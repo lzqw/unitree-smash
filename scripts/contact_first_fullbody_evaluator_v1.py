@@ -216,6 +216,8 @@ class ContactFirstFullBodyEvaluatorV1:
                     "node": node,
                     "error": repr(error),
                 }
+            if leg_reference is not None and hasattr(leg_reference, 'commit_final_command'):
+                leg_reference.commit_final_command(target.copy(),node)
             contact_modes_changed |= not np.array_equal(state.contacts, result["state"].contacts)
             state = result["state"]
             diagnostics = result["diagnostics"]

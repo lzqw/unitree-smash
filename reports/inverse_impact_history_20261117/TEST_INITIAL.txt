@@ -1,0 +1,16 @@
+F........................................                                [100%]
+=================================== FAILURES ===================================
+_____ test_recorded_lane0_has_analytic_attack_target_not_robot_certificate _____
+
+    def test_recorded_lane0_has_analytic_attack_target_not_robot_certificate():
+        root=Path(__file__).resolve().parents[1]
+        record=json.loads((root/'reports/joint_loop_round_20261117/IMPACT_REJECTION_REPLAY.json').read_text())['impact_calls'][0]
+        model=ImpactOutcomeEvaluator(json.loads((root/'configs/shuttle_physics_v2.json').read_text()),load_court(),load_racket())
+        result=inverse_impact_target(model,record['ball'],record['incoming_velocity'],record['local'])
+>       assert result['accepted']
+E       assert False
+
+tests/test_inverse_impact_target_v1.py:15: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_inverse_impact_target_v1.py::test_recorded_lane0_has_analytic_attack_target_not_robot_certificate
+1 failed, 40 passed in 1.50s

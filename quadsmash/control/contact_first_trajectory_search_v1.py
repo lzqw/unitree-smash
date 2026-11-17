@@ -17,6 +17,7 @@ import math
 from typing import Callable, Optional
 
 import numpy as np
+from .inverse_impact_target_v1 import UnreachableImpactTarget
 
 
 @dataclass(frozen=True)
@@ -31,6 +32,7 @@ class ContactFirstSearchConfig:
 
     require_joint_prefix: bool = False
     evaluate_impact_outcome: bool = False
+    inverse_impact_targets: bool = False
     dt_s: float = 0.01
     # Approach planning starts around t=2.0 s while contact is commonly near
     # 2.7 s in the current DTG contract; 96 x 10 ms covers that interval.
@@ -613,8 +615,11 @@ class ContactFirstTrajectorySearchV1:
                 if contact_index < 1 or contact_index >= cfg.horizon_steps:
                     continue
                 times = np.arange(contact_index + 1, dtype=float) * cfg.dt_s
-                candidate_target_pos, candidate_target_normal, candidate_target_velocity = (
-                    target_state_at(duration))
+                try:
+                    candidate_target_pos, candidate_target_normal, candidate_target_velocity = target_state_at(duration)
+                except UnreachableImpactTarget:
+                    rejected.append('predicted_outgoing_unreachable')
+                    continue
                 (candidate_rotation, candidate_base_displacement,
                  candidate_linear_velocity, candidate_angular_velocity) = (
                     base_state_at(duration))
@@ -634,7 +639,7 @@ class ContactFirstTrajectorySearchV1:
                 # hard residual check on the selected normal.
                 tangent_u, tangent_v = _normal_tangent_basis(candidate_target_normal)
                 normal_options = []
-                for normal_offset in cfg.normal_tangent_offsets_rad:
+                for normal_offset in (((0.,0.),) if cfg.inverse_impact_targets else cfg.normal_tangent_offsets_rad):
                     normal_offset = (float(normal_offset[0]), float(normal_offset[1]))
                     adjusted_normal = candidate_target_normal + (
                         normal_offset[0] * tangent_u + normal_offset[1] * tangent_v)
@@ -716,7 +721,7 @@ class ContactFirstTrajectorySearchV1:
                     float(np.linalg.norm(candidate_normal)), 1e-12)
                 normal_deviation = math.acos(float(np.clip(
                     nominal_target_normal_for_audit @ final_candidate_normal, -1.0, 1.0)))
-                if (cfg.adaptive_normal_target_max_deviation_rad > 0.0 and
+                if (not cfg.inverse_impact_targets and cfg.adaptive_normal_target_max_deviation_rad > 0.0 and
                         normal_deviation <= cfg.adaptive_normal_target_max_deviation_rad):
                     # The final position-refined arm state supplies a nearby
                     # face orientation.  Admit it only inside the explicit
@@ -731,7 +736,18 @@ class ContactFirstTrajectorySearchV1:
                                                      (candidate_target_normal - candidate_normal)]
                 qd_contact_nominal = np.clip(qd_contact_nominal, -velocity_limits,
                                              velocity_limits)
-                for velocity_scale in cfg.velocity_scales:
+                if cfg.inverse_impact_targets:
+                    from scipy.optimize import lsq_linear
+                    matrix=np.vstack((candidate_jp,cfg.normal_weight*candidate_jn,
+                                      cfg.damping*np.eye(6)))
+                    rhs=np.r_[relative_velocity,cfg.normal_weight*cfg.normal_rate_gain*
+                              (candidate_target_normal-candidate_normal),np.zeros(6)]
+                    fit=lsq_linear(matrix,rhs,bounds=(-velocity_limits,velocity_limits),max_iter=50)
+                    if not fit.success:
+                        rejected.append('bounded_task_velocity_solve_failed')
+                        continue
+                    qd_contact_nominal=fit.x
+                for velocity_scale in ((1.,) if cfg.inverse_impact_targets else cfg.velocity_scales):
                     candidates_considered += 1
                     qd1 = np.clip(qd_contact_nominal * float(velocity_scale),
                                   -velocity_limits, velocity_limits)
@@ -827,6 +843,8 @@ class ContactFirstTrajectorySearchV1:
                     effective_target_velocity_future_base_frame_m_s=effective_target_velocity.copy(),
                     normal_projection=normal_projection,
                     normal_deviation_from_requested_rad=float(normal_deviation),
+                    velocity_error_from_requested_m_s=float(requested_velocity_error),
+                    inverse_impact_targets=cfg.inverse_impact_targets,
                     velocity_projection=velocity_projection,
                     achieved_contact_speed_m_s=float(np.linalg.norm(achieved_velocity)),
                     position_tolerance_m=float(cfg.position_tolerance_m),

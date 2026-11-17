@@ -1,0 +1,476 @@
+diff --git a/quadsmash/control/contact_first_trajectory_search_v1.py b/quadsmash/control/contact_first_trajectory_search_v1.py
+index 81bd5ee..e6bc44a 100644
+--- a/quadsmash/control/contact_first_trajectory_search_v1.py
++++ b/quadsmash/control/contact_first_trajectory_search_v1.py
+@@ -17,6 +17,7 @@ import math
+ from typing import Callable, Optional
+ 
+ import numpy as np
++from .inverse_impact_target_v1 import UnreachableImpactTarget
+ 
+ 
+ @dataclass(frozen=True)
+@@ -31,6 +32,7 @@ class ContactFirstSearchConfig:
+ 
+     require_joint_prefix: bool = False
+     evaluate_impact_outcome: bool = False
++    inverse_impact_targets: bool = False
+     dt_s: float = 0.01
+     # Approach planning starts around t=2.0 s while contact is commonly near
+     # 2.7 s in the current DTG contract; 96 x 10 ms covers that interval.
+@@ -613,8 +615,11 @@ class ContactFirstTrajectorySearchV1:
+                 if contact_index < 1 or contact_index >= cfg.horizon_steps:
+                     continue
+                 times = np.arange(contact_index + 1, dtype=float) * cfg.dt_s
+-                candidate_target_pos, candidate_target_normal, candidate_target_velocity = (
+-                    target_state_at(duration))
++                try:
++                    candidate_target_pos, candidate_target_normal, candidate_target_velocity = target_state_at(duration)
++                except UnreachableImpactTarget:
++                    rejected.append('predicted_outgoing_unreachable')
++                    continue
+                 (candidate_rotation, candidate_base_displacement,
+                  candidate_linear_velocity, candidate_angular_velocity) = (
+                     base_state_at(duration))
+@@ -634,7 +639,7 @@ class ContactFirstTrajectorySearchV1:
+                 # hard residual check on the selected normal.
+                 tangent_u, tangent_v = _normal_tangent_basis(candidate_target_normal)
+                 normal_options = []
+-                for normal_offset in cfg.normal_tangent_offsets_rad:
++                for normal_offset in (((0.,0.),) if cfg.inverse_impact_targets else cfg.normal_tangent_offsets_rad):
+                     normal_offset = (float(normal_offset[0]), float(normal_offset[1]))
+                     adjusted_normal = candidate_target_normal + (
+                         normal_offset[0] * tangent_u + normal_offset[1] * tangent_v)
+@@ -716,7 +721,7 @@ class ContactFirstTrajectorySearchV1:
+                     float(np.linalg.norm(candidate_normal)), 1e-12)
+                 normal_deviation = math.acos(float(np.clip(
+                     nominal_target_normal_for_audit @ final_candidate_normal, -1.0, 1.0)))
+-                if (cfg.adaptive_normal_target_max_deviation_rad > 0.0 and
++                if (not cfg.inverse_impact_targets and cfg.adaptive_normal_target_max_deviation_rad > 0.0 and
+                         normal_deviation <= cfg.adaptive_normal_target_max_deviation_rad):
+                     # The final position-refined arm state supplies a nearby
+                     # face orientation.  Admit it only inside the explicit
+@@ -731,7 +736,18 @@ class ContactFirstTrajectorySearchV1:
+                                                      (candidate_target_normal - candidate_normal)]
+                 qd_contact_nominal = np.clip(qd_contact_nominal, -velocity_limits,
+                                              velocity_limits)
+-                for velocity_scale in cfg.velocity_scales:
++                if cfg.inverse_impact_targets:
++                    from scipy.optimize import lsq_linear
++                    matrix=np.vstack((candidate_jp,cfg.normal_weight*candidate_jn,
++                                      cfg.damping*np.eye(6)))
++                    rhs=np.r_[relative_velocity,cfg.normal_weight*cfg.normal_rate_gain*
++                              (candidate_target_normal-candidate_normal),np.zeros(6)]
++                    fit=lsq_linear(matrix,rhs,bounds=(-velocity_limits,velocity_limits),max_iter=50)
++                    if not fit.success:
++                        rejected.append('bounded_task_velocity_solve_failed')
++                        continue
++                    qd_contact_nominal=fit.x
++                for velocity_scale in ((1.,) if cfg.inverse_impact_targets else cfg.velocity_scales):
+                     candidates_considered += 1
+                     qd1 = np.clip(qd_contact_nominal * float(velocity_scale),
+                                   -velocity_limits, velocity_limits)
+@@ -827,6 +843,8 @@ class ContactFirstTrajectorySearchV1:
+                     effective_target_velocity_future_base_frame_m_s=effective_target_velocity.copy(),
+                     normal_projection=normal_projection,
+                     normal_deviation_from_requested_rad=float(normal_deviation),
++                    velocity_error_from_requested_m_s=float(requested_velocity_error),
++                    inverse_impact_targets=cfg.inverse_impact_targets,
+                     velocity_projection=velocity_projection,
+                     achieved_contact_speed_m_s=float(np.linalg.norm(achieved_velocity)),
+                     position_tolerance_m=float(cfg.position_tolerance_m),
+diff --git a/quadsmash/control/full_racket_rally_controller_v4.py b/quadsmash/control/full_racket_rally_controller_v4.py
+index 9e40d53..fe5eb2c 100644
+--- a/quadsmash/control/full_racket_rally_controller_v4.py
++++ b/quadsmash/control/full_racket_rally_controller_v4.py
+@@ -503,6 +503,8 @@ class FullRacketRallyControllerV4:
+                     from quadsmash.physics.court_v4 import load_court
+                     impact_model=ImpactOutcomeEvaluator(self.physics,load_court(),load_racket())
+                 target_state_fns=[]
++                if self.contact_first_planner.config.inverse_impact_targets and impact_model is None:
++                    raise ValueError("Inverse impact targets require impact evaluation")
+                 base_state_fns=[]
+                 planner_cfg=self.contact_first_planner.config
+                 for local in range(len(ids)):
+@@ -512,8 +514,9 @@ class FullRacketRallyControllerV4:
+                     v_ref=np.asarray(incoming_ball_velocity[local], dtype=float)
+                     desired_body_velocity=desired_velocity[local].detach().cpu().numpy()
+                     normal_body=normal_target[local].detach().cpu().numpy()
+-                    def target_state_fn(duration_s, basis=basis, root=root,
+-                                        p0=p0, v0=v0, v_ref=v_ref,
++                    inverse_cache={}
++                    def target_state_fn(duration_s, basis=basis, root=root, inverse_cache=inverse_cache,
++                                        p0=p0, v0=v0, v_ref=v_ref, lane_id=int(ids[local]), clock_s=float(public[local,775]),
+                                         desired_body_velocity=desired_body_velocity,
+                                         normal_body=normal_body):
+                         # DO NOT add the legacy plan.position_m - nominal
+@@ -522,6 +525,23 @@ class FullRacketRallyControllerV4:
+                         target=causal_shuttle_target_in_planning_frame(
+                             self.physics, p0, v0, v_ref, basis, root,
+                             desired_body_velocity, duration_s)
++                        if self.contact_first_planner.config.inverse_impact_targets:
++                            key=round(float(duration_s),9)
++                            if key not in inverse_cache:
++                                from .inverse_impact_target_v1 import inverse_impact_target
++                                ball,incoming=propagate_ball_state(p0,v0,duration_s,self.physics)
++                                local=self.teacher.contact_offset.detach().cpu().numpy().copy()
++                                local[0]=self.teacher.face_sign*impact_model.racket['assumptions']['string_thickness_m']/2
++                                inverse_cache[key]=inverse_impact_target(impact_model,ball,incoming,local)
++                                if not hasattr(self,'inverse_impact_audit'):self.inverse_impact_audit=[]
++                                self.inverse_impact_audit.append(dict(lane=lane_id,clock_s=clock_s,
++                                    duration_s=duration_s,result=inverse_cache[key]))
++                            inverse=inverse_cache[key]
++                            if not inverse['accepted']:
++                                from .inverse_impact_target_v1 import UnreachableImpactTarget
++                                raise UnreachableImpactTarget('predicted_outgoing_unreachable')
++                            target['velocity_world_m_s']=basis.T@np.asarray(inverse['racket_velocity_world_m_s'])
++                            return dict(target,normal_world=basis.T@np.asarray(inverse['normal_world']))
+                         return dict(target, normal_world=normal_body)
+                     target_state_fns.append(target_state_fn)
+                     impact_fn=None
+diff --git a/quadsmash/control/impact_outcome_evaluator_v1.py b/quadsmash/control/impact_outcome_evaluator_v1.py
+index 5844aee..551dbdc 100644
+--- a/quadsmash/control/impact_outcome_evaluator_v1.py
++++ b/quadsmash/control/impact_outcome_evaluator_v1.py
+@@ -48,6 +48,9 @@ class ImpactOutcomeEvaluator:
+             contact_tolerance_m=self.tolerance)
+         def reject(reason):
+             result['rejection_reason'] = reason
++            result['rejection_class'] = ('structural_contact' if reason in (
++                'outside_authored_string_surface','ball_string_contact_position_mismatch',
++                'nonapproaching_contact','contact_on_opponent_side') else 'analytic_outcome_prediction')
+             return result
+         # Actual authored strip boxes, not an invented circular racket radius.
+         on_string = any(np.all(np.abs(local-np.asarray(s['center'])) <=
+diff --git a/quadsmash/control/inverse_impact_target_v1.py b/quadsmash/control/inverse_impact_target_v1.py
+new file mode 100644
+index 0000000..a34d0d3
+--- /dev/null
++++ b/quadsmash/control/inverse_impact_target_v1.py
+@@ -0,0 +1,41 @@
++"""Bounded analytic task-target inversion; never a robot-feasibility certificate."""
++import numpy as np
++from scipy.optimize import least_squares
++from .initial_intercept import propagate_ball_state
++
++
++class UnreachableImpactTarget(ValueError):
++    """One contact time has no verified analytic task target."""
++
++
++def inverse_impact_target(impact_model, position, incoming, contact_local):
++    p=np.asarray(position,dtype=float);v=np.asarray(incoming,dtype=float)
++    if p.shape!=(3,) or v.shape!=(3,) or not np.isfinite([p,v]).all():
++        raise ValueError('Finite world position and incoming velocity required')
++    court=impact_model.court;physics=impact_model.physics
++    # One deterministic interior target, no case lookup or parameter scan.
++    landing=np.array([court['target_x_limits_m'][1]-.1,0.,physics['collision_radius_m']])
++    vz=-1.01
++    def residual(x):
++        end,_=propagate_ball_state(p,[x[0],x[1],vz],x[2],physics)
++        return (end-landing)/.01
++    fit=least_squares(residual,[8.,0.,.4],bounds=([.1,-20.,.05],[30.,20.,2.]),
++                      max_nfev=60,ftol=1e-8,xtol=1e-8,gtol=1e-8)
++    desired=np.array([fit.x[0],fit.x[1],vz])
++    delta=desired-v;size=np.linalg.norm(delta)
++    if size<1e-9:return dict(accepted=False,rejection_reason='zero_impact_change')
++    normal=delta/size
++    # Match incoming tangential velocity: relative tangential speed and hence
++    # friction impulse are zero. Forward model independently verifies this.
++    racket_velocity=v+size/(1+physics['restitution'])*normal
++    surface=p-physics['collision_radius_m']*normal
++    outcome=impact_model.evaluate(p,v,surface,racket_velocity,normal,contact_local)
++    valid=bool(fit.success and np.linalg.norm(residual(fit.x))<=.1 and
++               outcome.get('legal_return_predicted') and outcome.get('attack5_predicted') and
++               outcome.get('target_landing_predicted'))
++    return dict(accepted=valid,rejection_reason=None if valid else 'predicted_outgoing_unreachable',
++        normal_world=normal.tolist(),racket_velocity_world_m_s=racket_velocity.tolist(),
++        incoming_velocity_world_m_s=v.tolist(),desired_outgoing_velocity_world_m_s=desired.tolist(),
++        target_landing_world_m=landing.tolist(),flight_time_s=float(fit.x[2]),
++        optimizer_nfev=int(fit.nfev),forward_outcome=outcome,
++        robot_feasibility_verified=False,model='infinite_mass_zero_relative_tangent_seed')
+diff --git a/scripts/causal_frozen_leg_prefix_v1.py b/scripts/causal_frozen_leg_prefix_v1.py
+index 0787d6c..44d1824 100644
+--- a/scripts/causal_frozen_leg_prefix_v1.py
++++ b/scripts/causal_frozen_leg_prefix_v1.py
+@@ -28,35 +28,33 @@ class CausalFrozenLegReferenceFactory:
+         audit=FrozenBaseInferenceAudit(teacher)
+         start=float(public[lane,775]);last_node=-1
+         airborne_seen=bool(public[lane,772:775].sum()>.5)
++        goal_time=float(public[lane,759]+public[lane,775])
++        hit_seen=bool(public[lane,773]>.5)
+         factory=self
++        from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
++        from scripts.predicted_observation_frame_v1 import predicted_frame, encode_final_command
++        model=LoadedPinocchioModelV1()
++        committed_node=-1
+         def reference(state,node):
+             nonlocal last_node,airborne_seen
++            if node and committed_node != node-1:
++                raise ValueError("Previous final18 command was not committed")
+             if node!=last_node+1:raise ValueError('Causal leg reference requires sequential predicted states')
+             last_node=node
+             old=public[lane].clone()
+             if node:public[lane,69:759]=old[:690]
+             def put(sl,value):public[lane,sl]=torch.as_tensor(value,device=public.device,dtype=public.dtype)
+             rotation=state.root_rotation_world
+-            put(slice(0,6),state.v[:6]);put(slice(6,9),rotation.T@np.array([0.,0.,-1.]))
+-            put(slice(9,27),state.joint_position-self.default.cpu().numpy())
+-            put(slice(27,45),state.joint_velocity)
+-            q=public.new_tensor(state.joint_position[12:])[None]
+-            with torch.inference_mode():
+-                point,normal,jp,_=teacher.kinematics(q,public.new_zeros(3))
+-            put(slice(45,48),point[0]);put(slice(48,51),normal[0])
+-            put(slice(51,54),jp[0]@public.new_tensor(state.joint_velocity[12:]))
+-            put(slice(57,61),state.contacts.astype(float))
+             ball,velocity=propagate_ball_state(factory.ball_position[0],factory.ball_velocity[0],node*factory.dt_s,factory.physics)
+-            relative=rotation.T@(ball-state.root_position_world)
+-            put(slice(61,64),relative)
+-            put(slice(64,67),rotation.T@velocity-state.v[:3]-np.cross(state.v[3:6],relative))
++            put(slice(0,69),predicted_frame(model,state,self.default.cpu().numpy(),ball,velocity,
++                bool(old[67]>.5)))
+             target=rotation.T@(np.array([1.1,0.,1.8])-state.root_position_world)
+             put(slice(760,763),target);put(slice(763,766),rotation.T@np.array([1.,0.,0.]))
+             put(slice(766,769),-state.v[:3]-np.cross(state.v[3:6],target))
+             public[lane,775]=start+node*factory.dt_s
+-            public[lane,759]=2.75-public[lane,775]
++            public[lane,759]=goal_time-public[lane,775]
+             airborne=not state.contacts.any();airborne_seen|=airborne
+-            phase=2 if airborne else (4 if airborne_seen else (1 if (rotation@state.v[:3])[2]>.05 else 0))
++            phase=(3 if hit_seen else 2) if airborne else (4 if airborne_seen else (1 if (rotation@state.v[:3])[2]>.05 else 0))
+             public[lane,770:775]=0.;public[lane,770+phase]=1.
+             before=dict(audit.counts)
+             with torch.inference_mode():
+@@ -65,7 +63,13 @@ class CausalFrozenLegReferenceFactory:
+             if factory.inference_counts is not None:
+                 for name,count in audit.counts.items():
+                     factory.inference_counts[name]=factory.inference_counts.get(name,0)+count-before[name]
+-            public[lane,776:794]=action[lane]
+             target=factory.limits[:,0]+.5*(action[lane].clamp(-1,1)+1)*(factory.limits[:,1]-factory.limits[:,0])
+             return target[:12].detach().cpu().numpy().copy()
++        def commit(target,node):
++            nonlocal committed_node
++            if node!=last_node or committed_node==node:
++                raise ValueError('Final command commit must follow one prediction')
++            public[lane,776:794]=public.new_tensor(encode_final_command(target,factory.limits.cpu().numpy()))
++            committed_node=node
++        reference.commit_final_command=commit
+         return reference
+diff --git a/scripts/check_predicted_frame_replay_v1.py b/scripts/check_predicted_frame_replay_v1.py
+new file mode 100644
+index 0000000..3c4d079
+--- /dev/null
++++ b/scripts/check_predicted_frame_replay_v1.py
+@@ -0,0 +1,30 @@
++"""Field-wise saved-native/public reconstruction audit, not independent truth."""
++import argparse,json
++from pathlib import Path
++import numpy as np
++from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
++from scripts.predicted_observation_frame_v1 import predicted_frame
++from quadsmash.tasks.stand.observation_contract import FRAME_FIELDS
++
++
++def main():
++    p=argparse.ArgumentParser();p.add_argument('--input',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
++    if a.output.exists():raise ValueError('Preserve prior results')
++    root=Path(__file__).resolve().parents[1];model=LoadedPinocchioModelV1()
++    authored=json.loads((root/'reports/G07_full_racket_v4/CPU_REPLAY_AUTHORED_JOINTS_0724.json').read_text())['defaults_before_neutral_arm_override']
++    default=np.array([authored[n] for n in model.joint_order]);default[12:]=json.loads((root/'configs/full_racket_reset_v4.json').read_text())['arm_joint_positions_rad']
++    obs=np.load(a.input,mmap_mode='r');rows=[]
++    for tick in (200,201,202):
++        for lane in range(obs.shape[1]):
++            public=obs[tick,lane];s=model.state_from_public(public,default);R=s.root_rotation_world
++            ball=s.root_position_world+R@public[61:64]
++            velocity=R@(public[64:67]+s.v[:3]+np.cross(s.v[3:6],public[61:64]))
++            frame=predicted_frame(model,s,default,ball,velocity,bool(public[67]>.5))
++            errors={};start=0
++            for name,size in FRAME_FIELDS.items():
++                errors[name]=float(np.max(np.abs(frame[start:start+size]-public[start:start+size])));start+=size
++            rows.append(dict(tick=tick,lane=lane,field_max_abs_error=errors,
++                native_tool_angular=public[54:57].tolist(),reconstructed_tool_angular=frame[54:57].tolist()))
++    a.output.write_text(json.dumps(dict(scope='Saved native observation compared with reconstructed public state; root and ball are not independent truth',rows=rows),indent=2)+'\n')
++    print(json.dumps({k:max(r['field_max_abs_error'][k] for r in rows) for k in FRAME_FIELDS}))
++if __name__=='__main__':main()
+diff --git a/scripts/contact_first_fullbody_evaluator_v1.py b/scripts/contact_first_fullbody_evaluator_v1.py
+index 989ebd1..67f7891 100644
+--- a/scripts/contact_first_fullbody_evaluator_v1.py
++++ b/scripts/contact_first_fullbody_evaluator_v1.py
+@@ -216,6 +216,8 @@ class ContactFirstFullBodyEvaluatorV1:
+                     "node": node,
+                     "error": repr(error),
+                 }
++            if leg_reference is not None and hasattr(leg_reference, 'commit_final_command'):
++                leg_reference.commit_final_command(target.copy(),node)
+             contact_modes_changed |= not np.array_equal(state.contacts, result["state"].contacts)
+             state = result["state"]
+             diagnostics = result["diagnostics"]
+diff --git a/scripts/predicted_observation_frame_v1.py b/scripts/predicted_observation_frame_v1.py
+new file mode 100644
+index 0000000..a4d240a
+--- /dev/null
++++ b/scripts/predicted_observation_frame_v1.py
+@@ -0,0 +1,32 @@
++"""Reconstruct the native 69D current-frame convention from predicted state."""
++import numpy as np
++import pinocchio as pin
++
++
++def predicted_frame(model,state,default,ball_position,ball_velocity,ball_present=True):
++    pin.computeJointJacobians(model.model,model.data,state.q)
++    pin.updateFramePlacements(model.model,model.data)
++    fid=model.body_frames['Racket'];pose=model.data.oMf[fid]
++    jac=pin.getFrameJacobian(model.model,model.data,fid,pin.ReferenceFrame.LOCAL_WORLD_ALIGNED)
++    twist=jac@state.v;R=state.root_rotation_world
++    offset=R.T@(pose.translation-state.root_position_world)
++    tool_velocity=R.T@twist[:3]-state.v[:3]-np.cross(state.v[3:6],offset)
++    tool_angular=R.T@twist[3:]-state.v[3:6]
++    ball=R.T@(np.asarray(ball_position)-state.root_position_world)
++    ball_v=R.T@ball_velocity-state.v[:3]-np.cross(state.v[3:6],ball)
++    frame=np.r_[state.v[:6],R.T@np.array([0.,0.,-1.]),
++        state.joint_position-default,state.joint_velocity,offset,R.T@pose.rotation[:,0],
++        tool_velocity,tool_angular,state.contacts.astype(float),
++        ball*bool(ball_present),ball_v*bool(ball_present),float(ball_present),1.]
++    if frame.shape!=(69,) or not np.isfinite(frame).all():raise ValueError('Invalid predicted frame')
++    return frame
++
++
++def encode_final_command(target,limits):
++    target=np.asarray(target,dtype=float);limits=np.asarray(limits,dtype=float)
++    if target.shape!=(18,) or limits.shape!=(18,2) or not np.isfinite(target).all():
++        raise ValueError('Finite final18 target required')
++    action=2*(target-limits[:,0])/(limits[:,1]-limits[:,0])-1
++    if not np.isfinite(action).all() or np.any(np.abs(action)>1+1e-7):
++        raise ValueError('Final command outside original position limits')
++    return action
+diff --git a/scripts/replay_contact_candidate_gate_v1.py b/scripts/replay_contact_candidate_gate_v1.py
+index a82af1c..56d5601 100644
+--- a/scripts/replay_contact_candidate_gate_v1.py
++++ b/scripts/replay_contact_candidate_gate_v1.py
+@@ -15,6 +15,7 @@ from scripts.whole_body_support_qp_v1 import PositionPDInterface
+ 
+ def main():
+     parser=argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--inverse-impact',action='store_true')
+     parser.add_argument('--input',type=Path,required=True)
+     parser.add_argument('--checkpoint',type=Path,required=True)
+     parser.add_argument('--interface',type=Path,required=True)
+@@ -35,6 +36,9 @@ def main():
+     default=torch.tensor(default,dtype=torch.float32);limits=torch.tensor(interface.limits,dtype=torch.float32)
+     checkpoint=torch.load(args.checkpoint,map_location='cpu',weights_only=False)
+     controller=FullRacketRallyControllerV4(checkpoint,observations.shape[1],'cpu')
++    if args.inverse_impact:
++        from dataclasses import replace
++        controller.contact_first_planner.config=replace(controller.contact_first_planner.config,inverse_impact_targets=True)
+     physical=[];impacts=[]
+     def factory(lane,public,q,qd):
+         model=LoadedPinocchioModelV1();state=model.state_from_public(public,default.numpy())
+@@ -71,6 +75,7 @@ def main():
+         future_recorded_actions_read=False,source_ticks=end,training=False,native='NOT_RUN',
+         input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in
+             (args.input/'public_observations.npy',args.checkpoint,args.interface)},
++        inverse_impact_targets=args.inverse_impact,inverse_impact_audit=getattr(controller,'inverse_impact_audit',[]),
+         plans=controller.logs,impact_calls=impacts,physical_calls=physical)
+     args.output.parent.mkdir(parents=True,exist_ok=True)
+     args.output.write_text(json.dumps(result,indent=2)+'\n')
+diff --git a/tests/test_causal_final_command_history_v1.py b/tests/test_causal_final_command_history_v1.py
+new file mode 100644
+index 0000000..4ffa898
+--- /dev/null
++++ b/tests/test_causal_final_command_history_v1.py
+@@ -0,0 +1,40 @@
++from types import SimpleNamespace
++import numpy as np
++import torch
++import pytest
++from scripts.causal_frozen_leg_prefix_v1 import CausalFrozenLegReferenceFactory
++from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
++from test_contact_first_fullbody_evaluator_v1 import _fixture
++
++
++class Teacher:
++    observations=[]
++    def __init__(self):
++        self.walk=SimpleNamespace(actor=torch.nn.Identity())
++        self.standing=SimpleNamespace(actor=torch.nn.Identity())
++        self.strike=torch.nn.Identity()
++    def action(self,obs,*args,**kwargs):
++        Teacher.observations.append(obs['policy'].clone())
++        return torch.zeros((1,18))
++
++
++def test_committed_final_arm_replaces_base_proposal_and_isolates_candidates():
++    public,default,interface=_fixture(0.)
++    public[67:69]=1.;public[61:64]=[1.,0.,1.];public[775]=2.;public[759]=.75
++    factory=CausalFrozenLegReferenceFactory(Teacher(),torch.zeros(1,1),torch.tensor(public[None]).float(),
++        torch.tensor(default).float(),torch.tensor([[-4.,4.]]*18),torch.tensor([2.75]),torch.zeros(1,3),0,
++        {'gravity_mps2':9.81,'quadratic_drag_k_per_m':0.})
++    # Use actual physics schema for causal propagation.
++    import json
++    from pathlib import Path
++    factory.physics=json.loads((Path(__file__).resolve().parents[1]/'configs/shuttle_physics_v2.json').read_text())
++    state=LoadedPinocchioModelV1().state_from_public(public,default)
++    reference=factory();reference(state,0)
++    with pytest.raises(ValueError,match='not committed'):reference(state,1)
++    target=np.zeros(18);target[12:]=.8
++    reference.commit_final_command(target,0)
++    with pytest.raises(ValueError,match='commit'):reference.commit_final_command(target,0)
++    reference(state,1)
++    np.testing.assert_allclose(Teacher.observations[-1][0,-18:].numpy(),target/4,atol=1e-7)
++    fresh=factory();fresh(state,0)
++    np.testing.assert_allclose(Teacher.observations[-1][0,-18:],public[-18:])
+diff --git a/tests/test_contact_first_trajectory_search_v1.py b/tests/test_contact_first_trajectory_search_v1.py
+index a011909..b981c7c 100644
+--- a/tests/test_contact_first_trajectory_search_v1.py
++++ b/tests/test_contact_first_trajectory_search_v1.py
+@@ -439,3 +439,19 @@ def test_joint_gross_contact_error_never_reaches_physics():
+         planner.plan(**_inputs(), evaluator=physical,
+             impact_evaluator=lambda _: dict(valid_return=False,contact_position_error_m=.1,
+                 rejection_reason='ball_string_contact_position_mismatch'))
++
++
++def test_inverse_target_time_failure_does_not_abort_other_contact_times():
++    from quadsmash.control.inverse_impact_target_v1 import UnreachableImpactTarget
++    planner=ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
++        horizon_steps=32,contact_time_offsets_s=(-.02,0.,.02),inverse_impact_targets=True))
++    inputs=_inputs()
++    def target(t):
++        if abs(t-.18)<1e-8:raise UnreachableImpactTarget('no net clearance')
++        return dict(position_world_m=inputs['target_position_world_m'],
++                    velocity_world_m_s=inputs['target_velocity_world_m_s'],
++                    normal_world=inputs['target_normal_world'])
++    result=planner.plan(**inputs,target_state_fn=target)
++    assert not result.metadata['normal_projection']
++    assert 'velocity_error_from_requested_m_s' in result.metadata
++    assert planner.last_diagnostics['rejection_counts']['predicted_outgoing_unreachable']>0
+diff --git a/tests/test_inverse_impact_target_v1.py b/tests/test_inverse_impact_target_v1.py
+new file mode 100644
+index 0000000..9e59542
+--- /dev/null
++++ b/tests/test_inverse_impact_target_v1.py
+@@ -0,0 +1,25 @@
++import json
++from pathlib import Path
++import numpy as np
++from quadsmash.control.inverse_impact_target_v1 import inverse_impact_target
++from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
++from quadsmash.physics.full_racket_v4 import load_racket
++from quadsmash.physics.court_v4 import load_court
++
++
++def test_recorded_lane0_has_analytic_attack_target_not_robot_certificate():
++    root=Path(__file__).resolve().parents[1]
++    record=json.loads((root/'reports/joint_loop_round_20261117/IMPACT_REJECTION_REPLAY.json').read_text())['impact_calls'][0]
++    model=ImpactOutcomeEvaluator(json.loads((root/'configs/shuttle_physics_v2.json').read_text()),load_court(),load_racket())
++    from quadsmash.control.initial_intercept import propagate_ball_state
++    plan=json.loads((root/'reports/joint_loop_round_20261117/attempts/probe01/native/causal_plans.json').read_text())[0]
++    ball,incoming=propagate_ball_state(plan['initial_position_m'][0],plan['initial_velocity_mps'][0],.77,model.physics)
++    result=inverse_impact_target(model,ball,incoming,record['local'])
++    assert result['accepted']
++    out=result['forward_outcome']
++    assert out['attack5_predicted'] and out['target_landing_predicted'] and out['legal_return_predicted']
++    np.testing.assert_allclose(out['outgoing_velocity'],result['desired_outgoing_velocity_world_m_s'],atol=1e-9)
++    assert not result['robot_feasibility_verified']
++    # Below the net cannot be accepted as a downward attack.
++    position=np.array(record['ball']);position[2]=1.
++    assert not inverse_impact_target(model,position,record['incoming_velocity'],record['local'])['accepted']

@@ -439,3 +439,19 @@ def test_joint_gross_contact_error_never_reaches_physics():
         planner.plan(**_inputs(), evaluator=physical,
             impact_evaluator=lambda _: dict(valid_return=False,contact_position_error_m=.1,
                 rejection_reason='ball_string_contact_position_mismatch'))
+
+
+def test_inverse_target_time_failure_does_not_abort_other_contact_times():
+    from quadsmash.control.inverse_impact_target_v1 import UnreachableImpactTarget
+    planner=ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32,contact_time_offsets_s=(-.02,0.,.02),inverse_impact_targets=True))
+    inputs=_inputs()
+    def target(t):
+        if abs(t-.18)<1e-8:raise UnreachableImpactTarget('no net clearance')
+        return dict(position_world_m=inputs['target_position_world_m'],
+                    velocity_world_m_s=inputs['target_velocity_world_m_s'],
+                    normal_world=inputs['target_normal_world'])
+    result=planner.plan(**inputs,target_state_fn=target)
+    assert not result.metadata['normal_projection']
+    assert 'velocity_error_from_requested_m_s' in result.metadata
+    assert planner.last_diagnostics['rejection_counts']['predicted_outgoing_unreachable']>0

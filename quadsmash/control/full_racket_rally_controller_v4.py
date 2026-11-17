@@ -503,6 +503,8 @@ class FullRacketRallyControllerV4:
                     from quadsmash.physics.court_v4 import load_court
                     impact_model=ImpactOutcomeEvaluator(self.physics,load_court(),load_racket())
                 target_state_fns=[]
+                if self.contact_first_planner.config.inverse_impact_targets and impact_model is None:
+                    raise ValueError("Inverse impact targets require impact evaluation")
                 base_state_fns=[]
                 planner_cfg=self.contact_first_planner.config
                 for local in range(len(ids)):
@@ -512,8 +514,9 @@ class FullRacketRallyControllerV4:
                     v_ref=np.asarray(incoming_ball_velocity[local], dtype=float)
                     desired_body_velocity=desired_velocity[local].detach().cpu().numpy()
                     normal_body=normal_target[local].detach().cpu().numpy()
-                    def target_state_fn(duration_s, basis=basis, root=root,
-                                        p0=p0, v0=v0, v_ref=v_ref,
+                    inverse_cache={}
+                    def target_state_fn(duration_s, basis=basis, root=root, inverse_cache=inverse_cache,
+                                        p0=p0, v0=v0, v_ref=v_ref, lane_id=int(ids[local]), clock_s=float(public[local,775]),
                                         desired_body_velocity=desired_body_velocity,
                                         normal_body=normal_body):
                         # DO NOT add the legacy plan.position_m - nominal
@@ -522,6 +525,23 @@ class FullRacketRallyControllerV4:
                         target=causal_shuttle_target_in_planning_frame(
                             self.physics, p0, v0, v_ref, basis, root,
                             desired_body_velocity, duration_s)
+                        if self.contact_first_planner.config.inverse_impact_targets:
+                            key=round(float(duration_s),9)
+                            if key not in inverse_cache:
+                                from .inverse_impact_target_v1 import inverse_impact_target
+                                ball,incoming=propagate_ball_state(p0,v0,duration_s,self.physics)
+                                local=self.teacher.contact_offset.detach().cpu().numpy().copy()
+                                local[0]=self.teacher.face_sign*impact_model.racket['assumptions']['string_thickness_m']/2
+                                inverse_cache[key]=inverse_impact_target(impact_model,ball,incoming,local)
+                                if not hasattr(self,'inverse_impact_audit'):self.inverse_impact_audit=[]
+                                self.inverse_impact_audit.append(dict(lane=lane_id,clock_s=clock_s,
+                                    duration_s=duration_s,result=inverse_cache[key]))
+                            inverse=inverse_cache[key]
+                            if not inverse['accepted']:
+                                from .inverse_impact_target_v1 import UnreachableImpactTarget
+                                raise UnreachableImpactTarget('predicted_outgoing_unreachable')
+                            target['velocity_world_m_s']=basis.T@np.asarray(inverse['racket_velocity_world_m_s'])
+                            return dict(target,normal_world=basis.T@np.asarray(inverse['normal_world']))
                         return dict(target, normal_world=normal_body)
                     target_state_fns.append(target_state_fn)
                     impact_fn=None

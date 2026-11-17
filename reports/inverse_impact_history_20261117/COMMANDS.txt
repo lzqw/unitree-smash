@@ -1,0 +1,8 @@
+# CPU final, exit 0
+bash scripts/python.sh -m pytest -q tests/test_inverse_impact_target_v1.py tests/test_causal_final_command_history_v1.py tests/test_contact_first_base_transport_v1.py tests/test_probe_rally_export_v1.py tests/test_contact_first_trajectory_search_v1.py tests/test_joint_prefix_execution_v1.py tests/test_impact_outcome_evaluator_v1.py tests/test_contact_first_fullbody_evaluator_v1.py tests/test_unilateral_implicit_prediction_v1.py
+# Offline replay, exit 0; output must be a fresh path
+OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.replay_contact_candidate_gate_v1 --inverse-impact --input reports/joint_loop_round_20261117/attempts/probe01/native --checkpoint reports/joint_loop_round_20261117/attempts/probe01/candidate.pt --interface reports/codex_teacher_joint_eval_20261116/controller.json --output reports/inverse_impact_history_20261117/REPLAY_FINAL.json
+# Field comparison, exit 0
+bash scripts/python.sh -m scripts.check_predicted_frame_replay_v1 --input reports/joint_loop_round_20261117/attempts/probe01/native/public_observations.npy --output reports/inverse_impact_history_20261117/FRAME_REPLAY.json
+# Initial failing test: pytest exit 1 retained in TEST_INITIAL.txt; shell wrapper cat returned 0, not a test pass.
+# No Isaac/native evaluations run.

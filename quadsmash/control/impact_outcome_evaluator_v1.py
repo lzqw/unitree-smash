@@ -48,6 +48,9 @@ class ImpactOutcomeEvaluator:
             contact_tolerance_m=self.tolerance)
         def reject(reason):
             result['rejection_reason'] = reason
+            result['rejection_class'] = ('structural_contact' if reason in (
+                'outside_authored_string_surface','ball_string_contact_position_mismatch',
+                'nonapproaching_contact','contact_on_opponent_side') else 'analytic_outcome_prediction')
             return result
         # Actual authored strip boxes, not an invented circular racket radius.
         on_string = any(np.all(np.abs(local-np.asarray(s['center'])) <=
