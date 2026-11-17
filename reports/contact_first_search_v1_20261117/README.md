@@ -29,6 +29,8 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
   - deterministic candidate replay from one measured `public794` state;
   - optional direct `LoadedPinocchioModelV1.PublicState` input for a future
     native-state adapter, avoiding observation-based root reconstruction;
+  - `from_native(...)` constructor that reads the repository's live tensor
+    contract and still performs CPU-only replay.
   - original 18-joint position bounds, velocity/torque/contact diagnostics,
     and authored non-foot ground-clearance witness;
   - measured-contact-only policy, so an airborne prefix cannot invent ground

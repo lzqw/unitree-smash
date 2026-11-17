@@ -68,6 +68,22 @@ class ContactFirstFullBodyEvaluatorV1:
         self.max_tracking_error_rad = float(max_tracking_error_rad)
         self.dt_s = 0.01
 
+    @classmethod
+    def from_native(cls, env, lane, interface_config, *, default=None,
+                    contact_force_threshold_n=0.0, **kwargs):
+        """Construct from the live native articulation tensors.
+
+        ``LoadedPinocchioModelV1.state_from_native`` reads the root pose/twist,
+        admitted 18-joint state and measured foot contacts.  The evaluator
+        still performs a CPU replay and does not query or command PhysX.
+        """
+        model = LoadedPinocchioModelV1()
+        state = model.state_from_native(
+            env, lane, default=default,
+            contact_force_threshold_n=contact_force_threshold_n)
+        return cls(interface_config=interface_config, initial_state=state,
+                   model=model, **kwargs)
+
     @staticmethod
     def _violations(diagnostics):
         limits = {

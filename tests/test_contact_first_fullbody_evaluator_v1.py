@@ -1,4 +1,5 @@
 import json
+from types import SimpleNamespace
 
 import numpy as np
 
@@ -57,6 +58,33 @@ def test_fullbody_evaluator_accepts_explicit_loaded_state_without_public_reconst
     result = evaluator(q, qd, 3, {"source": "explicit_loaded_state"})
     assert result["accepted"] is True
     assert result["nodes_checked"] == 4
+
+
+def test_fullbody_evaluator_from_native_reads_live_tensor_contract():
+    _, default, interface = _fixture()
+    import torch
+
+    data = SimpleNamespace(
+        root_link_pos_w=torch.tensor([[0.7, 0.0, 0.6]], dtype=torch.float64),
+        root_link_quat_w=torch.tensor([[1.0, 0.0, 0.0, 0.0]], dtype=torch.float64),
+        root_com_ang_vel_w=torch.zeros((1, 3), dtype=torch.float64),
+        root_com_lin_vel_w=torch.tensor([[0.0, 0.0, 5.0]], dtype=torch.float64),
+        body_com_pos_b=torch.zeros((1, 1, 3), dtype=torch.float64),
+        joint_pos=torch.as_tensor(default[None], dtype=torch.float64),
+        joint_vel=torch.zeros((1, 18), dtype=torch.float64),
+    )
+    env = SimpleNamespace(
+        robot=SimpleNamespace(data=data),
+        scene=SimpleNamespace(env_origins=torch.zeros((1, 3), dtype=torch.float64)),
+        joint_ids=np.arange(18),
+        observed_foot_contact=torch.zeros((1, 4), dtype=torch.bool),
+    )
+    evaluator = ContactFirstFullBodyEvaluatorV1.from_native(
+        env, 0, interface, substeps=1)
+    q = np.repeat(default[None, 12:], 4, axis=0)
+    result = evaluator(q, np.zeros_like(q), 3, {"source": "fake_native_tensors"})
+    assert result["accepted"] is True
+    assert result["airborne_ground_force_policy"] == "measured_contacts_only"
 
 
 def test_fullbody_evaluator_rejects_prefix_that_enters_authored_ground():
