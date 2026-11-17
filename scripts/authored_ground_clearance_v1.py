@@ -85,3 +85,17 @@ class AuthoredGroundClearance:
                     cached[fid]=pin.getFrameJacobian(m.model,m.data,fid,pin.ReferenceFrame.LOCAL_WORLD_ALIGNED).copy()
                 J=cached[fid];rows.append(J[2]+offset[1]*J[3]-offset[0]*J[4])
         return np.asarray(distances),np.asarray(rows) if jacobian else None
+
+
+    def minimum_witness(self, q):
+        """Exact authored lowest support point; does not assert native contact."""
+        gaps,_=self.evaluate(q)
+        index=int(np.argmin(gaps));shape=self.shapes[index]
+        pose=self.model.data.oMf[self.model.body_frames[shape['body']]]
+        local=support_witness(shape,pose.rotation)
+        return dict(body=shape['body'],shape_path=shape['path'],shape_index=index,
+            gap_m=float(gaps[index]),witness_world_m=(pose.translation+pose.rotation@local).tolist(),
+            root_position_world_m=np.asarray(q[:3]).tolist(),
+            root_quaternion_xyzw=np.asarray(q[3:7]).tolist(),
+            geometry_sha256=self.sha256,ground_z_m=self.ground_z_m,
+            native_contact_verified=False)

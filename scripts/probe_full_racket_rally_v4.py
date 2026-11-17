@@ -5,6 +5,8 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from isaaclab.app import AppLauncher
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True)
+p.add_argument('--joint-interface',type=Path,required=True)
+p.add_argument('--precision-receipt',type=Path,required=True)
 p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--count',type=int,default=16)
 p.add_argument('--frozen-base-assisted', action='store_true', required=True,
     help='Allow pinned frozen base inference; no learned heads or policy updates')
@@ -27,7 +29,7 @@ signal.signal(signal.SIGTERM,stop);signal.signal(signal.SIGINT,stop)
 def main():
     args.output.mkdir(parents=True,exist_ok=True)
     checkpoint=torch.load(args.checkpoint,map_location='cpu',weights_only=False)
-    protocol=json.loads((ROOT/'configs/g07_full_racket_eval_v4_r3.json').read_text())
+    protocol=json.loads((ROOT/'configs/g07_full_racket_eval_v5_contact_recovery_origin0.json').read_text())
     assert checkpoint['asset_sha256']==protocol['asset']['sha256']
     assert 2<=args.count<=128 and args.count%2==0
     suite=protocol['training_suite'];path=ROOT/suite['path']
@@ -42,20 +44,37 @@ def main():
         learned_action_sources=sources, teacher_only_eligible=not bool(sources),
         native_steps=0),indent=2)+'\n')
     del controller  # CPU provenance inspection; native controller constructed below
-    cfg=full_racket_cfg(args.count);cfg.seed=720601
-    env=FullRacketEnvV4(cfg,cases=cases);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
+    from quadsmash.tasks.stand.contact_recovery_origin0_v5 import contact_recovery_origin0_cfg
+    from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
+    from quadsmash.control.full_racket_train_evaluation_v4 import training_noise
+    cfg=contact_recovery_origin0_cfg(args.count,protocol,args.precision_receipt)
+    cfg.seed=882072;cfg.ground_size_m=(64.,64.,.1)
+    noise=training_noise(args.count,dict(joint_position_rad=0.,joint_velocity_rad_s=0.,root_xy_m=0.,root_yaw_rad=0.),cfg.seed)
+    env=FrozenPanelEnv(cfg,cases=cases,reset_noise=noise,contact_flight_recovery=protocol['recovery_association']['schema'])
+    wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
     controller=FullRacketRallyControllerV4(checkpoint,args.count,env.device)
+    from scripts.attach_joint_contact_prefix_v1 import attach_joint_contact_prefix
+    interface_record=json.loads(args.joint_interface.read_text())
+    attach_joint_contact_prefix(env,controller,interface_record.get('interface',interface_record))
     inference_audit=FrozenBaseInferenceAudit(controller.teacher)
     try:
         observation,_=wrapper.reset();controller.reset()
         export_robot_geometry(get_current_stage(),env.robot,args.output)
         default=env.robot.data.default_joint_pos[0,env.joint_ids]
         limits=env.robot.data.joint_pos_limits[0,env.joint_ids]
+        from scripts.small_panel_ground_observer_v1 import SmallPanelGroundObserver
+        from scripts.native_pure_control_state_driven_long_mpc_v1_qp_continuity_repair import NativePureControlStateDrivenLongMPCV1QPContinuityRepair
+        ground=SmallPanelGroundObserver(env)
+        recovery=NativePureControlStateDrivenLongMPCV1QPContinuityRepair(env,limits,default,args.joint_interface,args.output,ground)
         observations,actions,poses,traces,masks=[],[],[],[],[]
         finished=torch.zeros(args.count,dtype=torch.bool,device=env.device)
         with torch.inference_mode():
             for tick in range(800):
-                action=controller.action(observation,default,limits)
+                owned=torch.tensor([m.memory.phase!='PREFIX' for m in recovery.managers],device=env.device)
+                controller.set_contact_first_recovery_owned(owned)
+                proposed=controller.action(observation,default,limits)
+                action=recovery.action(tick,observation,proposed,finished)
+                first_before=finished.clone()
                 observations.append(observation['policy'].cpu().numpy().copy())
                 actions.append(action.cpu().numpy().copy())
                 masks.append((~finished).cpu().numpy().copy())
@@ -66,7 +85,9 @@ def main():
                         ball_velocity_mps=env.shuttle.data.root_lin_vel_w[:2].cpu().tolist(),
                         active=env.rally.in_play[:2].cpu().tolist(),contact=env.rally.had_contact[:2].cpu().tolist(),
                         airborne=env.observed_airborne[:2].cpu().tolist()))
-                observation,_,done,_=wrapper.step(action);finished|=done.bool()
+                observation,_,done,_=wrapper.step(action)
+                recovery.verify_applied(first_before)
+                finished|=done.bool()
                 if (tick+1)%100==0:
                     progress=dict(control_ticks=tick+1,requested_ticks=800,
                         contacts=int(env.rally.had_contact.sum()),airborne_contacts=int(env.rally.airborne_string_hit.sum()),
@@ -120,6 +141,10 @@ def main():
         (args.output/'completed.json').write_text(json.dumps(dict(env_steps=(tick+1)*args.count))+'\n')
         print(json.dumps(result),flush=True)
     finally:
+        if "recovery" in locals():recovery.save()
+        (args.output/'prediction_actor_counts.json').write_text(json.dumps(controller.contact_first_prediction_counts,indent=2)+'\n')
+        (args.output/'joint_execution_audit.json').write_text(json.dumps(controller.contact_first_execution_log,indent=2)+'\n')
+        (args.output/'native_planning_state_audit.json').write_text(json.dumps(controller.contact_first_state_audit,indent=2)+'\n')
         (args.output/'action_source_audit.json').write_text(json.dumps(inference_audit.report(),indent=2)+'\n')
         env.close()
 

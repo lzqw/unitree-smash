@@ -99,6 +99,10 @@ class FullRacketRallyControllerV4:
                 ContactFirstSearchConfig(**search_config))
             horizon=self.contact_first_planner.config.horizon_steps
             self.contact_first_plan_q=torch.zeros((count,horizon,6),device=device)
+            self.contact_first_joint_targets=torch.zeros((count,horizon,18),device=device)
+            self.contact_first_joint_valid=torch.zeros(count,dtype=torch.bool,device=device)
+            self.contact_first_recovery_owned=torch.zeros(count,dtype=torch.bool,device=device)
+            self.contact_first_execution_log=[]
             self.contact_first_plan_start_time=torch.full((count,),float('inf'),device=device)
             self.contact_first_plan_contact_time=torch.zeros((count,),device=device)
             self.contact_first_plan_valid=torch.zeros(count,dtype=torch.bool,device=device)
@@ -125,6 +129,9 @@ class FullRacketRallyControllerV4:
                 self.event_velocity_world[ids]=0.
             if getattr(self,'contact_first_plan_valid',None) is not None:
                 self.contact_first_plan_valid[ids]=False
+                if hasattr(self,'contact_first_joint_valid'):
+                    self.contact_first_joint_valid[ids]=False
+                    self.contact_first_recovery_owned[ids]=False
                 self.contact_first_plan_start_time[ids]=float('inf')
                 self.contact_first_last_valid[ids]=False
                 self.contact_first_last_base_linear[ids]=0.
@@ -132,6 +139,9 @@ class FullRacketRallyControllerV4:
                 self.contact_first_last_basis[ids]=0.
         if ids is None and getattr(self,'contact_first_plan_valid',None) is not None:
             self.contact_first_plan_valid.zero_()
+            self.contact_first_joint_valid.zero_()
+            self.contact_first_recovery_owned.zero_()
+            self.contact_first_execution_log=[]
             self.contact_first_plan_start_time.fill_(float('inf'))
             self.contact_first_plan_contact_time.zero_()
             self.contact_first_plan_log=[]
@@ -250,6 +260,17 @@ class FullRacketRallyControllerV4:
                     error=str(exc), contact_time_s=contact_time,
                     search_diagnostics=dict(self.contact_first_planner.last_diagnostics)))
                 continue
+            physical=result.metadata.get('evaluator')
+            self.contact_first_joint_valid[lane]=False
+            if cfg.require_joint_prefix:
+                if not isinstance(physical,dict) or physical.get('leg_reference')!='causal_frozen_base':
+                    raise RuntimeError('Joint execution requires a causal frozen-base leg replay')
+                targets=np.asarray(physical['replayed_target_sequence_rad'],dtype=float)
+                if targets.shape!=(result.contact_index,18):
+                    raise ValueError('Incomplete verified joint prefix')
+                self.contact_first_joint_targets[lane,:result.contact_index]=torch.as_tensor(
+                    targets,device=actual.device,dtype=actual.dtype)
+                self.contact_first_joint_valid[lane]=True
             self.contact_first_plan_q[lane]=torch.as_tensor(
                 result.q_rad,device=actual.device,dtype=actual.dtype)
             self.contact_first_plan_start_time[lane]=float(public[local,775])
@@ -274,6 +295,10 @@ class FullRacketRallyControllerV4:
                 latest[lane] = dict(row)
         return [latest[lane] for lane in lanes if lane in latest]
 
+    def set_contact_first_recovery_owned(self, mask):
+        # The outer Recovery arbiter remains the final owner after its original trigger.
+        self.contact_first_recovery_owned.copy_(mask)
+
     @torch.inference_mode()
     def _overlay_contact_first_plan(self, action, public, limits):
         """Use the contact prefix, then hand it back continuously."""
@@ -289,9 +314,24 @@ class FullRacketRallyControllerV4:
         active=self.contact_first_plan_valid & (elapsed>=0.) & (
             elapsed<=self.contact_first_plan_contact_time)
         normalized=2.*(plan-limits[12:,0])/(limits[12:,1]-limits[12:,0])-1.
-        action[:,12:]=torch.where(active[:,None],normalized,action[:,12:])
+        active &= ~self.contact_first_recovery_owned
+        joint=self.contact_first_joint_valid & active & (elapsed<self.contact_first_plan_contact_time-1e-6)
+        arm_only=active & ~self.contact_first_joint_valid
+        action[:,12:]=torch.where(arm_only[:,None],normalized,action[:,12:])
+        if joint.any():
+            lanes=torch.where(joint)[0]
+            targets=self.contact_first_joint_targets[lanes,index[lanes]]
+            encoded=2.*(targets-limits[:,0])/(limits[:,1]-limits[:,0])-1.
+            decoded=limits[:,0]+.5*(encoded.clamp(-1,1)+1)*(limits[:,1]-limits[:,0])
+            error=(decoded-targets).abs().amax(1)
+            if (error>2e-6).any():raise RuntimeError('Joint prefix final target round-trip exceeds 2e-6 rad')
+            action[lanes]=encoded
+            self.contact_first_execution_log.append(dict(lanes=lanes.cpu().tolist(),
+                node=index[lanes].cpu().tolist(),clock_s=time[lanes].cpu().tolist(),
+                target_rad=targets.cpu().tolist(),round_trip_error_rad=error.cpu().tolist(),
+                owner='joint_prefix',physical_admission=True))
         if cfg.handoff_duration_s > 0.0:
-            handoff=(self.contact_first_plan_valid &
+            handoff=(self.contact_first_plan_valid & ~self.contact_first_joint_valid & ~self.contact_first_recovery_owned &
                      (elapsed>self.contact_first_plan_contact_time) &
                      (elapsed<=self.contact_first_plan_contact_time+cfg.handoff_duration_s))
             blend=((elapsed-self.contact_first_plan_contact_time)/cfg.handoff_duration_s).clamp(0.,1.)
@@ -302,6 +342,8 @@ class FullRacketRallyControllerV4:
     @torch.inference_mode()
     def action(self,observation,default,limits):
         obs=observation['policy']
+        if self.contact_first_planner is not None:
+            self.contact_first_current_public=obs.detach().clone()
         actual_all=default[12:][None]+obs[:,21:27]
         actual_velocity=None
         base_linear_acceleration=None
@@ -457,7 +499,8 @@ class FullRacketRallyControllerV4:
                             proxy=root+basis@metadata['achieved_position_current_frame_m']
                             surface=proxy-self.physics['collision_radius_m']*normal
                             velocity=basis@metadata['achieved_velocity_current_frame_m_s']
-                            return impact_model.evaluate(ball,incoming,surface,velocity,normal,local_contact)
+                            return impact_model.evaluate(ball,incoming,surface,velocity,normal,local_contact,
+                                robot_state=metadata.get("impact_robot_state"))
                     impact_evaluators.append(impact_fn)
                     base_linear=np.asarray(public[local,:3], dtype=float)
                     base_angular=np.asarray(public[local,3:6], dtype=float)

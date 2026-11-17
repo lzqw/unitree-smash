@@ -1,0 +1,7 @@
+Final frozen-source CPU regression:
+bash scripts/python.sh -m pytest -q tests/test_impact_outcome_evaluator_v1.py tests/test_joint_prefix_execution_v1.py tests/test_contact_first_fullbody_evaluator_v1.py tests/test_contact_first_trajectory_search_v1.py tests/test_contact_first_base_transport_v1.py tests/test_unilateral_implicit_prediction_v1.py
+Exit: 0; 53 passed in 1.54s.
+Earlier broader regression: CPU_TEST_OUTPUT.txt, 107 passed. Exact earlier invocation was not preserved in this artifact; not reconstructed.
+Native command: attempts/probe01/command.json (persistent service unit unitree-joint-dev-20261117-probe01.service).
+
+Scoring postprocessing: complete5_summary, exit 1, KeyError: jump. No fabricated replacement fields. See REPORT.md.

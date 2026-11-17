@@ -42,7 +42,8 @@ class ContactFirstFullBodyEvaluatorV1:
                  max_tracking_error_rad=0.25, initial_state=None, model=None,
                  enforce_target_admission_bounds=False,
                  racket_measure_fn=None, leg_target_sequence_rad=None,
-                 record_state_trace=False, contact_prediction="measured_fixed"):
+                 record_state_trace=False, contact_prediction="measured_fixed",
+                 leg_reference_factory=None, impact_state_fn=None):
         if initial_state is None:
             public = np.asarray(public, dtype=np.float64)
             default = np.asarray(default, dtype=np.float64)
@@ -87,6 +88,10 @@ class ContactFirstFullBodyEvaluatorV1:
         if racket_measure_fn is not None and not callable(racket_measure_fn):
             raise TypeError("racket_measure_fn must be callable or None")
         self.racket_measure_fn = racket_measure_fn
+        if leg_reference_factory is not None and (not callable(leg_reference_factory) or leg_target_sequence_rad is not None):
+            raise ValueError('Use one causal leg factory or explicit leg sequence')
+        self.leg_reference_factory=leg_reference_factory
+        self.impact_state_fn=impact_state_fn
         self.dt_s = 0.01
         self.leg_target_sequence_rad = None
         if leg_target_sequence_rad is not None:
@@ -163,6 +168,11 @@ class ContactFirstFullBodyEvaluatorV1:
             }
 
         state = deepcopy(self.initial_state)
+        initial_witness=self.geometry.minimum_witness(state.q)
+        if initial_witness['gap_m'] < -1e-6:
+            return dict(accepted=False,rejection='initial_nonfoot_ground_violation',
+                node=0,geometry_witness_before=initial_witness,
+                violations={'nonfoot_ground_violation_m':-initial_witness['gap_m']})
         maximum_tracking_error = 0.
         minimum_ground_gap = float("inf")
         maximum_diagnostics = {}
@@ -172,6 +182,7 @@ class ContactFirstFullBodyEvaluatorV1:
             targets[:, :12] = self.leg_target_sequence_rad[:contact_index]
         # Hash exactly the replayed absolute commands, not a clipped approximation.
         command_sha256 = hashlib.sha256(targets.astype('<f8').tobytes()).hexdigest()
+        leg_reference = None if self.leg_reference_factory is None else self.leg_reference_factory()
         state_trace = []
         contact_modes_changed = False
         # q[0] is the boundary at the measured planning state. Command i is
@@ -179,6 +190,12 @@ class ContactFirstFullBodyEvaluatorV1:
         # contact_index physical intervals, not contact_index+1.
         for node in range(contact_index):
             target = targets[node].copy()
+            if leg_reference is not None:
+                legs=np.asarray(leg_reference(deepcopy(state),node),dtype=float)
+                if legs.shape!=(12,) or not np.isfinite(legs).all():
+                    return dict(accepted=False,rejection='invalid_causal_leg_reference',node=node)
+                target[:12]=legs;targets[node]=target
+            before_witness=self.geometry.minimum_witness(state.q)
             if self.enforce_target_admission_bounds:
                 low, high = self.interface.admitted_target_bounds(
                     state.joint_position, self.dt_s)
@@ -213,7 +230,8 @@ class ContactFirstFullBodyEvaluatorV1:
             for name, value in diagnostics.items():
                 if isinstance(value, (int, float, np.integer, np.floating)) and np.isfinite(value):
                     maximum_diagnostics[name] = max(maximum_diagnostics.get(name, 0.), float(value))
-            gap = float(np.min(self.geometry.evaluate(state.q)[0]))
+            after_witness = self.geometry.minimum_witness(state.q)
+            gap = after_witness["gap_m"]
             minimum_ground_gap = min(minimum_ground_gap, gap)
             if gap < -1e-6:
                 violations["nonfoot_ground_violation_m"] = -gap
@@ -227,19 +245,26 @@ class ContactFirstFullBodyEvaluatorV1:
                     "rejection": "full_body_prefix_violation",
                     "node": node,
                     "violations": violations,
+                    "geometry_witness_before": before_witness,
+                    "geometry_witness_initial": initial_witness,
+                    "geometry_witness_after": after_witness,
+                    "contact_mask": state.contacts.tolist(),
                     "minimum_ground_gap_m": minimum_ground_gap,
                     "maximum_tracking_error_rad": maximum_tracking_error,
                     "diagnostics": maximum_diagnostics,
                 }
 
         result = {
+            "geometry_witness_initial": initial_witness,
+            "geometry_witness_terminal": after_witness,
             "accepted": True,
             "nodes_checked": contact_index + 1,
             "prediction_intervals": contact_index,
             "terminal_elapsed_s": contact_index*self.dt_s,
-            "leg_reference": ("explicit_sequence" if self.leg_target_sequence_rad is not None
+            "leg_reference": ("causal_frozen_base" if leg_reference is not None else "explicit_sequence" if self.leg_target_sequence_rad is not None
                               else "measured_position_hold"),
-            "replayed_command_sha256": command_sha256,
+            "replayed_command_sha256": hashlib.sha256(targets.astype("<f8").tobytes()).hexdigest(),
+            "replayed_target_sequence_rad": targets.tolist(),
             "contact_modes_changed": bool(contact_modes_changed),
             "minimum_ground_gap_m": minimum_ground_gap,
             "maximum_tracking_error_rad": maximum_tracking_error,
@@ -252,6 +277,8 @@ class ContactFirstFullBodyEvaluatorV1:
         }
         if self.record_state_trace:
             result["state_trace"] = state_trace
+        if self.impact_state_fn is not None:
+            result["impact_robot_state"]=self.impact_state_fn(state)
         if self.racket_measure_fn is not None:
             try:
                 measured = self.racket_measure_fn(state)

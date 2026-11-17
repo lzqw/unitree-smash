@@ -56,3 +56,11 @@ def test_net_collision_is_not_ranked_as_a_valid_return():
     result=model.evaluate(**args)
     assert not result['valid_return']
     assert result['rejection_reason'] in ('predicted_net_intersection','no_net_crossing')
+
+
+def test_slow_legal_return_is_not_attack5_or_complete5():
+    model,args=fixture();result=model.evaluate(**args)
+    assert result['legal_return_predicted']
+    assert not result['attack5_predicted']
+    assert not result['ball_side_complete_predicted']
+    assert 'complete5' not in result

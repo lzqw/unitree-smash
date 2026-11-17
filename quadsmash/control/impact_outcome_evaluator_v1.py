@@ -25,7 +25,7 @@ class ImpactOutcomeEvaluator:
 
     def evaluate(self, shuttle_position, shuttle_velocity_before,
                  racket_contact_position, racket_contact_velocity, racket_normal,
-                 contact_point_local, robot_state=None):
+                 contact_point_local, robot_state=None, task_context=None):
         vectors = [np.asarray(v, dtype=float) for v in (shuttle_position,
             shuttle_velocity_before, racket_contact_position, racket_contact_velocity,
             racket_normal, contact_point_local)]
@@ -38,6 +38,8 @@ class ImpactOutcomeEvaluator:
         radius = self.physics['collision_radius_m']
         result = dict(model='analytic_finite_mass_coulomb_impulse_plus_drag',
             native_execution=False, valid_string_contact=False, valid_return=False,
+            contact_feasible=False,legal_return_predicted=False,attack5_predicted=False,
+            target_landing_predicted=False,ball_side_complete_predicted=False,
             predicted_target_landing=False, rejection_reason=None,
             incoming_normal_speed=float((incoming-vr)@normal),
             outgoing_velocity=None, predicted_impulse=None, reaction_impulse=None,
@@ -54,6 +56,7 @@ class ImpactOutcomeEvaluator:
         result['valid_string_contact'] = True
         if result['incoming_normal_speed'] >= 0: return reject('nonapproaching_contact')
         if surface[0] >= self.court['net_plane_x_m']: return reject('contact_on_opponent_side')
+        result['contact_feasible'] = True
         effective_mass = math.inf
         if robot_state is not None:
             # Normal effective mass from full floating-base inertia and point J.
@@ -65,7 +68,15 @@ class ImpactOutcomeEvaluator:
                 raise ValueError('Invalid full-body effective-mass input')
             np.linalg.cholesky(mass)
             jn = normal@jac
-            inverse_mass = float(jn@np.linalg.solve(mass,jn))
+            response=np.linalg.solve(mass,jn)
+            support=np.asarray(robot_state.get('support_jacobian',[]),dtype=float)
+            if support.size:
+                if support.ndim!=2 or support.shape[1]!=len(mass) or not np.isfinite(support).all():
+                    raise ValueError('Invalid support Jacobian')
+                inverse_support=np.linalg.solve(mass,support.T)
+                response-=inverse_support@np.linalg.pinv(support@inverse_support)@(support@response)
+            inverse_mass = max(0.,float(jn@response))
+            result['effective_mass_support_model']=robot_state.get('support_model','free_floating')
             effective_mass = 1./inverse_mass if inverse_mass > 1e-14 else math.inf
         outgoing, _, event = resolve_racket_collision_with_reaction(incoming,
             RacketGeometry(surface,normal), racket_velocity=vr, racket_mass=effective_mass,
@@ -77,6 +88,7 @@ class ImpactOutcomeEvaluator:
             reaction_impulse=event.reaction_impulse.tolist(),
             effective_racket_mass_kg=None if math.isinf(effective_mass) else effective_mass,
             finite_mass_approximation='normal effective scalar mass; isotropic tangential approximation')
+        result['attack5_predicted'] = bool(np.linalg.norm(outgoing)>=5. and outgoing[0]>0. and outgoing[2]<=-1.)
         if outgoing[0] <= 0: return reject('outgoing_not_toward_opponent')
         position, velocity = p.copy(), outgoing.copy()
         crossing = None
@@ -107,7 +119,17 @@ class ImpactOutcomeEvaluator:
             return reject('predicted_out_of_court')
         lo,hi = self.court['target_x_limits_m']
         result['predicted_target_landing'] = bool(lo <= x <= hi and abs(y) <= self.court['target_y_half_width_m'])
-        result['valid_return'] = True
+        result['valid_return'] = True  # compatibility alias: LEGAL RETURN ONLY
+        result['legal_return_predicted'] = True
+        result['target_landing_predicted'] = result['predicted_target_landing']
+        required_context=('ground_single_launch','legal_airborne_strings','no_rule_fault',
+                          'event_order','no_numerical_failure')
+        context={} if task_context is None else task_context
+        result['unverified_ball_side_requirements']=[k for k in required_context if context.get(k) is not True]
+        result['ball_side_complete_predicted']=bool(result['attack5_predicted'] and
+            result['target_landing_predicted'] and not result['unverified_ball_side_requirements'])
+        result['ball_side_kinematic_requirements_predicted']=bool(result['attack5_predicted'] and
+            result['target_landing_predicted'])
         # Dimensionless task cost with physical scales: target half-widths and .1m clearance.
         center = .5*(lo+hi)
         result['ranking_cost'] = float(((x-center)/(.5*(hi-lo)))**2 +

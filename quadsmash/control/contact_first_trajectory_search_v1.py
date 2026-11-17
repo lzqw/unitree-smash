@@ -29,6 +29,7 @@ class ContactFirstSearchConfig:
     acceptance.
     """
 
+    require_joint_prefix: bool = False
     evaluate_impact_outcome: bool = False
     dt_s: float = 0.01
     # Approach planning starts around t=2.0 s while contact is commonly near
@@ -322,6 +323,8 @@ class ContactFirstTrajectorySearchV1:
              target_state_fn: Optional[Callable] = None,
              base_state_fn: Optional[Callable] = None,
              impact_evaluator: Optional[Callable] = None):
+        if self.config.require_joint_prefix and evaluator is None:
+            raise ValueError("Joint prefix requires physical evaluator")
         data = _validate_vectors(
             q_rad, qd_rad_s, position_jacobian, normal_jacobian,
             racket_position_world_m, racket_normal_world,
@@ -923,6 +926,7 @@ class ContactFirstTrajectorySearchV1:
                     if impact_evaluator is not None and isinstance(evaluator_result, dict):
                         if 'actual_racket_position_world_m' in evaluator_result:
                             actual_metadata = dict(metadata,
+                                impact_robot_state=evaluator_result.get("impact_robot_state"),
                                 achieved_position_current_frame_m=evaluator_result['actual_racket_position_world_m'],
                                 achieved_normal_current_frame=evaluator_result['actual_racket_normal_world'],
                                 achieved_velocity_current_frame_m_s=evaluator_result['actual_racket_velocity_world_m_s'])
@@ -944,8 +948,8 @@ class ContactFirstTrajectorySearchV1:
                              cfg.nullspace_penalty_weight * abs(nullspace_offset) +
                              1e-6 * contact_index)
                     if impact_result is not None:
-                        score += (float(impact_result['ranking_cost']) + float(normal_deviation)**2 +
-                                  requested_velocity_error**2)
+                        score += (float(impact_result['ranking_cost']) + (float(normal_deviation)/cfg.normal_tolerance)**2 +
+                                  (requested_velocity_error/cfg.velocity_tolerance_m_s)**2)
                         metadata['impact_outcome'] = impact_result
                     accepted_candidates += 1
                     candidate = ContactFirstCandidate(
@@ -959,7 +963,13 @@ class ContactFirstTrajectorySearchV1:
                                       branch_kind=branch_kind,
                                       evaluator=evaluator_result,
                                       rejected_before_selection=tuple(rejected)))
-                    if best is None or candidate.score < best.score:
+                    def priority(value):
+                        outcome=value.metadata.get('impact_outcome')
+                        if outcome is None: return (0,0,value.score)
+                        return (not outcome.get('ball_side_complete_predicted',False),
+                                not outcome.get('ball_side_kinematic_requirements_predicted',False),
+                                value.score)
+                    if best is None or priority(candidate) < priority(best):
                         best = candidate
         self.last_diagnostics = {
             "candidates_considered": candidates_considered,

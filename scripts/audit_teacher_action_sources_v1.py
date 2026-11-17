@@ -62,7 +62,12 @@ class FrozenBaseInferenceAudit:
                 audit.counts[self.name] += 1
                 return self.module(*args, **kwargs)
             def __getattr__(self, name):
-                return getattr(self.module, name)
+                module=self.__dict__.get('module')
+                if module is None:raise AttributeError(name)
+                return getattr(module, name)
+            def __deepcopy__(self, memo):
+                from copy import deepcopy
+                return deepcopy(self.module,memo)
         for name, owner, attr in (('walk',teacher.walk,'actor'),
                                    ('standing',teacher.standing,'actor'),
                                    ('strike',teacher,'strike')):

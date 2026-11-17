@@ -1,0 +1,701 @@
+diff --git a/quadsmash/control/contact_first_trajectory_search_v1.py b/quadsmash/control/contact_first_trajectory_search_v1.py
+index 54d43e8..ac07ab2 100644
+--- a/quadsmash/control/contact_first_trajectory_search_v1.py
++++ b/quadsmash/control/contact_first_trajectory_search_v1.py
+@@ -29,6 +29,7 @@ class ContactFirstSearchConfig:
+     acceptance.
+     """
+ 
++    require_joint_prefix: bool = False
+     evaluate_impact_outcome: bool = False
+     dt_s: float = 0.01
+     # Approach planning starts around t=2.0 s while contact is commonly near
+@@ -322,6 +323,8 @@ class ContactFirstTrajectorySearchV1:
+              target_state_fn: Optional[Callable] = None,
+              base_state_fn: Optional[Callable] = None,
+              impact_evaluator: Optional[Callable] = None):
++        if self.config.require_joint_prefix and evaluator is None:
++            raise ValueError("Joint prefix requires physical evaluator")
+         data = _validate_vectors(
+             q_rad, qd_rad_s, position_jacobian, normal_jacobian,
+             racket_position_world_m, racket_normal_world,
+@@ -923,6 +926,7 @@ class ContactFirstTrajectorySearchV1:
+                     if impact_evaluator is not None and isinstance(evaluator_result, dict):
+                         if 'actual_racket_position_world_m' in evaluator_result:
+                             actual_metadata = dict(metadata,
++                                impact_robot_state=evaluator_result.get("impact_robot_state"),
+                                 achieved_position_current_frame_m=evaluator_result['actual_racket_position_world_m'],
+                                 achieved_normal_current_frame=evaluator_result['actual_racket_normal_world'],
+                                 achieved_velocity_current_frame_m_s=evaluator_result['actual_racket_velocity_world_m_s'])
+@@ -944,8 +948,8 @@ class ContactFirstTrajectorySearchV1:
+                              cfg.nullspace_penalty_weight * abs(nullspace_offset) +
+                              1e-6 * contact_index)
+                     if impact_result is not None:
+-                        score += (float(impact_result['ranking_cost']) + float(normal_deviation)**2 +
+-                                  requested_velocity_error**2)
++                        score += (float(impact_result['ranking_cost']) + (float(normal_deviation)/cfg.normal_tolerance)**2 +
++                                  (requested_velocity_error/cfg.velocity_tolerance_m_s)**2)
+                         metadata['impact_outcome'] = impact_result
+                     accepted_candidates += 1
+                     candidate = ContactFirstCandidate(
+@@ -959,7 +963,13 @@ class ContactFirstTrajectorySearchV1:
+                                       branch_kind=branch_kind,
+                                       evaluator=evaluator_result,
+                                       rejected_before_selection=tuple(rejected)))
+-                    if best is None or candidate.score < best.score:
++                    def priority(value):
++                        outcome=value.metadata.get('impact_outcome')
++                        if outcome is None: return (0,0,value.score)
++                        return (not outcome.get('ball_side_complete_predicted',False),
++                                not outcome.get('ball_side_kinematic_requirements_predicted',False),
++                                value.score)
++                    if best is None or priority(candidate) < priority(best):
+                         best = candidate
+         self.last_diagnostics = {
+             "candidates_considered": candidates_considered,
+diff --git a/quadsmash/control/full_racket_rally_controller_v4.py b/quadsmash/control/full_racket_rally_controller_v4.py
+index ad10339..5af238f 100644
+--- a/quadsmash/control/full_racket_rally_controller_v4.py
++++ b/quadsmash/control/full_racket_rally_controller_v4.py
+@@ -99,6 +99,10 @@ class FullRacketRallyControllerV4:
+                 ContactFirstSearchConfig(**search_config))
+             horizon=self.contact_first_planner.config.horizon_steps
+             self.contact_first_plan_q=torch.zeros((count,horizon,6),device=device)
++            self.contact_first_joint_targets=torch.zeros((count,horizon,18),device=device)
++            self.contact_first_joint_valid=torch.zeros(count,dtype=torch.bool,device=device)
++            self.contact_first_recovery_owned=torch.zeros(count,dtype=torch.bool,device=device)
++            self.contact_first_execution_log=[]
+             self.contact_first_plan_start_time=torch.full((count,),float('inf'),device=device)
+             self.contact_first_plan_contact_time=torch.zeros((count,),device=device)
+             self.contact_first_plan_valid=torch.zeros(count,dtype=torch.bool,device=device)
+@@ -125,6 +129,9 @@ class FullRacketRallyControllerV4:
+                 self.event_velocity_world[ids]=0.
+             if getattr(self,'contact_first_plan_valid',None) is not None:
+                 self.contact_first_plan_valid[ids]=False
++                if hasattr(self,'contact_first_joint_valid'):
++                    self.contact_first_joint_valid[ids]=False
++                    self.contact_first_recovery_owned[ids]=False
+                 self.contact_first_plan_start_time[ids]=float('inf')
+                 self.contact_first_last_valid[ids]=False
+                 self.contact_first_last_base_linear[ids]=0.
+@@ -132,6 +139,9 @@ class FullRacketRallyControllerV4:
+                 self.contact_first_last_basis[ids]=0.
+         if ids is None and getattr(self,'contact_first_plan_valid',None) is not None:
+             self.contact_first_plan_valid.zero_()
++            self.contact_first_joint_valid.zero_()
++            self.contact_first_recovery_owned.zero_()
++            self.contact_first_execution_log=[]
+             self.contact_first_plan_start_time.fill_(float('inf'))
+             self.contact_first_plan_contact_time.zero_()
+             self.contact_first_plan_log=[]
+@@ -250,6 +260,17 @@ class FullRacketRallyControllerV4:
+                     error=str(exc), contact_time_s=contact_time,
+                     search_diagnostics=dict(self.contact_first_planner.last_diagnostics)))
+                 continue
++            physical=result.metadata.get('evaluator')
++            self.contact_first_joint_valid[lane]=False
++            if cfg.require_joint_prefix:
++                if not isinstance(physical,dict) or physical.get('leg_reference')!='causal_frozen_base':
++                    raise RuntimeError('Joint execution requires a causal frozen-base leg replay')
++                targets=np.asarray(physical['replayed_target_sequence_rad'],dtype=float)
++                if targets.shape!=(result.contact_index,18):
++                    raise ValueError('Incomplete verified joint prefix')
++                self.contact_first_joint_targets[lane,:result.contact_index]=torch.as_tensor(
++                    targets,device=actual.device,dtype=actual.dtype)
++                self.contact_first_joint_valid[lane]=True
+             self.contact_first_plan_q[lane]=torch.as_tensor(
+                 result.q_rad,device=actual.device,dtype=actual.dtype)
+             self.contact_first_plan_start_time[lane]=float(public[local,775])
+@@ -274,6 +295,10 @@ class FullRacketRallyControllerV4:
+                 latest[lane] = dict(row)
+         return [latest[lane] for lane in lanes if lane in latest]
+ 
++    def set_contact_first_recovery_owned(self, mask):
++        # The outer Recovery arbiter remains the final owner after its original trigger.
++        self.contact_first_recovery_owned.copy_(mask)
++
+     @torch.inference_mode()
+     def _overlay_contact_first_plan(self, action, public, limits):
+         """Use the contact prefix, then hand it back continuously."""
+@@ -289,9 +314,24 @@ class FullRacketRallyControllerV4:
+         active=self.contact_first_plan_valid & (elapsed>=0.) & (
+             elapsed<=self.contact_first_plan_contact_time)
+         normalized=2.*(plan-limits[12:,0])/(limits[12:,1]-limits[12:,0])-1.
+-        action[:,12:]=torch.where(active[:,None],normalized,action[:,12:])
++        active &= ~self.contact_first_recovery_owned
++        joint=self.contact_first_joint_valid & active & (elapsed<self.contact_first_plan_contact_time-1e-6)
++        arm_only=active & ~self.contact_first_joint_valid
++        action[:,12:]=torch.where(arm_only[:,None],normalized,action[:,12:])
++        if joint.any():
++            lanes=torch.where(joint)[0]
++            targets=self.contact_first_joint_targets[lanes,index[lanes]]
++            encoded=2.*(targets-limits[:,0])/(limits[:,1]-limits[:,0])-1.
++            decoded=limits[:,0]+.5*(encoded.clamp(-1,1)+1)*(limits[:,1]-limits[:,0])
++            error=(decoded-targets).abs().amax(1)
++            if (error>2e-6).any():raise RuntimeError('Joint prefix final target round-trip exceeds 2e-6 rad')
++            action[lanes]=encoded
++            self.contact_first_execution_log.append(dict(lanes=lanes.cpu().tolist(),
++                node=index[lanes].cpu().tolist(),clock_s=time[lanes].cpu().tolist(),
++                target_rad=targets.cpu().tolist(),round_trip_error_rad=error.cpu().tolist(),
++                owner='joint_prefix',physical_admission=True))
+         if cfg.handoff_duration_s > 0.0:
+-            handoff=(self.contact_first_plan_valid &
++            handoff=(self.contact_first_plan_valid & ~self.contact_first_joint_valid & ~self.contact_first_recovery_owned &
+                      (elapsed>self.contact_first_plan_contact_time) &
+                      (elapsed<=self.contact_first_plan_contact_time+cfg.handoff_duration_s))
+             blend=((elapsed-self.contact_first_plan_contact_time)/cfg.handoff_duration_s).clamp(0.,1.)
+@@ -302,6 +342,8 @@ class FullRacketRallyControllerV4:
+     @torch.inference_mode()
+     def action(self,observation,default,limits):
+         obs=observation['policy']
++        if self.contact_first_planner is not None:
++            self.contact_first_current_public=obs.detach().clone()
+         actual_all=default[12:][None]+obs[:,21:27]
+         actual_velocity=None
+         base_linear_acceleration=None
+@@ -457,7 +499,8 @@ class FullRacketRallyControllerV4:
+                             proxy=root+basis@metadata['achieved_position_current_frame_m']
+                             surface=proxy-self.physics['collision_radius_m']*normal
+                             velocity=basis@metadata['achieved_velocity_current_frame_m_s']
+-                            return impact_model.evaluate(ball,incoming,surface,velocity,normal,local_contact)
++                            return impact_model.evaluate(ball,incoming,surface,velocity,normal,local_contact,
++                                robot_state=metadata.get("impact_robot_state"))
+                     impact_evaluators.append(impact_fn)
+                     base_linear=np.asarray(public[local,:3], dtype=float)
+                     base_angular=np.asarray(public[local,3:6], dtype=float)
+diff --git a/quadsmash/control/impact_outcome_evaluator_v1.py b/quadsmash/control/impact_outcome_evaluator_v1.py
+index 83794ca..e220076 100644
+--- a/quadsmash/control/impact_outcome_evaluator_v1.py
++++ b/quadsmash/control/impact_outcome_evaluator_v1.py
+@@ -25,7 +25,7 @@ class ImpactOutcomeEvaluator:
+ 
+     def evaluate(self, shuttle_position, shuttle_velocity_before,
+                  racket_contact_position, racket_contact_velocity, racket_normal,
+-                 contact_point_local, robot_state=None):
++                 contact_point_local, robot_state=None, task_context=None):
+         vectors = [np.asarray(v, dtype=float) for v in (shuttle_position,
+             shuttle_velocity_before, racket_contact_position, racket_contact_velocity,
+             racket_normal, contact_point_local)]
+@@ -38,6 +38,8 @@ class ImpactOutcomeEvaluator:
+         radius = self.physics['collision_radius_m']
+         result = dict(model='analytic_finite_mass_coulomb_impulse_plus_drag',
+             native_execution=False, valid_string_contact=False, valid_return=False,
++            contact_feasible=False,legal_return_predicted=False,attack5_predicted=False,
++            target_landing_predicted=False,ball_side_complete_predicted=False,
+             predicted_target_landing=False, rejection_reason=None,
+             incoming_normal_speed=float((incoming-vr)@normal),
+             outgoing_velocity=None, predicted_impulse=None, reaction_impulse=None,
+@@ -54,6 +56,7 @@ class ImpactOutcomeEvaluator:
+         result['valid_string_contact'] = True
+         if result['incoming_normal_speed'] >= 0: return reject('nonapproaching_contact')
+         if surface[0] >= self.court['net_plane_x_m']: return reject('contact_on_opponent_side')
++        result['contact_feasible'] = True
+         effective_mass = math.inf
+         if robot_state is not None:
+             # Normal effective mass from full floating-base inertia and point J.
+@@ -65,7 +68,15 @@ class ImpactOutcomeEvaluator:
+                 raise ValueError('Invalid full-body effective-mass input')
+             np.linalg.cholesky(mass)
+             jn = normal@jac
+-            inverse_mass = float(jn@np.linalg.solve(mass,jn))
++            response=np.linalg.solve(mass,jn)
++            support=np.asarray(robot_state.get('support_jacobian',[]),dtype=float)
++            if support.size:
++                if support.ndim!=2 or support.shape[1]!=len(mass) or not np.isfinite(support).all():
++                    raise ValueError('Invalid support Jacobian')
++                inverse_support=np.linalg.solve(mass,support.T)
++                response-=inverse_support@np.linalg.pinv(support@inverse_support)@(support@response)
++            inverse_mass = max(0.,float(jn@response))
++            result['effective_mass_support_model']=robot_state.get('support_model','free_floating')
+             effective_mass = 1./inverse_mass if inverse_mass > 1e-14 else math.inf
+         outgoing, _, event = resolve_racket_collision_with_reaction(incoming,
+             RacketGeometry(surface,normal), racket_velocity=vr, racket_mass=effective_mass,
+@@ -77,6 +88,7 @@ class ImpactOutcomeEvaluator:
+             reaction_impulse=event.reaction_impulse.tolist(),
+             effective_racket_mass_kg=None if math.isinf(effective_mass) else effective_mass,
+             finite_mass_approximation='normal effective scalar mass; isotropic tangential approximation')
++        result['attack5_predicted'] = bool(np.linalg.norm(outgoing)>=5. and outgoing[0]>0. and outgoing[2]<=-1.)
+         if outgoing[0] <= 0: return reject('outgoing_not_toward_opponent')
+         position, velocity = p.copy(), outgoing.copy()
+         crossing = None
+@@ -107,7 +119,17 @@ class ImpactOutcomeEvaluator:
+             return reject('predicted_out_of_court')
+         lo,hi = self.court['target_x_limits_m']
+         result['predicted_target_landing'] = bool(lo <= x <= hi and abs(y) <= self.court['target_y_half_width_m'])
+-        result['valid_return'] = True
++        result['valid_return'] = True  # compatibility alias: LEGAL RETURN ONLY
++        result['legal_return_predicted'] = True
++        result['target_landing_predicted'] = result['predicted_target_landing']
++        required_context=('ground_single_launch','legal_airborne_strings','no_rule_fault',
++                          'event_order','no_numerical_failure')
++        context={} if task_context is None else task_context
++        result['unverified_ball_side_requirements']=[k for k in required_context if context.get(k) is not True]
++        result['ball_side_complete_predicted']=bool(result['attack5_predicted'] and
++            result['target_landing_predicted'] and not result['unverified_ball_side_requirements'])
++        result['ball_side_kinematic_requirements_predicted']=bool(result['attack5_predicted'] and
++            result['target_landing_predicted'])
+         # Dimensionless task cost with physical scales: target half-widths and .1m clearance.
+         center = .5*(lo+hi)
+         result['ranking_cost'] = float(((x-center)/(.5*(hi-lo)))**2 +
+diff --git a/scripts/attach_joint_contact_prefix_v1.py b/scripts/attach_joint_contact_prefix_v1.py
+new file mode 100644
+index 0000000..6aa18c6
+--- /dev/null
++++ b/scripts/attach_joint_contact_prefix_v1.py
+@@ -0,0 +1,61 @@
++"""Wire live native truth, causal frozen legs and common-frame terminal checks."""
++import numpy as np
++import torch
++from scripts.causal_frozen_leg_prefix_v1 import CausalFrozenLegReferenceFactory
++from scripts.contact_first_fullbody_evaluator_v1 import ContactFirstFullBodyEvaluatorV1
++from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
++from quadsmash.control.full_racket_rally_controller_v4 import planning_world_pose
++
++
++def attach_joint_contact_prefix(env, controller, interface_config):
++    cfg=controller.contact_first_planner.config
++    if not cfg.require_joint_prefix or not cfg.evaluate_impact_outcome:
++        raise ValueError('Explicit joint replay and impact flags required')
++    default=env.robot.data.default_joint_pos[0,env.joint_ids]
++    limits=env.robot.data.joint_pos_limits[0,env.joint_ids]
++    def factory(lane,public,q,qd):
++        model=LoadedPinocchioModelV1()
++        state=model.state_from_native(env,lane)
++        rotation,origin=planning_world_pose(public,[1.1,0.,1.8])
++        reconstructed=model.state_from_public(public,default.detach().cpu().numpy())
++        controller.contact_first_state_audit.append(dict(lane=lane,clock_s=float(public[775]),
++            native_root_position=state.root_position_world.tolist(),
++            public_root_position=reconstructed.root_position_world.tolist(),
++            root_error_m=float(np.linalg.norm(state.root_position_world-reconstructed.root_position_world)),
++            previous_final_target_rad=(limits[:,0]+.5*(env.last_action[lane]+1)*(limits[:,1]-limits[:,0])).detach().cpu().tolist(),
++            state_source='native truth for physical admission; causal public input for ball planner'))
++        legs=CausalFrozenLegReferenceFactory(controller.teacher,controller.parameters,
++            controller.contact_first_current_public,default,limits,controller.event_time,
++            controller.target_offset_world,lane,controller.physics,cfg.dt_s,controller.contact_first_prediction_counts)
++        def measure(s):
++            with torch.inference_mode():
++                arm=torch.as_tensor(s.joint_position[12:],device=default.device,dtype=default.dtype)[None]
++                point,normal,jp,_=controller.teacher.kinematics(arm,controller.teacher.contact_offset)
++            point,normal,jp=[x[0].detach().cpu().numpy().astype(float) for x in (point,normal,jp)]
++            R=s.root_rotation_world
++            world_position=s.root_position_world+R@point
++            world_velocity=R@(s.v[:3]+np.cross(s.v[3:6],point)+jp@s.joint_velocity[12:])
++            return rotation.T@(world_position-origin),rotation.T@R@normal,rotation.T@world_velocity
++        def impact_state(s):
++            # Full point Jacobian in WORLD, generalized velocity convention of M.
++            offset=controller.teacher.contact_offset.detach().clone()
++            offset[0]-=controller.teacher.face_sign*controller.physics['collision_radius_m']
++            with torch.inference_mode():
++                arm=torch.as_tensor(s.joint_position[12:],device=default.device,dtype=default.dtype)[None]
++                point,_,jp,_=controller.teacher.kinematics(arm,offset)
++            point=point[0].cpu().numpy();jp=jp[0].cpu().numpy()
++            R=s.root_rotation_world
++            skew=np.array([[0.,-point[2],point[1]],[point[2],0.,-point[0]],[-point[1],point[0],0.]])
++            J=np.zeros((3,24));J[:,:3]=R;J[:,3:6]=-R@skew
++            J[:,model.v_indices[12:]]=R@jp
++            snapshot=model.snapshot(s.q,s.v)
++            return dict(mass_matrix=snapshot['mass_matrix'].tolist(),contact_jacobian_world=J.tolist(),
++                support_jacobian=snapshot['foot_jacobian'][s.contacts].reshape(-1,24).tolist(),
++                support_model='sticking measured foot-body translational constraints' if s.contacts.any() else 'free_floating')
++        return ContactFirstFullBodyEvaluatorV1(interface_config=interface_config,
++            model=model,initial_state=state,leg_reference_factory=legs,
++            contact_prediction='unilateral_release',record_state_trace=True,racket_measure_fn=measure,impact_state_fn=impact_state)
++    controller.contact_first_prediction_counts={}
++    controller.contact_first_state_audit=[]
++    controller.set_contact_first_evaluator_factory(factory)
++    return controller
+diff --git a/scripts/audit_teacher_action_sources_v1.py b/scripts/audit_teacher_action_sources_v1.py
+index 2d18315..b703006 100644
+--- a/scripts/audit_teacher_action_sources_v1.py
++++ b/scripts/audit_teacher_action_sources_v1.py
+@@ -62,7 +62,12 @@ class FrozenBaseInferenceAudit:
+                 audit.counts[self.name] += 1
+                 return self.module(*args, **kwargs)
+             def __getattr__(self, name):
+-                return getattr(self.module, name)
++                module=self.__dict__.get('module')
++                if module is None:raise AttributeError(name)
++                return getattr(module, name)
++            def __deepcopy__(self, memo):
++                from copy import deepcopy
++                return deepcopy(self.module,memo)
+         for name, owner, attr in (('walk',teacher.walk,'actor'),
+                                    ('standing',teacher.standing,'actor'),
+                                    ('strike',teacher,'strike')):
+diff --git a/scripts/authored_ground_clearance_v1.py b/scripts/authored_ground_clearance_v1.py
+index c9fb6e4..27e8aba 100644
+--- a/scripts/authored_ground_clearance_v1.py
++++ b/scripts/authored_ground_clearance_v1.py
+@@ -85,3 +85,17 @@ class AuthoredGroundClearance:
+                     cached[fid]=pin.getFrameJacobian(m.model,m.data,fid,pin.ReferenceFrame.LOCAL_WORLD_ALIGNED).copy()
+                 J=cached[fid];rows.append(J[2]+offset[1]*J[3]-offset[0]*J[4])
+         return np.asarray(distances),np.asarray(rows) if jacobian else None
++
++
++    def minimum_witness(self, q):
++        """Exact authored lowest support point; does not assert native contact."""
++        gaps,_=self.evaluate(q)
++        index=int(np.argmin(gaps));shape=self.shapes[index]
++        pose=self.model.data.oMf[self.model.body_frames[shape['body']]]
++        local=support_witness(shape,pose.rotation)
++        return dict(body=shape['body'],shape_path=shape['path'],shape_index=index,
++            gap_m=float(gaps[index]),witness_world_m=(pose.translation+pose.rotation@local).tolist(),
++            root_position_world_m=np.asarray(q[:3]).tolist(),
++            root_quaternion_xyzw=np.asarray(q[3:7]).tolist(),
++            geometry_sha256=self.sha256,ground_z_m=self.ground_z_m,
++            native_contact_verified=False)
+diff --git a/scripts/causal_frozen_leg_prefix_v1.py b/scripts/causal_frozen_leg_prefix_v1.py
+new file mode 100644
+index 0000000..0787d6c
+--- /dev/null
++++ b/scripts/causal_frozen_leg_prefix_v1.py
+@@ -0,0 +1,71 @@
++"""Isolated frozen-base lookahead driven only by predicted full-body states.
++
++Never consumes recorded future actions. Each candidate gets its own controller
++history; returned absolute targets are retained for identical prefix execution.
++"""
++from copy import deepcopy
++import numpy as np
++import torch
++from quadsmash.control.initial_intercept import observed_initial_ball,propagate_ball_state
++
++
++class CausalFrozenLegReferenceFactory:
++    def __init__(self, teacher, parameters, observation, default, limits, event_time,
++                 target_offset, lane, physics, dt_s=.01, inference_counts=None):
++        self.inference_counts=inference_counts
++        self.teacher=deepcopy(teacher)
++        self.parameters=parameters.detach().clone()
++        self.public=observation.detach().clone()
++        self.default=default.detach().clone();self.limits=limits.detach().clone()
++        self.event_time=event_time.detach().clone();self.target_offset=target_offset.detach().clone()
++        self.lane=int(lane);self.physics=deepcopy(physics);self.dt_s=dt_s
++        self.ball_position,self.ball_velocity=observed_initial_ball(
++            self.public[self.lane:self.lane+1].cpu().numpy(),[1.1,0.,1.8],[1.,0.,0.])
++
++    def __call__(self):
++        teacher=deepcopy(self.teacher);public=self.public.clone();lane=self.lane
++        from scripts.audit_teacher_action_sources_v1 import FrozenBaseInferenceAudit
++        audit=FrozenBaseInferenceAudit(teacher)
++        start=float(public[lane,775]);last_node=-1
++        airborne_seen=bool(public[lane,772:775].sum()>.5)
++        factory=self
++        def reference(state,node):
++            nonlocal last_node,airborne_seen
++            if node!=last_node+1:raise ValueError('Causal leg reference requires sequential predicted states')
++            last_node=node
++            old=public[lane].clone()
++            if node:public[lane,69:759]=old[:690]
++            def put(sl,value):public[lane,sl]=torch.as_tensor(value,device=public.device,dtype=public.dtype)
++            rotation=state.root_rotation_world
++            put(slice(0,6),state.v[:6]);put(slice(6,9),rotation.T@np.array([0.,0.,-1.]))
++            put(slice(9,27),state.joint_position-self.default.cpu().numpy())
++            put(slice(27,45),state.joint_velocity)
++            q=public.new_tensor(state.joint_position[12:])[None]
++            with torch.inference_mode():
++                point,normal,jp,_=teacher.kinematics(q,public.new_zeros(3))
++            put(slice(45,48),point[0]);put(slice(48,51),normal[0])
++            put(slice(51,54),jp[0]@public.new_tensor(state.joint_velocity[12:]))
++            put(slice(57,61),state.contacts.astype(float))
++            ball,velocity=propagate_ball_state(factory.ball_position[0],factory.ball_velocity[0],node*factory.dt_s,factory.physics)
++            relative=rotation.T@(ball-state.root_position_world)
++            put(slice(61,64),relative)
++            put(slice(64,67),rotation.T@velocity-state.v[:3]-np.cross(state.v[3:6],relative))
++            target=rotation.T@(np.array([1.1,0.,1.8])-state.root_position_world)
++            put(slice(760,763),target);put(slice(763,766),rotation.T@np.array([1.,0.,0.]))
++            put(slice(766,769),-state.v[:3]-np.cross(state.v[3:6],target))
++            public[lane,775]=start+node*factory.dt_s
++            public[lane,759]=2.75-public[lane,775]
++            airborne=not state.contacts.any();airborne_seen|=airborne
++            phase=2 if airborne else (4 if airborne_seen else (1 if (rotation@state.v[:3])[2]>.05 else 0))
++            public[lane,770:775]=0.;public[lane,770+phase]=1.
++            before=dict(audit.counts)
++            with torch.inference_mode():
++                action=teacher.action({'policy':public},factory.parameters,factory.default,
++                    factory.limits,event_time=factory.event_time,target_offset_world=factory.target_offset)
++            if factory.inference_counts is not None:
++                for name,count in audit.counts.items():
++                    factory.inference_counts[name]=factory.inference_counts.get(name,0)+count-before[name]
++            public[lane,776:794]=action[lane]
++            target=factory.limits[:,0]+.5*(action[lane].clamp(-1,1)+1)*(factory.limits[:,1]-factory.limits[:,0])
++            return target[:12].detach().cpu().numpy().copy()
++        return reference
+diff --git a/scripts/contact_first_fullbody_evaluator_v1.py b/scripts/contact_first_fullbody_evaluator_v1.py
+index 2550cf5..989ebd1 100644
+--- a/scripts/contact_first_fullbody_evaluator_v1.py
++++ b/scripts/contact_first_fullbody_evaluator_v1.py
+@@ -42,7 +42,8 @@ class ContactFirstFullBodyEvaluatorV1:
+                  max_tracking_error_rad=0.25, initial_state=None, model=None,
+                  enforce_target_admission_bounds=False,
+                  racket_measure_fn=None, leg_target_sequence_rad=None,
+-                 record_state_trace=False, contact_prediction="measured_fixed"):
++                 record_state_trace=False, contact_prediction="measured_fixed",
++                 leg_reference_factory=None, impact_state_fn=None):
+         if initial_state is None:
+             public = np.asarray(public, dtype=np.float64)
+             default = np.asarray(default, dtype=np.float64)
+@@ -87,6 +88,10 @@ class ContactFirstFullBodyEvaluatorV1:
+         if racket_measure_fn is not None and not callable(racket_measure_fn):
+             raise TypeError("racket_measure_fn must be callable or None")
+         self.racket_measure_fn = racket_measure_fn
++        if leg_reference_factory is not None and (not callable(leg_reference_factory) or leg_target_sequence_rad is not None):
++            raise ValueError('Use one causal leg factory or explicit leg sequence')
++        self.leg_reference_factory=leg_reference_factory
++        self.impact_state_fn=impact_state_fn
+         self.dt_s = 0.01
+         self.leg_target_sequence_rad = None
+         if leg_target_sequence_rad is not None:
+@@ -163,6 +168,11 @@ class ContactFirstFullBodyEvaluatorV1:
+             }
+ 
+         state = deepcopy(self.initial_state)
++        initial_witness=self.geometry.minimum_witness(state.q)
++        if initial_witness['gap_m'] < -1e-6:
++            return dict(accepted=False,rejection='initial_nonfoot_ground_violation',
++                node=0,geometry_witness_before=initial_witness,
++                violations={'nonfoot_ground_violation_m':-initial_witness['gap_m']})
+         maximum_tracking_error = 0.
+         minimum_ground_gap = float("inf")
+         maximum_diagnostics = {}
+@@ -172,6 +182,7 @@ class ContactFirstFullBodyEvaluatorV1:
+             targets[:, :12] = self.leg_target_sequence_rad[:contact_index]
+         # Hash exactly the replayed absolute commands, not a clipped approximation.
+         command_sha256 = hashlib.sha256(targets.astype('<f8').tobytes()).hexdigest()
++        leg_reference = None if self.leg_reference_factory is None else self.leg_reference_factory()
+         state_trace = []
+         contact_modes_changed = False
+         # q[0] is the boundary at the measured planning state. Command i is
+@@ -179,6 +190,12 @@ class ContactFirstFullBodyEvaluatorV1:
+         # contact_index physical intervals, not contact_index+1.
+         for node in range(contact_index):
+             target = targets[node].copy()
++            if leg_reference is not None:
++                legs=np.asarray(leg_reference(deepcopy(state),node),dtype=float)
++                if legs.shape!=(12,) or not np.isfinite(legs).all():
++                    return dict(accepted=False,rejection='invalid_causal_leg_reference',node=node)
++                target[:12]=legs;targets[node]=target
++            before_witness=self.geometry.minimum_witness(state.q)
+             if self.enforce_target_admission_bounds:
+                 low, high = self.interface.admitted_target_bounds(
+                     state.joint_position, self.dt_s)
+@@ -213,7 +230,8 @@ class ContactFirstFullBodyEvaluatorV1:
+             for name, value in diagnostics.items():
+                 if isinstance(value, (int, float, np.integer, np.floating)) and np.isfinite(value):
+                     maximum_diagnostics[name] = max(maximum_diagnostics.get(name, 0.), float(value))
+-            gap = float(np.min(self.geometry.evaluate(state.q)[0]))
++            after_witness = self.geometry.minimum_witness(state.q)
++            gap = after_witness["gap_m"]
+             minimum_ground_gap = min(minimum_ground_gap, gap)
+             if gap < -1e-6:
+                 violations["nonfoot_ground_violation_m"] = -gap
+@@ -227,19 +245,26 @@ class ContactFirstFullBodyEvaluatorV1:
+                     "rejection": "full_body_prefix_violation",
+                     "node": node,
+                     "violations": violations,
++                    "geometry_witness_before": before_witness,
++                    "geometry_witness_initial": initial_witness,
++                    "geometry_witness_after": after_witness,
++                    "contact_mask": state.contacts.tolist(),
+                     "minimum_ground_gap_m": minimum_ground_gap,
+                     "maximum_tracking_error_rad": maximum_tracking_error,
+                     "diagnostics": maximum_diagnostics,
+                 }
+ 
+         result = {
++            "geometry_witness_initial": initial_witness,
++            "geometry_witness_terminal": after_witness,
+             "accepted": True,
+             "nodes_checked": contact_index + 1,
+             "prediction_intervals": contact_index,
+             "terminal_elapsed_s": contact_index*self.dt_s,
+-            "leg_reference": ("explicit_sequence" if self.leg_target_sequence_rad is not None
++            "leg_reference": ("causal_frozen_base" if leg_reference is not None else "explicit_sequence" if self.leg_target_sequence_rad is not None
+                               else "measured_position_hold"),
+-            "replayed_command_sha256": command_sha256,
++            "replayed_command_sha256": hashlib.sha256(targets.astype("<f8").tobytes()).hexdigest(),
++            "replayed_target_sequence_rad": targets.tolist(),
+             "contact_modes_changed": bool(contact_modes_changed),
+             "minimum_ground_gap_m": minimum_ground_gap,
+             "maximum_tracking_error_rad": maximum_tracking_error,
+@@ -252,6 +277,8 @@ class ContactFirstFullBodyEvaluatorV1:
+         }
+         if self.record_state_trace:
+             result["state_trace"] = state_trace
++        if self.impact_state_fn is not None:
++            result["impact_robot_state"]=self.impact_state_fn(state)
+         if self.racket_measure_fn is not None:
+             try:
+                 measured = self.racket_measure_fn(state)
+diff --git a/scripts/probe_full_racket_rally_v4.py b/scripts/probe_full_racket_rally_v4.py
+index 8e1a9e3..bcd90fa 100644
+--- a/scripts/probe_full_racket_rally_v4.py
++++ b/scripts/probe_full_racket_rally_v4.py
+@@ -5,6 +5,8 @@ from pathlib import Path
+ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+ from isaaclab.app import AppLauncher
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True)
++p.add_argument('--joint-interface',type=Path,required=True)
++p.add_argument('--precision-receipt',type=Path,required=True)
+ p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--count',type=int,default=16)
+ p.add_argument('--frozen-base-assisted', action='store_true', required=True,
+     help='Allow pinned frozen base inference; no learned heads or policy updates')
+@@ -27,7 +29,7 @@ signal.signal(signal.SIGTERM,stop);signal.signal(signal.SIGINT,stop)
+ def main():
+     args.output.mkdir(parents=True,exist_ok=True)
+     checkpoint=torch.load(args.checkpoint,map_location='cpu',weights_only=False)
+-    protocol=json.loads((ROOT/'configs/g07_full_racket_eval_v4_r3.json').read_text())
++    protocol=json.loads((ROOT/'configs/g07_full_racket_eval_v5_contact_recovery_origin0.json').read_text())
+     assert checkpoint['asset_sha256']==protocol['asset']['sha256']
+     assert 2<=args.count<=128 and args.count%2==0
+     suite=protocol['training_suite'];path=ROOT/suite['path']
+@@ -42,20 +44,37 @@ def main():
+         learned_action_sources=sources, teacher_only_eligible=not bool(sources),
+         native_steps=0),indent=2)+'\n')
+     del controller  # CPU provenance inspection; native controller constructed below
+-    cfg=full_racket_cfg(args.count);cfg.seed=720601
+-    env=FullRacketEnvV4(cfg,cases=cases);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
++    from quadsmash.tasks.stand.contact_recovery_origin0_v5 import contact_recovery_origin0_cfg
++    from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
++    from quadsmash.control.full_racket_train_evaluation_v4 import training_noise
++    cfg=contact_recovery_origin0_cfg(args.count,protocol,args.precision_receipt)
++    cfg.seed=882072;cfg.ground_size_m=(64.,64.,.1)
++    noise=training_noise(args.count,dict(joint_position_rad=0.,joint_velocity_rad_s=0.,root_xy_m=0.,root_yaw_rad=0.),cfg.seed)
++    env=FrozenPanelEnv(cfg,cases=cases,reset_noise=noise,contact_flight_recovery=protocol['recovery_association']['schema'])
++    wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
+     controller=FullRacketRallyControllerV4(checkpoint,args.count,env.device)
++    from scripts.attach_joint_contact_prefix_v1 import attach_joint_contact_prefix
++    interface_record=json.loads(args.joint_interface.read_text())
++    attach_joint_contact_prefix(env,controller,interface_record.get('interface',interface_record))
+     inference_audit=FrozenBaseInferenceAudit(controller.teacher)
+     try:
+         observation,_=wrapper.reset();controller.reset()
+         export_robot_geometry(get_current_stage(),env.robot,args.output)
+         default=env.robot.data.default_joint_pos[0,env.joint_ids]
+         limits=env.robot.data.joint_pos_limits[0,env.joint_ids]
++        from scripts.small_panel_ground_observer_v1 import SmallPanelGroundObserver
++        from scripts.native_pure_control_state_driven_long_mpc_v1_qp_continuity_repair import NativePureControlStateDrivenLongMPCV1QPContinuityRepair
++        ground=SmallPanelGroundObserver(env)
++        recovery=NativePureControlStateDrivenLongMPCV1QPContinuityRepair(env,limits,default,args.joint_interface,args.output,ground)
+         observations,actions,poses,traces,masks=[],[],[],[],[]
+         finished=torch.zeros(args.count,dtype=torch.bool,device=env.device)
+         with torch.inference_mode():
+             for tick in range(800):
+-                action=controller.action(observation,default,limits)
++                owned=torch.tensor([m.memory.phase!='PREFIX' for m in recovery.managers],device=env.device)
++                controller.set_contact_first_recovery_owned(owned)
++                proposed=controller.action(observation,default,limits)
++                action=recovery.action(tick,observation,proposed,finished)
++                first_before=finished.clone()
+                 observations.append(observation['policy'].cpu().numpy().copy())
+                 actions.append(action.cpu().numpy().copy())
+                 masks.append((~finished).cpu().numpy().copy())
+@@ -66,7 +85,9 @@ def main():
+                         ball_velocity_mps=env.shuttle.data.root_lin_vel_w[:2].cpu().tolist(),
+                         active=env.rally.in_play[:2].cpu().tolist(),contact=env.rally.had_contact[:2].cpu().tolist(),
+                         airborne=env.observed_airborne[:2].cpu().tolist()))
+-                observation,_,done,_=wrapper.step(action);finished|=done.bool()
++                observation,_,done,_=wrapper.step(action)
++                recovery.verify_applied(first_before)
++                finished|=done.bool()
+                 if (tick+1)%100==0:
+                     progress=dict(control_ticks=tick+1,requested_ticks=800,
+                         contacts=int(env.rally.had_contact.sum()),airborne_contacts=int(env.rally.airborne_string_hit.sum()),
+@@ -120,6 +141,10 @@ def main():
+         (args.output/'completed.json').write_text(json.dumps(dict(env_steps=(tick+1)*args.count))+'\n')
+         print(json.dumps(result),flush=True)
+     finally:
++        if "recovery" in locals():recovery.save()
++        (args.output/'prediction_actor_counts.json').write_text(json.dumps(controller.contact_first_prediction_counts,indent=2)+'\n')
++        (args.output/'joint_execution_audit.json').write_text(json.dumps(controller.contact_first_execution_log,indent=2)+'\n')
++        (args.output/'native_planning_state_audit.json').write_text(json.dumps(controller.contact_first_state_audit,indent=2)+'\n')
+         (args.output/'action_source_audit.json').write_text(json.dumps(inference_audit.report(),indent=2)+'\n')
+         env.close()
+ 
+diff --git a/scripts/small_panel_ground_observer_v1.py b/scripts/small_panel_ground_observer_v1.py
+new file mode 100644
+index 0000000..59c29e4
+--- /dev/null
++++ b/scripts/small_panel_ground_observer_v1.py
+@@ -0,0 +1,24 @@
++"""Read-only same body/ground force input for a small development panel."""
++import re
++import torch
++
++
++class SmallPanelGroundObserver:
++    def __init__(self,env):
++        from pxr import Usd,UsdPhysics
++        from omni.usd import get_context
++        self.env=env;self.names=list(env.robot.body_names)
++        root=get_context().get_stage().GetPrimAtPath('/World/envs/env_0/Robot')
++        paths={p.GetName():str(p.GetPath()) for p in Usd.PrimRange(root,Usd.TraverseInstanceProxies()) if p.HasAPI(UsdPhysics.RigidBodyAPI)}
++        patterns=[paths[n].replace('/env_0/','/env_*/') for n in self.names]
++        self.view=env.feet_contact._physics_sim_view.create_rigid_contact_view(patterns,
++            filter_patterns=[['/World/Ground/geometry/mesh'] for _ in patterns],max_contact_data_count=131072)
++        mapping={(int(re.search(r'/env_(\d+)/',p)[1]),p.rsplit('/',1)[-1]):i for i,p in enumerate(self.view.sensor_paths)}
++        expected=[(lane,n) for lane in range(env.num_envs) for n in self.names]
++        if set(mapping)!=set(expected) or self.view.filter_count!=1:raise ValueError('Incomplete ground pair view')
++        self.order=torch.tensor([mapping[k] for k in expected],device=env.device)
++    def read(self):
++        force=self.view.get_contact_force_matrix(self.env.physics_dt)
++        expected=(self.env.num_envs*len(self.names),1,3)
++        if tuple(force.shape)!=expected:raise ValueError('Unexpected native ground matrix')
++        return force[self.order,0].reshape(self.env.num_envs,len(self.names),3)
+diff --git a/tests/test_impact_outcome_evaluator_v1.py b/tests/test_impact_outcome_evaluator_v1.py
+index ae13dd9..3762a85 100644
+--- a/tests/test_impact_outcome_evaluator_v1.py
++++ b/tests/test_impact_outcome_evaluator_v1.py
+@@ -56,3 +56,11 @@ def test_net_collision_is_not_ranked_as_a_valid_return():
+     result=model.evaluate(**args)
+     assert not result['valid_return']
+     assert result['rejection_reason'] in ('predicted_net_intersection','no_net_crossing')
++
++
++def test_slow_legal_return_is_not_attack5_or_complete5():
++    model,args=fixture();result=model.evaluate(**args)
++    assert result['legal_return_predicted']
++    assert not result['attack5_predicted']
++    assert not result['ball_side_complete_predicted']
++    assert 'complete5' not in result
+diff --git a/tests/test_joint_prefix_execution_v1.py b/tests/test_joint_prefix_execution_v1.py
+new file mode 100644
+index 0000000..4a4904a
+--- /dev/null
++++ b/tests/test_joint_prefix_execution_v1.py
+@@ -0,0 +1,35 @@
++from types import SimpleNamespace
++import torch
++from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
++
++
++def fixture():
++    c=object.__new__(FullRacketRallyControllerV4)
++    c.contact_first_planner=SimpleNamespace(config=SimpleNamespace(dt_s=.01,horizon_steps=4,handoff_duration_s=.02))
++    c.contact_first_plan_valid=torch.ones(2,dtype=torch.bool)
++    c.contact_first_joint_valid=torch.ones(2,dtype=torch.bool)
++    c.contact_first_recovery_owned=torch.tensor([False,True])
++    c.contact_first_plan_q=torch.zeros(2,4,6)
++    c.contact_first_plan_start_time=torch.zeros(2)
++    c.contact_first_plan_contact_time=torch.full((2,),.03)
++    c.contact_first_joint_targets=torch.arange(144).reshape(2,4,18).float()/200
++    c.contact_first_execution_log=[]
++    public=torch.zeros(2,794);public[:,775]=.01
++    limits=torch.tensor([[-1.,1.]]*18)
++    return c,public,limits
++
++
++def test_exact_verified_full_command_and_recovery_exclusion():
++    c,public,limits=fixture();base=torch.full((2,18),-.2)
++    result=c._overlay_contact_first_plan(base.clone(),public,limits)
++    torch.testing.assert_close(result[0],c.contact_first_joint_targets[0,1])
++    torch.testing.assert_close(result[1],base[1])
++    assert c.contact_first_execution_log[0]['lanes']==[0]
++    assert max(c.contact_first_execution_log[0]['round_trip_error_rad'])<2e-6
++
++
++def test_joint_prefix_never_executes_unvalidated_terminal_or_handoff_blend():
++    c,public,limits=fixture();base=torch.full((2,18),-.2)
++    for time in (.03,.04,.06):
++        public[:,775]=time
++        torch.testing.assert_close(c._overlay_contact_first_plan(base.clone(),public,limits),base)

@@ -1,0 +1,21 @@
+{
+  "learned_action_sources": [
+    {
+      "path": "controller.teacher.walk.actor",
+      "kind": "transferred_learned_action_actor",
+      "owner": "quadsmash.control.go2_walk_transfer.Go2WalkTransfer"
+    },
+    {
+      "path": "controller.teacher.standing.actor",
+      "kind": "transferred_learned_action_actor",
+      "owner": "quadsmash.control.go2_standing_transfer.Go2StandingTransfer"
+    },
+    {
+      "path": "controller.teacher.strike",
+      "kind": "learned_piecewise_affine_action_policy",
+      "owner": "quadsmash.control.piecewise_affine.PiecewiseAffinePolicy"
+    }
+  ],
+  "teacher_only_eligible": false,
+  "native_steps": 0
+}
