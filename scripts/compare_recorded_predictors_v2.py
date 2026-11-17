@@ -15,6 +15,7 @@ from scripts.predict_speed_limited_spheres_v1 import predict_speed_limited_spher
 from scripts.audit_sphere_touchdown_predictions_v1 import spheres_from_asset
 from scripts.authored_ground_clearance_v1 import AuthoredGroundClearance
 from scripts.diagnostic_nonfoot_spheres_v1 import nonfoot_spheres
+from scripts.hip_mount_collision_response_v1 import HipMountCollisionResponseV1
 
 
 def measured_state(model,data,tick,lane):
@@ -29,7 +30,7 @@ def measured_state(model,data,tick,lane):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--native',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--spheres',type=Path);p.add_argument('--rollout',action='store_true');p.add_argument('--method',choices=('current_body_anchor','authored_sphere_contact','sphere_plus_sim_speed_constraint','sphere_speed_and_position_stops','sphere_stops_and_nonfoot_response'));p.add_argument('--start-tick',type=int,default=249);p.add_argument('--steps',type=int,default=14);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--native',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--spheres',type=Path);p.add_argument('--rollout',action='store_true');p.add_argument('--method',choices=('current_body_anchor','authored_sphere_contact','sphere_plus_sim_speed_constraint','sphere_speed_and_position_stops','sphere_stops_and_nonfoot_response','sphere_stops_nonfoot_and_hip_response'));p.add_argument('--start-tick',type=int,default=249);p.add_argument('--steps',type=int,default=14);p.add_argument('--solver-iterations',type=int,default=400);a=p.parse_args()
     if a.output.exists():raise ValueError('Do not overwrite evidence')
     a.output.mkdir(parents=True)
     if not (0<=a.start_tick and 1<=a.steps<=80 and a.start_tick+a.steps<800):raise ValueError('Bounded recorded prediction window required')
@@ -51,11 +52,12 @@ def main():
       'sphere_plus_sim_speed_constraint':lambda s,t:predict_speed_limited_spheres(model,interface,s,t,spheres,substeps=160)}
     methods['sphere_speed_and_position_stops']=lambda s,t:predict_speed_limited_spheres(
         model,interface,s,t,spheres,substeps=160,enforce_joint_stops=True)
-    if a.method == 'sphere_stops_and_nonfoot_response':
+    if a.method in ('sphere_stops_and_nonfoot_response','sphere_stops_nonfoot_and_hip_response'):
         geometry=AuthoredGroundClearance(root/'configs/go2_piper_authored_ground_geometry_v1.json',model,margin_m=0.)
         extra_spheres=nonfoot_spheres(geometry,model.feet)
+        hip_response=HipMountCollisionResponseV1(model) if a.method=='sphere_stops_nonfoot_and_hip_response' else None
         methods[a.method]=lambda s,t:predict_speed_limited_spheres(model,interface,s,t,spheres,substeps=160,
-            enforce_joint_stops=True,diagnostic_nonfoot_spheres=extra_spheres)
+            enforce_joint_stops=True,diagnostic_nonfoot_spheres=extra_spheres,diagnostic_hip_mount_response=hip_response,contact_max_iterations=a.solver_iterations)
     if a.method is not None:methods={a.method:methods[a.method]}
     rows=[]
     # Entire predeclared window, both original lanes; no success subset.
@@ -92,7 +94,7 @@ def main():
         summary[name]=dict(solved=len(solved),attempted=len(selected),requested=2*a.steps,not_a_physical_acceptance_count=True,
             error_stats={key:dict(mean=float(np.mean([r[key] for r in solved])),max=float(max(r[key] for r in solved))) for key in
                 ('joint_velocity_max_error_rad_s','joint_position_max_error_rad','root_position_error_m','racket_position_error_m')} if solved else {})
-    (a.output/'RESULTS.json').write_text(json.dumps(dict(mode='open_loop' if a.rollout else 'one_step',start_tick=a.start_tick,steps=a.steps,summary=summary,rows=rows,spheres=spheres,joint_order=model.joint_order,
+    (a.output/'RESULTS.json').write_text(json.dumps(dict(mode='open_loop' if a.rollout else 'one_step',start_tick=a.start_tick,steps=a.steps,solver_iterations=a.solver_iterations,summary=summary,rows=rows,spheres=spheres,joint_order=model.joint_order,
         source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),interface_sha256=hashlib.sha256(interface_path.read_bytes()).hexdigest(),asset_sha256=protocol['asset']['sha256'],
         policy_modified=False,native_execution=False,physx_equivalent=False,valid_teacher_reference=False,
         speed_constraint_caveat='Existing experimental ideal simulator constraint; reaction not calibrated as actual actuator braking. Never native admission.'),indent=2))

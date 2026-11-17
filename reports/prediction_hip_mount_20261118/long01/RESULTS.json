@@ -1,0 +1,110 @@
+{
+  "mode": "open_loop",
+  "start_tick": 201,
+  "steps": 80,
+  "summary": {
+    "sphere_stops_nonfoot_and_hip_response": {
+      "solved": 0,
+      "attempted": 2,
+      "requested": 160,
+      "not_a_physical_acceptance_count": true,
+      "error_stats": {}
+    }
+  },
+  "rows": [
+    {
+      "lane": 0,
+      "tick": 201,
+      "method": "sphere_stops_nonfoot_and_hip_response",
+      "solved": false,
+      "error": "Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 1.56767853029538e-06, 'friction_cone': 0.0, 'tangent_fixed_point': 8.253797954722863e-07}, 'box_violation': 1.0080257514810675e-06, 'box_fixed_point': 1.1480377026741768e-08}",
+      "seconds": 0.6256557409651577
+    },
+    {
+      "lane": 1,
+      "tick": 201,
+      "method": "sphere_stops_nonfoot_and_hip_response",
+      "solved": false,
+      "error": "Coupled contact/joint interval law did not converge: {'contact': {'normal_complementarity': 1.8366994959245764e-06, 'friction_cone': 0.0, 'tangent_fixed_point': 9.67018878757003e-07}, 'box_violation': 1.1810184001731505e-06, 'box_fixed_point': 1.3450578858391696e-08}",
+      "seconds": 0.5720618991181254
+    }
+  ],
+  "spheres": [
+    {
+      "body": "FL_foot",
+      "path": "/World/Go2/FL_foot/collisions/mesh_0/sphere",
+      "center_body_m": [
+        -0.0020000000949949026,
+        0.0,
+        0.0
+      ],
+      "radius_m": 0.02199999988079071,
+      "contact_offset_authored": null,
+      "rest_offset_authored": null
+    },
+    {
+      "body": "FR_foot",
+      "path": "/World/Go2/FR_foot/collisions/mesh_0/sphere",
+      "center_body_m": [
+        -0.0020000000949949026,
+        0.0,
+        0.0
+      ],
+      "radius_m": 0.02199999988079071,
+      "contact_offset_authored": null,
+      "rest_offset_authored": null
+    },
+    {
+      "body": "RL_foot",
+      "path": "/World/Go2/RL_foot/collisions/mesh_0/sphere",
+      "center_body_m": [
+        -0.0020000000949949026,
+        0.0,
+        0.0
+      ],
+      "radius_m": 0.02199999988079071,
+      "contact_offset_authored": null,
+      "rest_offset_authored": null
+    },
+    {
+      "body": "RR_foot",
+      "path": "/World/Go2/RR_foot/collisions/mesh_0/sphere",
+      "center_body_m": [
+        -0.0020000000949949026,
+        0.0,
+        0.0
+      ],
+      "radius_m": 0.02199999988079071,
+      "contact_offset_authored": null,
+      "rest_offset_authored": null
+    }
+  ],
+  "joint_order": [
+    "FL_hip_joint",
+    "FR_hip_joint",
+    "RL_hip_joint",
+    "RR_hip_joint",
+    "FL_thigh_joint",
+    "FR_thigh_joint",
+    "RL_thigh_joint",
+    "RR_thigh_joint",
+    "FL_calf_joint",
+    "FR_calf_joint",
+    "RL_calf_joint",
+    "RR_calf_joint",
+    "joint1",
+    "joint2",
+    "joint3",
+    "joint4",
+    "joint5",
+    "joint6"
+  ],
+  "source_sha256": "9dede9d614ecb6a73f232f51f2f8ca89876297f74e9af530c041e71438ef7574",
+  "interface_sha256": "4c1a1c3cce71954081c252b0ca7bb10e77f65bdaf39525e9a78fb4f8e67330f7",
+  "asset_sha256": "c2264fcece90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+  "policy_modified": false,
+  "native_execution": false,
+  "physx_equivalent": false,
+  "valid_teacher_reference": false,
+  "speed_constraint_caveat": "Existing experimental ideal simulator constraint; reaction not calibrated as actual actuator braking. Never native admission."
+}

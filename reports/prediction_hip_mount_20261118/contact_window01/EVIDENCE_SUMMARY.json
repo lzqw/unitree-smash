@@ -1,0 +1,65 @@
+{
+  "mode": "open_loop",
+  "start_tick": 249,
+  "steps": 32,
+  "groups": [
+    {
+      "method": "sphere_stops_nonfoot_and_hip_response",
+      "lane": 0,
+      "solved": 32,
+      "requested": 32,
+      "first_solver_failure": null,
+      "first_racket_body_error_above_3mm": null,
+      "diagnostic_evidence": {
+        "joint_position_violation_rad": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "joint_velocity_violation_rad_s": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "motor_torque_violation_nm": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "foot_penetration_m": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        }
+      },
+      "physical_admission": "NOT_EVALUATED",
+      "contact_point_accuracy": "NOT_MEASURED"
+    },
+    {
+      "method": "sphere_stops_nonfoot_and_hip_response",
+      "lane": 1,
+      "solved": 32,
+      "requested": 32,
+      "first_solver_failure": null,
+      "first_racket_body_error_above_3mm": null,
+      "diagnostic_evidence": {
+        "joint_position_violation_rad": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "joint_velocity_violation_rad_s": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "motor_torque_violation_nm": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        },
+        "foot_penetration_m": {
+          "first_above_display_threshold": null,
+          "missing_or_nonfinite_ticks": []
+        }
+      },
+      "physical_admission": "NOT_EVALUATED",
+      "contact_point_accuracy": "NOT_MEASURED"
+    }
+  ],
+  "valid_teacher_reference": false,
+  "explanation": "Solver convergence is not physical admission. Racket body origin is not the actual contact point. Missing checks remain unknown."
+}

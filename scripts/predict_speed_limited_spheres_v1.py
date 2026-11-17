@@ -1,7 +1,8 @@
 """Foot-contact prediction with coupled simulator speed-limit reactions.
 
-Offline candidate, not an accepted MPC teacher. No nonfoot/self-collision
-response, restitution, PhysX margin or compliance equivalence is claimed.
+Offline candidate, not an accepted MPC teacher. Optional authored sphere and
+hip/mount responses remain diagnostic approximations, not complete collision
+coverage, restitution, PhysX margin or compliance equivalence.
 """
 import copy
 import numpy as np
@@ -23,8 +24,13 @@ def surface_jacobians(model,q,spheres):
 
 
 def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substeps=16,geometry=None,
-                                 enforce_joint_stops=False,diagnostic_nonfoot_spheres=None):
+                                 enforce_joint_stops=False,diagnostic_nonfoot_spheres=None,
+                                 diagnostic_hip_mount_response=None,contact_max_iterations=400):
     if type(substeps) is not int or not 1<=substeps<=160:raise ValueError('Invalid substeps')
+    if type(contact_max_iterations) is not int or not 1<=contact_max_iterations<=4000:
+        raise ValueError('Bounded contact iteration budget required')
+    if diagnostic_hip_mount_response is not None and not enforce_joint_stops:
+        raise ValueError('Hip/mount diagnostics require original joint stops')
     target=np.asarray(target,float)
     if (target.shape!=(18,) or not np.isfinite(target).all() or
             np.any(target<interface.limits[:,0]-1e-6) or np.any(target>interface.limits[:,1]+1e-6)):
@@ -43,7 +49,8 @@ def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substep
         joint_position_violation_rad=0.,motor_torque_violation_nm=0.,nonfoot_ground_violation_m=0.,velocity_limit_active_substeps=0,
         maximum_velocity_limit_impulse_ns=0.,speed_constraint_residual=0.,
         nonfoot_normal_impulse_ns=0.,nonfoot_contact_substeps=0,
-        position_limit_active_substeps=0,maximum_joint_stop_impulse_nms=0.)
+        position_limit_active_substeps=0,maximum_joint_stop_impulse_nms=0.,
+        hip_mount_active_substeps=0,maximum_hip_mount_impulse_nms=0.)
     for micro in range(substeps):
         snapshot=model.snapshot(q,v);gap=sphere_gaps(model,q,spheres)
         jac=surface_jacobians(model,q,spheres).reshape(3*contact_count,24)
@@ -53,9 +60,17 @@ def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substep
         bounds={} if not enforce_joint_stops else dict(
             position=q[model.q_indices],position_limits=interface.limits)
         step=position_limited_velocity_step if enforce_joint_stops else speed_limited_velocity_step
-        result=step(snapshot['mass_matrix'],v,snapshot['nonlinear'],selection,
+        arguments=(snapshot['mass_matrix'],v,snapshot['nonlinear'],selection,
             interface.kp,interface.kd,target-q[model.q_indices],interface.effort,dt,jac,normal_target,
-            interface.friction,interface.velocity,warm=warm,**bounds)
+            interface.friction,interface.velocity)
+        if diagnostic_hip_mount_response is None:
+            result=step(*arguments,warm=warm,max_iterations=contact_max_iterations,**bounds)
+        else:
+            result=diagnostic_hip_mount_response.step(*arguments,q[model.q_indices],interface.limits,
+                warm=warm,max_iterations=contact_max_iterations)
+        diagnostics['hip_mount_active_substeps']+=int(np.any(result.get('hip_mount_impulse',0.)!=0))
+        diagnostics['maximum_hip_mount_impulse_nms']=max(diagnostics['maximum_hip_mount_impulse_nms'],
+            float(np.max(abs(result.get('hip_mount_impulse',np.zeros(18))),initial=0.)))
         diagnostics['velocity_limit_active_substeps']+=int(result['velocity_limit_active'])
         diagnostics['maximum_velocity_limit_impulse_ns']=max(diagnostics['maximum_velocity_limit_impulse_ns'],float(np.max(abs(result['velocity_limit_impulse']),initial=0.)))
         diagnostics['speed_constraint_residual']=max(diagnostics['speed_constraint_residual'],result['speed_violation'],result['speed_fixed_point'])
@@ -91,4 +106,5 @@ def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substep
     return dict(state=following,diagnostics=diagnostics,events=events,native_execution=False,valid_teacher=False,
         ground_geometry_checked=geometry is not None,first_ground_violation=first_ground_violation,
         ideal_joint_position_stops=enforce_joint_stops,
-        diagnostic_nonfoot_bodies=[s['body'] for s in extras],nonfoot_contact_not_admissible=True)
+        diagnostic_nonfoot_bodies=[s['body'] for s in extras],nonfoot_contact_not_admissible=True,
+        diagnostic_hip_mount_response=diagnostic_hip_mount_response is not None)

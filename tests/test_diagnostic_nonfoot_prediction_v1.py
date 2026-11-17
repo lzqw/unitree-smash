@@ -9,6 +9,7 @@ from scripts.predict_speed_limited_spheres_v1 import predict_speed_limited_spher
 from scripts.whole_body_support_qp_v1 import PositionPDInterface
 from scripts.audit_prediction_contact_geometry_v2 import racket_contact_state
 import pinocchio as pin
+from scripts.hip_mount_collision_response_v1 import HipMountCollisionResponseV1
 
 
 def test_contact_direction_does_not_alias_pinocchio_workspace():
@@ -38,3 +39,27 @@ def test_historical_nonfoot_response_keeps_foot_mask_history_and_admission_separ
     result['state'].previous_command_target[:]=123
     np.testing.assert_array_equal(state.previous_command_target,previous)
     assert np.all(target!=123)
+
+
+def test_hip_mount_response_uses_real_boundaries_and_retains_original_limits():
+    model=LoadedPinocchioModelV1()
+    interface=PositionPDInterface(**json.loads(Path('reports/codex_teacher_joint_eval_20261116/controller.json').read_text())['interface'])
+    original_limits=interface.limits.copy()
+    geometry=AuthoredGroundClearance('configs/go2_piper_authored_ground_geometry_v1.json',model,margin_m=0.)
+    feet=json.loads(Path('reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json').read_text())['spheres']
+    response=HipMountCollisionResponseV1(model)
+    with np.load('reports/task_constrained_hit_20261118/attempts/calibration01/native/control_state.npz') as data:
+        state=measured_state(model,data,201,0);q_before=state.q.copy()
+        result=predict_speed_limited_spheres(model,interface,state,data['previous_target'][202,0],feet,
+            substeps=160,enforce_joint_stops=True,diagnostic_nonfoot_spheres=nonfoot_spheres(geometry,model.feet),
+            diagnostic_hip_mount_response=response,contact_max_iterations=2000)
+    assert result['diagnostics']['hip_mount_active_substeps']>0
+    assert result['diagnostics']['momentum_residual']<1e-8
+    assert not result['valid_teacher']
+    assert result['state'].contacts.shape==(4,)
+    np.testing.assert_array_equal(interface.limits,original_limits)
+    np.testing.assert_array_equal(state.q,q_before)
+    for j,bound,lower in response.constraints:
+        old=(bound-state.joint_position[j]) if lower else (state.joint_position[j]-bound)
+        new=(bound-result['state'].joint_position[j]) if lower else (result['state'].joint_position[j]-bound)
+        assert new<=max(old,0.)+1e-9

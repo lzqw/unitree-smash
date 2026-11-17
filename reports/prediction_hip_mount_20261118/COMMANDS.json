@@ -1,0 +1,25 @@
+[
+  {
+    "name": "long01",
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_recorded_predictors_v2 --native reports/task_constrained_hit_20261118/attempts/calibration01/native --spheres reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json --method sphere_stops_nonfoot_and_hip_response --rollout --start-tick 201 --steps 80 --solver-iterations 400 --output reports/prediction_hip_mount_20261118/long01",
+    "exit_code": 0,
+    "kind": "recorded CPU diagnostic; solver failures retained"
+  },
+  {
+    "name": "long02",
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_recorded_predictors_v2 --native reports/task_constrained_hit_20261118/attempts/calibration01/native --spheres reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json --method sphere_stops_nonfoot_and_hip_response --rollout --start-tick 201 --steps 80 --solver-iterations 2000 --output reports/prediction_hip_mount_20261118/long02",
+    "exit_code": 0,
+    "kind": "recorded CPU diagnostic; solver failures retained"
+  },
+  {
+    "name": "contact_window01",
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_recorded_predictors_v2 --native reports/task_constrained_hit_20261118/attempts/calibration01/native --spheres reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json --method sphere_stops_nonfoot_and_hip_response --rollout --start-tick 249 --steps 32 --solver-iterations 2000 --output reports/prediction_hip_mount_20261118/contact_window01",
+    "exit_code": 0,
+    "kind": "recorded CPU diagnostic; solver failures retained"
+  },
+  {
+    "name": "final_tests",
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m pytest -q tests/test_speed_limited_impulse_v1.py tests/test_position_limited_impulse_v1.py tests/test_hip_mount_collision_response_v1.py tests/test_diagnostic_nonfoot_prediction_v1.py tests/test_diagnostic_nonfoot_spheres_v1.py",
+    "exit_code": 0
+  }
+]
