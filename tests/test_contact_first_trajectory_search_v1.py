@@ -117,6 +117,17 @@ def test_causal_base_angular_acceleration_is_extrapolated_to_contact():
     assert result.metadata['relative_target_velocity_world_m_s'][0] == pytest.approx(.8)
 
 
+def test_base_acceleration_prediction_is_bounded_and_audited():
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
+        base_angular_acceleration_limit_rad_s2=2.0))
+    inputs = _inputs()
+    inputs['base_angular_acceleration_world_rad_s2'] = np.array([0., 9., 0.])
+    result = planner.plan(**inputs)
+    assert result.metadata['raw_base_angular_acceleration_world_rad_s2'][1] == pytest.approx(9.)
+    assert result.metadata['used_base_angular_acceleration_world_rad_s2'][1] == pytest.approx(2.)
+
+
 def test_forward_kinematics_callback_relinearizes_before_acceptance():
     calls = []
 
@@ -143,7 +154,8 @@ def test_forward_kinematics_callback_relinearizes_before_acceptance():
         horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
         kinematic_iterations=4, max_iteration_step_rad=.25))
     result = planner.plan(**inputs, kinematics_fn=forward_kinematics)
-    assert len(calls) == 4
+    # Four full task iterations plus eight position-priority refinement calls.
+    assert len(calls) == 12
     assert result.position_error_m < 1e-3
     assert result.metadata['kinematic_iterations'] == 4
 
@@ -174,8 +186,10 @@ def test_regular_unit_normal_task_explores_one_joint_nullspace():
         horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
         kinematic_iterations=1))
     result = planner.plan(**inputs, kinematics_fn=forward_kinematics)
-    assert len(calls) == 1 + 4
-    assert result.metadata['search_diagnostics']['candidates_considered'] == 5
+    # Initial full-task call, four nullspace branches, and two position-
+    # priority refinement calls.
+    assert len(calls) == 1 + 4 + 2
+    assert result.metadata['search_diagnostics']['candidates_considered'] == 6
     assert result.metadata['nullspace_offset_rad'] in (-.12, -.06, .06, .12, 0.)
 
 

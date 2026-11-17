@@ -45,6 +45,11 @@ class ContactFirstSearchConfig:
     normal_weight: float = 0.30
     normal_rate_gain: float = 2.0
     arm_velocity_limit_rad_s: float = 5.0
+    # Public finite differences can contain contact/solver spikes.  These
+    # bounds protect the causal base prediction from turning one noisy tick
+    # into an impossible future racket velocity; they are not robot limits.
+    base_linear_acceleration_limit_m_s2: float = 12.0
+    base_angular_acceleration_limit_rad_s2: float = 4.0
     # Five bounded re-linearizations materially improve nonlinear FK
     # convergence while remaining sub-2 ms on the CPU benchmark path.
     kinematic_iterations: int = 5
@@ -80,6 +85,11 @@ class ContactFirstSearchConfig:
                 raise ValueError(f"Nonnegative finite {name} required")
         if not math.isfinite(self.arm_velocity_limit_rad_s) or self.arm_velocity_limit_rad_s <= 0.0:
             raise ValueError("Positive arm velocity limit required")
+        for name in ("base_linear_acceleration_limit_m_s2",
+                     "base_angular_acceleration_limit_rad_s2"):
+            value = float(getattr(self, name))
+            if not math.isfinite(value) or value <= 0.0:
+                raise ValueError(f"Positive finite {name} required")
         if self.kinematic_iterations < 1 or self.kinematic_iterations > 8:
             raise ValueError("Kinematic iterations must be in [1, 8]")
         if not math.isfinite(self.max_iteration_step_rad) or self.max_iteration_step_rad <= 0.0:
@@ -262,6 +272,16 @@ class ContactFirstTrajectorySearchV1:
         # acceleration extrapolation from the current measured base velocity
         # and acceleration; it does not read future simulator state.  The
         # velocity compensation below remains separate and is applied once.
+        raw_base_linear_acceleration = base_linear_acceleration.copy()
+        raw_base_angular_acceleration = base_angular_acceleration.copy()
+        base_linear_acceleration = np.clip(
+            base_linear_acceleration,
+            -cfg.base_linear_acceleration_limit_m_s2,
+            cfg.base_linear_acceleration_limit_m_s2)
+        base_angular_acceleration = np.clip(
+            base_angular_acceleration,
+            -cfg.base_angular_acceleration_limit_rad_s2,
+            cfg.base_angular_acceleration_limit_rad_s2)
         base_displacement = (base_linear * requested_contact +
                              0.5 * base_linear_acceleration * requested_contact**2)
         relative_target_position = target_pos - base_displacement
@@ -343,6 +363,28 @@ class ContactFirstTrajectorySearchV1:
                         lower, upper, velocity_limits)
                     branches.append((branch_q, branch_pos, branch_normal,
                                      branch_jp, branch_jn, float(offset)))
+        # A full position-plus-normal solve can stall near a wrist limit when
+        # the desired face direction is temporarily unreachable.  Add one
+        # deterministic position-priority branch so the search can still
+        # find a physically close contact point; the normal residual remains
+        # a hard admission gate below and is never silently discarded.
+        if kinematics_fn is not None:
+            position_q = q0.copy()
+            position_pos, position_normal = racket_pos.copy(), racket_normal.copy()
+            position_jp, position_jn = jp.copy(), jn.copy()
+            for _ in range(max(2, iteration_count * 2)):
+                position_delta = _damped_inverse(position_jp, cfg.damping) @ (
+                    relative_target_position - position_pos)
+                position_delta = np.clip(position_delta, -cfg.max_iteration_step_rad,
+                                         cfg.max_iteration_step_rad)
+                position_q = np.clip(position_q + position_delta, lower, upper)
+                values = kinematics_fn(position_q.copy())
+                position_pos = np.asarray(values[0], dtype=float)
+                position_normal = np.asarray(values[1], dtype=float)
+                position_jp = np.asarray(values[2], dtype=float)
+                position_jn = np.asarray(values[3], dtype=float)
+            branches.append((position_q, position_pos, position_normal,
+                             position_jp, position_jn, 0.0))
         maximum_candidate_duration = requested_contact + max(
             (float(x) for x in cfg.contact_time_offsets_s), default=0.0)
         minimum_joint_speed_duration = min(
@@ -357,6 +399,10 @@ class ContactFirstTrajectorySearchV1:
                 "evaluator_rejection_reasons": {},
                 "minimum_joint_speed_duration_s": minimum_joint_speed_duration,
                 "maximum_candidate_duration_s": maximum_candidate_duration,
+                "raw_base_linear_acceleration_world_m_s2": raw_base_linear_acceleration.tolist(),
+                "used_base_linear_acceleration_world_m_s2": base_linear_acceleration.tolist(),
+                "raw_base_angular_acceleration_world_rad_s2": raw_base_angular_acceleration.tolist(),
+                "used_base_angular_acceleration_world_rad_s2": base_angular_acceleration.tolist(),
             }
             raise RuntimeError(
                 "No contact-first candidate passed pre-contact checks: "
@@ -431,6 +477,14 @@ class ContactFirstTrajectorySearchV1:
                     initial_joint_velocity_rad_s=qd0.copy(),
                     base_displacement_world_m=base_displacement.copy(),
                     relative_target_position_world_m=relative_target_position.copy(),
+                    raw_base_linear_acceleration_world_m_s2=(
+                        raw_base_linear_acceleration.copy()),
+                    used_base_linear_acceleration_world_m_s2=(
+                        base_linear_acceleration.copy()),
+                    raw_base_angular_acceleration_world_rad_s2=(
+                        raw_base_angular_acceleration.copy()),
+                    used_base_angular_acceleration_world_rad_s2=(
+                        base_angular_acceleration.copy()),
                     base_point_velocity_world_m_s=contact_base_point_velocity.copy(),
                     relative_target_velocity_world_m_s=relative_velocity.copy(),
                     source="causal_ball_or_dtg_contact_event",
@@ -519,6 +573,10 @@ class ContactFirstTrajectorySearchV1:
             "rejection_counts": dict(Counter(rejected)),
             "evaluator_rejection_reasons": dict(evaluator_rejection_reasons),
             "best_kinematic_residual": best_kinematic_residual,
+            "raw_base_linear_acceleration_world_m_s2": raw_base_linear_acceleration.tolist(),
+            "used_base_linear_acceleration_world_m_s2": base_linear_acceleration.tolist(),
+            "raw_base_angular_acceleration_world_rad_s2": raw_base_angular_acceleration.tolist(),
+            "used_base_angular_acceleration_world_rad_s2": base_angular_acceleration.tolist(),
         }
         if best is None:
             raise RuntimeError(

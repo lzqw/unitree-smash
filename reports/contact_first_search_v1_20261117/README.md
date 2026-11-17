@@ -14,6 +14,10 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
   - optional causal base angular-acceleration extrapolation for the racket
     offset term, also defaulting to zero;
   - six-joint damped task inverse for racket position and face normal;
+  - deterministic position-priority IK branch for cases where the full
+    position-plus-normal solve stalls near a wrist limit; normal residual
+    remains a hard admission condition;
+  - bounded base acceleration prediction with raw-versus-used diagnostics;
   - optional bounded Gauss-Newton relinearization through the real six-joint
     forward-kinematics callback;
   - Hermite position/velocity trajectory to the contact state;
@@ -56,7 +60,7 @@ training dependencies with that code.
 
 ## Current limits
 
-This is a trajectory generator and Approach integration hook, not a completed native performance claim. The full-body predictor callback must be supplied for physical admission; without it the planner only performs kinematic and actuator prechecks. No native evaluation was started in this implementation turn.
+This is a trajectory generator and Approach integration hook, not a completed native performance claim. The full-body predictor callback must be supplied for physical admission; without it the planner only performs kinematic and actuator prechecks. A 2-environment native development probe exists, but formal native evaluation remains `NOT_RUN`.
 
 The planner is intentionally deterministic and low-dimensional, but it is not a replacement for the existing full-body WBC or Recovery controller.  With a forward-kinematics callback it relinearizes at the proposed six-joint contact state; without one it applies the supplied Jacobian exactly once.  A plan with a large terminal task residual is rejected instead of being silently accepted.
 
