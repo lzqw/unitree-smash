@@ -12,6 +12,19 @@ from .supermimic_ball_geometry_preview_v1 import BallGeometryPreviewV1
 from .supermimic_v1 import MLP
 
 
+def preimpact_hard_negatives(contact_edge, episode, terminated, timeout):
+    """Offline replay label for the transition immediately before a hit edge.
+
+    Never consumed by Actor/WM forward; does not cross a reset boundary.
+    """
+    if not (contact_edge.shape==episode.shape==terminated.shape==timeout.shape):
+        raise ValueError('Preimpact label shape mismatch')
+    out=torch.zeros_like(contact_edge,dtype=torch.bool)
+    out[:-1]=contact_edge[1:].bool()&(episode[:-1]==episode[1:])&~(
+        terminated[:-1].bool()|timeout[:-1].bool())
+    return out&~contact_edge.bool()
+
+
 class ActionConditionedBallV1(nn.Module):
     schema = 'action-conditioned-racket-sweep-v1'
     feature_dim = 48
