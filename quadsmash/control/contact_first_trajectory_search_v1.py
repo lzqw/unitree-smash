@@ -907,9 +907,20 @@ class ContactFirstTrajectorySearchV1:
                     impact_result = None
                     if impact_evaluator is not None:
                         impact_result = impact_evaluator(metadata)
+                        metadata['coarse_impact_outcome'] = impact_result
                         if not impact_result.get('valid_return', False):
-                            rejected.append('impact_'+str(impact_result.get('rejection_reason', 'invalid')))
-                            continue
+                            # Only defer a near-contact geometric mismatch when a
+                            # full joint replay is mandatory. This is NOT contact
+                            # admission: actual predicted state must still pass
+                            # the original strict impact test below.
+                            gap = impact_result.get('contact_position_error_m', np.inf)
+                            defer = (cfg.require_joint_prefix and evaluator is not None
+                                and impact_result.get('rejection_reason') == 'ball_string_contact_position_mismatch'
+                                and np.isfinite(gap) and 0 <= gap <= cfg.position_tolerance_m)
+                            if not defer:
+                                rejected.append('impact_'+str(impact_result.get('rejection_reason', 'invalid')))
+                                continue
+                            metadata['coarse_contact_deferred_to_fullbody'] = True
                     accepted = True
                     evaluator_result = None
                     if evaluator is not None:
@@ -923,6 +934,14 @@ class ContactFirstTrajectorySearchV1:
                             reason = evaluator_result.get("rejection", "unspecified")
                             evaluator_rejection_reasons[str(reason)] += 1
                         continue
+                    actual_fields = ('actual_racket_position_world_m',
+                                     'actual_racket_normal_world',
+                                     'actual_racket_velocity_world_m_s')
+                    if impact_evaluator is not None and cfg.require_joint_prefix:
+                        if (not isinstance(evaluator_result, dict) or
+                                not all(k in evaluator_result for k in actual_fields)):
+                            rejected.append('missing_fullbody_impact_state')
+                            continue
                     if impact_evaluator is not None and isinstance(evaluator_result, dict):
                         if 'actual_racket_position_world_m' in evaluator_result:
                             actual_metadata = dict(metadata,

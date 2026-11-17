@@ -11,12 +11,12 @@ def _inputs():
     indices = [0, 64]
     rally = [
         {'env_id': 0, 'episode_index': 0, 'case_id': 'TRAIN-0',
-         'complete_smash': False},
+         'complete_smash': False, 'ground_init': True},
         {'env_id': 1, 'episode_index': 0, 'case_id': 'TRAIN-64',
-         'complete_smash': True},
+         'complete_smash': True, 'ground_init': True},
         # Must never substitute a later episode for the first.
         {'env_id': 0, 'episode_index': 1, 'case_id': 'TRAIN-0',
-         'complete_smash': True},
+         'complete_smash': True, 'ground_init': True},
     ]
     jump = [
         {'env_id': 1, 'qualified_jump_landed': True,
@@ -66,4 +66,15 @@ def test_bad_case_identity_or_missing_first_episode_is_rejected():
     rally = [row for row in rally if not
              (row['env_id'] == 1 and row['episode_index'] == 0)]
     with pytest.raises(ValueError, match='rally='):
+        first_episode_probe_rows(rally, jump, cases, indices)
+
+
+@pytest.mark.parametrize('ground', [False, None])
+def test_export_does_not_invent_ground_initialization(ground):
+    rally, jump, cases, indices = _inputs()
+    if ground is None:
+        del rally[0]['ground_init']
+    else:
+        rally[0]['ground_init'] = ground
+    with pytest.raises(ValueError, match='native ground initialization'):
         first_episode_probe_rows(rally, jump, cases, indices)

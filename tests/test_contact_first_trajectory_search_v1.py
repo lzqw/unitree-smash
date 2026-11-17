@@ -390,3 +390,52 @@ def test_invalid_outgoing_outcome_cannot_win_on_low_ik_error():
         ranking_cost=2.,native_execution=False))
     assert result.metadata['impact_outcome']['ranking_cost']==2.
     assert result.score>=2.
+
+@pytest.mark.parametrize('actual_valid', [True, False])
+def test_joint_near_contact_requires_strict_actual_impact(actual_valid):
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
+        require_joint_prefix=True))
+    calls = []
+    def impact(meta):
+        if meta.get('impact_robot_state') == 'actual':
+            calls.append('actual')
+            return dict(valid_return=actual_valid, ranking_cost=0.,
+                        rejection_reason='ball_string_contact_position_mismatch')
+        calls.append('coarse')
+        return dict(valid_return=False, contact_position_error_m=.01,
+                    rejection_reason='ball_string_contact_position_mismatch')
+    def physical(q, qd, index, meta):
+        return dict(accepted=True, impact_robot_state='actual',
+            actual_racket_position_world_m=meta['achieved_position_current_frame_m'],
+            actual_racket_normal_world=meta['achieved_normal_current_frame'],
+            actual_racket_velocity_world_m_s=meta['achieved_velocity_current_frame_m_s'])
+    if actual_valid:
+        result = planner.plan(**_inputs(), evaluator=physical, impact_evaluator=impact)
+        assert result.metadata['coarse_contact_deferred_to_fullbody']
+        assert result.metadata['impact_outcome']['valid_return']
+    else:
+        with pytest.raises(RuntimeError, match='predicted_actual_impact'):
+            planner.plan(**_inputs(), evaluator=physical, impact_evaluator=impact)
+    assert 'actual' in calls
+
+
+def test_joint_impact_cannot_accept_missing_physical_measurement():
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
+        require_joint_prefix=True))
+    with pytest.raises(RuntimeError, match='missing_fullbody_impact_state'):
+        planner.plan(**_inputs(), evaluator=lambda *args: True,
+            impact_evaluator=lambda _: dict(valid_return=True,ranking_cost=0.))
+
+
+def test_joint_gross_contact_error_never_reaches_physics():
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
+        require_joint_prefix=True))
+    def physical(*args):
+        pytest.fail('gross mismatch must be rejected before expensive replay')
+    with pytest.raises(RuntimeError, match='impact_ball_string_contact_position_mismatch'):
+        planner.plan(**_inputs(), evaluator=physical,
+            impact_evaluator=lambda _: dict(valid_return=False,contact_position_error_m=.1,
+                rejection_reason='ball_string_contact_position_mismatch'))

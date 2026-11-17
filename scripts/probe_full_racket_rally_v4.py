@@ -128,6 +128,9 @@ def main():
         from scripts.probe_rally_export_v1 import first_episode_probe_rows
         from quadsmash.control.full_racket_train_evaluation_v4 import summarize_training
         from scripts.compare_frozen_complete5_v2 import complete5_summary
+        # Preserve the native sources even if strict joining/scoring fails.
+        (args.output/'rally_records.raw.json').write_text(json.dumps(env.rally_records,indent=2)+'\n')
+        (args.output/'jump_records.raw.json').write_text(json.dumps(env.episode_records,indent=2)+'\n')
         rows=first_episode_probe_rows(env.rally_records,env.episode_records,cases,indices)
         (args.output/'episodes.json').write_text(json.dumps(rows,indent=2)+'\n')
         (args.output/'contacts.json').write_text(json.dumps(env.contact_records,indent=2)+'\n')

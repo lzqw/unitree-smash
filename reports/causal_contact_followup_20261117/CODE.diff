@@ -1,0 +1,571 @@
+diff --git a/quadsmash/control/contact_first_trajectory_search_v1.py b/quadsmash/control/contact_first_trajectory_search_v1.py
+index ac07ab2..81bd5ee 100644
+--- a/quadsmash/control/contact_first_trajectory_search_v1.py
++++ b/quadsmash/control/contact_first_trajectory_search_v1.py
+@@ -907,9 +907,20 @@ class ContactFirstTrajectorySearchV1:
+                     impact_result = None
+                     if impact_evaluator is not None:
+                         impact_result = impact_evaluator(metadata)
++                        metadata['coarse_impact_outcome'] = impact_result
+                         if not impact_result.get('valid_return', False):
+-                            rejected.append('impact_'+str(impact_result.get('rejection_reason', 'invalid')))
+-                            continue
++                            # Only defer a near-contact geometric mismatch when a
++                            # full joint replay is mandatory. This is NOT contact
++                            # admission: actual predicted state must still pass
++                            # the original strict impact test below.
++                            gap = impact_result.get('contact_position_error_m', np.inf)
++                            defer = (cfg.require_joint_prefix and evaluator is not None
++                                and impact_result.get('rejection_reason') == 'ball_string_contact_position_mismatch'
++                                and np.isfinite(gap) and 0 <= gap <= cfg.position_tolerance_m)
++                            if not defer:
++                                rejected.append('impact_'+str(impact_result.get('rejection_reason', 'invalid')))
++                                continue
++                            metadata['coarse_contact_deferred_to_fullbody'] = True
+                     accepted = True
+                     evaluator_result = None
+                     if evaluator is not None:
+@@ -923,6 +934,14 @@ class ContactFirstTrajectorySearchV1:
+                             reason = evaluator_result.get("rejection", "unspecified")
+                             evaluator_rejection_reasons[str(reason)] += 1
+                         continue
++                    actual_fields = ('actual_racket_position_world_m',
++                                     'actual_racket_normal_world',
++                                     'actual_racket_velocity_world_m_s')
++                    if impact_evaluator is not None and cfg.require_joint_prefix:
++                        if (not isinstance(evaluator_result, dict) or
++                                not all(k in evaluator_result for k in actual_fields)):
++                            rejected.append('missing_fullbody_impact_state')
++                            continue
+                     if impact_evaluator is not None and isinstance(evaluator_result, dict):
+                         if 'actual_racket_position_world_m' in evaluator_result:
+                             actual_metadata = dict(metadata,
+diff --git a/quadsmash/control/full_racket_rally_controller_v4.py b/quadsmash/control/full_racket_rally_controller_v4.py
+index 5af238f..9e40d53 100644
+--- a/quadsmash/control/full_racket_rally_controller_v4.py
++++ b/quadsmash/control/full_racket_rally_controller_v4.py
+@@ -37,6 +37,47 @@ def planning_world_pose(public, command_world):
+     return rotation, np.asarray(command_world)-rotation@public[760:763]
+ 
+ 
++
++def causal_shuttle_target_in_planning_frame(physics, initial_position_world,
++                                            initial_velocity_world,
++                                            reference_incoming_velocity_world,
++                                            world_from_planning, planning_origin_world,
++                                            desired_racket_velocity_planning,
++                                            duration_s):
++    """One candidate-time shuttle target, in the *fixed* planning frame.
++
++    The current intercept predictor supplies the causal shuttle state. Its
++    nominal intercept delta is already present in the propagated position,
++    so the legacy rally-controller prepose displacement MUST NOT be applied
++    again here. Intentional racket geometry offsets belong in the contact FK,
++    not in a second translation of the ball.
++    """
++    basis = np.asarray(world_from_planning, dtype=np.float64)
++    origin = np.asarray(planning_origin_world, dtype=np.float64)
++    initial_position = np.asarray(initial_position_world, dtype=np.float64)
++    initial_velocity = np.asarray(initial_velocity_world, dtype=np.float64)
++    incoming_reference = np.asarray(reference_incoming_velocity_world, dtype=np.float64)
++    racket_velocity = np.asarray(desired_racket_velocity_planning, dtype=np.float64)
++    if (basis.shape != (3, 3) or any(value.shape != (3,) for value in
++            (origin, initial_position, initial_velocity, incoming_reference, racket_velocity)) or
++            not all(np.isfinite(value).all() for value in
++                    (basis, origin, initial_position, initial_velocity,
++                     incoming_reference, racket_velocity))):
++        raise ValueError('Finite shuttle and planning-frame inputs required')
++    if not np.allclose(basis.T @ basis, np.eye(3), atol=2e-5):
++        raise ValueError('World-from-planning basis must be orthonormal')
++    ball_position, ball_velocity = propagate_ball_state(
++        initial_position, initial_velocity, duration_s, physics)
++    return dict(
++        # Retain planner's historical field names; their explicit contract
++        # is the fixed planning frame, not a changing future-base frame.
++        position_world_m=basis.T @ (ball_position - origin),
++        incoming_ball_velocity_world_m_s=basis.T @ ball_velocity,
++        velocity_world_m_s=racket_velocity + basis.T @ (
++            ball_velocity - incoming_reference),
++    )
++
++
+ def transported_body_acceleration(current, previous, current_basis,
+                                   previous_basis, delta_time, usable):
+     """Inertial finite-difference acceleration expressed in the current body.
+@@ -454,7 +495,6 @@ class FullRacketRallyControllerV4:
+                 initial_ball_velocity=plan['initial_velocity_mps']
+                 incoming_ball_velocity=plan['incoming_velocity_mps']
+                 command_world=np.array([1.10, 0.0, 1.80], dtype=np.float64)
+-                target_offsets=self.target_offset_world[ids].detach().cpu().numpy()
+                 impact_evaluators=[]
+                 impact_model=None
+                 if self.contact_first_planner.config.evaluate_impact_outcome:
+@@ -470,22 +510,19 @@ class FullRacketRallyControllerV4:
+                     p0=np.asarray(initial_ball_position[local], dtype=float)
+                     v0=np.asarray(initial_ball_velocity[local], dtype=float)
+                     v_ref=np.asarray(incoming_ball_velocity[local], dtype=float)
+-                    offset_body=basis.T@target_offsets[local]
+                     desired_body_velocity=desired_velocity[local].detach().cpu().numpy()
+                     normal_body=normal_target[local].detach().cpu().numpy()
+                     def target_state_fn(duration_s, basis=basis, root=root,
+                                         p0=p0, v0=v0, v_ref=v_ref,
+-                                        offset_body=offset_body,
+                                         desired_body_velocity=desired_body_velocity,
+                                         normal_body=normal_body):
+-                        ball_position, ball_velocity=propagate_ball_state(
+-                            p0, v0, duration_s, self.physics)
+-                        body_position=basis.T@(ball_position-root)+offset_body
+-                        body_velocity=desired_body_velocity+basis.T@(ball_velocity-v_ref)
+-                        return dict(position_world_m=body_position,
+-                                    incoming_ball_velocity_world_m_s=basis.T@ball_velocity,
+-                                    velocity_world_m_s=body_velocity,
+-                                    normal_world=normal_body)
++                        # DO NOT add the legacy plan.position_m - nominal
++                        # intercept delta: ball propagation already places
++                        # this candidate at the predicted interception point.
++                        target=causal_shuttle_target_in_planning_frame(
++                            self.physics, p0, v0, v_ref, basis, root,
++                            desired_body_velocity, duration_s)
++                        return dict(target, normal_world=normal_body)
+                     target_state_fns.append(target_state_fn)
+                     impact_fn=None
+                     if impact_model is not None:
+diff --git a/quadsmash/control/impact_outcome_evaluator_v1.py b/quadsmash/control/impact_outcome_evaluator_v1.py
+index e220076..5844aee 100644
+--- a/quadsmash/control/impact_outcome_evaluator_v1.py
++++ b/quadsmash/control/impact_outcome_evaluator_v1.py
+@@ -43,7 +43,9 @@ class ImpactOutcomeEvaluator:
+             predicted_target_landing=False, rejection_reason=None,
+             incoming_normal_speed=float((incoming-vr)@normal),
+             outgoing_velocity=None, predicted_impulse=None, reaction_impulse=None,
+-            net_clearance=None, landing_position=None)
++            net_clearance=None, landing_position=None,
++            contact_position_error_m=float(np.linalg.norm(p-(surface+radius*normal))),
++            contact_tolerance_m=self.tolerance)
+         def reject(reason):
+             result['rejection_reason'] = reason
+             return result
+diff --git a/scripts/probe_full_racket_rally_v4.py b/scripts/probe_full_racket_rally_v4.py
+index bcd90fa..e98e799 100644
+--- a/scripts/probe_full_racket_rally_v4.py
++++ b/scripts/probe_full_racket_rally_v4.py
+@@ -106,7 +106,8 @@ def main():
+                 if bool(finished.all()):break
+                 if stopping:break
+         first={}
+-        for row in env.rally_records:first.setdefault(row['env_id'],row)
++        for row in env.rally_records:
++            if row.get('episode_index') == 0:first.setdefault(row['env_id'],row)
+         np.save(args.output/'public_observations.npy',np.stack(observations))
+         np.save(args.output/'public_actions.npy',np.stack(actions))
+         np.save(args.output/'valid_first_episode_mask.npy',np.stack(masks))
+@@ -120,12 +121,29 @@ def main():
+             (args.output/'contacts.partial.json').write_text(json.dumps(env.contact_records,indent=2)+'\n')
+             (args.output/'causal_plans.partial.json').write_text(json.dumps(controller.logs,indent=2)+'\n')
+             return
+-        assert len(first)==args.count
+-        rows=[dict(first[i],case_id=cases[i]['case_id'],source_case_index=indices[i]) for i in range(args.count)]
++        # Match the native train evaluator: pair the actual first-episode
++        # jump record with the rally record, then invoke the original
++        # independent scorer. Never invent a missing jump or count a reset
++        # state's live metrics as the prior episode.
++        from scripts.probe_rally_export_v1 import first_episode_probe_rows
++        from quadsmash.control.full_racket_train_evaluation_v4 import summarize_training
++        from scripts.compare_frozen_complete5_v2 import complete5_summary
++        # Preserve the native sources even if strict joining/scoring fails.
++        (args.output/'rally_records.raw.json').write_text(json.dumps(env.rally_records,indent=2)+'\n')
++        (args.output/'jump_records.raw.json').write_text(json.dumps(env.episode_records,indent=2)+'\n')
++        rows=first_episode_probe_rows(env.rally_records,env.episode_records,cases,indices)
+         (args.output/'episodes.json').write_text(json.dumps(rows,indent=2)+'\n')
+         (args.output/'contacts.json').write_text(json.dumps(env.contact_records,indent=2)+'\n')
+         (args.output/'causal_plans.json').write_text(json.dumps(controller.logs,indent=2)+'\n')
+-        air=sum(r['airborne_string_hit'] and r['legal_initial_contact'] for r in rows)
++        protocol['_root']=str(ROOT)
++        independent=summarize_training(rows,cases,indices,protocol)
++        five=complete5_summary(rows,protocol)
++        if (independent['complete'] != sum(r['complete_smash'] for r in rows)
++                or five['complete8'] != independent['complete']):
++            raise ValueError('Probe native and independent scoring disagree')
++        (args.output/'complete5_breakdown.json').write_text(
++            json.dumps(five,indent=2)+'\n')
++        air=independent['airborne_contacts']
+         result=dict(kind='Native ball development probe; not formal400 acceptance',episodes=args.count,
+             complete=sum(r['complete_smash'] for r in rows),airborne_contacts=air,
+             contacts=sum(r['had_contact'] for r in rows),crossed_net=sum(r['crossed_net'] for r in rows),
+@@ -134,8 +152,16 @@ def main():
+             fault_counts={name:sum(r[name] for r in rows) for name in env.rally.flags if 'fault' in name or name=='engineering_body_crossing'},
+             policy_sha256=hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),asset_sha256=protocol['asset']['sha256'],
+             source_training_suite=suite,ground_initialization=True,reset_perturbations=False,
+-            physics_dt_s=cfg.sim.dt,formal_acceptance=False,old_passes_inherited=False)
+-        (args.output/'metrics.json').write_text(json.dumps(result,indent=2)+'\n')
++            physics_dt_s=cfg.sim.dt,evaluation_stage='teacher_debug',
++            formal_eligible=False,formal_acceptance=False,formal_cases_read=False,
++            old_passes_inherited=False,
++            complete5=five['complete5'],complete5_success_rate=five['complete5_rate'],
++            ball5_except_recovery=five['ball5_except_recovery'],
++            conditional_recovery_count=independent['conditional_recovery_count'],
++            conditional_recovery_rate=independent['conditional_recovery_rate'],
++            independent_original8_complete=independent['complete'],
++            scorer_validation='PASSED_original_independent_episode_and_complete5',
++            scoring_scope='first-episode frozen TRAIN development cases only')
+         result['executed_control_ticks']=tick+1
+         (args.output/'metrics.json').write_text(json.dumps(result,indent=2)+'\n')
+         (args.output/'completed.json').write_text(json.dumps(dict(env_steps=(tick+1)*args.count))+'\n')
+diff --git a/scripts/probe_rally_export_v1.py b/scripts/probe_rally_export_v1.py
+new file mode 100644
+index 0000000..a310e9b
+--- /dev/null
++++ b/scripts/probe_rally_export_v1.py
+@@ -0,0 +1,51 @@
++"""Lossless first-episode join for small native contact-development panels.
++
++The authoritative scorer requires the real JumpEnv.episode_records entry
++in addition to FullRacketEnvV4.rally_records. Never fabricate a jump result,
++infer it from a contact flag, or substitute a post-reset live state.
++"""
++
++
++def first_episode_probe_rows(rally_records, jump_records, cases, indices):
++    count = len(cases)
++    if not count or len(indices) != count or len(set(indices)) != count:
++        raise ValueError('Distinct indexed first-episode cases required')
++
++    first = {}
++    for row in rally_records:
++        lane = row.get('env_id')
++        if row.get('episode_index') != 0:
++            continue
++        if not isinstance(lane, int) or not 0 <= lane < count or lane in first:
++            raise ValueError('Invalid or repeated first-rally episode')
++        first[lane] = row
++
++    # JumpEnv stores rows in chronological completion order; unlike the rally
++    # records, these rows do not have a native episode_index. As in the formal
++    # evaluation entry, the first row for a lane is its first episode.
++    jumps = {}
++    for row in jump_records:
++        lane = row.get('env_id')
++        if not isinstance(lane, int) or not 0 <= lane < count:
++            raise ValueError('Invalid jump episode lane')
++        jumps.setdefault(lane, row)
++
++    expected = set(range(count))
++    if set(first) != expected or set(jumps) != expected:
++        missing_rally = sorted(expected-set(first))
++        missing_jump = sorted(expected-set(jumps))
++        raise ValueError(
++            f'Incomplete first-episode source: rally={missing_rally}, jump={missing_jump}')
++
++    rows = []
++    for lane in range(count):
++        row = first[lane]
++        if row.get('case_id') not in (None, cases[lane]['case_id']):
++            raise ValueError('Rally case identity differs from frozen case')
++        if row.get('ground_init') is not True:
++            raise ValueError('Missing or false native ground initialization')
++        rows.append(dict(
++            row, jump=dict(jumps[lane]), case_id=cases[lane]['case_id'],
++            source_training_index=indices[lane],
++            source_case_index=indices[lane]))
++    return rows
+diff --git a/scripts/replay_contact_candidate_gate_v1.py b/scripts/replay_contact_candidate_gate_v1.py
+new file mode 100644
+index 0000000..a82af1c
+--- /dev/null
++++ b/scripts/replay_contact_candidate_gate_v1.py
+@@ -0,0 +1,80 @@
++"""Offline gate replay on recorded causal public states; never a native success test."""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import numpy as np
++import torch
++from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4, planning_world_pose
++from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
++from scripts.causal_frozen_leg_prefix_v1 import CausalFrozenLegReferenceFactory
++from scripts.contact_first_fullbody_evaluator_v1 import ContactFirstFullBodyEvaluatorV1
++from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
++from scripts.whole_body_support_qp_v1 import PositionPDInterface
++
++
++def main():
++    parser=argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--input',type=Path,required=True)
++    parser.add_argument('--checkpoint',type=Path,required=True)
++    parser.add_argument('--interface',type=Path,required=True)
++    parser.add_argument('--output',type=Path,required=True)
++    args=parser.parse_args()
++    if args.output.exists():raise ValueError('Preserve prior replay output')
++    root=Path(__file__).resolve().parents[1]
++    observations=np.load(args.input/'public_observations.npy',mmap_mode='r')
++    # Stop at the first recorded planning event, selected without outcome labels.
++    old=json.loads((args.input/'causal_plans.json').read_text())
++    clock=old[0]['observation_clock_s'][0]
++    end=int(np.argmin(np.abs(observations[:,0,775]-clock)))+1
++    cfg=json.loads(args.interface.read_text())['interface']
++    interface=PositionPDInterface(**cfg)
++    authored=json.loads((root/'reports/G07_full_racket_v4/CPU_REPLAY_AUTHORED_JOINTS_0724.json').read_text())['defaults_before_neutral_arm_override']
++    order=json.loads((root/'configs/go2_piper_racket_landing_model_v1.json').read_text())['joint_order']
++    default=np.array([authored[n] for n in order]);default[12:]=json.loads((root/'configs/full_racket_reset_v4.json').read_text())['arm_joint_positions_rad']
++    default=torch.tensor(default,dtype=torch.float32);limits=torch.tensor(interface.limits,dtype=torch.float32)
++    checkpoint=torch.load(args.checkpoint,map_location='cpu',weights_only=False)
++    controller=FullRacketRallyControllerV4(checkpoint,observations.shape[1],'cpu')
++    physical=[];impacts=[]
++    def factory(lane,public,q,qd):
++        model=LoadedPinocchioModelV1();state=model.state_from_public(public,default.numpy())
++        rotation,origin=planning_world_pose(public,[1.1,0.,1.8])
++        legs=CausalFrozenLegReferenceFactory(controller.teacher,controller.parameters,
++            controller.contact_first_current_public,default,limits,controller.event_time,
++            controller.target_offset_world,lane,controller.physics,controller.contact_first_planner.config.dt_s)
++        def measure(s):
++            arm=torch.tensor(s.joint_position[12:],dtype=default.dtype)[None]
++            point,normal,jp,_=controller.teacher.kinematics(arm,controller.teacher.contact_offset)
++            point,normal,jp=[x[0].numpy().astype(float) for x in (point,normal,jp)]
++            R=s.root_rotation_world
++            velocity=R@(s.v[:3]+np.cross(s.v[3:6],point)+jp@s.joint_velocity[12:])
++            return rotation.T@(s.root_position_world+R@point-origin),rotation.T@R@normal,rotation.T@velocity
++        evaluator=ContactFirstFullBodyEvaluatorV1(interface_config=cfg,model=model,
++            initial_state=state,leg_reference_factory=legs,contact_prediction='unilateral_release',
++            record_state_trace=True,racket_measure_fn=measure)
++        def evaluate(*a):
++            result=evaluator(*a);physical.append(dict(lane=lane,result=result));return result
++        return evaluate
++    controller.set_contact_first_evaluator_factory(factory)
++    original=ImpactOutcomeEvaluator.evaluate
++    def recorded(self,*a,**kw):
++        result=original(self,*a,**kw);impacts.append(result.copy());return result
++    # Process-local read-only instrumentation, restored even on failure.
++    ImpactOutcomeEvaluator.evaluate=recorded
++    try:
++        with torch.inference_mode():
++            for tick in range(end):
++                controller.action({'policy':torch.tensor(np.array(observations[tick]))},default,limits)
++    finally:ImpactOutcomeEvaluator.evaluate=original
++    result=dict(scope='CPU gate replay; public reconstruction, no native truth or online execution',
++        finite_mass_refinement='NOT_EVALUATED in this offline adapter',
++        future_recorded_actions_read=False,source_ticks=end,training=False,native='NOT_RUN',
++        input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in
++            (args.input/'public_observations.npy',args.checkpoint,args.interface)},
++        plans=controller.logs,impact_calls=impacts,physical_calls=physical)
++    args.output.parent.mkdir(parents=True,exist_ok=True)
++    args.output.write_text(json.dumps(result,indent=2)+'\n')
++    print(json.dumps(dict(impact_calls=len(impacts),physical_calls=len(physical),
++        physical_accepted=sum(x['result']['accepted'] for x in physical),output=str(args.output))))
++
++if __name__=='__main__':main()
+diff --git a/tests/test_contact_first_base_transport_v1.py b/tests/test_contact_first_base_transport_v1.py
+index 8ea4964..87ccb4b 100644
+--- a/tests/test_contact_first_base_transport_v1.py
++++ b/tests/test_contact_first_base_transport_v1.py
+@@ -53,3 +53,67 @@ def test_world_pose_translation_pitch_and_twist_round_trip():
+     point=np.array([.3,.1,.4]);linear=np.array([.2,-.1,.6]);angular=np.array([.3,.5,-.2])
+     world_velocity=rotation@(linear+np.cross(angular,point))
+     np.testing.assert_allclose(basis.T@world_velocity,linear+np.cross(angular,point),atol=1e-12)
++
++
++def test_causal_shuttle_target_has_no_duplicate_nominal_intercept_offset():
++    """Reproduce the 100.23 mm failure in the production callback math."""
++    import numpy as np
++    from quadsmash.control.full_racket_rally_controller_v4 import (
++        causal_shuttle_target_in_planning_frame, planning_world_pose,
++    )
++    from quadsmash.control.contact_first_trajectory_search_v1 import (
++        rotation_current_from_future_from_rotvec,
++    )
++    from quadsmash.control.initial_intercept import propagate_ball_state
++
++    physics = {'wind_m_s': [0., 0., 0.],
++               'quadratic_drag_k_per_m': 0.025442307692307694}
++    rotation = rotation_current_from_future_from_rotvec(np.array([.2, -.3, .1]))
++    origin = np.array([.68, -.04, .25])
++    p0 = np.array([2.45, .16, 1.8])
++    v0 = np.array([-7.8, -.5, -3.6])
++    duration = .79
++    reference_incoming = np.array([-8.1, -.4, -3.9])
++    desired_racket_velocity = np.array([2.2, -.8, -.5])
++    command_world = np.array([1.1, 0., 1.8])
++    public = np.zeros(794)
++    public[6:9] = rotation.T @ [0., 0., -1.]
++    public[763:766] = rotation.T @ [1., 0., 0.]
++    public[760:763] = rotation.T @ (command_world - origin)
++    basis, root = planning_world_pose(public, command_world)
++    target = causal_shuttle_target_in_planning_frame(
++        physics, p0, v0, reference_incoming, basis, root,
++        desired_racket_velocity, duration)
++    ball, incoming = propagate_ball_state(p0, v0, duration, physics)
++    np.testing.assert_allclose(
++        root + basis @ target['position_world_m'], ball, atol=2e-12)
++    np.testing.assert_allclose(
++        basis @ target['incoming_ball_velocity_world_m_s'], incoming, atol=2e-12)
++    np.testing.assert_allclose(
++        target['velocity_world_m_s'],
++        desired_racket_velocity + basis.T @ (incoming-reference_incoming),
++        atol=2e-12)
++    # The frozen probe's legacy nominal-target displacement was ~100.23 mm.
++    # Adding it again must reproduce the error, never the production target.
++    legacy_offset = np.array([.10022794451986757, 0., 0.])
++    double_compensated = target['position_world_m'] + basis.T @ legacy_offset
++    assert np.linalg.norm(root + basis @ double_compensated - ball) > .100
++    later = causal_shuttle_target_in_planning_frame(
++        physics, p0, v0, reference_incoming, basis, root,
++        desired_racket_velocity, duration+.02)
++    later_ball, _ = propagate_ball_state(p0, v0, duration+.02, physics)
++    np.testing.assert_allclose(root + basis @ later['position_world_m'],
++                               later_ball, atol=2e-12)
++
++
++def test_causal_shuttle_target_rejects_incorrect_frame_shapes():
++    import numpy as np
++    import pytest
++    from quadsmash.control.full_racket_rally_controller_v4 import (
++        causal_shuttle_target_in_planning_frame,
++    )
++    physics = {'wind_m_s':[0.,0.,0.], 'quadratic_drag_k_per_m':0.}
++    with pytest.raises(ValueError, match='planning-frame inputs'):
++        causal_shuttle_target_in_planning_frame(
++            physics, np.zeros(3), np.zeros(3), np.zeros(3),
++            np.ones((2, 3)), np.zeros(3), np.zeros(3), .2)
+diff --git a/tests/test_contact_first_trajectory_search_v1.py b/tests/test_contact_first_trajectory_search_v1.py
+index 8569262..a011909 100644
+--- a/tests/test_contact_first_trajectory_search_v1.py
++++ b/tests/test_contact_first_trajectory_search_v1.py
+@@ -390,3 +390,52 @@ def test_invalid_outgoing_outcome_cannot_win_on_low_ik_error():
+         ranking_cost=2.,native_execution=False))
+     assert result.metadata['impact_outcome']['ranking_cost']==2.
+     assert result.score>=2.
++
++@pytest.mark.parametrize('actual_valid', [True, False])
++def test_joint_near_contact_requires_strict_actual_impact(actual_valid):
++    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
++        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
++        require_joint_prefix=True))
++    calls = []
++    def impact(meta):
++        if meta.get('impact_robot_state') == 'actual':
++            calls.append('actual')
++            return dict(valid_return=actual_valid, ranking_cost=0.,
++                        rejection_reason='ball_string_contact_position_mismatch')
++        calls.append('coarse')
++        return dict(valid_return=False, contact_position_error_m=.01,
++                    rejection_reason='ball_string_contact_position_mismatch')
++    def physical(q, qd, index, meta):
++        return dict(accepted=True, impact_robot_state='actual',
++            actual_racket_position_world_m=meta['achieved_position_current_frame_m'],
++            actual_racket_normal_world=meta['achieved_normal_current_frame'],
++            actual_racket_velocity_world_m_s=meta['achieved_velocity_current_frame_m_s'])
++    if actual_valid:
++        result = planner.plan(**_inputs(), evaluator=physical, impact_evaluator=impact)
++        assert result.metadata['coarse_contact_deferred_to_fullbody']
++        assert result.metadata['impact_outcome']['valid_return']
++    else:
++        with pytest.raises(RuntimeError, match='predicted_actual_impact'):
++            planner.plan(**_inputs(), evaluator=physical, impact_evaluator=impact)
++    assert 'actual' in calls
++
++
++def test_joint_impact_cannot_accept_missing_physical_measurement():
++    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
++        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
++        require_joint_prefix=True))
++    with pytest.raises(RuntimeError, match='missing_fullbody_impact_state'):
++        planner.plan(**_inputs(), evaluator=lambda *args: True,
++            impact_evaluator=lambda _: dict(valid_return=True,ranking_cost=0.))
++
++
++def test_joint_gross_contact_error_never_reaches_physics():
++    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
++        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
++        require_joint_prefix=True))
++    def physical(*args):
++        pytest.fail('gross mismatch must be rejected before expensive replay')
++    with pytest.raises(RuntimeError, match='impact_ball_string_contact_position_mismatch'):
++        planner.plan(**_inputs(), evaluator=physical,
++            impact_evaluator=lambda _: dict(valid_return=False,contact_position_error_m=.1,
++                rejection_reason='ball_string_contact_position_mismatch'))
+diff --git a/tests/test_probe_rally_export_v1.py b/tests/test_probe_rally_export_v1.py
+new file mode 100644
+index 0000000..b9fad00
+--- /dev/null
++++ b/tests/test_probe_rally_export_v1.py
+@@ -0,0 +1,80 @@
++"""CPU tests for production small-panel first-episode scoring inputs."""
++from copy import deepcopy
++
++import pytest
++
++from scripts.probe_rally_export_v1 import first_episode_probe_rows
++
++
++def _inputs():
++    cases = [{'case_id': 'TRAIN-0'}, {'case_id': 'TRAIN-64'}]
++    indices = [0, 64]
++    rally = [
++        {'env_id': 0, 'episode_index': 0, 'case_id': 'TRAIN-0',
++         'complete_smash': False, 'ground_init': True},
++        {'env_id': 1, 'episode_index': 0, 'case_id': 'TRAIN-64',
++         'complete_smash': True, 'ground_init': True},
++        # Must never substitute a later episode for the first.
++        {'env_id': 0, 'episode_index': 1, 'case_id': 'TRAIN-0',
++         'complete_smash': True, 'ground_init': True},
++    ]
++    jump = [
++        {'env_id': 1, 'qualified_jump_landed': True,
++         'stable_recovery': True},
++        {'env_id': 0, 'qualified_jump_landed': False,
++         'stable_recovery': False},
++        {'env_id': 0, 'qualified_jump_landed': True,
++         'stable_recovery': True},
++    ]
++    return rally, jump, cases, indices
++
++
++def test_native_first_episode_requires_original_jump_and_rally_records():
++    rally, jump, cases, indices = _inputs()
++    before_rally, before_jump = deepcopy(rally), deepcopy(jump)
++    rows = first_episode_probe_rows(rally, jump, cases, indices)
++    assert [r['source_training_index'] for r in rows] == [0, 64]
++    assert [r['source_case_index'] for r in rows] == [0, 64]
++    assert [r['case_id'] for r in rows] == ['TRAIN-0', 'TRAIN-64']
++    assert [r['episode_index'] for r in rows] == [0, 0]
++    assert [r['jump']['qualified_jump_landed'] for r in rows] == [False, True]
++    assert [r['ground_init'] for r in rows] == [True, True]
++    assert not rows[0]['complete_smash']
++    assert rally == before_rally and jump == before_jump
++
++
++def test_missing_jump_fails_without_synthesizing_zero_or_false():
++    rally, jump, cases, indices = _inputs()
++    jump = [row for row in jump if row['env_id'] == 0]
++    with pytest.raises(ValueError, match='jump='):
++        first_episode_probe_rows(rally, jump, cases, indices)
++
++
++def test_duplicate_first_rally_record_is_not_silently_replaced():
++    rally, jump, cases, indices = _inputs()
++    rally.insert(1, deepcopy(rally[0]))
++    with pytest.raises(ValueError, match='repeated first-rally'):
++        first_episode_probe_rows(rally, jump, cases, indices)
++
++
++def test_bad_case_identity_or_missing_first_episode_is_rejected():
++    rally, jump, cases, indices = _inputs()
++    rally[0]['case_id'] = 'WRONG'
++    with pytest.raises(ValueError, match='case identity'):
++        first_episode_probe_rows(rally, jump, cases, indices)
++    rally, jump, cases, indices = _inputs()
++    rally = [row for row in rally if not
++             (row['env_id'] == 1 and row['episode_index'] == 0)]
++    with pytest.raises(ValueError, match='rally='):
++        first_episode_probe_rows(rally, jump, cases, indices)
++
++
++@pytest.mark.parametrize('ground', [False, None])
++def test_export_does_not_invent_ground_initialization(ground):
++    rally, jump, cases, indices = _inputs()
++    if ground is None:
++        del rally[0]['ground_init']
++    else:
++        rally[0]['ground_init'] = ground
++    with pytest.raises(ValueError, match='native ground initialization'):
++        first_episode_probe_rows(rally, jump, cases, indices)

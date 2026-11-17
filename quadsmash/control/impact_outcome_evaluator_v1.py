@@ -43,7 +43,9 @@ class ImpactOutcomeEvaluator:
             predicted_target_landing=False, rejection_reason=None,
             incoming_normal_speed=float((incoming-vr)@normal),
             outgoing_velocity=None, predicted_impulse=None, reaction_impulse=None,
-            net_clearance=None, landing_position=None)
+            net_clearance=None, landing_position=None,
+            contact_position_error_m=float(np.linalg.norm(p-(surface+radius*normal))),
+            contact_tolerance_m=self.tolerance)
         def reject(reason):
             result['rejection_reason'] = reason
             return result

@@ -42,8 +42,10 @@ def first_episode_probe_rows(rally_records, jump_records, cases, indices):
         row = first[lane]
         if row.get('case_id') not in (None, cases[lane]['case_id']):
             raise ValueError('Rally case identity differs from frozen case')
+        if row.get('ground_init') is not True:
+            raise ValueError('Missing or false native ground initialization')
         rows.append(dict(
             row, jump=dict(jumps[lane]), case_id=cases[lane]['case_id'],
             source_training_index=indices[lane],
-            source_case_index=indices[lane], ground_init=True))
+            source_case_index=indices[lane]))
     return rows
