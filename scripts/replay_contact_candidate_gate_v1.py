@@ -49,6 +49,7 @@ def main():
         controller.contact_first_planner.config=replace(controller.contact_first_planner.config,inverse_impact_targets=True,reachable_impact_targets=args.reachable_impact,bounded_replanning=args.replanning,position_anchored_search=args.anchored,velocity_aware_pose=args.velocity_aware)
     controller.contact_first_offline_diagnostic=bool(args.anchored)
     physical=[];impacts=[];fallback_audit=[];bundles=[]
+    physically_accepted_pending=[]  # No export until FINAL chosen-plan impact passes.
     frozen_inputs={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in
         (args.input/'public_observations.npy',args.checkpoint,args.interface)}
     def factory(lane,public,q,qd):
@@ -74,15 +75,16 @@ def main():
             result=evaluator(*a)
             physical.append(dict(lane=lane,result=result,metadata=a[3],arm_sequence_rad=np.asarray(a[0]).tolist()))
             if result.get('accepted'):
-                from scripts.offline_reference_bundle_v1 import write_candidate
-                path=args.output.parent/(args.output.stem+'_candidates')/f'lane{lane}_call{len(physical)}'
-                write_candidate(path,final_targets_rad=result['replayed_target_sequence_rad'],
-                    prior_final_target_rad=interface.limits[:,0]+.5*(public[-18:]+1)*np.diff(interface.limits,axis=1)[:,0],
-                    state_q=state.q,state_v=state.v,control_tick=round(float(public[775])/.01),
-                    contact_index=int(a[2]),limits=interface.limits,input_hashes=frozen_inputs,
-                    controller_parameters=controller.parameters[lane].detach().cpu().tolist(),
-                    prediction_contract=result['prediction_contract'],cpu_prediction_valid=True,state_source='public_reconstruction')
-                bundles.append(str(path))
+                # A FULLBODY pass is only an intermediate candidate; the
+                # planner may reject its terminal actual-string/return result.
+                # Store this snapshot without writing any reference archive.
+                physically_accepted_pending.append(dict(
+                    lane=lane,result=result,contact_index=int(a[2]),
+                    initial_q=state.q.copy(),initial_v=state.v.copy(),
+                    clock_s=float(public[775]),
+                    prior_final_target_rad=(interface.limits[:,0]+
+                        .5*(public[-18:]+1)*np.diff(interface.limits,axis=1)[:,0]),
+                    controller_parameters=controller.parameters[lane].detach().cpu().tolist()))
             return result
         return evaluate
     controller.set_contact_first_evaluator_factory(factory)
@@ -103,6 +105,45 @@ def main():
                     fallback_audit.append(dict(tick=tick,frozen_fallback_state_drift=drift))
                     if drift:raise RuntimeError('Retry altered frozen fallback parameters')
     finally:ImpactOutcomeEvaluator.evaluate=original
+    # Export ONLY a plan actually selected by the controller after FINAL impact
+    # validation, matched to the exact physical 18D terminal prefix. Earlier
+    # callbacks passing dynamics alone must never become teacher bundles.
+    from scripts.offline_reference_bundle_v1 import (
+        require_final_trajectory_admission,write_candidate)
+    for lane in range(observations.shape[1]):
+        if not bool(controller.contact_first_plan_valid[lane].item()):
+            continue
+        if not bool(controller.contact_first_joint_valid[lane].item()):
+            raise ValueError('Accepted offline plan lacks fully-owned 18D prefix')
+        selected_log=next((row for row in reversed(controller.contact_first_plan_log)
+                           if int(row['lane'])==lane and row.get('accepted') is True),None)
+        if selected_log is None:
+            raise ValueError('Selected joint prefix lacks final planner admission log')
+        count=int(selected_log['contact_index'])
+        selected=(controller.contact_first_joint_targets[lane,:count]
+                  .detach().cpu().numpy().astype(float))
+        matches=[]
+        for pending in physically_accepted_pending:
+            if pending['lane']!=lane or pending['contact_index']!=count:
+                continue
+            replayed=np.asarray(pending['result']['replayed_target_sequence_rad'],dtype=float)
+            if (replayed.shape==selected.shape and
+                    np.max(np.abs(replayed-selected),initial=0.)<=2e-6):
+                matches.append(pending)
+        if len(matches)!=1:
+            raise ValueError('Chosen 18D prefix has no unique physically verified provenance')
+        admitted=matches[0]
+        require_final_trajectory_admission(selected_log,admitted['result'])
+        path=args.output.parent/(args.output.stem+'_candidates')/f'lane{lane}_final_verified'
+        write_candidate(path,final_targets_rad=admitted['result']['replayed_target_sequence_rad'],
+            prior_final_target_rad=admitted['prior_final_target_rad'],
+            state_q=admitted['initial_q'],state_v=admitted['initial_v'],
+            control_tick=round(admitted['clock_s']/.01),
+            contact_index=count,limits=interface.limits,input_hashes=frozen_inputs,
+            controller_parameters=admitted['controller_parameters'],
+            prediction_contract=admitted['result']['prediction_contract'],
+            cpu_prediction_valid=True,state_source='public_reconstruction')
+        bundles.append(str(path))
     result=dict(scope='CPU gate replay; public reconstruction, no native truth or online execution',
         finite_mass_refinement='NOT_EVALUATED in this offline adapter',
         prediction_contract=dict(version='implicit_contact_diagnostic_v2',substeps=args.prediction_substeps,
