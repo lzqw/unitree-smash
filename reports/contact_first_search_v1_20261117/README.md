@@ -10,8 +10,11 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
   - DTG event-compatible target position/normal/velocity inputs;
   - moving-base velocity compensation, including base angular velocity crossed with racket offset;
   - six-joint damped task inverse for racket position and face normal;
+  - optional bounded Gauss-Newton relinearization through the real six-joint
+    forward-kinematics callback;
   - Hermite position/velocity trajectory to the contact state;
   - physical joint/velocity/step prechecks;
+  - explicit terminal position/normal/velocity residual rejection;
   - optional full-body evaluator callback, with contact-prefix acceptance only.
 - `quadsmash/control/full_racket_rally_controller_v4.py`
   - opt-in `seed.contact_first_search` configuration;
@@ -25,4 +28,8 @@ The planner does not use future simulator state, TRAIN case IDs, learned action 
 
 This is a trajectory generator and Approach integration hook, not a completed native performance claim. The full-body predictor callback must be supplied for physical admission; without it the planner only performs kinematic and actuator prechecks. No native evaluation was started in this implementation turn.
 
-The planner is intentionally deterministic and low-dimensional, but it is not a replacement for the existing full-body WBC or Recovery controller.
+The planner is intentionally deterministic and low-dimensional, but it is not a replacement for the existing full-body WBC or Recovery controller.  With a forward-kinematics callback it relinearizes at the proposed six-joint contact state; without one it applies the supplied Jacobian exactly once.  A plan with a large terminal task residual is rejected instead of being silently accepted.
+
+The actual `FullRacketKinematicsV4` callback was exercised on CPU and accepted a
+32-node plan (`KINEMATICS_CALLBACK_SMOKE.json`); this is a controller smoke only,
+not an Isaac/native hit-rate result.

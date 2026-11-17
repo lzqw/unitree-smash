@@ -65,6 +65,37 @@ def test_base_velocity_is_removed_once_from_joint_velocity_target():
     assert result.qd_rad_s[result.contact_index, 0] == pytest.approx(.6, abs=2e-3)
 
 
+def test_forward_kinematics_callback_relinearizes_before_acceptance():
+    calls = []
+
+    def forward_kinematics(q):
+        calls.append(q.copy())
+        position = np.array([np.sin(q[0]), q[1], q[2]])
+        jacobian = np.zeros((3, 6))
+        jacobian[0, 0] = np.cos(q[0])
+        jacobian[1, 1] = 1.0
+        jacobian[2, 2] = 1.0
+        normal = np.array([0., 0., 1.])
+        normal_jacobian = np.zeros((3, 6))
+        return position, normal, jacobian, normal_jacobian
+
+    inputs = _inputs()
+    inputs.update(
+        racket_position_world_m=np.zeros(3),
+        target_position_world_m=np.array([np.sin(.2), 0., 0.]),
+        target_velocity_world_m_s=np.array([.3, 0., 0.]),
+        position_jacobian=np.c_[np.eye(3), np.zeros((3, 3))],
+        normal_jacobian=np.zeros((3, 6)),
+    )
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
+        kinematic_iterations=4, max_iteration_step_rad=.25))
+    result = planner.plan(**inputs, kinematics_fn=forward_kinematics)
+    assert len(calls) == 4
+    assert result.position_error_m < 1e-3
+    assert result.metadata['kinematic_iterations'] == 4
+
+
 def test_full_body_evaluator_can_reject_candidates_without_partial_acceptance():
     planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
         horizon_steps=32, contact_time_offsets_s=(-.02, 0., .02), velocity_scales=(.8, 1., 1.2)))

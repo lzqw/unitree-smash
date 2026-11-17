@@ -116,6 +116,11 @@ class FullRacketRallyControllerV4:
         for local,lane in enumerate(ids.tolist()):
             contact_time=float(event_time[local].item()-public[local,775])
             try:
+                def kinematics_fn(q):
+                    q_tensor=torch.as_tensor(q,device=actual.device,dtype=actual.dtype)[None]
+                    pose=self.teacher.kinematics(q_tensor,self.teacher.contact_offset)
+                    return tuple(value[0].detach().cpu().numpy() for value in pose)
+
                 result=self.contact_first_planner.plan(
                     q_rad=actual[local].detach().cpu().numpy(),
                     qd_rad_s=np.zeros(6),
@@ -132,6 +137,7 @@ class FullRacketRallyControllerV4:
                     racket_offset_world_m=point[local].detach().cpu().numpy(),
                     lower_rad=q_limits[:,0], upper_rad=q_limits[:,1],
                     velocity_limits_rad_s=np.full(6,cfg.arm_velocity_limit_rad_s),
+                    kinematics_fn=kinematics_fn,
                 )
             except (ValueError, RuntimeError, FloatingPointError) as exc:
                 self.contact_first_plan_valid[lane]=False

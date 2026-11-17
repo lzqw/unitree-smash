@@ -39,6 +39,8 @@ class ContactFirstSearchConfig:
     normal_weight: float = 0.30
     normal_rate_gain: float = 2.0
     arm_velocity_limit_rad_s: float = 5.0
+    kinematic_iterations: int = 3
+    max_iteration_step_rad: float = 0.25
     position_tolerance_m: float = 0.035
     normal_tolerance: float = 0.12
     velocity_tolerance_m_s: float = 0.75
@@ -56,6 +58,10 @@ class ContactFirstSearchConfig:
             raise ValueError("Positive task damping and normal weight required")
         if not math.isfinite(self.arm_velocity_limit_rad_s) or self.arm_velocity_limit_rad_s <= 0.0:
             raise ValueError("Positive arm velocity limit required")
+        if self.kinematic_iterations < 1 or self.kinematic_iterations > 8:
+            raise ValueError("Kinematic iterations must be in [1, 8]")
+        if not math.isfinite(self.max_iteration_step_rad) or self.max_iteration_step_rad <= 0.0:
+            raise ValueError("Positive kinematic iteration step required")
         return self
 
 
@@ -200,7 +206,8 @@ class ContactFirstTrajectorySearchV1:
              contact_time_s, base_linear_velocity_world_m_s=(0.0, 0.0, 0.0),
              base_angular_velocity_world_rad_s=(0.0, 0.0, 0.0),
              racket_offset_world_m=(0.0, 0.0, 0.0), lower_rad, upper_rad,
-             velocity_limits_rad_s, evaluator: Optional[Callable] = None):
+             velocity_limits_rad_s, evaluator: Optional[Callable] = None,
+             kinematics_fn: Optional[Callable] = None):
         data = _validate_vectors(
             q_rad, qd_rad_s, position_jacobian, normal_jacobian,
             racket_position_world_m, racket_normal_world,
@@ -214,12 +221,44 @@ class ContactFirstTrajectorySearchV1:
         cfg = self.config
         racket_normal = racket_normal / max(np.linalg.norm(racket_normal), 1e-12)
         target_normal = target_normal / max(np.linalg.norm(target_normal), 1e-12)
-        task = np.vstack((jp, cfg.normal_weight * jn))
+        q_contact = q0.copy()
+        current_pos, current_normal = racket_pos.copy(), racket_normal.copy()
+        current_jp, current_jn = jp.copy(), jn.copy()
+        # Without a forward-kinematics callback the supplied Jacobian is the
+        # complete linear model, so applying the same correction repeatedly
+        # would over-shoot the terminal task.  Re-linearize only when the
+        # caller can evaluate the updated configuration.
+        iteration_count = cfg.kinematic_iterations if kinematics_fn is not None else 1
+        for _ in range(iteration_count):
+            current_normal = current_normal / max(np.linalg.norm(current_normal), 1e-12)
+            task = np.vstack((current_jp, cfg.normal_weight * current_jn))
+            inverse = _damped_inverse(task, cfg.damping)
+            position_error = target_pos - current_pos
+            normal_error = target_normal - current_normal
+            q_delta = inverse @ np.r_[position_error, cfg.normal_weight * normal_error]
+            q_delta = np.clip(q_delta, -cfg.max_iteration_step_rad,
+                              cfg.max_iteration_step_rad)
+            q_contact = np.clip(q_contact + q_delta, lower, upper)
+            if kinematics_fn is not None:
+                values = kinematics_fn(q_contact.copy())
+                if not isinstance(values, (tuple, list)) or len(values) != 4:
+                    raise ValueError("kinematics_fn must return position, normal, and two Jacobians")
+                candidate_position = np.asarray(values[0], dtype=float)
+                candidate_normal = np.asarray(values[1], dtype=float)
+                candidate_jp = np.asarray(values[2], dtype=float)
+                candidate_jn = np.asarray(values[3], dtype=float)
+                _validate_vectors(
+                    q_contact, np.zeros(6), candidate_jp, candidate_jn,
+                    candidate_position, candidate_normal, target_pos,
+                    target_normal, target_velocity, base_linear, base_angular,
+                    racket_offset, lower, upper, velocity_limits)
+                current_pos, current_normal = candidate_position, candidate_normal
+                current_jp, current_jn = candidate_jp, candidate_jn
+        current_normal = current_normal / max(np.linalg.norm(current_normal), 1e-12)
+        task = np.vstack((current_jp, cfg.normal_weight * current_jn))
         inverse = _damped_inverse(task, cfg.damping)
-        position_error = target_pos - racket_pos
-        normal_error = target_normal - racket_normal
-        q_delta = inverse @ np.r_[position_error, cfg.normal_weight * normal_error]
-        q_contact = np.clip(q0 + q_delta, lower, upper)
+        position_error = target_pos - current_pos
+        normal_error = target_normal - current_normal
         # The base contributes to the racket point velocity.  Remove it once,
         # matching the moving-base compensation used by the Approach teacher.
         base_point_velocity = base_linear + np.cross(base_angular, racket_offset)
@@ -277,10 +316,15 @@ class ContactFirstTrajectorySearchV1:
                     continue
                 # Linearized terminal diagnostics are deliberately separate
                 # from the physical evaluator and never replace it.
-                achieved_pos = racket_pos + jp @ (q_contact - q0)
-                achieved_normal = racket_normal + jn @ (q_contact - q0)
-                achieved_normal /= max(np.linalg.norm(achieved_normal), 1e-12)
-                achieved_velocity = base_point_velocity + jp @ qd1
+                if kinematics_fn is None:
+                    achieved_pos = racket_pos + jp @ (q_contact - q0)
+                    achieved_normal = racket_normal + jn @ (q_contact - q0)
+                    achieved_normal /= max(np.linalg.norm(achieved_normal), 1e-12)
+                    achieved_jp = jp
+                else:
+                    achieved_pos, achieved_normal = current_pos, current_normal
+                    achieved_jp = current_jp
+                achieved_velocity = base_point_velocity + achieved_jp @ qd1
                 position_error_norm = float(np.linalg.norm(target_pos - achieved_pos))
                 normal_error_norm = float(np.linalg.norm(target_normal - achieved_normal))
                 velocity_error_norm = float(np.linalg.norm(target_velocity - achieved_velocity))
@@ -301,6 +345,7 @@ class ContactFirstTrajectorySearchV1:
                     normal_error=normal_error_norm,
                     velocity_error_m_s=velocity_error_norm,
                     metadata=dict(metadata,
+                                  kinematic_iterations=iteration_count,
                                   evaluator=evaluator_result,
                                   rejected_before_selection=tuple(rejected)))
                 if best is None or candidate.score < best.score:
