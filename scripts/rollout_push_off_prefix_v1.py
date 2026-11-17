@@ -16,10 +16,11 @@ from scripts.push_off_support_qp_v1 import PushOffSupportQPV1
 from scripts.audit_prediction_contact_geometry_v2 import racket_contact_state
 from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
 from quadsmash.physics.full_racket_v4 import load_racket
+from quadsmash.control.push_off_window_v1 import PushOffWindowV1
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--contact-window',action='store_true');a=p.parse_args()
     if a.output.exists():raise ValueError('Preserve prior attempts')
     root=Path(__file__).resolve().parents[1]
     source=root/'reports/push_off_task_20261118/DIAGNOSED.json';seed=json.loads(source.read_text())
@@ -39,11 +40,13 @@ def main():
         initial_witness=geometry.minimum_witness(state.q)
         if initial_witness['gap_m'] < -1e-6:raise ValueError('Initial nonfoot geometry violation')
         delta=np.asarray(request['requested_extra_com_acceleration_world']);start=time.perf_counter()
+        window=PushOffWindowV1(len(commands)) if a.contact_window else None
         for node,nominal in enumerate(commands):
+            decision=(window.step(node,state.contacts) if window else dict(enabled=node<8 and bool(state.contacts.any()),phase='legacy_fixed_window'))
             before=model.snapshot(state.q,state.v)
             try:
                 baseline=predictor(model,interface,copy.deepcopy(state),nominal.copy(),duration_s=.01,substeps=160,enforce_joint_stops=True)
-                if node<8 and state.contacts.any():
+                if decision['enabled']:
                     after=model.snapshot(baseline['state'].q,baseline['state'].v)
                     plan=qp.propose(state,nominal,(baseline['state'].v-state.v)/.01,
                         (after['com_velocity_world']-before['com_velocity_world'])/.01,delta,np.zeros(3),phase='PUSH_OFF')
@@ -62,7 +65,7 @@ def main():
                 if bad:failure=dict(node=node,kind='path_violation',violations=bad);break
                 adopted+=int(plan['accepted']);state=chosen['state']
                 rows.append(dict(node=node,q=state.q,v=state.v,contacts=state.contacts,final_target_rad=target,
-                    elapsed_s=(node+1)*.01,qp=plan,diagnostics=diagnostics,command_error_rad=command_error,arm_tracking_error_rad=tracking))
+                    elapsed_s=(node+1)*.01,window=decision,qp=plan,diagnostics=diagnostics,command_error_rad=command_error,arm_tracking_error_rad=tracking))
             except (ValueError,np.linalg.LinAlgError) as error:
                 failure=dict(node=node,kind='MODEL_UNCERTAIN',error=str(error));break
         point,normal,velocity=racket_contact_state(model,state.q,state.v,np.asarray(metadata['contact_point_local'])+np.array([metadata['task_physics']['collision_radius_m'],0,0]))
@@ -82,7 +85,8 @@ def main():
         ball_valid=bool(impact and all(impact.get(k) is True for k in
             ('contact_feasible','legal_return_predicted','attack5_predicted','target_landing_predicted')))
         results.append(dict(lane=request['lane'],requested_delta_com_acceleration_world=delta,
-            support_window_ticks=8,adopted_qp_commands=adopted,steps=len(rows),required_steps=len(commands),
+            support_window_ticks=(None if a.contact_window else 8),
+            support_window_mode=('causal_contact_latched' if a.contact_window else 'legacy_fixed8'),adopted_qp_commands=adopted,steps=len(rows),required_steps=len(commands),
             path_valid=path_valid,failure=failure,terminal_errors=errors,
             final_root_position=state.q[:3],trajectory=rows,seconds=time.perf_counter()-start,
             FULLBODY_PREDICTION_VALID=bool(terminal_pass and ball_valid),terminal_contact_passed=bool(terminal_pass),
