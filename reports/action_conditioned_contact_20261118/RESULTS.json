@@ -1,0 +1,88 @@
+{
+  "source_sha256": "74d1c56fd8f9c5b0266cc13e90b7a1695b54cd6d1001bb9d502d83eb8dfe460f",
+  "observations_sha256": "18eef3aa0fb74200a983b5814d255e5d7150ee899906390ba476395c7c79efe0",
+  "scope": "conditional offline optimization, not independent fullbody validation",
+  "future_native_states_read": false,
+  "training": false,
+  "rows": [
+    {
+      "lane": 1,
+      "clock_s": 2.490000009536743,
+      "duration_s": 0.29,
+      "current_observation_tick": 249,
+      "previous_terminal_error_m": 0.7640639716804974,
+      "transport": {
+        "rotation_current_from_future": [
+          [
+            0.7784560067128217,
+            0.06712735381214455,
+            -0.6240994824408255
+          ],
+          [
+            -0.19312292892801217,
+            0.9716504521453082,
+            -0.13637790571820602
+          ],
+          [
+            0.5972518563679757,
+            0.2266921198806811,
+            0.7693509620771328
+          ]
+        ],
+        "translation_current_m": [
+          0.0287473334591445,
+          0.01522336276612087,
+          0.30591939070235136
+        ],
+        "linear_velocity_current_m_s": [
+          0.4219956298192411,
+          0.11531551102016369,
+          0.15032111261360054
+        ],
+        "angular_velocity_current_rad_s": [
+          1.394611678438435,
+          -2.53781097625474,
+          0.27251185628237895
+        ],
+        "source": "causal_action_conditioned_model",
+        "command_context_sha256": "05d6c2e283e6f201d1f825d53b0f690c492ede08ee2f747406f27c4add732347",
+        "execution_valid": false,
+        "requires_full_revalidation": true
+      },
+      "target_future_body_m": [
+        0.7846273618472125,
+        0.3495961322281262,
+        1.1379103245722846
+      ],
+      "position_anchor": {
+        "q_anchor": [
+          -2.6179915226722463,
+          0.7254630119301985,
+          -2.1297955301103184,
+          1.473166136059392,
+          0.90637087781427,
+          2.0943996906272937
+        ],
+        "position_anchor": [
+          0.6384209394454956,
+          0.28477194905281067,
+          0.9526114463806152
+        ],
+        "normal_anchor": [
+          0.2832263112068176,
+          -0.7412117719650269,
+          0.608595073223114
+        ],
+        "position_error_anchor_m": 0.24477370556280598,
+        "solver_success": false,
+        "nfev": 48,
+        "position_seconds": 0.028621785808354616
+      },
+      "changed_command_requires_revalidation": true,
+      "fullbody_prediction_valid": false,
+      "native_execution": false,
+      "valid_teacher_reference": false,
+      "rejection": "ACTION_CONDITIONED_POSITION_ANCHOR_OUTSIDE_FINE_BUDGET"
+    }
+  ]
+}
