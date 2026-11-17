@@ -97,7 +97,8 @@ def optimize_impact_feasible_rate(
             output_error = float(np.linalg.norm(v_out - outgoing_target))
             if best_diagnostic is None or output_error < best_diagnostic[0]:
                 best_diagnostic = (output_error, rate.copy(), achieved.copy())
-        valid = all(outcome.get(k) is True for k in TASK_FLAGS)
+        valid = (raw is not None and
+                 all(outcome.get(k) is True for k in TASK_FLAGS))
         if valid:
             cost = outcome.get("ranking_cost", float("inf"))
             cost = float(cost) if cost is not None else float("inf")
