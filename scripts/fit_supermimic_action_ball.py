@@ -12,7 +12,7 @@ import torch
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
 from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
 from quadsmash.rl.supermimic_ball_residual_v1 import ball_geometry_features
-from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1
+from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,preimpact_hard_negatives
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_wm_validation_v1 import event_aligned_windows
 
@@ -112,10 +112,8 @@ def main():
     # The native event edge occurs in the NEXT recorded transition. Its
     # previous transition is a hard negative; training on it prevents the
     # model from inventing a bounce one control tick too early.
-    preceding=torch.zeros_like(events)
-    preceding[:-1]=events[1:]&(data['episode'][:-1]==data['episode'][1:])&~(
-        data['terminated'][:-1]|data['timeout'][:-1])
-    hard_negative=(eligible&~events&preceding).nonzero()
+    preceding=preimpact_hard_negatives(events,data['episode'],data['terminated'],data['timeout'])
+    hard_negative=(eligible&preceding).nonzero()
     if min(len(positive),len(negative),len(hard_negative))<8:
         raise ValueError('Need real racket contacts and pre-contact hard negatives')
     if not len(event_aligned_windows(metadata,val,horizon=64,offsets=(0,),maximum=1)['0']['starts']):
