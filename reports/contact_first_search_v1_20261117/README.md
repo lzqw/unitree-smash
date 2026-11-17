@@ -27,6 +27,8 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
   - no behavior change when the configuration block is absent.
 - `scripts/contact_first_fullbody_evaluator_v1.py`
   - deterministic candidate replay from one measured `public794` state;
+  - optional direct `LoadedPinocchioModelV1.PublicState` input for a future
+    native-state adapter, avoiding observation-based root reconstruction;
   - original 18-joint position bounds, velocity/torque/contact diagnostics,
     and authored non-foot ground-clearance witness;
   - measured-contact-only policy, so an airborne prefix cannot invent ground

@@ -3,6 +3,7 @@ import json
 import numpy as np
 
 from scripts.contact_first_fullbody_evaluator_v1 import ContactFirstFullBodyEvaluatorV1
+from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
 
 
 ROOT = __import__("pathlib").Path(__file__).resolve().parents[1]
@@ -43,6 +44,19 @@ def test_fullbody_evaluator_accepts_airborne_prefix_with_measured_contacts_only(
     assert result["nodes_checked"] == 31
     assert result["airborne_ground_force_policy"] == "measured_contacts_only"
     assert result["diagnostics"]["normal_force_violation_n"] == 0.0
+
+
+def test_fullbody_evaluator_accepts_explicit_loaded_state_without_public_reconstruction():
+    public, default, interface = _fixture()
+    model = LoadedPinocchioModelV1()
+    state = model.state_from_public(public, default)
+    evaluator = ContactFirstFullBodyEvaluatorV1(
+        interface_config=interface, initial_state=state, model=model, substeps=1)
+    q = np.repeat(default[None, 12:], 4, axis=0)
+    qd = np.zeros_like(q)
+    result = evaluator(q, qd, 3, {"source": "explicit_loaded_state"})
+    assert result["accepted"] is True
+    assert result["nodes_checked"] == 4
 
 
 def test_fullbody_evaluator_rejects_prefix_that_enters_authored_ground():

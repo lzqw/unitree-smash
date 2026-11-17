@@ -13,7 +13,7 @@ import numpy as np
 
 from scripts.authored_ground_clearance_v1 import AuthoredGroundClearance
 from scripts.implicit_support_prediction_v1 import predict_implicit_support
-from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
+from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1, PublicState
 from scripts.whole_body_support_qp_v1 import PositionPDInterface
 
 
@@ -29,22 +29,40 @@ class ContactFirstFullBodyEvaluatorV1:
     state, so candidates cannot borrow mutable state from one another.
     """
 
-    def __init__(self, public, default, interface_config, *, geometry_path=DEFAULT_GEOMETRY,
-                 substeps=4, max_tracking_error_rad=0.25):
-        public = np.asarray(public, dtype=np.float64)
-        default = np.asarray(default, dtype=np.float64)
-        if public.shape != (794,) or default.shape != (18,):
-            raise ValueError("Contact-first full-body evaluator requires public794 and default18")
-        if not np.isfinite(public).all() or not np.isfinite(default).all():
-            raise ValueError("Contact-first full-body evaluator requires finite state")
+    def __init__(self, public=None, default=None, interface_config=None, *,
+                 geometry_path=DEFAULT_GEOMETRY, substeps=4,
+                 max_tracking_error_rad=0.25, initial_state=None, model=None):
+        if initial_state is None:
+            public = np.asarray(public, dtype=np.float64)
+            default = np.asarray(default, dtype=np.float64)
+            if public.shape != (794,) or default.shape != (18,):
+                raise ValueError("Contact-first full-body evaluator requires public794 and default18")
+            if not np.isfinite(public).all() or not np.isfinite(default).all():
+                raise ValueError("Contact-first full-body evaluator requires finite state")
+        elif not isinstance(initial_state, PublicState):
+            raise ValueError("initial_state must be a LoadedPinocchio PublicState")
         if type(substeps) is not int or not 1 <= substeps <= 32:
             raise ValueError("Evaluator substeps must be in [1, 32]")
         if not np.isfinite(max_tracking_error_rad) or max_tracking_error_rad <= 0.:
             raise ValueError("Positive tracking admission margin required")
-        self.model = LoadedPinocchioModelV1()
+        if not isinstance(interface_config, dict):
+            raise ValueError("Full-body evaluator requires an interface mapping")
+        self.model = LoadedPinocchioModelV1() if model is None else model
         self.interface = PositionPDInterface(**interface_config)
         self.geometry = AuthoredGroundClearance(geometry_path, self.model, margin_m=0.)
-        self.initial_state = self.model.state_from_public(public, default)
+        if initial_state is None:
+            self.initial_state = self.model.state_from_public(public, default)
+        else:
+            if (initial_state.q.shape != (25,) or initial_state.v.shape != (24,) or
+                    initial_state.joint_position.shape != (18,) or
+                    initial_state.joint_velocity.shape != (18,) or
+                    initial_state.contacts.shape != (4,) or
+                    not all(np.isfinite(value).all() for value in (
+                        initial_state.q, initial_state.v, initial_state.joint_position,
+                        initial_state.joint_velocity, initial_state.root_position_world,
+                        initial_state.root_rotation_world))):
+                raise ValueError("initial_state has invalid full-body dimensions")
+            self.initial_state = deepcopy(initial_state)
         self.initial_joint_position = self.initial_state.joint_position.copy()
         self.substeps = substeps
         self.max_tracking_error_rad = float(max_tracking_error_rad)
