@@ -134,6 +134,9 @@ def test_hermite_speed_overshoot_is_rejected_before_scoring():
     inputs['velocity_limits_rad_s'] = np.full(6, .2)
     with pytest.raises(RuntimeError, match='No contact-first candidate'):
         planner.plan(**inputs)
+    assert planner.last_diagnostics['rejection_counts'] == {
+        'contact_time_below_joint_speed_bound': 1}
+    assert planner.last_diagnostics['minimum_joint_speed_duration_s'] > .2
 
 
 def test_full_body_evaluator_can_reject_candidates_without_partial_acceptance():

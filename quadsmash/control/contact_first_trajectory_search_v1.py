@@ -314,6 +314,25 @@ class ContactFirstTrajectorySearchV1:
         requested_contact = float(contact_time_s)
         if not math.isfinite(requested_contact) or requested_contact <= cfg.dt_s:
             raise ValueError("Positive contact time after current state required")
+        maximum_candidate_duration = requested_contact + max(
+            (float(x) for x in cfg.contact_time_offsets_s), default=0.0)
+        minimum_joint_speed_duration = min(
+            float(np.max(np.abs(branch[0] - q0) / velocity_limits))
+            for branch in branches
+        )
+        if maximum_candidate_duration + 1e-9 < minimum_joint_speed_duration:
+            self.last_diagnostics = {
+                "candidates_considered": 0,
+                "accepted_candidates": 0,
+                "rejection_counts": {"contact_time_below_joint_speed_bound": 1},
+                "evaluator_rejection_reasons": {},
+                "minimum_joint_speed_duration_s": minimum_joint_speed_duration,
+                "maximum_candidate_duration_s": maximum_candidate_duration,
+            }
+            raise RuntimeError(
+                "No contact-first candidate passed pre-contact checks: "
+                "contact_time_below_joint_speed_bound"
+            )
         best = None
         rejected = []
         evaluator_rejection_reasons = Counter()

@@ -73,6 +73,12 @@ the full-body replay callback.  This keeps the same acceptance contract while
 avoiding physical replay for candidates that already miss the causal
 position/normal/velocity tolerances.
 
+It also reports a strict necessary lower bound on contact time from the
+selected joint displacement and original per-joint velocity limits.  If all
+allowed timing offsets are below that bound, the search exits before candidate
+generation with `contact_time_below_joint_speed_bound`; this is an explicit
+unreachable-time diagnostic, not a relaxed or substituted trajectory.
+
 With the nullspace branches enabled, 300 repeated 96-node plans with the real
 kinematics callback took 5.38 ms mean (5.69 ms p95), with five
 re-linearizations and five posture branches; see `CPU_BENCHMARK.json`.  This
