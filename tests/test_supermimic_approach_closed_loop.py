@@ -52,7 +52,10 @@ def test_frozen_refresh_unequal_reset_boundaries_and_manifest(tmp_path):
     assert report['returns']==[9.,6.]
     path=tmp_path/'manifest.json';path.write_text(json.dumps(report));assert json.loads(path.read_text())['policy_id']=='policy_fixed'
     assert len(f.starts)<=3
-    assert all(len(start['before']['physical']['joint_position'])==2 for start,_ in f.starts.values())
+    rows=list(f.calibration_rows())
+    assert all(len(start['before']['physical']['joint_position'])==2 for _,start,_ in rows)
+    assert report['stage_coverage']=={'0':2,'1':2,'2':2}
+    assert {(stage,int(i)) for stage,_,mask in rows for i in torch.where(mask)[0]}=={(s,i) for s in range(3) for i in range(2)}
 
 def test_incomplete_refresh_refuses_value_labels():
     f=FrozenRefresh(1,3,.9,'frozen',Schema());f.append(row(0,[0],[0],[False]))
@@ -91,3 +94,31 @@ def test_gradient_components_identify_anchor_only():
     stats=gradient_parts(dict(task=p.sum()*0,tracking=p.sum()*0,anchor=p.square().sum()),[p])
     assert stats['task_gradient_norm']==0 and stats['anchor_gradient_norm']>0
     assert p.grad is None
+
+
+def test_compact_critic_snapshots_preserve_async_lane_time_identity():
+    encoder=lambda start:torch.stack((start['before']['episode_index'],start['before']['elapsed_tick']),1).float()
+    f=FrozenRefresh(2,3,.9,'frozen',Schema(),stage_ticks=(0,1,2),start_encoder=encoder)
+    sequence=[([2,0],[0,0],[True,False]),([0,1],[1,0],[False,False]),
+              ([1,2],[1,0],[False,True]),([2,0],[1,1],[True,False])]
+    for t,(elapsed,ep,done) in enumerate(sequence):f.append(row(t,elapsed,ep,done))
+    seen=set()
+    for stage,start,mask in f.calibration_rows():
+        assert 'executor_before' not in start
+        for lane in torch.where(mask)[0].tolist():
+            assert start['critic_input'][lane].tolist()==[1-lane,stage]
+            seen.add((lane,stage))
+    assert len(seen)==6
+
+
+def test_initial_archive_survives_online_ring_wrap_and_holdout_exclusion():
+    from quadsmash.rl.supermimic_physical_loop_replay_v1 import row_tensors
+    initial=row(0,[0,0],[0,0],[False,False])
+    replay=PhysicalLoopReplay({'tensors':{k:v.unsqueeze(0) for k,v in row_tensors(initial,Schema()).items()}},Schema(),capacity_ticks=64)
+    replay.new_stream()
+    for t in range(70):replay.append(row(t,[t,t],[1,1],[False,False]),retain_start=False,policy_version=2)
+    d,_,_,sources,_,_=replay._ordered()
+    assert len(d['state'])==65 and (sources==0).sum()==2
+    window,lanes,report=replay.window(steps=16,batch=4,device='cpu',excluded_lanes=[1])
+    assert lanes.tolist()==[0]*4
+    assert not (window['episode']==0).any() # the singleton initial window cannot cross into online

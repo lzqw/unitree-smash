@@ -41,6 +41,7 @@ if [[ -n "${SM_RESUME_CHECKPOINT:-}" ]]; then
   [[ -f "$SM_RESUME_CHECKPOINT" ]] || { echo "resume checkpoint not found: $SM_RESUME_CHECKPOINT" >&2; exit 12; }
   PREV="$SM_RESUME_CHECKPOINT"
 fi
+PREV_EVAL="${SM_NATIVE_ACCEPTANCE_RECEIPT:-}"
 PREV_RETURN=""
 DECLINE_STREAK=0
 FLAT_STREAK=0
@@ -69,8 +70,14 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     --output "$OUT" --headless --device cuda:0
     --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false
   )
+  if [[ "${SM_TRAINING_PROFILE:-bounded}" == large ]]; then
+    TRAIN_ARGS+=(--training-profile large --contact-validation-receipt "${SM_CONTACT_VALIDATION_RECEIPT:?contact validation evidence required}")
+  fi
   if [[ -n "$PREV" ]]; then
     TRAIN_ARGS+=(--resume-training "$PREV" --resume-warmup-ticks 0)
+    if [[ -n "$PREV_EVAL" ]]; then
+      TRAIN_ARGS+=(--resume-next-cycle --native-acceptance-receipt "$PREV_EVAL")
+    fi
   fi
   echo "[cycle $cycle] training start $(date -Is)"
   (cd "$ROOT" && QUADSMASH_ZSTD_ARCHIVE=1 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}" QUADSMASH_PYTHON="$PYTHON" \
@@ -136,5 +143,6 @@ EOF
   fi
   PREV_RETURN="$CURRENT_RETURN"
   PREV="$CANDIDATE"
+  PREV_EVAL="$EVAL/metrics.json"
 done
 echo "PHASE1_FINISHED=$RUN_ROOT"

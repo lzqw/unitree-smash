@@ -73,18 +73,18 @@ class PhysicalHorizonTrainer:
 
     def _actor_action(self, state, *, sample=False):
         """Use the causal post-hit latch for recovery-head imagination."""
-        rally=state.task_memory.get('rally', {})
-        if hasattr(self.actor, 'forward_with_recovery_gate') and 'had_contact' in rally and 'released' in rally:
-            gate=(rally['had_contact'] > .5) & (rally['released'] > .5)
-            return self.actor.forward_with_recovery_gate(state.observation, gate, sample=sample)
-        return self.actor(state.observation, sample=sample)
+        from .supermimic_policy_execution_v1 import policy_forward
+        # CPU toy actors without the native gate interface exercise the generic
+        # learner; production ResidualPPOInitializedActor always takes the strict path.
+        if hasattr(self.actor,'forward_with_recovery_gate'):
+            return policy_forward(self.actor,state.observation,state.task_memory.get('rally',{}),sample=sample)
+        return self.actor(state.observation,sample=sample)
 
     def _reference_action(self, state, *, sample=False):
-        rally=state.task_memory.get('rally', {})
-        if hasattr(self.reference, 'forward_with_recovery_gate') and 'had_contact' in rally and 'released' in rally:
-            gate=(rally['had_contact'] > .5) & (rally['released'] > .5)
-            return self.reference.forward_with_recovery_gate(state.observation, gate, sample=sample)
-        return self.reference(state.observation, sample=sample)
+        from .supermimic_policy_execution_v1 import policy_forward
+        if hasattr(self.reference,'forward_with_recovery_gate'):
+            return policy_forward(self.reference,state.observation,state.task_memory.get('rally',{}),sample=sample)
+        return self.reference(state.observation,sample=sample)
 
     def _head_gate(self, state):
         """Return the actual exported gate used by the active trainable head."""
@@ -95,7 +95,7 @@ class PhysicalHorizonTrainer:
             return ((rally['had_contact'] > .5) & (rally['released'] > .5)).float()
         return torch.ones(state.observation.shape[0], device=state.observation.device)
 
-    def set_trainable_names(self,names,block_name=None):
+    def set_trainable_names(self,names,block_name=None,*,reset_block=True):
         names=set(names)
         self.trainable_names=set_actor_trainable(self.actor,names)
         self.block_name=block_name or self.block_name
@@ -108,9 +108,10 @@ class PhysicalHorizonTrainer:
         pending=getattr(self,'_pending_actor_optimizer_states',{}).pop(self.block_name,None)
         if pending is not None:
             self.actor_opt.load_state_dict(pending)
-        self.actor_updates=0; self.actor_attempts=0; self.rejected_actor_updates=0; self.backtracked_actor_updates=0
-        self.block_start_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
-        self.accepted_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
+        if reset_block:
+            self.actor_updates=0; self.actor_attempts=0; self.rejected_actor_updates=0; self.backtracked_actor_updates=0
+            self.block_start_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
+            self.accepted_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
         self.frozen_actor_hash=self.frozen_hash()
 
     def set_budget_state_library(self,states):
@@ -155,10 +156,11 @@ class PhysicalHorizonTrainer:
         # Snapshots are parameter snapshots. Recompute command baselines by temporarily loading
         # into the same actor; caller runs under no_grad and restores accepted parameters.
         current={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
-        self.actor.load_state_dict(state_dict,strict=True)
-        rows=self._budget_snapshot()
-        self.actor.load_state_dict(current,strict=True)
-        return rows
+        try:
+            self.actor.load_state_dict(state_dict,strict=True)
+            return self._budget_snapshot()
+        finally:
+            self.actor.load_state_dict(current,strict=True)
 
     def accept_snapshot(self):
         self.accepted_snapshot={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
@@ -169,7 +171,7 @@ class PhysicalHorizonTrainer:
     def _rollout_objective(self, initial_state, *, effective_weights=None):
         from .supermimic_approach_data_v1 import masked_lane_mean
         cfg=self.timebase; state=initial_state.branch()
-        states=[]; rewards=[]; dones=[]; valid=[]; anchors=[]; gates=[]; tracks=[]
+        states=[]; rewards=[]; dones=[]; valid=[]; anchors=[]; gates=[]; tracks=[]; track_weights=[]; track_states=[]
         selected=state.clock_goal_context.get('actor_lane_mask',torch.ones(len(state.physical),dtype=torch.bool,device=state.physical.device))
         survival=state.physical.new_ones(len(state.physical))
         reference=None
@@ -199,9 +201,10 @@ class PhysicalHorizonTrainer:
                 else:track_mask=track_mask&(rally['had_contact'].reshape(-1)<.5)
             state,reward,done,_=self.adapter(state,action)
             if reference is not None:
-                tracks.append(self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
-                    geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival))
-            states.append(current.detach());rewards.append(reward*active[:,None]);dones.append(done);valid.append(active)
+                numerator,denominator,weights=self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
+                    geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival,return_components=True)
+                tracks.append(numerator);track_weights.append(weights);track_states.append(state.physical)
+            states.append(current.detach());rewards.append(reward*active[:,None]);dones.append(done);valid.append(active&selected)
             survival=survival*(1-done.reshape(-1))
         if not states:raise ValueError('No active in-episode imagination start')
         final=self.adapter.critic_input(state)
@@ -212,13 +215,27 @@ class PhysicalHorizonTrainer:
         if effective_weights is not None:weights=effective_weights.detach()
         task_loss=-masked_lane_mean(ret,weights)
         anchor_loss=masked_lane_mean(torch.stack(anchors).sum(0),weights)
-        tracking_loss=torch.stack(tracks).mean() if tracks else ret.sum()*0.
+        track_weight_sum=torch.stack(track_weights).sum() if tracks else ret.new_zeros(())
+        tracking_loss=torch.stack(tracks).sum()/track_weight_sum.clamp_min(1e-8) if tracks else ret.sum()*0.
+        nonzero_lanes=0
+        if tracks and torch.is_grad_enabled() and tracking_loss.requires_grad:
+            differentiable=[i for i,x in enumerate(track_states) if x.requires_grad]
+            gradients=torch.autograd.grad(tracking_loss,[track_states[i] for i in differentiable],retain_graph=True,allow_unused=True) if differentiable else []
+            responding=torch.zeros(len(state.physical),dtype=torch.bool,device=state.physical.device)
+            for g,w in zip(gradients,[track_weights[i] for i in differentiable]):
+                if g is not None:responding|=(g.detach().abs().sum(-1)>0)&(w>0)
+            nonzero_lanes=int(responding.sum())
         loss=task_loss+self.tracking_weight*tracking_loss+self.anchor_coeff*anchor_loss
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical BPTT objective')
-        return dict(loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
+        from .supermimic_dual_head_quality_v1 import reference_coverage
+        coverage=reference_coverage(self.reference_bank,self.block_name,self.tracking_weight)
+        coverage.update(matched_lanes=int(reference['matched'].sum()) if reference else 0,
+            effective_weight_sum=float(track_weight_sum.detach()),tracking_applied=bool(tracks and float(track_weight_sum.detach())>0))
+        return dict(reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
                     gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
                     critic_data=(torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid)),
-                    tracking_steps=len(tracks),matched_references=int(reference['matched'].sum()) if reference else 0)
+                    tracking_steps=len(tracks),tracking_active_lane_steps=int((torch.stack(track_weights)>0).sum()) if tracks else 0,
+                    tracking_effective_weight_sum=float(track_weight_sum.detach()),tracking_nonzero_gradient_lanes=nonzero_lanes,matched_references=int(reference['matched'].sum()) if reference else 0)
 
     def imagine_update(self,initial_state,*,update_actor=True):
         from .supermimic_approach_data_v1 import gradient_parts
@@ -276,8 +293,27 @@ class PhysicalHorizonTrainer:
             critic_data=rollout['critic_data']
             ret_mean=float(rollout['ret'].detach().mean()); track_value=float(rollout['tracking'].detach())
             gate_steps=rollout['gate_steps'];gate_lanes=rollout['gate_lanes'];track_steps=rollout['tracking_steps']
-            matched=rollout['matched_references']
+            track_stats={k:rollout[k] for k in ('tracking_active_lane_steps','tracking_effective_weight_sum','tracking_nonzero_gradient_lanes')}
+            matched=rollout['matched_references'];coverage=rollout['reference_coverage']
             del rollout
+        except BaseException:
+            self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
+            raise
+        if model_hash!=tensor_digest(self.adapter.state_dict().items()):raise RuntimeError('Actor update changed model')
+        if self.frozen_hash()!=self.frozen_actor_hash:raise RuntimeError('Frozen actor state changed')
+        # Critic updates only AFTER all fixed-objective comparisons finish.
+        bptt_seconds=time.perf_counter()-started;started=time.perf_counter()
+        try:
+            states,rewards,dones,final,valid=critic_data
+            with torch.no_grad():targets=gae_returns(self.critic(states),self.critic(final),rewards,dones,cfg.gamma,cfg.lam).clamp(max=self.v_max)
+            x,y=states[valid],targets[valid]; losses=[]
+            if not len(y):raise ValueError('No valid critic data')
+            for _ in range(5):
+                for ids in torch.tensor_split(torch.randperm(len(y),device=y.device),4):
+                    if not ids.numel():continue
+                    self.critic_opt.zero_grad(set_to_none=True); loss=(self.critic(x[ids])-y[ids]).square().mean()
+                    if not torch.isfinite(loss):raise FloatingPointError('Nonfinite GAE critic loss')
+                    loss.backward();optimizer_step(self.critic_opt,self.critic.parameters());self.critic_updates+=1;losses.append(float(loss.detach()))
         except BaseException:
             self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
             raise
@@ -287,24 +323,10 @@ class PhysicalHorizonTrainer:
             else:
                 self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
                 self.rejected_actor_updates+=1
-        if model_hash!=tensor_digest(self.adapter.state_dict().items()):raise RuntimeError('Actor update changed model')
-        if self.frozen_hash()!=self.frozen_actor_hash:raise RuntimeError('Frozen actor state changed')
-        # Critic updates only AFTER all fixed-objective comparisons finish.
-        bptt_seconds=time.perf_counter()-started;started=time.perf_counter()
-        states,rewards,dones,final,valid=critic_data
-        with torch.no_grad():targets=gae_returns(self.critic(states),self.critic(final),rewards,dones,cfg.gamma,cfg.lam).clamp(max=self.v_max)
-        x,y=states[valid],targets[valid]; losses=[]
-        if not len(y):raise ValueError('No valid critic data')
-        for _ in range(5):
-            for ids in torch.tensor_split(torch.randperm(len(y),device=y.device),4):
-                if not ids.numel():continue
-                self.critic_opt.zero_grad(set_to_none=True); loss=(self.critic(x[ids])-y[ids]).square().mean()
-                if not torch.isfinite(loss):raise FloatingPointError('Nonfinite GAE critic loss')
-                loss.backward();optimizer_step(self.critic_opt,self.critic.parameters());self.critic_updates+=1;losses.append(float(loss.detach()))
         self.last_critic_loss=sum(losses)/len(losses)
         changes={k:float((p.detach()-actor_before[k]).abs().max()) for k,p in self.actor.named_parameters() if p.requires_grad}
         command_delta=[self._max_budget_delta(n,b) for n,b in zip(self._budget_snapshot(),before_budget)]
-        return dict(actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,rejected_actor_updates=self.rejected_actor_updates,
+        return dict(reference_coverage=coverage,actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,rejected_actor_updates=self.rejected_actor_updates,
             update_accepted=accepted if update_actor else False,block_name=self.block_name,trainable_names=sorted(self.trainable_names),
             block_attempts=self.block_attempts,backtracked_actor_updates=self.backtracked_actor_updates,backtrack_alpha=alpha,
             rejection_reason=reason,backtrack_trials=trials,objective_before=baseline_loss,
@@ -312,7 +334,7 @@ class PhysicalHorizonTrainer:
             command_delta_budget=self.command_delta_budget,target_delta_budget_rad=self.target_delta_budget_rad,
             critic_updates=self.critic_updates,world_updates=self.world_updates,imagined_return_mean=ret_mean,
             actor_gradient=gradient,parameter_max_changes=changes,tracking_loss=track_value,tracking_weight=self.tracking_weight,
-            tracking_steps=track_steps,matched_references=matched,**grad_stats,
+            tracking_steps=track_steps,matched_references=matched,**grad_stats,**track_stats,
             final_command_max_change=max(x[2] for x in command_delta),request_max_change=max(x[0] for x in command_delta),
             budget_report=self._relative_budget_report(),critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,
             critic_seconds=time.perf_counter()-started,model_runtime_state_sha256=model_hash,imagined_steps=len(rewards),
@@ -385,6 +407,11 @@ class PhysicalHorizonTrainer:
             mask=torch.cat(masks).to(x.device).bool()
             x=x[mask];y=y[mask]
             if not len(y): raise ValueError('No complete same-policy calibration samples')
+        return self.calibrate_critic_tensors(x,y,epochs=epochs)
+
+    def calibrate_critic_tensors(self,x,y,*,epochs=1):
+        x=x.detach();y=y.detach().reshape(-1,1)
+        if len(x)!=len(y) or not len(y):raise ValueError('Invalid native critic tensor labels')
         losses=[]
         for _ in range(epochs):
             self.critic_opt.zero_grad(set_to_none=True)

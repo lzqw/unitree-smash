@@ -5,7 +5,7 @@ from pathlib import Path
 import torch
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop
 from quadsmash.rl.supermimic_physical_dataset_v1 import valid_windows
-from quadsmash.rl.supermimic_wm_validation_v1 import validate_windows,command_sensitivity,validation_stages
+from quadsmash.rl.supermimic_wm_validation_v1 import validate_windows,command_sensitivity,validation_stages,event_aligned_windows
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
@@ -32,6 +32,7 @@ def main():
         ball_checkpoint=a.ball_checkpoint,task_checkpoint=a.task_checkpoint,safety_mapping=a.safety_mapping,device=a.device)
     baseline={k:v.detach().clone() for k,v in adapter.state_dict().items()}
     results={}; candidates=[('initial',None)]+[x.split('=',1) for x in a.candidate]
+    aligned=event_aligned_windows(data,val,maximum=a.max_windows)
     if len({x[0] for x in candidates})!=len(candidates):raise ValueError('Duplicate candidate name')
     for name,path in candidates:
         adapter.load_state_dict(baseline,strict=True)
@@ -48,6 +49,16 @@ def main():
                 subset={k:v[:,mask] for k,v in window.items()}
                 groups[stage]['errors']=validate_windows(adapter,subset,launch[lanes.to(a.device)][mask])
         results[name]['native_stage_groups']=groups
+        aligned_results={}
+        for offset,group in aligned.items():
+            starts=group['starts'];record={k:v for k,v in group.items() if k!='starts'}
+            record.update(windows=len(starts),starts=starts.tolist(),errors=None)
+            if len(starts):
+                times,ids=starts.unbind(1);indices=times[None]+torch.arange(64)[:,None]
+                subset={k:v[indices,ids[None]].to(a.device) for k,v in data.items() if v.ndim>=2 and v.shape[:2]==data['episode'].shape}
+                record['errors']=validate_windows(adapter,subset,launch[ids.to(a.device)])
+            aligned_results[offset]=record
+        results[name]['event_aligned']=aligned_results
     output=dict(results=results,window_starts=pairs.tolist(),split=split,
         packed_sha256=hashlib.sha256(a.packed_data.read_bytes()).hexdigest(),native_simulation=False,
         limitations=['Split manifest must match fitting provenance; this script cannot certify unseen training data.',

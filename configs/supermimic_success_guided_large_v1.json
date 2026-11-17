@@ -1,0 +1,43 @@
+{
+  "status": "code-only, no native validation or training executed",
+  "training_profile": "large",
+  "num_envs": 128,
+  "cycles": 4,
+  "cycle_schedule": [
+    "Recovery64",
+    "frozen complete collection",
+    "Approach64 with refresh every 8 accepts",
+    "frozen formal evaluation"
+  ],
+  "max_proposals_per_head_per_cycle": 256,
+  "target_actor_accepts": 512,
+  "native_ticks_per_proposal": 16,
+  "proposal_collection_tick_upper_bound": 32768,
+  "refresh_collection_tick_upper_bound": 57636,
+  "formal_eval_ticks_per_cycle": 800,
+  "note": "8192 proposal ticks only if all 512 proposals accepted. Rejections and full frozen refreshes add native ticks; counters report actual totals.",
+  "imagination_s": 0.64,
+  "world_window_s": 0.16,
+  "actor_lr": 5e-05,
+  "world_lr": 0.0002,
+  "critic_lr": 0.0002,
+  "world_updates_per_proposal": 4,
+  "native_accepted_reference": "moves only with checkpoint-matched passing native evaluation",
+  "ablation_experiments": false,
+  "new_ball_network": false,
+  "new_preserve_or_outgoing_reward": false,
+  "requirements": [
+    "checkpoint/contract-matched native action-response evidence for BOTH heads",
+    "dual_head_quality calibrated bounds and whole-lane holdout split",
+    "original task/asset/action contract",
+    "independently scored per-head reference coverage (missing => explicitly task-only)"
+  ],
+  "acceptance": {
+    "return_gt": -12.52678435,
+    "ball_side_min": 53,
+    "complete5_min": 27,
+    "numerical_failures": 0
+  },
+  "policy_execution": "causal-contact-release-recovery-v1; shared train/eval/deployment entry",
+  "quality_protection": "Per-head calibrated WM/native-critic bounds; disjoint complete-episode lanes; no auto extra fitting"
+}

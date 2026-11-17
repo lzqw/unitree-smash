@@ -49,6 +49,10 @@ def main():
     for name in ('archive','packed-data','physical-checkpoint','ball-checkpoint','task-checkpoint','safety-mapping','output'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--resume-training',type=Path)
+    parser.add_argument('--resume-next-cycle',action='store_true',help='Start a new cycle only after checkpoint-matched native acceptance')
+    parser.add_argument('--native-acceptance-receipt',type=Path)
+    parser.add_argument('--training-profile',choices=('bounded','large'),default='bounded')
+    parser.add_argument('--contact-validation-receipt',type=Path)
     parser.add_argument('--resume-start-block',choices=('recovery','approach'),default='recovery',
                         help='Resume a completed Recovery checkpoint directly at Approach')
     parser.add_argument('--resume-warmup-ticks',type=int,default=0,
@@ -61,8 +65,8 @@ def main():
     parser.add_argument('--joint-update-budget',type=int,default=16)
     parser.add_argument('--update-mode',choices=('sequential','joint'),default='sequential')
     parser.add_argument('--ball-side-mode',choices=('shadow','enforce'),default='shadow')
-    parser.add_argument('--recovery-proposal-budget',type=int,default=4)
-    parser.add_argument('--approach-proposal-budget',type=int,default=4)
+    parser.add_argument('--recovery-proposal-budget',type=int,default=32)
+    parser.add_argument('--approach-proposal-budget',type=int,default=32)
     parser.add_argument('--refresh-ticks',type=int,default=800)
     parser.add_argument('--cycles',type=int,default=1)
     parser.add_argument('--native-ticks-per-actor-update',type=int,default=16)
@@ -104,10 +108,17 @@ def main():
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
     if args.actor_update_budget is not None:
         args.recovery_update_budget=0;args.approach_update_budget=args.actor_update_budget
+    from quadsmash.rl.supermimic_long_run_contract_v1 import validate_budgets
+    try:validate_budgets(args.recovery_update_budget,args.approach_update_budget,args.recovery_proposal_budget,args.approach_proposal_budget)
+    except ValueError as error:parser.error(str(error))
+    if args.training_profile=='large' and args.contact_validation_receipt is None:parser.error('Large training requires contact-validation-receipt; model-only sensitivity is insufficient')
+    if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
+    if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
     args.output=args.output.resolve();args.output.mkdir(parents=True,exist_ok=False)
     try:
         args.wm_approach_stage_quota=parse_quota(args.wm_approach_stage_quota,allowed={'uniform','approach_active','hit_prepare','contact_release','approach_failure','post_hit'},name='wm-approach-stage-quota')
         args.wm_source_quota=parse_quota(args.wm_source_quota,allowed={'recent_online','older_online','initial_archive'},name='wm-source-quota')
+        if sum(args.wm_source_quota.values())!=128:raise ValueError('WM source quotas must sum to the fixed batch size 128')
         args.wm_stage_quota=parse_quota(args.wm_stage_quota,allowed={'uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery'},name='wm-stage-quota')
     except ValueError as error:
         parser.error(str(error))
@@ -142,7 +153,7 @@ def run(args):
     lifecycle_stage(args.output, 'IMPORT_TENSORBOARD')
     from isaaclab_rl.rsl_rl import RslRlVecEnvWrapper
     lifecycle_stage(args.output, 'IMPORT_RSL')
-    from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop,APPROACH_NAMES,RECOVERY_NAMES
+    from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop,APPROACH_NAMES,RECOVERY_NAMES,tensor_digest
     lifecycle_stage(args.output, 'IMPORT_LOADING')
     from quadsmash.rl.supermimic_physical_learner_v1 import PhysicalHorizonTrainer
     lifecycle_stage(args.output, 'IMPORT_LEARNER')
@@ -166,12 +177,22 @@ def run(args):
             physical_checkpoint=args.physical_checkpoint,ball_checkpoint=args.ball_checkpoint,
             task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping)
         lifecycle_stage(args.output, 'AFTER_LOAD_PHYSICAL_LOOP')
+        contact_validation=None;wm_holdout_lanes=[];runtime_wm_bounds={};runtime_validation_data=None;dual_quality=None;native_value_bank=None
+        if args.contact_validation_receipt is not None:
+            from quadsmash.rl.supermimic_long_run_contract_v1 import verify_contact_receipt
+            contact_validation=verify_contact_receipt(args.contact_validation_receipt,dict(physical=args.physical_checkpoint,ball=args.ball_checkpoint,task=args.task_checkpoint),manifest['task_contract'])
+            write(args.output/'contact_validation_verified.json',contact_validation)
+            if args.training_profile=='large' or 'dual_head_quality' in json.loads(args.contact_validation_receipt.read_text()):
+                from quadsmash.rl.supermimic_dual_head_quality_v1 import quality_spec
+                dual_quality=quality_spec(json.loads(args.contact_validation_receipt.read_text()))
+                wm_holdout_lanes=dual_quality['heldout_lane_ids'];runtime_wm_bounds=dual_quality['wm_upper_bounds']
         write(args.output/'model_manifest.json',adapter.manifest)
         packed_sha=hashlib.sha256(args.packed_data.read_bytes()).hexdigest()
         expected=json.loads((args.packed_data.parent/'completed.json').read_text())
         if packed_sha!=expected['sha256'] or expected['first_completed']!=128:raise ValueError('Invalid initialization data')
         package=torch.load(args.packed_data,map_location='cpu',weights_only=True)
         lifecycle_stage(args.output, 'LOADED_PACKED_DATA')
+        runtime_validation_data=package['tensors'];runtime_validation_path=str(args.packed_data)
         replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema,capacity_ticks=args.replay_capacity_ticks)
         lifecycle_stage(args.output, 'REPLAY_READY')
         reference_bank=None
@@ -219,8 +240,9 @@ def run(args):
             # a useful actor gradient. Singleton/masked batches need only their
             # own active lanes, not an impossible fixed four-lane threshold.
             from quadsmash.rl.supermimic_approach_data_v1 import active_gate
-            mask=row.get('_actor_lane_mask')
-            if mask is not None: gate=gate[mask.to(gate.device)]
+            mask=row.get('_actor_lane_mask',torch.ones(len(gate),dtype=torch.bool)).to(gate.device).clone()
+            if wm_holdout_lanes:mask[wm_holdout_lanes]=False
+            gate=gate[mask]
             return active_gate(gate) if gate.numel() else False
 
         approach_pool=[start_cache[t] for t in APPROACH_TICKS if approach_active(start_cache[t])]
@@ -238,10 +260,10 @@ def run(args):
             running=native_reward[ti].double()+timebase.gamma*running*(~native_done[ti]).double()
             rtg[ti]=running
         del native_reward,native_done,running
-        replay_archives=[];critic_coverage_blocks=0
+        replay_archives=[];replay_receipts=[];critic_coverage_blocks=0
         refresh_world_updates=0;refresh_critic_updates=0
         if args.resume_training:
-            resumed=torch.load(args.resume_training,map_location='cuda:0',weights_only=False)
+            resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
             if resumed['adapter_schema']!=adapter.schema or resumed['metadata']['physical_imagination']!=adapter.manifest:
                 raise ValueError('Resume physical model/execution source mismatch')
             actor.load_state_dict(resumed['actor'],strict=True);adapter.load_state_dict(resumed['world'],strict=True)
@@ -269,9 +291,12 @@ def run(args):
             # online transitions; skipping them breaks the native-data→WM
             # closed loop.  Rebuild every committed archive before restoring
             # sampler metadata.
-            for directory in replay_archives:
+            replay_receipts=resumed.get('replay_archive_receipts')
+            if replay_receipts is not None and len(replay_receipts)!=len(replay_archives):raise ValueError('Replay receipt/archive count mismatch')
+            for archive_index,directory in enumerate(replay_archives):
                 replay.new_stream(source='online',policy_version=int(resumed_global.get('accepted',0)))
-                directory=Path(directory);receipt=json.loads((directory/'manifest.json').read_text())
+                directory=Path(directory)
+                receipt=replay_receipts[archive_index] if replay_receipts is not None else json.loads((directory/'manifest.json').read_text())
                 for item in receipt['chunks']:
                     path=directory/item['file']
                     if hashlib.sha256(path.read_bytes()).hexdigest()!=item['sha256']:raise ValueError('Resume archive hash mismatch')
@@ -281,10 +306,14 @@ def run(args):
                     else:
                         chunk=torch.load(path,map_location='cpu',weights_only=True)
                     # Rebuild only the compact chronological ring on resume.
-                    # Historical full executor/observation trees are not
-                    # needed for Approach proposals and otherwise dominate
-                    # memory (many archived rows × full 128-lane state).
+                    # Dynamic executor starts are restored separately below;
+                    # reconstructing every historical tree would be unbounded.
                     for row in chunk['rows']:replay.append(row,retain_start=False,policy_version=row.get('policy_version',0))
+            if 'actor_start_bank' in resumed:
+                replay.actor_start_bank.load_state_dict(tensor_tree_copy(resumed['actor_start_bank'],cpu=True))
+            elif args.resume_start_block=='approach':
+                raise ValueError('Approach continuation lacks persisted dynamic actor starts; rebuild audited starts from native archives first')
+            if 'dynamic_stage_starts' in resumed:replay.stage_starts=tensor_tree_copy(resumed['dynamic_stage_starts'],cpu=True)
             replay.generator.set_state(resumed['replay_rng'].cpu())
             replay_state=resumed.get('replay_state',{})
             replay.current_source=str(replay_state.get('current_source','online'))
@@ -303,7 +332,24 @@ def run(args):
                     target=getattr(replay,name,None)
                     if value is not None and target is not None and tuple(value.shape)==tuple(target.shape):
                         target.copy_(value)
+            if resumed.get('runtime_validation_archive'):
+                saved_validation=resumed['runtime_validation_archive']
+                from quadsmash.rl.supermimic_long_run_contract_v1 import sha256
+                if sha256(saved_validation['path'])!=saved_validation['sha256']:raise ValueError('Saved validation archive changed')
+                runtime_validation_path=saved_validation['path']
+                runtime_validation_data=torch.load(runtime_validation_path,map_location='cpu',weights_only=True)['tensors']
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
+        from quadsmash.rl.supermimic_sequential_progress_v1 import SequentialProgress
+        schedule=SequentialProgress()
+        if args.resume_training and not args.resume_next_cycle and 'sequential_progress' in resumed:
+            schedule.load_state_dict(resumed['sequential_progress'])
+            if schedule.complete():raise ValueError('Completed schedule requires explicit resume-next-cycle and native acceptance')
+        if args.resume_next_cycle:
+            from quadsmash.rl.supermimic_long_run_contract_v1 import verify_native_promotion
+            from quadsmash.rl.supermimic_policy_execution_v1 import contract as execution_contract
+            promotion=verify_native_promotion(args.native_acceptance_receipt,args.resume_training,expected_execution=execution_contract())
+            trainer.native_accepted_snapshot={k:v.detach().clone() for k,v in actor.state_dict().items()}
+            write(args.output/'native_reference_promotion.json',promotion)
         source_path=Path(manifest['source_checkpoint']);source=torch.load(source_path,map_location='cpu',weights_only=False)
         execution_root=Path('/home/autodrive/LZQW/unitree_smash')
         contract,protocol,cases,receipt=resolve_task_contract(source,source_path,execution_root=execution_root)
@@ -319,14 +365,29 @@ def run(args):
             # Environment seeding must not overwrite the resumed learner RNG.
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
         stage(args.output,'AFTER_RESET')
+        from quadsmash.rl.supermimic_policy_execution_v1 import policy_forward,contract as execution_contract,resolve_contract
+        policy_execution=execution_contract()
+        if args.resume_training and resolve_contract(resumed)[0]!=policy_execution:
+            raise ValueError('Resume would change trained recovery gate')
         def native_actor_action(observation):
-            # Phase4 only means foot contact.  Recovery corrections are allowed
-            # only after the native rally has both contacted and released the
-            # shuttle; this latch is per lane and resets with the rally.
-            gate=(env.rally.had_contact & env.rally.released)
-            if hasattr(actor,'forward_with_recovery_gate'):
-                return actor.forward_with_recovery_gate(observation['policy'],gate,sample=False)[0]
-            return actor(observation['policy'],sample=False)[0]
+            return policy_forward(actor,observation['policy'],env.rally,sample=False)[0]
+        def encode_native_value_start(row):
+            from quadsmash.rl.supermimic_policy_execution_v1 import recovery_gate
+            with torch.no_grad():
+                state=as_state(row);rally=state.task_memory.get('rally',{})
+                recovery=recovery_gate(rally,state.observation)
+                approach=(actor.approach_gate(state.observation).reshape(-1)>.25)&(rally['had_contact'].reshape(-1)<.5)
+                return dict(critic_input=adapter.critic_input(state).detach(),head_masks=dict(recovery=recovery,approach=approach))
+        def training_lane_available(row):
+            mask=row.get('_actor_lane_mask',torch.ones(128,dtype=torch.bool)).detach().cpu().clone()
+            if wm_holdout_lanes:mask[wm_holdout_lanes]=False
+            return bool(mask.any())
+        def training_state(row):
+            state=as_state(row)
+            if wm_holdout_lanes:
+                mask=state.clock_goal_context.get('actor_lane_mask',torch.ones(len(state.physical),dtype=torch.bool,device=state.physical.device)).clone()
+                mask[wm_holdout_lanes]=False;state.clock_goal_context['actor_lane_mask']=mask
+            return state
         from quadsmash.rl.supermimic_frozen_refresh_v1 import FrozenRefresh
         from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
         refresh_collector=None; refresh_serial=0
@@ -371,7 +432,7 @@ def run(args):
                                             compression='zstd'))
                     self.rows.clear()
                 self._manifest()
-        archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,control_ticks=0,transitions=0,chunks=[],
+        archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,policy_execution=policy_execution,control_ticks=0,transitions=0,chunks=[],
             scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=args.recovery_update_budget+args.approach_update_budget,
             replay_source_schema=['recent_online','older_online','initial_archive'],
             replay_stage_schema=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery','approach_active','hit_prepare','contact_release','approach_failure','post_hit']),chunk_ticks=1000000)
@@ -386,7 +447,7 @@ def run(args):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
+        config=dict(dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
@@ -403,7 +464,7 @@ def run(args):
             tracking_weight=args.tracking_weight,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         write(args.output/'config.json',config)
-        metadata=dict(init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
+        metadata=dict(policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
         global_attempt_id=0;global_accepted_id=0;global_rejected=0;global_backtracked=0
         if args.resume_training:
@@ -413,7 +474,7 @@ def run(args):
             archive.flush()  # Checkpoint never points beyond durable replay.
             atomic_torch_save(dict(algorithm='supermimic_v1',adapter_schema=adapter.schema,actor=actor.state_dict(),
                 critic=trainer.critic.state_dict(),world=adapter.state_dict(),actor_optimizer=trainer.actor_opt.state_dict(),
-                actor_optimizers={name:opt.state_dict() for name,opt in trainer._actor_optimizers.items()},
+                actor_optimizers=dict(getattr(trainer,'_pending_actor_optimizer_states',{}),**{name:opt.state_dict() for name,opt in trainer._actor_optimizers.items()}),
                 world_optimizer=trainer.world_opt.state_dict(),critic_optimizer=trainer.critic_opt.state_dict(),
                 actor_updates=trainer.actor_updates,actor_attempts=trainer.actor_attempts,
                 rejected_actor_updates=trainer.rejected_actor_updates,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
@@ -428,12 +489,15 @@ def run(args):
                                   native_tick_counter=int(replay._native_tick_counter),
                                   source_names=['initial_archive','online'],
                                   stage_names=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery']),
+                runtime_validation_archive=dict(path=runtime_validation_path,sha256=file_sha(runtime_validation_path)),
+                native_value_bank=native_value_bank,sequential_progress=schedule.state_dict(),actor_start_bank=replay.actor_start_bank.state_dict(),dynamic_stage_starts=replay.stage_starts,
                 reference_bank=trainer.reference_bank.payload() if trainer.reference_bank else None,
                 actor_references=dict(step=trainer.accepted_snapshot,block=trainer.block_start_snapshot,native=trainer.native_accepted_snapshot),
                 replay_metadata=dict(approach_metadata=replay.approach_metadata,
                     streams=replay.streams.cpu(), stage_ids=replay.stage_ids.cpu(),
                     source_ids=replay.source_ids.cpu(), policy_versions=replay.policy_versions.cpu(),
                     native_ticks=replay.native_ticks.cpu()),
+                replay_archive_receipts=(replay_receipts if replay_receipts is not None else [json.loads((Path(d)/'manifest.json').read_text()) for d in replay_archives])+[json.loads((archive.directory/'manifest.json').read_text())],
                 replay_archives=replay_archives+[str(archive.directory)],replay_rng=replay.generator.get_state(),
                 torch_rng=torch.get_rng_state(),cuda_rng=torch.cuda.get_rng_state()),args.output/name)
         def check_stop():
@@ -442,7 +506,7 @@ def run(args):
             for retry in range(32):
                 if critic_ready(trainer.critic_updates,trainer.last_critic_loss):return
                 check_stop()
-                state=as_state(starts[retry%len(starts)])
+                state=training_state(starts[retry%len(starts)])
                 stats=trainer.imagine_update(state,update_actor=False)
                 print('PHYSICAL_CRITIC='+json.dumps(stats),flush=True)
                 with (args.output/'critic_history.jsonl').open('a') as f:f.write(json.dumps(stats)+'\n')
@@ -456,18 +520,61 @@ def run(args):
         native_calibration.update(source='packed_loop/data.pt',discount_mode='physical_time',
                                   horizon_steps=int(rtg.shape[0]),native_return_scope='same-policy first completed 128 episodes')
         write(args.output/'native_critic_stage_audit.json',native_calibration)
-        native_calibration_fit=trainer.calibrate_critic_native([as_state(start_cache[0])],rtg[0],epochs=2)
-        native_calibration_fit.update(policy_id='initial_reference',source='packed_loop/data.pt',
-                                      discount_mode='physical_time',horizon_steps=int(rtg.shape[0]),
-                                      native_return_scope='same-policy first completed 128 episodes')
-        write(args.output/'native_critic_calibration.json',native_calibration_fit)
+        from quadsmash.rl.supermimic_dual_head_quality_v1 import split_native_value_rows,critic_holdout,reference_coverage
+        if args.resume_training and resumed.get('native_value_bank') is not None:
+            native_value_bank=resumed['native_value_bank']
+        else:
+            value_x=[];value_y=[];value_ids=[];value_masks={h:[] for h in ('recovery','approach')}
+            for ti in sorted(start_cache):
+                encoded=encode_native_value_start(start_cache[ti]);value_x.append(encoded['critic_input'].cpu());value_y.append(rtg[ti].float().cpu())
+                value_ids.extend([(lane,int(package['tensors']['episode'][ti,lane]),ti) for lane in range(128)])
+                for h in value_masks:value_masks[h].append(encoded['head_masks'][h].cpu())
+            native_value_bank=dict(inputs=torch.cat(value_x),rtg=torch.cat(value_y),identity=value_ids,
+                head_masks={h:torch.cat(v) for h,v in value_masks.items()},policy_id='initial_reference',
+                actor_sha256=tensor_digest(trainer.reference.state_dict().items()),source_sha256=packed_sha,policy_execution=manifest.get('policy_execution'))
+        if not args.resume_training:
+            initial_mask=torch.ones(128,dtype=torch.bool)
+            if wm_holdout_lanes:initial_mask[wm_holdout_lanes]=False
+            native_calibration_fit=trainer.calibrate_critic_native([as_state(start_cache[0])],rtg[0],epochs=2,masks=[initial_mask])
+            native_calibration_fit.update(policy_id='initial_reference',discount_mode='physical_time',horizon_steps=int(rtg.shape[0]),
+                native_return_scope='same-policy completed episodes; validation lanes excluded',heldout_lanes=wm_holdout_lanes)
+            write(args.output/'native_critic_calibration.json',native_calibration_fit)
+        def check_head_quality(head,attempt):
+            coverage=reference_coverage(trainer.reference_bank,head,trainer.tracking_weight)
+            write(args.output/(head+'_reference_coverage.json'),coverage)
+            if dual_quality is None:
+                return dict(enforced=False,reference=coverage,reason='no calibrated dual-head bounds configured')
+            from quadsmash.rl.supermimic_wm_validation_v1 import runtime_head_check
+            wm=runtime_head_check(adapter,runtime_validation_data,wm_holdout_lanes,launch,head,runtime_wm_bounds[head])
+            value=critic_holdout(trainer.critic,native_value_bank,head,wm_holdout_lanes,
+                current_actor_sha256=tensor_digest(actor.state_dict().items()),current_execution=policy_execution,limits=dual_quality['critic_upper_bounds'][head])
+            result=dict(head=head,attempt=attempt,enforced=True,wm=wm,critic=value,reference=coverage,
+                world_updates=trainer.world_updates,critic_updates=trainer.critic_updates)
+            write(args.output/'latest_dual_head_quality.json',result)
+            with (args.output/'dual_head_quality.jsonl').open('a') as f:f.write(json.dumps(result)+'\n')
+            if writer is not None:
+                step=tick*128
+                writer.add_scalar('quality/'+head+'/wm_passed',float(wm['passed']),step)
+                for event,horizons in wm['errors'].items():
+                    for horizon,metrics in horizons.items():
+                        for name,metric in metrics.items():
+                            if isinstance(metric,(int,float)):writer.add_scalar('quality/'+head+'/wm/'+event+'/'+horizon+'/'+name,metric,step)
+                writer.add_scalar('quality/'+head+'/critic_passed',float(value['passed']),step)
+                for key,metric in value.get('metrics',{}).items():
+                    if metric is not None:writer.add_scalar('quality/'+head+'/critic_'+key,metric,step)
+                writer.add_scalar('tracking/'+head+'/verified_reference_count',coverage['verified_reference_count'],step)
+                writer.flush()
+            if not wm['passed'] or not value['passed']:
+                save('quality_stopped.pt')
+                raise RuntimeError(head+' independent WM/critic quality failed; actor disabled, no automatic extra fitting')
+            return result
         # A already supplies complete native episodes. This warmup concerns the
         # new contextual critic, not recollecting a fresh 800 ticks each update.
         def cover_critic():
             nonlocal critic_coverage_blocks
             check_stop()
             selected=critic_coverage_blocks%len(critic_starts)
-            stats=trainer.imagine_update(as_state(critic_starts[selected]),update_actor=False)
+            stats=trainer.imagine_update(training_state(critic_starts[selected]),update_actor=False)
             critic_coverage_blocks+=1
             stats.update(coverage_blocks=critic_coverage_blocks,source_tick=CRITIC_TICKS[selected])
             with (args.output/'critic_coverage.jsonl').open('a') as f:f.write(json.dumps(stats)+'\n')
@@ -490,7 +597,7 @@ def run(args):
                     timebase.world_steps,128,iteration*total+offset,
                     source_quota=args.wm_source_quota,stage_quota=quotas,head=head,
                     recent_policy_window=args.wm_recent_policy_window,
-                    recent_tick_window=args.wm_recent_tick_window)
+                    recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes)
                 stats=trainer.fit_world_window(window,launch[lanes]); del window
                 stats['sampling']=sampling; reports.append(stats)
                 if writer is not None:
@@ -514,22 +621,33 @@ def run(args):
             aggregate.update(world_updates=len(reports),world_update_reports=reports,
                              world_update_seconds=time.perf_counter()-started)
             return aggregate
-        def run_block(block_name, names, budget, proposal_limit):
+        def run_block(block_name, names, budget, proposal_limit,cycle_index=0):
             nonlocal completed_returns,completed_discounted,completed_records,obs,tick,cursor
             nonlocal global_attempt_id,global_accepted_id,global_rejected,global_backtracked
             if budget<=0:return 0
-            trainer.set_trainable_names(names,block_name)
+            progress=schedule.block(cycle_index,block_name,budget,proposal_limit)
+            if progress['status']=='done':return progress['accepted']
+            continuing=progress['status']!='new'
+            trainer.set_trainable_names(names,block_name,reset_block=not continuing)
+            progress['status']='training'
             dynamic_names=('touchdown','post_touchdown','recovery_failure','stable_recovery') if block_name=='recovery' else ('approach_active',)
-            dynamic_pool=[item for name in dynamic_names for item in replay.stage_starts.get(name,[])]
+            dynamic_pool=[item for name in dynamic_names for item in replay.stage_starts.get(name,[]) if training_lane_available(item)]
             if block_name=='approach': dynamic_pool=[item for item in dynamic_pool if approach_active(item)]
             block_pool=(dynamic_pool + (recovery_pool if block_name=='recovery' else approach_pool))
             # Fixed, bounded multi-stage budget library for the entire block.
             # Actor starts refresh independently; do not move the budget test set per proposal.
             budget_rows=(recovery_pool if block_name=='recovery' else approach_pool)+critic_starts[:4]
             trainer.set_budget_state_library([as_state(row) for row in budget_rows])
-            accepted=0;attempts=0;max_attempts=proposal_limit
+            accepted=progress['accepted'];attempts=progress['attempts'];max_attempts=proposal_limit
+            trainer.actor_updates=accepted;trainer.actor_attempts=attempts
+            trainer.rejected_actor_updates=progress.get('rejected',attempts-accepted)
+            trainer.backtracked_actor_updates=progress.get('backtracked',0)
+            if progress['pending_refresh']:
+                refresh_frozen_policy(block_name)
+                progress['refresh_at']=accepted;progress['pending_refresh']=False;save('latest.pt')
             while accepted<budget and attempts<max_attempts:
                 attempts+=1;global_attempt_id+=1;trainer.block_attempts=attempts
+                progress['attempts']=attempts
                 trainer.actor_updates=accepted
                 trainer.actor_attempts=attempts
                 check_stop();cover_critic();ensure_critic()
@@ -541,6 +659,7 @@ def run(args):
                         if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite native observation')
                         for raw in env.rally_records[cursor:]:
                             record=score_terminal_episode(raw,dict(protocol,_root=str(ROOT)));record.update(policy_block=block_name,policy_update_at_end=accepted,scope='mixed-policy monitoring, not frozen score');completed_returns.append(record['native_episode_return']);completed_discounted.append(record['native_episode_discounted_return']);completed_records.append(record)
+                            replay.actor_start_bank.label_terminal(record,replay.current_stream)
                             with (args.output/'native_episodes.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                             if writer is not None:
                                 step=int(tick*128); total=len(completed_records)
@@ -557,11 +676,12 @@ def run(args):
                         cursor=len(env.rally_records)
                 collect_s=time.perf_counter()-started;check_stop()
                 world_stats=run_world_updates(global_attempt_id)
+                quality=check_head_quality(block_name,global_attempt_id)
                 # Rebuild the start pool for every proposal.  Recovery starts
                 # therefore follow fresh event-aligned native data as it
                 # arrives; the verified archive remains a deterministic
                 # fallback when a stage is temporarily under-populated.
-                dynamic_pool=[item for name in dynamic_names for item in replay.stage_starts.get(name,[])]
+                dynamic_pool=[item for name in dynamic_names for item in replay.stage_starts.get(name,[]) if training_lane_available(item)]
                 if block_name=='approach': dynamic_pool=[item for item in dynamic_pool if approach_active(item)]
                 pool=dynamic_pool + (recovery_pool if block_name=='recovery' else approach_pool)
                 if block_name=='approach' and replay.new_starts:
@@ -571,7 +691,15 @@ def run(args):
                 if block_name=='approach':
                     active_pool=[item for item in pool if approach_active(item)]
                     pool=active_pool if active_pool else approach_pool
-                row=pool[(attempts-1)%len(pool)];state=as_state(row);check_stop();stats=trainer.imagine_update(state)
+                row=pool[(attempts-1)%len(pool)];start_sampling={'source':'recovery_event_pool'}
+                if block_name=='approach':
+                    sampled,start_sampling=replay.actor_start_bank.sample(attempts)
+                    if sampled is not None and training_lane_available(sampled):row=sampled
+                    else:start_sampling['fallback']='verified_initial_archive_or_event_pool';start_sampling['excluded_holdout_only_start']=sampled is not None
+                state=training_state(row);check_stop();trainer.actor_attempts=attempts-1
+                stats=trainer.imagine_update(state)
+                stats['actor_start_sampling']=start_sampling
+                stats['quality_protection']=quality
                 if stats['update_accepted']:
                     if not any(v>0.0 for v in stats['parameter_max_changes'].values()):
                         raise RuntimeError(f'{block_name} accepted update had zero trainable parameter change; no effective gradient')
@@ -579,9 +707,11 @@ def run(args):
                     global_accepted_id+=1
                 else:
                     global_rejected+=1
-                global_backtracked += int(stats.get('update_accepted',False) and stats.get('backtrack_alpha',1.)<1.)
-                with torch.no_grad():request=actor(state.observation,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
-                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_accepted_updates=accepted,attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
+                backtracked=int(stats.get('update_accepted',False) and stats.get('backtrack_alpha',1.)<1.)
+                global_backtracked += backtracked
+                progress.update(attempts=attempts,accepted=accepted,rejected=progress.get('rejected',0)+int(not stats['update_accepted']),backtracked=progress.get('backtracked',0)+backtracked)
+                with torch.no_grad():request=trainer._actor_action(state,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
+                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_accepted_updates=accepted,block_rejected=progress['rejected'],block_backtracked=progress['backtracked'],attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
                 if writer is not None:
                     step=int(tick*128)
                     writer.add_scalar('native/step_reward_mean',float(reward.mean()),step)
@@ -594,7 +724,7 @@ def run(args):
                     writer.add_scalar('actor/%s_gate_active'%block_name,float(stats.get('effective_gate_lanes',0)),step)
                     writer.add_scalar('actor/effective_updates',float(stats.get('actor_updates',0)),step)
                     writer.add_scalar('actor/tracking_loss',float(stats.get('tracking_loss',0.0)),step)
-                    for name in ('task_gradient_norm','tracking_gradient_norm','anchor_gradient_norm','task_tracking_cosine','final_command_max_change','objective_before','objective_after'):
+                    for name in ('task_gradient_norm','tracking_gradient_norm','anchor_gradient_norm','task_tracking_cosine','final_command_max_change','objective_before','objective_after','tracking_active_lane_steps','tracking_effective_weight_sum','tracking_nonzero_gradient_lanes'):
                         if name in stats:writer.add_scalar('actor/'+name,float(stats[name]),step)
                     writer.add_scalar('actor/accepted_updates',global_accepted_id,step)
                     writer.add_scalar('actor/rejected_updates',global_rejected,step)
@@ -608,14 +738,23 @@ def run(args):
                 print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
                 if stats['update_accepted'] and accepted and accepted%16==0:save(f'{block_name}_checkpoint_{accepted:04d}.pt')
                 if block_name=='approach' and stats['update_accepted'] and accepted%args.approach_refresh_interval==0:
+                    progress['pending_refresh']=True;save('latest.pt')
                     refresh_frozen_policy('approach')
-            if block_name=='approach' and accepted and accepted%args.approach_refresh_interval:
+                    progress['refresh_at']=accepted;progress['pending_refresh']=False;save('latest.pt')
+            if accepted<budget:
+                save(f'{block_name}_candidate_{accepted:04d}.pt')
+                write(args.output/'block_incomplete.json',dict(block=block_name,target=budget,accepted=accepted,attempts=attempts,limit=max_attempts))
+                raise RuntimeError(f'{block_name}: proposal budget exhausted ({accepted}/{budget} accepted); next block disabled')
+            if block_name=='approach' and accepted>progress['refresh_at']:
+                progress['pending_refresh']=True;save('latest.pt')
                 refresh_frozen_policy('approach')
+                progress['refresh_at']=accepted;progress['pending_refresh']=False
             save(f'{block_name}_candidate_{accepted:04d}.pt')
+            progress['status']='done';save('latest.pt')
             return accepted
         def refresh_frozen_policy(head):
             """Bounded first-complete-episode collection; no mid-episode manual reset."""
-            nonlocal obs,tick,cursor,refresh_collector,refresh_serial
+            nonlocal obs,tick,cursor,refresh_collector,refresh_serial,runtime_validation_data,runtime_validation_path,native_value_bank
             if args.refresh_ticks==0:return 0,0
             refresh_serial+=1
             policy_id=f'{head}_frozen_v{global_accepted_id}_refresh{refresh_serial}'
@@ -623,7 +762,7 @@ def run(args):
             refresh_dir.mkdir(exist_ok=False)
             from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
             actor_hash=tensor_digest(actor.state_dict().items())
-            refresh_collector=FrozenRefresh(128,800,timebase.gamma,policy_id,adapter.task_model.memory_schema)
+            refresh_collector=FrozenRefresh(128,800,timebase.gamma,policy_id,adapter.task_model.memory_schema,stage_ticks=tuple(sorted(set(CRITIC_TICKS+APPROACH_TICKS+RECOVERY_TICKS))),start_encoder=encode_native_value_start)
             replay.new_stream(source='online',policy_version=global_accepted_id)
             start_tick=tick
             record_cursor=len(env.rally_records)
@@ -645,22 +784,51 @@ def run(args):
                             if (int(r['env_id']),int(r['episode_index'])) in wanted]
             keys={(int(r['env_id']),int(r['episode_index'])) for r in native_records}
             if len(native_records)!=128 or keys!=wanted:raise RuntimeError('Frozen refresh terminal-score identities incomplete or duplicated')
-            for record in native_records:record.update(policy_id=policy_id,actor_sha256=actor_hash,scope='frozen training refresh, not candidate promotion')
+            for record in native_records:
+                record.update(policy_id=policy_id,actor_sha256=actor_hash,policy_execution=policy_execution,scope='frozen training refresh, not candidate promotion')
+                replay.actor_start_bank.label_terminal(record,replay.current_stream)
             write(refresh_dir/'episodes_summary.json',native_records)
             cursor=len(env.rally_records) # these records belong to the frozen stream, not mixed monitoring
-            receipt.update(start_tick=start_tick,end_tick=tick,actor_sha256=actor_hash,head=head,formal_evaluation=False,
+            receipt.update(start_tick=start_tick,end_tick=tick,actor_sha256=actor_hash,policy_execution=policy_execution,head=head,formal_evaluation=False,
                            native_metrics=summarize_native_episodes(native_records))
             packed=collector.packed_complete()
+            runtime_validation_data=packed
             atomic_torch_save(dict(tensors=packed,policy_id=policy_id,receipt=receipt),refresh_dir/'complete_episodes.pt')
+            runtime_validation_path=str(refresh_dir/'complete_episodes.pt')
             refresh_stats=run_world_updates(global_attempt_id,args.refresh_world_updates,head=head) if args.refresh_world_updates else {'world_updates':0}
-            fits=[];stages=sorted(collector.starts)
+            # Encode every eligible lane once, keeping only compact critic
+            # inputs. Full asynchronous G07 snapshots are read one at a time.
+            native_x=[];native_y=[];native_stage=[];native_identity=[];native_masks={h:[] for h in ('recovery','approach')}
+            with torch.no_grad():
+                for ti,row,mask in collector.calibration_rows():
+                    ids=torch.where(mask)[0]
+                    if 'critic_input' in row:native_x.append(row['critic_input'][mask])
+                    else:
+                        state=as_state(row)
+                        native_x.append(adapter.critic_input(state)[mask.to(state.physical.device)].detach().cpu())
+                    for h in native_masks:native_masks[h].append(row['head_masks'][h][mask].cpu())
+                    native_y.append(rtg_refresh[ti,ids].float())
+                    native_stage.extend([ti]*len(ids))
+                    native_identity.extend([(int(i),int(collector.ids[i]),ti) for i in ids])
+            if not native_x:raise RuntimeError('No complete frozen native critic labels')
+            x=torch.cat(native_x);y=torch.cat(native_y);phase_ids=torch.tensor(native_stage)
+            native_value_bank=dict(inputs=x,rtg=y,identity=native_identity,head_masks={h:torch.cat(v) for h,v in native_masks.items()},
+                policy_id=policy_id,actor_sha256=actor_hash,policy_execution=policy_execution,source_sha256=file_sha(refresh_dir/'complete_episodes.pt'))
+            native_rows=torch.arange(len(y))
+            if wm_holdout_lanes:
+                train_mask,_=split_native_value_rows(native_value_bank,wm_holdout_lanes);native_rows=native_rows[train_mask]
+            visited=torch.zeros(len(y),dtype=torch.bool)
+            order=native_rows[torch.randperm(len(native_rows),generator=replay.generator)]
+            fits=[]
             for update in range(args.refresh_critic_updates):
-                if not stages:raise RuntimeError('No causal stage states for frozen critic labels')
-                ti=stages[update%len(stages)];row,mask=collector.starts[ti]
-                state=as_state(row)
-                fit=trainer.calibrate_critic_native([state],rtg_refresh[ti].to(state.physical.device),epochs=1,
-                    masks=[mask.to(state.physical.device)])
+                start=(update*128)%len(order);ids=torch.cat((order,order))[start:start+min(128,len(order))]
+                visited[ids]=True
+                fit=trainer.calibrate_critic_tensors(x[ids].to('cuda:0'),y[ids].to('cuda:0'),epochs=1)
                 fits.append(fit)
+            receipt['critic_stage_coverage']={str(t):dict(eligible=int((phase_ids==t).sum()),used=int(((phase_ids==t)&visited).sum())) for t in sorted(set(native_stage))}
+            atomic_torch_save(dict(native_value_bank,stage=phase_ids),refresh_dir/'native_critic_labels.pt')
+            if wm_holdout_lanes:
+                receipt['critic_holdout']={h:critic_holdout(trainer.critic,native_value_bank,h,wm_holdout_lanes,current_actor_sha256=actor_hash,current_execution=policy_execution,limits=dual_quality['critic_upper_bounds'][h]) for h in ('recovery','approach')}
             if trainer.reference_bank is not None:
                 from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
                 source_hash=hashlib.sha256((refresh_dir/'complete_episodes.pt').read_bytes()).hexdigest()
@@ -709,7 +877,7 @@ def run(args):
                 if stats['update_accepted']:
                     if not any(v>0.0 for v in stats['parameter_max_changes'].values()): raise RuntimeError('joint accepted update had zero trainable parameter change')
                     accepted += 1
-                with torch.no_grad(): request=actor(state.observation,sample=False)[0]; preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
+                with torch.no_grad(): request=trainer._actor_action(state,sample=False)[0]; preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
                 record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block='joint',block_accepted_updates=accepted,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s,native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='initialization_archive')
                 save('latest.pt'); write(args.output/'progress.json',record)
                 with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
@@ -731,11 +899,18 @@ def run(args):
                     recovery_accepted=0
                     refresh_world_updates,refresh_critic_updates=0,0
                 else:
-                    recovery_accepted=run_block('recovery', RECOVERY_NAMES, min(args.recovery_update_budget,args.recovery_proposal_budget), args.recovery_proposal_budget)
-                    save('cycle_%02d_recovery_candidate_%04d.pt' % (cycle+1,recovery_accepted))
-                    refresh_world_updates,refresh_critic_updates=refresh_frozen_policy('recovery')
-                save('cycle_%02d_recovery_refresh_candidate_%04d.pt' % (cycle+1,recovery_accepted))
-                approach_accepted=run_block('approach', APPROACH_NAMES, min(args.approach_update_budget,args.approach_proposal_budget), args.approach_proposal_budget)
+                    recovery_was_done=schedule.block(cycle,'recovery',args.recovery_update_budget,args.recovery_proposal_budget)['status']=='done'
+                    recovery_accepted=run_block('recovery', RECOVERY_NAMES, args.recovery_update_budget, args.recovery_proposal_budget,cycle)
+                    if not recovery_was_done:save('cycle_%02d_recovery_candidate_%04d.pt' % (cycle+1,recovery_accepted))
+                    rp=schedule.block(cycle,'recovery',args.recovery_update_budget,args.recovery_proposal_budget)
+                    if not rp.get('frozen_refresh_done',False):
+                        refresh_world_updates,refresh_critic_updates=refresh_frozen_policy('recovery')
+                        rp.update(frozen_refresh_done=True,refresh_world_updates=refresh_world_updates,refresh_critic_updates=refresh_critic_updates);save('latest.pt')
+                    else:
+                        refresh_world_updates=rp.get('refresh_world_updates',0);refresh_critic_updates=rp.get('refresh_critic_updates',0)
+                # Do not mislabel an already-updated Approach actor as a Recovery checkpoint.
+                if trainer.block_name=='recovery':save('cycle_%02d_recovery_refresh_candidate_%04d.pt' % (cycle+1,recovery_accepted))
+                approach_accepted=run_block('approach', APPROACH_NAMES, args.approach_update_budget, args.approach_proposal_budget,cycle)
                 total_accepted=recovery_accepted+approach_accepted
                 archive.flush(); save('cycle_%02d_candidate_%04d.pt' % (cycle+1,total_accepted))
                 cycle_results.append(dict(cycle=cycle+1,recovery_accepted=recovery_accepted,approach_accepted=approach_accepted,
@@ -788,7 +963,7 @@ def run(args):
             if stats['update_accepted'] and not any(v>0 for v in stats['parameter_max_changes'].values()):
                 raise RuntimeError('Accepted actor optimizer step made no approach parameter change')
             with torch.no_grad():
-                request=actor(state.observation,sample=False)[0]
+                request=trainer._actor_action(state,sample=False)[0]
                 preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],
                     state.clock_goal_context['limits'],state.executor_memory)
             record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},native_ticks=tick,

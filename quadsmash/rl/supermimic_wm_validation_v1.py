@@ -2,7 +2,33 @@
 import torch
 from .supermimic_ball_sequence_v1 import ball_transition
 from .supermimic_physical_dataset_v1 import decode_physical
+from .supermimic_physical_dataset_v1 import valid_windows
 from .supermimic_event_hazard_v1 import advance_event_latches
+
+def event_aligned_windows(data,lanes,*,horizon=64,offsets=(-4,-1,0,1,4),maximum=128):
+    """Offsets use the native transition that first creates contact/frame latch.
+
+    Offset zero starts immediately before that transition; labels are offline
+    selection only. No interpolation of PhysX substeps is performed.
+    """
+    valid=valid_windows(data['episode'],data['terminated'],data['timeout'],horizon)
+    if 'valid_lengths' in data:valid &= torch.arange(len(valid))[:,None]+horizon<=data['valid_lengths'][None]
+    allowed=torch.zeros(valid.shape[1],dtype=torch.bool);allowed[list(lanes)]=True
+    before,after=data['event_state'],data['next_event_state']
+    contacts=((after[:,:,1]>before[:,:,1])|(after[:,:,6]>before[:,:,6]))&allowed[None]
+    events=contacts.nonzero();result={}
+    for offset in offsets:
+        rows=[];ticks=[]
+        for tick,lane in events.tolist():
+            start=tick+offset
+            if start<0 or start>=len(valid) or not valid[start,lane]:continue
+            if data['episode'][start,lane]!=data['episode'][tick,lane]:continue
+            if data['terminated'][min(start,tick):max(start,tick),lane].any() or data['timeout'][min(start,tick):max(start,tick),lane].any():continue
+            rows.append((start,lane));ticks.append(tick)
+            if len(rows)>=maximum:break
+        result[str(offset)]=dict(starts=torch.tensor(rows,dtype=torch.long).reshape(-1,2),event_ticks=ticks,
+                                offset_control_ticks=offset,source='native qualified-contact/frame latch edge, not substep timestamp')
+    return result
 
 @torch.no_grad()
 def validate_windows(adapter,window,launch,horizons=(1,4,16,32,64)):
@@ -31,6 +57,7 @@ def validate_windows(adapter,window,launch,horizons=(1,4,16,32,64)):
                 orientation_rad=float((2*torch.acos((q*qt).sum(-1).abs().clamp(0,1))).mean()),
                 angular_velocity_rmse=float(delta[:,10:13].square().mean().sqrt()),joint_velocity_rmse=float(delta[:,31:49].square().mean().sqrt()),
                 ball_position_rmse=float(delta[:,49:52].square().mean().sqrt()),ball_velocity_rmse=float(delta[:,52:55].square().mean().sqrt()),
+                ball_forward_sign_error=float(((state[:,52]>0)!=(target[:,52]>0)).float().mean()),
                 ball_forward_sign_accuracy=float(((state[:,52]>0)==(target[:,52]>0)).float().mean()),
                 foot_contact_brier=float((feet-window['next_feet'][t].float()).square().mean()),
                 body_ground_brier=float((body-truth).square().mean()),task_event_brier=float((events-window['next_event_state'][t]).square().mean()),
@@ -82,3 +109,67 @@ def command_sensitivity(adapter,window,launch,*,epsilon=.001,joints=(12,13,14,15
         rows.append(dict(joint=int(joint),robot_derivative_norm=float(fd[:,:49].norm()),ball_derivative_norm=float(fd[:,49:].norm()),
                          scope='model only; perturbs final targets; native slew/contact-cache replay not performed'))
     return rows
+
+@torch.no_grad()
+def runtime_contact_check(adapter,data,lanes,launch,upper_bounds,*,maximum=16):
+    """Fixed event-aligned holdout check; caller excludes these lanes from WM fit."""
+    pairs=event_aligned_windows(data,lanes,maximum=maximum)['-1']['starts']
+    if not len(pairs):raise ValueError('No held-out event-aligned contact windows; do not substitute standing loss')
+    t,ids=pairs.unbind(1);indices=t[None]+torch.arange(64)[:,None]
+    device=next(adapter.parameters()).device
+    window={k:v[indices,ids[None]].to(device) for k,v in data.items() if v.ndim>=2 and v.shape[:2]==data['episode'].shape}
+    results=validate_windows(adapter,window,launch[ids.to(launch.device)],horizons=(1,4,16,64))
+    failures={}
+    for path,limit in upper_bounds.items():
+        horizon,key=path.split('/',1);value=results.get(horizon,{}).get(key)
+        if value is None or not isinstance(value,(int,float)) or not torch.isfinite(torch.tensor(value)) or value>limit:
+            failures[path]=dict(value=value,upper_bound=limit)
+    return dict(errors=results,failures=failures,passed=not failures,window_starts=pairs.tolist(),
+                scope='event-aligned held-out recorded-command prediction; not native policy score')
+
+
+def recovery_event_windows(data,lanes,*,horizon=64,maximum=16):
+    """Recovery event origins, using observed jump/contact and native foot edges."""
+    valid=valid_windows(data['episode'],data['terminated'],data['timeout'],horizon)
+    if 'valid_lengths' in data:valid &= torch.arange(len(valid))[:,None]+horizon<=data['valid_lengths'][None]
+    allowed=torch.zeros(valid.shape[1],dtype=torch.bool);allowed[list(lanes)]=True
+    event=data['event_state'];nxt=data['next_event_state'];feet=data['feet'].bool().any(-1);after=data['next_feet'].bool().any(-1)
+    posthit=(event[:,:,1]>.5)&(event[:,:,0]>.5)
+    groups={'touchdown':(~feet)&after&posthit,'support_loss':feet&(~after)&posthit,
+            'body_ground':(nxt[:,:,5]>event[:,:,5])&posthit,'stable':(nxt[:,:,4]>event[:,:,4])&posthit}
+    result={}
+    for name,mask in groups.items():
+        rows=[]
+        for tick,lane in (mask&allowed[None]).nonzero().tolist():
+            start=max(0,tick-1)
+            if start>=len(valid) or not valid[start,lane]:continue
+            rows.append((start,lane))
+            if len(rows)>=maximum:break
+        result[name]=torch.tensor(rows,dtype=torch.long).reshape(-1,2)
+    return result
+
+
+@torch.no_grad()
+def runtime_head_check(adapter,data,lanes,launch,head,upper_bounds,*,maximum=16):
+    from .supermimic_dual_head_quality_v1 import compare_bounds
+    if head=='approach':groups={'contact':event_aligned_windows(data,lanes,maximum=maximum)['-1']['starts']}
+    elif head=='recovery':groups=recovery_event_windows(data,lanes,maximum=maximum)
+    else:raise ValueError('Unknown WM validation head')
+    measured={};failures={};starts={}
+    for name,pairs in groups.items():
+        starts[name]=pairs.tolist()
+        if not len(pairs):continue
+        t,ids=pairs.unbind(1);at=t[None]+torch.arange(64)[:,None];device=next(adapter.parameters()).device
+        window={k:v[at,ids[None]].to(device) for k,v in data.items() if v.ndim>=2 and v.shape[:2]==data['episode'].shape}
+        result=validate_windows(adapter,window,launch[ids.to(launch.device)],horizons=(1,4,16,32,64))
+        measured[name]=result
+        flat={h+'/'+k:v for h,m in result.items() for k,v in m.items()}
+        failed=compare_bounds(flat,upper_bounds)
+        if failed:failures[name]=failed
+    # Missing critical events are unknown, never successful validation.
+    required='contact' if head=='approach' else 'touchdown'
+    if required not in measured:failures['missing_required_event']=required
+    return dict(head=head,passed=not failures,errors=measured,failures=failures,window_starts=starts,
+                missing_events=[k for k,v in starts.items() if not v],
+                scope='held-out recorded-command prediction; native action-response evidence is separate',
+                contact_source='native task/foot flags, not independent paired PhysX forces')

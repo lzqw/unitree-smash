@@ -34,8 +34,8 @@ def test_stage_classification_is_per_lane_and_touchdown_is_event_aligned():
 
 def test_stratified_sampler_reports_quota_shortfall_instead_of_faking_data():
     pools = {
-        'pre_touchdown': torch.tensor([[0, 0], [1, 0]]),
-        'touchdown': torch.tensor([[2, 0], [3, 1]]),
+        'pre_touchdown': torch.tensor([[0, 0],[0,1], [1, 0],[1,1]]),
+        'touchdown': torch.tensor([[2, 0],[2,1],[3,0], [3, 1]]),
     }
     source_labels = torch.tensor([[0, 0], [0, 0], [1, 1], [1, 1]])
     chosen, report = sample_stratified_windows(

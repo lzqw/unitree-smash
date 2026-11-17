@@ -148,6 +148,9 @@ def _run_native(args, stop_request):
         if trained is not None:
             actor.load_state_dict(trained['actor'], strict=True)
         actor.eval()
+        from quadsmash.rl.supermimic_policy_execution_v1 import resolve_contract,policy_forward
+        policy_execution,execution_provenance=resolve_contract(trained)
+        write_json(args.output/'policy_execution.json',dict(contract=policy_execution,provenance=execution_provenance))
         if args.record_physical_transitions:
             from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive
             if env._sm_residual_controller is None:
@@ -187,7 +190,7 @@ def _run_native(args, stop_request):
                 if reference is not None:
                     old_final = reference.action(obs, env._sm_residual_default, env._sm_residual_limits)
                     old_target = full_range_targets(old_final, env._sm_residual_limits).clone()
-                action = actor(before, sample=False)[0].clamp(-1.,1.)
+                action = policy_forward(actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
                 if not torch.isfinite(action).all():
                     raise FloatingPointError('Nonfinite evaluation action')
                 obs, _, done, _ = wrapper.step(action)
@@ -257,7 +260,7 @@ def _run_native(args, stop_request):
         native_summary = summarize_native_episodes(rows)
         n=native_summary['conditional_recovery_denominator']
         recovery=native_summary['conditional_recovery_count']
-        metrics=dict(evaluation_scope='TRAIN128 development, not A/B acceptance',
+        metrics=dict(policy_execution=policy_execution,policy_execution_provenance=execution_provenance,evaluation_scope='TRAIN128 development, not A/B acceptance',
             num_envs=128,control_ticks=800,episode_seconds=8.,
             qualified_airborne_string_contact=n,
             ball_side_complete_except_recovery=sum(r['ball_side_complete_except_recovery'] for r in rows),

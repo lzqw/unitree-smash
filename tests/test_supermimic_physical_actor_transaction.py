@@ -69,3 +69,53 @@ def test_zero_final_command_response_rolls_back_parameters_and_adam():
     assert not stats['update_accepted'] and len(stats['backtrack_trials'])==5
     assert t.actor_opt.state_dict()['state']=={}
     for k,v in before.items():assert torch.equal(v,t.actor.state_dict()[k])
+
+
+def test_tracking_normalizes_global_lane_time_mass_not_mean_of_time_means():
+    t=learner();state=t.budget_states[0]
+    t.adapter.physical_model=SimpleNamespace(geometry=None)
+    original=t.adapter.forward
+    def alive(s,a):
+        new,reward,done,info=original(s,a)
+        return new,reward,torch.zeros_like(done),info
+    t.adapter.forward=alive
+    class Reference:
+        entries=[dict(mode='approach',terminal_verified=True,score_schema='historical-independent-complete5-v1')]
+        def bind(self,*args,**kwargs):return {'matched':torch.ones(2,dtype=torch.bool)}
+        def loss(self,p,elapsed,*args,**kwargs):
+            first=float(elapsed[0])<.015
+            weights=p.new_tensor([1.,0.] if first else [1.,1.])
+            values=p[:,0]*0+(1. if first else 4.)
+            return (values*weights).sum(),weights.sum(),weights
+    t.reference_bank=Reference();t.tracking_weight=1.
+    rollout=t._rollout_objective(state)
+    assert float(rollout['tracking'])==3. # (1 + 4 + 4) / (1 + 2)
+    assert rollout['tracking_effective_weight_sum']==3
+    assert rollout['tracking_active_lane_steps']==3
+
+
+def test_recovery_approach_recovery_bptt_and_independent_adam_cpu_contract():
+    t=learner()
+    class Dual(nn.Module):
+        def __init__(self):
+            super().__init__();self.base=nn.Linear(2,2,bias=False);self.recovery=nn.Linear(2,2,bias=False);self.approach=nn.Linear(2,2,bias=False)
+            for p in self.parameters():nn.init.zeros_(p)
+        def forward(self,obs,sample=False):
+            action=self.base(obs)+self.recovery(obs)+self.approach(obs)
+            return action,action.new_zeros(len(obs),1),action.new_zeros(len(obs),1)
+    t.actor=Dual();t.reference=copy.deepcopy(t.actor).requires_grad_(False)
+    t._actor_optimizers={};t._pending_actor_optimizer_states={}
+    t.native_accepted_snapshot=copy.deepcopy(t.actor.state_dict())
+    seen={}
+    for head in ('recovery','approach','recovery'):
+        t.set_trainable_names([head+'.weight'],head)
+        before=copy.deepcopy(t.actor.state_dict());model_before=copy.deepcopy(t.adapter.state_dict())
+        stats=t.imagine_update(t.budget_states[0])
+        assert stats['update_accepted'] and stats['task_gradient_norm']>0 and stats['final_command_max_change']>0
+        for name,value in t.actor.state_dict().items():
+            assert (not torch.equal(value,before[name])) == (name==head+'.weight')
+        for name,value in model_before.items():assert torch.equal(value,t.adapter.state_dict()[name])
+        seen[head]=seen.get(head,0)+1
+        assert int(next(iter(t.actor_opt.state.values()))['step'])==seen[head]
+    assert seen=={'recovery':2,'approach':1}
+    for name,value in t.native_accepted_snapshot.items():assert value.eq(0).all()

@@ -126,6 +126,7 @@ try:
         'policy_checkpoint': str(checkpoint),
         'policy_checkpoint_sha256': digest(checkpoint),
     }
+    learned_actor=None
     if args.supermimic_checkpoint is not None:
         candidate_path = args.supermimic_checkpoint.resolve()
         candidate = torch.load(candidate_path, map_location='cpu', weights_only=False)
@@ -155,9 +156,14 @@ try:
         native_actor.load_state_dict(exported_state, strict=True)
         if not all(torch.isfinite(value).all() for value in exported_state.values()):
             raise ValueError('SuperMimic actor contains nonfinite parameters')
-        controller.actor = native_actor
+        from quadsmash.rl.supermimic_v1 import ResidualPPOInitializedActor
+        from quadsmash.rl.supermimic_policy_execution_v1 import resolve_contract,policy_forward
+        learned_actor=ResidualPPOInitializedActor(native_actor).to(env.device)
+        learned_actor.load_state_dict(actor_state,strict=True);learned_actor.eval()
+        policy_execution,execution_provenance=resolve_contract(candidate)
         policy_meta = {
             'policy_kind': 'supermimic_actor_on_native_g07_executor',
+            'policy_execution':policy_execution,'policy_execution_provenance':execution_provenance,
             'policy_checkpoint': str(candidate_path),
             'policy_checkpoint_sha256': digest(candidate_path),
             'execution_checkpoint': str(checkpoint),
@@ -196,7 +202,11 @@ try:
             tick_start = time.perf_counter()
             if tick == 0:
                 progress('before_controller_action')
-            action = controller.action(observation, default, limits)
+            if learned_actor is None:
+                action = controller.action(observation, default, limits)
+            else:
+                request=policy_forward(learned_actor,observation['policy'],env.rally,mode=policy_execution['recovery_gate'],sample=False)[0]
+                action=controller.apply_residual(observation,request,default,limits)
             if tick == 0:
                 progress(f'after_controller_action elapsed_s={time.perf_counter() - tick_start:.3f}')
             if action.shape != (capture_envs, 18) or not torch.isfinite(action).all():

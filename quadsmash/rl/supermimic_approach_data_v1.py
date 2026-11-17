@@ -4,7 +4,7 @@ import torch
 APPROACH_QUOTA = dict(uniform=24, approach_active=32, hit_prepare=24,
                      contact_release=24, approach_failure=16, post_hit=8)
 FIELDS = ('approach_gate', 'racket_distance', 'had_contact', 'released',
-          'qualified', 'frame_hit', 'attack')
+          'qualified', 'frame_hit', 'attack', 'crossed_net', 'landed_target')
 
 def active_gate(gate, threshold=.25, minimum_batch_lanes=4):
     gate = gate.detach().reshape(-1)
@@ -31,7 +31,7 @@ def native_approach_metadata(row, actor, geometry):
                            p['root_quaternion_w'],p['root_link_velocity_w'],p['root_angular_velocity_w'])
             result['racket_distance'] = (kin['position'][:,geometry.ids['Racket']]-p['ball_position_w']).norm(dim=-1).cpu()
         for name,value in dict(had_contact=field('had_contact'),released=field('released'),
-                               qualified=contact,frame_hit=field('frame_hit'),attack=attack).items():
+                               qualified=contact,frame_hit=field('frame_hit'),attack=attack,crossed_net=field('crossed_net'),landed_target=field('landed_target')).items():
             result[prefix+name] = value.detach().cpu()
     return result
 
@@ -49,10 +49,12 @@ def approach_window_masks(metadata, valid, steps, *, gate_threshold=.25, min_gat
     illegal=((metadata['next_frame_hit']>.5)&(metadata['frame_hit']<.5)) | (contact&(metadata['next_qualified']<.5))
     bad_out=release & (metadata['next_qualified']>.5)&(metadata['next_attack']<.5)
     miss=metadata.get('completed_miss',torch.zeros_like(pre)) & near & pre
+    failed_net=metadata.get('failed_net_crossing',torch.zeros_like(pre))
+    failed_target=metadata.get('failed_target_landing',torch.zeros_like(pre))
     return dict(approach_active=((gate>gate_threshold).unfold(0,steps,1).sum(-1)>=min(min_gate_steps,steps))&valid,
                 hit_prepare=any_window(near & pre), contact_release=any_window(contact|release),
-                approach_failure=any_window(illegal|bad_out|miss),post_hit=any_window(metadata['released']>.5),
-                near_miss=any_window(miss),illegal_contact=any_window(illegal),invalid_outgoing=any_window(bad_out))
+                approach_failure=any_window(illegal|bad_out|miss|((failed_net|failed_target)&(pre|contact|release))),post_hit=any_window(metadata['released']>.5),
+                near_miss=any_window(miss),illegal_contact=any_window(illegal),invalid_outgoing=any_window(bad_out),failed_net_crossing=any_window(failed_net&(pre|contact|release)),failed_target_landing=any_window(failed_target&(pre|contact|release)))
 
 def masked_lane_mean(value, weights):
     weights=weights.detach().reshape(-1).to(value)

@@ -150,9 +150,11 @@ class TaskSpaceReferenceBankV1:
                     times=time_table[chosen],features=feature_table[chosen],lengths=sizes[chosen],
                     distance=best,offset=aligned-elapsed.detach().reshape(-1))
 
-    def loss(self,predicted_physical,elapsed,reference,mode,geometry=None,valid_mask=None,weights=None):
+    def loss(self,predicted_physical,elapsed,reference,mode,geometry=None,valid_mask=None,weights=None,return_components=False):
         actual=task_space_features(predicted_physical,geometry,mode)
-        if reference is None:return actual.sum()*0.
+        if reference is None:
+            zero=actual.sum()*0.
+            return (zero,zero.detach(),actual.new_zeros(len(actual))) if return_components else zero
         times,features,lengths=reference['times'],reference['features'],reference['lengths']
         rows=torch.arange(len(actual),device=actual.device)
         query=elapsed.detach().reshape(-1)+reference['offset']
@@ -165,4 +167,7 @@ class TaskSpaceReferenceBankV1:
         if valid_mask is not None:mask=mask&valid_mask.to(mask.device)
         w=mask.to(actual.dtype)
         if weights is not None:w=w*weights.detach().reshape(-1)
-        return ((actual-target.detach()).square().mean(-1)*w).sum()/w.sum().clamp_min(1.)
+        numerator=((actual-target.detach()).square().mean(-1)*w).sum()
+        denominator=w.sum()
+        if return_components:return numerator,denominator,w
+        return numerator/denominator.clamp_min(1e-8)
