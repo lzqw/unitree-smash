@@ -1,0 +1,26 @@
+[
+  {
+    "run": "long01",
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_recorded_predictors_v2 --native reports/task_constrained_hit_20261118/attempts/calibration01/native --spheres reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json --start-tick 201 --steps 80 --method sphere_speed_and_position_stops --rollout --output reports/prediction_position_stops_20261118/long01",
+    "exit_code": 0,
+    "implementation": "PRELIMINARY_IMPLEMENTATION.patch"
+  },
+  {
+    "run": "one_step01",
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_recorded_predictors_v2 --native reports/task_constrained_hit_20261118/attempts/calibration01/native --spheres reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json --start-tick 201 --steps 80 --method sphere_speed_and_position_stops --output reports/prediction_position_stops_20261118/one_step01",
+    "exit_code": 0,
+    "implementation": "PRELIMINARY_IMPLEMENTATION.patch"
+  },
+  {
+    "run": "nonfoot01",
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_recorded_predictors_v2 --native reports/task_constrained_hit_20261118/attempts/calibration01/native --spheres reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json --start-tick 201 --steps 80 --method sphere_stops_and_nonfoot_response --rollout --output reports/prediction_position_stops_20261118/nonfoot01",
+    "exit_code": 0,
+    "implementation": "PRELIMINARY_IMPLEMENTATION.patch"
+  },
+  {
+    "run": "canonical_nonfoot01",
+    "command": "OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_recorded_predictors_v2 --native reports/task_constrained_hit_20261118/attempts/calibration01/native --spheres reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json --start-tick 201 --steps 80 --method sphere_stops_and_nonfoot_response --rollout --output reports/prediction_position_stops_20261118/canonical_nonfoot01",
+    "exit_code": 0,
+    "implementation": "canonical"
+  }
+]

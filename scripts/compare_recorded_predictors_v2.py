@@ -13,6 +13,8 @@ from scripts.unilateral_implicit_prediction_v1 import predict_unilateral_support
 from scripts.predict_frictional_spheres_v1 import predict_frictional_spheres
 from scripts.predict_speed_limited_spheres_v1 import predict_speed_limited_spheres
 from scripts.audit_sphere_touchdown_predictions_v1 import spheres_from_asset
+from scripts.authored_ground_clearance_v1 import AuthoredGroundClearance
+from scripts.diagnostic_nonfoot_spheres_v1 import nonfoot_spheres
 
 
 def measured_state(model,data,tick,lane):
@@ -27,7 +29,7 @@ def measured_state(model,data,tick,lane):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--native',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--spheres',type=Path);p.add_argument('--rollout',action='store_true');p.add_argument('--start-tick',type=int,default=249);p.add_argument('--steps',type=int,default=14);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--native',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--spheres',type=Path);p.add_argument('--rollout',action='store_true');p.add_argument('--method',choices=('current_body_anchor','authored_sphere_contact','sphere_plus_sim_speed_constraint','sphere_speed_and_position_stops','sphere_stops_and_nonfoot_response'));p.add_argument('--start-tick',type=int,default=249);p.add_argument('--steps',type=int,default=14);a=p.parse_args()
     if a.output.exists():raise ValueError('Do not overwrite evidence')
     a.output.mkdir(parents=True)
     if not (0<=a.start_tick and 1<=a.steps<=80 and a.start_tick+a.steps<800):raise ValueError('Bounded recorded prediction window required')
@@ -47,6 +49,14 @@ def main():
     methods={'current_body_anchor':lambda s,t:predict_unilateral_support(model,interface,s,t,substeps=160,enforce_joint_stops=True),
       'authored_sphere_contact':lambda s,t:predict_frictional_spheres(model,interface,s,t,spheres,substeps=160),
       'sphere_plus_sim_speed_constraint':lambda s,t:predict_speed_limited_spheres(model,interface,s,t,spheres,substeps=160)}
+    methods['sphere_speed_and_position_stops']=lambda s,t:predict_speed_limited_spheres(
+        model,interface,s,t,spheres,substeps=160,enforce_joint_stops=True)
+    if a.method == 'sphere_stops_and_nonfoot_response':
+        geometry=AuthoredGroundClearance(root/'configs/go2_piper_authored_ground_geometry_v1.json',model,margin_m=0.)
+        extra_spheres=nonfoot_spheres(geometry,model.feet)
+        methods[a.method]=lambda s,t:predict_speed_limited_spheres(model,interface,s,t,spheres,substeps=160,
+            enforce_joint_stops=True,diagnostic_nonfoot_spheres=extra_spheres)
+    if a.method is not None:methods={a.method:methods[a.method]}
     rows=[]
     # Entire predeclared window, both original lanes; no success subset.
     for lane in range(2):
@@ -68,6 +78,7 @@ def main():
                       joint_velocity_max_error_rad_s=float(max(abs(s.joint_velocity-truth.joint_velocity))),
                       root_position_error_m=float(np.linalg.norm(s.q[:3]-truth.q[:3])),root_rotation_error_rad=float(np.linalg.norm(difference[3:6])),
                       racket_position_error_m=float(np.linalg.norm(initial_positions[racket]-actual_positions[racket])),
+                      predicted_q=s.q.tolist(),predicted_v=s.v.tolist(),native_q=truth.q.tolist(),native_v=truth.v.tolist(),
                       predicted_joint_velocity=s.joint_velocity.tolist(),native_joint_velocity=truth.joint_velocity.tolist(),diagnostics=result['diagnostics'],
                       predicted_contacts=s.contacts.tolist(),native_contacts=truth.contacts.tolist())
                 except (ValueError,np.linalg.LinAlgError,FloatingPointError) as e:

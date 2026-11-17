@@ -1,0 +1,27 @@
+{
+  "base_head": "e096d4eaaab6fd087a75438477fdcd9d02fc2d7a",
+  "sha256": {
+    "scripts/predict_speed_limited_spheres_v1.py": "cbf0bfdf87881ba2f459aaa45072d4b34d9172dd60066f51355b31100a54947f",
+    "scripts/frictional_speed_limited_step_v1.py": "6b5392e7dbdb2f4c95a48570d668a28e66fbd2ffd8eb7ae1bef04a8a01b01b92",
+    "scripts/frictional_position_limited_step_v1.py": "07d976fa06b4c1e9e90792f463cb058be5c9a1af38170e22ff226c9680230413",
+    "scripts/compare_recorded_predictors_v2.py": "94bdc9042575757458a9a42bf05438bdc32ea9f54dbfff04162c0c5b0b96880f",
+    "scripts/diagnostic_nonfoot_spheres_v1.py": "7a0c3c7901f97b925631ed9abe5d4019abfd745b104603ca00aa24bc92704ea8",
+    "configs/go2_piper_authored_ground_geometry_v1.json": "e39c41e9b69e481aeac8907c2dfacb9f593cf54e00c8fb822696638ef083167b",
+    "reports/task_constrained_hit_20261118/attempts/calibration01/native/control_state.npz": "9dede9d614ecb6a73f232f51f2f8ca89876297f74e9af530c041e71438ef7574",
+    "scripts/audit_prediction_contact_geometry_v2.py": "102f768f04f38968a66ccd39f500d2639577e036875c6de03477f064eb88a55e",
+    "tests/test_diagnostic_nonfoot_prediction_v1.py": "f61648c021ba6d308c44b6e09ba241a1e4538d78b3c05cbd832af33f936ebed7"
+  },
+  "native_run": false,
+  "teacher_admission": false,
+  "preliminary_implementation_patch": "PRELIMINARY_IMPLEMENTATION.patch",
+  "preliminary_runs": [
+    "long01",
+    "one_step01",
+    "nonfoot01"
+  ],
+  "final_run": "canonical_nonfoot01",
+  "shared_models": {
+    "position_stop": "existing frictional_position_limited_step_v1.py",
+    "speed_limit": "unchanged frictional_speed_limited_step_v1.py"
+  }
+}

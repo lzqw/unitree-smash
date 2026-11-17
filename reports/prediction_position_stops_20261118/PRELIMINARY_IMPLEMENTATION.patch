@@ -1,0 +1,245 @@
+diff --git a/scripts/compare_recorded_predictors_v2.py b/scripts/compare_recorded_predictors_v2.py
+index e16b8b6..fccea88 100644
+--- a/scripts/compare_recorded_predictors_v2.py
++++ b/scripts/compare_recorded_predictors_v2.py
+@@ -13,6 +13,8 @@ from scripts.unilateral_implicit_prediction_v1 import predict_unilateral_support
+ from scripts.predict_frictional_spheres_v1 import predict_frictional_spheres
+ from scripts.predict_speed_limited_spheres_v1 import predict_speed_limited_spheres
+ from scripts.audit_sphere_touchdown_predictions_v1 import spheres_from_asset
++from scripts.authored_ground_clearance_v1 import AuthoredGroundClearance
++from scripts.diagnostic_nonfoot_spheres_v1 import nonfoot_spheres
+ 
+ 
+ def measured_state(model,data,tick,lane):
+@@ -27,7 +29,7 @@ def measured_state(model,data,tick,lane):
+ 
+ 
+ def main():
+-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--native',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--spheres',type=Path);p.add_argument('--rollout',action='store_true');p.add_argument('--start-tick',type=int,default=249);p.add_argument('--steps',type=int,default=14);a=p.parse_args()
++    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--native',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--spheres',type=Path);p.add_argument('--rollout',action='store_true');p.add_argument('--method',choices=('current_body_anchor','authored_sphere_contact','sphere_plus_sim_speed_constraint','sphere_speed_and_position_stops','sphere_stops_and_nonfoot_response'));p.add_argument('--start-tick',type=int,default=249);p.add_argument('--steps',type=int,default=14);a=p.parse_args()
+     if a.output.exists():raise ValueError('Do not overwrite evidence')
+     a.output.mkdir(parents=True)
+     if not (0<=a.start_tick and 1<=a.steps<=80 and a.start_tick+a.steps<800):raise ValueError('Bounded recorded prediction window required')
+@@ -47,6 +49,14 @@ def main():
+     methods={'current_body_anchor':lambda s,t:predict_unilateral_support(model,interface,s,t,substeps=160,enforce_joint_stops=True),
+       'authored_sphere_contact':lambda s,t:predict_frictional_spheres(model,interface,s,t,spheres,substeps=160),
+       'sphere_plus_sim_speed_constraint':lambda s,t:predict_speed_limited_spheres(model,interface,s,t,spheres,substeps=160)}
++    methods['sphere_speed_and_position_stops']=lambda s,t:predict_speed_limited_spheres(
++        model,interface,s,t,spheres,substeps=160,enforce_joint_stops=True)
++    if a.method == 'sphere_stops_and_nonfoot_response':
++        geometry=AuthoredGroundClearance(root/'configs/go2_piper_authored_ground_geometry_v1.json',model,margin_m=0.)
++        extra_spheres=nonfoot_spheres(geometry,model.feet)
++        methods[a.method]=lambda s,t:predict_speed_limited_spheres(model,interface,s,t,spheres,substeps=160,
++            enforce_joint_stops=True,diagnostic_nonfoot_spheres=extra_spheres)
++    if a.method is not None:methods={a.method:methods[a.method]}
+     rows=[]
+     # Entire predeclared window, both original lanes; no success subset.
+     for lane in range(2):
+@@ -68,6 +78,7 @@ def main():
+                       joint_velocity_max_error_rad_s=float(max(abs(s.joint_velocity-truth.joint_velocity))),
+                       root_position_error_m=float(np.linalg.norm(s.q[:3]-truth.q[:3])),root_rotation_error_rad=float(np.linalg.norm(difference[3:6])),
+                       racket_position_error_m=float(np.linalg.norm(initial_positions[racket]-actual_positions[racket])),
++                      predicted_q=s.q.tolist(),predicted_v=s.v.tolist(),native_q=truth.q.tolist(),native_v=truth.v.tolist(),
+                       predicted_joint_velocity=s.joint_velocity.tolist(),native_joint_velocity=truth.joint_velocity.tolist(),diagnostics=result['diagnostics'],
+                       predicted_contacts=s.contacts.tolist(),native_contacts=truth.contacts.tolist())
+                 except (ValueError,np.linalg.LinAlgError,FloatingPointError) as e:
+diff --git a/scripts/frictional_speed_limited_step_v1.py b/scripts/frictional_speed_limited_step_v1.py
+index 8e4ef8d..2689bbc 100644
+--- a/scripts/frictional_speed_limited_step_v1.py
++++ b/scripts/frictional_speed_limited_step_v1.py
+@@ -12,7 +12,8 @@ from scripts.frictional_impulse_step_v1 import (
+ 
+ 
+ def contact_and_speed_impulses(matrix, bias, contact_count, limits, mu, *,
+-                               warm=None, max_iterations=400, tolerance=2e-7):
++                               warm=None, max_iterations=400, tolerance=2e-7,
++                               lower=None, upper=None):
+     n=3*contact_count;limits=np.asarray(limits,float);total=n+len(limits)
+     if (matrix.shape!=(total,total) or bias.shape!=(total,) or np.any(limits<=0)
+             or not np.isfinite(matrix).all() or not np.isfinite(bias).all()
+@@ -20,6 +21,7 @@ def contact_and_speed_impulses(matrix, bias, contact_count, limits, mu, *,
+             or np.any(np.diag(matrix)<=0) or not np.isfinite(mu) or mu<0
+             or type(max_iterations) is not int or max_iterations<1):
+         raise ValueError('Invalid coupled contact/speed problem')
++    lower,upper=joint_velocity_interval(limits,lower,upper)
+     impulse=np.zeros(total)
+     if warm is not None:
+         warm=np.asarray(warm,float)
+@@ -39,12 +41,12 @@ def contact_and_speed_impulses(matrix, bias, contact_count, limits, mu, *,
+         # negative enforces the upper. The full response also moves the base.
+         for joint,limit in enumerate(limits):
+             k=n+joint;without=bias[k]+matrix[k]@impulse-matrix[k,k]*impulse[k]
+-            impulse[k]=(np.clip(without,-limit,limit)-without)/matrix[k,k]
++            impulse[k]=(np.clip(without,lower[joint],upper[joint])-without)/matrix[k,k]
+         contact=contact_law_residual(matrix[:n,:n],bias[:n]+matrix[:n,n:]@impulse[n:],impulse[:n],mu)
+         speed=bias[n:]+matrix[n:]@impulse
+-        violation=float(np.max(abs(speed)-limits,initial=0.))
++        violation=float(max(np.max(lower-speed,initial=0.),np.max(speed-upper,initial=0.)))
+         without=speed-np.diag(matrix)[n:]*impulse[n:]
+-        expected=(np.clip(without,-limits,limits)-without)/np.diag(matrix)[n:]
++        expected=(np.clip(without,lower,upper)-without)/np.diag(matrix)[n:]
+         fixed_point=float(np.max(abs(expected-impulse[n:]),initial=0.))
+         if max([violation,fixed_point,*contact.values()])<=tolerance:
+             return impulse,dict(iterations=iteration+1,contact=contact,
+@@ -53,16 +55,36 @@ def contact_and_speed_impulses(matrix, bias, contact_count, limits, mu, *,
+         contact=contact,speed_violation=violation,speed_fixed_point=fixed_point)))
+ 
+ 
++def joint_velocity_interval(limits,lower=None,upper=None):
++    """Intersect original speed bounds with optional position-stop bounds.
++
++    These bounds enter the coupled impulse solve, never a post-step clipping.
++    Infeasible intervals fail explicitly; no constraint is silently relaxed.
++    """
++    limits=np.asarray(limits,float)
++    lo=-limits.copy() if lower is None else np.asarray(lower,float)
++    hi=limits.copy() if upper is None else np.asarray(upper,float)
++    if (lo.shape!=limits.shape or hi.shape!=limits.shape or
++            not np.isfinite(lo).all() or not np.isfinite(hi).all()):
++        raise ValueError('Invalid joint constraint interval')
++    lo=np.maximum(lo,-limits);hi=np.minimum(hi,limits)
++    if np.any(lo>hi):raise ValueError('Position and speed constraint intervals incompatible')
++    return lo,hi
++
++
+ def speed_limited_velocity_step(mass,velocity,bias,selection,kp,kd,target_error,effort,
+-                                dt,jacobian,normal_target,mu,velocity_limits,*,warm=None,max_iterations=400):
++                                dt,jacobian,normal_target,mu,velocity_limits,*,warm=None,max_iterations=400,
++                                lower=None,upper=None):
+     limits=np.asarray(velocity_limits,float);na=selection.shape[1]
+     if limits.shape!=(na,) or not np.isfinite(limits).all() or np.any(limits<=0):
+         raise ValueError('Explicit original simulator velocity limits required')
++    lower,upper=joint_velocity_interval(limits,lower,upper)
+     # Preserve the old numerical path exactly whenever the new constraints
+     # are inactive. This also retains the original input validation.
+     original=frictional_velocity_step(mass,velocity,bias,selection,kp,kd,target_error,effort,
+         dt,jacobian,normal_target,mu,warm=warm,max_iterations=max_iterations)
+-    if np.max(abs(selection.T@original['velocity'])-limits,initial=0.)<=2e-7:
++    joint_velocity=selection.T@original['velocity']
++    if max(np.max(lower-joint_velocity,initial=0.),np.max(joint_velocity-upper,initial=0.))<=2e-7:
+         return dict(original,velocity_limit_impulse=np.zeros(na),velocity_limit_active=False,
+             speed_violation=float(np.max(abs(selection.T@original['velocity'])-limits,initial=0.)),
+             speed_fixed_point=0.)
+@@ -79,7 +101,7 @@ def speed_limited_velocity_step(mass,velocity,bias,selection,kp,kd,target_error,
+         vfree=solved[:,0];response=solved[:,1:];matrix=augmented@response;matrix=(matrix+matrix.T)/2
+         offset=augmented@vfree;offset[2:n:3]-=normal_target
+         all_impulse,law=contact_and_speed_impulses(matrix,offset,nc,limits,mu,warm=warm,
+-            max_iterations=max_iterations)
++            max_iterations=max_iterations,lower=lower,upper=upper)
+         following=vfree+response@all_impulse;torque_raw=drive_bias-slope*(selection.T@following)
+         new=np.where(torque_raw>effort+1e-8,1,np.where(torque_raw < -effort-1e-8,-1,0)).astype(np.int8)
+         if np.array_equal(new,saturated):
+diff --git a/scripts/predict_speed_limited_spheres_v1.py b/scripts/predict_speed_limited_spheres_v1.py
+index 6940ea5..9e0feed 100644
+--- a/scripts/predict_speed_limited_spheres_v1.py
++++ b/scripts/predict_speed_limited_spheres_v1.py
+@@ -21,39 +21,54 @@ def surface_jacobians(model,q,spheres):
+     return np.asarray(rows)
+ 
+ 
+-def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substeps=16,geometry=None):
++def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substeps=16,geometry=None,
++                                 enforce_joint_stops=False,diagnostic_nonfoot_spheres=None):
+     if type(substeps) is not int or not 1<=substeps<=160:raise ValueError('Invalid substeps')
+     target=np.asarray(target,float)
+     if (target.shape!=(18,) or not np.isfinite(target).all() or
+             np.any(target<interface.limits[:,0]-1e-6) or np.any(target>interface.limits[:,1]+1e-6)):
+         raise ValueError('Invalid command')
+     if [s['body'] for s in spheres]!=model.feet:raise ValueError('Wrong sphere order')
++    extras=[] if diagnostic_nonfoot_spheres is None else copy.deepcopy(diagnostic_nonfoot_spheres)
++    if any(s['body'] in model.feet or s['body'] not in model.body_frames for s in extras):
++        raise ValueError('Invalid diagnostic nonfoot bodies')
++    spheres=list(spheres)+extras
++    contact_count=len(spheres)
+     q=state.q.copy();v=state.v.copy();dt=.01/substeps;warm=None;last=None;events=[]
+     selection=np.zeros((24,18));selection[model.v_indices,np.arange(18)]=1.
+     first_ground_violation=None
+     diagnostics=dict(momentum_residual=0.,normal_complementarity=0.,friction_cone=0.,tangent_fixed_point=0.,
+         max_contact_iterations=0,foot_penetration_m=0.,joint_velocity_violation_rad_s=0.,
+         joint_position_violation_rad=0.,motor_torque_violation_nm=0.,nonfoot_ground_violation_m=0.,velocity_limit_active_substeps=0,
+-        maximum_velocity_limit_impulse_ns=0.,speed_constraint_residual=0.)
++        maximum_velocity_limit_impulse_ns=0.,speed_constraint_residual=0.,
++        nonfoot_normal_impulse_ns=0.,nonfoot_contact_substeps=0)
+     for micro in range(substeps):
+         snapshot=model.snapshot(q,v);gap=sphere_gaps(model,q,spheres)
+-        jac=surface_jacobians(model,q,spheres).reshape(12,24)
++        jac=surface_jacobians(model,q,spheres).reshape(3*contact_count,24)
+         normal_target=-gap/np.where(gap>0,dt,.01)
++        # Ideal unilateral position stops coupled to contact, PD saturation and
++        # original simulator speed constraints. Not calibrated PhysX compliance.
++        bounds={} if not enforce_joint_stops else dict(
++            lower=(interface.limits[:,0]-q[model.q_indices])/dt,
++            upper=(interface.limits[:,1]-q[model.q_indices])/dt)
+         result=speed_limited_velocity_step(snapshot['mass_matrix'],v,snapshot['nonlinear'],selection,
+             interface.kp,interface.kd,target-q[model.q_indices],interface.effort,dt,jac,normal_target,
+-            interface.friction,interface.velocity,warm=warm)
++            interface.friction,interface.velocity,warm=warm,**bounds)
+         diagnostics['velocity_limit_active_substeps']+=int(result['velocity_limit_active'])
+         diagnostics['maximum_velocity_limit_impulse_ns']=max(diagnostics['maximum_velocity_limit_impulse_ns'],float(np.max(abs(result['velocity_limit_impulse']),initial=0.)))
+         diagnostics['speed_constraint_residual']=max(diagnostics['speed_constraint_residual'],result['speed_violation'],result['speed_fixed_point'])
+         v=result['velocity'];warm=result['impulse'];q=pin.integrate(model.model,q,dt*v)
+-        loaded=warm.reshape(4,3)[:,2]>1e-8
++        normals=warm.reshape(contact_count,3)[:,2]
++        loaded=normals[:4]>1e-8
++        diagnostics['nonfoot_normal_impulse_ns']+=float(np.sum(normals[4:]))
++        diagnostics['nonfoot_contact_substeps']+=int(np.any(normals[4:]>1e-8))
+         if last is None or not np.array_equal(loaded,last):
+-            events.append(dict(micro=micro,predicted_loaded_feet=loaded.tolist(),normal_impulse_ns=warm[2::3].tolist()))
++            events.append(dict(micro=micro,predicted_loaded_feet=loaded.tolist(),normal_impulse_ns=normals[:4].tolist()))
+         last=loaded
+         diagnostics['momentum_residual']=max(diagnostics['momentum_residual'],result['momentum_residual'])
+         for key,value in result['contact']['residual'].items():diagnostics[key]=max(diagnostics[key],value)
+         diagnostics['max_contact_iterations']=max(diagnostics['max_contact_iterations'],result['contact']['iterations'])
+-        diagnostics['foot_penetration_m']=max(diagnostics['foot_penetration_m'],float(np.max(-sphere_gaps(model,q,spheres))))
++        diagnostics['foot_penetration_m']=max(diagnostics['foot_penetration_m'],float(np.max(-sphere_gaps(model,q,spheres[:4]))))
+         diagnostics['joint_velocity_violation_rad_s']=max(diagnostics['joint_velocity_violation_rad_s'],float(np.max(abs(v[model.v_indices])-interface.velocity)))
+         diagnostics['joint_position_violation_rad']=max(diagnostics['joint_position_violation_rad'],
+             float(np.max(interface.limits[:,0]-q[model.q_indices])),float(np.max(q[model.q_indices]-interface.limits[:,1])))
+@@ -67,5 +82,8 @@ def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substep
+     following.joint_position=q[model.q_indices].copy();following.joint_velocity=v[model.v_indices].copy()
+     following.root_position_world=q[:3].copy();following.root_rotation_world=pin.Quaternion(q[3:7]).matrix()
+     following.contacts=last
++    following.previous_command_target=target.copy()
+     return dict(state=following,diagnostics=diagnostics,events=events,native_execution=False,valid_teacher=False,
+-        ground_geometry_checked=geometry is not None,first_ground_violation=first_ground_violation)
++        ground_geometry_checked=geometry is not None,first_ground_violation=first_ground_violation,
++        ideal_joint_position_stops=enforce_joint_stops,
++        diagnostic_nonfoot_bodies=[s['body'] for s in extras],nonfoot_contact_not_admissible=True)
+diff --git a/tests/test_speed_limited_impulse_v1.py b/tests/test_speed_limited_impulse_v1.py
+index fcf236d..f0f4d25 100644
+--- a/tests/test_speed_limited_impulse_v1.py
++++ b/tests/test_speed_limited_impulse_v1.py
+@@ -72,5 +72,33 @@ class SpeedLimitMechanics(unittest.TestCase):
+             with self.assertRaises(ValueError):
+                 speed_limited_velocity_step(**self.floating_problem(),velocity_limits=np.array([limit]))
+ 
++    def test_position_stop_reaction_couples_to_floating_base(self):
++        for sign in [-1.,1.]:
++            p=self.floating_problem(sign)
++            # Only 0.5mrad remains before a stop; dt=10ms -> 0.05rad/s.
++            lower=np.array([-.05 if sign<0 else -30.])
++            upper=np.array([30. if sign<0 else .05])
++            r=speed_limited_velocity_step(**p,velocity_limits=np.array([30.]),lower=lower,upper=upper)
++            np.testing.assert_allclose(r['velocity'],sign*np.array([-.01,.05]),atol=1e-12,rtol=0.)
++            self.assertLess(r['momentum_residual'],1e-12)
++            self.assertLessEqual(abs(r['torque'][0]),p['effort'][0])
++
++    def test_incompatible_stop_does_not_override_original_speed_limit(self):
++        with self.assertRaisesRegex(ValueError,'incompatible'):
++            speed_limited_velocity_step(**self.floating_problem(),velocity_limits=np.array([.1]),
++                                        lower=np.array([.2]),upper=np.array([.3]))
++
++    def test_contact_stop_solution_matches_independent_primal_qp(self):
++        p=self.contact_problem(0.)
++        r=speed_limited_velocity_step(**p,velocity_limits=np.array([30.]),
++                                      lower=np.array([-.5]),upper=np.array([.1]))
++        S=p['selection'];A=p['mass']+p['dt']*(S*(p['kd']+p['dt']*p['kp']))@S.T
++        b=p['mass']@p['velocity']+p['dt']*S@(p['kp']*p['target_error'])
++        oracle=minimize(lambda v:.5*v@A@v-b@v,np.zeros(4),jac=lambda v:A@v-b,
++            constraints=LinearConstraint(np.vstack([p['jacobian'][2],S.T]),[0.,-.5],[np.inf,.1]),
++            method='SLSQP',options={'ftol':1e-13,'maxiter':200})
++        self.assertTrue(oracle.success)
++        np.testing.assert_allclose(r['velocity'],oracle.x,atol=1e-6,rtol=0.)
++
+ 
+ if __name__=='__main__':unittest.main()
