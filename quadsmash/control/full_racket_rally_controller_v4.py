@@ -70,6 +70,7 @@ class FullRacketRallyControllerV4:
             self.contact_first_last_actual_q=torch.zeros((count,6),device=device)
             self.contact_first_last_time=torch.full((count,),float('nan'),device=device)
             self.contact_first_last_valid=torch.zeros(count,dtype=torch.bool,device=device)
+            self.contact_first_last_base_linear=torch.zeros((count,3),device=device)
 
     def reset(self,ids=None):
         self.teacher.reset(ids)
@@ -89,6 +90,7 @@ class FullRacketRallyControllerV4:
                 self.contact_first_plan_valid[ids]=False
                 self.contact_first_plan_start_time[ids]=float('inf')
                 self.contact_first_last_valid[ids]=False
+                self.contact_first_last_base_linear[ids]=0.
         if ids is None and getattr(self,'contact_first_plan_valid',None) is not None:
             self.contact_first_plan_valid.zero_()
             self.contact_first_plan_start_time.fill_(float('inf'))
@@ -97,6 +99,7 @@ class FullRacketRallyControllerV4:
             self.contact_first_last_actual_q.zero_()
             self.contact_first_last_time.fill_(float('nan'))
             self.contact_first_last_valid.zero_()
+            self.contact_first_last_base_linear.zero_()
 
     def plan_contact_first_arm(self, **kwargs):
         """Plan a causal pre-contact arm trajectory from a DTG event.
@@ -145,7 +148,7 @@ class FullRacketRallyControllerV4:
 
     @torch.inference_mode()
     def _install_contact_first_plan(self, ids, public, actual, actual_velocity,
-                                    forward, left, up,
+                                    base_linear_acceleration, forward, left, up,
                                     target, normal_target, desired_velocity, event_time,
                                     limits):
         """Build one causal pre-contact arm plan per newly planned lane."""
@@ -183,6 +186,7 @@ class FullRacketRallyControllerV4:
                     target_velocity_world_m_s=desired_velocity[local].detach().cpu().numpy(),
                     contact_time_s=contact_time,
                     base_linear_velocity_world_m_s=public[local,:3],
+                    base_linear_acceleration_world_m_s2=base_linear_acceleration[local],
                     base_angular_velocity_world_rad_s=public[local,3:6],
                     racket_offset_world_m=point[local].detach().cpu().numpy(),
                     lower_rad=q_limits[:,0], upper_rad=q_limits[:,1],
@@ -240,9 +244,11 @@ class FullRacketRallyControllerV4:
         obs=observation['policy']
         actual_all=default[12:][None]+obs[:,21:27]
         actual_velocity=None
+        base_linear_acceleration=None
         if self.contact_first_planner is not None:
             time_all=obs[:,775]
             actual_velocity=torch.zeros_like(actual_all)
+            base_linear_acceleration=torch.zeros_like(obs[:,:3])
             previous_valid=self.contact_first_last_valid
             delta_time=time_all-self.contact_first_last_time
             usable=previous_valid & torch.isfinite(delta_time) & (delta_time>1e-6)
@@ -250,6 +256,10 @@ class FullRacketRallyControllerV4:
                 usable[:,None],
                 (actual_all-self.contact_first_last_actual_q)/delta_time.clamp_min(1e-6)[:,None],
                 actual_velocity)
+            base_linear_acceleration=torch.where(
+                usable[:,None],
+                (obs[:,:3]-self.contact_first_last_base_linear)/delta_time.clamp_min(1e-6)[:,None],
+                base_linear_acceleration)
         ids=torch.where((~self.planned)&(obs[:,67]>.5)&(obs[:,775]>=2.0))[0]
         if len(ids):
             public=obs[ids].cpu().numpy()
@@ -331,7 +341,8 @@ class FullRacketRallyControllerV4:
                                   velocity_world[:,2:3]*up)
                 actual=actual_all[ids]
                 self._install_contact_first_plan(
-                    ids,public,actual,actual_velocity[ids],forward,left,up,target_body,
+                    ids,public,actual,actual_velocity[ids],base_linear_acceleration[ids],
+                    forward,left,up,target_body,
                     normal_target,desired_velocity,self.event_time[ids],limits)
             self.logs.append(dict(input='Current public794D observation, fixed known command and learned no-ball calibration only',
                 env_ids=ids.cpu().tolist(),observation_clock_s=public[:,775].tolist(),
@@ -347,4 +358,5 @@ class FullRacketRallyControllerV4:
             self.contact_first_last_actual_q.copy_(actual_all)
             self.contact_first_last_time.copy_(obs[:,775])
             self.contact_first_last_valid.fill_(True)
+            self.contact_first_last_base_linear.copy_(obs[:,:3])
         return action

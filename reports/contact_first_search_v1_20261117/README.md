@@ -80,6 +80,11 @@ the full-body replay callback.  This keeps the same acceptance contract while
 avoiding physical replay for candidates that already miss the causal
 position/normal/velocity tolerances.
 
+When the opt-in planner is used by `FullRacketRallyControllerV4`, the base
+linear acceleration is estimated per lane from consecutive public
+observations.  The first tick after reset has no history and uses zero;
+partial reset clears only that lane's history.
+
 It also reports a strict necessary lower bound on contact time from the
 selected joint displacement and original per-joint velocity limits.  If all
 allowed timing offsets are below that bound, the search exits before candidate
