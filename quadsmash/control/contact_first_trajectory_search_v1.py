@@ -38,6 +38,7 @@ class ContactFirstSearchConfig:
     velocity_aware_pose: bool = False
     # Offline only: retarget joint rates against actual analytic task outcome.
     # No physical velocity or ball-side acceptance threshold is relaxed.
+    task_constrained_hit: bool = False
     impact_feasible_rate_retarget: bool = False
     reachable_impact_targets: bool = False
     dt_s: float = 0.01
@@ -118,9 +119,11 @@ class ContactFirstSearchConfig:
         if self.minimum_contact_speed_alignment > 1.0:
             raise ValueError("Contact speed alignment must be at most one")
         for flag in ("position_anchored_search", "velocity_aware_pose",
-                     "impact_feasible_rate_retarget"):
+                     "impact_feasible_rate_retarget", "task_constrained_hit"):
             if type(getattr(self, flag)) is not bool:
                 raise ValueError(f"{flag} must be boolean")
+        if self.task_constrained_hit and (not self.position_anchored_search or self.impact_feasible_rate_retarget):
+            raise ValueError("Task joint search requires anchored mode and replaces fixed-face rate search")
         if self.impact_feasible_rate_retarget and not self.position_anchored_search:
             raise ValueError("Impact-feasible rate requires position-anchored search")
         if type(self.allow_reachable_velocity_projection) is not bool:
@@ -405,7 +408,9 @@ class ContactFirstTrajectorySearchV1:
             value = target_state_fn(float(duration_s))
             if isinstance(value, dict):
                 target_metadata_cache[cache_key]={k:value[k] for k in
-                    ('contact_point_local','optimized_q_rad','reachability',
+                    ('attack_geometry','task_court','task_physics','task_string_strip','planning_to_world_rotation',
+                     'incoming_velocity_planning','analytic_goal_valid','initialization_only',
+                     'contact_point_local','optimized_q_rad','reachability',
                      'original_requested_racket_velocity_world_m_s','optimized_requested_racket_velocity_world_m_s',
                      'original_requested_velocity_current_frame_m_s',
                      'desired_outgoing_velocity_world_m_s',

@@ -1,0 +1,13 @@
+....F                                                                    [100%]
+=================================== FAILURES ===================================
+_________________ test_mutually_exclusive_rate_and_joint_modes _________________
+
+    def test_mutually_exclusive_rate_and_joint_modes():
+        from quadsmash.control.contact_first_trajectory_search_v1 import ContactFirstSearchConfig
+>       with pytest.raises(ValueError):
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_task_constrained_hit_v2.py:66: Failed
+=========================== short test summary info ============================
+FAILED tests/test_task_constrained_hit_v2.py::test_mutually_exclusive_rate_and_joint_modes
+1 failed, 4 passed in 0.85s

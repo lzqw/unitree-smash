@@ -217,17 +217,24 @@ class ContactFirstFullBodyEvaluatorV1:
                         "rejection": "native_admitted_target_bounds",
                         "node": node,
                     }
+            solver_trace=[]
             try:
                 result = self.predict(
                     self.model, self.interface, state, target,
                     duration_s=self.dt_s, substeps=self.substeps,
-                    **({"enforce_joint_stops": True} if self.enforce_joint_stops else {}))
+                    **({"enforce_joint_stops": True} if self.enforce_joint_stops else {}),
+                    **({"iteration_trace":solver_trace} if self.record_state_trace and self.contact_prediction=="unilateral_release" else {}))
             except (ValueError, np.linalg.LinAlgError, FloatingPointError) as error:
                 return {
                     "accepted": False,
                     "rejection": "implicit_position_interface",
                     "node": node,
                     "error": repr(error),
+                    "failure_kind": "MODEL_UNCERTAIN",
+                    "failed_initial_q":state.q.tolist(),"failed_initial_v":state.v.tolist(),
+                    "failed_target_rad":target.tolist(),"failed_contacts":state.contacts.tolist(),
+                    "state_trace":state_trace if self.record_state_trace else None,
+                    "solver_trace":solver_trace if self.record_state_trace else None,
                 }
             if leg_reference is not None and hasattr(leg_reference, 'commit_final_command'):
                 leg_reference.commit_final_command(target.copy(),node)

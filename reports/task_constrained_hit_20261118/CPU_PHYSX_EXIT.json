@@ -1,0 +1,15 @@
+{
+  "command": [
+    "bash",
+    "scripts/python.sh",
+    "-m",
+    "scripts.analyze_historical_teacher_calibration_v2",
+    "--native",
+    "reports/task_constrained_hit_20261118/attempts/calibration01/native",
+    "--interface",
+    "reports/codex_teacher_joint_eval_20261116/controller.json",
+    "--output",
+    "reports/task_constrained_hit_20261118/CPU_PHYSX_COMPARISON.json"
+  ],
+  "exit_code": 0
+}

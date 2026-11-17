@@ -335,3 +335,19 @@ def test_task_retarget_keeps_original_requested_error_and_original_tracking_tole
     failed=evaluator(q,np.zeros_like(q),3,poorly_tracked)
     assert failed['rejection']=='actual_racket_terminal_residual'
     assert failed['actual_racket_velocity_error_m_s']==1.
+
+
+def test_solver_failure_retains_state_command_and_trace_without_certification():
+    public,default,interface=_fixture()
+    evaluator=ContactFirstFullBodyEvaluatorV1(public,default,interface,substeps=1,
+        record_state_trace=True,contact_prediction='unilateral_release')
+    def fail(model,interface,state,target,**kwargs):
+        kwargs['iteration_trace'].append(dict(iteration=1,modes=[0,0,0,0]))
+        raise ValueError('synthetic solver failure')
+    evaluator.predict=fail
+    q=np.repeat(default[None,12:],3,axis=0)
+    result=evaluator(q,np.zeros_like(q),2,{})
+    assert not result['accepted'] and result['failure_kind']=='MODEL_UNCERTAIN'
+    assert len(result['failed_initial_q'])==25 and len(result['failed_target_rad'])==18
+    assert result['solver_trace'][0]['iteration']==1
+    assert result['state_trace']==[]

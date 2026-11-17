@@ -1,0 +1,36 @@
+{
+  "schema": "dual-line-runtime-v1",
+  "line": "teacher",
+  "run_id": "calibration-20261118-01",
+  "supervisor_pid": 2806906,
+  "supervisor_ppid": 2481,
+  "supervisor_pgid": 2806906,
+  "supervisor_sid": 2806906,
+  "supervisor_start_ticks": 255950179,
+  "started_at": "2026-11-17T16:34:08.346497+00:00",
+  "cwd": "/home/autodrive/LZQW/unitree_smash_teacher_eval",
+  "command": [
+    "bash",
+    "scripts/python.sh",
+    "scripts/calibrate_historical_teacher_physx_v2.py",
+    "--source",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/reports/joint_loop_round_20261117/attempts/probe01/native",
+    "--output",
+    "/home/autodrive/LZQW/unitree_smash_teacher_eval/reports/task_constrained_hit_20261118/attempts/calibration01/native",
+    "--precision-receipt",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json",
+    "--headless"
+  ],
+  "command_sha256": "e2d36d2246a01670e2bedcc172f261f6509694fe74e3ecc89af516a102faed93",
+  "supervisor_cgroup": [
+    "0::/user.slice/user-1000.slice/user@1000.service/unitree.slice/unitree-teacher.slice/unitree-teacher-calibration-20261118-01.service"
+  ],
+  "child_pid": 2806907,
+  "child_pgid": 2806907,
+  "child_sid": 2806907,
+  "child_start_ticks": 255950183,
+  "child_cgroup": [
+    "0::/user.slice/user-1000.slice/user@1000.service/unitree.slice/unitree-teacher.slice/unitree-teacher-calibration-20261118-01.service"
+  ],
+  "child_started_at": "2026-11-17T16:34:08.348401+00:00"
+}

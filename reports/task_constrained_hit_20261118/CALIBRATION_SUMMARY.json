@@ -1,0 +1,88 @@
+{
+  "native": {
+    "ticks": 800,
+    "initial_public_max_delta": 0.0,
+    "dispatch_max_delta_rad": 0.0,
+    "public_max_delta": 0.0,
+    "policy_evaluation": false,
+    "actor_forwards": 0,
+    "optimizer_steps": 0,
+    "physx_reference_valid": false
+  },
+  "exit_code": 0,
+  "cpu_analysis_exit_code": 0,
+  "comparisons": [
+    {
+      "lane": 0,
+      "mode": "one_step_from_native",
+      "numerical_solves_completed": 14,
+      "attempted": 14,
+      "not_a_physical_acceptance_count": true,
+      "max_joint_velocity_error_rad_s": 28.04537338771459,
+      "max_root_position_error_m": 0.0005229611798430217,
+      "failed_ticks": [],
+      "errors": []
+    },
+    {
+      "lane": 0,
+      "mode": "open_loop_from_native249",
+      "numerical_solves_completed": 9,
+      "attempted": 10,
+      "not_a_physical_acceptance_count": true,
+      "max_joint_velocity_error_rad_s": 1.159184762034858,
+      "max_root_position_error_m": 0.001999567156860632,
+      "failed_ticks": [
+        258
+      ],
+      "errors": [
+        "Contact/motor active set did not converge; no fallback applied"
+      ]
+    },
+    {
+      "lane": 1,
+      "mode": "one_step_from_native",
+      "numerical_solves_completed": 13,
+      "attempted": 14,
+      "not_a_physical_acceptance_count": true,
+      "max_joint_velocity_error_rad_s": 28.88643250453344,
+      "max_root_position_error_m": 0.0005270077746248394,
+      "failed_ticks": [
+        250
+      ],
+      "errors": [
+        "Contact/motor active set did not converge; no fallback applied"
+      ]
+    },
+    {
+      "lane": 1,
+      "mode": "open_loop_from_native249",
+      "numerical_solves_completed": 1,
+      "attempted": 2,
+      "not_a_physical_acceptance_count": true,
+      "max_joint_velocity_error_rad_s": 1.3509175734464236,
+      "max_root_position_error_m": 2.6277752272189016e-05,
+      "failed_ticks": [
+        250
+      ],
+      "errors": [
+        "Contact/motor active set did not converge; no fallback applied"
+      ]
+    }
+  ],
+  "fl_calf_witness": {
+    "tick": 259,
+    "lane": 0,
+    "native_rad_s": -30.000003814697266,
+    "cpu_rad_s": -58.045377202411856
+  },
+  "conclusion": "Native identical historical replay reproduced. CPU speed-limit/contact response mismatches remain MODEL_UNCERTAIN; no new reference certified.",
+  "torque_measurement": "ImplicitActuator estimate only; exact solver drive torque unavailable in this capture",
+  "native_artifact_sha256": {
+    "isolation_microtrace.npz": "3d19424a297e5738ce29defe5e7b9311c84925286bf673140a60e63debcfa766",
+    "CALIBRATION_COMPLETE.json": "98646e30174adef6e5afac7b87ac92a263cf6f97d8bda1cec301094676acb75c",
+    "control_state.npz": "9dede9d614ecb6a73f232f51f2f8ca89876297f74e9af530c041e71438ef7574",
+    "progress.json": "0037747d11c702bb109f6032d018b115bf4ccebb9492d60df264758c9167516c",
+    "isolation_microtrace.json": "e39a8e14933c0b8d14539da4b1e40ad79968e36d7f984e4b1e4d67f01a34d3c4",
+    "INITIAL_STATE.json": "82fc99e4accc63aa4ae7c96497211b8a7f8ac25d9f04195b00444d00cbe4df14"
+  }
+}

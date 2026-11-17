@@ -292,10 +292,12 @@ class FullRacketRallyControllerV4:
                     pose=self.teacher.kinematics(q_tensor,self.teacher.contact_offset)
                     return tuple(value[0].detach().cpu().numpy() for value in pose)
 
-                def kinematics_at_time_fn(q,duration):
+                def kinematics_at_time_fn(q,duration,contact=None):
                     event=target_state_fns[local](duration)
                     offset=self.teacher.contact_offset.clone()
-                    if 'contact_point_local' in event:
+                    if contact is not None:
+                        offset[1:]=offset.new_tensor(contact[1:])
+                    elif 'contact_point_local' in event:
                         offset[1:]=offset.new_tensor(event['contact_point_local'][1:])
                     pose=self.teacher.kinematics(offset.new_tensor(q)[None],offset)
                     return tuple(x[0].detach().cpu().numpy() for x in pose)
@@ -319,7 +321,7 @@ class FullRacketRallyControllerV4:
                     velocity_limits_rad_s=np.full(6,cfg.arm_velocity_limit_rad_s),
                     evaluator=evaluator,
                     kinematics_fn=kinematics_fn,
-                    kinematics_at_time_fn=(kinematics_at_time_fn if cfg.reachable_impact_targets else None),
+                    kinematics_at_time_fn=(kinematics_at_time_fn if (cfg.reachable_impact_targets or cfg.task_constrained_hit) else None),
                     target_state_fn=(None if target_state_fns is None
                                      else target_state_fns[local]),
                     impact_evaluator=(None if impact_evaluators is None else impact_evaluators[local]),
@@ -601,7 +603,10 @@ class FullRacketRallyControllerV4:
                                 ball,incoming=propagate_ball_state(p0,v0,duration_s,self.physics)
                                 local=self.teacher.contact_offset.detach().cpu().numpy().copy()
                                 local[0]=self.teacher.face_sign*impact_model.racket['assumptions']['string_thickness_m']/2
-                                if self.contact_first_planner.config.reachable_impact_targets:
+                                if self.contact_first_planner.config.task_constrained_hit:
+                                    from .task_constrained_impact_goal_v2 import optimize_task_goal
+                                    inverse_cache[key]=optimize_task_goal(impact_model,ball,incoming,local)
+                                elif self.contact_first_planner.config.reachable_impact_targets:
                                     from .inverse_impact_target_v1 import optimize_reachable_impact
                                     from .contact_pose_reachability_v1 import diagnose_contact_pose
                                     base=base_context['fn'](duration_s)
@@ -641,6 +646,16 @@ class FullRacketRallyControllerV4:
                             extras['optimized_requested_racket_velocity_world_m_s']=inverse['racket_velocity_world_m_s']
                             extras['desired_outgoing_velocity_world_m_s']=inverse['desired_outgoing_velocity_world_m_s']
                             extras['inverse_accepted_semantics']='analytic_ball_side_only'
+                            extras['analytic_goal_valid']=bool(inverse['accepted'])
+                            extras['initialization_only']=not bool(inverse['accepted'])
+                            if self.contact_first_planner.config.task_constrained_hit:
+                                from .task_constrained_impact_goal_v2 import attack_geometry
+                                ball,incoming=propagate_ball_state(p0,v0,duration_s,self.physics)
+                                selected=np.asarray(inverse.get('contact_point_local',self.teacher.contact_offset.detach().cpu().numpy()))
+                                strip=min(impact_model.strips,key=lambda x:np.linalg.norm(np.maximum(abs(selected-np.asarray(x['center']))-.5*np.asarray(x['size']),0)))
+                                extras.update(attack_geometry=inverse.get('attack_geometry',attack_geometry(ball,self.physics,impact_model.court)),
+                                    task_court=impact_model.court,task_physics=self.physics,task_string_strip=strip,
+                                    planning_to_world_rotation=basis.copy(),incoming_velocity_planning=basis.T@incoming)
                             extras['inverse_robot_kinematic_valid']=inverse.get('robot_contact_kinematic_valid',False)
                             return dict(target,normal_world=basis.T@np.asarray(inverse['normal_world']),**extras)
                         return dict(target, normal_world=normal_body)

@@ -153,6 +153,11 @@ def plan_anchored_events(planner,q0,qd0,lower,upper,speed,requested,target_at,ba
         fk=(lambda q:kinematics_at_time(q,duration)) if kinematics_at_time is not None else kinematics
         def base_velocity(point):return R.T@(vbase+np.cross(omega,R@point))
         extra=target_metadata.get(round(duration,9),{})
+        if cfg.task_constrained_hit and not extra['attack_geometry']['downward_attack_geometrically_possible']:
+            reason=extra['attack_geometry']['rejection']
+            records.append(dict(contact_time_s=duration,attack_geometry=extra['attack_geometry'],
+                ATTACK_GEOMETRY_FEASIBLE=False,rejection=reason,position_solver_executed=False))
+            rejected[reason]+=1;continue
         seeds=[q0.copy()]
         if 'optimized_q_rad' in extra:seeds.append(np.asarray(extra['optimized_q_rad']))
         result=anchored_pose_velocity(fk,seeds,lower,upper,speed,R.T@(target-displacement),R.T@normal,R.T@velocity,base_velocity,normal_tolerance=cfg.normal_tolerance,velocity_tolerance=cfg.velocity_tolerance_m_s,velocity_aware=cfg.velocity_aware_pose)
@@ -164,6 +169,42 @@ def plan_anchored_events(planner,q0,qd0,lower,upper,speed,requested,target_at,ba
                 if result['velocity_solver_executed'] and 'original_requested_velocity_current_frame_m_s' in extra else None),
             rotation_current_from_future=R.tolist(),**result)
         records.append(record)
+        adapted_task_rate=False
+        if cfg.task_constrained_hit:
+            geometry=extra['attack_geometry']
+            record.update(attack_geometry=geometry,ATTACK_GEOMETRY_FEASIBLE=geometry['downward_attack_geometrically_possible'],
+                initial_ANALYTIC_GOAL_VALID=extra['analytic_goal_valid'])
+            if not geometry['downward_attack_geometrically_possible']:
+                record['rejection']=geometry['rejection'];rejected[geometry['rejection']]+=1;continue
+            if result['position_error_anchor_m']>.0005:
+                record['rejection']='POSITION_ANCHOR_OUTSIDE_FINE_BUDGET';rejected[record['rejection']]+=1;continue
+            from .task_constrained_hit_search_v2 import optimize_task_hit
+            def contact_fk(q,contact):return kinematics_at_time(q,duration,contact)
+            trial=optimize_task_hit(contact_fk,result['q_rad'],result['qd_rad_s'],lower,upper,speed,
+                R.T@(target-displacement),extra['contact_point_local'],extra['task_string_strip'],
+                base_velocity,R,displacement,dict(extra,contact_time_s=duration),impact,
+                extra['task_court'],extra['incoming_velocity_planning'])
+            record['task_joint_search']=trial
+            if not trial['accepted']:
+                record['rejection']='TASK_JOINT_INFEASIBLE';rejected[record['rejection']]+=1;continue
+            chosen=trial['selected'];adapted_task_rate=True
+            for name in ('q_rad','qd_rad_s','position','normal','velocity','position_error_m','normal_error'):
+                result[name]=chosen[name]
+            # Keep initial requested normal/speed and immutable anchor in the
+            # record; new target is explicitly task-derived, never renamed.
+            normal=chosen['task_target_normal_current']
+            extra=dict(extra,contact_point_local=chosen['contact_point_local'])
+            result['NORMAL_FEASIBLE']=True
+            result['requested_velocity_error_m_s']=float(np.linalg.norm(R@result['velocity']-velocity))
+            record.update(initial_pose_normal_error=record['normal_error'],
+                original_requested_normal_error=float(np.linalg.norm(result['normal']-result['requested_normal'])),
+                original_ideal_velocity_feasible=record['VELOCITY_FEASIBLE'],
+                q_rad=result['q_rad'],qd_rad_s=result['qd_rad_s'],position=result['position'],
+                normal=result['normal'],velocity=result['velocity'],position_error_m=result['position_error_m'],
+                normal_error=result['normal_error'],requested_velocity_error_m_s=result['requested_velocity_error_m_s'],
+                rejection=None,TASK_FEASIBLE_RACKET_VELOCITY=True,ANALYTIC_GOAL_VALID=True,
+                POSITION_FEASIBLE=True,NORMAL_FEASIBLE=True,
+                task_target_normal_current=normal,task_contact_point_local=chosen['contact_point_local'])
         if not result['NORMAL_FEASIBLE']:
             rejected['POSE_TASK_INCOMPATIBLE']+=1;continue
         # A fixed desired racket speed is only one possible way to achieve
@@ -172,8 +213,8 @@ def plan_anchored_events(planner,q0,qd0,lower,upper,speed,requested,target_at,ba
         # It cannot relabel the original requested-velocity error as zero,
         # and it must still pass the unchanged trajectory/18D/final impact
         # admission checks below.
-        adapted_task_rate=False
         if (not result['VELOCITY_FEASIBLE']
+                and not cfg.task_constrained_hit
                 and cfg.impact_feasible_rate_retarget
                 and result['NORMAL_FEASIBLE']
                 and 'desired_outgoing_velocity_world_m_s' in extra
@@ -235,6 +276,7 @@ def plan_anchored_events(planner,q0,qd0,lower,upper,speed,requested,target_at,ba
         started=time.perf_counter();physical=evaluator(qfull,dfull,index,metadata);record['dynamics_seconds']=time.perf_counter()-started
         record['physical_result']=physical
         if not isinstance(physical,dict) or not physical.get('accepted'):
+            record['rejection']='FULLBODY_PREDICTION_REJECTED'
             rejected['dynamics']+=1;continue
         fields=('actual_racket_position_world_m','actual_racket_normal_world','actual_racket_velocity_world_m_s')
         if not all(k in physical for k in fields):rejected['missing_actual_contact_state']+=1;continue
@@ -243,7 +285,14 @@ def plan_anchored_events(planner,q0,qd0,lower,upper,speed,requested,target_at,ba
             achieved_velocity_current_frame_m_s=physical[fields[2]]))
         if not valid(final):rejected['final_impact']+=1;continue
         metadata.update(evaluator=physical,impact_outcome=final)
-        score=float(final['ranking_cost'])+result['requested_velocity_error_m_s']/cfg.velocity_tolerance_m_s
+        if cfg.task_constrained_hit:
+            from .task_constrained_impact_goal_v2 import task_margins
+            final_task=task_margins(final,extra['task_court'])
+            if not final_task['valid']:
+                rejected['final_task_margins']+=1;continue
+            score=-final_task['gamma']
+        else:
+            score=float(final['ranking_cost'])+result['requested_velocity_error_m_s']/cfg.velocity_tolerance_m_s
         candidate=ContactFirstCandidate(qfull,dfull,index,duration,score,result['position_error_m'],result['normal_error'],result['requested_velocity_error_m_s'],metadata)
         if best is None or candidate.score<best.score:best=candidate
     planner.last_diagnostics=dict(method='position_anchored_contact_search_v1',anchors=records,rejection_counts=dict(rejected),accepted_candidates=int(best is not None))

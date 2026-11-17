@@ -20,6 +20,7 @@ def main():
     parser.add_argument('--velocity-aware',action='store_true')
     parser.add_argument('--impact-feasible-rate',action='store_true',
                         help='Offline analytic task-valid rate retarget; requires --anchored')
+    parser.add_argument('--task-constrained-hit',action='store_true')
     parser.add_argument('--anchored',action='store_true')
     parser.add_argument('--inverse-impact',action='store_true')
     parser.add_argument('--reachable-impact',action='store_true')
@@ -32,6 +33,8 @@ def main():
     if args.velocity_aware and not args.anchored:raise ValueError("Velocity-aware refinement requires anchored search")
     if args.impact_feasible_rate and not args.anchored:
         raise ValueError("Impact-feasible rate retarget requires anchored search")
+    if args.task_constrained_hit and (not args.anchored or args.impact_feasible_rate):
+        raise ValueError('Joint task search requires anchored, without fixed-face rate search')
     if args.output.exists():raise ValueError('Preserve prior replay output')
     root=Path(__file__).resolve().parents[1]
     observations=np.load(args.input/'public_observations.npy',mmap_mode='r')
@@ -51,7 +54,7 @@ def main():
     if args.inverse_impact or args.reachable_impact or args.anchored:
         from dataclasses import replace
         controller.contact_first_planner.config=replace(controller.contact_first_planner.config,inverse_impact_targets=True,reachable_impact_targets=args.reachable_impact,bounded_replanning=args.replanning,position_anchored_search=args.anchored,velocity_aware_pose=args.velocity_aware,
-            impact_feasible_rate_retarget=args.impact_feasible_rate)
+            task_constrained_hit=args.task_constrained_hit,impact_feasible_rate_retarget=args.impact_feasible_rate)
     controller.contact_first_offline_diagnostic=bool(args.anchored)
     physical=[];impacts=[];fallback_audit=[];bundles=[]
     physically_accepted_pending=[]  # No export until FINAL chosen-plan impact passes.
@@ -160,7 +163,7 @@ def main():
         prediction_contract=dict(version='implicit_contact_diagnostic_v2',substeps=args.prediction_substeps,
             integration_dt_s=.01/args.prediction_substeps,joint_stops=args.joint_stops,physx_equivalent=False),
         velocity_aware_pose=args.velocity_aware,
-        impact_feasible_rate_retarget=args.impact_feasible_rate,
+        task_constrained_hit=args.task_constrained_hit,impact_feasible_rate_retarget=args.impact_feasible_rate,
         future_recorded_actions_read=False,source_ticks=end,training=False,native='NOT_RUN',
         input_sha256=frozen_inputs,offline_reference_bundles=bundles,
         position_anchored_search=args.anchored,inverse_impact_targets=bool(args.inverse_impact or args.anchored or args.reachable_impact),reachable_impact_targets=args.reachable_impact,replanning=args.replanning,inverse_impact_audit=getattr(controller,'inverse_impact_audit',[]),
