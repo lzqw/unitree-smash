@@ -129,8 +129,9 @@ class FullRacketRallyControllerV4:
         self.contact_first_plan_log=[]
         self.contact_first_evaluator=None
         self.contact_first_evaluator_factory=None
-        # Anchored search has not met the runtime/model gates. The native
-        # control loop must not block on it; explicit CPU replay alone opts in.
+        # Anchored search is an offline reference generator. Wall time is
+        # telemetry, not a trajectory admission criterion. An explicit offline
+        # runner opts in; the ordinary native action loop keeps its fallback.
         self.contact_first_offline_diagnostic=False
         if search_config is not None:
             if not isinstance(search_config,dict):
@@ -266,7 +267,7 @@ class FullRacketRallyControllerV4:
         if not self.contact_first_inline_search_allowed():
             for lane in ids.tolist():
                 self.contact_first_plan_log.append(dict(lane=lane,accepted=False,
-                    rejection='anchored_search_offline_only_runtime_and_model_gates_not_met',planning_seconds=0.))
+                    rejection='offline_reference_search_requires_explicit_runner',planning_seconds=0.))
             return
         point,normal,jp,jn=self.teacher.kinematics(actual,self.teacher.contact_offset)
         import time
