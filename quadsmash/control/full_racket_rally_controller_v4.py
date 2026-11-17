@@ -80,10 +80,10 @@ class FullRacketRallyControllerV4:
             self.target_offset_world[ids]=0.
             if self.event_velocity_world is not None:
                 self.event_velocity_world[ids]=0.
-            if self.contact_first_plan_valid is not None:
+            if getattr(self,'contact_first_plan_valid',None) is not None:
                 self.contact_first_plan_valid[ids]=False
                 self.contact_first_plan_start_time[ids]=float('inf')
-        if ids is None and self.contact_first_plan_valid is not None:
+        if ids is None and getattr(self,'contact_first_plan_valid',None) is not None:
             self.contact_first_plan_valid.zero_()
             self.contact_first_plan_start_time.fill_(float('inf'))
             self.contact_first_plan_contact_time.zero_()

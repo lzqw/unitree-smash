@@ -1,0 +1,19 @@
+{
+  "command": "bash scripts/python.sh -m pytest -q tests/test_full_racket_*.py",
+  "exit_code": 1,
+  "passed": 172,
+  "failed": 2,
+  "failures": [
+    {
+      "test": "tests/test_full_racket_arm_target_rate_v4.py::ArmTargetRateTest::test_invalid_rate_and_nonfinite_input_rejected",
+      "reason": "existing ArmTargetRateV4 contract accepts rates up to 20 rad/s; the test still expects 5.1 rad/s to be rejected",
+      "introduced_by_contact_first_patch": false
+    },
+    {
+      "test": "tests/test_full_racket_residual_v4.py::test_rally_selective_reset_preserves_other_episode_and_logs",
+      "reason": "fixed in the follow-up reset compatibility patch; focused regression now passes",
+      "introduced_by_contact_first_patch": true,
+      "fixed": true
+    }
+  ]
+}
