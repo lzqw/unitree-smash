@@ -324,10 +324,22 @@ class ContactFirstFullBodyEvaluatorV1:
                 measured_velocity = np.asarray(measured[2], dtype=np.float64)
                 target_position = np.asarray(metadata["target_position_world_m"], dtype=np.float64)
                 target_normal = np.asarray(metadata["target_normal_world"], dtype=np.float64)
-                target_velocity = np.asarray(metadata["target_velocity_world_m_s"], dtype=np.float64)
+                # Task-retargeted rate is NOT the inverse model's original
+                # ideal velocity. Retain its original error as a diagnostic.
+                # Apply the unchanged tracking gate to the chosen rate target.
+                original_target_velocity = np.asarray(
+                    metadata["target_velocity_world_m_s"], dtype=np.float64)
+                adapted_rate = metadata.get("task_feasible_velocity_retarget", False)
+                if type(adapted_rate) is not bool:
+                    raise ValueError("Invalid impact rate retarget flag")
+                target_velocity = (np.asarray(
+                    metadata["retargeted_velocity_current_frame_m_s"],
+                    dtype=np.float64) if adapted_rate
+                    else original_target_velocity)
                 if any(x.shape != (3,) or not np.isfinite(x).all() for x in (
                         measured_position, measured_normal, measured_velocity,
-                        target_position, target_normal, target_velocity)):
+                        target_position, target_normal, target_velocity,
+                        original_target_velocity)):
                     raise ValueError("racket measure and target vectors must be finite 3D")
                 normal_norm = np.linalg.norm(measured_normal)
                 if normal_norm < 1e-9:
@@ -336,7 +348,13 @@ class ContactFirstFullBodyEvaluatorV1:
                 position_error = float(np.linalg.norm(measured_position - target_position))
                 normal_error = float(np.linalg.norm(measured_normal - target_normal))
                 velocity_error = float(np.linalg.norm(measured_velocity - target_velocity))
+                original_velocity_error = float(np.linalg.norm(
+                    measured_velocity - original_target_velocity))
                 result.update(dict(
+                    terminal_velocity_target_source=(
+                        "task_adapted_analytic_rate" if adapted_rate else
+                        "original_inverse_racket_request"),
+                    original_requested_racket_velocity_error_m_s=original_velocity_error,
                     actual_racket_position_world_m=measured_position,
                     actual_racket_normal_world=measured_normal,
                     actual_racket_velocity_world_m_s=measured_velocity,
