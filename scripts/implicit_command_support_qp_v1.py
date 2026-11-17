@@ -22,6 +22,11 @@ def implicit_command_map(torque_map, torque_bias, q, v, kp, kd, selector, dt):
 
 
 class ImplicitCommandSupportQP(CommandHistorySupportQP):
+    def angular_task(self, state, snapshot, reference):
+        """Default body-angular acceleration task; subclasses may supply a task."""
+        matrix = np.zeros((3, 24)); matrix[:, 3:6] = np.eye(3)
+        return matrix, reference['angular_acceleration_body']
+
     def solve(self, state, joint_reference, *, static_equilibrium=False):
         started = time.perf_counter()
         cfg, interface = self.settings, self.interface
@@ -68,8 +73,11 @@ class ImplicitCommandSupportQP(CommandHistorySupportQP):
 
         task(torque_map, -torque_bias, cfg.torque_regularization)
         task(np.c_[com_jac, np.zeros((3, nf))], reference['com_acceleration'] - com_bias, cfg.com_weight)
-        angular = np.zeros((3, nz)); angular[:, 3:6] = np.eye(3)
-        task(angular, reference['angular_acceleration_body'], cfg.orientation_weight)
+        angular, angular_target = self.angular_task(state, snapshot, reference)
+        if (angular.shape != (3, nv) or np.asarray(angular_target).shape != (3,) or
+                not np.isfinite(angular).all() or not np.isfinite(angular_target).all()):
+            raise ValueError('Finite angular task with full generalized acceleration required')
+        task(np.c_[angular, np.zeros((3, nf))], angular_target, cfg.orientation_weight)
         task(selector, reference['joint_acceleration'], cfg.posture_weight)
         foot_ids = [self.model.names.index(n) for n in self.model.feet]
         swing = reference.get('swing_foot_target_world')

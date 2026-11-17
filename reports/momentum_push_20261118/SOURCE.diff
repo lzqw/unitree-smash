@@ -1,0 +1,164 @@
+diff --git a/scripts/implicit_command_support_qp_v1.py b/scripts/implicit_command_support_qp_v1.py
+index 6285828..505e389 100644
+--- a/scripts/implicit_command_support_qp_v1.py
++++ b/scripts/implicit_command_support_qp_v1.py
+@@ -22,6 +22,11 @@ def implicit_command_map(torque_map, torque_bias, q, v, kp, kd, selector, dt):
+ 
+ 
+ class ImplicitCommandSupportQP(CommandHistorySupportQP):
++    def angular_task(self, state, snapshot, reference):
++        """Default body-angular acceleration task; subclasses may supply a task."""
++        matrix = np.zeros((3, 24)); matrix[:, 3:6] = np.eye(3)
++        return matrix, reference['angular_acceleration_body']
++
+     def solve(self, state, joint_reference, *, static_equilibrium=False):
+         started = time.perf_counter()
+         cfg, interface = self.settings, self.interface
+@@ -68,8 +73,11 @@ class ImplicitCommandSupportQP(CommandHistorySupportQP):
+ 
+         task(torque_map, -torque_bias, cfg.torque_regularization)
+         task(np.c_[com_jac, np.zeros((3, nf))], reference['com_acceleration'] - com_bias, cfg.com_weight)
+-        angular = np.zeros((3, nz)); angular[:, 3:6] = np.eye(3)
+-        task(angular, reference['angular_acceleration_body'], cfg.orientation_weight)
++        angular, angular_target = self.angular_task(state, snapshot, reference)
++        if (angular.shape != (3, nv) or np.asarray(angular_target).shape != (3,) or
++                not np.isfinite(angular).all() or not np.isfinite(angular_target).all()):
++            raise ValueError('Finite angular task with full generalized acceleration required')
++        task(np.c_[angular, np.zeros((3, nf))], angular_target, cfg.orientation_weight)
+         task(selector, reference['joint_acceleration'], cfg.posture_weight)
+         foot_ids = [self.model.names.index(n) for n in self.model.feet]
+         swing = reference.get('swing_foot_target_world')
+diff --git a/scripts/push_off_support_qp_v1.py b/scripts/push_off_support_qp_v1.py
+index 7e00f26..4e005c9 100644
+--- a/scripts/push_off_support_qp_v1.py
++++ b/scripts/push_off_support_qp_v1.py
+@@ -6,6 +6,7 @@ is only an unsaturated backward-Euler proposal; complete nonlinear prefix valida
+ mandatory. This does not alter any Recovery QP or default standing task.
+ """
+ import numpy as np
++import pinocchio as pin
+ from scripts.implicit_command_support_qp_v1 import ImplicitCommandSupportQP
+ from scripts.full_authority_position_interface_v1 import FullAuthorityPositionPDInterfaceV1
+ from scripts.whole_body_support_qp_v1 import SupportSettings
+@@ -16,6 +17,20 @@ class PushOffSupportQPV1(ImplicitCommandSupportQP):
+         super().__init__(interface,settings,preserve_arm_command=True,continuous_reference=False)
+         self.interface=FullAuthorityPositionPDInterfaceV1(interface)
+         self._task=None
++        self._momentum_rate=None
++
++    def angular_task(self,state,snapshot,reference):
++        if self._momentum_rate is None:
++            return super().angular_task(state,snapshot,reference)
++        # Hdot = Ag*a + dAg*v, about the moving COM in world axes.
++        # All 24 DOFs contribute, including the prescribed moving arm.
++        data=self.model.model.createData()
++        pin.computeCentroidalMapTimeVariation(self.model.model,data,state.q,state.v)
++        matrix=data.Ag[3:].copy();bias=data.dAg[3:]@state.v
++        inertia=snapshot['centroidal_inertia_world']
++        # Normalize to rad/s^2 using the current locked whole-body inertia.
++        # This is only objective scaling, not a substituted dynamics model.
++        return np.linalg.solve(inertia,matrix),np.linalg.solve(inertia,self._momentum_rate-bias)
+ 
+     def reference(self,state,snapshot,joint_reference):
+         if self._task is None:raise ValueError('Explicit causal baseline task required')
+@@ -29,7 +44,8 @@ class PushOffSupportQPV1(ImplicitCommandSupportQP):
+             swing_foot_target_world=None)
+ 
+     def propose(self,state,final_reference,baseline_acceleration,baseline_com_acceleration,
+-                delta_com_acceleration,delta_angular_acceleration,*,phase,recovery_owned=False):
++                delta_com_acceleration,delta_angular_acceleration,*,phase,recovery_owned=False,
++                desired_angular_momentum_rate_world=None):
+         reference=np.asarray(final_reference,float)
+         if reference.shape!=(18,) or not np.isfinite(reference).all():raise ValueError('Finite final18 reference required')
+         if np.any(reference<self.interface.limits[:,0]) or np.any(reference>self.interface.limits[:,1]):raise ValueError('Original command limits required')
+@@ -41,12 +57,19 @@ class PushOffSupportQPV1(ImplicitCommandSupportQP):
+             raise ValueError('Finite causal acceleration tasks required')
+         self.interface.bind_previous_command(state.previous_command_target)
+         self._task=values
++        if desired_angular_momentum_rate_world is not None:
++            rate=np.asarray(desired_angular_momentum_rate_world,float)
++            if rate.shape!=(3,) or not np.isfinite(rate).all():
++                self._task=None
++                raise ValueError('Finite whole-body angular momentum rate required')
++            self._momentum_rate=rate.copy()
+         try:plan=super().solve(state,reference)
+-        finally:self._task=None
++        finally:self._task=None;self._momentum_rate=None
+         if plan['accepted'] and np.max(abs(plan['joint_position_target'][12:]-reference[12:]))>2e-6:
+             raise ValueError('Push-off replaced the prescribed arm command')
+         plan.update(owner='push_off_qp_proposal',requested_com_acceleration_delta=values[2],
+             requested_angular_acceleration_delta=values[3],fullbody_prediction_valid=False,
+             native_execution=False,valid_teacher_reference=False,
+             contact_model='existing implicit-drive measured foot-body QP; independent sphere validation required')
++        plan['desired_angular_momentum_rate_world']=desired_angular_momentum_rate_world
+         return plan
+diff --git a/scripts/rollout_push_off_prefix_v1.py b/scripts/rollout_push_off_prefix_v1.py
+index a09b830..f3192e9 100644
+--- a/scripts/rollout_push_off_prefix_v1.py
++++ b/scripts/rollout_push_off_prefix_v1.py
+@@ -20,7 +20,7 @@ from quadsmash.control.push_off_window_v1 import PushOffWindowV1
+ 
+ 
+ def main():
+-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--contact-window',action='store_true');a=p.parse_args()
++    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--contact-window',action='store_true');p.add_argument('--preserve-momentum-rate',action='store_true');a=p.parse_args()
+     if a.output.exists():raise ValueError('Preserve prior attempts')
+     root=Path(__file__).resolve().parents[1]
+     source=root/'reports/push_off_task_20261118/DIAGNOSED.json';seed=json.loads(source.read_text())
+@@ -49,7 +49,8 @@ def main():
+                 if decision['enabled']:
+                     after=model.snapshot(baseline['state'].q,baseline['state'].v)
+                     plan=qp.propose(state,nominal,(baseline['state'].v-state.v)/.01,
+-                        (after['com_velocity_world']-before['com_velocity_world'])/.01,delta,np.zeros(3),phase='PUSH_OFF')
++                        (after['com_velocity_world']-before['com_velocity_world'])/.01,delta,np.zeros(3),phase='PUSH_OFF',
++                        desired_angular_momentum_rate_world=((after['momentum_world'][3:]-before['momentum_world'][3:])/.01 if a.preserve_momentum_rate else None))
+                 else:plan=dict(accepted=False,rejection='outside_support_window')
+                 target=np.asarray(plan['joint_position_target']) if plan['accepted'] else nominal.copy()
+                 chosen=(predictor(model,interface,copy.deepcopy(state),target,duration_s=.01,substeps=160,enforce_joint_stops=True)
+@@ -85,6 +86,7 @@ def main():
+         ball_valid=bool(impact and all(impact.get(k) is True for k in
+             ('contact_feasible','legal_return_predicted','attack5_predicted','target_landing_predicted')))
+         results.append(dict(lane=request['lane'],requested_delta_com_acceleration_world=delta,
++            preserve_baseline_angular_momentum_rate=a.preserve_momentum_rate,
+             support_window_ticks=(None if a.contact_window else 8),
+             support_window_mode=('causal_contact_latched' if a.contact_window else 'legacy_fixed8'),adopted_qp_commands=adopted,steps=len(rows),required_steps=len(commands),
+             path_valid=path_valid,failure=failure,terminal_errors=errors,
+diff --git a/tests/test_push_off_support_qp_v1.py b/tests/test_push_off_support_qp_v1.py
+index 73e9fad..4539110 100644
+--- a/tests/test_push_off_support_qp_v1.py
++++ b/tests/test_push_off_support_qp_v1.py
+@@ -51,3 +51,34 @@ def test_push_proposal_uses_actual_implicit_command_map_and_keeps_arm():
+     assert plan['residuals']['dynamics']<2e-4
+     assert not plan['fullbody_prediction_valid'] and not plan['valid_teacher_reference']
+     assert qp._task is None
++
++
++def test_centroidal_task_matches_momentum_finite_difference_with_moving_arm():
++    import pinocchio as pin
++    from test_command_history_support_v1 import fixture
++    _,source,state=fixture();qp=PushOffSupportQPV1(source)
++    state.v=np.linspace(-.3,.4,24);acceleration=np.linspace(.2,-.1,24)
++    snapshot=qp.model.snapshot(state.q,state.v)
++    requested=np.array([.3,-.2,.1]);qp._momentum_rate=requested.copy()
++    matrix,target=qp.angular_task(state,snapshot,{})
++    eps=1e-6
++    plus=qp.model.snapshot(pin.integrate(qp.model.model,state.q,eps*state.v),state.v+eps*acceleration)
++    minus=qp.model.snapshot(pin.integrate(qp.model.model,state.q,-eps*state.v),state.v-eps*acceleration)
++    actual=(plus['momentum_world'][3:]-minus['momentum_world'][3:])/(2*eps)
++    np.testing.assert_allclose(matrix@acceleration-target,
++        np.linalg.solve(snapshot['centroidal_inertia_world'],actual-requested),atol=1e-7)
++    assert np.linalg.norm(matrix[:,qp.model.v_indices[12:]])>0
++
++
++def test_momentum_proposal_clears_state_and_retains_hard_constraints():
++    from test_command_history_support_v1 import fixture
++    _,source,state=fixture();state.previous_command_target=state.joint_position.copy()
++    qp=PushOffSupportQPV1(source)
++    args=(state,state.joint_position,np.zeros(24),np.zeros(3),np.array([0.,0.,.2]),np.zeros(3))
++    baseline=qp.propose(*args,phase='PUSH_OFF')
++    plan=qp.propose(*args,phase='PUSH_OFF',desired_angular_momentum_rate_world=np.zeros(3))
++    assert plan['accepted'],plan
++    assert max(plan['residuals'].values())<=qp.settings.residual_tolerance
++    assert qp._momentum_rate is None and qp._task is None
++    repeated=qp.propose(*args,phase='PUSH_OFF')
++    np.testing.assert_array_equal(baseline['joint_position_target'],repeated['joint_position_target'])

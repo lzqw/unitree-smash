@@ -51,3 +51,34 @@ def test_push_proposal_uses_actual_implicit_command_map_and_keeps_arm():
     assert plan['residuals']['dynamics']<2e-4
     assert not plan['fullbody_prediction_valid'] and not plan['valid_teacher_reference']
     assert qp._task is None
+
+
+def test_centroidal_task_matches_momentum_finite_difference_with_moving_arm():
+    import pinocchio as pin
+    from test_command_history_support_v1 import fixture
+    _,source,state=fixture();qp=PushOffSupportQPV1(source)
+    state.v=np.linspace(-.3,.4,24);acceleration=np.linspace(.2,-.1,24)
+    snapshot=qp.model.snapshot(state.q,state.v)
+    requested=np.array([.3,-.2,.1]);qp._momentum_rate=requested.copy()
+    matrix,target=qp.angular_task(state,snapshot,{})
+    eps=1e-6
+    plus=qp.model.snapshot(pin.integrate(qp.model.model,state.q,eps*state.v),state.v+eps*acceleration)
+    minus=qp.model.snapshot(pin.integrate(qp.model.model,state.q,-eps*state.v),state.v-eps*acceleration)
+    actual=(plus['momentum_world'][3:]-minus['momentum_world'][3:])/(2*eps)
+    np.testing.assert_allclose(matrix@acceleration-target,
+        np.linalg.solve(snapshot['centroidal_inertia_world'],actual-requested),atol=1e-7)
+    assert np.linalg.norm(matrix[:,qp.model.v_indices[12:]])>0
+
+
+def test_momentum_proposal_clears_state_and_retains_hard_constraints():
+    from test_command_history_support_v1 import fixture
+    _,source,state=fixture();state.previous_command_target=state.joint_position.copy()
+    qp=PushOffSupportQPV1(source)
+    args=(state,state.joint_position,np.zeros(24),np.zeros(3),np.array([0.,0.,.2]),np.zeros(3))
+    baseline=qp.propose(*args,phase='PUSH_OFF')
+    plan=qp.propose(*args,phase='PUSH_OFF',desired_angular_momentum_rate_world=np.zeros(3))
+    assert plan['accepted'],plan
+    assert max(plan['residuals'].values())<=qp.settings.residual_tolerance
+    assert qp._momentum_rate is None and qp._task is None
+    repeated=qp.propose(*args,phase='PUSH_OFF')
+    np.testing.assert_array_equal(baseline['joint_position_target'],repeated['joint_position_target'])
