@@ -383,7 +383,7 @@ class ContactFirstTrajectorySearchV1:
                 candidate_normal = value.get("normal_world", target_normal_default)
             elif isinstance(value, (tuple, list)) and len(value) in (2, 3):
                 candidate_position, candidate_velocity = value[:2]
-                candidate_normal = value[2] if len(value) == 3 else target_normal
+                candidate_normal = value[2] if len(value) == 3 else target_normal_default
             else:
                 raise ValueError(
                     "target_state_fn must return a mapping or (position, velocity[, normal])")
@@ -785,12 +785,15 @@ class ContactFirstTrajectorySearchV1:
                     initial_joint_position_rad=q0.copy(),
                     initial_joint_velocity_rad_s=qd0.copy(),
                     target_position_world_m=candidate_target_pos.copy(),
-                    target_normal_world=candidate_target_normal.copy(),
-                    requested_target_normal_world=requested_target_normal.copy(),
+                    target_normal_world=candidate_rotation @ candidate_target_normal,
+                    requested_target_normal_world=candidate_rotation @ requested_target_normal,
                     selected_target_normal_before_projection=selected_target_normal.copy(),
-                    target_velocity_world_m_s=effective_target_velocity.copy(),
-                    requested_target_velocity_world_m_s=candidate_target_velocity.copy(),
+                    target_velocity_world_m_s=candidate_rotation @ effective_target_velocity,
+                    requested_target_velocity_world_m_s=candidate_rotation @ candidate_target_velocity,
                     target_position_current_frame_m=candidate_target_pos.copy(),
+                    terminal_target_frame="current_planning_frame",
+                    target_normal_current_frame=candidate_rotation @ candidate_target_normal,
+                    target_velocity_current_frame_m_s=candidate_rotation @ effective_target_velocity,
                     target_normal_future_base_frame=candidate_target_normal.copy(),
                     target_velocity_future_base_frame_m_s=candidate_target_velocity.copy(),
                     effective_target_velocity_future_base_frame_m_s=effective_target_velocity.copy(),

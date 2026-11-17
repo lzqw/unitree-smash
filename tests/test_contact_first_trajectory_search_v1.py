@@ -310,3 +310,43 @@ def test_invalid_contact_time_and_singular_normal_are_rejected():
     with pytest.raises(ValueError, match='Nonzero contact-plane normal'):
         solve_ballistic_plane_contact([0, 0, 0], [0, 0, 1], [0, 0, 0], [0, 0, 0])
 
+
+
+def test_physical_evaluator_receives_position_normal_velocity_in_one_frame():
+    rotation = rotation_current_from_future_from_rotvec(np.array([0., .1, 0.]))
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
+        normal_tangent_offsets_rad=((0.,0.),), nullspace_offsets_rad=(),
+        adaptive_normal_target_max_deviation_rad=0.,
+        allow_reachable_velocity_projection=False))
+    seen = []
+    inputs = _inputs()
+    def evaluate(q, qd, contact, metadata):
+        seen.append(metadata)
+        np.testing.assert_allclose(metadata['target_position_world_m'],
+                                   inputs['target_position_world_m'], atol=1e-12)
+        np.testing.assert_allclose(metadata['target_normal_world'],
+                                   inputs['target_normal_world'], atol=1e-12)
+        np.testing.assert_allclose(metadata['target_velocity_world_m_s'],
+                                   inputs['target_velocity_world_m_s'], atol=1e-12)
+        assert metadata['terminal_target_frame'] == 'current_planning_frame'
+        return True
+    planner.plan(**inputs, evaluator=evaluate, base_state_fn=lambda _: dict(
+        rotation_current_from_future=rotation, translation_current_m=np.zeros(3),
+        linear_velocity_current_m_s=np.zeros(3), angular_velocity_current_rad_s=np.zeros(3)))
+    assert seen
+
+
+def test_two_element_causal_target_keeps_original_normal_after_base_rotation():
+    rotation = rotation_current_from_future_from_rotvec(np.array([0., .1, 0.]))
+    inputs = _inputs()
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, normal_tangent_offsets_rad=((0.,0.),),
+        adaptive_normal_target_max_deviation_rad=0., nullspace_offsets_rad=()))
+    result = planner.plan(**inputs,
+        target_state_fn=lambda _: (inputs['target_position_world_m'], inputs['target_velocity_world_m_s']),
+        base_state_fn=lambda _: dict(rotation_current_from_future=rotation,
+            translation_current_m=np.zeros(3), linear_velocity_current_m_s=np.zeros(3),
+            angular_velocity_current_rad_s=np.zeros(3)))
+    np.testing.assert_allclose(result.metadata['requested_target_normal_world'],
+                               inputs['target_normal_world'], atol=1e-12)

@@ -29,6 +29,12 @@ class ContactFirstFullBodyEvaluatorV1:
     ``public`` and ``default`` are the measured state at the planning tick.
     The evaluator is deterministic and replays every candidate from that same
     state, so candidates cannot borrow mutable state from one another.
+
+    ``racket_measure_fn`` must return position, normal and inertial point
+    velocity expressed in the planner's fixed current planning frame. When
+    that frame is the initial body frame, callers must transform native world
+    measurements explicitly; it is not the changing future body frame. The
+    legacy metadata keys ending in ``world`` refer to this common fixed frame.
     """
 
     def __init__(self, public=None, default=None, interface_config=None, *,
