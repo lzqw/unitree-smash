@@ -116,6 +116,10 @@ def main():
     from scripts.offline_reference_bundle_v1 import (
         require_final_trajectory_admission,write_candidate)
     for lane in range(observations.shape[1]):
+        # The strict full-final-impact provenance contract is defined only
+        # for the opted-in anchored 18D planner, not legacy arm-only paths.
+        if not args.anchored:
+            break
         if not bool(controller.contact_first_plan_valid[lane].item()):
             continue
         if not bool(controller.contact_first_joint_valid[lane].item()):
