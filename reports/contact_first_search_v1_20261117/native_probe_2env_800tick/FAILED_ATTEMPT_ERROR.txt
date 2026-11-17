@@ -1,0 +1,31 @@
+Traceback (most recent call last):
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/probe_full_racket_rally_v4.py", line 113, in <module>
+    try:main()
+        ^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/probe_full_racket_rally_v4.py", line 47, in main
+    action=controller.action(observation,default,limits)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/quadsmash/control/full_racket_rally_controller_v4.py", line 353, in action
+    self._install_contact_first_plan(
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/quadsmash/control/full_racket_rally_controller_v4.py", line 181, in _install_contact_first_plan
+    result=self.contact_first_planner.plan(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/quadsmash/control/contact_first_trajectory_search_v1.py", line 228, in plan
+    data = _validate_vectors(
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/quadsmash/control/contact_first_trajectory_search_v1.py", line 163, in _validate_vectors
+    vectors = [np.asarray(x, dtype=float) for x in vectors]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/quadsmash/control/contact_first_trajectory_search_v1.py", line 163, in <listcomp>
+    vectors = [np.asarray(x, dtype=float) for x in vectors]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/torch/_tensor.py", line 1227, in __array__
+    return self.numpy().astype(dtype, copy=False)
+           ^^^^^^^^^^^^
+TypeError: can't convert cuda:0 device type tensor to numpy. Use Tensor.cpu() to copy the tensor to host memory first.

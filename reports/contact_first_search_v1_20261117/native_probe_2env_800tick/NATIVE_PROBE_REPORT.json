@@ -1,0 +1,30 @@
+{
+  "scope": "native development probe only; not formal evaluation",
+  "command": "bash scripts/python.sh scripts/probe_full_racket_rally_v4.py --output /tmp/contact_first_teacher_probe_20261117_retry1 --checkpoint /tmp/contact_first_candidate_20261117.pt --count 2 --headless",
+  "retry_output": "/tmp/contact_first_teacher_probe_20261117_retry1",
+  "failed_attempt_output": "/tmp/contact_first_teacher_probe_20261117",
+  "failed_attempt": {
+    "exit_code": 1,
+    "reason": "CUDA tensor was passed to the NumPy contact planner without an explicit CPU transfer",
+    "preserved_log": "FAILED_ATTEMPT_ERROR.txt"
+  },
+  "retry": {
+    "exit_code": 0,
+    "episodes": 2,
+    "control_ticks": 800,
+    "executed_env_steps": 1600,
+    "contacts": 0,
+    "airborne_contacts": 0,
+    "complete": 0,
+    "numerical_failures": 0,
+    "formal_acceptance": false,
+    "old_passes_inherited": false
+  },
+  "interpretation": "The retry validates native lifecycle and the controller/planner path for 2 environments and 800 control ticks after the tensor bridge fix. The ball was not launched in this development probe, so it provides no hit-rate or trajectory-success claim.",
+  "supermimic": "untouched",
+  "temporary_checkpoint_sha256": "7ed17ef0ab3330139a1f20c4cc4695a644a0192072423392c63062d72e7b9ca7",
+  "asset_sha256": "c2264fce90b042c7c6a1cac7d516af83972729d0402947e3a519041e184cf2",
+  "source_training_suite_sha256": "2f9bf380d938a87418c4fa7da087e86d0da43f27a2ee6492bff7d7f1c3ff7c30",
+  "source_training_suite_count": 128,
+  "formal_evaluation": "NOT_RUN"
+}
