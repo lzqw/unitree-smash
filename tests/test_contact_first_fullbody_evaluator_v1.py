@@ -304,3 +304,34 @@ def test_native_timestep_profile_is_explicit_and_not_physx_equivalence():
     assert contract['joint_position_stops']
     assert not contract['physx_equivalent']
     assert contract['velocity_limit_response']=='postsolve_rejection_only'
+
+
+def test_task_retarget_keeps_original_requested_error_and_original_tracking_tolerance():
+    public,default,interface=_fixture()
+    recorded_velocity=np.array([0.,0.,0.])
+    def measured(state):
+        return np.array([0.,0.,0.]),np.array([1.,0.,0.]),recorded_velocity
+    evaluator=ContactFirstFullBodyEvaluatorV1(public,default,interface,substeps=1,
+                                               racket_measure_fn=measured)
+    q=np.repeat(default[None,12:],4,axis=0)
+    original=dict(target_position_world_m=[0.,0.,0.],
+                  target_normal_world=[1.,0.,0.],
+                  target_velocity_world_m_s=[3.,0.,0.])
+    unadapted=evaluator(q,np.zeros_like(q),3,original)
+    assert unadapted['rejection']=='actual_racket_terminal_residual'
+    selected=dict(original,task_feasible_velocity_retarget=True,
+                  retargeted_velocity_current_frame_m_s=[0.,0.,0.])
+    accepted=evaluator(q,np.zeros_like(q),3,selected)
+    assert accepted['accepted']
+    assert accepted['terminal_velocity_target_source']=='task_adapted_analytic_rate'
+    assert accepted['actual_racket_velocity_error_m_s']==0.
+    assert accepted['original_requested_racket_velocity_error_m_s']==3.
+    missing=dict(original,task_feasible_velocity_retarget=True)
+    rejected=evaluator(q,np.zeros_like(q),3,missing)
+    assert rejected['rejection']=='actual_racket_measurement'
+    # The actual executed velocity still must track the selected target
+    # within the unchanged .75-m/s gate: task change cannot bypass it.
+    poorly_tracked=dict(selected,retargeted_velocity_current_frame_m_s=[1.,0.,0.])
+    failed=evaluator(q,np.zeros_like(q),3,poorly_tracked)
+    assert failed['rejection']=='actual_racket_terminal_residual'
+    assert failed['actual_racket_velocity_error_m_s']==1.
