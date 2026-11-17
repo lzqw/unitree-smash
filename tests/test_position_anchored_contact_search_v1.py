@@ -98,3 +98,48 @@ def test_production_anchored_branch_keeps_per_time_anchor_and_requires_final_imp
         planner.plan(**inputs,kinematics_fn=fk,target_state_fn=target,evaluator=physical,
                      impact_evaluator=lambda m:dict(legal_return_predicted=True,attack5_predicted=False))
     assert not calls
+
+
+def test_task_feasible_rate_retargets_without_erasing_unreachable_original_speed():
+    from quadsmash.control.contact_first_trajectory_search_v1 import (
+        ContactFirstTrajectorySearchV1,ContactFirstSearchConfig)
+    planner=ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        position_anchored_search=True,
+        impact_feasible_rate_retarget=True,contact_time_offsets_s=(0.,),
+        horizon_steps=32))
+    q0=np.zeros(6)
+    inputs=dict(q_rad=q0,qd_rad_s=np.zeros(6),
+        position_jacobian=fk(q0)[2],normal_jacobian=fk(q0)[3],
+        racket_position_world_m=np.zeros(3),racket_normal_world=[1.,0.,0.],
+        target_position_world_m=[.1,0.,0.],target_normal_world=[1.,0.,0.],
+        target_velocity_world_m_s=[9.,0.,0.],contact_time_s=.2,
+        lower_rad=-np.ones(6),upper_rad=np.ones(6),
+        velocity_limits_rad_s=np.ones(6)*5.)
+    def target(t):
+        return dict(position_world_m=[.1,0.,0.],normal_world=[1.,0.,0.],
+            velocity_world_m_s=[9.,0.,0.],
+            contact_point_local=[.0006,0.,.07],
+            desired_outgoing_velocity_world_m_s=[5.5,0.,-1.5])
+    def impact(meta):
+        velocity=np.asarray(meta['achieved_velocity_current_frame_m_s'])
+        outgoing=np.array([3.+velocity[0],velocity[1],-1.5+velocity[2]])
+        valid=bool(5.<=outgoing[0]<6. and abs(outgoing[1])<.2 and outgoing[2]<-1.)
+        return dict(contact_feasible=True,legal_return_predicted=valid,
+            attack5_predicted=valid,target_landing_predicted=valid,
+            contact_position_error_m=.0001,outgoing_velocity=outgoing.tolist(),
+            ranking_cost=float((outgoing[0]-5.5)**2))
+    physical_calls=[]
+    def physical(q,qd,index,meta):
+        physical_calls.append(meta)
+        return dict(accepted=True,
+            actual_racket_position_world_m=q[index,:3],
+            actual_racket_normal_world=np.array([1.,0.,0.]),
+            actual_racket_velocity_world_m_s=qd[index,:3])
+    result=planner.plan(**inputs,kinematics_fn=fk,target_state_fn=target,
+                        impact_evaluator=impact,evaluator=physical)
+    assert len(physical_calls)==1
+    assert result.metadata['task_feasible_velocity_retarget']
+    assert not result.metadata['original_request_velocity_feasible']
+    assert result.metadata['velocity_error_from_requested_m_s']>.75
+    assert result.metadata['impact_outcome']['attack5_predicted']
+    assert np.max(abs(result.qd_rad_s))<=5.+1e-9
