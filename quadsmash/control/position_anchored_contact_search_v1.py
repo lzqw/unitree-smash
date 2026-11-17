@@ -79,7 +79,13 @@ def anchored_pose_velocity(kinematics,seeds,lower,upper,speed,position,normal,ve
                 position,requested,expanded_bound,max_iterations=32)
             refinement['attempts']=refined['attempts']
             refinement['seconds']=refined['seconds']
-            if (refined['normal_vector_error'] < en-1e-8
+            # Do not spend submillimetre contact precision for an
+            # insignificant face improvement that still fails the unchanged
+            # normal gate. Preserve the exact old anchor in that case.
+            improvement=en-refined['normal_vector_error']
+            useful=(refined['normal_vector_error']<=normal_tolerance
+                    or improvement>=max(.02,.05*en))
+            if (useful and improvement>1e-8
                     and refined['position_error_m'] <= expanded_bound+1e-10):
                 q=refined['q_rad'].copy()
                 p,n,jp,jn=kinematics(q)
