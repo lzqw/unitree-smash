@@ -334,6 +334,17 @@ class FullRacketRallyControllerV4:
                     search_diagnostics=json.loads(json.dumps(self.contact_first_planner.last_diagnostics,default=lambda v:v.tolist() if isinstance(v,np.ndarray) else v.item()))))
                 continue
             physical=result.metadata.get('evaluator')
+            final_impact=result.metadata.get('impact_outcome')
+            final_impact_checks=None
+            if cfg.position_anchored_search and cfg.require_joint_prefix:
+                required=('contact_feasible','legal_return_predicted',
+                          'attack5_predicted','target_landing_predicted')
+                if (not isinstance(final_impact,dict) or
+                        not all(final_impact.get(k) is True for k in required) or
+                        not np.isfinite(final_impact.get('contact_position_error_m',np.nan)) or
+                        final_impact['contact_position_error_m']>0.003):
+                    raise RuntimeError('Final analytic return and strict 3mm contact not certified')
+                final_impact_checks={k:bool(final_impact[k]) for k in required}
             joint_accepted=False
             if cfg.require_joint_prefix:
                 if not isinstance(physical,dict) or physical.get('leg_reference')!='causal_frozen_base':
@@ -358,6 +369,9 @@ class FullRacketRallyControllerV4:
                 normal_error=result.normal_error,
                 velocity_error_m_s=result.velocity_error_m_s,
                 physical_evaluator=bool(evaluator is not None),
+                final_impact_checks=final_impact_checks,
+                final_contact_position_error_m=(None if final_impact_checks is None
+                    else float(final_impact['contact_position_error_m'])),
                 search_diagnostics=dict(result.metadata.get(
                     'search_diagnostics', {}))))
 
