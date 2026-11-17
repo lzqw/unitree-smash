@@ -71,6 +71,10 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     --output "$OUT" --headless --device cuda:0
     --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false
   )
+  if [[ -n "${SM_ACTION_BALL_CHECKPOINT:-}" ]]; then
+    [[ -f "$SM_ACTION_BALL_CHECKPOINT" ]] || { echo "Missing opt-in action-ball candidate: $SM_ACTION_BALL_CHECKPOINT" >&2; exit 13; }
+    TRAIN_ARGS+=(--action-ball-checkpoint "$SM_ACTION_BALL_CHECKPOINT")
+  fi
   if [[ "${SM_TRAINING_PROFILE:-large}" == large ]]; then
     TRAIN_ARGS+=(--training-profile large --contact-validation-receipt "${SM_CONTACT_VALIDATION_RECEIPT:?contact validation evidence required}")
   fi
