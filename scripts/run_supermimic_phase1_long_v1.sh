@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# Persistent four-cycle Recovery->Approach run with a frozen 128-env gate after
-# each cycle. This script is intentionally launch-only: it is never run by the
+# Bounded success-guided Recovery32->Approach8 default with a frozen 128-env
+# gate after the cycle. Budgets remain explicit overrides. This script is intentionally launch-only: it is never run by the
 # code validation step. Set the six SM_* paths before invoking it.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PYTHON="${QUADSMASH_PYTHON:-/home/autodrive/Isaac/env_isaaclab/bin/python}"
@@ -15,6 +15,13 @@ TASK="${SM_TASK_CHECKPOINT:?set SM_TASK_CHECKPOINT to task.pt}"
 SAFETY="${SM_SAFETY_MAPPING:-$ROOT/reports/supermimic_native_physical_loop_20261114/safety_mapping.json}"
 REFERENCE="${SM_REFERENCE_POLICY:-/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt}"
 mkdir -p "$RUN_ROOT" "$RUN_ROOT/tensorboard"
+REF_BANK="${SM_TASK_REFERENCE_BANK:?set SM_TASK_REFERENCE_BANK to a terminal-verified v2 bank}"
+TRACK_WEIGHT="${SM_TRACKING_WEIGHT:?declare SM_TRACKING_WEIGHT before this experiment}"
+R_UPDATES="${SM_RECOVERY_UPDATES:-32}"
+A_UPDATES="${SM_APPROACH_UPDATES:-8}"
+R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-64}"
+A_PROPOSALS="${SM_APPROACH_PROPOSALS:-16}"
+CYCLES="${SM_CYCLES:-1}"
 TB_PID=""
 cleanup(){
   if [[ -n "$TB_PID" ]]; then kill "$TB_PID" 2>/dev/null || true; fi
@@ -24,7 +31,7 @@ trap cleanup EXIT INT TERM
 echo "RUN_ROOT=$RUN_ROOT"
 echo "GPU=${CUDA_VISIBLE_DEVICES:-all} DEVICE=cuda:0"
 echo "PYTHON=$PYTHON"
-echo "CONFIG=$ROOT/configs/supermimic_phase1_long_v1.json"
+echo "CONFIG=$ROOT/configs/supermimic_success_guided_v2.json"
 
 "$PYTHON" -m tensorboard.main --logdir "$RUN_ROOT/tensorboard" --host 127.0.0.1 --port "${SM_TENSORBOARD_PORT:-6006}" >"$RUN_ROOT/tensorboard.log" 2>&1 &
 TB_PID=$!
@@ -40,19 +47,23 @@ FLAT_STREAK=0
 RETURN_DROP_TOL="${SM_RETURN_DROP_TOL:-0.10}"
 CONVERGENCE_TOL="${SM_RETURN_CONVERGENCE_TOL:-0.05}"
 CONVERGENCE_PATIENCE="${SM_RETURN_CONVERGENCE_PATIENCE:-2}"
-for cycle in 1 2 3 4; do
+for ((cycle=1; cycle<=CYCLES; cycle++)); do
   OUT="$RUN_ROOT/cycle_${cycle}"
   TRAIN_ARGS=(
     --archive "$ARCHIVE" --packed-data "$PACKED"
     --physical-checkpoint "$PHYSICAL" --ball-checkpoint "$BALL"
     --task-checkpoint "$TASK" --safety-mapping "$SAFETY"
     --reference-policy-checkpoint "$REFERENCE"
-    --recovery-update-budget 64 --approach-update-budget 64
-    --recovery-proposal-budget 64 --approach-proposal-budget 64
+    --recovery-update-budget "$R_UPDATES" --approach-update-budget "$A_UPDATES"
+    --recovery-proposal-budget "$R_PROPOSALS" --approach-proposal-budget "$A_PROPOSALS"
     --update-mode sequential --ball-side-mode shadow
     --cycles 1 --native-ticks-per-actor-update 16
-    --replay-capacity-ticks 16384 --refresh-ticks 0
-    --refresh-world-updates 0 --refresh-critic-updates 0
+    --replay-capacity-ticks 16384 --refresh-ticks 800
+    --refresh-world-updates 32 --refresh-critic-updates 20
+    --world-updates-per-actor-update 4 --approach-refresh-interval 8
+    --wm-stage-quota uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8
+    --wm-approach-stage-quota uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8
+    --task-reference-bank "$REF_BANK" --tracking-weight "$TRACK_WEIGHT"
     --command-delta-budget 0.005 --target-delta-budget-rad 0.04
     --tensorboard-dir "$RUN_ROOT/tensorboard"
     --output "$OUT" --headless --device cuda:0
@@ -69,8 +80,8 @@ import json,sys
 m=json.load(open(sys.argv[1])); print(int(m.get('actor_updates',0)))
 PY
   )"
-  if [[ "$ACCEPTED_COUNT" != 128 ]]; then
-    echo "cycle $cycle accepted only $ACCEPTED_COUNT/128 proposals; preserving output and stopping" | tee "$RUN_ROOT/STOPPED"
+  if (( ACCEPTED_COUNT != R_UPDATES + A_UPDATES )); then
+    echo "cycle $cycle accepted only $ACCEPTED_COUNT/$((R_UPDATES+A_UPDATES)) effective updates; preserving output and stopping" | tee "$RUN_ROOT/STOPPED"
     exit 22
   fi
   CANDIDATE="$OUT/cycle_01_candidate_$(printf '%04d' "$ACCEPTED_COUNT").pt"

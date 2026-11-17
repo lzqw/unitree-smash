@@ -1,0 +1,2150 @@
+diff --git a/quadsmash/rl/supermimic_physical_imagination_state_v1.py b/quadsmash/rl/supermimic_physical_imagination_state_v1.py
+index ea45c2d..9a2fe23 100644
+--- a/quadsmash/rl/supermimic_physical_imagination_state_v1.py
++++ b/quadsmash/rl/supermimic_physical_imagination_state_v1.py
+@@ -53,6 +53,8 @@ class PhysicalImaginationStateV1:
+             ball_present=p['ball_present'],foot_contact=p['foot_contact'],
+             final_action=p['final_action'],episode_index=before['episode_index'].to(device).clone(),
+             history_tick=before['history_tick'].to(device).clone())
++        if '_actor_lane_mask' in row:
++            context['actor_lane_mask']=row['_actor_lane_mask'].to(device).bool().clone()
+         executor=restore_captured_execution(executor_template,row['executor_before'],device=device)
+         return cls(encode_physical(p),executor,memory,current_history,observation,context)
+ 
+diff --git a/quadsmash/rl/supermimic_physical_learner_v1.py b/quadsmash/rl/supermimic_physical_learner_v1.py
+index 1870721..c71d5dc 100644
+--- a/quadsmash/rl/supermimic_physical_learner_v1.py
++++ b/quadsmash/rl/supermimic_physical_learner_v1.py
+@@ -166,165 +166,158 @@ class PhysicalHorizonTrainer:
+     def frozen_hash(self):
+         return tensor_digest((k,v) for k,v in self.actor.state_dict().items() if k not in self.trainable_names)
+ 
++    def _rollout_objective(self, initial_state, *, effective_weights=None):
++        from .supermimic_approach_data_v1 import masked_lane_mean
++        cfg=self.timebase; state=initial_state.branch()
++        states=[]; rewards=[]; dones=[]; valid=[]; anchors=[]; gates=[]; tracks=[]
++        selected=state.clock_goal_context.get('actor_lane_mask',torch.ones(len(state.physical),dtype=torch.bool,device=state.physical.device))
++        survival=state.physical.new_ones(len(state.physical))
++        reference=None
++        if self.reference_bank is not None and self.tracking_weight>0 and self.block_name in ('approach','recovery'):
++            # G07's causal current plan is available without consulting archived
++            # future contacts. Missing plans use current-state phase matching.
++            base=getattr(state.executor_memory,'reference_controller',None)
++            event_time=getattr(base,'event_time',None) if self.block_name=='approach' else None
++            if event_time is not None and hasattr(base,'planned'):
++                event_time=torch.where(base.planned,event_time,torch.full_like(event_time,float('nan')))
++            reference=self.reference_bank.bind(state.physical,self.block_name,geometry=self.adapter.physical_model.geometry,
++                elapsed=state.clock_goal_context['elapsed'],event_time=event_time)
++        for _ in range(cfg.imagination_steps):
++            active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7
++            if not active.any():break
++            current=self.adapter.critic_input(state)
++            action=self._actor_action(state,sample=False)[0]
++            gate=self._head_gate(state).reshape(-1)
++            usable=selected&active
++            gates.append((gate.detach()*survival.detach()*usable).detach())
++            with torch.no_grad(): ref_action=self._reference_action(state,sample=False)[0]
++            anchors.append((action-ref_action).square().mean(-1)*active*survival.detach())
++            track_mask=usable&(gate.detach()>.25)
++            rally=state.task_memory.get('rally',{})
++            if self.block_name=='approach':
++                if 'had_contact' not in rally:track_mask=torch.zeros_like(track_mask)
++                else:track_mask=track_mask&(rally['had_contact'].reshape(-1)<.5)
++            state,reward,done,_=self.adapter(state,action)
++            if reference is not None:
++                tracks.append(self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
++                    geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival))
++            states.append(current.detach());rewards.append(reward*active[:,None]);dones.append(done);valid.append(active)
++            survival=survival*(1-done.reshape(-1))
++        if not states:raise ValueError('No active in-episode imagination start')
++        final=self.adapter.critic_input(state)
++        ret=bptt_return(torch.stack(rewards),torch.stack(dones),self.critic(final).clamp(max=self.v_max),cfg.gamma)
++        activity=torch.stack(gates); weights=(activity.sum(0)>.25).detach()
++        # Backtracking must not improve a loss merely by dropping the lanes
++        # that were selected by the original proposal's gate/survival trace.
++        if effective_weights is not None:weights=effective_weights.detach()
++        task_loss=-masked_lane_mean(ret,weights)
++        anchor_loss=masked_lane_mean(torch.stack(anchors).sum(0),weights)
++        tracking_loss=torch.stack(tracks).mean() if tracks else ret.sum()*0.
++        loss=task_loss+self.tracking_weight*tracking_loss+self.anchor_coeff*anchor_loss
++        if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical BPTT objective')
++        return dict(loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
++                    gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
++                    critic_data=(torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid)),
++                    tracking_steps=len(tracks),matched_references=int(reference['matched'].sum()) if reference else 0)
++
+     def imagine_update(self,initial_state,*,update_actor=True):
+-        cfg=self.timebase;state=initial_state.branch()
+-        states=[];rewards=[];dones=[];valid=[];anchors=[];gate_activity=[];tracking_losses=[]
+-        tracking_reference = None
+-        if self.reference_bank is not None and self.tracking_weight > 0:
+-            tracking_reference = self.reference_bank.bind(initial_state.physical, self.block_name)
+-        before={k:p.detach().clone() for k,p in self.actor.named_parameters() if p.requires_grad}
+-        actor_state_before={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
+-        optimizer_state_before=copy.deepcopy(self.actor_opt.state_dict())
+-        with torch.no_grad():
+-            context=initial_state.clock_goal_context
+-            initial_request=self._actor_action(initial_state,sample=False)[0]
+-            initial_preview,_,_=self.adapter.executor.forward(initial_state.observation,initial_request,
+-                context['joint_default'][0],context['limits'],initial_state.executor_memory)
+-            initial_command=initial_preview.final_joint_targets.clone()
+-            reference_request=self._reference_action(initial_state,sample=False)[0]
+-            reference_preview,_,_=self.adapter.executor.forward(initial_state.observation,reference_request,
+-                context['joint_default'][0],context['limits'],initial_state.executor_memory)
+-            reference_command=reference_preview.final_joint_targets.clone()
+-        before_models=tensor_digest(self.adapter.state_dict().items())
+-        self.actor_opt.zero_grad(set_to_none=True);started=time.perf_counter()
+-        with frozen(self.adapter,self.critic), torch.set_grad_enabled(update_actor):
+-            for i in range(cfg.imagination_steps):
+-                current=self.adapter.critic_input(state)
+-                active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7
+-                if not active.any():break
+-                action=self._actor_action(state,sample=False)[0]
+-                gate=self._head_gate(state)
+-                gate_activity.append(gate.detach())
+-                with torch.no_grad():reference=self._reference_action(state,sample=False)[0]
+-                anchors.append((action-reference).square().mean(-1,keepdim=True)*active[:,None])
+-                state,reward,done,_=self.adapter(state,action)
+-                if tracking_reference is not None:
+-                    tracking_losses.append(self.reference_bank.loss(
+-                        state.physical, state.clock_goal_context['elapsed'],
+-                        tracking_reference, self.block_name,
+-                        geometry=self.adapter.physical_model.geometry,
+-                        valid_mask=active))
+-                states.append(current.detach());rewards.append(reward*active[:,None]);dones.append(done);valid.append(active)
+-            if not states:raise ValueError('No active in-episode imagination start')
+-            final=self.adapter.critic_input(state)
+-            ret=bptt_return(torch.stack(rewards),torch.stack(dones),self.critic(final).clamp(max=self.v_max),cfg.gamma)
+-            tracking_loss=(torch.stack(tracking_losses).mean() if tracking_losses else ret.new_zeros(()))
+-            loss=-ret.mean()+self.anchor_coeff*torch.stack(anchors).sum(0).mean()
+-            loss=loss+self.tracking_weight*tracking_loss
+-            if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical BPTT objective')
+-            effective_gate_steps=int(sum(int((g > .25).sum().item()) for g in gate_activity))
+-            effective_gate_lanes=int(max((int((g > .25).sum().item()) for g in gate_activity), default=0))
+-            no_effective_gate=bool(update_actor and effective_gate_steps == 0)
+-            no_effective_gradient=False
+-            if update_actor and not no_effective_gate:
+-                self.actor_attempts+=1
+-                loss.backward()
+-                parameters=[p for p in self.actor.parameters() if p.requires_grad]
+-                raw_grad=sum(float(p.grad.detach().abs().sum()) for p in parameters if p.grad is not None)
+-                no_effective_gradient=not torch.isfinite(loss.new_tensor(raw_grad)) or raw_grad <= 1e-12
+-                gradient=loss.new_zeros(()) if no_effective_gradient else optimizer_step(
+-                    self.actor_opt,parameters,element_clip=.1)
+-            else:gradient=loss.new_zeros(())
+-            critic_data=(torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),
+-                         final.detach(),torch.stack(valid))
+-        if update_actor and not no_effective_gate and not no_effective_gradient:self.actor_updates+=1
+-        if before_models!=tensor_digest(self.adapter.state_dict().items()):raise RuntimeError('Actor step changed physical model')
+-        if self.frozen_hash()!=self.frozen_actor_hash:raise RuntimeError('Frozen base/recovery changed')
+-        del state,rewards,dones,anchors,final,loss
+-        bptt_seconds=time.perf_counter()-started
++        from .supermimic_approach_data_v1 import gradient_parts
++        cfg=self.timebase; started=time.perf_counter()
++        actor_before={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
++        optimizer_before=copy.deepcopy(self.actor_opt.state_dict())
++        model_hash=tensor_digest(self.adapter.state_dict().items())
++        parameters=[p for p in self.actor.parameters() if p.requires_grad]
++        self.actor_opt.zero_grad(set_to_none=True)
++        before_budget=self._budget_snapshot()
++        cpu_rng=torch.get_rng_state(); cuda_rng=torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None
++        def restore_rng():
++            torch.set_rng_state(cpu_rng)
++            if cuda_rng is not None:torch.cuda.set_rng_state_all(cuda_rng)
++        accepted=False; alpha=0.; gradient=0.; reason=None; grad_stats={}; trials=[]
++        if update_actor:self.actor_attempts+=1
++        try:
++            with frozen(self.adapter,self.critic),torch.set_grad_enabled(update_actor):
++                rollout=self._rollout_objective(initial_state)
++                baseline_loss=float(rollout['loss'].detach())
++                if update_actor and rollout['gate_lanes']:
++                    grad_stats=gradient_parts({k:rollout[k] for k in ('task','tracking','anchor')},parameters)
++                    # Anchor-only momentum is not an effective task update.
++                    if grad_stats['task_gradient_norm']+self.tracking_weight*grad_stats['tracking_gradient_norm']>1e-12:
++                        rollout['loss'].backward()
++                        norm=torch.sqrt(sum((p.grad.detach().square().sum() for p in parameters if p.grad is not None),rollout['loss'].new_zeros(())))
++                        if not torch.isfinite(norm):raise FloatingPointError('Nonfinite actor gradient')
++                        if float(norm)>1e-12:
++                            gradient=float(optimizer_step(self.actor_opt,parameters,element_clip=.1))
++                            proposed={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
++                            proposed_opt=copy.deepcopy(self.actor_opt.state_dict())
++                            for candidate_alpha in (1.,.5,.25,.125,.0625):
++                                candidate={k:(v+(proposed[k]-v)*candidate_alpha if k in self.trainable_names else v) for k,v in actor_before.items()}
++                                self.actor.load_state_dict(candidate,strict=True)
++                                with torch.no_grad():
++                                    report=self._relative_budget_report()
++                                    local=report['relative_last_accepted']; native=report['relative_native_accepted']
++                                    bounded=(local['final_normalized_command_delta']<=self.command_delta_budget and local['final_joint_target_delta_rad']<=self.target_delta_budget_rad)
++                                    if self.native_reference_command_budget is not None:
++                                        bounded &= (native['final_normalized_command_delta']<=self.native_reference_command_budget and native['final_joint_target_delta_rad']<=self.native_reference_target_budget_rad)
++                                    # Measure final executable commands on identical real states/memory.
++                                    effect=max(self._max_budget_delta(n,b)[2] for n,b in zip(self._budget_snapshot(),before_budget))
++                                    restore_rng(); candidate_loss=float(self._rollout_objective(initial_state,effective_weights=rollout['effective_weights'])['loss'])
++                                trials.append(dict(alpha=candidate_alpha,loss=candidate_loss,budget_ok=bool(bounded),final_command_change=effect))
++                                if bounded and effect>0 and candidate_loss<=baseline_loss:
++                                    alpha=candidate_alpha;accepted=True;break
++                            if accepted:
++                                # Adam moments correspond to the original same-gradient proposal;
++                                # alpha scales only the committed parameter displacement.
++                                self.actor_opt.load_state_dict(proposed_opt)
++                            else:reason='objective_budget_or_zero_final_command_response'
++                        else:reason='zero_total_gradient'
++                    else:reason='no_task_or_tracking_gradient'
++                elif update_actor:reason='no_effective_gate'
++            critic_data=rollout['critic_data']
++            ret_mean=float(rollout['ret'].detach().mean()); track_value=float(rollout['tracking'].detach())
++            gate_steps=rollout['gate_steps'];gate_lanes=rollout['gate_lanes'];track_steps=rollout['tracking_steps']
++            matched=rollout['matched_references']
++            del rollout
++        except BaseException:
++            self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
++            raise
++        if update_actor:
++            if accepted:
++                self.actor_updates+=1; self.backtracked_actor_updates+=int(alpha<1);self.accept_snapshot()
++            else:
++                self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
++                self.rejected_actor_updates+=1
++        if model_hash!=tensor_digest(self.adapter.state_dict().items()):raise RuntimeError('Actor update changed model')
++        if self.frozen_hash()!=self.frozen_actor_hash:raise RuntimeError('Frozen actor state changed')
++        # Critic updates only AFTER all fixed-objective comparisons finish.
++        bptt_seconds=time.perf_counter()-started;started=time.perf_counter()
+         states,rewards,dones,final,valid=critic_data
+-        with torch.no_grad():
+-            targets=gae_returns(self.critic(states),self.critic(final),rewards,dones,cfg.gamma,cfg.lam).clamp(max=self.v_max)
+-        x,y=states[valid],targets[valid]
+-        if not len(y):raise ValueError('No in-episode imagined critic states')
+-        losses=[];started=time.perf_counter()
+-        for epoch in range(5):
++        with torch.no_grad():targets=gae_returns(self.critic(states),self.critic(final),rewards,dones,cfg.gamma,cfg.lam).clamp(max=self.v_max)
++        x,y=states[valid],targets[valid]; losses=[]
++        if not len(y):raise ValueError('No valid critic data')
++        for _ in range(5):
+             for ids in torch.tensor_split(torch.randperm(len(y),device=y.device),4):
+-                self.critic_opt.zero_grad(set_to_none=True)
+-                loss=(self.critic(x[ids])-y[ids]).square().mean()
+-                if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical GAE critic loss')
+-                loss.backward();optimizer_step(self.critic_opt,self.critic.parameters())
+-                self.critic_updates+=1;losses.append(float(loss.detach()))
+-        proposal_state={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
+-        proposal_optimizer=copy.deepcopy(self.actor_opt.state_dict())
+-        delta={k:float((p.detach()-before[k]).abs().max()) for k,p in self.actor.named_parameters() if p.requires_grad}
++                if not ids.numel():continue
++                self.critic_opt.zero_grad(set_to_none=True); loss=(self.critic(x[ids])-y[ids]).square().mean()
++                if not torch.isfinite(loss):raise FloatingPointError('Nonfinite GAE critic loss')
++                loss.backward();optimizer_step(self.critic_opt,self.critic.parameters());self.critic_updates+=1;losses.append(float(loss.detach()))
+         self.last_critic_loss=sum(losses)/len(losses)
+-        with torch.no_grad():
+-            updated_request=self._actor_action(initial_state,sample=False)[0]
+-            updated_preview,_,_=self.adapter.executor.forward(initial_state.observation,updated_request,
+-                context['joint_default'][0],context['limits'],initial_state.executor_memory)
+-            command_change=float((updated_preview.final_joint_targets-initial_command).abs().max())
+-            reference_command_delta=float((updated_preview.final_joint_targets-reference_command).abs().max())
+-            reference_request_delta=float((updated_request-reference_request).abs().max())
+-        accepted=True; alpha=1.0; budget_report=self._relative_budget_report()
+-        if update_actor and not no_effective_gate and not no_effective_gradient:
+-            # Same proposal, same model/critic/start/batch: only scale the parameter
+-            # displacement.  No alternate batch or extra rollout is selected.
+-            base_state=actor_state_before
+-            for candidate_alpha in (1.0,0.5,0.25,0.125,0.0625):
+-                candidate={}
+-                for key,b in base_state.items():
+-                    p=proposal_state[key]
+-                    candidate[key]=(b+(p-b)*candidate_alpha) if (b.is_floating_point() or b.is_complex()) else p
+-                self.actor.load_state_dict(candidate,strict=True)
+-                report=self._relative_budget_report()
+-                local_ok = (report['relative_last_accepted']['final_normalized_command_delta'] <= self.command_delta_budget and
+-                            report['relative_last_accepted']['final_joint_target_delta_rad'] <= self.target_delta_budget_rad)
+-                native_ok = (self.native_reference_command_budget is None or
+-                             (report['relative_native_accepted']['final_normalized_command_delta'] <= self.native_reference_command_budget and
+-                              report['relative_native_accepted']['final_joint_target_delta_rad'] <= self.native_reference_target_budget_rad))
+-                if local_ok and native_ok:
+-                    alpha=candidate_alpha;budget_report=report;break
+-            else:
+-                self.actor.load_state_dict(actor_state_before,strict=True)
+-                self.actor_opt.load_state_dict(optimizer_state_before)
+-                self.rejected_actor_updates+=1;self.actor_updates-=1;accepted=False
+-                delta={k:0.0 for k in before};command_change=0.0;request_change=0.0
+-            if accepted:
+-                self.actor_opt.load_state_dict(proposal_optimizer)
+-                if alpha < 1.0:self.backtracked_actor_updates+=1
+-                self.accept_snapshot()
+-                # Refresh diagnostics for the accepted scaled proposal.
+-                with torch.no_grad():
+-                    updated_request=self._actor_action(initial_state,sample=False)[0]
+-                    updated_preview,_,_=self.adapter.executor.forward(initial_state.observation,updated_request,
+-                        context['joint_default'][0],context['limits'],initial_state.executor_memory)
+-                    command_change=float((updated_preview.final_joint_targets-initial_command).abs().max())
+-                    reference_command_delta=float((updated_preview.final_joint_targets-reference_command).abs().max())
+-                    reference_request_delta=float((updated_request-reference_request).abs().max())
+-                request_change=float((updated_request-initial_request).abs().max())
+-        else:
+-            request_change=float((updated_request-initial_request).abs().max())
+-            if update_actor and (no_effective_gate or no_effective_gradient):
+-                self.actor_opt.load_state_dict(optimizer_state_before)
+-                self.rejected_actor_updates+=1
+-                accepted=False
+-                alpha=0.0
+-                delta={k:0.0 for k in before}
+-                command_change=0.0
+-                request_change=0.0
+-        return dict(actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,
+-            rejected_actor_updates=self.rejected_actor_updates,update_accepted=accepted,
+-            block_name=self.block_name,trainable_names=sorted(self.trainable_names),block_attempts=self.block_attempts,
+-            backtracked_actor_updates=self.backtracked_actor_updates,backtrack_alpha=alpha,
++        changes={k:float((p.detach()-actor_before[k]).abs().max()) for k,p in self.actor.named_parameters() if p.requires_grad}
++        command_delta=[self._max_budget_delta(n,b) for n,b in zip(self._budget_snapshot(),before_budget)]
++        return dict(actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,rejected_actor_updates=self.rejected_actor_updates,
++            update_accepted=accepted if update_actor else False,block_name=self.block_name,trainable_names=sorted(self.trainable_names),
++            block_attempts=self.block_attempts,backtracked_actor_updates=self.backtracked_actor_updates,backtrack_alpha=alpha,
++            rejection_reason=reason,backtrack_trials=trials,objective_before=baseline_loss,
++            objective_after=trials[-1]['loss'] if accepted else baseline_loss,adam_scaling='full proposal moments with alpha-scaled parameters',
+             command_delta_budget=self.command_delta_budget,target_delta_budget_rad=self.target_delta_budget_rad,
+-            native_reference_command_budget=self.native_reference_command_budget,
+-            native_reference_target_budget_rad=self.native_reference_target_budget_rad,
+-            critic_updates=self.critic_updates,world_updates=self.world_updates,
+-            imagined_return_mean=float(ret.detach().mean()),actor_gradient=float(gradient),parameter_max_changes=delta,
+-            tracking_loss=float(tracking_loss.detach()),tracking_weight=self.tracking_weight,
+-            tracking_steps=len(tracking_losses),
+-            final_command_max_change=command_change,request_max_change=request_change,
+-            reference_final_command_delta=reference_command_delta,reference_request_delta=reference_request_delta,
+-            budget_report=budget_report,
+-            critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,critic_seconds=time.perf_counter()-started,
+-            model_runtime_state_sha256=before_models,imagined_steps=len(rewards),
+-            imagined_start_elapsed_min=float(initial_state.clock_goal_context['elapsed'].min()),
+-            imagined_start_elapsed_max=float(initial_state.clock_goal_context['elapsed'].max()),
+-            effective_gate_steps=effective_gate_steps,
+-            effective_gate_lanes=effective_gate_lanes,
+-            no_effective_gate=no_effective_gate,
+-            no_effective_gradient=no_effective_gradient,
++            critic_updates=self.critic_updates,world_updates=self.world_updates,imagined_return_mean=ret_mean,
++            actor_gradient=gradient,parameter_max_changes=changes,tracking_loss=track_value,tracking_weight=self.tracking_weight,
++            tracking_steps=track_steps,matched_references=matched,**grad_stats,
++            final_command_max_change=max(x[2] for x in command_delta),request_max_change=max(x[0] for x in command_delta),
++            budget_report=self._relative_budget_report(),critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,
++            critic_seconds=time.perf_counter()-started,model_runtime_state_sha256=model_hash,imagined_steps=len(rewards),
++            effective_gate_steps=gate_steps,effective_gate_lanes=gate_lanes,no_effective_gate=gate_lanes==0,
++            no_effective_gradient=reason in ('zero_total_gradient','no_task_or_tracking_gradient'),
+             frozen_base_recovery_unchanged=True,model_unchanged_during_actor=True)
+ 
+     def fit_world_window(self,window,launch):
+@@ -380,7 +373,7 @@ class PhysicalHorizonTrainer:
+                     world_task_gradient=group_gradients[2],
+                     world_seconds=time.perf_counter()-started)
+ 
+-    def calibrate_critic_native(self, states, returns, *, epochs=2):
++    def calibrate_critic_native(self, states, returns, *, epochs=2, masks=None):
+         """Fit the contextual critic to same-policy native return-to-go labels.
+ 
+         This is a separately reported task adaptation.  Labels are only accepted
+@@ -388,6 +381,10 @@ class PhysicalHorizonTrainer:
+         """
+         x=torch.cat([self.adapter.critic_input(s) for s in states],dim=0).detach()
+         y=returns.to(x.device).float().reshape(-1,1).detach()
++        if masks is not None:
++            mask=torch.cat(masks).to(x.device).bool()
++            x=x[mask];y=y[mask]
++            if not len(y): raise ValueError('No complete same-policy calibration samples')
+         losses=[]
+         for _ in range(epochs):
+             self.critic_opt.zero_grad(set_to_none=True)
+diff --git a/quadsmash/rl/supermimic_physical_loop_replay_v1.py b/quadsmash/rl/supermimic_physical_loop_replay_v1.py
+index 06f33df..40e5e5d 100644
+--- a/quadsmash/rl/supermimic_physical_loop_replay_v1.py
++++ b/quadsmash/rl/supermimic_physical_loop_replay_v1.py
+@@ -3,6 +3,7 @@ import torch
+ from .supermimic_physical_dataset_v1 import encode_physical, valid_windows
+ from .supermimic_physical_world_v2 import sample_event_windows
+ from .supermimic_physical_capture_v1 import tensor_tree_copy
++from .supermimic_approach_data_v1 import FIELDS, approach_window_masks
+ 
+ 
+ SOURCE_NAMES = ('recent_online', 'older_online', 'initial_archive')
+@@ -74,15 +75,18 @@ def _sample_rows(pool, count, generator):
+         return pool[:0]
+     if len(pool) == 0:
+         return None
+-    return pool[torch.randint(len(pool), (count,), generator=generator)]
++    # Prefer distinct windows; replacement is explicit only when scarce.
++    order=torch.randperm(len(pool),generator=generator)
++    if count<=len(pool):return pool[order[:count]]
++    return torch.cat((pool[order],pool[torch.randint(len(pool),(count-len(pool),),generator=generator)]))
+ 
+ 
+ def sample_stratified_windows(stage_pools, source_labels, batch, generator,
+                               *, source_quota=None, stage_quota=None):
+     """Sample windows with auditable source × stage quotas.
+ 
+-    Sampling is with replacement, matching the historical event sampler.  If
+-    a requested source/stage cell is empty, the sampler fills from the
++    Prefer distinct windows within each cell; repeat only when it is scarce.
++    If a requested source/stage cell is empty, the sampler fills from the
+     remaining valid cells and reports the shortfall instead of pretending the
+     quota was met.
+     """
+@@ -157,7 +161,7 @@ def sample_stratified_windows(stage_pools, source_labels, batch, generator,
+                 fallback.append(pool)
+     if not fallback:
+         raise ValueError('No valid windows available for stratified sampling')
+-    union = torch.cat(fallback)
++    union = torch.unique(torch.cat(fallback),dim=0)
+     used = sum(len(x) for x in selected)
+     if used < batch:
+         selected.append(_sample_rows(union, batch - used, generator))
+@@ -174,8 +178,9 @@ def sample_stratified_windows(stage_pools, source_labels, batch, generator,
+     # histogram after fallback sampling.
+     actual_event_coverage={}
+     for stage, pairs in stage_pools.items():
+-        pair_set={tuple(pair.tolist()) for pair in pairs}
+-        actual_event_coverage[stage]=sum(tuple(pair.tolist()) in pair_set for pair in chosen)
++        stride=source_labels.shape[1]
++        actual_event_coverage[stage]=int(torch.isin(chosen[:,0]*stride+chosen[:,1],
++                                                   pairs[:,0]*stride+pairs[:,1]).sum())
+     return chosen, dict(source_counts=actual_source, stage_counts=actual_stage,
+                         source_requested=source_quota, stage_requested=stage_quota,
+                         source_shortfall={name: max(0, source_quota.get(name, 0)-actual_source.get(name, 0))
+@@ -248,6 +253,8 @@ class PhysicalLoopReplay:
+         self.source_ids = torch.zeros((self.capacity, self.lanes), dtype=torch.long)
+         self.policy_versions = torch.zeros((self.capacity, self.lanes), dtype=torch.long)
+         self.native_ticks = torch.arange(self.capacity, dtype=torch.long)
++        self.approach_metadata = {k: torch.full((self.capacity, self.lanes), float('nan'))
++            for k in FIELDS + tuple('next_'+k for k in FIELDS[2:])}
+         self._native_tick_counter = source_count
+         self.count = source_count
+         self.write_pos = source_count % self.capacity
+@@ -260,7 +267,7 @@ class PhysicalLoopReplay:
+         self.new_starts = []
+         self.stage_starts = {name: [] for name in
+                              ('prepare', 'approach', 'pre_touchdown', 'post_touchdown',
+-                              'touchdown', 'recovery_failure', 'stable_recovery')}
++                              'touchdown', 'recovery_failure', 'stable_recovery','approach_active')}
+ 
+     def new_stream(self, *, source='online', policy_version=None):
+         self.current_stream += 1
+@@ -276,9 +283,10 @@ class PhysicalLoopReplay:
+         ids = _stage_ids_from_tensors(record)
+         names = ('prepare', 'approach', 'pre_touchdown', 'post_touchdown',
+                  'touchdown', 'recovery_failure', 'stable_recovery')
+-        return [names[int(value)] for value in ids[0]], ids[0]
++        ids = ids.reshape(-1)
++        return [names[int(value)] for value in ids], ids
+ 
+-    def append(self, row, *, retain_start=True, policy_version=None, native_tick=None):
++    def append(self, row, *, retain_start=True, policy_version=None, native_tick=None, approach_metadata=None):
+         """Append one native transition.
+ 
+         Restoring an old checkpoint must rebuild the ring tensors, but does not
+@@ -300,6 +308,9 @@ class PhysicalLoopReplay:
+         self.native_ticks[index] = int(native_tick)
+         self._native_tick_counter = max(self._native_tick_counter + 1, int(native_tick) + 1)
+         self.streams[index] = self.current_stream
++        for key, values in self.approach_metadata.items():
++            supplied=(approach_metadata or row.get('sampling_metadata',{})).get(key)
++            values[index].copy_(supplied.detach().cpu() if supplied is not None else torch.full((self.lanes,),float('nan')))
+         self.write_pos = (index + 1) % self.capacity
+         self.count = min(self.capacity, self.count + 1)
+         if not retain_start:
+@@ -308,17 +319,17 @@ class PhysicalLoopReplay:
+         # Full executor/observation trees are expensive.  Keep a small recent
+         # diagnostic pool; fixed verified pools remain available for each
+         # training block, so long runs do not grow memory with every tick.
+-        for lane, stage in enumerate(stages):
+-            if stage not in self.stage_starts:
+-                self.stage_starts[stage] = []
+-            lane_start = _slice_lane(start, lane, self.lanes)
+-            # Keep the causal launch lane with the compact start.  The
+-            # executor snapshot is already sliced; the training entry point
+-            # uses this id to slice the matching [128,6] launch tensor.
+-            lane_start['_lane_id'] = int(lane)
+-            lane_start['_source_lanes'] = int(self.lanes)
+-            self.stage_starts[stage].append(lane_start)
+-            self.stage_starts[stage] = self.stage_starts[stage][-8:]
++        # Preserve the full G07 execution graph. A mask selects training lanes;
++        # never slice arbitrary tensors/scalars/aliases from a 128-lane template.
++        for stage in set(stages):
++            mask = torch.tensor([x == stage for x in stages])
++            entry = dict(start, _actor_lane_mask=mask, _source_lanes=self.lanes)
++            self.stage_starts.setdefault(stage, []).append(entry)
++            self.stage_starts[stage] = self.stage_starts[stage][-16:]
++        gate_mask=(self.approach_metadata['approach_gate'][index]>.25)&(self.approach_metadata['had_contact'][index]<.5)
++        if gate_mask.any():
++            self.stage_starts['approach_active'].append(dict(start,_actor_lane_mask=gate_mask.clone(),_source_lanes=self.lanes))
++            self.stage_starts['approach_active']=self.stage_starts['approach_active'][-16:]
+         self.new_starts.append(start)
+         self.new_starts = self.new_starts[-32:]
+ 
+@@ -328,6 +339,7 @@ class PhysicalLoopReplay:
+         else:
+             indices = torch.cat((torch.arange(self.write_pos, self.capacity),
+                                 torch.arange(0, self.write_pos)))
++        self._ordered_indices=indices
+         return ({key: value[indices] for key, value in self.data.items()},
+                 self.streams[indices], self.stage_ids[indices],
+                 self.source_ids[indices], self.policy_versions[indices],
+@@ -335,7 +347,7 @@ class PhysicalLoopReplay:
+ 
+     def window(self, steps=16, batch=128, iteration=0, device='cuda:0',
+                *, source_quota=None, stage_quota=None,
+-               recent_policy_window=32, recent_tick_window=1024):
++               recent_policy_window=32, recent_tick_window=1024, head='recovery'):
+         d, streams, stage_ids, source_ids_all, policy_versions, native_ticks = self._ordered()
+         if self.count < steps:
+             raise RuntimeError(f'Replay has {self.count} ticks; needs {steps}')
+@@ -363,7 +375,20 @@ class PhysicalLoopReplay:
+             if event.any():
+                 pools[str(i)] = event.nonzero()
+         if source_quota or stage_quota:
+-            stage_pools = _stage_window_masks(d, valid, steps, stage_ids=stage_ids)
++            if head == 'approach':
++                meta={key:value[self._ordered_indices] for key,value in self.approach_metadata.items()}
++                meta['completed_miss']=torch.zeros_like(d['terminated'])
++                # Build labels only from a completed episode in this stream.
++                for lane in range(self.lanes):
++                    ends=torch.where(d['terminated'][:,lane]|d['timeout'][:,lane])[0]
++                    for end in ends.tolist():
++                        same=(d['episode'][:,lane]==d['episode'][end,lane])&(streams==streams[end])
++                        same &= torch.arange(self.count)<=end
++                        if torch.isfinite(meta['next_qualified'][end,lane]) and meta['next_qualified'][end,lane]<.5:
++                            meta['completed_miss'][:,lane] |= same
++                stage_pools=approach_window_masks(meta,valid,steps)
++            else:
++                stage_pools = _stage_window_masks(d, valid, steps, stage_ids=stage_ids)
+             # Preserve a named uniform category for requested batches that do
+             # not have enough rare event windows.
+             stage_pools['uniform'] = valid
+@@ -390,14 +415,18 @@ class PhysicalLoopReplay:
+         t, lanes = chosen.unbind(1)
+         at = t[None] + torch.arange(steps)[:, None]
+         window = {key: value[at, lanes[None]].to(device) for key, value in d.items()}
++        if head=='approach' and (source_quota or stage_quota):
++            counts['approach_missing_fields']={key:int((~torch.isfinite(value[at,lanes[None]])).sum())
++                for key,value in meta.items() if value.is_floating_point()}
+         start_episode = d['episode'][t, lanes]
+         start_stream = streams[t]
+         start_source = source_codes[t, lanes]
+-        counts.update(dict(window_count=int(len(chosen)),
+-                           unique_episode_count=int(torch.unique(start_episode).numel()),
++        _,episode_counts=torch.unique(torch.stack((start_stream,lanes,start_episode),1),dim=0,return_counts=True)
++        counts.update(dict(unique_window_count=int(torch.unique(chosen,dim=0).shape[0]),window_count=int(len(chosen)),
++                           unique_episode_count=int(torch.unique(torch.stack((start_stream,lanes,start_episode),1),dim=0).shape[0]),
+                            unique_stream_count=int(torch.unique(start_stream).numel()),
+                            unique_source_count=int(torch.unique(start_source).numel()),
+-                           repeated_episode_max=int(torch.bincount(start_episode).max().item())
++                           repeated_episode_max=int(episode_counts.max().item())
+                            if start_episode.numel() else 0,
+                            source_counts={
+                                'initial_archive': int((start_source == 0).sum()),
+@@ -408,5 +437,5 @@ class PhysicalLoopReplay:
+                            policy_version_max=int(policy_versions[t, lanes].max().item()) if len(chosen) else 0,
+                            native_tick_min=int(native_ticks[t].min().item()) if len(chosen) else 0,
+                            native_tick_max=int(native_ticks[t].max().item()) if len(chosen) else 0,
+-                           source_metadata='stream1=initial_archive; newest online stream=recent_online'))
++                           source_metadata='recorded source + policy-version age + native-tick age'))
+         return window, lanes.to(device), counts
+diff --git a/quadsmash/rl/supermimic_task_space_reference_v1.py b/quadsmash/rl/supermimic_task_space_reference_v1.py
+index 81bad78..ea9c822 100644
+--- a/quadsmash/rl/supermimic_task_space_reference_v1.py
++++ b/quadsmash/rl/supermimic_task_space_reference_v1.py
+@@ -1,180 +1,168 @@
+-"""Success-guided task-space references for the physical SuperMimic loop.
++"""Event-aligned success references, never future observations or native scores.
+ 
+-The bank is an auxiliary training signal only.  It never supplies future
+-events to the actor and is never used by native scoring.  References are
+-selected from a causal initial physical state, then sampled by elapsed time;
+-the stored trajectories remain ordinary native-success evidence.
++Schema v2 rejects v1 banks: v1 used absolute time and did not prove terminals.
++Discrete retrieval is detached; task-space FK remains differentiable.
+ """
+-from dataclasses import dataclass
++from dataclasses import dataclass, asdict
+ import hashlib
++import math
+ import torch
+-
+ from .supermimic_physical_dataset_v1 import decode_physical
+ 
+ 
+-APPROACH_FEATURES = ('racket_position', 'racket_velocity', 'racket_normal',
+-                     'center', 'center_velocity', 'root_angular_velocity')
+-RECOVERY_FEATURES = ('center', 'center_velocity', 'root_angular_velocity',
+-                     'feet')
+-
+-
+ def task_space_features(state, geometry, mode):
+-    """Compute differentiable task-space quantities from a 55D physical state."""
+-    p = decode_physical(state)
+-    fk = geometry(p['joint_position'], p['joint_velocity'], p['root_position_w'],
+-                  p['root_quaternion_w'], p['root_link_velocity_w'],
+-                  p['root_angular_velocity_w'])
+-    racket_id = geometry.ids['Racket']
+-    racket_position = fk['position'][:, racket_id]
+-    racket_velocity = fk['velocity'][:, racket_id]
+-    # The racket local z axis is the declared face-normal convention in the
+-    # pinned geometry asset.  Normalize defensively at the singular boundary.
+-    racket_normal = fk['rotation'][:, racket_id, :, 2]
+-    racket_normal = racket_normal / racket_normal.norm(dim=-1, keepdim=True).clamp_min(1e-8)
+-    common = dict(center=fk['center'], center_velocity=fk['center_velocity'],
+-                  root_angular_velocity=p['root_angular_velocity_w'])
+-    if mode == 'approach':
+-        common.update(racket_position=racket_position, racket_velocity=racket_velocity,
+-                      racket_normal=racket_normal)
+-        names = APPROACH_FEATURES
+-    elif mode == 'recovery':
+-        common['feet'] = fk['feet'].reshape(len(state), -1)
+-        names = RECOVERY_FEATURES
+-    else:
+-        raise ValueError(f'Unknown task-space reference mode: {mode}')
+-    return torch.cat([common[name] for name in names], dim=-1)
++    p=decode_physical(state)
++    fk=geometry(p['joint_position'],p['joint_velocity'],p['root_position_w'],p['root_quaternion_w'],
++                p['root_link_velocity_w'],p['root_angular_velocity_w'])
++    rid=geometry.ids['Racket']
++    normal=fk['rotation'][:,rid,:,0]  # string plane is YZ in the pinned asset
++    orientation=fk['rotation'][:,geometry.root_id,:,2]
++    if mode=='approach':
++        return torch.cat(((fk['position'][:,rid]-p['ball_position_w'])/.2,
++                          (fk['velocity'][:,rid]-p['ball_velocity_w'])/5.,normal,
++                          orientation,fk['center_velocity']/2.,p['root_angular_velocity_w']/5.),-1)
++    if mode=='recovery':
++        return torch.cat((orientation,fk['center_velocity']/2.,p['root_angular_velocity_w']/5.,
++                          (fk['feet']-fk['center'][:,None]).flatten(1)/.4),-1)
++    raise ValueError('Unknown tracking head: '+mode)
+ 
+ 
+ @dataclass
+ class TaskSpaceReferenceBankV1:
+-    """A compact bank of event-validated native reference trajectories."""
+-    approach_sequences: torch.Tensor
+-    recovery_sequences: torch.Tensor
+-    approach_keys: torch.Tensor
+-    recovery_keys: torch.Tensor
+-    elapsed: torch.Tensor
++    entries: list
+     geometry_sha256: str
+-    source_sha256: str = ''
+-    match_distance_threshold: float = float('inf')
+-    schema: str = 'success-guided-task-space-reference-v1'
++    source_sha256: str
++    match_distance_threshold: float = 1.0
++    max_per_head: int = 128
++    schema: str = 'success-guided-task-space-reference-v2'
+ 
+-    def to(self, device):
+-        return type(self)(*(x.to(device) if torch.is_tensor(x) else x for x in (
+-            self.approach_sequences, self.recovery_sequences, self.approach_keys,
+-            self.recovery_keys, self.elapsed)), self.geometry_sha256, self.source_sha256,
+-            self.match_distance_threshold)
++    def __post_init__(self):
++        if not math.isfinite(self.match_distance_threshold) or self.match_distance_threshold<=0:
++            raise ValueError('Tracking requires a finite positive matching threshold')
++        if self.max_per_head<1: raise ValueError('Reference capacity must be positive')
++
++    def to(self,device):
++        return type(self)([{k:v.to(device) if torch.is_tensor(v) else v for k,v in e.items()} for e in self.entries],
++                          self.geometry_sha256,self.source_sha256,self.match_distance_threshold,self.max_per_head)
+ 
+     @property
+     def manifest(self):
+-        return dict(schema=self.schema, geometry_sha256=self.geometry_sha256,
+-                    source_sha256=self.source_sha256,
+-                    approach_count=int(self.approach_sequences.shape[0]),
+-                    recovery_count=int(self.recovery_sequences.shape[0]),
+-                    horizon_steps=int(self.approach_sequences.shape[1]),
+-                    approach_feature_dim=int(self.approach_sequences.shape[-1]),
+-                    recovery_feature_dim=int(self.recovery_sequences.shape[-1]))
++        return dict(schema=self.schema,geometry_sha256=self.geometry_sha256,source_sha256=self.source_sha256,
++                    approach_count=sum(e['mode']=='approach' for e in self.entries),
++                    recovery_count=sum(e['mode']=='recovery' for e in self.entries),
++                    match_distance_threshold=self.match_distance_threshold,max_per_head=self.max_per_head,
++                    protocol_verified=bool(self.entries) and all(e.get('score_schema')=='historical-independent-complete5-v1' for e in self.entries),
++                    native_contact_certification=False,alignment='current causal event estimate / current-state phase match')
+ 
+-    @staticmethod
+-    def _key(state):
+-        p = decode_physical(state)
+-        return torch.cat((p['root_position_w'], p['root_link_velocity_w'],
+-                          p['ball_position_w'], p['ball_velocity_w']), -1)
++    def payload(self): return asdict(self)
+ 
+     @classmethod
+-    def from_packed(cls, tensors, geometry, *, source_sha256='', horizon=None):
+-        """Build references from packed native data using terminal event flags.
+-
+-        The archive contains cumulative event bits, so success selection is
+-        performed only at the terminal sample.  Faulted or body-ground lanes
+-        are excluded.  This does not invent labels for incomplete trajectories.
+-        """
+-        states = tensors['state']
+-        events = tensors['event_state']
+-        if states.ndim != 3 or events.ndim != 3:
+-            raise ValueError('Packed reference data must be [time,lane,*]')
+-        t = states.shape[0] if horizon is None else min(int(horizon), states.shape[0])
+-        states = states[:t]
+-        events = events[:t]
+-        # event indices follow physical-world-v2: qualified contact, cross,
+-        # target, recovery, body-ground, frame and fault.
+-        final = events[-1]
+-        approach_ok = (final[:, 1] > .5) & (final[:, 2] > .5) & (final[:, 3] > .5)
+-        approach_ok &= ~(final[:, 5] > .5) & ~(final[:, 6] > .5) & ~(final[:, 7] > .5)
+-        recovery_ok = (final[:, 4] > .5) & ~(final[:, 5] > .5) & ~(final[:, 7] > .5)
+-        # The bank stores physical states; geometry is applied lazily by the
+-        # caller when features are computed.  We use root/ball keys now.
+-        def sequence(mask, event_index):
+-            ids = mask.nonzero(as_tuple=False).flatten()
+-            if len(ids) == 0:
+-                return states.new_empty((0, t, 0)), states.new_empty((0, 13))
+-            seq = states[:, ids].permute(1, 0, 2).contiguous()
+-            event = events[:, ids, event_index] > .5
+-            first = event.float().argmax(0)
+-            key = cls._key(seq[torch.arange(len(ids)), first])
+-            return seq, key
+-        approach, approach_keys = sequence(approach_ok, 1)
+-        recovery, recovery_keys = sequence(recovery_ok, 4)
+-        # Feature tensors are materialized by bind() after the geometry is
+-        # available.  Keep the physical sequence schema explicit in the bank.
+-        elapsed = tensors['elapsed'][:t, 0].detach().clone()
+-        geometry_sha = getattr(geometry, 'model_sha256', '')
+-        return cls(approach, recovery, approach_keys, recovery_keys, elapsed,
+-                   geometry_sha, source_sha256)
++    def from_payload(cls,payload):
++        if payload.get('schema')!='success-guided-task-space-reference-v2':
++            raise ValueError('Reference schema requires terminal-verified event-aligned v2 bank')
++        return cls(**payload)
+ 
+-    def _select(self, initial_physical, mode):
+-        keys = self.approach_keys if mode == 'approach' else self.recovery_keys
+-        sequences = self.approach_sequences if mode == 'approach' else self.recovery_sequences
+-        if sequences.shape[0] == 0:
+-            return None
+-        distance = (self._key(initial_physical)[:, None] - keys[None]).square().mean(-1)
+-        return distance.argmin(-1)
+-
+-    def bind(self, initial_physical, mode):
+-        """Return an immutable reference id for each imagination lane."""
+-        keys = self.approach_keys if mode == 'approach' else self.recovery_keys
+-        sequences = self.approach_sequences if mode == 'approach' else self.recovery_sequences
+-        if sequences.shape[0] == 0:
+-            return None
+-        distance=(self._key(initial_physical)[:, None] - keys[None]).square().mean(-1)
+-        best=distance.argmin(-1)
+-        threshold=float(self.match_distance_threshold)
+-        matched=torch.isfinite(distance.gather(1,best[:,None]).squeeze(1))
+-        if threshold < float('inf'):
+-            matched &= distance.gather(1,best[:,None]).squeeze(1) <= threshold
+-        return dict(indices=best.detach(), matched=matched.detach(), mode=mode)
+-
+-    def loss(self, predicted_physical, elapsed, reference, mode, geometry=None, valid_mask=None):
+-        """Return task-space loss; geometry is required for live features."""
+-        if reference is None:
+-            return predicted_physical.new_zeros(())
+-        if geometry is None:
+-            raise ValueError('Task-space tracking requires the verified geometry module')
+-        sequences = self.approach_sequences if mode == 'approach' else self.recovery_sequences
+-        if sequences.shape[-1] != 55:
+-            # Sequences are physical states until lazily transformed by the
+-            # geometry-aware helper below.
+-            raise ValueError('Reference bank physical sequence schema is corrupted')
+-        indices = reference['indices'].to(predicted_physical.device)
+-        selected = sequences.to(predicted_physical.device)[indices]
+-        # Use one target time per lane, with linear interpolation between the
+-        # same native 100Hz samples.  Selection is detached; predicted feature
+-        # computation remains differentiable.
+-        time = elapsed.flatten().clamp(float(self.elapsed[0]), float(self.elapsed[-1]))
+-        position = time / max(float(self.elapsed[1] - self.elapsed[0]), 1e-6)
+-        lo = position.floor().long().clamp(0, selected.shape[1] - 1)
+-        hi = (lo + 1).clamp(0, selected.shape[1] - 1)
+-        alpha = (position - lo.float()).unsqueeze(-1)
+-        target_state = selected[torch.arange(len(selected), device=selected.device), lo] * (1-alpha) \
+-            + selected[torch.arange(len(selected), device=selected.device), hi] * alpha
+-        target = task_space_features(target_state, geometry, mode).detach()
+-        actual = task_space_features(predicted_physical, geometry, mode)
+-        mask=reference.get('matched',torch.ones(len(actual),dtype=torch.bool,device=actual.device))
+-        if valid_mask is not None: mask &= valid_mask.to(mask.device)
+-        if not mask.any(): return actual.new_zeros(())
+-        actual=actual[mask]; target=target[mask]
+-        scale = actual.new_tensor(1.).clamp_min(1e-6)
+-        return (actual-target).square().mean() / scale
+-
+-
+-def sha256_tensor(tensor):
+-    return hashlib.sha256(tensor.detach().cpu().contiguous().numpy().tobytes()).hexdigest()
++    @classmethod
++    def from_packed(cls,tensors,geometry,*,source_sha256='',policy_id='unknown',match_distance_threshold=1.,horizon=None,terminal_records=None):
++        if horizon is not None: raise ValueError('Do not truncate reference episodes')
++        for name in ('state','next_state','event_state','next_event_state','episode','elapsed','terminated','timeout','feet','next_feet'):
++            if name not in tensors: raise ValueError('Reference evidence missing: '+name)
++        labels=None
++        if terminal_records is not None:
++            labels={}
++            for record in terminal_records:
++                key=(int(record['env_id']),int(record['episode_index']))
++                if key in labels:raise ValueError('Duplicate reference terminal identity')
++                if record.get('scoring_schema')!='historical-independent-complete5-v1':raise ValueError('Reference requires original independent task scoring')
++                labels[key]=record
++        entries=[]; d=tensors; T,N=d['episode'].shape
++        for lane in range(N):
++            start=0
++            for end in torch.where(d['terminated'][:,lane]|d['timeout'][:,lane])[0].tolist():
++                same=bool((d['episode'][start:end+1,lane]==d['episode'][end,lane]).all())
++                if not same or float(d['elapsed'][start,lane])>.011:
++                    start=end+1; continue
++                final=d['next_event_state'][end,lane]
++                label=None if labels is None else labels.get((lane,int(d['episode'][end,lane])))
++                if labels is not None and label is None:raise ValueError('Missing terminal score for complete reference episode')
++                times=torch.cat((d['elapsed'][start:end+1,lane],d['elapsed'][end:end+1,lane]+.01))
++                seq=torch.cat((d['state'][start:end+1,lane],d['next_state'][end:end+1,lane])).detach()
++                ev=torch.cat((d['event_state'][start:end+1,lane],final[None]))
++                feet=torch.cat((d['feet'][start:end+1,lane],d['next_feet'][end:end+1,lane])).bool().any(-1)
++                contact=torch.where(ev[:,1]>.5)[0]
++                td=torch.where((~feet[:-1])&feet[1:]&(ev[:-1,0]>.5))[0]+1
++                for mode,ok,anchor in (
++                    ('approach',bool((final[1:4]>.5).all() and final[7]<.5),int(contact[0]) if len(contact) else None),
++                    ('recovery',bool(final[4]>.5 and final[5]<.5 and final[7]<.5),int(td[0]) if len(td) else None)):
++                    if not ok or anchor is None: continue
++                    if label is not None:
++                        required='ball_side_complete_except_recovery' if mode=='approach' else 'recovery_success'
++                        if label.get(required) is not True:continue
++                        if mode=='recovery' and label.get('body_ground_seen') is not False:continue
++                    features=task_space_features(seq,geometry,mode).detach()
++                    # Match within the same event phase. Terminal features are
++                    # offline reference labels; never supplied to current actor.
++                    choices=torch.arange(max(0,anchor-64),anchor+1,device=seq.device) if mode=='approach' else torch.arange(anchor,len(seq),device=seq.device)
++                    digest=hashlib.sha256(seq.cpu().contiguous().numpy().tobytes()+mode.encode()).hexdigest()
++                    entries.append(dict(mode=mode,features=features,times=times.detach(),anchor_time=float(times[anchor]),
++                                        choices=choices,policy_id=str(policy_id),lane_id=lane,episode_id=int(d['episode'][end,lane]),
++                                        digest=digest,source_sha256=source_sha256,terminal_verified=True,
++                                        score_schema=label['scoring_schema'] if label else 'event-flags-only'))
++                start=end+1
++        return cls(entries,geometry.model_sha256,source_sha256,match_distance_threshold)
++
++    def extend(self,other):
++        if other.geometry_sha256!=self.geometry_sha256: raise ValueError('Reference geometry differs')
++        seen=set(); kept=[]
++        for e in reversed(self.entries+other.entries):
++            if e['digest'] in seen: continue
++            if sum(x['mode']==e['mode'] for x in kept)>=self.max_per_head: continue
++            seen.add(e['digest']);kept.append(e)
++        self.entries=list(reversed(kept))
++
++    def bind(self,initial_physical,mode,*,geometry,elapsed,event_time=None):
++        current=task_space_features(initial_physical,geometry,mode).detach()
++        candidates=[e for e in self.entries if e['mode']==mode]
++        if not candidates:return None
++        best=current.new_full((len(current),),float('inf')); chosen=torch.zeros(len(current),dtype=torch.long,device=current.device)
++        aligned=current.new_zeros(len(current))
++        for i,e in enumerate(candidates):
++            ids=e['choices'].to(current.device); ts=e['times'].to(current.device); fs=e['features'].to(current.device)
++            distance=(current[:,None]-fs[ids][None]).square().mean(-1)
++            if event_time is not None:
++                relative=elapsed.reshape(-1)-event_time.reshape(-1)
++                known=torch.isfinite(relative)
++                compatible=(relative[:,None]-(ts[ids]-e['anchor_time'])[None]).abs()<=.02
++                distance=distance.masked_fill(known[:,None]&~compatible,float('inf'))
++            value,idx=distance.min(-1); better=value<best
++            best=torch.where(better,value,best); chosen=torch.where(better,i,chosen)
++            aligned=torch.where(better,ts[ids[idx]],aligned)
++        # Pack once per rollout. Per-step interpolation stays batched on the
++        # device (no per-lane int(cuda_tensor) synchronizations inside BPTT).
++        length=max(len(e['times']) for e in candidates)
++        time_table=current.new_full((len(candidates),length),float('inf'))
++        feature_table=current.new_zeros(len(candidates),length,current.shape[-1])
++        sizes=torch.tensor([len(e['times']) for e in candidates],device=current.device)
++        for i,e in enumerate(candidates):
++            size=len(e['times']);time_table[i,:size]=e['times'].to(current)
++            feature_table[i,:size]=e['features'].to(current)
++        return dict(indices=chosen,matched=torch.isfinite(best)&(best<=self.match_distance_threshold),
++                    times=time_table[chosen],features=feature_table[chosen],lengths=sizes[chosen],
++                    distance=best,offset=aligned-elapsed.detach().reshape(-1))
++
++    def loss(self,predicted_physical,elapsed,reference,mode,geometry=None,valid_mask=None,weights=None):
++        actual=task_space_features(predicted_physical,geometry,mode)
++        if reference is None:return actual.sum()*0.
++        times,features,lengths=reference['times'],reference['features'],reference['lengths']
++        rows=torch.arange(len(actual),device=actual.device)
++        query=elapsed.detach().reshape(-1)+reference['offset']
++        query=torch.minimum(torch.maximum(query,times[:,0]),times[rows,lengths-1])
++        hi=torch.searchsorted(times.contiguous(),query[:,None].contiguous()).flatten().clamp_min(1)
++        hi=torch.minimum(hi,lengths-1);lo=hi-1
++        alpha=((query-times[rows,lo])/(times[rows,hi]-times[rows,lo]).clamp_min(1e-8))[:,None]
++        target=(1-alpha)*features[rows,lo]+alpha*features[rows,hi]
++        mask=reference['matched'].clone().to(actual.device)
++        if valid_mask is not None:mask=mask&valid_mask.to(mask.device)
++        w=mask.to(actual.dtype)
++        if weights is not None:w=w*weights.detach().reshape(-1)
++        return ((actual-target.detach()).square().mean(-1)*w).sum()/w.sum().clamp_min(1.)
+diff --git a/scripts/run_supermimic_phase1_long_v1.sh b/scripts/run_supermimic_phase1_long_v1.sh
+index 92979ce..e1283b0 100755
+--- a/scripts/run_supermimic_phase1_long_v1.sh
++++ b/scripts/run_supermimic_phase1_long_v1.sh
+@@ -1,8 +1,8 @@
+ #!/usr/bin/env bash
+ set -Eeuo pipefail
+ 
+-# Persistent four-cycle Recovery->Approach run with a frozen 128-env gate after
+-# each cycle. This script is intentionally launch-only: it is never run by the
++# Bounded success-guided Recovery32->Approach8 default with a frozen 128-env
++# gate after the cycle. Budgets remain explicit overrides. This script is intentionally launch-only: it is never run by the
+ # code validation step. Set the six SM_* paths before invoking it.
+ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ PYTHON="${QUADSMASH_PYTHON:-/home/autodrive/Isaac/env_isaaclab/bin/python}"
+@@ -15,6 +15,13 @@ TASK="${SM_TASK_CHECKPOINT:?set SM_TASK_CHECKPOINT to task.pt}"
+ SAFETY="${SM_SAFETY_MAPPING:-$ROOT/reports/supermimic_native_physical_loop_20261114/safety_mapping.json}"
+ REFERENCE="${SM_REFERENCE_POLICY:-/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt}"
+ mkdir -p "$RUN_ROOT" "$RUN_ROOT/tensorboard"
++REF_BANK="${SM_TASK_REFERENCE_BANK:?set SM_TASK_REFERENCE_BANK to a terminal-verified v2 bank}"
++TRACK_WEIGHT="${SM_TRACKING_WEIGHT:?declare SM_TRACKING_WEIGHT before this experiment}"
++R_UPDATES="${SM_RECOVERY_UPDATES:-32}"
++A_UPDATES="${SM_APPROACH_UPDATES:-8}"
++R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-64}"
++A_PROPOSALS="${SM_APPROACH_PROPOSALS:-16}"
++CYCLES="${SM_CYCLES:-1}"
+ TB_PID=""
+ cleanup(){
+   if [[ -n "$TB_PID" ]]; then kill "$TB_PID" 2>/dev/null || true; fi
+@@ -24,7 +31,7 @@ trap cleanup EXIT INT TERM
+ echo "RUN_ROOT=$RUN_ROOT"
+ echo "GPU=${CUDA_VISIBLE_DEVICES:-all} DEVICE=cuda:0"
+ echo "PYTHON=$PYTHON"
+-echo "CONFIG=$ROOT/configs/supermimic_phase1_long_v1.json"
++echo "CONFIG=$ROOT/configs/supermimic_success_guided_v2.json"
+ 
+ "$PYTHON" -m tensorboard.main --logdir "$RUN_ROOT/tensorboard" --host 127.0.0.1 --port "${SM_TENSORBOARD_PORT:-6006}" >"$RUN_ROOT/tensorboard.log" 2>&1 &
+ TB_PID=$!
+@@ -40,19 +47,23 @@ FLAT_STREAK=0
+ RETURN_DROP_TOL="${SM_RETURN_DROP_TOL:-0.10}"
+ CONVERGENCE_TOL="${SM_RETURN_CONVERGENCE_TOL:-0.05}"
+ CONVERGENCE_PATIENCE="${SM_RETURN_CONVERGENCE_PATIENCE:-2}"
+-for cycle in 1 2 3 4; do
++for ((cycle=1; cycle<=CYCLES; cycle++)); do
+   OUT="$RUN_ROOT/cycle_${cycle}"
+   TRAIN_ARGS=(
+     --archive "$ARCHIVE" --packed-data "$PACKED"
+     --physical-checkpoint "$PHYSICAL" --ball-checkpoint "$BALL"
+     --task-checkpoint "$TASK" --safety-mapping "$SAFETY"
+     --reference-policy-checkpoint "$REFERENCE"
+-    --recovery-update-budget 64 --approach-update-budget 64
+-    --recovery-proposal-budget 64 --approach-proposal-budget 64
++    --recovery-update-budget "$R_UPDATES" --approach-update-budget "$A_UPDATES"
++    --recovery-proposal-budget "$R_PROPOSALS" --approach-proposal-budget "$A_PROPOSALS"
+     --update-mode sequential --ball-side-mode shadow
+     --cycles 1 --native-ticks-per-actor-update 16
+-    --replay-capacity-ticks 16384 --refresh-ticks 0
+-    --refresh-world-updates 0 --refresh-critic-updates 0
++    --replay-capacity-ticks 16384 --refresh-ticks 800
++    --refresh-world-updates 32 --refresh-critic-updates 20
++    --world-updates-per-actor-update 4 --approach-refresh-interval 8
++    --wm-stage-quota uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8
++    --wm-approach-stage-quota uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8
++    --task-reference-bank "$REF_BANK" --tracking-weight "$TRACK_WEIGHT"
+     --command-delta-budget 0.005 --target-delta-budget-rad 0.04
+     --tensorboard-dir "$RUN_ROOT/tensorboard"
+     --output "$OUT" --headless --device cuda:0
+@@ -69,8 +80,8 @@ import json,sys
+ m=json.load(open(sys.argv[1])); print(int(m.get('actor_updates',0)))
+ PY
+   )"
+-  if [[ "$ACCEPTED_COUNT" != 128 ]]; then
+-    echo "cycle $cycle accepted only $ACCEPTED_COUNT/128 proposals; preserving output and stopping" | tee "$RUN_ROOT/STOPPED"
++  if (( ACCEPTED_COUNT != R_UPDATES + A_UPDATES )); then
++    echo "cycle $cycle accepted only $ACCEPTED_COUNT/$((R_UPDATES+A_UPDATES)) effective updates; preserving output and stopping" | tee "$RUN_ROOT/STOPPED"
+     exit 22
+   fi
+   CANDIDATE="$OUT/cycle_01_candidate_$(printf '%04d' "$ACCEPTED_COUNT").pt"
+diff --git a/scripts/train_supermimic_physical_block.py b/scripts/train_supermimic_physical_block.py
+index 78bf93b..bb19d78 100644
+--- a/scripts/train_supermimic_physical_block.py
++++ b/scripts/train_supermimic_physical_block.py
+@@ -82,6 +82,8 @@ def main():
+     parser.add_argument('--world-updates-per-actor-update',type=int,default=4,
+                         help='World-model optimizer steps before each actor proposal')
+     parser.add_argument('--wm-source-quota',default='recent_online=64,older_online=32,initial_archive=32')
++    parser.add_argument('--approach-refresh-interval',type=int,default=8)
++    parser.add_argument('--wm-approach-stage-quota',default='uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8')
+     parser.add_argument('--wm-stage-quota',default='uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8')
+     parser.add_argument('--wm-recent-policy-window',type=int,default=32)
+     parser.add_argument('--wm-recent-tick-window',type=int,default=1024)
+@@ -96,11 +98,15 @@ def main():
+     if args.refresh_ticks < 0 or args.refresh_world_updates < 0 or args.refresh_critic_updates < 0 or args.resume_warmup_ticks < 0: parser.error('refresh/resume budgets invalid')
+     if args.world_updates_per_actor_update < 1: parser.error('world-updates-per-actor-update must be positive')
+     if args.wm_recent_policy_window < 0 or args.wm_recent_tick_window < 1: parser.error('WM freshness windows invalid')
++    if args.approach_refresh_interval < 1: parser.error('approach-refresh-interval must be positive')
++    if args.refresh_ticks not in (0,800): parser.error('Frozen refresh requires the original 800-tick task')
++    if args.tracking_weight < 0 or (args.tracking_weight > 0 and args.task_reference_bank is None): parser.error('Positive tracking needs a validated reference bank')
+     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
+     if args.actor_update_budget is not None:
+         args.recovery_update_budget=0;args.approach_update_budget=args.actor_update_budget
+     args.output=args.output.resolve();args.output.mkdir(parents=True,exist_ok=False)
+     try:
++        args.wm_approach_stage_quota=parse_quota(args.wm_approach_stage_quota,allowed={'uniform','approach_active','hit_prepare','contact_release','approach_failure','post_hit'},name='wm-approach-stage-quota')
+         args.wm_source_quota=parse_quota(args.wm_source_quota,allowed={'recent_online','older_online','initial_archive'},name='wm-source-quota')
+         args.wm_stage_quota=parse_quota(args.wm_stage_quota,allowed={'uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery'},name='wm-stage-quota')
+     except ValueError as error:
+@@ -147,6 +153,7 @@ def run(args):
+     from quadsmash.rl.supermimic_timebase_v2 import Timebase
+     from quadsmash.rl.supermimic_task_contract import resolve_task_contract,make_task_cfg,zero_panel_reset_noise
+     from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
++    from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
+     from quadsmash.rl.supermimic_run_lifecycle import close_resource,stage
+     from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1
+     from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
+@@ -171,14 +178,8 @@ def run(args):
+         if args.task_reference_bank is not None:
+             from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
+             bank_payload=torch.load(args.task_reference_bank,map_location='cpu',weights_only=False)
+-            if isinstance(bank_payload,TaskSpaceReferenceBankV1):
+-                reference_bank=bank_payload
+-            elif isinstance(bank_payload,dict) and bank_payload.get('schema')=='success-guided-task-space-reference-v1':
+-                reference_bank=TaskSpaceReferenceBankV1(**{key:bank_payload[key] for key in (
+-                    'approach_sequences','recovery_sequences','approach_keys','recovery_keys',
+-                    'elapsed','geometry_sha256','source_sha256')})
+-            else:
+-                raise ValueError('Task reference bank schema mismatch')
++            reference_bank=TaskSpaceReferenceBankV1.from_payload(bank_payload)
++            if not reference_bank.manifest['protocol_verified']:raise ValueError('Tracking requires independently scored complete native references')
+             if reference_bank.geometry_sha256 and reference_bank.geometry_sha256 != adapter.physical_model.geometry.model_sha256:
+                 raise ValueError('Task reference bank geometry hash mismatch')
+             reference_bank=reference_bank.to(torch.device('cuda:0'))
+@@ -191,9 +192,8 @@ def run(args):
+         critic_starts=[start_cache[t] for t in CRITIC_TICKS]
+         lifecycle_stage(args.output, 'STARTS_SELECTED')
+         def as_state(row):
+-            # Dynamic event starts are compact one-lane snapshots.  Preserve
+-            # the corresponding native launch lane instead of passing the
+-            # original [128,6] launch tensor to a [1,*] execution graph.
++            # Dynamic starts keep the full G07 graph and a per-lane loss mask.
++            # Keep explicit launch selection for verified legacy compact starts.
+             row_launch=select_launch_for_start(row,launch)
+             return PhysicalImaginationStateV1.from_record(row,executor_template=template,launch=row_launch,device='cuda:0')
+         timebase=Timebase(**json.loads((ROOT/'configs/supermimic_task_horizon_v2.json').read_text()))
+@@ -216,8 +216,12 @@ def run(args):
+             gate=actor.approach_gate(observation)
+             if gate.ndim == 2: gate=gate[:,0]
+             # A tiny positive gate is numerically present but does not provide
+-            # a useful actor gradient. Keep at least four genuinely active lanes.
+-            return bool((gate > 0.25).sum() >= 4)
++            # a useful actor gradient. Singleton/masked batches need only their
++            # own active lanes, not an impossible fixed four-lane threshold.
++            from quadsmash.rl.supermimic_approach_data_v1 import active_gate
++            mask=row.get('_actor_lane_mask')
++            if mask is not None: gate=gate[mask.to(gate.device)]
++            return active_gate(gate) if gate.numel() else False
+ 
+         approach_pool=[start_cache[t] for t in APPROACH_TICKS if approach_active(start_cache[t])]
+         if not approach_pool:
+@@ -241,6 +245,11 @@ def run(args):
+             if resumed['adapter_schema']!=adapter.schema or resumed['metadata']['physical_imagination']!=adapter.manifest:
+                 raise ValueError('Resume physical model/execution source mismatch')
+             actor.load_state_dict(resumed['actor'],strict=True);adapter.load_state_dict(resumed['world'],strict=True)
++            if resumed.get('reference_bank') is not None:
++                from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
++                trainer.reference_bank=TaskSpaceReferenceBankV1.from_payload(resumed['reference_bank']).to('cuda:0')
++            for attr,key in (('accepted_snapshot','step'),('block_start_snapshot','block'),('native_accepted_snapshot','native')):
++                if key in resumed.get('actor_references',{}):setattr(trainer,attr,resumed['actor_references'][key])
+             trainer.critic.load_state_dict(resumed['critic'],strict=True)
+             if 'actor_optimizers' in resumed:
+                 trainer._pending_actor_optimizer_states=dict(resumed['actor_optimizers'])
+@@ -256,17 +265,12 @@ def run(args):
+             critic_coverage_blocks=int(resumed.get('critic_coverage_blocks',0))
+             if trainer.frozen_hash()!=trainer.frozen_actor_hash:raise ValueError('Resume changed frozen actor parameters')
+             replay_archives=resumed['replay_archives']
+-            # A direct Approach continuation has a valid fixed initialization
+-            # ring and fixed approach-gated starts.  Re-decoding every prior
+-            # native archive row is both redundant and very expensive; it also
+-            # recreates large executor trees that are not needed for this
+-            # block.  Keep the archive manifest for provenance, but start the
+-            # live ring from the verified packed initialization data.
+             # A direct Approach resume must retain the Recovery-generated
+             # online transitions; skipping them breaks the native-data→WM
+             # closed loop.  Rebuild every committed archive before restoring
+             # sampler metadata.
+             for directory in replay_archives:
++                replay.new_stream(source='online',policy_version=int(resumed_global.get('accepted',0)))
+                 directory=Path(directory);receipt=json.loads((directory/'manifest.json').read_text())
+                 for item in receipt['chunks']:
+                     path=directory/item['file']
+@@ -280,15 +284,20 @@ def run(args):
+                     # Historical full executor/observation trees are not
+                     # needed for Approach proposals and otherwise dominate
+                     # memory (many archived rows × full 128-lane state).
+-                    for row in chunk['rows']:replay.append(row,retain_start=False)
+-                replay.new_stream(source='online', policy_version=int(resumed_global.get('accepted',0)))
++                    for row in chunk['rows']:replay.append(row,retain_start=False,policy_version=row.get('policy_version',0))
+             replay.generator.set_state(resumed['replay_rng'].cpu())
+             replay_state=resumed.get('replay_state',{})
+             replay.current_source=str(replay_state.get('current_source','online'))
++            replay.current_stream=int(replay_state.get('current_stream',replay.current_stream))
+             replay.current_policy_version=int(replay_state.get('current_policy_version',resumed_global.get('accepted',0)))
+             replay._native_tick_counter=int(replay_state.get('native_tick_counter',replay._native_tick_counter))
+             saved_meta=resumed.get('replay_metadata')
++            if saved_meta is not None and (replay.count!=int(replay_state.get('count',-1)) or replay.write_pos!=int(replay_state.get('write_pos',-1))):
++                raise ValueError('Replay tensor reconstruction differs from checkpoint metadata; refusing mismatched resume')
+             if saved_meta is not None:
++                for key,value in saved_meta.get('approach_metadata',{}).items():
++                    if value.shape!=replay.approach_metadata[key].shape:raise ValueError('Replay Approach metadata shape mismatch')
++                    replay.approach_metadata[key].copy_(value.cpu())
+                 for name in ('streams','stage_ids','source_ids','policy_versions','native_ticks'):
+                     value=saved_meta.get(name)
+                     target=getattr(replay,name,None)
+@@ -318,38 +327,24 @@ def run(args):
+             if hasattr(actor,'forward_with_recovery_gate'):
+                 return actor.forward_with_recovery_gate(observation['policy'],gate,sample=False)[0]
+             return actor(observation['policy'],sample=False)[0]
+-        refresh_records=[]
+-        refresh_rewards=[]; refresh_dones=[]; refresh_episode_ids=[]
+-        refresh_stage_records={}; refresh_stage_episode_ids={}; refresh_initial_episode_ids=None; refresh_count=0
+-        refresh_stage_ticks={0,96,192,288,384,480,576,672}
++        from quadsmash.rl.supermimic_frozen_refresh_v1 import FrozenRefresh
++        from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
++        refresh_collector=None; refresh_serial=0
+         archive_flush_rows=max(32,int(os.environ.get('QUADSMASH_ARCHIVE_FLUSH_ROWS','32')))
+         archive_refresh_only=os.environ.get('QUADSMASH_ARCHIVE_REFRESH_ONLY','0')=='1'
++        if archive_refresh_only:raise ValueError('ARCHIVE_REFRESH_ONLY drops live training transitions; unsupported in the data-closed-loop path')
+         class TrainingArchive(PhysicalTransitionArchive):
+             def finish_record(self,*values):
+-                nonlocal refresh_count,refresh_initial_episode_ids,refresh_stage_episode_ids
++                nonlocal refresh_collector
+                 super().finish_record(*values)
+-                if archive_refresh_only and not getattr(self,'capture_refresh',False):
+-                    # The packed initialization replay already supplies the
+-                    # warmup states.  In the bounded refresh audit, avoid
+-                    # serializing duplicate warmup/post-refresh rows; only
+-                    # durable the explicitly captured frozen-policy refresh.
+-                    self.rows.clear()
+-                    return
+-                replay.append(self.rows[-1], policy_version=global_accepted_id, native_tick=tick)
+-                if getattr(self,'capture_refresh',False):
+-                    row=self.rows[-1]
+-                    # Keep only compact reward/terminal arrays plus the small
+-                    # stage snapshot set needed for bounded critic refresh.
+-                    refresh_rewards.append(row['reward'].detach().cpu())
+-                    refresh_dones.append((row['terminated']|row['timeout']).detach().cpu())
+-                    episode_ids=row['before']['episode_index'].detach().cpu()
+-                    if refresh_initial_episode_ids is None:
+-                        refresh_initial_episode_ids=episode_ids.clone()
+-                    refresh_episode_ids.append(episode_ids)
+-                    if refresh_count in refresh_stage_ticks:
+-                        refresh_stage_records[refresh_count]=tensor_tree_copy(row)
+-                        refresh_stage_episode_ids[refresh_count]=episode_ids.clone()
+-                    refresh_count += 1
++                row=self.rows[-1]
++                sampling_metadata=native_approach_metadata(row,actor,adapter.physical_model.geometry)
++                row['sampling_metadata']=sampling_metadata
++                row['policy_version']=global_accepted_id
++                row['source_id']='online'
++                row['block_name']=trainer.block_name
++                replay.append(row,policy_version=global_accepted_id,native_tick=tick,approach_metadata=sampling_metadata)
++                if refresh_collector is not None: refresh_collector.append(row)
+                 if len(self.rows)>=archive_flush_rows:self.flush()
+             def flush(self):
+                 if os.environ.get('QUADSMASH_ZSTD_ARCHIVE','0') != '1':
+@@ -379,8 +374,7 @@ def run(args):
+         archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,control_ticks=0,transitions=0,chunks=[],
+             scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=args.recovery_update_budget+args.approach_update_budget,
+             replay_source_schema=['recent_online','older_online','initial_archive'],
+-            replay_stage_schema=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery']),chunk_ticks=1000000)
+-        archive.capture_refresh=False
++            replay_stage_schema=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery','approach_active','hit_prepare','contact_release','approach_failure','post_hit']),chunk_ticks=1000000)
+         archive.attach_task_sequence(env);env.physical_transition_archive=archive
+         # The packed 800-tick archive is a separate stream from this fresh
+         # native rollout.  Prevent windows from crossing the reset boundary
+@@ -403,6 +397,7 @@ def run(args):
+             reference_policy=dict(path=str(reference_path),sha256=file_sha(reference_path)),bad_policy=bad_meta,
+             sampling='source×event stratified WM windows; actor starts are causal native event states',
+             wm_source_quota=args.wm_source_quota,wm_stage_quota=args.wm_stage_quota,
++            wm_approach_stage_quota=args.wm_approach_stage_quota,approach_sampling_thresholds=dict(gate=.25,minimum_gate_steps=4,near_distance_m=.30),approach_refresh_interval=args.approach_refresh_interval,
+             wm_recent_policy_window=args.wm_recent_policy_window,wm_recent_tick_window=args.wm_recent_tick_window,
+             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
+             tracking_weight=args.tracking_weight,
+@@ -433,7 +428,9 @@ def run(args):
+                                   native_tick_counter=int(replay._native_tick_counter),
+                                   source_names=['initial_archive','online'],
+                                   stage_names=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery']),
+-                replay_metadata=dict(
++                reference_bank=trainer.reference_bank.payload() if trainer.reference_bank else None,
++                actor_references=dict(step=trainer.accepted_snapshot,block=trainer.block_start_snapshot,native=trainer.native_accepted_snapshot),
++                replay_metadata=dict(approach_metadata=replay.approach_metadata,
+                     streams=replay.streams.cpu(), stage_ids=replay.stage_ids.cpu(),
+                     source_ids=replay.source_ids.cpu(), policy_versions=replay.policy_versions.cpu(),
+                     native_ticks=replay.native_ticks.cpu()),
+@@ -482,14 +479,16 @@ def run(args):
+         while critic_coverage_blocks<len(critic_starts):cover_critic()
+         ensure_critic()
+         cursor=0;completed_returns=[];completed_discounted=[];completed_records=[];phase='LEARNING'
+-        def run_world_updates(iteration, count=None):
++        def run_world_updates(iteration, count=None, head=None):
+             """Fit WM with explicit source×event quotas and return audit totals."""
++            head=head or trainer.block_name
++            quotas=args.wm_approach_stage_quota if head=='approach' else args.wm_stage_quota
+             total=int(args.world_updates_per_actor_update if count is None else count)
+             reports=[]; started=time.perf_counter()
+             for offset in range(total):
+                 window,lanes,sampling=replay.window(
+                     timebase.world_steps,128,iteration*total+offset,
+-                    source_quota=args.wm_source_quota,stage_quota=args.wm_stage_quota,
++                    source_quota=args.wm_source_quota,stage_quota=quotas,head=head,
+                     recent_policy_window=args.wm_recent_policy_window,
+                     recent_tick_window=args.wm_recent_tick_window)
+                 stats=trainer.fit_world_window(window,launch[lanes]); del window
+@@ -520,11 +519,14 @@ def run(args):
+             nonlocal global_attempt_id,global_accepted_id,global_rejected,global_backtracked
+             if budget<=0:return 0
+             trainer.set_trainable_names(names,block_name)
+-            dynamic_names=('touchdown','post_touchdown','recovery_failure','stable_recovery') if block_name=='recovery' else ('prepare','approach','pre_touchdown')
++            dynamic_names=('touchdown','post_touchdown','recovery_failure','stable_recovery') if block_name=='recovery' else ('approach_active',)
+             dynamic_pool=[item for name in dynamic_names for item in replay.stage_starts.get(name,[])]
+             if block_name=='approach': dynamic_pool=[item for item in dynamic_pool if approach_active(item)]
+             block_pool=(dynamic_pool + (recovery_pool if block_name=='recovery' else approach_pool))
+-            trainer.set_budget_state_library([as_state(row) for row in block_pool+critic_starts[:4]])
++            # Fixed, bounded multi-stage budget library for the entire block.
++            # Actor starts refresh independently; do not move the budget test set per proposal.
++            budget_rows=(recovery_pool if block_name=='recovery' else approach_pool)+critic_starts[:4]
++            trainer.set_budget_state_library([as_state(row) for row in budget_rows])
+             accepted=0;attempts=0;max_attempts=proposal_limit
+             while accepted<budget and attempts<max_attempts:
+                 attempts+=1;global_attempt_id+=1;trainer.block_attempts=attempts
+@@ -542,9 +544,13 @@ def run(args):
+                             with (args.output/'native_episodes.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
+                             if writer is not None:
+                                 step=int(tick*128); total=len(completed_records)
+-                                metric_names={'qualified_airborne_string_contact':'qualified_contact_rate','ball_side_complete_except_recovery':'ball_side_rate','recovery_success':'conditional_recovery_rate','complete5':'complete5_rate','body_ground_seen':'body_ground_rate'}
++                                measured=summarize_native_episodes(completed_records)
++                                metric_names={'qualified_airborne_string_contact_rate':'qualified_contact_rate','ball_side_complete_except_recovery_rate':'ball_side_rate','recovery_given_airborne_string_contact':'conditional_recovery_rate','complete5_rate':'complete5_rate'}
+                                 for key,name in metric_names.items():
+-                                    writer.add_scalar('native/'+name,sum(bool(x.get(key,False)) for x in completed_records)/total,step)
++                                    if measured[key] is not None:writer.add_scalar('native/'+name,measured[key],step)
++                                body=[x['body_ground_seen'] for x in completed_records if x.get('body_ground_seen') is not None]
++                                writer.add_scalar('native/body_ground_evidence_count',len(body),step)
++                                if len(body)==total:writer.add_scalar('native/body_ground_rate',sum(map(bool,body))/total,step)
+                                 writer.add_scalar('native/episode_return',float(record['native_episode_return']),step)
+                                 writer.add_scalar('native/return_ema',sum(completed_returns[-16:])/len(completed_returns[-16:]),step)
+                                 writer.flush()
+@@ -562,11 +568,10 @@ def run(args):
+                     fresh=[item for item in replay.new_starts if approach_active(item)]
+                     if fresh: pool=fresh + approach_pool
+                 if not pool: pool=block_pool
+-                trainer.set_budget_state_library([as_state(row) for row in pool+critic_starts[:4]])
+                 if block_name=='approach':
+                     active_pool=[item for item in pool if approach_active(item)]
+                     pool=active_pool if active_pool else approach_pool
+-                row=pool[accepted%len(pool)];state=as_state(row);check_stop();stats=trainer.imagine_update(state)
++                row=pool[(attempts-1)%len(pool)];state=as_state(row);check_stop();stats=trainer.imagine_update(state)
+                 if stats['update_accepted']:
+                     if not any(v>0.0 for v in stats['parameter_max_changes'].values()):
+                         raise RuntimeError(f'{block_name} accepted update had zero trainable parameter change; no effective gradient')
+@@ -574,14 +579,14 @@ def run(args):
+                     global_accepted_id+=1
+                 else:
+                     global_rejected+=1
+-                global_backtracked += int(stats.get('backtracked',False))
++                global_backtracked += int(stats.get('update_accepted',False) and stats.get('backtrack_alpha',1.)<1.)
+                 with torch.no_grad():request=actor(state.observation,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
+                 record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_accepted_updates=accepted,attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
+                 if writer is not None:
+                     step=int(tick*128)
+                     writer.add_scalar('native/step_reward_mean',float(reward.mean()),step)
+                     writer.add_scalar('native/completed_episodes',len(completed_returns),step)
+-                    if completed_returns: writer.add_scalar('native/return_mean_128',sum(completed_returns)/len(completed_returns),step)
++                    if completed_returns: writer.add_scalar('native/return_mean_128',sum(completed_returns[-128:])/len(completed_returns[-128:]),step)
+                     writer.add_scalar('actor/imagined_return',float(stats.get('imagined_return_mean',0.0)),step)
+                     writer.add_scalar('model/world_loss',float(world_stats.get('world_loss',0.0)),step)
+                     writer.add_scalar('critic/loss',float(stats.get('critic_loss',0.0)),step)
+@@ -589,6 +594,8 @@ def run(args):
+                     writer.add_scalar('actor/%s_gate_active'%block_name,float(stats.get('effective_gate_lanes',0)),step)
+                     writer.add_scalar('actor/effective_updates',float(stats.get('actor_updates',0)),step)
+                     writer.add_scalar('actor/tracking_loss',float(stats.get('tracking_loss',0.0)),step)
++                    for name in ('task_gradient_norm','tracking_gradient_norm','anchor_gradient_norm','task_tracking_cosine','final_command_max_change','objective_before','objective_after'):
++                        if name in stats:writer.add_scalar('actor/'+name,float(stats[name]),step)
+                     writer.add_scalar('actor/accepted_updates',global_accepted_id,step)
+                     writer.add_scalar('actor/rejected_updates',global_rejected,step)
+                     writer.add_scalar('performance/native_collect_s',collect_s,step)
+@@ -599,102 +606,81 @@ def run(args):
+                 save('latest.pt');write(args.output/'progress.json',record)
+                 with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
+                 print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
+-                if accepted and accepted%16==0:save(f'{block_name}_checkpoint_{accepted:04d}.pt')
++                if stats['update_accepted'] and accepted and accepted%16==0:save(f'{block_name}_checkpoint_{accepted:04d}.pt')
++                if block_name=='approach' and stats['update_accepted'] and accepted%args.approach_refresh_interval==0:
++                    refresh_frozen_policy('approach')
++            if block_name=='approach' and accepted and accepted%args.approach_refresh_interval:
++                refresh_frozen_policy('approach')
+             save(f'{block_name}_candidate_{accepted:04d}.pt')
+             return accepted
+-        def refresh_frozen_recovery():
+-            """Collect one reset-separated full native block before Approach."""
+-            nonlocal obs,tick,refresh_count,refresh_world_updates,refresh_critic_updates,refresh_initial_episode_ids
+-            if args.refresh_ticks == 0:
+-                return 0,0
+-            archive.capture_refresh=False
+-            refresh_records.clear()
+-            refresh_rewards.clear(); refresh_dones.clear(); refresh_episode_ids.clear()
+-            refresh_stage_records.clear(); refresh_stage_episode_ids.clear(); refresh_initial_episode_ids=None; refresh_count=0
++        def refresh_frozen_policy(head):
++            """Bounded first-complete-episode collection; no mid-episode manual reset."""
++            nonlocal obs,tick,cursor,refresh_collector,refresh_serial
++            if args.refresh_ticks==0:return 0,0
++            refresh_serial+=1
++            policy_id=f'{head}_frozen_v{global_accepted_id}_refresh{refresh_serial}'
++            refresh_dir=args.output/policy_id
++            refresh_dir.mkdir(exist_ok=False)
++            from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
++            actor_hash=tensor_digest(actor.state_dict().items())
++            refresh_collector=FrozenRefresh(128,800,timebase.gamma,policy_id,adapter.task_model.memory_schema)
++            replay.new_stream(source='online',policy_version=global_accepted_id)
+             start_tick=tick
+-            # Start calibration at an explicit all-lane reset boundary.  The
+-            # preceding mixed-policy suffix remains valid WM data, but cannot
+-            # be used as a frozen-policy RTG label.  We intentionally reject
+-            # the old warmup option here because it would recreate a partial
+-            # episode before the calibration stream begins.
+-            if int(args.resume_warmup_ticks):
+-                raise ValueError('resume_warmup_ticks is incompatible with reset-separated frozen refresh')
+-            archive.flush()
+-            obs,_=wrapper.reset()
+-            cursor=len(env.rally_records)
+-            replay.new_stream(source='online', policy_version=global_accepted_id)
+-            refresh_records.clear()
+-            refresh_rewards.clear(); refresh_dones.clear(); refresh_episode_ids.clear()
+-            refresh_stage_records.clear(); refresh_stage_episode_ids.clear(); refresh_initial_episode_ids=None; refresh_count=0
+-            archive.capture_refresh=True
+-            with torch.inference_mode():
+-                for _ in range(args.refresh_ticks):
+-                    check_stop()
+-                    action=native_actor_action(obs)
+-                    obs,reward,done,info=wrapper.step(action)
+-                    tick+=1
+-                    if not torch.isfinite(obs['policy']).all():
+-                        raise FloatingPointError('Nonfinite native observation during recovery refresh')
+-            archive.capture_refresh=False
+-            archive.flush()
+-            if args.refresh_ticks and refresh_count!=args.refresh_ticks:
+-                raise RuntimeError(f'Expected {args.refresh_ticks} refresh rows, got {refresh_count}')
+-            # Same frozen-policy labels, separated by episode and stage. These
+-            # labels are used only for bounded critic calibration, never actor input.
+-            rewards=torch.stack(refresh_rewards).double()
+-            dones=torch.stack(refresh_dones)
+-            if refresh_initial_episode_ids is None:
+-                raise RuntimeError('Frozen refresh produced no episode identity')
+-            episode_ids=torch.stack(refresh_episode_ids)
+-            initial_episode_complete=((dones & (episode_ids == refresh_initial_episode_ids[None])).any(0))
+-            if not bool(initial_episode_complete.all()):
+-                missing=torch.where(~initial_episode_complete)[0].tolist()
+-                raise RuntimeError(f'Frozen refresh did not complete the first post-reset episode for lanes {missing[:16]}')
+-            rtg_refresh=torch.zeros_like(rewards)
+-            running=torch.zeros(rewards.shape[1],dtype=torch.float64)
+-            for ti in range(args.refresh_ticks-1,-1,-1):
+-                running=rewards[ti]+timebase.gamma*running*(~dones[ti]).double()
+-                rtg_refresh[ti]=running
+-            stage_ticks_refresh=[0,96,192,288,384,480,576,672]
+-            refresh_world=0
+-            if args.refresh_world_updates:
+-                refresh_stats=run_world_updates(global_attempt_id, args.refresh_world_updates)
+-                refresh_world=int(refresh_stats['world_updates'])
+-            refresh_critic=0
+-            refresh_critic_losses=[]
+-            skipped_stage_ticks=[]
++            record_cursor=len(env.rally_records)
++            try:
++                with torch.inference_mode():
++                    for _ in range(1601):
++                        check_stop()
++                        obs,reward,done,info=wrapper.step(native_actor_action(obs)); tick+=1
++                        if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite frozen refresh')
++                        if refresh_collector.complete.all():break
++                collector=refresh_collector
++                rtg_refresh,receipt=collector.result()
++            finally:
++                refresh_collector=None
++                archive.flush()
++            if actor_hash!=tensor_digest(actor.state_dict().items()):raise RuntimeError('Frozen collection changed actor')
++            wanted={(lane,int(ep)) for lane,ep in enumerate(collector.ids.tolist())}
++            native_records=[score_terminal_episode(r,dict(protocol,_root=str(ROOT))) for r in env.rally_records[record_cursor:]
++                            if (int(r['env_id']),int(r['episode_index'])) in wanted]
++            keys={(int(r['env_id']),int(r['episode_index'])) for r in native_records}
++            if len(native_records)!=128 or keys!=wanted:raise RuntimeError('Frozen refresh terminal-score identities incomplete or duplicated')
++            for record in native_records:record.update(policy_id=policy_id,actor_sha256=actor_hash,scope='frozen training refresh, not candidate promotion')
++            write(refresh_dir/'episodes_summary.json',native_records)
++            cursor=len(env.rally_records) # these records belong to the frozen stream, not mixed monitoring
++            receipt.update(start_tick=start_tick,end_tick=tick,actor_sha256=actor_hash,head=head,formal_evaluation=False,
++                           native_metrics=summarize_native_episodes(native_records))
++            packed=collector.packed_complete()
++            atomic_torch_save(dict(tensors=packed,policy_id=policy_id,receipt=receipt),refresh_dir/'complete_episodes.pt')
++            refresh_stats=run_world_updates(global_attempt_id,args.refresh_world_updates,head=head) if args.refresh_world_updates else {'world_updates':0}
++            fits=[];stages=sorted(collector.starts)
+             for update in range(args.refresh_critic_updates):
+-                ti=stage_ticks_refresh[update%len(stage_ticks_refresh)]
+-                # A lane that has already reset before this global tick would
+-                # otherwise pair a new episode state with the old stage label.
+-                # Do not silently mix it into the frozen-policy calibration.
+-                stage_episode_ids=refresh_stage_episode_ids.get(ti)
+-                if stage_episode_ids is None or not torch.equal(stage_episode_ids, refresh_initial_episode_ids):
+-                    skipped_stage_ticks.append(ti)
+-                    continue
+-                # Refresh critic values against the completed frozen-policy
+-                # native return-to-go.  Do not call imagine_update here: that
+-                # would train the critic on a model rollout and silently erase
+-                # the policy/episode-aligned native labels just computed above.
+-                state=as_state(refresh_stage_records[ti])
+-                fit=trainer.calibrate_critic_native(
+-                    [state], rtg_refresh[ti].to(state.physical.device), epochs=1)
+-                refresh_critic += int(fit['native_critic_calibration_updates'])
+-                refresh_critic_losses.append(float(fit['native_critic_calibration_loss']))
+-            write(args.output/'refresh_manifest.json',dict(
+-                policy_id='recovery_frozen_refresh',start_tick=start_tick,end_tick=tick,
+-                ticks=refresh_count,transitions=refresh_count*128,
+-                world_updates=refresh_world,critic_updates=refresh_critic,
+-                critic_update_mode='native_rtg_calibration',
+-                critic_calibration_losses=refresh_critic_losses,
+-                stage_ticks=stage_ticks_refresh,skipped_stage_ticks=sorted(set(skipped_stage_ticks)),
+-                complete_initial_episode_lanes=int(initial_episode_complete.sum()),
+-                rtg_scope='same frozen recovery policy; reset-separated first episode only',
+-                replay_count=int(replay.count),replay_capacity=int(replay.capacity),warmup_ticks=warmup_ticks,
+-                missing_fields=[]))
+-            print('PHYSICAL_REFRESH='+json.dumps(dict(ticks=refresh_count,transitions=refresh_count*128,world_updates=refresh_world,critic_updates=refresh_critic)),flush=True)
+-            refresh_world_updates,refresh_critic_updates=refresh_world,refresh_critic
+-            return refresh_world,refresh_critic
++                if not stages:raise RuntimeError('No causal stage states for frozen critic labels')
++                ti=stages[update%len(stages)];row,mask=collector.starts[ti]
++                state=as_state(row)
++                fit=trainer.calibrate_critic_native([state],rtg_refresh[ti].to(state.physical.device),epochs=1,
++                    masks=[mask.to(state.physical.device)])
++                fits.append(fit)
++            if trainer.reference_bank is not None:
++                from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
++                source_hash=hashlib.sha256((refresh_dir/'complete_episodes.pt').read_bytes()).hexdigest()
++                with torch.no_grad():
++                    device=next(adapter.parameters()).device
++                    additions=TaskSpaceReferenceBankV1.from_packed({k:v.to(device) for k,v in packed.items()},
++                        adapter.physical_model.geometry,source_sha256=source_hash,policy_id=policy_id,
++                        match_distance_threshold=trainer.reference_bank.match_distance_threshold,terminal_records=native_records)
++                trainer.reference_bank.extend(additions)
++                atomic_torch_save(trainer.reference_bank.payload(),refresh_dir/'reference_bank.pt')
++                receipt['reference_bank']=trainer.reference_bank.manifest
++            receipt.update(world_updates=refresh_stats['world_updates'],critic_updates=len(fits),critic_fits=fits,
++                           warmup_ticks=0,partial_suffix_scope='WM only, excluded from calibration')
++            write(refresh_dir/'manifest.json',receipt)
++            if writer is not None:
++                writer.add_scalar('native_frozen/episode_return_mean',sum(receipt['returns'])/128,tick*128)
++                writer.flush()
++            print('PHYSICAL_REFRESH='+json.dumps(receipt),flush=True)
++            save('latest.pt')
++            return refresh_stats['world_updates'],len(fits)
+         if args.update_mode == 'joint':
+             # One Adam update jointly covers both heads.  The old sequential blocks
+             # remain available only as diagnostic code; this experiment must not
+@@ -747,7 +733,7 @@ def run(args):
+                 else:
+                     recovery_accepted=run_block('recovery', RECOVERY_NAMES, min(args.recovery_update_budget,args.recovery_proposal_budget), args.recovery_proposal_budget)
+                     save('cycle_%02d_recovery_candidate_%04d.pt' % (cycle+1,recovery_accepted))
+-                    refresh_world_updates,refresh_critic_updates=refresh_frozen_recovery()
++                    refresh_world_updates,refresh_critic_updates=refresh_frozen_policy('recovery')
+                 save('cycle_%02d_recovery_refresh_candidate_%04d.pt' % (cycle+1,recovery_accepted))
+                 approach_accepted=run_block('approach', APPROACH_NAMES, min(args.approach_update_budget,args.approach_proposal_budget), args.approach_proposal_budget)
+                 total_accepted=recovery_accepted+approach_accepted
+@@ -755,7 +741,7 @@ def run(args):
+                 cycle_results.append(dict(cycle=cycle+1,recovery_accepted=recovery_accepted,approach_accepted=approach_accepted,
+                     native_ticks=tick,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
+                     refresh_world_updates=refresh_world_updates,refresh_critic_updates=refresh_critic_updates))
+-                write(args.output/'cycle_%02d.json' % (cycle+1),cycle_results[-1])
++                write(args.output/('cycle_%02d.json' % (cycle+1)),cycle_results[-1])
+             total_accepted=sum(x['recovery_accepted']+x['approach_accepted'] for x in cycle_results)
+             write(args.output/'training_completed.json', dict(
+                 update_mode='sequential', cycles=args.cycles, actor_updates=total_accepted,
+diff --git a/tests/test_supermimic_physical_loop_replay_v2.py b/tests/test_supermimic_physical_loop_replay_v2.py
+index 73eb23d..c255f89 100644
+--- a/tests/test_supermimic_physical_loop_replay_v2.py
++++ b/tests/test_supermimic_physical_loop_replay_v2.py
+@@ -67,3 +67,9 @@ def test_replay_legacy_window_reports_source_without_stratification_bug():
+     _, _, report = replay.window(steps=16, batch=4, device='cpu')
+     assert report['window_count'] == 4
+     assert report['source_counts'] == {'initial_archive': 4, 'recent_online': 0, 'older_online': 0}
++    _,_,approach=replay.window(steps=16,batch=4,device='cpu',head='approach',
++        source_quota={'initial_archive':4},stage_quota={'approach_active':4})
++    assert approach['approach_missing_fields']['approach_gate']==64
++    assert approach['stage_shortfall']['approach_active']==4
++    assert approach['actual_event_coverage']['approach_active']==0
++    assert approach['fallback_count']==4
+diff --git a/tests/test_supermimic_success_guided_reference_v1.py b/tests/test_supermimic_success_guided_reference_v1.py
+index 9be2964..e85a57e 100644
+--- a/tests/test_supermimic_success_guided_reference_v1.py
++++ b/tests/test_supermimic_success_guided_reference_v1.py
+@@ -1,26 +1,64 @@
++"""Reference contracts using asset FK and synthetic labels, not native success evidence."""
++import json
++import pytest
+ import torch
++from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1, MODEL
++from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1, task_space_features
+ 
+-from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
++def fixture():
++    geometry=FullBodyGeometryV1(json.loads(MODEL.read_text())['asset_sha256'])
++    t,n=12,3;state=torch.zeros(t,n,55);state[:,:,3]=1.;state[:,:,2]=.5
++    state[:,:,49]=.7;state[:,:,51]=.5
++    events=torch.zeros(t,n,8);events[2:,:,0]=1;events[5:,:2,1]=1;events[6:,:2,2:4]=1;events[10:,:2,4]=1
++    events[-1,1,7]=1
++    feet=torch.zeros(t,n,4,dtype=torch.bool);feet[:2]=True;feet[8:]=True
++    done=torch.zeros(t,n,dtype=torch.bool);done[-1]=True
++    data=dict(state=state,next_state=state.clone(),event_state=events,next_event_state=events.clone(),feet=feet,
++              next_feet=torch.cat((feet[1:],feet[-1:])),episode=torch.zeros(t,n,dtype=torch.long),
++              elapsed=torch.arange(t)[:,None].expand(t,n)*.01,terminated=torch.zeros_like(done),timeout=done)
++    return geometry,data
+ 
++def test_terminal_evidence_and_event_selection():
++    g,d=fixture();bank=TaskSpaceReferenceBankV1.from_packed(d,g,source_sha256='fixture',policy_id='p0')
++    assert bank.manifest['approach_count']==1 and bank.manifest['recovery_count']==1
++    assert bank.entries[0]['anchor_time']==pytest.approx(.05)
++    assert bank.entries[1]['anchor_time']==pytest.approx(.08)
++    assert all(e['terminal_verified'] for e in bank.entries)
++    del d['timeout']
++    with pytest.raises(ValueError,match='missing'):TaskSpaceReferenceBankV1.from_packed(d,g)
+ 
+-class _Geometry:
+-    model_sha256 = 'geometry-test'
++def test_time_alignment_mask_and_finite_gradient():
++    g,d=fixture();bank=TaskSpaceReferenceBankV1.from_packed(d,g)
++    initial=d['state'][3,:1].clone();elapsed=torch.tensor([2.03]);event=torch.tensor([2.05])
++    ref=bank.bind(initial,'approach',geometry=g,elapsed=elapsed,event_time=event)
++    assert ref['matched'].all()
++    predicted=initial.clone();predicted[:,49]+=.01;predicted.requires_grad_()
++    loss=bank.loss(predicted,elapsed,ref,'approach',geometry=g,valid_mask=torch.tensor([True]))
++    grad=torch.autograd.grad(loss,predicted)[0]
++    assert torch.isfinite(grad).all() and grad.norm()>0
++    original=ref['matched'].clone()
++    masked=bank.loss(predicted,elapsed,ref,'approach',geometry=g,valid_mask=torch.tensor([False]))
++    assert float(masked)==0 and torch.equal(original,ref['matched'])
++    # The racket normal matches the local X convention used by the ball model.
++    feature=task_space_features(initial,g,'approach')
++    assert feature.shape==(1,18)
+ 
++def test_reject_distant_and_deduplicate():
++    g,d=fixture();bank=TaskSpaceReferenceBankV1.from_packed(d,g,match_distance_threshold=.01)
++    x=d['state'][3,:1].clone();x[:,49]+=100
++    ref=bank.bind(x,'approach',geometry=g,elapsed=torch.tensor([.03]))
++    assert not ref['matched'].any()
++    count=len(bank.entries);bank.extend(bank);assert len(bank.entries)==count
++    restored=TaskSpaceReferenceBankV1.from_payload(bank.payload()).to('cpu')
++    assert restored.manifest==bank.manifest
++    with pytest.raises(ValueError):TaskSpaceReferenceBankV1([],g.model_sha256,'',float('inf'))
+ 
+-def test_reference_bank_selects_only_terminal_valid_success_lanes():
+-    states = torch.zeros(8, 3, 55)
+-    events = torch.zeros(8, 3, 8)
+-    # lane 0 is a clean approach/recovery success; lane 1 is faulted;
+-    # lane 2 has no terminal task event.
+-    events[:, 0, 1:5] = 1.
+-    events[:, 1, 1:5] = 1.
+-    events[-1, 1, 7] = 1.
+-    bank = TaskSpaceReferenceBankV1.from_packed(
+-        {'state': states, 'event_state': events,
+-         'elapsed': torch.arange(8, dtype=torch.float32)[:, None].expand(8, 3)},
+-        _Geometry(), source_sha256='source-test')
+-    assert bank.geometry_sha256 == 'geometry-test'
+-    assert bank.source_sha256 == 'source-test'
+-    assert bank.approach_sequences.shape[:2] == (1, 8)
+-    assert bank.recovery_sequences.shape[:2] == (1, 8)
+-    assert bank.manifest['schema'] == 'success-guided-task-space-reference-v1'
++def test_paid_event_latches_cannot_override_independent_ball_side_rejection():
++    g,d=fixture()
++    rows=[dict(env_id=i,episode_index=0,scoring_schema='historical-independent-complete5-v1',
++               ball_side_complete_except_recovery=False,recovery_success=i==0,body_ground_seen=False) for i in range(3)]
++    bank=TaskSpaceReferenceBankV1.from_packed(d,g,terminal_records=rows)
++    assert bank.manifest['approach_count']==0 and bank.manifest['recovery_count']==1
++    assert bank.manifest['protocol_verified']
++    with pytest.raises(ValueError,match='Missing terminal score'):
++        TaskSpaceReferenceBankV1.from_packed(d,g,terminal_records=rows[:1])
+diff --git a/configs/supermimic_success_guided_v2.json b/configs/supermimic_success_guided_v2.json
+new file mode 100644
+index 0000000..56573c1
+--- /dev/null
++++ b/configs/supermimic_success_guided_v2.json
+@@ -0,0 +1,25 @@
++{
++  "scope": "Launch defaults only; actual CLI overrides are recorded in each run config. Not yet native-validated.",
++  "num_envs": 128,
++  "cycles": 1,
++  "update_mode": "sequential",
++  "recovery_updates": 32,
++  "recovery_proposals": 64,
++  "approach_updates": 8,
++  "approach_proposals": 16,
++  "world_updates_per_proposal": 4,
++  "native_ticks_per_proposal": 16,
++  "imagination_s": 0.64,
++  "world_window_s": 0.16,
++  "control_dt_s": 0.01,
++  "actor_learning_rate": 0.00005,
++  "world_learning_rate": 0.0002,
++  "critic_learning_rate": 0.0002,
++  "source_quota": {"recent_online": 64, "older_online": 32, "initial_archive": 32},
++  "recovery_quota": {"uniform": 32, "pre_touchdown": 24, "touchdown": 24, "post_touchdown": 24, "recovery_failure": 16, "stable_recovery": 8},
++  "approach_quota": {"uniform": 24, "approach_active": 32, "hit_prepare": 24, "contact_release": 24, "approach_failure": 16, "post_hit": 8},
++  "frozen_refresh": {"episode_ticks": 800, "maximum_collection_ticks": 1601, "after_recovery": true, "approach_effective_update_interval": 8, "approach_block_remainder": true, "world_updates": 32, "critic_updates": 20},
++  "tracking": {"schema": "success-guided-task-space-reference-v2", "weight": "explicit SM_TRACKING_WEIGHT required", "bank": "explicit SM_TASK_REFERENCE_BANK required", "threshold": "finite positive threshold recorded in bank, requires offline calibration"},
++  "ball_side_mode": "shadow",
++  "acceptance": {"native_return_gt": -12.52678435, "ball_side_min": 53, "complete5_min": 27, "numerical_failures": 0}
++}
+diff --git a/quadsmash/rl/supermimic_approach_data_v1.py b/quadsmash/rl/supermimic_approach_data_v1.py
+new file mode 100644
+index 0000000..8e42618
+--- /dev/null
++++ b/quadsmash/rl/supermimic_approach_data_v1.py
+@@ -0,0 +1,72 @@
++"""Native-only Approach sampling labels. Never inputs to actor/model rollout."""
++import torch
++
++APPROACH_QUOTA = dict(uniform=24, approach_active=32, hit_prepare=24,
++                     contact_release=24, approach_failure=16, post_hit=8)
++FIELDS = ('approach_gate', 'racket_distance', 'had_contact', 'released',
++          'qualified', 'frame_hit', 'attack')
++
++def active_gate(gate, threshold=.25, minimum_batch_lanes=4):
++    gate = gate.detach().reshape(-1)
++    if not len(gate):return False
++    return bool((gate > threshold).sum() >= min(minimum_batch_lanes, len(gate)))
++
++@torch.no_grad()
++def native_approach_metadata(row, actor, geometry):
++    before, after = row['before'], row['after']
++    result = {}
++    for prefix, record in (('', before), ('next_', after)):
++        task = record['task']; p = record['physical']
++        n = len(p['joint_position']); device = p['joint_position'].device
++        unknown = torch.full((n,), float('nan'), device=device)
++        def field(name):
++            return task[name].float() if name in task else unknown.clone()
++        contact = field('legal_initial_contact') * field('string_hit') * field('airborne_string_hit')
++        velocity = task.get('outgoing_velocity')
++        attack = (contact * field('released') * (velocity.norm(dim=-1)>=5.) * (velocity[:,0]>0.)) if velocity is not None else unknown.clone()
++        if prefix == '':
++            obs = row['observation']; obs = obs['policy'] if isinstance(obs,dict) else obs
++            result['approach_gate'] = actor.approach_gate(obs).reshape(-1).detach().cpu()
++            kin = geometry(p['joint_position'],p['joint_velocity'],p['root_position_w'],
++                           p['root_quaternion_w'],p['root_link_velocity_w'],p['root_angular_velocity_w'])
++            result['racket_distance'] = (kin['position'][:,geometry.ids['Racket']]-p['ball_position_w']).norm(dim=-1).cpu()
++        for name,value in dict(had_contact=field('had_contact'),released=field('released'),
++                               qualified=contact,frame_hit=field('frame_hit'),attack=attack).items():
++            result[prefix+name] = value.detach().cpu()
++    return result
++
++def approach_window_masks(metadata, valid, steps, *, gate_threshold=.25, min_gate_steps=4, near_distance=.30):
++    """Unknown historical fields stay unknown; no terminal miss is invented.
++
++    Near miss requires a *completed* same-episode suffix in replay. Before
++    completion the close/no-hit sample remains hit_prepare, not a failure.
++    """
++    gate=metadata['approach_gate']; near=metadata['racket_distance']<=near_distance
++    pre=(metadata['had_contact']<.5)
++    def any_window(x): return x.unfold(0,steps,1).any(-1)&valid
++    contact=(metadata['next_had_contact']>.5)&(metadata['had_contact']<.5)
++    release=(metadata['next_released']>.5)&(metadata['released']<.5)
++    illegal=((metadata['next_frame_hit']>.5)&(metadata['frame_hit']<.5)) | (contact&(metadata['next_qualified']<.5))
++    bad_out=release & (metadata['next_qualified']>.5)&(metadata['next_attack']<.5)
++    miss=metadata.get('completed_miss',torch.zeros_like(pre)) & near & pre
++    return dict(approach_active=((gate>gate_threshold).unfold(0,steps,1).sum(-1)>=min(min_gate_steps,steps))&valid,
++                hit_prepare=any_window(near & pre), contact_release=any_window(contact|release),
++                approach_failure=any_window(illegal|bad_out|miss),post_hit=any_window(metadata['released']>.5),
++                near_miss=any_window(miss),illegal_contact=any_window(illegal),invalid_outgoing=any_window(bad_out))
++
++def masked_lane_mean(value, weights):
++    weights=weights.detach().reshape(-1).to(value)
++    value=value.reshape(len(weights),-1).mean(-1)
++    return (value*weights).sum()/weights.sum().clamp_min(1.)
++
++def gradient_parts(terms, parameters):
++    """Diagnostics only; does not accumulate .grad or step an optimizer."""
++    result={}; vectors={}
++    for name,term in terms.items():
++        grads=torch.autograd.grad(term,parameters,retain_graph=True,allow_unused=True) if term.requires_grad else [None]*len(parameters)
++        vector=torch.cat([(g.detach() if g is not None else torch.zeros_like(p)).flatten() for p,g in zip(parameters,grads)])
++        if not torch.isfinite(vector).all(): raise FloatingPointError('Nonfinite '+name+' gradient')
++        vectors[name]=vector; result[name+'_gradient_norm']=float(vector.norm())
++    a,b=vectors['task'],vectors['tracking']
++    result['task_tracking_cosine']=float(torch.dot(a,b)/(a.norm()*b.norm()).clamp_min(1e-20))
++    return result
+diff --git a/quadsmash/rl/supermimic_frozen_refresh_v1.py b/quadsmash/rl/supermimic_frozen_refresh_v1.py
+new file mode 100644
+index 0000000..d5aff56
+--- /dev/null
++++ b/quadsmash/rl/supermimic_frozen_refresh_v1.py
+@@ -0,0 +1,58 @@
++"""Collect the first complete frozen-policy episode per lane, without forced reset.
++
++Partial suffixes and later prefixes may train WM but never become MC labels.
++Only a bounded number of full G07 starts is retained (one per calibration stage).
++"""
++import torch
++from .supermimic_physical_capture_v1 import tensor_tree_copy
++from .supermimic_physical_loop_replay_v1 import current_start, row_tensors
++
++class FrozenRefresh:
++    def __init__(self,lanes,episode_ticks,gamma,policy_id,schema,stage_ticks=(0,96,192,288,384,480,576,672)):
++        self.lanes=lanes; self.episode_ticks=episode_ticks; self.gamma=gamma
++        self.policy_id=policy_id; self.schema=schema; self.stages=stage_ticks
++        self.ids=torch.full((lanes,),-1,dtype=torch.long)
++        self.lengths=torch.zeros(lanes,dtype=torch.long);self.complete=torch.zeros(lanes,dtype=torch.bool)
++        self.rewards=torch.zeros(episode_ticks,lanes,dtype=torch.float64)
++        self.dones=torch.zeros(episode_ticks,lanes,dtype=torch.bool)
++        self.starts={};self.compact=None;self.calls=0
++
++    def append(self,row):
++        b=row['before']; episode=b['episode_index'].detach().cpu().long()
++        elapsed=b['elapsed_tick'].detach().cpu().long(); done=(row['terminated']|row['timeout']).detach().cpu().bool()
++        new=(self.ids<0)&(elapsed==0);self.ids[new]=episode[new]
++        active=(self.ids==episode)&~self.complete
++        if ((self.ids>=0)&~self.complete&~active).any():raise RuntimeError('Frozen episode changed without terminal evidence')
++        if not torch.equal(elapsed[active],self.lengths[active]):raise RuntimeError('Frozen refresh lost or duplicated a control tick')
++        if (elapsed[active]>=self.episode_ticks).any():raise RuntimeError('Frozen episode exceeded task horizon')
++        record=row_tensors(row,self.schema)
++        if self.compact is None:
++            self.compact={k:torch.zeros((self.episode_ticks,*v.shape),dtype=v.dtype) for k,v in record.items()}
++        lanes=torch.where(active)[0]; steps=elapsed[lanes]
++        for k,v in record.items(): self.compact[k][steps,lanes]=v.detach().cpu()[lanes]
++        self.rewards[steps,lanes]=row['reward'].detach().cpu()[lanes].double()
++        self.dones[steps,lanes]=done[lanes]
++        for stage in self.stages:
++            mask=active&(elapsed==stage)
++            if mask.any() and stage not in self.starts:
++                self.starts[stage]=(dict(current_start(row),_actor_lane_mask=mask.clone()),mask.clone())
++        self.lengths[active]+=1; self.complete|=active&done; self.calls+=1
++
++    def result(self):
++        if not self.complete.all(): raise RuntimeError('Incomplete frozen episodes: '+str(torch.where(~self.complete)[0].tolist()))
++        rtg=torch.zeros_like(self.rewards); running=torch.zeros(self.lanes,dtype=torch.float64)
++        for t in range(self.episode_ticks-1,-1,-1):
++            active=t<self.lengths
++            running=torch.where(active,self.rewards[t]+self.gamma*running*(~self.dones[t]),torch.zeros_like(running))
++            rtg[t]=running
++        return rtg,dict(policy_id=self.policy_id,complete_lanes=int(self.complete.sum()),
++                        episode_ids=self.ids.tolist(),lengths=self.lengths.tolist(),native_ticks=self.calls,
++                        returns=self.rewards.sum(0).tolist(),stage_ticks=list(self.starts),
++                        scope='first complete episode starting after policy freeze, per lane')
++
++    def packed_complete(self):
++        self.result()
++        # Each column is one complete episode. Pad only AFTER its terminal;
++        # builders must honor valid_windows/terminal boundaries and never use
++        # padded tails as new training windows.
++        return dict(self.compact,reward=self.rewards,valid_lengths=self.lengths.clone())
+diff --git a/quadsmash/rl/supermimic_wm_validation_v1.py b/quadsmash/rl/supermimic_wm_validation_v1.py
+new file mode 100644
+index 0000000..abed3c3
+--- /dev/null
++++ b/quadsmash/rl/supermimic_wm_validation_v1.py
+@@ -0,0 +1,84 @@
++"""Held-out recorded-command autoregression; no native simulation or updates."""
++import torch
++from .supermimic_ball_sequence_v1 import ball_transition
++from .supermimic_physical_dataset_v1 import decode_physical
++from .supermimic_event_hazard_v1 import advance_event_latches
++
++@torch.no_grad()
++def validate_windows(adapter,window,launch,horizons=(1,4,16,32,64)):
++    if len(window['state'])<max(horizons):raise ValueError('Validation window too short')
++    state=window['state'][0];feet=window['feet'][0].float();present=window['present'][0]
++    values,valid=window['values'][0],window['valid'][0];events=window['event_state'][0].float()
++    result={}; predicted_first=torch.full((len(state),),-1,device=state.device,dtype=torch.long)
++    true_first=predicted_first.clone()
++    for t in range(max(horizons)):
++        next_state,newfeet,present=ball_transition(adapter.physical_model,adapter.ball_model,state,window['targets'][t],
++            window['previous_action'][t],feet,present,window['elapsed'][t],launch)
++        task=adapter.task_model.forward_values(state,next_state,window['targets'][t],window['previous_action'][t],feet,
++            window['elapsed'][t],values,valid)
++        events=advance_event_latches(events,task['hazards'])
++        ptd=(~(feet>.5).any(-1))&(newfeet>.5).any(-1)&(events[:,0]>.5)
++        ttd=(~window['feet'][t].bool().any(-1))&window['next_feet'][t].bool().any(-1)&(window['event_state'][t,:,0]>.5)
++        predicted_first=torch.where((predicted_first<0)&ptd,t+1,predicted_first)
++        true_first=torch.where((true_first<0)&ttd,t+1,true_first)
++        state,feet=next_state,newfeet;values=task['numeric'];valid=task['valid_logits'].sigmoid()
++        if t+1 in horizons:
++            target=window['next_state'][t];delta=state-target
++            q=torch.nn.functional.normalize(state[:,3:7],dim=-1);qt=torch.nn.functional.normalize(target[:,3:7],dim=-1)
++            body=events[:,5];truth=window['next_event_state'][t,:,5].float()
++            matched=(predicted_first>=0)&(true_first>=0)
++            metrics=dict(state_rmse=float(delta.square().mean().sqrt()),root_position_rmse=float(delta[:,:3].square().mean().sqrt()),
++                orientation_rad=float((2*torch.acos((q*qt).sum(-1).abs().clamp(0,1))).mean()),
++                angular_velocity_rmse=float(delta[:,10:13].square().mean().sqrt()),joint_velocity_rmse=float(delta[:,31:49].square().mean().sqrt()),
++                ball_position_rmse=float(delta[:,49:52].square().mean().sqrt()),ball_velocity_rmse=float(delta[:,52:55].square().mean().sqrt()),
++                ball_forward_sign_accuracy=float(((state[:,52]>0)==(target[:,52]>0)).float().mean()),
++                foot_contact_brier=float((feet-window['next_feet'][t].float()).square().mean()),
++                body_ground_brier=float((body-truth).square().mean()),task_event_brier=float((events-window['next_event_state'][t]).square().mean()),
++                touchdown_matched=int(matched.sum()),touchdown_presence_mismatch=int(((predicted_first>=0)!=(true_first>=0)).sum()),
++                touchdown_timing_mae_s=float((predicted_first[matched]-true_first[matched]).abs().float().mean()*.01) if matched.any() else None)
++            for label,mask in (('positive',truth>.5),('negative',truth<.5)):
++                metrics['body_'+label+'_count']=int(mask.sum())
++                metrics['body_'+label+'_brier']=float((body[mask]-truth[mask]).square().mean()) if mask.any() else None
++            geometry=getattr(adapter.physical_model,'geometry',None)
++            if geometry is not None:
++                def fk(s):
++                    p=decode_physical(s)
++                    return geometry(p['joint_position'],p['joint_velocity'],p['root_position_w'],p['root_quaternion_w'],
++                                    p['root_link_velocity_w'],p['root_angular_velocity_w'])
++                pred_fk,true_fk=fk(state),fk(target);rid=geometry.ids['Racket']
++                metrics['racket_position_rmse']=float((pred_fk['position'][:,rid]-true_fk['position'][:,rid]).square().mean().sqrt())
++                metrics['racket_velocity_rmse']=float((pred_fk['velocity'][:,rid]-true_fk['velocity'][:,rid]).square().mean().sqrt())
++                dot=(pred_fk['rotation'][:,rid,:,0]*true_fk['rotation'][:,rid,:,0]).sum(-1).clamp(-1,1)
++                metrics['racket_normal_error_rad']=float(torch.acos(dot).mean())
++            else:
++                metrics['missing_fields']=['racket_kinematics']
++            if not all(torch.isfinite(x).all() for x in (state,feet,events)):raise FloatingPointError('Nonfinite validation rollout')
++            result[str(t+1)]=metrics
++    return result
++
++def validation_stages(window):
++    """Overlapping native-label groups for reporting, never rollout inputs."""
++    before,after=window['event_state'],window['next_event_state']
++    feet=window['feet'].bool().any(-1);next_feet=window['next_feet'].bool().any(-1)
++    return dict(all=torch.ones(before.shape[1],dtype=torch.bool,device=before.device),
++        contact=(after[:,:,1]>before[:,:,1]).any(0),
++        touchdown=((~feet)&next_feet&(before[:,:,0]>.5)).any(0),
++        recovery_failure=(after[:,:,5]>before[:,:,5]).any(0),
++        stable_recovery=(after[:,:,4]>before[:,:,4]).any(0),
++        contact_ball_side_pending=((after[:,:,1]>.5)&((after[:,:,2]<.5)|(after[:,:,3]<.5))).any(0))
++
++@torch.no_grad()
++def command_sensitivity(adapter,window,launch,*,epsilon=.001,joints=(12,13,14,15,16,17)):
++    """Fixed perturbation model diagnostic; NOT a PhysX counterfactual."""
++    rows=[]
++    for joint in joints:
++        predictions=[]
++        for sign in (-1.,1.):
++            targets=window['targets'][0].clone();targets[:,joint]+=sign*epsilon
++            state,feet,present=ball_transition(adapter.physical_model,adapter.ball_model,window['state'][0],targets,
++                window['previous_action'][0],window['feet'][0].float(),window['present'][0],window['elapsed'][0],launch)
++            predictions.append(state)
++        fd=(predictions[1]-predictions[0])/(2*epsilon)
++        rows.append(dict(joint=int(joint),robot_derivative_norm=float(fd[:,:49].norm()),ball_derivative_norm=float(fd[:,49:].norm()),
++                         scope='model only; perturbs final targets; native slew/contact-cache replay not performed'))
++    return rows
+diff --git a/scripts/build_supermimic_task_references.py b/scripts/build_supermimic_task_references.py
+new file mode 100644
+index 0000000..83e86e0
+--- /dev/null
++++ b/scripts/build_supermimic_task_references.py
+@@ -0,0 +1,25 @@
++#!/usr/bin/env python3
++"""Build terminal-verified v2 success bank on CPU; never start Isaac."""
++import argparse,hashlib,json
++from pathlib import Path
++import torch
++from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1,MODEL
++from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
++
++def main():
++    p=argparse.ArgumentParser(description=__doc__)
++    p.add_argument('--packed-data',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
++    p.add_argument('--policy-id',required=True);p.add_argument('--match-distance-threshold',type=float,required=True)
++    p.add_argument('--episodes-summary',type=Path,required=True,help='Original independently scored terminal records, matching packed episode identities')
++    a=p.parse_args()
++    if a.output.exists():raise FileExistsError(a.output)
++    data=torch.load(a.packed_data,map_location='cpu',weights_only=True)
++    asset=json.loads(MODEL.read_text())['asset_sha256'];geometry=FullBodyGeometryV1(asset)
++    with torch.no_grad():bank=TaskSpaceReferenceBankV1.from_packed(data['tensors'],geometry,
++        source_sha256=hashlib.sha256(a.packed_data.read_bytes()).hexdigest(),policy_id=a.policy_id,
++        match_distance_threshold=a.match_distance_threshold,terminal_records=json.loads(a.episodes_summary.read_text()))
++    if not bank.entries:raise ValueError('No complete verified success reference; do not enable tracking')
++    a.output.parent.mkdir(parents=True,exist_ok=True);torch.save(bank.payload(),a.output)
++    a.output.with_suffix('.json').write_text(json.dumps(bank.manifest,indent=2)+'\n')
++    print(json.dumps(bank.manifest))
++if __name__=='__main__':main()
+diff --git a/scripts/validate_supermimic_physical_wm.py b/scripts/validate_supermimic_physical_wm.py
+new file mode 100644
+index 0000000..1579ed0
+--- /dev/null
++++ b/scripts/validate_supermimic_physical_wm.py
+@@ -0,0 +1,57 @@
++#!/usr/bin/env python3
++"""Compare frozen WM candidates on identical held-out native episodes, no training."""
++import argparse,hashlib,json
++from pathlib import Path
++import torch
++from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop
++from quadsmash.rl.supermimic_physical_dataset_v1 import valid_windows
++from quadsmash.rl.supermimic_wm_validation_v1 import validate_windows,command_sensitivity,validation_stages
++
++def main():
++    p=argparse.ArgumentParser(description=__doc__)
++    for name in ('archive','physical-checkpoint','ball-checkpoint','task-checkpoint','safety-mapping','packed-data','split-manifest','output'):
++        p.add_argument('--'+name,type=Path,required=True)
++    p.add_argument('--candidate',action='append',default=[],help='NAME=training checkpoint, frozen world state')
++    p.add_argument('--device',default='cpu');p.add_argument('--max-windows',type=int,default=128)
++    a=p.parse_args()
++    if a.max_windows<1:raise ValueError('max-windows must be positive')
++    if a.output.exists():raise FileExistsError(a.output)
++    split=json.loads(a.split_manifest.read_text());train=set(split['train_lanes']);val=set(split['validation_lanes'])
++    if not train or not val or train&val:raise ValueError('Explicit disjoint whole-case split required')
++    data=torch.load(a.packed_data,map_location='cpu',weights_only=True)['tensors']
++    if min(train|val)<0 or max(train|val)>=data['episode'].shape[1]:raise ValueError('Split lane outside archive')
++    valid=valid_windows(data['episode'],data['terminated'],data['timeout'],64)
++    if 'valid_lengths' in data: valid &= torch.arange(len(valid))[:,None]+64<=data['valid_lengths'][None]
++    allowed=torch.zeros(valid.shape[1],dtype=torch.bool);allowed[list(val)]=True;valid&=allowed[None]
++    # Fixed time/lane selection independent of model outcome.
++    pairs=valid.nonzero()[::64][:a.max_windows]
++    if not len(pairs):raise ValueError('No held-out 64-transition windows')
++    t,lanes=pairs.unbind(1);at=t[None]+torch.arange(64)[:,None]
++    window={k:v[at,lanes[None]].to(a.device) for k,v in data.items() if v.ndim>=2 and v.shape[:2]==data['episode'].shape}
++    _,adapter,_,launch,_=load_physical_loop(archive=a.archive,physical_checkpoint=a.physical_checkpoint,
++        ball_checkpoint=a.ball_checkpoint,task_checkpoint=a.task_checkpoint,safety_mapping=a.safety_mapping,device=a.device)
++    baseline={k:v.detach().clone() for k,v in adapter.state_dict().items()}
++    results={}; candidates=[('initial',None)]+[x.split('=',1) for x in a.candidate]
++    if len({x[0] for x in candidates})!=len(candidates):raise ValueError('Duplicate candidate name')
++    for name,path in candidates:
++        adapter.load_state_dict(baseline,strict=True)
++        if path:adapter.load_state_dict(torch.load(path,map_location=a.device,weights_only=False)['world'],strict=True)
++        adapter.eval()
++        results[name]=dict(checkpoint_sha256=hashlib.sha256(Path(path).read_bytes()).hexdigest() if path else adapter.manifest['checkpoint_sha256'],
++                           errors=validate_windows(adapter,window,launch[lanes.to(a.device)]),
++                           command_sensitivity=command_sensitivity(adapter,window,launch[lanes.to(a.device)]))
++        groups={}
++        for stage,mask in validation_stages(window).items():
++            if stage=='all':continue
++            groups[stage]=dict(windows=int(mask.sum()),errors=None)
++            if mask.any():
++                subset={k:v[:,mask] for k,v in window.items()}
++                groups[stage]['errors']=validate_windows(adapter,subset,launch[lanes.to(a.device)][mask])
++        results[name]['native_stage_groups']=groups
++    output=dict(results=results,window_starts=pairs.tolist(),split=split,
++        packed_sha256=hashlib.sha256(a.packed_data.read_bytes()).hexdigest(),native_simulation=False,
++        limitations=['Split manifest must match fitting provenance; this script cannot certify unseen training data.',
++                     'Recorded final-command autoregression is not closed-loop policy evaluation.',
++                     'No PhysX action perturbation evidence; native success is not inferred.'])
++    a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(output,indent=2)+'\n')
++if __name__=='__main__':main()
+diff --git a/tests/test_supermimic_approach_closed_loop.py b/tests/test_supermimic_approach_closed_loop.py
+new file mode 100644
+index 0000000..e1c6248
+--- /dev/null
++++ b/tests/test_supermimic_approach_closed_loop.py
+@@ -0,0 +1,93 @@
++"""CPU integration contracts; no Isaac, policy training or physical evidence."""
++import json
++from types import SimpleNamespace
++import pytest
++import torch
++from quadsmash.rl.supermimic_approach_data_v1 import active_gate,approach_window_masks,masked_lane_mean,gradient_parts,FIELDS
++from quadsmash.rl.supermimic_frozen_refresh_v1 import FrozenRefresh
++from quadsmash.rl.supermimic_physical_dataset_v1 import STATE_FIELDS
++from quadsmash.rl.supermimic_physical_loop_replay_v1 import PhysicalLoopReplay
++
++class Schema:
++    def encode(self,record):
++        n=len(record['paid_events']);return torch.zeros(n,2),torch.ones(n,2)
++
++def row(t,elapsed,episode,done):
++    n=len(elapsed);p={k:torch.zeros(n,w) for k,w in STATE_FIELDS}
++    p.update(final_action=torch.zeros(n,18),foot_contact=torch.ones(n,4,dtype=torch.bool),
++             ball_present=torch.zeros(n,dtype=torch.bool),elapsed_s=torch.tensor(elapsed)*.01)
++    b=dict(physical=p,task={},recovery={},event_state=torch.zeros(n,8),episode_index=torch.tensor(episode),
++           elapsed_tick=torch.tensor(elapsed),auxiliary=dict(reward_inputs=dict(applied_torque_all=torch.zeros(n,18))))
++    return dict(before=b,after=b,executor_before={'tensors':{'controller/lanes':torch.arange(n)},'values':{'controller/count':n}},
++                observation=torch.zeros(n,794),final_joint_targets=torch.zeros(n,18),reward=torch.full((n,),float(t+1)),
++                terminated=torch.tensor(done),timeout=torch.zeros(n,dtype=torch.bool),reward_components={'complete5_terminal':torch.zeros(n)})
++
++def test_gate_single_lane_and_effective_lane_normalization():
++    assert active_gate(torch.ones(1));assert not active_gate(torch.zeros(1))
++    assert not active_gate(torch.tensor([1.,0.,0.,0.]))
++    x=torch.tensor([2.,50.],requires_grad=True);loss=masked_lane_mean(x,torch.tensor([True,False]))
++    loss.backward();assert x.grad.tolist()==[1.,0.]
++
++def test_failure_pool_distinguishes_unknown_unfinished_and_invalid_outgoing():
++    t,n=20,2;meta={k:torch.full((t,n),float('nan')) for k in FIELDS+tuple('next_'+k for k in FIELDS[2:])}
++    meta['approach_gate'][:]=1;meta['racket_distance'][:]=.1;meta['had_contact'][:]=0
++    meta['completed_miss']=torch.zeros(t,n,dtype=torch.bool)
++    valid=torch.ones(t-15,n,dtype=torch.bool)
++    masks=approach_window_masks(meta,valid,16)
++    assert masks['approach_active'].all() and masks['hit_prepare'].all()
++    assert not masks['approach_failure'].any()
++    meta['released'][:]=0;meta['next_released'][10,0]=1;meta['next_qualified'][10,0]=1;meta['next_attack'][10,0]=0
++    masks=approach_window_masks(meta,valid,16)
++    assert masks['approach_failure'][:,0].all() and not masks['approach_failure'][:,1].any()
++
++def test_frozen_refresh_unequal_reset_boundaries_and_manifest(tmp_path):
++    f=FrozenRefresh(2,3,.9,'policy_fixed',Schema(),stage_ticks=(0,1,2))
++    # lane0 begins with an old suffix; lane1 begins at a real reset.
++    sequence=[([2,0],[0,0],[True,False]),([0,1],[1,0],[False,False]),
++              ([1,2],[1,0],[False,True]),([2,0],[1,1],[True,False])]
++    for t,(elapsed,ep,done) in enumerate(sequence): f.append(row(t,elapsed,ep,done))
++    rtg,report=f.result()
++    assert report['complete_lanes']==2 and report['lengths']==[3,3]
++    torch.testing.assert_close(rtg[0],torch.tensor([2+.9*3+.81*4,1+.9*2+.81*3],dtype=torch.float64))
++    assert report['returns']==[9.,6.]
++    path=tmp_path/'manifest.json';path.write_text(json.dumps(report));assert json.loads(path.read_text())['policy_id']=='policy_fixed'
++    assert len(f.starts)<=3
++    assert all(len(start['before']['physical']['joint_position'])==2 for start,_ in f.starts.values())
++
++def test_incomplete_refresh_refuses_value_labels():
++    f=FrozenRefresh(1,3,.9,'frozen',Schema());f.append(row(0,[0],[0],[False]))
++    with pytest.raises(RuntimeError,match='Incomplete'):f.result()
++
++def test_full_execution_snapshot_masks_all_lanes_not_fifo_last_eight():
++    n=128;one=row(0,[0]*n,[0]*n,[False]*n)
++    from quadsmash.rl.supermimic_physical_loop_replay_v1 import row_tensors
++    package={'tensors':{k:v.unsqueeze(0) for k,v in row_tensors(one,Schema()).items()}}
++    replay=PhysicalLoopReplay(package,Schema(),capacity_ticks=64);replay.new_stream()
++    replay.append(one)
++    start=replay.stage_starts['prepare'][0]
++    assert start['_actor_lane_mask'].sum()==128
++    assert start['executor_before']['values']['controller/count']==128
++    assert start['observation'].shape==(128,794)
++    metadata={k:torch.zeros(n) for k in FIELDS}
++    metadata['approach_gate'][37]=1
++    replay.append(one,approach_metadata=metadata)
++    gated=replay.stage_starts['approach_active'][0]
++    assert gated['_actor_lane_mask'].sum()==1 and gated['_actor_lane_mask'][37]
++    assert gated['observation'].shape==(128,794)
++
++def test_native_metadata_uses_real_gate_and_asset_kinematics():
++    from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
++    from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1,MODEL
++    g=FullBodyGeometryV1(json.loads(MODEL.read_text())['asset_sha256'])
++    r=row(0,[0,0],[0,0],[False,False]);r['before']['physical']['root_quaternion_w'][:,0]=1
++    actor=SimpleNamespace(approach_gate=lambda obs: torch.tensor([[1.],[0.]]))
++    metadata=native_approach_metadata(r,actor,g)
++    assert metadata['approach_gate'].tolist()==[1.,0.]
++    assert torch.isfinite(metadata['racket_distance']).all()
++    assert metadata['next_attack'].isnan().all() # unavailable terminal evidence stays unknown
++
++def test_gradient_components_identify_anchor_only():
++    p=torch.nn.Parameter(torch.tensor([1.,2.]))
++    stats=gradient_parts(dict(task=p.sum()*0,tracking=p.sum()*0,anchor=p.square().sum()),[p])
++    assert stats['task_gradient_norm']==0 and stats['anchor_gradient_norm']>0
++    assert p.grad is None
+diff --git a/tests/test_supermimic_physical_actor_transaction.py b/tests/test_supermimic_physical_actor_transaction.py
+new file mode 100644
+index 0000000..62aec95
+--- /dev/null
++++ b/tests/test_supermimic_physical_actor_transaction.py
+@@ -0,0 +1,71 @@
++"""Toy differentiable contracts for the actual learner method (no policy training)."""
++import copy
++from types import SimpleNamespace
++import torch
++from torch import nn
++from quadsmash.rl.supermimic_physical_learner_v1 import PhysicalHorizonTrainer
++from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
++from quadsmash.rl.supermimic_timebase_v2 import Timebase
++
++class Actor(nn.Module):
++    def __init__(self):super().__init__();self.approach=nn.Linear(2,2,bias=False);nn.init.constant_(self.approach.weight,.05)
++    def forward(self,obs,sample=False):return self.approach(obs),None,None
++    def approach_gate(self,obs):return torch.ones(len(obs),1)
++
++class State:
++    def __init__(self,obs):
++        self.physical=obs;self.observation=obs;self.task_memory={'rally':{'had_contact':torch.zeros(len(obs))}}
++        self.executor_memory=None;self.clock_goal_context=dict(elapsed=torch.zeros(len(obs)),joint_default=torch.zeros(len(obs),2),limits=torch.tensor([[-1.,1.],[-1.,1.]]))
++    def branch(self):
++        x=State(self.observation.clone());x.clock_goal_context={k:v.clone() for k,v in self.clock_goal_context.items()};return x
++
++class Adapter(nn.Module):
++    def __init__(self):
++        super().__init__();self.scale=nn.Parameter(torch.ones(()));self.zero_reward=False;self.constant_command=False
++        self.executor=SimpleNamespace(forward=self.preview)
++    def critic_input(self,state):return state.observation
++    def preview(self,observation,request,default,limits,memory):
++        final=request*0 if self.constant_command else request
++        return SimpleNamespace(final_joint_targets=final,final_normalized=final),None,None
++    def forward(self,state,action):
++        new=state.branch();new.observation=state.observation+action*.01*self.scale;new.physical=new.observation
++        new.clock_goal_context['elapsed']+=.01
++        reward=-(action-.3).square().sum(-1,keepdim=True)
++        if self.zero_reward:reward=reward*0
++        return new,reward,torch.ones(len(action),1),{}
++
++def learner():
++    t=PhysicalHorizonTrainer.__new__(PhysicalHorizonTrainer);t.actor=Actor();t.reference=copy.deepcopy(t.actor).requires_grad_(False)
++    t.adapter=Adapter();t.critic=nn.Linear(2,1);nn.init.zeros_(t.critic.weight);nn.init.zeros_(t.critic.bias)
++    t.timebase=Timebase(imagination_s=.02);t.actor_lr=5e-5;t.block_name='approach';t.reference_bank=None;t.tracking_weight=0.
++    t.trainable_names={'approach.weight'};t.actor_opt=torch.optim.Adam(t.actor.parameters(),lr=5e-5)
++    t.critic_opt=torch.optim.Adam(t.critic.parameters(),lr=2e-4);t.anchor_coeff=.05;t.v_max=1000.
++    t.actor_updates=t.actor_attempts=t.rejected_actor_updates=t.backtracked_actor_updates=t.block_attempts=t.critic_updates=t.world_updates=0
++    t.command_delta_budget=.005;t.target_delta_budget_rad=.04;t.native_reference_command_budget=None;t.native_reference_target_budget_rad=None
++    t.budget_states=[State(torch.ones(2,2))]
++    t.block_start_snapshot=copy.deepcopy(t.actor.state_dict());t.accepted_snapshot=copy.deepcopy(t.actor.state_dict());t.native_accepted_snapshot=copy.deepcopy(t.actor.state_dict())
++    t.frozen_actor_hash=t.frozen_hash();return t
++
++def test_real_learner_proposal_has_command_response_and_fixed_objective():
++    t=learner();before=tensor_digest(t.adapter.state_dict().items())
++    stats=t.imagine_update(t.budget_states[0])
++    assert stats['update_accepted'] and stats['final_command_max_change']>0
++    assert stats['objective_after']<=stats['objective_before']
++    assert stats['task_gradient_norm']>0
++    assert before==tensor_digest(t.adapter.state_dict().items())
++
++def test_zero_task_gradient_does_not_move_adam_momentum():
++    t=learner();t.actor.approach.weight.grad=torch.ones_like(t.actor.approach.weight);t.actor_opt.step()
++    t.reference.load_state_dict(t.actor.state_dict());t.adapter.zero_reward=True
++    before=copy.deepcopy(t.actor.state_dict());moments=copy.deepcopy(t.actor_opt.state_dict())
++    stats=t.imagine_update(t.budget_states[0])
++    assert not stats['update_accepted'] and stats['no_effective_gradient']
++    for k,v in before.items():assert torch.equal(v,t.actor.state_dict()[k])
++    for key,value in moments['state'][0].items():assert torch.equal(value,t.actor_opt.state_dict()['state'][0][key])
++
++def test_zero_final_command_response_rolls_back_parameters_and_adam():
++    t=learner();t.adapter.constant_command=True;before=copy.deepcopy(t.actor.state_dict())
++    stats=t.imagine_update(t.budget_states[0])
++    assert not stats['update_accepted'] and len(stats['backtrack_trials'])==5
++    assert t.actor_opt.state_dict()['state']=={}
++    for k,v in before.items():assert torch.equal(v,t.actor.state_dict()[k])
+diff --git a/tests/test_supermimic_wm_validation.py b/tests/test_supermimic_wm_validation.py
+new file mode 100644
+index 0000000..336910e
+--- /dev/null
++++ b/tests/test_supermimic_wm_validation.py
+@@ -0,0 +1,56 @@
++"""Offline metrics test: labels are targets, never future rollout inputs."""
++from types import SimpleNamespace
++import torch
++import pytest
++from quadsmash.rl import supermimic_wm_validation_v1 as validation
++
++def fixture():
++    t,n=64,2
++    state=torch.zeros(t,n,55);state[:,:,3]=1
++    w=dict(state=state,next_state=state.clone(),targets=torch.zeros(t,n,18),
++        previous_action=torch.zeros(t,n,18),feet=torch.zeros(t,n,4),next_feet=torch.zeros(t,n,4),
++        present=torch.ones(t,n),elapsed=torch.arange(t)[:,None].expand(t,n)*.01,
++        values=torch.zeros(t,n,2),valid=torch.ones(t,n,2),event_state=torch.zeros(t,n,8),
++        next_event_state=torch.zeros(t,n,8))
++    class Task:
++        def forward_values(self,s,ns,u,prev,feet,elapsed,values,valid):
++            return dict(numeric=values,valid_logits=torch.full_like(valid,30),hazards=torch.full((n,8),-80.))
++    adapter=SimpleNamespace(physical_model=SimpleNamespace(),ball_model=None,task_model=Task())
++    return adapter,w,torch.zeros(n,6)
++
++def test_autoregression_does_not_feed_future_labels(monkeypatch):
++    adapter,w,launch=fixture();seen=[]
++    def transition(base,ball,s,u,prev,feet,present,elapsed,launch):
++        seen.append(s.clone());return s.clone(),feet.clone(),present.clone()
++    monkeypatch.setattr(validation,'ball_transition',transition)
++    w['next_state'][:,:,0]=10.
++    result=validation.validate_windows(adapter,w,launch)
++    assert list(result)==['1','4','16','32','64']
++    assert all(x[:,0].eq(0).all() for x in seen)
++    assert result['64']['root_position_rmse']>0
++    assert result['64']['touchdown_timing_mae_s'] is None
++    assert result['64']['body_positive_count']==0
++    assert result['64']['body_positive_brier'] is None
++
++def test_native_stage_labels_do_not_call_pending_ball_side_failure():
++    _,w,_=fixture();w['next_event_state'][4,0,1]=1
++    groups=validation.validation_stages(w)
++    assert groups['contact'].tolist()==[True,False]
++    assert groups['contact_ball_side_pending'].tolist()==[True,False]
++    assert not groups['recovery_failure'].any()
++    w['feet'][3,0]=0;w['next_feet'][3,0]=1
++    assert not validation.validation_stages(w)['touchdown'].any() # no prior jump
++    w['event_state'][3,0,0]=1
++    assert validation.validation_stages(w)['touchdown'].tolist()==[True,False]
++
++def test_action_condition_diagnostic_detects_robot_response_but_no_direct_ball_response(monkeypatch):
++    adapter,w,launch=fixture()
++    def transition(base,ball,s,u,prev,feet,present,elapsed,launch):
++        s=s.clone();s[:,13:31]+=u
++        return s,feet,present
++    monkeypatch.setattr(validation,'ball_transition',transition)
++    result=validation.command_sensitivity(adapter,w,launch)
++    assert len(result)==6
++    assert all(r['robot_derivative_norm']>0 and r['ball_derivative_norm']==0 for r in result)
++    with pytest.raises(ValueError,match='too short'):
++        validation.validate_windows(adapter,{k:v[:2] for k,v in w.items()},launch)

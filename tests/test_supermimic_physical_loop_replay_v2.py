@@ -67,3 +67,9 @@ def test_replay_legacy_window_reports_source_without_stratification_bug():
     _, _, report = replay.window(steps=16, batch=4, device='cpu')
     assert report['window_count'] == 4
     assert report['source_counts'] == {'initial_archive': 4, 'recent_online': 0, 'older_online': 0}
+    _,_,approach=replay.window(steps=16,batch=4,device='cpu',head='approach',
+        source_quota={'initial_archive':4},stage_quota={'approach_active':4})
+    assert approach['approach_missing_fields']['approach_gate']==64
+    assert approach['stage_shortfall']['approach_active']==4
+    assert approach['actual_event_coverage']['approach_active']==0
+    assert approach['fallback_count']==4

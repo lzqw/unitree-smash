@@ -3,6 +3,7 @@ import torch
 from .supermimic_physical_dataset_v1 import encode_physical, valid_windows
 from .supermimic_physical_world_v2 import sample_event_windows
 from .supermimic_physical_capture_v1 import tensor_tree_copy
+from .supermimic_approach_data_v1 import FIELDS, approach_window_masks
 
 
 SOURCE_NAMES = ('recent_online', 'older_online', 'initial_archive')
@@ -74,15 +75,18 @@ def _sample_rows(pool, count, generator):
         return pool[:0]
     if len(pool) == 0:
         return None
-    return pool[torch.randint(len(pool), (count,), generator=generator)]
+    # Prefer distinct windows; replacement is explicit only when scarce.
+    order=torch.randperm(len(pool),generator=generator)
+    if count<=len(pool):return pool[order[:count]]
+    return torch.cat((pool[order],pool[torch.randint(len(pool),(count-len(pool),),generator=generator)]))
 
 
 def sample_stratified_windows(stage_pools, source_labels, batch, generator,
                               *, source_quota=None, stage_quota=None):
     """Sample windows with auditable source × stage quotas.
 
-    Sampling is with replacement, matching the historical event sampler.  If
-    a requested source/stage cell is empty, the sampler fills from the
+    Prefer distinct windows within each cell; repeat only when it is scarce.
+    If a requested source/stage cell is empty, the sampler fills from the
     remaining valid cells and reports the shortfall instead of pretending the
     quota was met.
     """
@@ -157,7 +161,7 @@ def sample_stratified_windows(stage_pools, source_labels, batch, generator,
                 fallback.append(pool)
     if not fallback:
         raise ValueError('No valid windows available for stratified sampling')
-    union = torch.cat(fallback)
+    union = torch.unique(torch.cat(fallback),dim=0)
     used = sum(len(x) for x in selected)
     if used < batch:
         selected.append(_sample_rows(union, batch - used, generator))
@@ -174,8 +178,9 @@ def sample_stratified_windows(stage_pools, source_labels, batch, generator,
     # histogram after fallback sampling.
     actual_event_coverage={}
     for stage, pairs in stage_pools.items():
-        pair_set={tuple(pair.tolist()) for pair in pairs}
-        actual_event_coverage[stage]=sum(tuple(pair.tolist()) in pair_set for pair in chosen)
+        stride=source_labels.shape[1]
+        actual_event_coverage[stage]=int(torch.isin(chosen[:,0]*stride+chosen[:,1],
+                                                   pairs[:,0]*stride+pairs[:,1]).sum())
     return chosen, dict(source_counts=actual_source, stage_counts=actual_stage,
                         source_requested=source_quota, stage_requested=stage_quota,
                         source_shortfall={name: max(0, source_quota.get(name, 0)-actual_source.get(name, 0))
@@ -248,6 +253,8 @@ class PhysicalLoopReplay:
         self.source_ids = torch.zeros((self.capacity, self.lanes), dtype=torch.long)
         self.policy_versions = torch.zeros((self.capacity, self.lanes), dtype=torch.long)
         self.native_ticks = torch.arange(self.capacity, dtype=torch.long)
+        self.approach_metadata = {k: torch.full((self.capacity, self.lanes), float('nan'))
+            for k in FIELDS + tuple('next_'+k for k in FIELDS[2:])}
         self._native_tick_counter = source_count
         self.count = source_count
         self.write_pos = source_count % self.capacity
@@ -260,7 +267,7 @@ class PhysicalLoopReplay:
         self.new_starts = []
         self.stage_starts = {name: [] for name in
                              ('prepare', 'approach', 'pre_touchdown', 'post_touchdown',
-                              'touchdown', 'recovery_failure', 'stable_recovery')}
+                              'touchdown', 'recovery_failure', 'stable_recovery','approach_active')}
 
     def new_stream(self, *, source='online', policy_version=None):
         self.current_stream += 1
@@ -276,9 +283,10 @@ class PhysicalLoopReplay:
         ids = _stage_ids_from_tensors(record)
         names = ('prepare', 'approach', 'pre_touchdown', 'post_touchdown',
                  'touchdown', 'recovery_failure', 'stable_recovery')
-        return [names[int(value)] for value in ids[0]], ids[0]
+        ids = ids.reshape(-1)
+        return [names[int(value)] for value in ids], ids
 
-    def append(self, row, *, retain_start=True, policy_version=None, native_tick=None):
+    def append(self, row, *, retain_start=True, policy_version=None, native_tick=None, approach_metadata=None):
         """Append one native transition.
 
         Restoring an old checkpoint must rebuild the ring tensors, but does not
@@ -300,6 +308,9 @@ class PhysicalLoopReplay:
         self.native_ticks[index] = int(native_tick)
         self._native_tick_counter = max(self._native_tick_counter + 1, int(native_tick) + 1)
         self.streams[index] = self.current_stream
+        for key, values in self.approach_metadata.items():
+            supplied=(approach_metadata or row.get('sampling_metadata',{})).get(key)
+            values[index].copy_(supplied.detach().cpu() if supplied is not None else torch.full((self.lanes,),float('nan')))
         self.write_pos = (index + 1) % self.capacity
         self.count = min(self.capacity, self.count + 1)
         if not retain_start:
@@ -308,17 +319,17 @@ class PhysicalLoopReplay:
         # Full executor/observation trees are expensive.  Keep a small recent
         # diagnostic pool; fixed verified pools remain available for each
         # training block, so long runs do not grow memory with every tick.
-        for lane, stage in enumerate(stages):
-            if stage not in self.stage_starts:
-                self.stage_starts[stage] = []
-            lane_start = _slice_lane(start, lane, self.lanes)
-            # Keep the causal launch lane with the compact start.  The
-            # executor snapshot is already sliced; the training entry point
-            # uses this id to slice the matching [128,6] launch tensor.
-            lane_start['_lane_id'] = int(lane)
-            lane_start['_source_lanes'] = int(self.lanes)
-            self.stage_starts[stage].append(lane_start)
-            self.stage_starts[stage] = self.stage_starts[stage][-8:]
+        # Preserve the full G07 execution graph. A mask selects training lanes;
+        # never slice arbitrary tensors/scalars/aliases from a 128-lane template.
+        for stage in set(stages):
+            mask = torch.tensor([x == stage for x in stages])
+            entry = dict(start, _actor_lane_mask=mask, _source_lanes=self.lanes)
+            self.stage_starts.setdefault(stage, []).append(entry)
+            self.stage_starts[stage] = self.stage_starts[stage][-16:]
+        gate_mask=(self.approach_metadata['approach_gate'][index]>.25)&(self.approach_metadata['had_contact'][index]<.5)
+        if gate_mask.any():
+            self.stage_starts['approach_active'].append(dict(start,_actor_lane_mask=gate_mask.clone(),_source_lanes=self.lanes))
+            self.stage_starts['approach_active']=self.stage_starts['approach_active'][-16:]
         self.new_starts.append(start)
         self.new_starts = self.new_starts[-32:]
 
@@ -328,6 +339,7 @@ class PhysicalLoopReplay:
         else:
             indices = torch.cat((torch.arange(self.write_pos, self.capacity),
                                 torch.arange(0, self.write_pos)))
+        self._ordered_indices=indices
         return ({key: value[indices] for key, value in self.data.items()},
                 self.streams[indices], self.stage_ids[indices],
                 self.source_ids[indices], self.policy_versions[indices],
@@ -335,7 +347,7 @@ class PhysicalLoopReplay:
 
     def window(self, steps=16, batch=128, iteration=0, device='cuda:0',
                *, source_quota=None, stage_quota=None,
-               recent_policy_window=32, recent_tick_window=1024):
+               recent_policy_window=32, recent_tick_window=1024, head='recovery'):
         d, streams, stage_ids, source_ids_all, policy_versions, native_ticks = self._ordered()
         if self.count < steps:
             raise RuntimeError(f'Replay has {self.count} ticks; needs {steps}')
@@ -363,7 +375,20 @@ class PhysicalLoopReplay:
             if event.any():
                 pools[str(i)] = event.nonzero()
         if source_quota or stage_quota:
-            stage_pools = _stage_window_masks(d, valid, steps, stage_ids=stage_ids)
+            if head == 'approach':
+                meta={key:value[self._ordered_indices] for key,value in self.approach_metadata.items()}
+                meta['completed_miss']=torch.zeros_like(d['terminated'])
+                # Build labels only from a completed episode in this stream.
+                for lane in range(self.lanes):
+                    ends=torch.where(d['terminated'][:,lane]|d['timeout'][:,lane])[0]
+                    for end in ends.tolist():
+                        same=(d['episode'][:,lane]==d['episode'][end,lane])&(streams==streams[end])
+                        same &= torch.arange(self.count)<=end
+                        if torch.isfinite(meta['next_qualified'][end,lane]) and meta['next_qualified'][end,lane]<.5:
+                            meta['completed_miss'][:,lane] |= same
+                stage_pools=approach_window_masks(meta,valid,steps)
+            else:
+                stage_pools = _stage_window_masks(d, valid, steps, stage_ids=stage_ids)
             # Preserve a named uniform category for requested batches that do
             # not have enough rare event windows.
             stage_pools['uniform'] = valid
@@ -390,14 +415,18 @@ class PhysicalLoopReplay:
         t, lanes = chosen.unbind(1)
         at = t[None] + torch.arange(steps)[:, None]
         window = {key: value[at, lanes[None]].to(device) for key, value in d.items()}
+        if head=='approach' and (source_quota or stage_quota):
+            counts['approach_missing_fields']={key:int((~torch.isfinite(value[at,lanes[None]])).sum())
+                for key,value in meta.items() if value.is_floating_point()}
         start_episode = d['episode'][t, lanes]
         start_stream = streams[t]
         start_source = source_codes[t, lanes]
-        counts.update(dict(window_count=int(len(chosen)),
-                           unique_episode_count=int(torch.unique(start_episode).numel()),
+        _,episode_counts=torch.unique(torch.stack((start_stream,lanes,start_episode),1),dim=0,return_counts=True)
+        counts.update(dict(unique_window_count=int(torch.unique(chosen,dim=0).shape[0]),window_count=int(len(chosen)),
+                           unique_episode_count=int(torch.unique(torch.stack((start_stream,lanes,start_episode),1),dim=0).shape[0]),
                            unique_stream_count=int(torch.unique(start_stream).numel()),
                            unique_source_count=int(torch.unique(start_source).numel()),
-                           repeated_episode_max=int(torch.bincount(start_episode).max().item())
+                           repeated_episode_max=int(episode_counts.max().item())
                            if start_episode.numel() else 0,
                            source_counts={
                                'initial_archive': int((start_source == 0).sum()),
@@ -408,5 +437,5 @@ class PhysicalLoopReplay:
                            policy_version_max=int(policy_versions[t, lanes].max().item()) if len(chosen) else 0,
                            native_tick_min=int(native_ticks[t].min().item()) if len(chosen) else 0,
                            native_tick_max=int(native_ticks[t].max().item()) if len(chosen) else 0,
-                           source_metadata='stream1=initial_archive; newest online stream=recent_online'))
+                           source_metadata='recorded source + policy-version age + native-tick age'))
         return window, lanes.to(device), counts

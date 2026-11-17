@@ -53,6 +53,8 @@ class PhysicalImaginationStateV1:
             ball_present=p['ball_present'],foot_contact=p['foot_contact'],
             final_action=p['final_action'],episode_index=before['episode_index'].to(device).clone(),
             history_tick=before['history_tick'].to(device).clone())
+        if '_actor_lane_mask' in row:
+            context['actor_lane_mask']=row['_actor_lane_mask'].to(device).bool().clone()
         executor=restore_captured_execution(executor_template,row['executor_before'],device=device)
         return cls(encode_physical(p),executor,memory,current_history,observation,context)
 
