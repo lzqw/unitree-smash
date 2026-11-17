@@ -1,0 +1,28 @@
+{
+  "kind": "offline replay of saved native public observations; not native success",
+  "source_probe": "/tmp/contact_first_teacher_probe_20261117_retry2_1794896388",
+  "checkpoint_sha256": "7ed17ef0ab3330139a1f20c4cc4695a644a0192072423392c63062d72e7b9ca7",
+  "planning_clock_s": [2.00999999, 2.00999999],
+  "planned_contact_time_s": [2.78044534, 2.80197930],
+  "base_acceleration_prediction": {
+    "linear_limit_m_s2": 12.0,
+    "angular_limit_rad_s2": 4.0,
+    "raw_lane0_angular_acceleration_rad_s2": [2.0211489, 6.7058907, -1.0922730],
+    "used_lane0_angular_acceleration_rad_s2": [2.0211489, 4.0, -1.0922730]
+  },
+  "best_rejected_candidate": {
+    "lane0": {
+      "position_error_m": 0.00000037,
+      "normal_error": 0.6636023,
+      "velocity_error_m_s": 1.2542209,
+      "rejection": "kinematic_task_residual"
+    },
+    "lane1": {
+      "position_error_m": 0.0124311,
+      "normal_error": 1.2117101,
+      "velocity_error_m_s": 1.0793777,
+      "rejection": "kinematic_task_residual"
+    }
+  },
+  "interpretation": "Causal base translation and position-priority IK remove the large position-only error, but the saved native input still cannot satisfy the requested face normal and contact velocity within the hard tolerances. This is an explicit unreachable-target diagnosis, not a success claim."
+}
