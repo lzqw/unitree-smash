@@ -61,10 +61,22 @@ def test_rally_selective_reset_preserves_other_episode_and_logs():
     c.event_time=torch.ones(2);c.planned=torch.ones(2,dtype=torch.bool)
     c.target_offset_world=torch.ones(2,3);c.logs=['kept']
     c.event_velocity_world=torch.ones(2,3)
+    c.contact_first_plan_valid=torch.ones(2,dtype=torch.bool)
+    c.contact_first_plan_start_time=torch.ones(2)
+    c.contact_first_last_valid=torch.ones(2,dtype=torch.bool)
+    c.contact_first_last_actual_q=torch.ones(2,6)
+    c.contact_first_last_time=torch.ones(2)
+    c.contact_first_last_base_linear=torch.ones(2,3)
+    c.contact_first_last_base_angular=torch.ones(2,3)
     c.reset(torch.tensor([0]))
     assert torch.equal(c.parameters[0],c.base) and c.parameters[1].eq(0).all()
     assert c.event_time[1]==1 and c.planned[1] and c.target_offset_world[1].eq(1).all() and c.logs==['kept']
     assert c.event_velocity_world[0].eq(0).all() and c.event_velocity_world[1].eq(1).all()
+    assert not c.contact_first_last_valid[0] and c.contact_first_last_valid[1]
+    assert c.contact_first_last_base_linear[0].eq(0).all()
+    assert c.contact_first_last_base_linear[1].eq(1).all()
+    assert c.contact_first_last_base_angular[0].eq(0).all()
+    assert c.contact_first_last_base_angular[1].eq(1).all()
 
 
 def test_rally_contact_evaluator_factory_is_exclusive_and_callable():
