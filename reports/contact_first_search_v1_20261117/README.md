@@ -15,6 +15,8 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
   - Hermite position/velocity trajectory to the contact state;
   - physical joint/velocity/step prechecks;
   - explicit terminal position/normal/velocity residual rejection;
+  - Hermite intermediate-speed rejection and measured-arm-velocity seeding;
+  - short post-contact command handoff to avoid an endpoint jump;
   - optional full-body evaluator callback, with contact-prefix acceptance only.
 - `quadsmash/control/full_racket_rally_controller_v4.py`
   - opt-in `seed.contact_first_search` configuration;
@@ -33,3 +35,7 @@ The planner is intentionally deterministic and low-dimensional, but it is not a 
 The actual `FullRacketKinematicsV4` callback was exercised on CPU and accepted a
 32-node plan (`KINEMATICS_CALLBACK_SMOKE.json`); this is a controller smoke only,
 not an Isaac/native hit-rate result.
+
+On the same CPU path, 100 repeated 96-node plans with the real kinematics
+callback took 1.51 ms mean (1.53 ms p95); see `CPU_BENCHMARK.json`.  This is a
+planner timing measurement, not a real-time Isaac guarantee.

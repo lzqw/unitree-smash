@@ -65,6 +65,9 @@ class FullRacketRallyControllerV4:
             self.contact_first_plan_start_time=torch.full((count,),float('inf'),device=device)
             self.contact_first_plan_contact_time=torch.zeros((count,),device=device)
             self.contact_first_plan_valid=torch.zeros(count,dtype=torch.bool,device=device)
+            self.contact_first_last_actual_q=torch.zeros((count,6),device=device)
+            self.contact_first_last_time=torch.full((count,),float('nan'),device=device)
+            self.contact_first_last_valid=torch.zeros(count,dtype=torch.bool,device=device)
 
     def reset(self,ids=None):
         self.teacher.reset(ids)
@@ -83,11 +86,15 @@ class FullRacketRallyControllerV4:
             if getattr(self,'contact_first_plan_valid',None) is not None:
                 self.contact_first_plan_valid[ids]=False
                 self.contact_first_plan_start_time[ids]=float('inf')
+                self.contact_first_last_valid[ids]=False
         if ids is None and getattr(self,'contact_first_plan_valid',None) is not None:
             self.contact_first_plan_valid.zero_()
             self.contact_first_plan_start_time.fill_(float('inf'))
             self.contact_first_plan_contact_time.zero_()
             self.contact_first_plan_log=[]
+            self.contact_first_last_actual_q.zero_()
+            self.contact_first_last_time.fill_(float('nan'))
+            self.contact_first_last_valid.zero_()
 
     def plan_contact_first_arm(self, **kwargs):
         """Plan a causal pre-contact arm trajectory from a DTG event.
@@ -103,7 +110,8 @@ class FullRacketRallyControllerV4:
         return self.contact_first_planner.plan(**kwargs)
 
     @torch.inference_mode()
-    def _install_contact_first_plan(self, ids, public, actual, forward, left, up,
+    def _install_contact_first_plan(self, ids, public, actual, actual_velocity,
+                                    forward, left, up,
                                     target, normal_target, desired_velocity, event_time,
                                     limits):
         """Build one causal pre-contact arm plan per newly planned lane."""
@@ -123,7 +131,7 @@ class FullRacketRallyControllerV4:
 
                 result=self.contact_first_planner.plan(
                     q_rad=actual[local].detach().cpu().numpy(),
-                    qd_rad_s=np.zeros(6),
+                    qd_rad_s=actual_velocity[local].detach().cpu().numpy(),
                     position_jacobian=jp[local].detach().cpu().numpy(),
                     normal_jacobian=jn[local].detach().cpu().numpy(),
                     racket_position_world_m=point[local].detach().cpu().numpy(),
@@ -160,7 +168,7 @@ class FullRacketRallyControllerV4:
 
     @torch.inference_mode()
     def _overlay_contact_first_plan(self, action, public, limits):
-        """Use the optional contact prefix only until the planned hit."""
+        """Use the contact prefix, then hand it back continuously."""
         if self.contact_first_planner is None or not self.contact_first_plan_valid.any():
             return action
         cfg=self.contact_first_planner.config
@@ -171,14 +179,33 @@ class FullRacketRallyControllerV4:
         plan=self.contact_first_plan_q[
             torch.arange(len(public),device=public.device),index]
         active=self.contact_first_plan_valid & (elapsed>=0.) & (
-            elapsed<=self.contact_first_plan_contact_time+cfg.dt_s)
+            elapsed<=self.contact_first_plan_contact_time)
         normalized=2.*(plan-limits[12:,0])/(limits[12:,1]-limits[12:,0])-1.
         action[:,12:]=torch.where(active[:,None],normalized,action[:,12:])
+        if cfg.handoff_duration_s > 0.0:
+            handoff=(self.contact_first_plan_valid &
+                     (elapsed>self.contact_first_plan_contact_time) &
+                     (elapsed<=self.contact_first_plan_contact_time+cfg.handoff_duration_s))
+            blend=((elapsed-self.contact_first_plan_contact_time)/cfg.handoff_duration_s).clamp(0.,1.)
+            blended=torch.lerp(normalized,action[:,12:],blend[:,None])
+            action[:,12:]=torch.where(handoff[:,None],blended,action[:,12:])
         return action
 
     @torch.inference_mode()
     def action(self,observation,default,limits):
         obs=observation['policy']
+        actual_all=default[12:][None]+obs[:,21:27]
+        actual_velocity=None
+        if self.contact_first_planner is not None:
+            time_all=obs[:,775]
+            actual_velocity=torch.zeros_like(actual_all)
+            previous_valid=self.contact_first_last_valid
+            delta_time=time_all-self.contact_first_last_time
+            usable=previous_valid & torch.isfinite(delta_time) & (delta_time>1e-6)
+            actual_velocity=torch.where(
+                usable[:,None],
+                (actual_all-self.contact_first_last_actual_q)/delta_time.clamp_min(1e-6)[:,None],
+                actual_velocity)
         ids=torch.where((~self.planned)&(obs[:,67]>.5)&(obs[:,775]>=2.0))[0]
         if len(ids):
             public=obs[ids].cpu().numpy()
@@ -258,9 +285,9 @@ class FullRacketRallyControllerV4:
                 desired_velocity=(velocity_world[:,0:1]*forward+
                                   velocity_world[:,1:2]*left+
                                   velocity_world[:,2:3]*up)
-                actual=default[12:][None]+obs[ids,21:27]
+                actual=actual_all[ids]
                 self._install_contact_first_plan(
-                    ids,public,actual,forward,left,up,target_body,
+                    ids,public,actual,actual_velocity[ids],forward,left,up,target_body,
                     normal_target,desired_velocity,self.event_time[ids],limits)
             self.logs.append(dict(input='Current public794D observation, fixed known command and learned no-ball calibration only',
                 env_ids=ids.cpu().tolist(),observation_clock_s=public[:,775].tolist(),
@@ -271,4 +298,9 @@ class FullRacketRallyControllerV4:
                 causal_prepose_joint_delta_rad=applied_prepose.tolist(),**{k:v.tolist() for k,v in plan.items()}))
         action=self.teacher.action(observation,self.parameters,default,limits,event_time=self.event_time,
                                    target_offset_world=self.target_offset_world)
-        return self._overlay_contact_first_plan(action,obs,limits)
+        action=self._overlay_contact_first_plan(action,obs,limits)
+        if self.contact_first_planner is not None:
+            self.contact_first_last_actual_q.copy_(actual_all)
+            self.contact_first_last_time.copy_(obs[:,775])
+            self.contact_first_last_valid.fill_(True)
+        return action

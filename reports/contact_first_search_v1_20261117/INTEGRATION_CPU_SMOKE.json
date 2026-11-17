@@ -7,6 +7,13 @@
   "partial_reset_after": [false, true],
   "lane1_preserved": true,
   "lane0_reset": true,
+  "measured_arm_velocity_seed": true,
+  "post_contact_handoff_duration_s": 0.02,
+  "trajectory_velocity_peak_gate": true,
+  "action_ticks": 2,
+  "action_shape": [2, 18],
+  "finite_bounded_actions": true,
+  "partial_history_after_reset": {"plan_valid": [false, false], "last_valid": [false, true]},
   "native_evaluation": "NOT_RUN",
   "note": "A synthetic public observation with an unreachable contact task was explicitly rejected by the kinematic task residual gate; finite fallback action remained available. This is an integration smoke, not a performance result."
 }

@@ -41,6 +41,7 @@ class ContactFirstSearchConfig:
     arm_velocity_limit_rad_s: float = 5.0
     kinematic_iterations: int = 3
     max_iteration_step_rad: float = 0.25
+    handoff_duration_s: float = 0.02
     position_tolerance_m: float = 0.035
     normal_tolerance: float = 0.12
     velocity_tolerance_m_s: float = 0.75
@@ -62,6 +63,8 @@ class ContactFirstSearchConfig:
             raise ValueError("Kinematic iterations must be in [1, 8]")
         if not math.isfinite(self.max_iteration_step_rad) or self.max_iteration_step_rad <= 0.0:
             raise ValueError("Positive kinematic iteration step required")
+        if not math.isfinite(self.handoff_duration_s) or not 0.0 <= self.handoff_duration_s <= 0.2:
+            raise ValueError("Handoff duration must be in [0, 0.2] seconds")
         return self
 
 
@@ -295,11 +298,21 @@ class ContactFirstTrajectorySearchV1:
                 if np.any(np.abs(np.diff(q_full, axis=0)) > step_limit):
                     rejected.append("joint_step_limit")
                     continue
+                # The endpoint velocity is clipped above, but a cubic Hermite
+                # prefix can still overshoot between its endpoints.  Reject
+                # that candidate before scoring it so the search never
+                # selects a trajectory that violates its own six-joint speed
+                # contract between sampled contact nodes.
+                if np.any(np.abs(qd_prefix) > velocity_limits[None, :] + 1e-9):
+                    rejected.append("trajectory_velocity_limit")
+                    continue
                 metadata = dict(
                     method="dtg_contact_first_hermite_jacobian_v1",
                     contact_index=contact_index,
                     contact_time_s=duration,
                     velocity_scale=float(velocity_scale),
+                    initial_joint_position_rad=q0.copy(),
+                    initial_joint_velocity_rad_s=qd0.copy(),
                     base_point_velocity_world_m_s=base_point_velocity.copy(),
                     relative_target_velocity_world_m_s=relative_velocity.copy(),
                     source="causal_ball_or_dtg_contact_event",

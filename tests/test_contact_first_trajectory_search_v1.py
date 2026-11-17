@@ -96,6 +96,15 @@ def test_forward_kinematics_callback_relinearizes_before_acceptance():
     assert result.metadata['kinematic_iterations'] == 4
 
 
+def test_hermite_speed_overshoot_is_rejected_before_scoring():
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,)))
+    inputs = _inputs()
+    inputs['velocity_limits_rad_s'] = np.full(6, .2)
+    with pytest.raises(RuntimeError, match='No contact-first candidate'):
+        planner.plan(**inputs)
+
+
 def test_full_body_evaluator_can_reject_candidates_without_partial_acceptance():
     planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
         horizon_steps=32, contact_time_offsets_s=(-.02, 0., .02), velocity_scales=(.8, 1., 1.2)))
