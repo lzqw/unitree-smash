@@ -32,3 +32,30 @@ def test_tamper_and_reconstructed_state_are_not_native_evidence(tmp_path):
         verify_replay_handoff(path,current_q=a['state_q'],current_v=a['state_v'],previous_final_target_rad=a['prior_final_target_rad'],input_hashes=a['input_hashes'])
     with (path/'commands_and_state.npz').open('ab') as stream:stream.write(b'changed')
     with pytest.raises(ValueError,match='digest'):load_candidate(path)
+
+
+def test_final_adoption_gate_refuses_physically_valid_but_unreturned_candidates():
+    from scripts.offline_reference_bundle_v1 import require_final_trajectory_admission
+    phys=dict(accepted=True,leg_reference='causal_frozen_base',
+              replayed_target_sequence_rad=[[0.]*18])
+    plan=dict(accepted=True,physical_evaluator=True,final_contact_position_error_m=.0008,
+              final_impact_checks=dict(contact_feasible=True,legal_return_predicted=True,
+                attack5_predicted=True,target_landing_predicted=True))
+    assert require_final_trajectory_admission(plan,phys)
+    for key in ('contact_feasible','legal_return_predicted','attack5_predicted',
+                'target_landing_predicted'):
+        bad=dict(plan,final_impact_checks=dict(plan['final_impact_checks'],**{key:False}))
+        with pytest.raises(ValueError,match='Final physical-terminal analytic'):
+            require_final_trajectory_admission(bad,phys)
+    with pytest.raises(ValueError,match='3mm'):
+        require_final_trajectory_admission(
+            dict(plan,final_contact_position_error_m=.0031),phys)
+    with pytest.raises(ValueError,match='planner and physical'):
+        require_final_trajectory_admission(
+            dict(plan,accepted=False),phys)
+    with pytest.raises(ValueError,match='planner and physical'):
+        require_final_trajectory_admission(
+            plan,dict(phys,accepted=False))
+    with pytest.raises(ValueError,match='Missing full 18D'):
+        require_final_trajectory_admission(
+            dict(plan,physical_evaluator=False),phys)
