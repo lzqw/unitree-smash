@@ -65,6 +65,18 @@ def test_base_velocity_is_removed_once_from_joint_velocity_target():
     assert result.qd_rad_s[result.contact_index, 0] == pytest.approx(.6, abs=2e-3)
 
 
+def test_base_angular_velocity_is_removed_at_racket_offset():
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,)))
+    inputs = _inputs()
+    inputs['base_angular_velocity_world_rad_s'] = np.array([0., 1., 0.])
+    inputs['racket_offset_world_m'] = np.array([0., 0., 1.])
+    result = planner.plan(**inputs)
+    # omega x r = [1, 0, 0], exactly consuming the requested racket velocity.
+    assert result.metadata['base_point_velocity_world_m_s'][0] == pytest.approx(1.)
+    assert result.qd_rad_s[result.contact_index, 0] == pytest.approx(0., abs=2e-3)
+
+
 def test_forward_kinematics_callback_relinearizes_before_acceptance():
     calls = []
 
