@@ -150,15 +150,15 @@ def solve_ballistic_plane_contact(position_world_m, velocity_world_m_s,
 def _validate_vectors(q, qd, position_jacobian, normal_jacobian,
                       racket_position, racket_normal, target_position,
                       target_normal, target_velocity, base_linear_velocity,
-                      base_angular_velocity, racket_offset, lower, upper,
-                      velocity_limits):
+                      base_linear_acceleration, base_angular_velocity,
+                      racket_offset, lower, upper, velocity_limits):
     q = np.asarray(q, dtype=float)
     qd = np.asarray(qd, dtype=float)
     jp = np.asarray(position_jacobian, dtype=float)
     jn = np.asarray(normal_jacobian, dtype=float)
     vectors = [racket_position, racket_normal, target_position, target_normal,
-               target_velocity, base_linear_velocity, base_angular_velocity,
-               racket_offset]
+               target_velocity, base_linear_velocity, base_linear_acceleration,
+               base_angular_velocity, racket_offset]
     vectors = [np.asarray(x, dtype=float) for x in vectors]
     lower = np.asarray(lower, dtype=float)
     upper = np.asarray(upper, dtype=float)
@@ -218,6 +218,7 @@ class ContactFirstTrajectorySearchV1:
              racket_position_world_m, racket_normal_world,
              target_position_world_m, target_normal_world, target_velocity_world_m_s,
              contact_time_s, base_linear_velocity_world_m_s=(0.0, 0.0, 0.0),
+             base_linear_acceleration_world_m_s2=(0.0, 0.0, 0.0),
              base_angular_velocity_world_rad_s=(0.0, 0.0, 0.0),
              racket_offset_world_m=(0.0, 0.0, 0.0), lower_rad, upper_rad,
              velocity_limits_rad_s, evaluator: Optional[Callable] = None,
@@ -227,11 +228,13 @@ class ContactFirstTrajectorySearchV1:
             racket_position_world_m, racket_normal_world,
             target_position_world_m, target_normal_world,
             target_velocity_world_m_s, base_linear_velocity_world_m_s,
+            base_linear_acceleration_world_m_s2,
             base_angular_velocity_world_rad_s, racket_offset_world_m,
             lower_rad, upper_rad, velocity_limits_rad_s)
         (q0, qd0, jp, jn, racket_pos, racket_normal, target_pos,
-         target_normal, target_velocity, base_linear, base_angular,
-         racket_offset, lower, upper, velocity_limits) = data
+         target_normal, target_velocity, base_linear,
+         base_linear_acceleration, base_angular, racket_offset, lower, upper,
+         velocity_limits) = data
         cfg = self.config
         racket_normal = racket_normal / max(np.linalg.norm(racket_normal), 1e-12)
         target_normal = target_normal / max(np.linalg.norm(target_normal), 1e-12)
@@ -264,7 +267,8 @@ class ContactFirstTrajectorySearchV1:
                 _validate_vectors(
                     q_contact, np.zeros(6), candidate_jp, candidate_jn,
                     candidate_position, candidate_normal, target_pos,
-                    target_normal, target_velocity, base_linear, base_angular,
+                    target_normal, target_velocity, base_linear,
+                    base_linear_acceleration, base_angular,
                     racket_offset, lower, upper, velocity_limits)
                 current_pos, current_normal = candidate_position, candidate_normal
                 current_jp, current_jn = candidate_jp, candidate_jn
@@ -272,7 +276,6 @@ class ContactFirstTrajectorySearchV1:
         # The base contributes to the racket point velocity.  Remove it once,
         # matching the moving-base compensation used by the Approach teacher.
         base_point_velocity = base_linear + np.cross(base_angular, racket_offset)
-        relative_velocity = target_velocity - base_point_velocity
 
         # The normal task contains a redundant scalar direction because the
         # racket normal is unit length.  Use that local nullspace to try a few
@@ -307,7 +310,8 @@ class ContactFirstTrajectorySearchV1:
                     _validate_vectors(
                         branch_q, np.zeros(6), branch_jp, branch_jn,
                         branch_pos, branch_normal, target_pos, target_normal,
-                        target_velocity, base_linear, base_angular, racket_offset,
+                        target_velocity, base_linear, base_linear_acceleration,
+                        base_angular, racket_offset,
                         lower, upper, velocity_limits)
                     branches.append((branch_q, branch_pos, branch_normal,
                                      branch_jp, branch_jn, float(offset)))
@@ -344,10 +348,6 @@ class ContactFirstTrajectorySearchV1:
             inverse = _damped_inverse(task, cfg.damping)
             normal_error = target_normal - branch_normal
             normal_rate = cfg.normal_rate_gain * normal_error
-            qd_contact_nominal = inverse @ np.r_[relative_velocity,
-                                                 cfg.normal_weight * normal_rate]
-            qd_contact_nominal = np.clip(qd_contact_nominal, -velocity_limits,
-                                         velocity_limits)
             for offset in cfg.contact_time_offsets_s:
                 duration = requested_contact + float(offset)
                 if duration < cfg.dt_s or duration > cfg.dt_s * (cfg.horizon_steps - 1):
@@ -357,6 +357,14 @@ class ContactFirstTrajectorySearchV1:
                 if contact_index < 1 or contact_index >= cfg.horizon_steps:
                     continue
                 times = np.arange(contact_index + 1, dtype=float) * cfg.dt_s
+                contact_base_point_velocity = (
+                    base_linear + base_linear_acceleration * duration +
+                    np.cross(base_angular, racket_offset))
+                relative_velocity = target_velocity - contact_base_point_velocity
+                qd_contact_nominal = inverse @ np.r_[relative_velocity,
+                                                     cfg.normal_weight * normal_rate]
+                qd_contact_nominal = np.clip(qd_contact_nominal, -velocity_limits,
+                                             velocity_limits)
                 for velocity_scale in cfg.velocity_scales:
                     candidates_considered += 1
                     qd1 = np.clip(qd_contact_nominal * float(velocity_scale),
@@ -394,7 +402,7 @@ class ContactFirstTrajectorySearchV1:
                         np.linalg.norm(branch_q - q0)),
                     initial_joint_position_rad=q0.copy(),
                     initial_joint_velocity_rad_s=qd0.copy(),
-                    base_point_velocity_world_m_s=base_point_velocity.copy(),
+                    base_point_velocity_world_m_s=contact_base_point_velocity.copy(),
                     relative_target_velocity_world_m_s=relative_velocity.copy(),
                     source="causal_ball_or_dtg_contact_event",
                 )
@@ -411,7 +419,7 @@ class ContactFirstTrajectorySearchV1:
                     else:
                         achieved_pos, achieved_normal = branch_pos, branch_normal
                         achieved_jp = branch_jp
-                    achieved_velocity = base_point_velocity + achieved_jp @ qd1
+                    achieved_velocity = contact_base_point_velocity + achieved_jp @ qd1
                     position_error_norm = float(np.linalg.norm(target_pos - achieved_pos))
                     normal_error_norm = float(np.linalg.norm(target_normal - achieved_normal))
                     velocity_error_norm = float(np.linalg.norm(target_velocity - achieved_velocity))

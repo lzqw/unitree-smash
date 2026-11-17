@@ -9,6 +9,8 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
   - ballistic plane-crossing helper for a low-cost event fallback;
   - DTG event-compatible target position/normal/velocity inputs;
   - moving-base velocity compensation, including base angular velocity crossed with racket offset;
+  - optional causal base linear-acceleration extrapolation to the planned
+    contact time, defaulting to zero for the historical path;
   - six-joint damped task inverse for racket position and face normal;
   - optional bounded Gauss-Newton relinearization through the real six-joint
     forward-kinematics callback;

@@ -79,6 +79,17 @@ def test_base_angular_velocity_is_removed_at_racket_offset():
     assert 0.0 <= result.metadata['peak_joint_step_ratio'] <= 1.0
 
 
+def test_causal_base_acceleration_is_extrapolated_to_contact():
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,)))
+    inputs = _inputs()
+    inputs['base_linear_acceleration_world_m_s2'] = np.array([1., 0., 0.])
+    result = planner.plan(**inputs)
+    # Over 0.20 s, the causal base-velocity estimate gains 0.20 m/s.
+    assert result.metadata['base_point_velocity_world_m_s'][0] == pytest.approx(.2)
+    assert result.metadata['relative_target_velocity_world_m_s'][0] == pytest.approx(.8)
+
+
 def test_forward_kinematics_callback_relinearizes_before_acceptance():
     calls = []
 
