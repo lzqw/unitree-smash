@@ -217,7 +217,17 @@ class FullRacketRallyControllerV4:
                 normal_error=result.normal_error,
                 velocity_error_m_s=result.velocity_error_m_s,
                 physical_evaluator=bool(evaluator is not None),
-                metadata=result.metadata))
+                search_diagnostics=dict(result.metadata.get(
+                    'search_diagnostics', {}))))
+
+    def _contact_first_plan_summaries(self, lanes):
+        """Return JSON-safe latest plan outcomes for the causal event log."""
+        latest = {}
+        for row in reversed(self.contact_first_plan_log):
+            lane = int(row['lane'])
+            if lane in lanes and lane not in latest:
+                latest[lane] = dict(row)
+        return [latest[lane] for lane in lanes if lane in latest]
 
     @torch.inference_mode()
     def _overlay_contact_first_plan(self, action, public, limits):
@@ -361,7 +371,10 @@ class FullRacketRallyControllerV4:
                 arm_joint_correction_rad=correction.tolist(),causal_prepose_gain=self.prepose_gain,
                 relative_contact_prepose=self.relative_prepose,
                 height_intercept=self.height_intercept,
-                causal_prepose_joint_delta_rad=applied_prepose.tolist(),**{k:v.tolist() for k,v in plan.items()}))
+                causal_prepose_joint_delta_rad=applied_prepose.tolist(),
+                contact_first_plan_summaries=self._contact_first_plan_summaries(
+                    set(ids.cpu().tolist())),
+                **{k:v.tolist() for k,v in plan.items()}))
         action=self.teacher.action(observation,self.parameters,default,limits,event_time=self.event_time,
                                    target_offset_world=self.target_offset_world)
         action=self._overlay_contact_first_plan(action,obs,limits)
