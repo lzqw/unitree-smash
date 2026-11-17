@@ -12,6 +12,36 @@ import numpy as np
 NATIVE_STAGES=('PHYSX_REFERENCE_VALID','NATIVE_ADOPTED','NATIVE_HIT','RECOVERY_SUCCESS','COMPLETE5')
 
 
+def require_final_trajectory_admission(planner_record, physical_result, *,
+                                       contact_limit_m=.003):
+    """Fail closed until a SELECTED plan has both physical and ball-side proof.
+
+    An individual 18D evaluator callback may accept a trajectory which later
+    fails the actual terminal collision and return checks. Such an early
+    result is not a complete offline teacher reference.
+    """
+    if (not isinstance(planner_record, dict) or
+            planner_record.get('accepted') is not True or
+            not isinstance(physical_result, dict) or
+            physical_result.get('accepted') is not True):
+        raise ValueError("Selected planner and physical prefix must both accept")
+    if planner_record.get('physical_evaluator') is not True:
+        raise ValueError("Missing full 18D physical evaluator")
+    flags=planner_record.get('final_impact_checks')
+    required=('contact_feasible','legal_return_predicted',
+              'attack5_predicted','target_landing_predicted')
+    if not isinstance(flags,dict) or not all(flags.get(k) is True for k in required):
+        raise ValueError("Final physical-terminal analytic impact not verified")
+    error=planner_record.get('final_contact_position_error_m')
+    if (not isinstance(error,(int,float,np.integer,np.floating)) or
+            not np.isfinite(error) or error<0 or error>contact_limit_m):
+        raise ValueError("Final 3mm contact gate not verified")
+    if (physical_result.get('leg_reference')!='causal_frozen_base' or
+            not isinstance(physical_result.get('replayed_target_sequence_rad'),list)):
+        raise ValueError("Selected full 18D executable prefix missing")
+    return True
+
+
 def write_candidate(directory, *, final_targets_rad, prior_final_target_rad,
                     state_q, state_v, control_tick, contact_index, limits,
                     input_hashes, controller_parameters, prediction_contract,
