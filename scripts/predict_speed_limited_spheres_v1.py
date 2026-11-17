@@ -45,7 +45,7 @@ def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substep
     selection=np.zeros((24,18));selection[model.v_indices,np.arange(18)]=1.
     first_ground_violation=None
     diagnostics=dict(momentum_residual=0.,normal_complementarity=0.,friction_cone=0.,tangent_fixed_point=0.,
-        max_contact_iterations=0,foot_penetration_m=0.,joint_velocity_violation_rad_s=0.,
+        normal_impulse_violation_ns=0.,max_contact_iterations=0,foot_penetration_m=0.,joint_velocity_violation_rad_s=0.,
         joint_position_violation_rad=0.,motor_torque_violation_nm=0.,nonfoot_ground_violation_m=0.,velocity_limit_active_substeps=0,
         maximum_velocity_limit_impulse_ns=0.,speed_constraint_residual=0.,
         nonfoot_normal_impulse_ns=0.,nonfoot_contact_substeps=0,
@@ -79,6 +79,7 @@ def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substep
             float(np.max(abs(result.get('position_limit_impulse',np.zeros(18))),initial=0.)))
         v=result['velocity'];warm=result['impulse'];q=pin.integrate(model.model,q,dt*v)
         normals=warm.reshape(contact_count,3)[:,2]
+        diagnostics['normal_impulse_violation_ns']=max(diagnostics['normal_impulse_violation_ns'],float(np.max(-normals,initial=0.)))
         loaded=normals[:4]>1e-8
         diagnostics['nonfoot_normal_impulse_ns']+=float(np.sum(normals[4:]))
         diagnostics['nonfoot_contact_substeps']+=int(np.any(normals[4:]>1e-8))

@@ -1,0 +1,295 @@
+diff --git a/scripts/contact_first_fullbody_evaluator_v1.py b/scripts/contact_first_fullbody_evaluator_v1.py
+index 986ced4..3e37e67 100644
+--- a/scripts/contact_first_fullbody_evaluator_v1.py
++++ b/scripts/contact_first_fullbody_evaluator_v1.py
+@@ -43,7 +43,8 @@ class ContactFirstFullBodyEvaluatorV1:
+                  enforce_target_admission_bounds=False,
+                  racket_measure_fn=None, leg_target_sequence_rad=None,
+                  record_state_trace=False, contact_prediction="measured_fixed",
+-                 leg_reference_factory=None, impact_state_fn=None, measurement_uses_metadata=False, enforce_joint_stops=False):
++                 leg_reference_factory=None, impact_state_fn=None, measurement_uses_metadata=False, enforce_joint_stops=False,
++                 experimental_sphere_manifest=None):
+         if initial_state is None:
+             public = np.asarray(public, dtype=np.float64)
+             default = np.asarray(default, dtype=np.float64)
+@@ -106,15 +107,23 @@ class ContactFirstFullBodyEvaluatorV1:
+             legs.flags.writeable = False
+             self.leg_target_sequence_rad = legs
+         self.record_state_trace = bool(record_state_trace)
+-        if contact_prediction not in ("measured_fixed", "unilateral_release"):
++        if contact_prediction not in ("measured_fixed", "unilateral_release", "experimental_spheres"):
+             raise ValueError("Unknown contact prediction mode")
+-        if enforce_joint_stops and contact_prediction != "unilateral_release":
++        if enforce_joint_stops and contact_prediction not in ("unilateral_release", "experimental_spheres"):
+             raise ValueError("Joint stops are experimental Approach unilateral prediction only")
+         self.enforce_joint_stops=bool(enforce_joint_stops)
+         self.contact_prediction = contact_prediction
+         self.predict = (predict_unilateral_support if contact_prediction == "unilateral_release"
+                         else predict_implicit_support)
+ 
++        if contact_prediction == "experimental_spheres":
++            if not enforce_joint_stops or experimental_sphere_manifest is None:
++                raise ValueError("Experimental sphere prediction requires stops and verified manifest")
++            from scripts.experimental_sphere_admission_v1 import ExperimentalSphereAdmissionV1
++            self.predict = ExperimentalSphereAdmissionV1(self.model, self.geometry, experimental_sphere_manifest)
++        elif experimental_sphere_manifest is not None:
++            raise ValueError("Sphere manifest requires explicit experimental mode")
++
+     @classmethod
+     def from_native(cls, env, lane, interface_config, *, default=None,
+                     contact_force_threshold_n=0.0, **kwargs):
+@@ -254,6 +263,13 @@ class ContactFirstFullBodyEvaluatorV1:
+                     foot_forces_world_n=(result["foot_forces_world_n"].tolist()
+                         if "foot_forces_world_n" in result else None)))
+             violations = self._violations(diagnostics)
++            if self.contact_prediction == "experimental_spheres":
++                # Interior microstep penetration/contact cannot disappear at
++                # the next control boundary and silently pass admission.
++                if diagnostics["nonfoot_ground_violation_m"] > 1e-6:
++                    violations["nonfoot_ground_violation_m"] = diagnostics["nonfoot_ground_violation_m"]
++                if diagnostics["nonfoot_contact_substeps"] > 0:
++                    violations["nonfoot_contact_substeps"] = diagnostics["nonfoot_contact_substeps"]
+             for name, value in diagnostics.items():
+                 if isinstance(value, (int, float, np.integer, np.floating)) and np.isfinite(value):
+                     maximum_diagnostics[name] = max(maximum_diagnostics.get(name, 0.), float(value))
+@@ -308,14 +324,14 @@ class ContactFirstFullBodyEvaluatorV1:
+             "diagnostics": maximum_diagnostics,
+             "native_execution": False,
+             "physical_model": "LoadedPinocchioModelV1+implicit_position_interface",
+-            "prediction_contract": dict(version="implicit_contact_diagnostic_v2",
++            "prediction_contract": dict(version=("experimental_sphere_admission_v1" if self.contact_prediction == "experimental_spheres" else "implicit_contact_diagnostic_v2"),
+                 control_dt_s=self.dt_s,integration_substeps=self.substeps,
+                 integration_dt_s=self.dt_s/self.substeps,joint_position_stops=self.enforce_joint_stops,
+-                velocity_limit_response="postsolve_rejection_only",physx_equivalent=False),
++                velocity_limit_response=("coupled_ideal_impulse" if self.contact_prediction == "experimental_spheres" else "postsolve_rejection_only"),physx_equivalent=False),
+             "contact_prediction": self.contact_prediction,
+             "joint_stops_enabled": self.enforce_joint_stops,
+-            "new_contact_candidates_added": False,
+-            "airborne_ground_force_policy": "measured_contacts_only",
++            "new_contact_candidates_added": self.contact_prediction == "experimental_spheres",
++            "airborne_ground_force_policy": ("authored_surface_gap_complementarity" if self.contact_prediction == "experimental_spheres" else "measured_contacts_only"),
+         }
+         if self.record_state_trace:
+             result["state_trace"] = state_trace
+diff --git a/scripts/predict_speed_limited_spheres_v1.py b/scripts/predict_speed_limited_spheres_v1.py
+index daa5241..aefb0df 100644
+--- a/scripts/predict_speed_limited_spheres_v1.py
++++ b/scripts/predict_speed_limited_spheres_v1.py
+@@ -45,7 +45,7 @@ def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substep
+     selection=np.zeros((24,18));selection[model.v_indices,np.arange(18)]=1.
+     first_ground_violation=None
+     diagnostics=dict(momentum_residual=0.,normal_complementarity=0.,friction_cone=0.,tangent_fixed_point=0.,
+-        max_contact_iterations=0,foot_penetration_m=0.,joint_velocity_violation_rad_s=0.,
++        normal_impulse_violation_ns=0.,max_contact_iterations=0,foot_penetration_m=0.,joint_velocity_violation_rad_s=0.,
+         joint_position_violation_rad=0.,motor_torque_violation_nm=0.,nonfoot_ground_violation_m=0.,velocity_limit_active_substeps=0,
+         maximum_velocity_limit_impulse_ns=0.,speed_constraint_residual=0.,
+         nonfoot_normal_impulse_ns=0.,nonfoot_contact_substeps=0,
+@@ -79,6 +79,7 @@ def predict_speed_limited_spheres(model,interface,state,target,spheres,*,substep
+             float(np.max(abs(result.get('position_limit_impulse',np.zeros(18))),initial=0.)))
+         v=result['velocity'];warm=result['impulse'];q=pin.integrate(model.model,q,dt*v)
+         normals=warm.reshape(contact_count,3)[:,2]
++        diagnostics['normal_impulse_violation_ns']=max(diagnostics['normal_impulse_violation_ns'],float(np.max(-normals,initial=0.)))
+         loaded=normals[:4]>1e-8
+         diagnostics['nonfoot_normal_impulse_ns']+=float(np.sum(normals[4:]))
+         diagnostics['nonfoot_contact_substeps']+=int(np.any(normals[4:]>1e-8))
+diff --git a/scripts/replay_contact_candidate_gate_v1.py b/scripts/replay_contact_candidate_gate_v1.py
+index 87aae24..c8f386c 100644
+--- a/scripts/replay_contact_candidate_gate_v1.py
++++ b/scripts/replay_contact_candidate_gate_v1.py
+@@ -17,6 +17,7 @@ def main():
+     parser=argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--prediction-substeps',type=int,default=4)
+     parser.add_argument('--joint-stops',action='store_true')
++    parser.add_argument('--experimental-spheres',type=Path,help='Offline-only verified authored sphere manifest')
+     parser.add_argument('--velocity-aware',action='store_true')
+     parser.add_argument('--impact-feasible-rate',action='store_true',
+                         help='Offline analytic task-valid rate retarget; requires --anchored')
+@@ -30,6 +31,8 @@ def main():
+     parser.add_argument('--interface',type=Path,required=True)
+     parser.add_argument('--output',type=Path,required=True)
+     args=parser.parse_args()
++    if args.experimental_spheres and not args.joint_stops:
++        raise ValueError('Experimental predictor requires original joint stops')
+     if args.velocity_aware and not args.anchored:raise ValueError("Velocity-aware refinement requires anchored search")
+     if args.impact_feasible_rate and not args.anchored:
+         raise ValueError("Impact-feasible rate retarget requires anchored search")
+@@ -76,7 +79,8 @@ def main():
+             velocity=R@(s.v[:3]+np.cross(s.v[3:6],point)+jp@s.joint_velocity[12:])
+             return rotation.T@(s.root_position_world+R@point-origin),rotation.T@R@normal,rotation.T@velocity
+         evaluator=ContactFirstFullBodyEvaluatorV1(interface_config=cfg,model=model,
+-            initial_state=state,leg_reference_factory=legs,contact_prediction='unilateral_release',
++            initial_state=state,leg_reference_factory=legs,contact_prediction=('experimental_spheres' if args.experimental_spheres else 'unilateral_release'),
++            experimental_sphere_manifest=args.experimental_spheres,
+             record_state_trace=True,racket_measure_fn=measure,measurement_uses_metadata=True,
+             substeps=args.prediction_substeps,enforce_joint_stops=args.joint_stops)
+         def evaluate(*a):
+@@ -160,7 +164,7 @@ def main():
+         bundles.append(str(path))
+     result=dict(scope='CPU gate replay; public reconstruction, no native truth or online execution',
+         finite_mass_refinement='NOT_EVALUATED in this offline adapter',
+-        prediction_contract=dict(version='implicit_contact_diagnostic_v2',substeps=args.prediction_substeps,
++        prediction_contract=dict(version=('experimental_sphere_admission_v1' if args.experimental_spheres else 'implicit_contact_diagnostic_v2'),substeps=args.prediction_substeps,
+             integration_dt_s=.01/args.prediction_substeps,joint_stops=args.joint_stops,physx_equivalent=False),
+         velocity_aware_pose=args.velocity_aware,
+         task_constrained_hit=args.task_constrained_hit,impact_feasible_rate_retarget=args.impact_feasible_rate,
+diff --git a/scripts/experimental_sphere_admission_v1.py b/scripts/experimental_sphere_admission_v1.py
+new file mode 100644
+index 0000000..3e68609
+--- /dev/null
++++ b/scripts/experimental_sphere_admission_v1.py
+@@ -0,0 +1,66 @@
++"""Explicit offline adapter: impulse-model diagnostics to original force gates.
++
++Not PhysX equivalence or a native reference certificate. Contact-law residuals
++retain their original solver units; only impulse balance/cone quantities are
++converted to force units. Authored geometry is checked at every microstep.
++"""
++import hashlib
++import json
++from pathlib import Path
++import numpy as np
++from scripts.predict_speed_limited_spheres_v1 import predict_speed_limited_spheres
++from scripts.diagnostic_nonfoot_spheres_v1 import nonfoot_spheres
++from scripts.hip_mount_collision_response_v1 import HipMountCollisionResponseV1
++
++ROOT = Path(__file__).resolve().parents[1]
++
++
++def admission_diagnostics(result, dt):
++    if not np.isfinite(dt) or dt <= 0 or result.get('ground_geometry_checked') is not True:
++        raise ValueError('Explicit microstep and checked ground geometry required')
++    d = dict(result['diagnostics'])
++    required = ('momentum_residual', 'normal_impulse_violation_ns', 'friction_cone',
++        'normal_complementarity', 'tangent_fixed_point', 'speed_constraint_residual',
++        'joint_velocity_violation_rad_s', 'joint_position_violation_rad',
++        'motor_torque_violation_nm', 'nonfoot_ground_violation_m', 'nonfoot_contact_substeps')
++    for key in required:
++        if key not in d or not np.isfinite(d[key]) or d[key] < 0:
++            raise ValueError('Missing or invalid physical diagnostic: ' + key)
++    for key in ('normal_complementarity', 'tangent_fixed_point', 'speed_constraint_residual'):
++        if d[key] > 2e-7:
++            raise ValueError('Original coupled solver contract failed: ' + key)
++    d['dynamics_residual_max'] = d['momentum_residual'] / dt
++    d['normal_force_violation_n'] = d['normal_impulse_violation_ns'] / dt
++    d['friction_violation_n'] = d['friction_cone'] / dt
++    return d
++
++
++class ExperimentalSphereAdmissionV1:
++    def __init__(self, model, geometry, sphere_manifest, *, iterations=2000):
++        record = json.loads(Path(sphere_manifest).read_text())
++        protocol = json.loads((ROOT/'configs/g07_full_racket_eval_v5_contact_recovery_origin0.json').read_text())
++        asset = ROOT/protocol['asset']['path']
++        if hashlib.sha256(asset.read_bytes()).hexdigest() != record['asset_sha256'] or record['asset_sha256'] != protocol['asset']['sha256']:
++            raise ValueError('Sphere asset drift')
++        for path, digest in record['dependency_sha256'].items():
++            if hashlib.sha256(Path(path).read_bytes()).hexdigest() != digest:
++                raise ValueError('Sphere dependency drift')
++        if type(iterations) is not int or not 1 <= iterations <= 4000:
++            raise ValueError('Bounded iterations required')
++        self.spheres = record['spheres']
++        if [s['body'] for s in self.spheres] != model.feet:
++            raise ValueError('Foot order mismatch')
++        self.geometry = geometry
++        self.extras = nonfoot_spheres(geometry, model.feet)
++        self.hip = HipMountCollisionResponseV1(model)
++        self.iterations = iterations
++
++    def __call__(self, model, interface, state, target, *, duration_s, substeps, enforce_joint_stops):
++        if duration_s != .01 or enforce_joint_stops is not True:
++            raise ValueError('Original control period and joint stops required')
++        result = predict_speed_limited_spheres(model, interface, state, target, self.spheres,
++            substeps=substeps, geometry=self.geometry, enforce_joint_stops=True,
++            diagnostic_nonfoot_spheres=self.extras, diagnostic_hip_mount_response=self.hip,
++            contact_max_iterations=self.iterations)
++        result['diagnostics'] = admission_diagnostics(result, duration_s/substeps)
++        return result
+diff --git a/tests/test_experimental_sphere_admission_v1.py b/tests/test_experimental_sphere_admission_v1.py
+new file mode 100644
+index 0000000..fd269a7
+--- /dev/null
++++ b/tests/test_experimental_sphere_admission_v1.py
+@@ -0,0 +1,83 @@
++import json
++from pathlib import Path
++import numpy as np
++import pytest
++from scripts.experimental_sphere_admission_v1 import admission_diagnostics
++from scripts.compare_recorded_predictors_v2 import measured_state
++from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
++from scripts.contact_first_fullbody_evaluator_v1 import ContactFirstFullBodyEvaluatorV1
++
++
++def evidence():
++    return dict(ground_geometry_checked=True, diagnostics=dict(momentum_residual=1e-9,
++        normal_impulse_violation_ns=1e-9, friction_cone=1e-9,
++        normal_complementarity=0., tangent_fixed_point=0., speed_constraint_residual=0.,
++        joint_velocity_violation_rad_s=0., joint_position_violation_rad=0.,
++        motor_torque_violation_nm=0., nonfoot_ground_violation_m=0., nonfoot_contact_substeps=0))
++
++
++def test_impulse_residual_is_not_silently_treated_as_force():
++    raw=evidence(); d=admission_diagnostics(raw,.0000625)
++    assert d['dynamics_residual_max']==pytest.approx(1.6e-5)
++    assert d['normal_force_violation_n']==pytest.approx(1.6e-5)
++    assert d['friction_violation_n']==pytest.approx(1.6e-5)
++    assert 'dynamics_residual_max' not in raw['diagnostics']
++    raw['diagnostics']['momentum_residual']=2e-9
++    assert 'dynamics_residual_max' in ContactFirstFullBodyEvaluatorV1._violations(admission_diagnostics(raw,.0000625))
++
++
++@pytest.mark.parametrize('key',list(evidence()['diagnostics']))
++@pytest.mark.parametrize('bad',[None,float('nan'),-1.])
++def test_missing_or_nonfinite_diagnostics_never_pass(key,bad):
++    result=evidence()
++    if bad is None:del result['diagnostics'][key]
++    else:result['diagnostics'][key]=bad
++    with pytest.raises(ValueError):admission_diagnostics(result,.0000625)
++
++
++def test_unchecked_geometry_and_unconverged_law_rejected():
++    raw=evidence();raw['ground_geometry_checked']=False
++    with pytest.raises(ValueError):admission_diagnostics(raw,.0000625)
++    raw=evidence();raw['diagnostics']['normal_complementarity']=3e-7
++    with pytest.raises(ValueError):admission_diagnostics(raw,.0000625)
++
++
++def test_real_history_through_explicit_adapter_preserves_state():
++    model=LoadedPinocchioModelV1()
++    cfg=json.loads(Path('reports/codex_teacher_joint_eval_20261116/controller.json').read_text())['interface']
++    with np.load('reports/task_constrained_hit_20261118/attempts/calibration01/native/control_state.npz') as z:
++        state=measured_state(model,z,249,1);target=z['previous_target'][250,1].copy()
++    before_q=state.q.copy();before_previous=state.previous_command_target.copy()
++    ev=ContactFirstFullBodyEvaluatorV1(interface_config=cfg,initial_state=state,model=model,
++        contact_prediction='experimental_spheres',enforce_joint_stops=True,substeps=160,
++        experimental_sphere_manifest='reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json')
++    result=ev.predict(model,ev.interface,state,target,duration_s=.01,substeps=160,enforce_joint_stops=True)
++    assert result['ground_geometry_checked'] and not result['valid_teacher']
++    assert not result['native_execution']
++    assert not ev._violations(result['diagnostics'])
++    np.testing.assert_array_equal(state.q,before_q)
++    np.testing.assert_array_equal(state.previous_command_target,before_previous)
++    np.testing.assert_array_equal(result['state'].previous_command_target,target)
++
++
++@pytest.mark.parametrize('diagnostic,value',[
++    ('nonfoot_ground_violation_m',2e-6),('nonfoot_contact_substeps',1)])
++def test_interior_collision_cannot_pass_with_clean_terminal_geometry(diagnostic,value):
++    from copy import deepcopy
++    model=LoadedPinocchioModelV1()
++    cfg=json.loads(Path('reports/codex_teacher_joint_eval_20261116/controller.json').read_text())['interface']
++    with np.load('reports/task_constrained_hit_20261118/attempts/calibration01/native/control_state.npz') as z:
++        state=measured_state(model,z,249,1)
++    # Force a clean boundary but retain an interior-microstep collision report.
++    state.q[2]+=2.;state.root_position_world[2]+=2.
++    ev=ContactFirstFullBodyEvaluatorV1(interface_config=cfg,initial_state=state,model=model,
++        contact_prediction='experimental_spheres',enforce_joint_stops=True,
++        experimental_sphere_manifest='reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json')
++    raw=evidence();raw['diagnostics'][diagnostic]=value
++    ev.predict=lambda *a,**kw: dict(state=deepcopy(state),diagnostics=admission_diagnostics(raw,.0025))
++    arm=np.repeat(state.joint_position[None,12:],2,axis=0)
++    result=ev(arm,np.zeros_like(arm),1,{})
++    assert not result['accepted']
++    assert result['rejection']=='full_body_prefix_violation'
++    assert result['violations'][diagnostic]==value
++    assert result['geometry_witness_after']['gap_m']>0

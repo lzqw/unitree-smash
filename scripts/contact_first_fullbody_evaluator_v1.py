@@ -43,7 +43,8 @@ class ContactFirstFullBodyEvaluatorV1:
                  enforce_target_admission_bounds=False,
                  racket_measure_fn=None, leg_target_sequence_rad=None,
                  record_state_trace=False, contact_prediction="measured_fixed",
-                 leg_reference_factory=None, impact_state_fn=None, measurement_uses_metadata=False, enforce_joint_stops=False):
+                 leg_reference_factory=None, impact_state_fn=None, measurement_uses_metadata=False, enforce_joint_stops=False,
+                 experimental_sphere_manifest=None):
         if initial_state is None:
             public = np.asarray(public, dtype=np.float64)
             default = np.asarray(default, dtype=np.float64)
@@ -106,14 +107,22 @@ class ContactFirstFullBodyEvaluatorV1:
             legs.flags.writeable = False
             self.leg_target_sequence_rad = legs
         self.record_state_trace = bool(record_state_trace)
-        if contact_prediction not in ("measured_fixed", "unilateral_release"):
+        if contact_prediction not in ("measured_fixed", "unilateral_release", "experimental_spheres"):
             raise ValueError("Unknown contact prediction mode")
-        if enforce_joint_stops and contact_prediction != "unilateral_release":
+        if enforce_joint_stops and contact_prediction not in ("unilateral_release", "experimental_spheres"):
             raise ValueError("Joint stops are experimental Approach unilateral prediction only")
         self.enforce_joint_stops=bool(enforce_joint_stops)
         self.contact_prediction = contact_prediction
         self.predict = (predict_unilateral_support if contact_prediction == "unilateral_release"
                         else predict_implicit_support)
+
+        if contact_prediction == "experimental_spheres":
+            if not enforce_joint_stops or experimental_sphere_manifest is None:
+                raise ValueError("Experimental sphere prediction requires stops and verified manifest")
+            from scripts.experimental_sphere_admission_v1 import ExperimentalSphereAdmissionV1
+            self.predict = ExperimentalSphereAdmissionV1(self.model, self.geometry, experimental_sphere_manifest)
+        elif experimental_sphere_manifest is not None:
+            raise ValueError("Sphere manifest requires explicit experimental mode")
 
     @classmethod
     def from_native(cls, env, lane, interface_config, *, default=None,
@@ -254,6 +263,13 @@ class ContactFirstFullBodyEvaluatorV1:
                     foot_forces_world_n=(result["foot_forces_world_n"].tolist()
                         if "foot_forces_world_n" in result else None)))
             violations = self._violations(diagnostics)
+            if self.contact_prediction == "experimental_spheres":
+                # Interior microstep penetration/contact cannot disappear at
+                # the next control boundary and silently pass admission.
+                if diagnostics["nonfoot_ground_violation_m"] > 1e-6:
+                    violations["nonfoot_ground_violation_m"] = diagnostics["nonfoot_ground_violation_m"]
+                if diagnostics["nonfoot_contact_substeps"] > 0:
+                    violations["nonfoot_contact_substeps"] = diagnostics["nonfoot_contact_substeps"]
             for name, value in diagnostics.items():
                 if isinstance(value, (int, float, np.integer, np.floating)) and np.isfinite(value):
                     maximum_diagnostics[name] = max(maximum_diagnostics.get(name, 0.), float(value))
@@ -308,14 +324,14 @@ class ContactFirstFullBodyEvaluatorV1:
             "diagnostics": maximum_diagnostics,
             "native_execution": False,
             "physical_model": "LoadedPinocchioModelV1+implicit_position_interface",
-            "prediction_contract": dict(version="implicit_contact_diagnostic_v2",
+            "prediction_contract": dict(version=("experimental_sphere_admission_v1" if self.contact_prediction == "experimental_spheres" else "implicit_contact_diagnostic_v2"),
                 control_dt_s=self.dt_s,integration_substeps=self.substeps,
                 integration_dt_s=self.dt_s/self.substeps,joint_position_stops=self.enforce_joint_stops,
-                velocity_limit_response="postsolve_rejection_only",physx_equivalent=False),
+                velocity_limit_response=("coupled_ideal_impulse" if self.contact_prediction == "experimental_spheres" else "postsolve_rejection_only"),physx_equivalent=False),
             "contact_prediction": self.contact_prediction,
             "joint_stops_enabled": self.enforce_joint_stops,
-            "new_contact_candidates_added": False,
-            "airborne_ground_force_policy": "measured_contacts_only",
+            "new_contact_candidates_added": self.contact_prediction == "experimental_spheres",
+            "airborne_ground_force_policy": ("authored_surface_gap_complementarity" if self.contact_prediction == "experimental_spheres" else "measured_contacts_only"),
         }
         if self.record_state_trace:
             result["state_trace"] = state_trace

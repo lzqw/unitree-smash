@@ -17,6 +17,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--prediction-substeps',type=int,default=4)
     parser.add_argument('--joint-stops',action='store_true')
+    parser.add_argument('--experimental-spheres',type=Path,help='Offline-only verified authored sphere manifest')
     parser.add_argument('--velocity-aware',action='store_true')
     parser.add_argument('--impact-feasible-rate',action='store_true',
                         help='Offline analytic task-valid rate retarget; requires --anchored')
@@ -30,6 +31,8 @@ def main():
     parser.add_argument('--interface',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args()
+    if args.experimental_spheres and not args.joint_stops:
+        raise ValueError('Experimental predictor requires original joint stops')
     if args.velocity_aware and not args.anchored:raise ValueError("Velocity-aware refinement requires anchored search")
     if args.impact_feasible_rate and not args.anchored:
         raise ValueError("Impact-feasible rate retarget requires anchored search")
@@ -76,7 +79,8 @@ def main():
             velocity=R@(s.v[:3]+np.cross(s.v[3:6],point)+jp@s.joint_velocity[12:])
             return rotation.T@(s.root_position_world+R@point-origin),rotation.T@R@normal,rotation.T@velocity
         evaluator=ContactFirstFullBodyEvaluatorV1(interface_config=cfg,model=model,
-            initial_state=state,leg_reference_factory=legs,contact_prediction='unilateral_release',
+            initial_state=state,leg_reference_factory=legs,contact_prediction=('experimental_spheres' if args.experimental_spheres else 'unilateral_release'),
+            experimental_sphere_manifest=args.experimental_spheres,
             record_state_trace=True,racket_measure_fn=measure,measurement_uses_metadata=True,
             substeps=args.prediction_substeps,enforce_joint_stops=args.joint_stops)
         def evaluate(*a):
@@ -160,7 +164,7 @@ def main():
         bundles.append(str(path))
     result=dict(scope='CPU gate replay; public reconstruction, no native truth or online execution',
         finite_mass_refinement='NOT_EVALUATED in this offline adapter',
-        prediction_contract=dict(version='implicit_contact_diagnostic_v2',substeps=args.prediction_substeps,
+        prediction_contract=dict(version=('experimental_sphere_admission_v1' if args.experimental_spheres else 'implicit_contact_diagnostic_v2'),substeps=args.prediction_substeps,
             integration_dt_s=.01/args.prediction_substeps,joint_stops=args.joint_stops,physx_equivalent=False),
         velocity_aware_pose=args.velocity_aware,
         task_constrained_hit=args.task_constrained_hit,impact_feasible_rate_retarget=args.impact_feasible_rate,
