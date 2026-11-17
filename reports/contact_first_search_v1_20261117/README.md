@@ -26,6 +26,12 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
 
 The planner does not use future simulator state, TRAIN case IDs, learned action outputs, or landing success. The existing Recovery MPC and its 32-node protocol remain separate.
 
+The upstream DTG source is recorded at commit
+`1e625f1914848abe290dd624ecd031e4a75216e8` under its MIT license. Its causal
+history, frozen predictor, predicted hit state and sigmoid timing are documented
+in `UPSTREAM_DTG_EVIDENCE.json`; this worktree does not replace the current
+training dependencies with that code.
+
 ## Current limits
 
 This is a trajectory generator and Approach integration hook, not a completed native performance claim. The full-body predictor callback must be supplied for physical admission; without it the planner only performs kinematic and actuator prechecks. No native evaluation was started in this implementation turn.

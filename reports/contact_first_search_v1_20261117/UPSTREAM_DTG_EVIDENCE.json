@@ -1,0 +1,20 @@
+{
+  "repository": "https://github.com/YanYuan98/DTG_IRRL_for_Badminton",
+  "locked_commit": "1e625f1914848abe290dd624ecd031e4a75216e8",
+  "branch": "master",
+  "license": "MIT",
+  "upstream_mechanism": {
+    "causal_history": "KirinEnv accumulates ball position, velocity and time history before prediction",
+    "predictor": "DTG_MLP.onnx inference on 70-value history",
+    "reference": "predicted hit state is converted to a roll target and sigmoid joint reference",
+    "timing": "sigmoid center is set to predicted time minus 0.12 s"
+  },
+  "local_adaptation": {
+    "predictor": "existing causal drag-aware public-state intercept model",
+    "robot": "six-joint FullRacketKinematicsV4 Jacobian IK",
+    "profile": "bounded Hermite contact prefix with measured qdot seed",
+    "upstream_training_dependency": "not imported or replaced"
+  },
+  "source_evidence": "KirinEnv.py lines 291-307, 399-419, 669-737 at locked commit",
+  "native_evaluation": "NOT_RUN"
+}
