@@ -74,7 +74,7 @@ def main():
     p.add_argument('--device',default='cuda:0')
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
-    if a.updates<1 or a.batch<2 or a.batch%2:raise ValueError('Positive updates and even batch >=2 required')
+    if a.updates<1 or a.batch<4 or a.batch%4:raise ValueError('Positive updates and batch multiple of four required')
     a.output.mkdir(parents=True)
     device=torch.device(a.device)
     physical_checkpoint=torch.load(a.physical_checkpoint,map_location='cpu',weights_only=True)
@@ -109,7 +109,15 @@ def main():
     mask=torch.zeros(lanes,dtype=torch.bool,device=device);mask[list(train)]=True
     eligible=data['present'].bool()&mask[None]
     positive=(eligible&events).nonzero();negative=(eligible&~events).nonzero()
-    if len(positive)<8 or len(negative)<8:raise ValueError('Insufficient real racket-contact/noncontact transitions')
+    # The native event edge occurs in the NEXT recorded transition. Its
+    # previous transition is a hard negative; training on it prevents the
+    # model from inventing a bounce one control tick too early.
+    preceding=torch.zeros_like(events)
+    preceding[:-1]=events[1:]&(data['episode'][:-1]==data['episode'][1:])&~(
+        data['terminated'][:-1]|data['timeout'][:-1])
+    hard_negative=(eligible&~events&preceding).nonzero()
+    if min(len(positive),len(negative),len(hard_negative))<8:
+        raise ValueError('Need real racket contacts and pre-contact hard negatives')
     if not len(event_aligned_windows(metadata,val,horizon=64,offsets=(0,),maximum=1)['0']['starts']):
         raise ValueError('No heldout contact edge for candidate validation')
     initial=metrics(base,ball,None,data,metadata,val,launch)
@@ -118,7 +126,7 @@ def main():
     history=[]
     for update in range(1,a.updates+1):
         def draw(pool,n):return pool[torch.randint(len(pool),(n,),device=device,generator=generator)]
-        pairs=torch.cat((draw(positive,a.batch//2),draw(negative,a.batch//2)))
+        pairs=torch.cat((draw(positive,a.batch//2),draw(hard_negative,a.batch//4),draw(negative,a.batch//4)))
         t,l=pairs.unbind(1)
         state=data['state'][t,l];targets=data['targets'][t,l]
         with torch.no_grad():
@@ -149,6 +157,7 @@ def main():
         a.output/'action_ball_candidate.pt')
     comparison=dict(initial=initial,candidate=final,action_gradient=gradient,history=history,
         train_contact_transitions=int(len(positive)),train_noncontact_transitions=int(len(negative)),
+        hard_precontact_transitions=int(len(hard_negative)),
         training_lanes=sorted(train),validation_lanes=sorted(val),native_paired_action_probe=False,
         actor_updates=0,world_updates=0,critic_updates=0,auto_promoted=False,
         candidate_sha256=sha256(a.output/'action_ball_candidate.pt'))
