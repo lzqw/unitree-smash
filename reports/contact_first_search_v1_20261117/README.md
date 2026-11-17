@@ -11,6 +11,8 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
   - moving-base velocity compensation, including base angular velocity crossed with racket offset;
   - optional causal base linear-acceleration extrapolation to the planned
     contact time, defaulting to zero for the historical path;
+  - optional causal base angular-acceleration extrapolation for the racket
+    offset term, also defaulting to zero;
   - six-joint damped task inverse for racket position and face normal;
   - optional bounded Gauss-Newton relinearization through the real six-joint
     forward-kinematics callback;
@@ -80,8 +82,8 @@ the full-body replay callback.  This keeps the same acceptance contract while
 avoiding physical replay for candidates that already miss the causal
 position/normal/velocity tolerances.
 
-When the opt-in planner is used by `FullRacketRallyControllerV4`, the base
-linear acceleration is estimated per lane from consecutive public
+When the opt-in planner is used by `FullRacketRallyControllerV4`, base linear
+and angular accelerations are estimated per lane from consecutive public
 observations.  The first tick after reset has no history and uses zero;
 partial reset clears only that lane's history.
 

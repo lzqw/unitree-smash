@@ -151,14 +151,15 @@ def _validate_vectors(q, qd, position_jacobian, normal_jacobian,
                       racket_position, racket_normal, target_position,
                       target_normal, target_velocity, base_linear_velocity,
                       base_linear_acceleration, base_angular_velocity,
-                      racket_offset, lower, upper, velocity_limits):
+                      base_angular_acceleration, racket_offset, lower, upper,
+                      velocity_limits):
     q = np.asarray(q, dtype=float)
     qd = np.asarray(qd, dtype=float)
     jp = np.asarray(position_jacobian, dtype=float)
     jn = np.asarray(normal_jacobian, dtype=float)
     vectors = [racket_position, racket_normal, target_position, target_normal,
                target_velocity, base_linear_velocity, base_linear_acceleration,
-               base_angular_velocity, racket_offset]
+               base_angular_velocity, base_angular_acceleration, racket_offset]
     vectors = [np.asarray(x, dtype=float) for x in vectors]
     lower = np.asarray(lower, dtype=float)
     upper = np.asarray(upper, dtype=float)
@@ -220,6 +221,7 @@ class ContactFirstTrajectorySearchV1:
              contact_time_s, base_linear_velocity_world_m_s=(0.0, 0.0, 0.0),
              base_linear_acceleration_world_m_s2=(0.0, 0.0, 0.0),
              base_angular_velocity_world_rad_s=(0.0, 0.0, 0.0),
+             base_angular_acceleration_world_rad_s2=(0.0, 0.0, 0.0),
              racket_offset_world_m=(0.0, 0.0, 0.0), lower_rad, upper_rad,
              velocity_limits_rad_s, evaluator: Optional[Callable] = None,
              kinematics_fn: Optional[Callable] = None):
@@ -229,11 +231,13 @@ class ContactFirstTrajectorySearchV1:
             target_position_world_m, target_normal_world,
             target_velocity_world_m_s, base_linear_velocity_world_m_s,
             base_linear_acceleration_world_m_s2,
-            base_angular_velocity_world_rad_s, racket_offset_world_m,
+            base_angular_velocity_world_rad_s,
+            base_angular_acceleration_world_rad_s2, racket_offset_world_m,
             lower_rad, upper_rad, velocity_limits_rad_s)
         (q0, qd0, jp, jn, racket_pos, racket_normal, target_pos,
          target_normal, target_velocity, base_linear,
-         base_linear_acceleration, base_angular, racket_offset, lower, upper,
+         base_linear_acceleration, base_angular, base_angular_acceleration,
+         racket_offset, lower, upper,
          velocity_limits) = data
         cfg = self.config
         racket_normal = racket_normal / max(np.linalg.norm(racket_normal), 1e-12)
@@ -269,6 +273,7 @@ class ContactFirstTrajectorySearchV1:
                     candidate_position, candidate_normal, target_pos,
                     target_normal, target_velocity, base_linear,
                     base_linear_acceleration, base_angular,
+                    base_angular_acceleration,
                     racket_offset, lower, upper, velocity_limits)
                 current_pos, current_normal = candidate_position, candidate_normal
                 current_jp, current_jn = candidate_jp, candidate_jn
@@ -311,7 +316,7 @@ class ContactFirstTrajectorySearchV1:
                         branch_q, np.zeros(6), branch_jp, branch_jn,
                         branch_pos, branch_normal, target_pos, target_normal,
                         target_velocity, base_linear, base_linear_acceleration,
-                        base_angular, racket_offset,
+                        base_angular, base_angular_acceleration, racket_offset,
                         lower, upper, velocity_limits)
                     branches.append((branch_q, branch_pos, branch_normal,
                                      branch_jp, branch_jn, float(offset)))
@@ -359,7 +364,8 @@ class ContactFirstTrajectorySearchV1:
                 times = np.arange(contact_index + 1, dtype=float) * cfg.dt_s
                 contact_base_point_velocity = (
                     base_linear + base_linear_acceleration * duration +
-                    np.cross(base_angular, racket_offset))
+                    np.cross(base_angular + base_angular_acceleration * duration,
+                             racket_offset))
                 relative_velocity = target_velocity - contact_base_point_velocity
                 qd_contact_nominal = inverse @ np.r_[relative_velocity,
                                                      cfg.normal_weight * normal_rate]
