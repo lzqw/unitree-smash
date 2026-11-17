@@ -60,11 +60,13 @@ PhysX replay or a native execution certificate; native evaluation remains
 
 A 100-sample diagnostic sweep through the same full-body admission showed
 24/25, 7/25, 3/25, and 1/25 accepted at 1, 2.5, 5, and 10 cm local target
-offsets respectively (`FULLBODY_LOCAL_TASK_SWEEP.json`).  These are CPU
-feasibility rates only.  The drop relative to the kinematic-only sweep exposes
-the current bottleneck: the physical prefix gate is stricter than the
-Jacobian terminal fit, so the next improvement should address jump-state and
-whole-body coordination rather than silently relaxing the gate.
+offsets for a 0.30 s contact horizon (`FULLBODY_LOCAL_TASK_SWEEP.json`).  With
+the same seed and targets but a 0.60 s horizon, acceptance was 25/25, 23/25,
+16/25, and 8/25 (`FULLBODY_LOCAL_TASK_SWEEP_0p60.json`).  These are CPU
+feasibility rates only.  The dominant rejection is the original admitted
+arm-target velocity bound, so the current bottleneck is available approach
+time and whole-body coordination; the gate is not being relaxed to improve a
+number.
 
 On the same CPU path, 100 repeated 96-node plans with the real kinematics
 callback took 2.09 ms mean (2.11 ms p95) with five re-linearizations; see
