@@ -284,6 +284,11 @@ class ContactFirstTrajectorySearchV1:
                 position_error_norm = float(np.linalg.norm(target_pos - achieved_pos))
                 normal_error_norm = float(np.linalg.norm(target_normal - achieved_normal))
                 velocity_error_norm = float(np.linalg.norm(target_velocity - achieved_velocity))
+                if (position_error_norm > cfg.position_tolerance_m or
+                        normal_error_norm > cfg.normal_tolerance or
+                        velocity_error_norm > cfg.velocity_tolerance_m_s):
+                    rejected.append("kinematic_task_residual")
+                    continue
                 score = (position_error_norm / cfg.position_tolerance_m +
                          normal_error_norm / cfg.normal_tolerance +
                          velocity_error_norm / cfg.velocity_tolerance_m_s +

@@ -44,7 +44,7 @@ class FullRacketRallyControllerV4:
         # action path remains bit-for-bit unchanged when the seed has no
         # contact_first_search block.  A caller can use the current DTG event
         # and measured six-axis Jacobians through plan_contact_first_arm().
-        search_config=seed.get('contact_first_search')
+        search_config=checkpoint['seed'].get('contact_first_search')
         self.contact_first_planner=None
         self.contact_first_plan_q=None
         self.contact_first_plan_start_time=None
@@ -141,7 +141,7 @@ class FullRacketRallyControllerV4:
                 continue
             self.contact_first_plan_q[lane]=torch.as_tensor(
                 result.q_rad,device=actual.device,dtype=actual.dtype)
-            self.contact_first_plan_start_time[lane]=public[local,775]
+            self.contact_first_plan_start_time[lane]=float(public[local,775])
             self.contact_first_plan_contact_time[lane]=result.contact_time_s
             self.contact_first_plan_valid[lane]=True
             self.contact_first_plan_log.append(dict(
