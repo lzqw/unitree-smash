@@ -117,6 +117,8 @@ def main():
     from quadsmash.rl.supermimic_long_run_contract_v1 import validate_budgets
     try:validate_budgets(args.recovery_update_budget,args.approach_update_budget,args.recovery_proposal_budget,args.approach_proposal_budget)
     except ValueError as error:parser.error(str(error))
+    if args.action_ball_checkpoint is not None and args.contact_validation_receipt is None:
+        parser.error('Action-ball candidate requires a current, calibrated native contact-validation receipt')
     if args.training_profile=='large' and args.contact_validation_receipt is None:parser.error('Large training requires contact-validation-receipt; model-only sensitivity is insufficient')
     if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
     if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
@@ -394,6 +396,19 @@ def run(args):
         policy_execution=execution_contract()
         if args.resume_training and resolve_contract(resumed)[0]!=policy_execution:
             raise ValueError('Resume would change trained recovery gate')
+        if args.action_ball_checkpoint is not None:
+            # An offline-fit candidate is never admitted to native Actor updates
+            # using stale pre-candidate action probes or a baseline-only receipt.
+            from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability
+            if dual_quality is None:
+                raise ValueError('Action-ball candidate requires calibrated dual-head physical evidence')
+            version=int(resumed_global.get('accepted',0)) if args.resume_training else 0
+            current=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,version)
+            invalid={head:probe_applicability(dual_quality['native_action_probes'][head],current)
+                     for head in ('recovery','approach')}
+            if any(not result['current_version_valid'] for result in invalid.values()):
+                write(args.output/'action_ball_native_probe_rejected.json',invalid)
+                raise ValueError('Action-ball candidate lacks CURRENT actor/WM native paired-action evidence')
         def native_actor_action(observation):
             return policy_forward(actor,observation['policy'],env.rally,sample=False)[0]
         def encode_native_value_start(row):
