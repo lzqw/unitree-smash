@@ -346,7 +346,12 @@ class FullRacketRallyControllerV4:
                 if (not isinstance(final_impact,dict) or
                         not all(final_impact.get(k) is True for k in required) or
                         not finite_gap):
-                    raise RuntimeError('Final analytic return and strict 3mm contact not certified')
+                    self.contact_first_plan_log.append(dict(
+                        lane=lane,accepted=False,
+                        rejection='final_analytic_impact_missing_or_invalid',
+                        planning_seconds=time.perf_counter()-planning_started,
+                        contact_time_s=contact_time))
+                    continue
                 final_impact_checks={k:bool(final_impact[k]) for k in required}
             joint_accepted=False
             if cfg.require_joint_prefix:
