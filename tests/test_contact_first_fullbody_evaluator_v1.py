@@ -235,7 +235,7 @@ def test_unilateral_takeoff_releases_measured_feet_without_fictitious_force():
     assert evaluator.initial_state.contacts.tolist() == [True, False, False, False]
 
 
-def test_unilateral_nonconvergence_rejects_candidate_without_bilateral_fallback():
+def test_four_foot_release_warm_start_fixes_original_active_set_failure():
     public, default, interface = _fixture(vertical_velocity=5.)
     model = LoadedPinocchioModelV1()
     state = model.state_from_public(public, default)
@@ -245,6 +245,31 @@ def test_unilateral_nonconvergence_rejects_candidate_without_bilateral_fallback(
         contact_prediction='unilateral_release')
     arm = np.repeat(default[None,12:], 4, axis=0)
     result = evaluator(arm, np.zeros_like(arm), 3, {})
-    assert not result['accepted']
-    assert result['rejection'] == 'implicit_position_interface'
-    assert 'did not converge; no fallback applied' in result['error']
+    assert result['accepted']
+    assert result['contact_modes_changed']
+    assert result['diagnostics']['dynamics_residual_max'] < 2e-5
+    from scripts.unilateral_implicit_prediction_v1 import predict_unilateral_support
+    import pytest
+    trace=[]
+    with pytest.raises(ValueError,match='did not converge'):
+        predict_unilateral_support(model,evaluator.interface,state,default,substeps=1,
+            separating_warm_start=False,iteration_trace=trace)
+    assert len(trace)==80
+    assert all(np.isfinite(r['linear_residual']) for r in trace)
+
+
+def test_released_feet_remain_force_free_across_internal_substeps():
+    from scripts.unilateral_implicit_prediction_v1 import predict_unilateral_support
+    from copy import deepcopy
+    public, default, interface = _fixture(vertical_velocity=5.)
+    model=LoadedPinocchioModelV1();state=model.state_from_public(public,default)
+    state.contacts[:]=True
+    free=deepcopy(state);free.contacts[:]=False
+    evaluator=ContactFirstFullBodyEvaluatorV1(interface_config=interface,initial_state=state,model=model)
+    trace=[]
+    released=predict_unilateral_support(model,evaluator.interface,state,default,substeps=4,iteration_trace=trace)
+    ballistic=predict_unilateral_support(model,evaluator.interface,free,default,substeps=4)
+    np.testing.assert_allclose(released['state'].q,ballistic['state'].q,atol=1e-12)
+    np.testing.assert_allclose(released['state'].v,ballistic['state'].v,atol=1e-12)
+    assert all(not any(t['modes']) for t in trace)
+    assert all(np.max(np.abs(t['forces_n'])) == 0. for t in trace)

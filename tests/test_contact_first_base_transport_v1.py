@@ -36,3 +36,20 @@ def test_inertial_acceleration_is_expressed_in_current_body_and_lanes_are_isolat
     expected = torch.bmm(basis, acceleration_world[:, :, None]).squeeze(-1)
     torch.testing.assert_close(result, expected)
     assert torch.isfinite(result).all()
+
+
+def test_world_pose_translation_pitch_and_twist_round_trip():
+    import numpy as np
+    from quadsmash.control.full_racket_rally_controller_v4 import planning_world_pose
+    from quadsmash.control.contact_first_trajectory_search_v1 import rotation_current_from_future_from_rotvec
+    rotation=rotation_current_from_future_from_rotvec(np.array([.2,-.4,.3]))
+    origin=np.array([.7,-.6,.9]);command=np.array([1.1,0.,1.8])
+    public=np.zeros(794);public[6:9]=rotation.T@np.array([0.,0.,-1.])
+    public[763:766]=rotation.T@np.array([1.,0.,0.])
+    public[760:763]=rotation.T@(command-origin)
+    basis,root=planning_world_pose(public,command)
+    np.testing.assert_allclose(basis,rotation,atol=1e-12)
+    np.testing.assert_allclose(root,origin,atol=1e-12)
+    point=np.array([.3,.1,.4]);linear=np.array([.2,-.1,.6]);angular=np.array([.3,.5,-.2])
+    world_velocity=rotation@(linear+np.cross(angular,point))
+    np.testing.assert_allclose(basis.T@world_velocity,linear+np.cross(angular,point),atol=1e-12)

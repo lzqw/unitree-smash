@@ -45,7 +45,7 @@ class ContactStepTests(unittest.TestCase):
 
     def test_exhausted_active_set_is_failure(self):
         with self.assertRaisesRegex(ValueError,'did not converge'):
-            unilateral_velocity_step(np.eye(3),np.array([0.,0.,1.]),np.zeros(3),
+            unilateral_velocity_step(np.eye(3),np.array([1.,0.,-1.]),np.zeros(3),
                 np.zeros((3,0)),*[np.zeros(0) for _ in range(4)],.01,
                 np.eye(3)[None],np.zeros((1,3)),.5,max_iterations=1)
 

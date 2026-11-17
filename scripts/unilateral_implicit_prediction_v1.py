@@ -13,7 +13,7 @@ import pinocchio as pin
 
 def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
                              target_error, effort, dt, jacobian,
-                             desired_contact_velocity, friction, *, max_iterations=80):
+                             desired_contact_velocity, friction, *, max_iterations=80, iteration_trace=None, separating_warm_start=True):
     nv, na = selection.shape
     nc = len(jacobian)
     if (mass.shape != (nv,nv) or velocity.shape != (nv,) or bias.shape != (nv,)
@@ -26,7 +26,13 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
         raise ValueError('Nonfinite predictor input')
     if np.any(kp<=0) or np.any(kd<0) or np.any(effort<=0):
         raise ValueError('Invalid motor parameters')
-    modes = np.ones(nc, dtype=np.int8)  # 0 released, 1 sticking, 2 sliding
+    # Warm-start geometrically separating contacts as released. This only
+    # seeds the active set; final complementarity and original residual gates
+    # still determine acceptance, and compressing feet can reactivate.
+    normal_velocity = np.einsum('cij,j->ci',jacobian,velocity)[:,2]
+    modes = np.where(normal_velocity > desired_contact_velocity[:,2]+2e-6, 0, 1).astype(np.int8)
+    if not separating_warm_start: modes[:] = 1
+    # 0 released, 1 sticking, 2 sliding
     directions = np.zeros((nc,2))
     saturated = np.zeros(na, dtype=np.int8)
     drive = kp*target_error
@@ -66,6 +72,12 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
         raw_torque = drive-slope*(selection.T@vn)
         new_sat = np.where(raw_torque>effort+1e-8,1,
                           np.where(raw_torque < -effort-1e-8,-1,0)).astype(np.int8)
+        if iteration_trace is not None:
+            iteration_trace.append(dict(iteration=iteration+1,modes=modes.tolist(),
+                forces_n=forces.tolist(),contact_velocity=np.einsum('cij,j->ci',jacobian,vn).tolist(),
+                motor_saturation=saturated.tolist(),proposed_motor_saturation=new_sat.tolist(),
+                matrix_condition=float(np.linalg.cond(K)),
+                linear_residual=float(np.max(abs(K@solved-rhs_full),initial=0.))))
         if not np.array_equal(new_sat,saturated):
             saturated = new_sat
             continue
@@ -119,7 +131,8 @@ def unilateral_velocity_step(mass, velocity, bias, selection, kp, kd,
 
 
 def predict_unilateral_support(model, interface, state, target, *, duration_s=.01,
-                               substeps=16, contact_velocity_decay_s=.06):
+                               substeps=16, contact_velocity_decay_s=.06, iteration_trace=None,
+                               separating_warm_start=True):
     target = np.asarray(target,dtype=np.float64)
     if target.shape != (18,) or not np.isfinite(target).all():
         raise ValueError('Finite full command required')
@@ -150,7 +163,8 @@ def predict_unilateral_support(model, interface, state, target, *, duration_s=.0
         desired[:,2] = -gap/dt-dt*jdot_v[:,2]
         step = unilateral_velocity_step(snap['mass_matrix'],v,snap['nonlinear'],S,
             interface.kp,interface.kd,target-q[model.q_indices],interface.effort,
-            dt,jac,desired,interface.friction)
+            dt,jac,desired,interface.friction,iteration_trace=iteration_trace,
+            separating_warm_start=separating_warm_start)
         v = step['velocity'];q = pin.integrate(model.model,q,dt*v)
         diag['motor_torque_violation_nm']=max(diag['motor_torque_violation_nm'],
             float(np.max(abs(step['torque'])-interface.effort)))

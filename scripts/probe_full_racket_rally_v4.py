@@ -6,8 +6,8 @@ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from isaaclab.app import AppLauncher
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True)
 p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--count',type=int,default=16)
-p.add_argument('--teacher-only', action='store_true', required=True,
-    help='Require a programmatic base; nested learned walk/standing/strike policies are rejected')
+p.add_argument('--frozen-base-assisted', action='store_true', required=True,
+    help='Allow pinned frozen base inference; no learned heads or policy updates')
 AppLauncher.add_app_launcher_args(p);args=p.parse_args();app=AppLauncher(args).app
 import numpy as np
 import torch
@@ -16,7 +16,7 @@ from isaacsim.core.utils.stage import get_current_stage
 from quadsmash.tasks.stand.full_racket_env_v4 import full_racket_cfg,FullRacketEnvV4
 from quadsmash.tasks.stand.visual_geometry import export_robot_geometry
 from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
-from scripts.audit_teacher_action_sources_v1 import learned_action_sources, require_no_known_learned_action_sources
+from scripts.audit_teacher_action_sources_v1 import learned_action_sources, FrozenBaseInferenceAudit
 
 stopping=False
 def stop(*_):
@@ -35,17 +35,17 @@ def main():
     all_cases=json.loads(path.read_text())['cases']
     indices=list(range(args.count//2))+list(range(64,64+args.count//2))
     cases=[all_cases[i] for i in indices]
-    # Reject before constructing a native scene or advancing physics. The old
-    # probe silently retained three learned base action sources.
+    # Explicitly record the three frozen learned base sources before rollout.
     controller=FullRacketRallyControllerV4(checkpoint,args.count,'cpu')
     sources=learned_action_sources(controller)
     (args.output/'action_source_precheck.json').write_text(json.dumps(dict(
         learned_action_sources=sources, teacher_only_eligible=not bool(sources),
         native_steps=0),indent=2)+'\n')
-    require_no_known_learned_action_sources(controller)
+    del controller  # CPU provenance inspection; native controller constructed below
     cfg=full_racket_cfg(args.count);cfg.seed=720601
     env=FullRacketEnvV4(cfg,cases=cases);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
     controller=FullRacketRallyControllerV4(checkpoint,args.count,env.device)
+    inference_audit=FrozenBaseInferenceAudit(controller.teacher)
     try:
         observation,_=wrapper.reset();controller.reset()
         export_robot_geometry(get_current_stage(),env.robot,args.output)
@@ -79,6 +79,7 @@ def main():
                     (args.output/'episodes.partial.json').write_text(json.dumps(env.rally_records,indent=2)+'\n')
                     (args.output/'contacts.partial.json').write_text(json.dumps(env.contact_records,indent=2)+'\n')
                     (args.output/'causal_plans.partial.json').write_text(json.dumps(controller.logs,indent=2)+'\n')
+                    (args.output/'action_source_audit.json').write_text(json.dumps(inference_audit.report(),indent=2)+'\n')
                     temp=args.output/'progress.json.tmp';temp.write_text(json.dumps(progress,indent=2)+'\n');temp.replace(args.output/'progress.json')
                     print(json.dumps(progress),flush=True)
                 if bool(finished.all()):break
@@ -118,7 +119,9 @@ def main():
         (args.output/'metrics.json').write_text(json.dumps(result,indent=2)+'\n')
         (args.output/'completed.json').write_text(json.dumps(dict(env_steps=(tick+1)*args.count))+'\n')
         print(json.dumps(result),flush=True)
-    finally:env.close()
+    finally:
+        (args.output/'action_source_audit.json').write_text(json.dumps(inference_audit.report(),indent=2)+'\n')
+        env.close()
 
 
 try:main()

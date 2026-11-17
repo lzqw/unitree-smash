@@ -45,3 +45,52 @@ def require_no_known_learned_action_sources(controller):
         paths = ', '.join(row['path'] for row in sources)
         raise RuntimeError('Teacher-only rejected: reachable learned action sources: '+paths)
     return sources
+
+
+class FrozenBaseInferenceAudit:
+    """Count actual frozen base calls, preserving each original module output."""
+    def __init__(self, teacher):
+        import hashlib
+        self._hashlib = hashlib
+        self.counts = {}
+        self.modules = {}
+        audit = self
+        class Counted:
+            def __init__(self, name, module):
+                self.name, self.module = name, module
+            def __call__(self, *args, **kwargs):
+                audit.counts[self.name] += 1
+                return self.module(*args, **kwargs)
+            def __getattr__(self, name):
+                return getattr(self.module, name)
+        for name, owner, attr in (('walk',teacher.walk,'actor'),
+                                   ('standing',teacher.standing,'actor'),
+                                   ('strike',teacher,'strike')):
+            module=getattr(owner,attr)
+            module.eval()
+            for parameter in module.parameters(): parameter.requires_grad_(False)
+            self.modules[name]=module
+            self.counts[name]=0
+            setattr(owner,attr,Counted(name,module))
+        self.before=self.hashes()
+
+    def hashes(self):
+        result={}
+        for name,module in self.modules.items():
+            digest=self._hashlib.sha256()
+            for key,tensor in sorted(module.state_dict().items()):
+                digest.update(key.encode());digest.update(str(tensor.dtype).encode())
+                digest.update(str(tuple(tensor.shape)).encode())
+                digest.update(tensor.detach().cpu().contiguous().numpy().tobytes())
+            result[name]=digest.hexdigest()
+        return result
+
+    def report(self):
+        after=self.hashes()
+        if after != self.before: raise RuntimeError('Frozen base weights/buffers changed')
+        return dict(controller_type='frozen_base_assisted_programmatic_teacher',
+            frozen_base_forward_counts=dict(self.counts), frozen_state_sha256=after,
+            frozen_state_unchanged=True,
+            approach_learning_head='not instantiated in this probe',
+            recovery_learning_head='not instantiated in this probe',
+            policy_optimizer='not instantiated in this probe')

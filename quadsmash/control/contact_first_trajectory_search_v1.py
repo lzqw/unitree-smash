@@ -29,6 +29,7 @@ class ContactFirstSearchConfig:
     acceptance.
     """
 
+    evaluate_impact_outcome: bool = False
     dt_s: float = 0.01
     # Approach planning starts around t=2.0 s while contact is commonly near
     # 2.7 s in the current DTG contract; 96 x 10 ms covers that interval.
@@ -319,7 +320,8 @@ class ContactFirstTrajectorySearchV1:
              velocity_limits_rad_s, evaluator: Optional[Callable] = None,
              kinematics_fn: Optional[Callable] = None,
              target_state_fn: Optional[Callable] = None,
-             base_state_fn: Optional[Callable] = None):
+             base_state_fn: Optional[Callable] = None,
+             impact_evaluator: Optional[Callable] = None):
         data = _validate_vectors(
             q_rad, qd_rad_s, position_jacobian, normal_jacobian,
             racket_position_world_m, racket_normal_world,
@@ -895,6 +897,16 @@ class ContactFirstTrajectorySearchV1:
                             velocity_error_norm > cfg.velocity_tolerance_m_s):
                         rejected.append("kinematic_task_residual")
                         continue
+                    metadata.update(
+                        achieved_position_current_frame_m=candidate_base_displacement+candidate_rotation@achieved_pos,
+                        achieved_normal_current_frame=candidate_rotation@achieved_normal,
+                        achieved_velocity_current_frame_m_s=candidate_rotation@achieved_velocity)
+                    impact_result = None
+                    if impact_evaluator is not None:
+                        impact_result = impact_evaluator(metadata)
+                        if not impact_result.get('valid_return', False):
+                            rejected.append('impact_'+str(impact_result.get('rejection_reason', 'invalid')))
+                            continue
                     accepted = True
                     evaluator_result = None
                     if evaluator is not None:
@@ -908,6 +920,16 @@ class ContactFirstTrajectorySearchV1:
                             reason = evaluator_result.get("rejection", "unspecified")
                             evaluator_rejection_reasons[str(reason)] += 1
                         continue
+                    if impact_evaluator is not None and isinstance(evaluator_result, dict):
+                        if 'actual_racket_position_world_m' in evaluator_result:
+                            actual_metadata = dict(metadata,
+                                achieved_position_current_frame_m=evaluator_result['actual_racket_position_world_m'],
+                                achieved_normal_current_frame=evaluator_result['actual_racket_normal_world'],
+                                achieved_velocity_current_frame_m_s=evaluator_result['actual_racket_velocity_world_m_s'])
+                            impact_result = impact_evaluator(actual_metadata)
+                            if not impact_result.get('valid_return', False):
+                                rejected.append('predicted_actual_impact_'+str(impact_result.get('rejection_reason', 'invalid')))
+                                continue
                     peak_speed_ratio = float(np.max(
                         np.abs(qd_prefix) / velocity_limits[None, :]))
                     peak_step_ratio = float(np.max(
@@ -921,6 +943,10 @@ class ContactFirstTrajectorySearchV1:
                              cfg.step_margin_weight * peak_step_ratio +
                              cfg.nullspace_penalty_weight * abs(nullspace_offset) +
                              1e-6 * contact_index)
+                    if impact_result is not None:
+                        score += (float(impact_result['ranking_cost']) + float(normal_deviation)**2 +
+                                  requested_velocity_error**2)
+                        metadata['impact_outcome'] = impact_result
                     accepted_candidates += 1
                     candidate = ContactFirstCandidate(
                         q_rad=q_full, qd_rad_s=qd_full,

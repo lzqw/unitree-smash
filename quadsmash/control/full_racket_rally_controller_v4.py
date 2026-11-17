@@ -28,6 +28,15 @@ def public_world_basis_in_body(public):
     return torch.stack((forward, torch.linalg.cross(up, forward), up), dim=-1)
 
 
+def planning_world_pose(public, command_world):
+    """World-from-current-body rotation and origin from the fixed rally command."""
+    forward, up = public[763:766], -public[6:9]
+    rotation = np.stack((forward, np.cross(up, forward), up), axis=0)
+    if not np.allclose(rotation.T@rotation,np.eye(3),atol=2e-5):
+        raise ValueError('Invalid public planning basis')
+    return rotation, np.asarray(command_world)-rotation@public[760:763]
+
+
 def transported_body_acceleration(current, previous, current_basis,
                                   previous_basis, delta_time, usable):
     """Inertial finite-difference acceleration expressed in the current body.
@@ -184,7 +193,7 @@ class FullRacketRallyControllerV4:
                                     forward, left, up,
                                     target, normal_target, desired_velocity, event_time,
                                     limits, target_state_fns=None,
-                                    base_state_fns=None):
+                                    base_state_fns=None, impact_evaluators=None):
         """Build one causal pre-contact arm plan per newly planned lane."""
         if self.contact_first_planner is None:
             return
@@ -230,6 +239,7 @@ class FullRacketRallyControllerV4:
                     kinematics_fn=kinematics_fn,
                     target_state_fn=(None if target_state_fns is None
                                      else target_state_fns[local]),
+                    impact_evaluator=(None if impact_evaluators is None else impact_evaluators[local]),
                     base_state_fn=(None if base_state_fns is None
                                    else base_state_fns[local]),
                 )
@@ -403,19 +413,22 @@ class FullRacketRallyControllerV4:
                 incoming_ball_velocity=plan['incoming_velocity_mps']
                 command_world=np.array([1.10, 0.0, 1.80], dtype=np.float64)
                 target_offsets=self.target_offset_world[ids].detach().cpu().numpy()
+                impact_evaluators=[]
+                impact_model=None
+                if self.contact_first_planner.config.evaluate_impact_outcome:
+                    from .impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
+                    from quadsmash.physics.full_racket_v4 import load_racket
+                    from quadsmash.physics.court_v4 import load_court
+                    impact_model=ImpactOutcomeEvaluator(self.physics,load_court(),load_racket())
                 target_state_fns=[]
                 base_state_fns=[]
                 planner_cfg=self.contact_first_planner.config
                 for local in range(len(ids)):
-                    basis=np.stack((
-                        forward[local].detach().cpu().numpy(),
-                        left[local].detach().cpu().numpy(),
-                        up[local].detach().cpu().numpy()), axis=1)
-                    root=command_world-basis@public[local,760:763]
+                    basis,root=planning_world_pose(public[local],command_world)
                     p0=np.asarray(initial_ball_position[local], dtype=float)
                     v0=np.asarray(initial_ball_velocity[local], dtype=float)
                     v_ref=np.asarray(incoming_ball_velocity[local], dtype=float)
-                    offset_body=target_offsets[local]
+                    offset_body=basis.T@target_offsets[local]
                     desired_body_velocity=desired_velocity[local].detach().cpu().numpy()
                     normal_body=normal_target[local].detach().cpu().numpy()
                     def target_state_fn(duration_s, basis=basis, root=root,
@@ -432,6 +445,20 @@ class FullRacketRallyControllerV4:
                                     velocity_world_m_s=body_velocity,
                                     normal_world=normal_body)
                     target_state_fns.append(target_state_fn)
+                    impact_fn=None
+                    if impact_model is not None:
+                        local_contact=self.teacher.contact_offset.detach().cpu().numpy().copy()
+                        local_contact[0]=self.teacher.face_sign*impact_model.racket['assumptions']['string_thickness_m']/2
+                        def impact_fn(metadata,basis=basis,root=root,p0=p0,v0=v0,local_contact=local_contact):
+                            ball, incoming=propagate_ball_state(p0,v0,metadata['contact_time_s'],self.physics)
+                            normal=basis@metadata['achieved_normal_current_frame']
+                            # Kinematics contact_offset is the ball-center proxy,
+                            # radius outward from the physical string surface.
+                            proxy=root+basis@metadata['achieved_position_current_frame_m']
+                            surface=proxy-self.physics['collision_radius_m']*normal
+                            velocity=basis@metadata['achieved_velocity_current_frame_m_s']
+                            return impact_model.evaluate(ball,incoming,surface,velocity,normal,local_contact)
+                    impact_evaluators.append(impact_fn)
                     base_linear=np.asarray(public[local,:3], dtype=float)
                     base_angular=np.asarray(public[local,3:6], dtype=float)
                     raw_linear_acceleration=np.asarray(
@@ -473,7 +500,7 @@ class FullRacketRallyControllerV4:
                     base_angular_acceleration[ids],
                     forward,left,up,target_body,
                     normal_target,desired_velocity,self.event_time[ids],limits,
-                    target_state_fns,base_state_fns)
+                    target_state_fns,base_state_fns,impact_evaluators)
             self.logs.append(dict(input='Current public794D observation, fixed known command and learned no-ball calibration only',
                 env_ids=ids.cpu().tolist(),observation_clock_s=public[:,775].tolist(),
                 used_public_observations=public.tolist(),calibrated_event_time_s=calibrated.tolist(),

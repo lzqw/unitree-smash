@@ -379,3 +379,14 @@ def test_approaching_ball_velocity_is_causal_and_audited():
     assert result.metadata['relative_normal_closing_speed_m_s'] > 0.
     np.testing.assert_allclose(result.metadata['incoming_ball_velocity_current_frame_m_s'],
                                [0.,0.,-2.-result.contact_time_s])
+
+
+def test_invalid_outgoing_outcome_cannot_win_on_low_ik_error():
+    planner=ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(horizon_steps=32))
+    with pytest.raises(RuntimeError,match='impact_predicted_net_intersection'):
+        planner.plan(**_inputs(),impact_evaluator=lambda _:dict(valid_return=False,
+            rejection_reason='predicted_net_intersection'))
+    result=planner.plan(**_inputs(),impact_evaluator=lambda _:dict(valid_return=True,
+        ranking_cost=2.,native_execution=False))
+    assert result.metadata['impact_outcome']['ranking_cost']==2.
+    assert result.score>=2.
