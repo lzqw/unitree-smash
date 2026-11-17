@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/pathlib.py", line 1267, in is_file
+    return S_ISREG(self.stat().st_mode)
+                   ^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/pathlib.py", line 1013, in stat
+    return os.stat(self, follow_symlinks=follow_symlinks)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/retention_currentbest18_teacher8_env5120_02/physical_transitions/manifest.json'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/index_supermimic_success_archive.py", line 100, in <module>
+    a=p.parse_args();r=build(a.roots,a.output);print(json.dumps({k:v for k,v in r.items() if k!='errors'},indent=2));print('scan_errors='+str(len(r['errors'])))
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/index_supermimic_success_archive.py", line 75, in build
+    db.execute('INSERT OR IGNORE INTO occurrences VALUES(?,?,?,?,?,?)',(idx,str(p),str(archive) if (archive/'manifest.json').is_file() else None,0,0,'not-admitted'))
+                                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/pathlib.py", line 1269, in is_file
+    if not _ignore_error(e):
+           ^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/pathlib.py", line 38, in _ignore_error
+    def _ignore_error(exception):
+    
+KeyboardInterrupt

@@ -53,14 +53,16 @@ def main():
     parser.add_argument('--native-acceptance-receipt',type=Path)
     parser.add_argument('--training-profile',choices=('bounded','large'),default='bounded')
     parser.add_argument('--contact-validation-receipt',type=Path)
+    parser.add_argument('--action-ball-checkpoint',type=Path,default=None,
+                        help='Opt-in fitted swept-racket candidate; never silently replaces legacy ball response')
     parser.add_argument('--resume-start-block',choices=('recovery','approach'),default='recovery',
                         help='Resume a completed Recovery checkpoint directly at Approach')
     parser.add_argument('--resume-warmup-ticks',type=int,default=0,
                         help='Optional native ticks before a resumed stream; zero preserves exact block budgets')
     parser.add_argument('--actor-update-budget',type=int,default=None,help='Legacy single-block budget')
-    parser.add_argument('--recovery-update-budget',type=int,default=64,
+    parser.add_argument('--recovery-update-budget',type=int,default=128,
                         help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
-    parser.add_argument('--approach-update-budget',type=int,default=64,
+    parser.add_argument('--approach-update-budget',type=int,default=128,
                         help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
     parser.add_argument('--joint-update-budget',type=int,default=16)
     parser.add_argument('--update-mode',choices=('sequential','joint'),default='sequential')
@@ -69,8 +71,8 @@ def main():
     parser.add_argument('--refresh-mode',choices=('pair','per-head'),default='pair',
                         help='pair: R8/A8 then one combined refresh; per-head: integration diagnostic only')
     parser.add_argument('--ball-side-mode',choices=('shadow','enforce'),default='shadow')
-    parser.add_argument('--recovery-proposal-budget',type=int,default=128)
-    parser.add_argument('--approach-proposal-budget',type=int,default=128)
+    parser.add_argument('--recovery-proposal-budget',type=int,default=256)
+    parser.add_argument('--approach-proposal-budget',type=int,default=256)
     parser.add_argument('--refresh-ticks',type=int,default=800)
     parser.add_argument('--cycles',type=int,default=1)
     parser.add_argument('--native-ticks-per-actor-update',type=int,default=16)
@@ -115,6 +117,8 @@ def main():
     from quadsmash.rl.supermimic_long_run_contract_v1 import validate_budgets
     try:validate_budgets(args.recovery_update_budget,args.approach_update_budget,args.recovery_proposal_budget,args.approach_proposal_budget)
     except ValueError as error:parser.error(str(error))
+    if args.action_ball_checkpoint is not None and args.contact_validation_receipt is None:
+        parser.error('Action-ball candidate requires a current, calibrated native contact-validation receipt')
     if args.training_profile=='large' and args.contact_validation_receipt is None:parser.error('Large training requires contact-validation-receipt; model-only sensitivity is insufficient')
     if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
     if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
@@ -195,12 +199,13 @@ def run(args):
         lifecycle_stage(args.output, 'BEFORE_LOAD_PHYSICAL_LOOP')
         actor,adapter,template,launch,manifest=load_physical_loop(archive=args.archive,
             physical_checkpoint=args.physical_checkpoint,ball_checkpoint=args.ball_checkpoint,
-            task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping)
+            task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping,
+            action_ball_checkpoint=args.action_ball_checkpoint)
         lifecycle_stage(args.output, 'AFTER_LOAD_PHYSICAL_LOOP')
         contact_validation=None;wm_holdout_lanes=[];runtime_wm_bounds={};runtime_validation_data=None;dual_quality=None;native_value_bank=None
         if args.contact_validation_receipt is not None:
             from quadsmash.rl.supermimic_long_run_contract_v1 import verify_contact_receipt
-            contact_validation=verify_contact_receipt(args.contact_validation_receipt,dict(physical=args.physical_checkpoint,ball=args.ball_checkpoint,task=args.task_checkpoint),manifest['task_contract'])
+            contact_validation=verify_contact_receipt(args.contact_validation_receipt,dict(physical=args.physical_checkpoint,ball=args.ball_checkpoint,task=args.task_checkpoint,**({'action_ball':args.action_ball_checkpoint} if args.action_ball_checkpoint else {})),manifest['task_contract'])
             write(args.output/'contact_validation_verified.json',contact_validation)
             if args.training_profile=='large' or 'dual_head_quality' in json.loads(args.contact_validation_receipt.read_text()):
                 from quadsmash.rl.supermimic_dual_head_quality_v1 import quality_spec
@@ -254,7 +259,8 @@ def run(args):
                 observation=observation['policy']
             if observation.ndim != 2 or observation.shape[-1] != 794:
                 raise ValueError('Approach start observation is not the 794D public contract')
-            gate=actor.approach_gate(observation)
+            from quadsmash.rl.supermimic_approach_data_v1 import gate_on_actor_device
+            gate=gate_on_actor_device(actor,observation)
             if gate.ndim == 2: gate=gate[:,0]
             # A tiny positive gate is numerically present but does not provide
             # a useful actor gradient. Singleton/masked batches need only their
@@ -391,6 +397,32 @@ def run(args):
         policy_execution=execution_contract()
         if args.resume_training and resolve_contract(resumed)[0]!=policy_execution:
             raise ValueError('Resume would change trained recovery gate')
+        def applicable_probe(head,current):
+            from quadsmash.rl.supermimic_evidence_binding_v1 import probe_applicability
+            from quadsmash.rl.supermimic_probe_region_v1 import assess_region
+            probe=dual_quality['native_action_probes'][head]
+            assessment=None
+            if probe.get('validity_region') is not None:
+                def preview(row):
+                    state=as_state(row).branch()
+                    _,final,target=trainer._preview_command(state)
+                    return final,target
+                assessment=assess_region(probe['validity_region'],args.contact_validation_receipt,
+                                         current,adapter,preview,head)
+            return probe_applicability(probe,current,assessment)
+        if args.action_ball_checkpoint is not None:
+            # An offline-fit candidate is never admitted to native Actor updates
+            # using stale pre-candidate action probes or a baseline-only receipt.
+            from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability
+            if dual_quality is None:
+                raise ValueError('Action-ball candidate requires calibrated dual-head physical evidence')
+            version=int(resumed_global.get('accepted',0)) if args.resume_training else 0
+            current=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,version)
+            invalid={head:applicable_probe(head,current)
+                     for head in ('recovery','approach')}
+            if any(not result['current_version_valid'] for result in invalid.values()):
+                write(args.output/'action_ball_native_probe_rejected.json',invalid)
+                raise ValueError('Action-ball candidate lacks CURRENT actor/WM native paired-action evidence')
         def native_actor_action(observation):
             return policy_forward(actor,observation['policy'],env.rally,sample=False)[0]
         def encode_native_value_start(row):
@@ -487,6 +519,7 @@ def run(args):
             wm_approach_stage_quota=args.wm_approach_stage_quota,approach_sampling_thresholds=dict(gate=.25,minimum_gate_steps=4,near_distance_m=.30),approach_refresh_interval=args.approach_refresh_interval,
             wm_recent_policy_window=args.wm_recent_policy_window,wm_recent_tick_window=args.wm_recent_tick_window,
             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
+            action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()) if args.action_ball_checkpoint else None,
             tracking_weight=args.tracking_weight,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         write(args.output/'config.json',config)
@@ -590,7 +623,7 @@ def run(args):
             from quadsmash.rl.supermimic_wm_validation_v1 import runtime_head_check
             from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability,verify_fit_provenance
             identity=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,global_accepted_id)
-            probe=probe_applicability(dual_quality['native_action_probes'][head],identity)
+            probe=applicable_probe(head,identity)
             fit_provenance=loaded_fit
             wm=runtime_head_check(adapter,runtime_validation_data,wm_holdout_lanes,launch,head,runtime_wm_bounds[head],
                 minimum_event_episodes=dual_quality['wm_min_event_episodes'][head])
@@ -620,6 +653,7 @@ def run(args):
                 writer.add_scalar('tracking/'+head+'/verified_reference_count',coverage['verified_reference_count'],step)
                 writer.flush()
             if not wm['passed'] or not value['passed'] or not probe['current_version_valid'] or not fit_provenance['verified']:
+                write(args.output/'revalidation_required.json',dict(head=head,attempt=attempt,probe=probe,wm=wm,value=value))
                 save('quality_stopped.pt')
                 raise RuntimeError(head+' model/probe provenance or independent WM/critic quality failed; actor disabled, no automatic extra fitting')
             return result

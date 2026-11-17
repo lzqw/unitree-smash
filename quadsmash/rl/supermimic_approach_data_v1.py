@@ -12,6 +12,20 @@ def active_gate(gate, threshold=.25, minimum_batch_lanes=4):
     return bool((gate > threshold).sum() >= min(minimum_batch_lanes, len(gate)))
 
 @torch.no_grad()
+def gate_on_actor_device(actor, observation):
+    """Archive tensors stay on CPU; only the gate input moves to actor device."""
+    if isinstance(observation, dict): observation = observation['policy']
+    if observation.ndim != 2 or observation.shape[-1] != 794:
+        raise ValueError('Expected [batch,794] public observation')
+    parameter = next(iter(actor.parameters()), None) if hasattr(actor, 'parameters') else None
+    # Stateless gates have no device-bearing weights; preserve their input.
+    input_value = observation if parameter is None else observation.to(device=parameter.device, dtype=parameter.dtype)
+    value = actor.approach_gate(input_value)
+    if value.numel() != len(observation) or not torch.isfinite(value).all():
+        raise ValueError('Invalid Approach gate shape or values')
+    return value.reshape(-1)
+
+@torch.no_grad()
 def native_approach_metadata(row, actor, geometry):
     before, after = row['before'], row['after']
     result = {}
@@ -26,7 +40,7 @@ def native_approach_metadata(row, actor, geometry):
         attack = (contact * field('released') * (velocity.norm(dim=-1)>=5.) * (velocity[:,0]>0.)) if velocity is not None else unknown.clone()
         if prefix == '':
             obs = row['observation']; obs = obs['policy'] if isinstance(obs,dict) else obs
-            result['approach_gate'] = actor.approach_gate(obs).reshape(-1).detach().cpu()
+            result['approach_gate'] = gate_on_actor_device(actor, obs).cpu()
             kin = geometry(p['joint_position'],p['joint_velocity'],p['root_position_w'],
                            p['root_quaternion_w'],p['root_link_velocity_w'],p['root_angular_velocity_w'])
             result['racket_distance'] = (kin['position'][:,geometry.ids['Racket']]-p['ball_position_w']).norm(dim=-1).cpu()

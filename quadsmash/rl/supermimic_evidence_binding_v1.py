@@ -12,7 +12,7 @@ def runtime_identity(actor,adapter,task_contract,execution,policy_version):
     root=Path(__file__).parent
     code_hashes={name:hashlib.sha256((root/name).read_bytes()).hexdigest() for name in
         ('supermimic_policy_execution_v1.py','supermimic_v1.py','supermimic_physical_imagination_adapter_v1.py',
-         'supermimic_ball_sequence_v1.py','supermimic_g07_memory_preview_v1.py','supermimic_execution_preview_v1.py')}
+         'supermimic_probe_region_v1.py','supermimic_native_pair_capture_v1.py','supermimic_ball_sequence_v1.py','supermimic_action_ball_v1.py','supermimic_g07_memory_preview_v1.py','supermimic_execution_preview_v1.py')}
     for name in ('g07_shared_target_residual_v1.py','full_racket_residual_v4.py','full_racket_rally_controller_v4.py','full_racket_arm_target_rate_v4.py','persistent_recovery_assistance_v1.py'):
         code_hashes['control/'+name]=hashlib.sha256((root.parent/'control'/name).read_bytes()).hexdigest()
     return dict(execution_code_sha256=code_hashes,schema='supermimic-runtime-identity-v1',actor_state_sha256=tensor_digest(actor.state_dict().items()),
@@ -20,13 +20,21 @@ def runtime_identity(actor,adapter,task_contract,execution,policy_version):
         policy_execution=execution,policy_version=int(policy_version))
 
 
-def probe_applicability(probe,current):
+def probe_applicability(probe,current,region=None):
     declared=probe.get('runtime_identity')
     required=('execution_code_sha256','schema','actor_state_sha256','world_state_sha256','task_contract_sha256','policy_execution','policy_version')
     mismatch={k:dict(evidence=None if declared is None else declared.get(k),current=current[k])
               for k in required if declared is None or declared.get(k)!=current[k]}
-    return dict(current_version_valid=not mismatch,scope='current-exact-version' if not mismatch else 'historical-reference-only',
-                mismatch=mismatch,evidence_identity=declared,current_identity=current)
+    static=('execution_code_sha256','schema','task_contract_sha256','policy_execution')
+    bounded=(region is not None and region.get('passed') is True
+             and region.get('current_identity')==current and region.get('origin_identity')==declared
+             and region.get('evidence_sha256')==probe.get('validity_region',{}).get('sha256')
+             and not any(k in mismatch for k in static))
+    valid=(not mismatch or bounded) and (region is None or region.get('passed') is True)
+    return dict(current_version_valid=valid,
+                scope='current-exact-version' if not mismatch else ('bounded-native-response-rechecked' if bounded else 'historical-reference-only'),
+                mismatch=mismatch,evidence_identity=declared,current_identity=current,region=region,
+                revalidation_required=not valid)
 
 
 def current_value_trust(bank,*,actor_sha,execution,accepted_updates,command_delta=None,limits=None):

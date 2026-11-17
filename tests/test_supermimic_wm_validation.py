@@ -20,7 +20,8 @@ def fixture():
 
 def test_autoregression_does_not_feed_future_labels(monkeypatch):
     adapter,w,launch=fixture();seen=[]
-    def transition(base,ball,s,u,prev,feet,present,elapsed,launch):
+    def transition(base,ball,s,u,prev,feet,present,elapsed,launch,*,action_model=None):
+        assert action_model is None
         seen.append(s.clone());return s.clone(),feet.clone(),present.clone()
     monkeypatch.setattr(validation,'ball_transition',transition)
     w['next_state'][:,:,0]=10.
@@ -45,7 +46,8 @@ def test_native_stage_labels_do_not_call_pending_ball_side_failure():
 
 def test_action_condition_diagnostic_detects_robot_response_but_no_direct_ball_response(monkeypatch):
     adapter,w,launch=fixture()
-    def transition(base,ball,s,u,prev,feet,present,elapsed,launch):
+    def transition(base,ball,s,u,prev,feet,present,elapsed,launch,*,action_model=None):
+        assert action_model is None
         s=s.clone();s[:,13:31]+=u
         return s,feet,present
     monkeypatch.setattr(validation,'ball_transition',transition)

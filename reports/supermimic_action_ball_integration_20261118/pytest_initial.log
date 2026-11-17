@@ -1,0 +1,45 @@
+.........F
+=================================== FAILURES ===================================
+___________ test_native_metadata_uses_real_gate_and_asset_kinematics ___________
+
+    def test_native_metadata_uses_real_gate_and_asset_kinematics():
+        from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
+        from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1,MODEL
+        g=FullBodyGeometryV1(json.loads(MODEL.read_text())['asset_sha256'])
+        r=row(0,[0,0],[0,0],[False,False]);r['before']['physical']['root_quaternion_w'][:,0]=1
+        actor=SimpleNamespace(approach_gate=lambda obs: torch.tensor([[1.],[0.]]))
+>       metadata=native_approach_metadata(r,actor,g)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_supermimic_approach_closed_loop.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/torch/utils/_contextlib.py:116: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+quadsmash/rl/supermimic_approach_data_v1.py:41: in native_approach_metadata
+    result['approach_gate'] = gate_on_actor_device(actor, obs).cpu()
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/torch/utils/_contextlib.py:116: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+actor = namespace(approach_gate=<function test_native_metadata_uses_real_gate_and_asset_kinematics.<locals>.<lambda> at 0x788b435deca0>)
+observation = tensor([[0., 0., 0.,  ..., 0., 0., 0.],
+        [0., 0., 0.,  ..., 0., 0., 0.]])
+
+    @torch.no_grad()
+    def gate_on_actor_device(actor, observation):
+        """Archive tensors stay on CPU; only the gate input moves to actor device."""
+        if isinstance(observation, dict): observation = observation['policy']
+        if observation.ndim != 2 or observation.shape[-1] != 794:
+            raise ValueError('Expected [batch,794] public observation')
+>       parameter = next(actor.parameters())
+                         ^^^^^^^^^^^^^^^^
+E       AttributeError: 'types.SimpleNamespace' object has no attribute 'parameters'
+
+quadsmash/rl/supermimic_approach_data_v1.py:20: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_supermimic_approach_closed_loop.py::test_native_metadata_uses_real_gate_and_asset_kinematics
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 9 passed in 1.64s

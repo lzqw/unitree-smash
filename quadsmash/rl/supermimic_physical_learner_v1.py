@@ -357,9 +357,11 @@ class PhysicalHorizonTrainer:
         loss=state.new_zeros(());started=time.perf_counter()
         physical_loss=state.new_zeros(());contact_loss=state.new_zeros(())
         ball_loss_value=state.new_zeros(());task_loss=state.new_zeros(())
+        action_ball_loss=state.new_zeros(())
         for i in range(cfg.world_steps):
             prediction,newfeet,newpresent=ball_transition(world,ball,state,window['targets'][i],
-                window['previous_action'][i],feet,present,window['elapsed'][i],launch)
+                window['previous_action'][i],feet,present,window['elapsed'][i],launch,
+                action_model=self.adapter.action_ball_model)
             out=task.forward_values(state,prediction,window['targets'][i],window['previous_action'][i],feet,
                 window['elapsed'][i],values,validity)
             physical_i=world.state_loss(prediction,window['next_state'][i])
@@ -371,6 +373,16 @@ class PhysicalHorizonTrainer:
             physical_loss=physical_loss+physical_i;contact_loss=contact_loss+contact_i
             ball_loss_value=ball_loss_value+ball_i;task_loss=task_loss+task_i
             loss=loss+physical_i+contact_i+task_i
+            if self.adapter.action_ball_model is not None:
+                # Explicit physical-unit ball loss for the optional fitted
+                # swept-contact candidate. The legacy WM objective is unchanged.
+                event=(window['next_event_state'][i,:,1]>window['event_state'][i,:,1]) | (
+                    window['next_event_state'][i,:,6]>window['event_state'][i,:,6])
+                scale=prediction.new_tensor([.1,.1,.1,2.,2.,2.])
+                error=((prediction[:,49:]-window['next_state'][i][:,49:])/scale).square().mean(-1)
+                extra=(error*(1.+3.*event.to(error.dtype))).mean()
+                action_ball_loss=action_ball_loss+extra
+                loss=loss+extra
             state,feet,present=prediction,newfeet,newpresent
             values,validity=out['numeric'],out['valid_logits'].sigmoid()
         loss=loss/cfg.world_steps
@@ -378,11 +390,16 @@ class PhysicalHorizonTrainer:
         self.world_opt.zero_grad(set_to_none=True);loss.backward()
         physical_loss=physical_loss/cfg.world_steps;contact_loss=contact_loss/cfg.world_steps
         ball_loss_value=ball_loss_value/cfg.world_steps;task_loss=task_loss/cfg.world_steps
+        action_ball_loss=action_ball_loss/cfg.world_steps
         groups=(self.adapter.physical_model,self.adapter.ball_model,self.adapter.task_model)
         group_gradients=[]
         for group in groups:
             group_gradients.append(float(torch.sqrt(sum((p.grad.detach().square().sum() for p in group.parameters()
                                                         if p.grad is not None), loss.new_zeros(())))))
+        action_ball_gradient=0.
+        if self.adapter.action_ball_model is not None:
+            action_ball_gradient=float(torch.sqrt(sum((p.grad.detach().square().sum()
+                for p in self.adapter.action_ball_model.parameters() if p.grad is not None),loss.new_zeros(()))))
         norm=optimizer_step(self.world_opt,self.adapter.parameters());self.world_updates+=1
         task.fit_updates.add_(1)
         return dict(world_loss=float(loss.detach()),world_gradient=float(norm),world_updates=self.world_updates,
@@ -390,6 +407,7 @@ class PhysicalHorizonTrainer:
                     world_contact_loss=float(contact_loss.detach()),
                     world_ball_loss=float(ball_loss_value.detach()),
                     world_task_loss=float(task_loss.detach()),
+                    world_action_ball_loss=float(action_ball_loss.detach()),world_action_ball_gradient=action_ball_gradient,
                     world_physical_gradient=group_gradients[0],
                     world_ball_gradient=group_gradients[1],
                     world_task_gradient=group_gradients[2],

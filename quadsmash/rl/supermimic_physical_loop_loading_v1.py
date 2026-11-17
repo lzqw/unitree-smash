@@ -5,6 +5,7 @@ import torch
 from .supermimic_v1 import load_ppo_initialized_actor
 from .supermimic_physical_world_v2 import PhysicalWorldV2
 from .supermimic_ball_residual_v2 import BallResidualV2
+from .supermimic_action_ball_v1 import ActionConditionedBallV1
 from .supermimic_task_memory_schema_v1 import TaskMemorySchemaV1,MemoryField
 from .supermimic_task_transition_model_v1 import NativeTaskTransitionSurrogateV1
 from .supermimic_physical_imagination_adapter_v1 import PhysicalImaginationAdapter
@@ -55,10 +56,12 @@ def tensor_digest(named):
     return h.hexdigest()
 
 
-def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkpoint,safety_mapping,device='cuda:0'):
+def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkpoint,safety_mapping,device='cuda:0',action_ball_checkpoint=None):
     manifest=json.loads((Path(archive)/'manifest.json').read_text())
     paths=dict(source=Path(manifest['source_checkpoint']),physical=Path(physical_checkpoint),
                ball=Path(ball_checkpoint),task=Path(task_checkpoint))
+    if action_ball_checkpoint is not None:
+        paths['action_ball']=Path(action_ball_checkpoint)
     hashes={k:hashlib.sha256(v.read_bytes()).hexdigest() for k,v in paths.items()}
     if hashes['source']!=SOURCE_SHA or manifest['source_sha256']!=SOURCE_SHA:raise ValueError('Wrong source actor')
     actor,actor_meta=load_ppo_initialized_actor(paths['source'],torch.device(device))
@@ -75,6 +78,20 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
     physical.load_state_dict(physical_state['model'],strict=True)
     ball_state=torch.load(paths['ball'],map_location='cpu',weights_only=True)
     ball=BallResidualV2().to(device);ball.load_state_dict(ball_state['model'],strict=True)
+    action_ball=None
+    if action_ball_checkpoint is not None:
+        candidate=torch.load(paths['action_ball'],map_location='cpu',weights_only=True)
+        if (candidate.get('schema')!=ActionConditionedBallV1.schema or
+                candidate.get('physical_sha256')!=hashes['physical'] or
+                candidate.get('legacy_ball_sha256')!=hashes['ball'] or
+                candidate.get('asset_sha256')!=manifest['task_contract']['asset']['sha256'] or
+                int(candidate.get('updates',0))<1):
+            raise ValueError('Action-conditioned ball candidate checkpoint/source mismatch')
+        action_ball=ActionConditionedBallV1().to(device)
+        if (candidate.get('geometry_hashes')!=action_ball.preview.geometry_hashes or
+                candidate.get('softness_m')!=action_ball.softness_m):
+            raise ValueError('Action-ball candidate racket/net geometry or support width mismatch')
+        action_ball.load_state_dict(candidate['model'],strict=True)
     task_state=torch.load(paths['task'],map_location='cpu',weights_only=True)
     schema=TaskMemorySchemaV1([MemoryField(**dict(f,shape=tuple(f['shape']))) for f in task_state['task_schema']['fields']])
     output_key=max((key for key in task_state['model'] if key.startswith('net.net.') and key.endswith('.bias')),
@@ -85,6 +102,7 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
     safety=json.loads(Path(safety_mapping).read_text())
     if safety['asset_sha256']!=manifest['task_contract']['asset']['sha256']:raise ValueError('Safety geometry asset mismatch')
     adapter=PhysicalImaginationAdapter(physical,ball,task,executor,safety_body_names=safety['safety_body_names'],
+        action_ball_model=action_ball,
         manifest=dict(checkpoint_paths={k:str(v) for k,v in paths.items()},checkpoint_sha256=hashes,
                       task_schema=schema.manifest(),actor_whitelist=APPROACH_NAMES,
                       actor_heads={'approach':APPROACH_NAMES,'recovery':RECOVERY_NAMES})).to(device)

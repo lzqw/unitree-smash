@@ -3,10 +3,10 @@
   "num_envs": 128,
   "cycles": 1,
   "update_mode": "sequential",
-  "recovery_updates": 64,
-  "recovery_proposals": 128,
-  "approach_updates": 64,
-  "approach_proposals": 128,
+  "recovery_updates": 128,
+  "recovery_proposals": 256,
+  "approach_updates": 128,
+  "approach_proposals": 256,
   "world_updates_per_proposal": 4,
   "native_ticks_per_proposal": 16,
   "imagination_s": 0.64,
@@ -40,8 +40,8 @@
     "episode_ticks": 800,
     "maximum_collection_ticks": 1601,
     "after": "each R8+A8 pair",
-    "collections_per_cycle": 8,
-    "integration_mode": "per-head (16 collections per R64+A64)",
+    "collections_per_cycle": 16,
+    "integration_mode": "per-head only when explicitly requested; 32 collections per R128+A128",
     "world_updates": 32,
     "world_update_budget_scope": "total split R16+A16 on the same shared WM and combined-policy data",
     "critic_updates": 20
@@ -64,11 +64,18 @@
   "refresh_mode": "pair",
   "training_profile": "large",
   "native_tick_budget": {
-    "proposal_collection_if_all_first_attempts_accepted": 2048,
-    "proposal_collection_upper_bound": 4096,
-    "frozen_collection_minimum": 6400,
-    "frozen_collection_upper_bound": 12808,
+    "proposal_collection_if_all_first_attempts_accepted": 4096,
+    "proposal_collection_upper_bound": 8192,
+    "frozen_collection_minimum": 12800,
+    "frozen_collection_upper_bound": 25616,
     "formal_evaluation": 800,
     "notes": "Per cycle; startup/resume collection separate. Rejected proposals still collect 16 ticks. Full refresh waits for valid per-lane episode boundaries."
+  },
+  "actor_updates_total": 256,
+  "action_ball": {
+    "required_by_success_guided_launcher": true,
+    "checkpoint": "explicit SM_ACTION_BALL_CHECKPOINT",
+    "validation": "immutable native paired-prefix response evidence and current model holdout checks",
+    "native_verified": false
   }
 }

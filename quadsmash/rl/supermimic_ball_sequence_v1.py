@@ -21,9 +21,15 @@ def ball_error(predicted,target):
     return ((predicted-target)/scale).square().mean()
 
 
-def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed,launch):
+def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed,launch,*,action_model=None):
+    """The optional action model sees the CURRENT final command only through
+    the command-conditioned robot prediction. Legacy mode is unchanged.
+    """
     prior,_=base.prior(state,present,elapsed,launch)
     correction,_=ball(ball_geometry_features(state,base.geometry),present)
     physical,logits,active=base(state,targets,previous_action,feet,present,elapsed,launch)
-    state=torch.cat((physical[:,:49],prior[:,49:]+correction),-1)
+    ball_prediction=prior[:,49:]+correction
+    if action_model is not None:
+        ball_prediction=ball_prediction+action_model(state,physical,prior[:,49:],base.geometry,present)
+    state=torch.cat((physical[:,:49],ball_prediction),-1)
     return state,logits.sigmoid(),active

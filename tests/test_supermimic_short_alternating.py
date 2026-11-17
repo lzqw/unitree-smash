@@ -177,8 +177,11 @@ def test_launcher_and_configs_match_pair_refresh_and_keep_native_promotion():
     import json
     root=Path(__file__).resolve().parents[1]
     c=json.loads((root/'configs/supermimic_success_guided_v2.json').read_text())
-    assert c['recovery_updates']==c['approach_updates']==64 and c['head_block_size']==8
-    assert c['refresh_mode']=='pair' and c['frozen_refresh']['collections_per_cycle']==8
+    assert c['recovery_updates']==c['approach_updates']==128 and c['head_block_size']==8
+    assert c['refresh_mode']=='pair' and c['frozen_refresh']['collections_per_cycle']==16
+    assert c['actor_updates_total']==c['recovery_updates']+c['approach_updates']==256
+    outer=(root/'scripts/run_supermimic_success_guided_large_v1.sh').read_text()
+    assert 'SM_CYCLES:-1' in outer and 'SM_RECOVERY_UPDATES:-128' in outer and 'SM_APPROACH_UPDATES:-128' in outer
     assert c['imagination_s']==.64 and c['world_window_s']==.16
     shell=(root/'scripts/run_supermimic_phase1_long_v1.sh').read_text()
     assert '--sequential-layout short-alternating' in shell

@@ -12,6 +12,8 @@ def main():
     for name in ('archive','physical-checkpoint','ball-checkpoint','task-checkpoint','safety-mapping','packed-data','split-manifest','output'):
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--candidate',action='append',default=[],help='NAME=training checkpoint, frozen world state')
+    p.add_argument('--action-ball-checkpoint',type=Path,
+        help='Optional offline-fitted swept-ball candidate; NOT native action-response certification')
     p.add_argument('--device',default='cpu');p.add_argument('--max-windows',type=int,default=128)
     a=p.parse_args()
     if a.max_windows<1:raise ValueError('max-windows must be positive')
@@ -29,7 +31,8 @@ def main():
     t,lanes=pairs.unbind(1);at=t[None]+torch.arange(64)[:,None]
     window={k:v[at,lanes[None]].to(a.device) for k,v in data.items() if v.ndim>=2 and v.shape[:2]==data['episode'].shape}
     _,adapter,_,launch,_=load_physical_loop(archive=a.archive,physical_checkpoint=a.physical_checkpoint,
-        ball_checkpoint=a.ball_checkpoint,task_checkpoint=a.task_checkpoint,safety_mapping=a.safety_mapping,device=a.device)
+        ball_checkpoint=a.ball_checkpoint,task_checkpoint=a.task_checkpoint,safety_mapping=a.safety_mapping,
+        action_ball_checkpoint=a.action_ball_checkpoint,device=a.device)
     baseline={k:v.detach().clone() for k,v in adapter.state_dict().items()}
     results={}; candidates=[('initial',None)]+[x.split('=',1) for x in a.candidate]
     aligned=event_aligned_windows(data,val,maximum=a.max_windows)

@@ -46,7 +46,20 @@ def main():
     AppLauncher.add_app_launcher_args(parser)
     parser.add_argument('--shutdown-diagnostic-ticks', type=int, default=None,
                         help='Lifecycle-only partial run on original 128 lanes; never writes scores/completed.json')
+    parser.add_argument('--native-action-probe-spec',type=Path,default=None)
+    parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus'),default=None)
     args = parser.parse_args()
+    if bool(args.native_action_probe_spec)!=bool(args.native_action_probe_branch):
+        parser.error('Probe spec and branch are required together')
+    if args.native_action_probe_spec:
+        if not args.physics_device.startswith('cuda') or not args.headless:
+            parser.error('Paired native probes require headless GPU PhysX on the original128 lanes')
+        if args.shutdown_diagnostic_ticks is not None or args.record_physical_transitions:
+            parser.error('Probe is a separate diagnostic, not evaluation/archive mode')
+        from quadsmash.rl.supermimic_native_pair_capture_v1 import validate_spec
+        probe_spec=validate_spec(json.loads(args.native_action_probe_spec.read_text()))
+        args.shutdown_diagnostic_ticks=probe_spec['tick']+1
+
     if args.shutdown_diagnostic_ticks is not None and not 1 <= args.shutdown_diagnostic_ticks < 800:
         parser.error('shutdown diagnostic ticks must be in [1,799]')
     if args.checkpoint and args.init_policy_recovery_gate!='legacy':
@@ -190,6 +203,12 @@ def _run_native(args, stop_request):
                        checked_native_ticks=0, scope='Independent old controller versus new actor+executor on the SAME live observations; not a separate old physics rollout')
         if policy_execution['recovery_gate']==POSTHIT:
             mapping['scope']='Independent original executor and new executor with identical causal-gated requests; not legacy policy equivalence'
+        probe_capture=None
+        if args.native_action_probe_spec:
+            from quadsmash.rl.supermimic_native_pair_capture_v1 import NativePairCapture
+            if policy_execution['recovery_gate']!=POSTHIT:
+                raise ValueError('Native training probe requires the causal execution contract')
+            probe_capture=NativePairCapture(json.loads(args.native_action_probe_spec.read_text()),args.native_action_probe_branch)
         start = time.perf_counter()
         stage = 'EVALUATING'
         with torch.inference_mode():
@@ -199,6 +218,7 @@ def _run_native(args, stop_request):
                 before = obs['policy'].clone()
                 old_target = None
                 action = policy_forward(actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
+                if probe_capture is not None:action=probe_capture.before(tick,env,before,action)
                 head_active_lane_steps['recovery']+=int((env.rally.had_contact&env.rally.released).sum())
                 head_active_lane_steps['approach']+=int((actor.actor.gate(before)>.25).sum())
                 if reference is not None:
@@ -210,6 +230,7 @@ def _run_native(args, stop_request):
                 if not torch.isfinite(action).all():
                     raise FloatingPointError('Nonfinite evaluation action')
                 obs, _, done, _ = wrapper.step(action)
+                if probe_capture is not None:probe_capture.after(tick,env,done)
                 ticks_completed += 1
                 if not torch.isfinite(obs['policy']).all():
                     raise FloatingPointError('Nonfinite evaluation observation')
@@ -258,6 +279,8 @@ def _run_native(args, stop_request):
                     print('SUPERMIMIC_EVAL_PROGRESS='+json.dumps(progress),flush=True)
         if env.physical_transition_archive is not None:
             env.physical_transition_archive.flush()
+        if probe_capture is not None:
+            probe_capture.save(args.output,actor,contract,policy_execution,physics,args.seed)
         if args.shutdown_diagnostic_ticks is not None:
             write_json(args.output/'command_consistency.json', mapping)
             write_json(args.output/'shutdown_diagnostic.json', dict(

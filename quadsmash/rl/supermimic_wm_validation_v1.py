@@ -39,7 +39,8 @@ def validate_windows(adapter,window,launch,horizons=(1,4,16,32,64)):
     true_first=predicted_first.clone()
     for t in range(max(horizons)):
         next_state,newfeet,present=ball_transition(adapter.physical_model,adapter.ball_model,state,window['targets'][t],
-            window['previous_action'][t],feet,present,window['elapsed'][t],launch)
+            window['previous_action'][t],feet,present,window['elapsed'][t],launch,
+            action_model=getattr(adapter,'action_ball_model',None))
         task=adapter.task_model.forward_values(state,next_state,window['targets'][t],window['previous_action'][t],feet,
             window['elapsed'][t],values,valid)
         events=advance_event_latches(events,task['hazards'])
@@ -103,7 +104,8 @@ def command_sensitivity(adapter,window,launch,*,epsilon=.001,joints=(12,13,14,15
         for sign in (-1.,1.):
             targets=window['targets'][0].clone();targets[:,joint]+=sign*epsilon
             state,feet,present=ball_transition(adapter.physical_model,adapter.ball_model,window['state'][0],targets,
-                window['previous_action'][0],window['feet'][0].float(),window['present'][0],window['elapsed'][0],launch)
+                window['previous_action'][0],window['feet'][0].float(),window['present'][0],window['elapsed'][0],launch,
+                action_model=getattr(adapter,'action_ball_model',None))
             predictions.append(state)
         fd=(predictions[1]-predictions[0])/(2*epsilon)
         rows.append(dict(joint=int(joint),robot_derivative_norm=float(fd[:,:49].norm()),ball_derivative_norm=float(fd[:,49:].norm()),

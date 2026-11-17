@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-# Short alternating (R8 -> A8 -> combined frozen refresh) x8, then
+# Short alternating (R8 -> A8 -> combined frozen refresh) x16, then
 # one formal 128-env evaluation. Large-profile evidence gates remain mandatory. Budgets remain explicit overrides. This script is intentionally launch-only: it is never run by the
 # code validation step. Set the six SM_* paths before invoking it.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -17,10 +17,10 @@ REFERENCE="${SM_REFERENCE_POLICY:-/home/autodrive/LZQW/unitree_smash/reports/G07
 mkdir -p "$RUN_ROOT" "$RUN_ROOT/tensorboard"
 REF_BANK="${SM_TASK_REFERENCE_BANK:?set SM_TASK_REFERENCE_BANK to a terminal-verified v2 bank}"
 TRACK_WEIGHT="${SM_TRACKING_WEIGHT:?declare SM_TRACKING_WEIGHT before this experiment}"
-R_UPDATES="${SM_RECOVERY_UPDATES:-64}"
-A_UPDATES="${SM_APPROACH_UPDATES:-64}"
-R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-128}"
-A_PROPOSALS="${SM_APPROACH_PROPOSALS:-128}"
+R_UPDATES="${SM_RECOVERY_UPDATES:-128}"
+A_UPDATES="${SM_APPROACH_UPDATES:-128}"
+R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-256}"
+A_PROPOSALS="${SM_APPROACH_PROPOSALS:-256}"
 CYCLES="${SM_CYCLES:-1}"
 TB_PID=""
 cleanup(){
@@ -71,6 +71,10 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     --output "$OUT" --headless --device cuda:0
     --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false
   )
+  if [[ -n "${SM_ACTION_BALL_CHECKPOINT:-}" ]]; then
+    [[ -f "$SM_ACTION_BALL_CHECKPOINT" ]] || { echo "Missing opt-in action-ball candidate: $SM_ACTION_BALL_CHECKPOINT" >&2; exit 13; }
+    TRAIN_ARGS+=(--action-ball-checkpoint "$SM_ACTION_BALL_CHECKPOINT")
+  fi
   if [[ "${SM_TRAINING_PROFILE:-large}" == large ]]; then
     TRAIN_ARGS+=(--training-profile large --contact-validation-receipt "${SM_CONTACT_VALIDATION_RECEIPT:?contact validation evidence required}")
   fi

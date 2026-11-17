@@ -1,0 +1,1622 @@
+diff --git a/configs/supermimic_success_guided_v2.json b/configs/supermimic_success_guided_v2.json
+index c1911ec..00bae2b 100644
+--- a/configs/supermimic_success_guided_v2.json
++++ b/configs/supermimic_success_guided_v2.json
+@@ -3,10 +3,10 @@
+   "num_envs": 128,
+   "cycles": 1,
+   "update_mode": "sequential",
+-  "recovery_updates": 64,
+-  "recovery_proposals": 128,
+-  "approach_updates": 64,
+-  "approach_proposals": 128,
++  "recovery_updates": 128,
++  "recovery_proposals": 256,
++  "approach_updates": 128,
++  "approach_proposals": 256,
+   "world_updates_per_proposal": 4,
+   "native_ticks_per_proposal": 16,
+   "imagination_s": 0.64,
+@@ -40,8 +40,8 @@
+     "episode_ticks": 800,
+     "maximum_collection_ticks": 1601,
+     "after": "each R8+A8 pair",
+-    "collections_per_cycle": 8,
+-    "integration_mode": "per-head (16 collections per R64+A64)",
++    "collections_per_cycle": 16,
++    "integration_mode": "per-head only when explicitly requested; 32 collections per R128+A128",
+     "world_updates": 32,
+     "world_update_budget_scope": "total split R16+A16 on the same shared WM and combined-policy data",
+     "critic_updates": 20
+@@ -64,11 +64,18 @@
+   "refresh_mode": "pair",
+   "training_profile": "large",
+   "native_tick_budget": {
+-    "proposal_collection_if_all_first_attempts_accepted": 2048,
+-    "proposal_collection_upper_bound": 4096,
+-    "frozen_collection_minimum": 6400,
+-    "frozen_collection_upper_bound": 12808,
++    "proposal_collection_if_all_first_attempts_accepted": 4096,
++    "proposal_collection_upper_bound": 8192,
++    "frozen_collection_minimum": 12800,
++    "frozen_collection_upper_bound": 25616,
+     "formal_evaluation": 800,
+     "notes": "Per cycle; startup/resume collection separate. Rejected proposals still collect 16 ticks. Full refresh waits for valid per-lane episode boundaries."
++  },
++  "actor_updates_total": 256,
++  "action_ball": {
++    "required_by_success_guided_launcher": true,
++    "checkpoint": "explicit SM_ACTION_BALL_CHECKPOINT",
++    "validation": "immutable native paired-prefix response evidence and current model holdout checks",
++    "native_verified": false
+   }
+ }
+diff --git a/quadsmash/rl/supermimic_approach_data_v1.py b/quadsmash/rl/supermimic_approach_data_v1.py
+index 63556a8..b9d0a86 100644
+--- a/quadsmash/rl/supermimic_approach_data_v1.py
++++ b/quadsmash/rl/supermimic_approach_data_v1.py
+@@ -11,6 +11,20 @@ def active_gate(gate, threshold=.25, minimum_batch_lanes=4):
+     if not len(gate):return False
+     return bool((gate > threshold).sum() >= min(minimum_batch_lanes, len(gate)))
+ 
++@torch.no_grad()
++def gate_on_actor_device(actor, observation):
++    """Archive tensors stay on CPU; only the gate input moves to actor device."""
++    if isinstance(observation, dict): observation = observation['policy']
++    if observation.ndim != 2 or observation.shape[-1] != 794:
++        raise ValueError('Expected [batch,794] public observation')
++    parameter = next(iter(actor.parameters()), None) if hasattr(actor, 'parameters') else None
++    # Stateless gates have no device-bearing weights; preserve their input.
++    input_value = observation if parameter is None else observation.to(device=parameter.device, dtype=parameter.dtype)
++    value = actor.approach_gate(input_value)
++    if value.numel() != len(observation) or not torch.isfinite(value).all():
++        raise ValueError('Invalid Approach gate shape or values')
++    return value.reshape(-1)
++
+ @torch.no_grad()
+ def native_approach_metadata(row, actor, geometry):
+     before, after = row['before'], row['after']
+@@ -26,7 +40,7 @@ def native_approach_metadata(row, actor, geometry):
+         attack = (contact * field('released') * (velocity.norm(dim=-1)>=5.) * (velocity[:,0]>0.)) if velocity is not None else unknown.clone()
+         if prefix == '':
+             obs = row['observation']; obs = obs['policy'] if isinstance(obs,dict) else obs
+-            result['approach_gate'] = actor.approach_gate(obs).reshape(-1).detach().cpu()
++            result['approach_gate'] = gate_on_actor_device(actor, obs).cpu()
+             kin = geometry(p['joint_position'],p['joint_velocity'],p['root_position_w'],
+                            p['root_quaternion_w'],p['root_link_velocity_w'],p['root_angular_velocity_w'])
+             result['racket_distance'] = (kin['position'][:,geometry.ids['Racket']]-p['ball_position_w']).norm(dim=-1).cpu()
+diff --git a/quadsmash/rl/supermimic_ball_sequence_v1.py b/quadsmash/rl/supermimic_ball_sequence_v1.py
+index f7a10e4..58132ba 100644
+--- a/quadsmash/rl/supermimic_ball_sequence_v1.py
++++ b/quadsmash/rl/supermimic_ball_sequence_v1.py
+@@ -21,9 +21,15 @@ def ball_error(predicted,target):
+     return ((predicted-target)/scale).square().mean()
+ 
+ 
+-def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed,launch):
++def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed,launch,*,action_model=None):
++    """The optional action model sees the CURRENT final command only through
++    the command-conditioned robot prediction. Legacy mode is unchanged.
++    """
+     prior,_=base.prior(state,present,elapsed,launch)
+     correction,_=ball(ball_geometry_features(state,base.geometry),present)
+     physical,logits,active=base(state,targets,previous_action,feet,present,elapsed,launch)
+-    state=torch.cat((physical[:,:49],prior[:,49:]+correction),-1)
++    ball_prediction=prior[:,49:]+correction
++    if action_model is not None:
++        ball_prediction=ball_prediction+action_model(state,physical,prior[:,49:],base.geometry,present)
++    state=torch.cat((physical[:,:49],ball_prediction),-1)
+     return state,logits.sigmoid(),active
+diff --git a/quadsmash/rl/supermimic_evidence_binding_v1.py b/quadsmash/rl/supermimic_evidence_binding_v1.py
+index 1562d00..b95c339 100644
+--- a/quadsmash/rl/supermimic_evidence_binding_v1.py
++++ b/quadsmash/rl/supermimic_evidence_binding_v1.py
+@@ -12,7 +12,7 @@ def runtime_identity(actor,adapter,task_contract,execution,policy_version):
+     root=Path(__file__).parent
+     code_hashes={name:hashlib.sha256((root/name).read_bytes()).hexdigest() for name in
+         ('supermimic_policy_execution_v1.py','supermimic_v1.py','supermimic_physical_imagination_adapter_v1.py',
+-         'supermimic_ball_sequence_v1.py','supermimic_g07_memory_preview_v1.py','supermimic_execution_preview_v1.py')}
++         'supermimic_probe_region_v1.py','supermimic_native_pair_capture_v1.py','supermimic_ball_sequence_v1.py','supermimic_action_ball_v1.py','supermimic_g07_memory_preview_v1.py','supermimic_execution_preview_v1.py')}
+     for name in ('g07_shared_target_residual_v1.py','full_racket_residual_v4.py','full_racket_rally_controller_v4.py','full_racket_arm_target_rate_v4.py','persistent_recovery_assistance_v1.py'):
+         code_hashes['control/'+name]=hashlib.sha256((root.parent/'control'/name).read_bytes()).hexdigest()
+     return dict(execution_code_sha256=code_hashes,schema='supermimic-runtime-identity-v1',actor_state_sha256=tensor_digest(actor.state_dict().items()),
+@@ -20,13 +20,21 @@ def runtime_identity(actor,adapter,task_contract,execution,policy_version):
+         policy_execution=execution,policy_version=int(policy_version))
+ 
+ 
+-def probe_applicability(probe,current):
++def probe_applicability(probe,current,region=None):
+     declared=probe.get('runtime_identity')
+     required=('execution_code_sha256','schema','actor_state_sha256','world_state_sha256','task_contract_sha256','policy_execution','policy_version')
+     mismatch={k:dict(evidence=None if declared is None else declared.get(k),current=current[k])
+               for k in required if declared is None or declared.get(k)!=current[k]}
+-    return dict(current_version_valid=not mismatch,scope='current-exact-version' if not mismatch else 'historical-reference-only',
+-                mismatch=mismatch,evidence_identity=declared,current_identity=current)
++    static=('execution_code_sha256','schema','task_contract_sha256','policy_execution')
++    bounded=(region is not None and region.get('passed') is True
++             and region.get('current_identity')==current and region.get('origin_identity')==declared
++             and region.get('evidence_sha256')==probe.get('validity_region',{}).get('sha256')
++             and not any(k in mismatch for k in static))
++    valid=(not mismatch or bounded) and (region is None or region.get('passed') is True)
++    return dict(current_version_valid=valid,
++                scope='current-exact-version' if not mismatch else ('bounded-native-response-rechecked' if bounded else 'historical-reference-only'),
++                mismatch=mismatch,evidence_identity=declared,current_identity=current,region=region,
++                revalidation_required=not valid)
+ 
+ 
+ def current_value_trust(bank,*,actor_sha,execution,accepted_updates,command_delta=None,limits=None):
+diff --git a/quadsmash/rl/supermimic_physical_imagination_adapter_v1.py b/quadsmash/rl/supermimic_physical_imagination_adapter_v1.py
+index 0141870..4014858 100644
+--- a/quadsmash/rl/supermimic_physical_imagination_adapter_v1.py
++++ b/quadsmash/rl/supermimic_physical_imagination_adapter_v1.py
+@@ -36,13 +36,14 @@ def matrix_quaternion(matrix):
+ class PhysicalImaginationAdapter(nn.Module):
+     schema='g07-physical-task-observation-loop-v1'
+ 
+-    def __init__(self,physical_model,ball_model,task_model,executor,*,safety_body_names,manifest,dt=.01):
++    def __init__(self,physical_model,ball_model,task_model,executor,*,safety_body_names,manifest,dt=.01,action_ball_model=None):
+         super().__init__()
+         if physical_model.schema!='physical55-separated-contact-transitions-v2':
+             raise ValueError('PhysicalWorldV2 required; legacy observation predictor is forbidden')
+         if not safety_body_names:raise ValueError('Native safety-body name mapping required')
+         self.physical_model=physical_model
+         self.ball_model=ball_model
++        self.action_ball_model=action_ball_model
+         self.task_model=task_model
+         self.executor=executor
+         self.observer=PhysicalPolicyObservationV1().to(dtype=physical_model.input_mean.dtype)
+@@ -54,6 +55,9 @@ class PhysicalImaginationAdapter(nn.Module):
+             event_semantics='supervised soft hazards; not native contacts',
+             discrete_approximations=['task timestamp validity > 0.5','observation phase/contact flags > 0.5',
+                                      'historical NumPy planning/requests stop-gradient'])
++        if action_ball_model is not None:
++            self.manifest['action_ball_schema']=action_ball_model.schema
++            self.manifest['action_ball_native_certified']=False
+         self.calls=0
+ 
+     def forward(self,state:PhysicalImaginationStateV1,actor_action):
+@@ -64,7 +68,7 @@ class PhysicalImaginationAdapter(nn.Module):
+             c['joint_default'][0],c['limits'],state.executor_memory)
+         predicted,feet,present=ball_transition(self.physical_model,self.ball_model,
+             state.physical,preview.final_joint_targets,c['final_action'],c['foot_contact'],
+-            c['ball_present'],c['elapsed'],c['launch'])
++            c['ball_present'],c['elapsed'],c['launch'],action_model=self.action_ball_model)
+         task=self.task_model(state.physical,predicted,preview.final_joint_targets,
+                              c['final_action'],c['foot_contact'],c['elapsed'],state.task_memory)
+         next_task=task['memory'];p=decode_physical(predicted)
+diff --git a/quadsmash/rl/supermimic_physical_learner_v1.py b/quadsmash/rl/supermimic_physical_learner_v1.py
+index f41c48a..498ca63 100644
+--- a/quadsmash/rl/supermimic_physical_learner_v1.py
++++ b/quadsmash/rl/supermimic_physical_learner_v1.py
+@@ -357,9 +357,11 @@ class PhysicalHorizonTrainer:
+         loss=state.new_zeros(());started=time.perf_counter()
+         physical_loss=state.new_zeros(());contact_loss=state.new_zeros(())
+         ball_loss_value=state.new_zeros(());task_loss=state.new_zeros(())
++        action_ball_loss=state.new_zeros(())
+         for i in range(cfg.world_steps):
+             prediction,newfeet,newpresent=ball_transition(world,ball,state,window['targets'][i],
+-                window['previous_action'][i],feet,present,window['elapsed'][i],launch)
++                window['previous_action'][i],feet,present,window['elapsed'][i],launch,
++                action_model=self.adapter.action_ball_model)
+             out=task.forward_values(state,prediction,window['targets'][i],window['previous_action'][i],feet,
+                 window['elapsed'][i],values,validity)
+             physical_i=world.state_loss(prediction,window['next_state'][i])
+@@ -371,6 +373,16 @@ class PhysicalHorizonTrainer:
+             physical_loss=physical_loss+physical_i;contact_loss=contact_loss+contact_i
+             ball_loss_value=ball_loss_value+ball_i;task_loss=task_loss+task_i
+             loss=loss+physical_i+contact_i+task_i
++            if self.adapter.action_ball_model is not None:
++                # Explicit physical-unit ball loss for the optional fitted
++                # swept-contact candidate. The legacy WM objective is unchanged.
++                event=(window['next_event_state'][i,:,1]>window['event_state'][i,:,1]) | (
++                    window['next_event_state'][i,:,6]>window['event_state'][i,:,6])
++                scale=prediction.new_tensor([.1,.1,.1,2.,2.,2.])
++                error=((prediction[:,49:]-window['next_state'][i][:,49:])/scale).square().mean(-1)
++                extra=(error*(1.+3.*event.to(error.dtype))).mean()
++                action_ball_loss=action_ball_loss+extra
++                loss=loss+extra
+             state,feet,present=prediction,newfeet,newpresent
+             values,validity=out['numeric'],out['valid_logits'].sigmoid()
+         loss=loss/cfg.world_steps
+@@ -378,11 +390,16 @@ class PhysicalHorizonTrainer:
+         self.world_opt.zero_grad(set_to_none=True);loss.backward()
+         physical_loss=physical_loss/cfg.world_steps;contact_loss=contact_loss/cfg.world_steps
+         ball_loss_value=ball_loss_value/cfg.world_steps;task_loss=task_loss/cfg.world_steps
++        action_ball_loss=action_ball_loss/cfg.world_steps
+         groups=(self.adapter.physical_model,self.adapter.ball_model,self.adapter.task_model)
+         group_gradients=[]
+         for group in groups:
+             group_gradients.append(float(torch.sqrt(sum((p.grad.detach().square().sum() for p in group.parameters()
+                                                         if p.grad is not None), loss.new_zeros(())))))
++        action_ball_gradient=0.
++        if self.adapter.action_ball_model is not None:
++            action_ball_gradient=float(torch.sqrt(sum((p.grad.detach().square().sum()
++                for p in self.adapter.action_ball_model.parameters() if p.grad is not None),loss.new_zeros(()))))
+         norm=optimizer_step(self.world_opt,self.adapter.parameters());self.world_updates+=1
+         task.fit_updates.add_(1)
+         return dict(world_loss=float(loss.detach()),world_gradient=float(norm),world_updates=self.world_updates,
+@@ -390,6 +407,7 @@ class PhysicalHorizonTrainer:
+                     world_contact_loss=float(contact_loss.detach()),
+                     world_ball_loss=float(ball_loss_value.detach()),
+                     world_task_loss=float(task_loss.detach()),
++                    world_action_ball_loss=float(action_ball_loss.detach()),world_action_ball_gradient=action_ball_gradient,
+                     world_physical_gradient=group_gradients[0],
+                     world_ball_gradient=group_gradients[1],
+                     world_task_gradient=group_gradients[2],
+diff --git a/quadsmash/rl/supermimic_physical_loop_loading_v1.py b/quadsmash/rl/supermimic_physical_loop_loading_v1.py
+index 0119ef6..a567ad6 100644
+--- a/quadsmash/rl/supermimic_physical_loop_loading_v1.py
++++ b/quadsmash/rl/supermimic_physical_loop_loading_v1.py
+@@ -5,6 +5,7 @@ import torch
+ from .supermimic_v1 import load_ppo_initialized_actor
+ from .supermimic_physical_world_v2 import PhysicalWorldV2
+ from .supermimic_ball_residual_v2 import BallResidualV2
++from .supermimic_action_ball_v1 import ActionConditionedBallV1
+ from .supermimic_task_memory_schema_v1 import TaskMemorySchemaV1,MemoryField
+ from .supermimic_task_transition_model_v1 import NativeTaskTransitionSurrogateV1
+ from .supermimic_physical_imagination_adapter_v1 import PhysicalImaginationAdapter
+@@ -55,10 +56,12 @@ def tensor_digest(named):
+     return h.hexdigest()
+ 
+ 
+-def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkpoint,safety_mapping,device='cuda:0'):
++def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkpoint,safety_mapping,device='cuda:0',action_ball_checkpoint=None):
+     manifest=json.loads((Path(archive)/'manifest.json').read_text())
+     paths=dict(source=Path(manifest['source_checkpoint']),physical=Path(physical_checkpoint),
+                ball=Path(ball_checkpoint),task=Path(task_checkpoint))
++    if action_ball_checkpoint is not None:
++        paths['action_ball']=Path(action_ball_checkpoint)
+     hashes={k:hashlib.sha256(v.read_bytes()).hexdigest() for k,v in paths.items()}
+     if hashes['source']!=SOURCE_SHA or manifest['source_sha256']!=SOURCE_SHA:raise ValueError('Wrong source actor')
+     actor,actor_meta=load_ppo_initialized_actor(paths['source'],torch.device(device))
+@@ -75,6 +78,20 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
+     physical.load_state_dict(physical_state['model'],strict=True)
+     ball_state=torch.load(paths['ball'],map_location='cpu',weights_only=True)
+     ball=BallResidualV2().to(device);ball.load_state_dict(ball_state['model'],strict=True)
++    action_ball=None
++    if action_ball_checkpoint is not None:
++        candidate=torch.load(paths['action_ball'],map_location='cpu',weights_only=True)
++        if (candidate.get('schema')!=ActionConditionedBallV1.schema or
++                candidate.get('physical_sha256')!=hashes['physical'] or
++                candidate.get('legacy_ball_sha256')!=hashes['ball'] or
++                candidate.get('asset_sha256')!=manifest['task_contract']['asset']['sha256'] or
++                int(candidate.get('updates',0))<1):
++            raise ValueError('Action-conditioned ball candidate checkpoint/source mismatch')
++        action_ball=ActionConditionedBallV1().to(device)
++        if (candidate.get('geometry_hashes')!=action_ball.preview.geometry_hashes or
++                candidate.get('softness_m')!=action_ball.softness_m):
++            raise ValueError('Action-ball candidate racket/net geometry or support width mismatch')
++        action_ball.load_state_dict(candidate['model'],strict=True)
+     task_state=torch.load(paths['task'],map_location='cpu',weights_only=True)
+     schema=TaskMemorySchemaV1([MemoryField(**dict(f,shape=tuple(f['shape']))) for f in task_state['task_schema']['fields']])
+     output_key=max((key for key in task_state['model'] if key.startswith('net.net.') and key.endswith('.bias')),
+@@ -85,6 +102,7 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
+     safety=json.loads(Path(safety_mapping).read_text())
+     if safety['asset_sha256']!=manifest['task_contract']['asset']['sha256']:raise ValueError('Safety geometry asset mismatch')
+     adapter=PhysicalImaginationAdapter(physical,ball,task,executor,safety_body_names=safety['safety_body_names'],
++        action_ball_model=action_ball,
+         manifest=dict(checkpoint_paths={k:str(v) for k,v in paths.items()},checkpoint_sha256=hashes,
+                       task_schema=schema.manifest(),actor_whitelist=APPROACH_NAMES,
+                       actor_heads={'approach':APPROACH_NAMES,'recovery':RECOVERY_NAMES})).to(device)
+diff --git a/quadsmash/rl/supermimic_wm_validation_v1.py b/quadsmash/rl/supermimic_wm_validation_v1.py
+index ecfd152..7b4dcb9 100644
+--- a/quadsmash/rl/supermimic_wm_validation_v1.py
++++ b/quadsmash/rl/supermimic_wm_validation_v1.py
+@@ -39,7 +39,8 @@ def validate_windows(adapter,window,launch,horizons=(1,4,16,32,64)):
+     true_first=predicted_first.clone()
+     for t in range(max(horizons)):
+         next_state,newfeet,present=ball_transition(adapter.physical_model,adapter.ball_model,state,window['targets'][t],
+-            window['previous_action'][t],feet,present,window['elapsed'][t],launch)
++            window['previous_action'][t],feet,present,window['elapsed'][t],launch,
++            action_model=getattr(adapter,'action_ball_model',None))
+         task=adapter.task_model.forward_values(state,next_state,window['targets'][t],window['previous_action'][t],feet,
+             window['elapsed'][t],values,valid)
+         events=advance_event_latches(events,task['hazards'])
+@@ -103,7 +104,8 @@ def command_sensitivity(adapter,window,launch,*,epsilon=.001,joints=(12,13,14,15
+         for sign in (-1.,1.):
+             targets=window['targets'][0].clone();targets[:,joint]+=sign*epsilon
+             state,feet,present=ball_transition(adapter.physical_model,adapter.ball_model,window['state'][0],targets,
+-                window['previous_action'][0],window['feet'][0].float(),window['present'][0],window['elapsed'][0],launch)
++                window['previous_action'][0],window['feet'][0].float(),window['present'][0],window['elapsed'][0],launch,
++                action_model=getattr(adapter,'action_ball_model',None))
+             predictions.append(state)
+         fd=(predictions[1]-predictions[0])/(2*epsilon)
+         rows.append(dict(joint=int(joint),robot_derivative_norm=float(fd[:,:49].norm()),ball_derivative_norm=float(fd[:,49:].norm()),
+diff --git a/scripts/evaluate_supermimic_v1.py b/scripts/evaluate_supermimic_v1.py
+index 9b2f18a..9598941 100644
+--- a/scripts/evaluate_supermimic_v1.py
++++ b/scripts/evaluate_supermimic_v1.py
+@@ -46,7 +46,20 @@ def main():
+     AppLauncher.add_app_launcher_args(parser)
+     parser.add_argument('--shutdown-diagnostic-ticks', type=int, default=None,
+                         help='Lifecycle-only partial run on original 128 lanes; never writes scores/completed.json')
++    parser.add_argument('--native-action-probe-spec',type=Path,default=None)
++    parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus'),default=None)
+     args = parser.parse_args()
++    if bool(args.native_action_probe_spec)!=bool(args.native_action_probe_branch):
++        parser.error('Probe spec and branch are required together')
++    if args.native_action_probe_spec:
++        if not args.physics_device.startswith('cuda') or not args.headless:
++            parser.error('Paired native probes require headless GPU PhysX on the original128 lanes')
++        if args.shutdown_diagnostic_ticks is not None or args.record_physical_transitions:
++            parser.error('Probe is a separate diagnostic, not evaluation/archive mode')
++        from quadsmash.rl.supermimic_native_pair_capture_v1 import validate_spec
++        probe_spec=validate_spec(json.loads(args.native_action_probe_spec.read_text()))
++        args.shutdown_diagnostic_ticks=probe_spec['tick']+1
++
+     if args.shutdown_diagnostic_ticks is not None and not 1 <= args.shutdown_diagnostic_ticks < 800:
+         parser.error('shutdown diagnostic ticks must be in [1,799]')
+     if args.checkpoint and args.init_policy_recovery_gate!='legacy':
+@@ -190,6 +203,12 @@ def _run_native(args, stop_request):
+                        checked_native_ticks=0, scope='Independent old controller versus new actor+executor on the SAME live observations; not a separate old physics rollout')
+         if policy_execution['recovery_gate']==POSTHIT:
+             mapping['scope']='Independent original executor and new executor with identical causal-gated requests; not legacy policy equivalence'
++        probe_capture=None
++        if args.native_action_probe_spec:
++            from quadsmash.rl.supermimic_native_pair_capture_v1 import NativePairCapture
++            if policy_execution['recovery_gate']!=POSTHIT:
++                raise ValueError('Native training probe requires the causal execution contract')
++            probe_capture=NativePairCapture(json.loads(args.native_action_probe_spec.read_text()),args.native_action_probe_branch)
+         start = time.perf_counter()
+         stage = 'EVALUATING'
+         with torch.inference_mode():
+@@ -199,6 +218,7 @@ def _run_native(args, stop_request):
+                 before = obs['policy'].clone()
+                 old_target = None
+                 action = policy_forward(actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
++                if probe_capture is not None:action=probe_capture.before(tick,env,before,action)
+                 head_active_lane_steps['recovery']+=int((env.rally.had_contact&env.rally.released).sum())
+                 head_active_lane_steps['approach']+=int((actor.actor.gate(before)>.25).sum())
+                 if reference is not None:
+@@ -210,6 +230,7 @@ def _run_native(args, stop_request):
+                 if not torch.isfinite(action).all():
+                     raise FloatingPointError('Nonfinite evaluation action')
+                 obs, _, done, _ = wrapper.step(action)
++                if probe_capture is not None:probe_capture.after(tick,env,done)
+                 ticks_completed += 1
+                 if not torch.isfinite(obs['policy']).all():
+                     raise FloatingPointError('Nonfinite evaluation observation')
+@@ -258,6 +279,8 @@ def _run_native(args, stop_request):
+                     print('SUPERMIMIC_EVAL_PROGRESS='+json.dumps(progress),flush=True)
+         if env.physical_transition_archive is not None:
+             env.physical_transition_archive.flush()
++        if probe_capture is not None:
++            probe_capture.save(args.output,actor,contract,policy_execution,physics,args.seed)
+         if args.shutdown_diagnostic_ticks is not None:
+             write_json(args.output/'command_consistency.json', mapping)
+             write_json(args.output/'shutdown_diagnostic.json', dict(
+diff --git a/scripts/run_supermimic_phase1_long_v1.sh b/scripts/run_supermimic_phase1_long_v1.sh
+index 13399b8..4a21b43 100755
+--- a/scripts/run_supermimic_phase1_long_v1.sh
++++ b/scripts/run_supermimic_phase1_long_v1.sh
+@@ -1,7 +1,7 @@
+ #!/usr/bin/env bash
+ set -Eeuo pipefail
+ 
+-# Short alternating (R8 -> A8 -> combined frozen refresh) x8, then
++# Short alternating (R8 -> A8 -> combined frozen refresh) x16, then
+ # one formal 128-env evaluation. Large-profile evidence gates remain mandatory. Budgets remain explicit overrides. This script is intentionally launch-only: it is never run by the
+ # code validation step. Set the six SM_* paths before invoking it.
+ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+@@ -17,10 +17,10 @@ REFERENCE="${SM_REFERENCE_POLICY:-/home/autodrive/LZQW/unitree_smash/reports/G07
+ mkdir -p "$RUN_ROOT" "$RUN_ROOT/tensorboard"
+ REF_BANK="${SM_TASK_REFERENCE_BANK:?set SM_TASK_REFERENCE_BANK to a terminal-verified v2 bank}"
+ TRACK_WEIGHT="${SM_TRACKING_WEIGHT:?declare SM_TRACKING_WEIGHT before this experiment}"
+-R_UPDATES="${SM_RECOVERY_UPDATES:-64}"
+-A_UPDATES="${SM_APPROACH_UPDATES:-64}"
+-R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-128}"
+-A_PROPOSALS="${SM_APPROACH_PROPOSALS:-128}"
++R_UPDATES="${SM_RECOVERY_UPDATES:-128}"
++A_UPDATES="${SM_APPROACH_UPDATES:-128}"
++R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-256}"
++A_PROPOSALS="${SM_APPROACH_PROPOSALS:-256}"
+ CYCLES="${SM_CYCLES:-1}"
+ TB_PID=""
+ cleanup(){
+@@ -71,6 +71,10 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
+     --output "$OUT" --headless --device cuda:0
+     --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false
+   )
++  if [[ -n "${SM_ACTION_BALL_CHECKPOINT:-}" ]]; then
++    [[ -f "$SM_ACTION_BALL_CHECKPOINT" ]] || { echo "Missing opt-in action-ball candidate: $SM_ACTION_BALL_CHECKPOINT" >&2; exit 13; }
++    TRAIN_ARGS+=(--action-ball-checkpoint "$SM_ACTION_BALL_CHECKPOINT")
++  fi
+   if [[ "${SM_TRAINING_PROFILE:-large}" == large ]]; then
+     TRAIN_ARGS+=(--training-profile large --contact-validation-receipt "${SM_CONTACT_VALIDATION_RECEIPT:?contact validation evidence required}")
+   fi
+diff --git a/scripts/run_supermimic_success_guided_large_v1.sh b/scripts/run_supermimic_success_guided_large_v1.sh
+index adefd4a..946f2ef 100644
+--- a/scripts/run_supermimic_success_guided_large_v1.sh
++++ b/scripts/run_supermimic_success_guided_large_v1.sh
+@@ -3,11 +3,12 @@ set -Eeuo pipefail
+ # Code-only delivery: this launcher is not invoked by the CPU validation suite.
+ # A supplied contact receipt is a prerequisite, not generated or marked passed here.
+ export SM_TRAINING_PROFILE=large
+-export SM_CYCLES="${SM_CYCLES:-4}"
+-export SM_RECOVERY_UPDATES="${SM_RECOVERY_UPDATES:-64}"
+-export SM_APPROACH_UPDATES="${SM_APPROACH_UPDATES:-64}"
++export SM_CYCLES="${SM_CYCLES:-1}"
++export SM_RECOVERY_UPDATES="${SM_RECOVERY_UPDATES:-128}"
++export SM_APPROACH_UPDATES="${SM_APPROACH_UPDATES:-128}"
+ export SM_RECOVERY_PROPOSALS="${SM_RECOVERY_PROPOSALS:-256}"
+ export SM_APPROACH_PROPOSALS="${SM_APPROACH_PROPOSALS:-256}"
++: "${SM_ACTION_BALL_CHECKPOINT:?supply the fitted and physically validated action-conditioned ball candidate}"
+ : "${SM_CONTACT_VALIDATION_RECEIPT:?supply checkpoint/contract-matched contact validation evidence}"
+ : "${SM_TASK_REFERENCE_BANK:?supply independently scored v2 reference bank}"
+ : "${SM_TRACKING_WEIGHT:?declare calibrated tracking weight}"
+diff --git a/scripts/train_supermimic_physical_block.py b/scripts/train_supermimic_physical_block.py
+index b163cae..8a5a39a 100644
+--- a/scripts/train_supermimic_physical_block.py
++++ b/scripts/train_supermimic_physical_block.py
+@@ -53,14 +53,16 @@ def main():
+     parser.add_argument('--native-acceptance-receipt',type=Path)
+     parser.add_argument('--training-profile',choices=('bounded','large'),default='bounded')
+     parser.add_argument('--contact-validation-receipt',type=Path)
++    parser.add_argument('--action-ball-checkpoint',type=Path,default=None,
++                        help='Opt-in fitted swept-racket candidate; never silently replaces legacy ball response')
+     parser.add_argument('--resume-start-block',choices=('recovery','approach'),default='recovery',
+                         help='Resume a completed Recovery checkpoint directly at Approach')
+     parser.add_argument('--resume-warmup-ticks',type=int,default=0,
+                         help='Optional native ticks before a resumed stream; zero preserves exact block budgets')
+     parser.add_argument('--actor-update-budget',type=int,default=None,help='Legacy single-block budget')
+-    parser.add_argument('--recovery-update-budget',type=int,default=64,
++    parser.add_argument('--recovery-update-budget',type=int,default=128,
+                         help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
+-    parser.add_argument('--approach-update-budget',type=int,default=64,
++    parser.add_argument('--approach-update-budget',type=int,default=128,
+                         help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
+     parser.add_argument('--joint-update-budget',type=int,default=16)
+     parser.add_argument('--update-mode',choices=('sequential','joint'),default='sequential')
+@@ -69,8 +71,8 @@ def main():
+     parser.add_argument('--refresh-mode',choices=('pair','per-head'),default='pair',
+                         help='pair: R8/A8 then one combined refresh; per-head: integration diagnostic only')
+     parser.add_argument('--ball-side-mode',choices=('shadow','enforce'),default='shadow')
+-    parser.add_argument('--recovery-proposal-budget',type=int,default=128)
+-    parser.add_argument('--approach-proposal-budget',type=int,default=128)
++    parser.add_argument('--recovery-proposal-budget',type=int,default=256)
++    parser.add_argument('--approach-proposal-budget',type=int,default=256)
+     parser.add_argument('--refresh-ticks',type=int,default=800)
+     parser.add_argument('--cycles',type=int,default=1)
+     parser.add_argument('--native-ticks-per-actor-update',type=int,default=16)
+@@ -115,6 +117,8 @@ def main():
+     from quadsmash.rl.supermimic_long_run_contract_v1 import validate_budgets
+     try:validate_budgets(args.recovery_update_budget,args.approach_update_budget,args.recovery_proposal_budget,args.approach_proposal_budget)
+     except ValueError as error:parser.error(str(error))
++    if args.action_ball_checkpoint is not None and args.contact_validation_receipt is None:
++        parser.error('Action-ball candidate requires a current, calibrated native contact-validation receipt')
+     if args.training_profile=='large' and args.contact_validation_receipt is None:parser.error('Large training requires contact-validation-receipt; model-only sensitivity is insufficient')
+     if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
+     if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
+@@ -195,12 +199,13 @@ def run(args):
+         lifecycle_stage(args.output, 'BEFORE_LOAD_PHYSICAL_LOOP')
+         actor,adapter,template,launch,manifest=load_physical_loop(archive=args.archive,
+             physical_checkpoint=args.physical_checkpoint,ball_checkpoint=args.ball_checkpoint,
+-            task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping)
++            task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping,
++            action_ball_checkpoint=args.action_ball_checkpoint)
+         lifecycle_stage(args.output, 'AFTER_LOAD_PHYSICAL_LOOP')
+         contact_validation=None;wm_holdout_lanes=[];runtime_wm_bounds={};runtime_validation_data=None;dual_quality=None;native_value_bank=None
+         if args.contact_validation_receipt is not None:
+             from quadsmash.rl.supermimic_long_run_contract_v1 import verify_contact_receipt
+-            contact_validation=verify_contact_receipt(args.contact_validation_receipt,dict(physical=args.physical_checkpoint,ball=args.ball_checkpoint,task=args.task_checkpoint),manifest['task_contract'])
++            contact_validation=verify_contact_receipt(args.contact_validation_receipt,dict(physical=args.physical_checkpoint,ball=args.ball_checkpoint,task=args.task_checkpoint,**({'action_ball':args.action_ball_checkpoint} if args.action_ball_checkpoint else {})),manifest['task_contract'])
+             write(args.output/'contact_validation_verified.json',contact_validation)
+             if args.training_profile=='large' or 'dual_head_quality' in json.loads(args.contact_validation_receipt.read_text()):
+                 from quadsmash.rl.supermimic_dual_head_quality_v1 import quality_spec
+@@ -254,7 +259,8 @@ def run(args):
+                 observation=observation['policy']
+             if observation.ndim != 2 or observation.shape[-1] != 794:
+                 raise ValueError('Approach start observation is not the 794D public contract')
+-            gate=actor.approach_gate(observation)
++            from quadsmash.rl.supermimic_approach_data_v1 import gate_on_actor_device
++            gate=gate_on_actor_device(actor,observation)
+             if gate.ndim == 2: gate=gate[:,0]
+             # A tiny positive gate is numerically present but does not provide
+             # a useful actor gradient. Singleton/masked batches need only their
+@@ -391,6 +397,32 @@ def run(args):
+         policy_execution=execution_contract()
+         if args.resume_training and resolve_contract(resumed)[0]!=policy_execution:
+             raise ValueError('Resume would change trained recovery gate')
++        def applicable_probe(head,current):
++            from quadsmash.rl.supermimic_evidence_binding_v1 import probe_applicability
++            from quadsmash.rl.supermimic_probe_region_v1 import assess_region
++            probe=dual_quality['native_action_probes'][head]
++            assessment=None
++            if probe.get('validity_region') is not None:
++                def preview(row):
++                    state=as_state(row).branch()
++                    _,final,target=trainer._preview_command(state)
++                    return final,target
++                assessment=assess_region(probe['validity_region'],args.contact_validation_receipt,
++                                         current,adapter,preview,head)
++            return probe_applicability(probe,current,assessment)
++        if args.action_ball_checkpoint is not None:
++            # An offline-fit candidate is never admitted to native Actor updates
++            # using stale pre-candidate action probes or a baseline-only receipt.
++            from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability
++            if dual_quality is None:
++                raise ValueError('Action-ball candidate requires calibrated dual-head physical evidence')
++            version=int(resumed_global.get('accepted',0)) if args.resume_training else 0
++            current=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,version)
++            invalid={head:applicable_probe(head,current)
++                     for head in ('recovery','approach')}
++            if any(not result['current_version_valid'] for result in invalid.values()):
++                write(args.output/'action_ball_native_probe_rejected.json',invalid)
++                raise ValueError('Action-ball candidate lacks CURRENT actor/WM native paired-action evidence')
+         def native_actor_action(observation):
+             return policy_forward(actor,observation['policy'],env.rally,sample=False)[0]
+         def encode_native_value_start(row):
+@@ -487,6 +519,7 @@ def run(args):
+             wm_approach_stage_quota=args.wm_approach_stage_quota,approach_sampling_thresholds=dict(gate=.25,minimum_gate_steps=4,near_distance_m=.30),approach_refresh_interval=args.approach_refresh_interval,
+             wm_recent_policy_window=args.wm_recent_policy_window,wm_recent_tick_window=args.wm_recent_tick_window,
+             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
++            action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()) if args.action_ball_checkpoint else None,
+             tracking_weight=args.tracking_weight,
+             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
+         write(args.output/'config.json',config)
+@@ -590,7 +623,7 @@ def run(args):
+             from quadsmash.rl.supermimic_wm_validation_v1 import runtime_head_check
+             from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability,verify_fit_provenance
+             identity=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,global_accepted_id)
+-            probe=probe_applicability(dual_quality['native_action_probes'][head],identity)
++            probe=applicable_probe(head,identity)
+             fit_provenance=loaded_fit
+             wm=runtime_head_check(adapter,runtime_validation_data,wm_holdout_lanes,launch,head,runtime_wm_bounds[head],
+                 minimum_event_episodes=dual_quality['wm_min_event_episodes'][head])
+@@ -620,6 +653,7 @@ def run(args):
+                 writer.add_scalar('tracking/'+head+'/verified_reference_count',coverage['verified_reference_count'],step)
+                 writer.flush()
+             if not wm['passed'] or not value['passed'] or not probe['current_version_valid'] or not fit_provenance['verified']:
++                write(args.output/'revalidation_required.json',dict(head=head,attempt=attempt,probe=probe,wm=wm,value=value))
+                 save('quality_stopped.pt')
+                 raise RuntimeError(head+' model/probe provenance or independent WM/critic quality failed; actor disabled, no automatic extra fitting')
+             return result
+diff --git a/scripts/validate_supermimic_physical_wm.py b/scripts/validate_supermimic_physical_wm.py
+index 6ba7d6b..e19a90e 100644
+--- a/scripts/validate_supermimic_physical_wm.py
++++ b/scripts/validate_supermimic_physical_wm.py
+@@ -12,6 +12,8 @@ def main():
+     for name in ('archive','physical-checkpoint','ball-checkpoint','task-checkpoint','safety-mapping','packed-data','split-manifest','output'):
+         p.add_argument('--'+name,type=Path,required=True)
+     p.add_argument('--candidate',action='append',default=[],help='NAME=training checkpoint, frozen world state')
++    p.add_argument('--action-ball-checkpoint',type=Path,
++        help='Optional offline-fitted swept-ball candidate; NOT native action-response certification')
+     p.add_argument('--device',default='cpu');p.add_argument('--max-windows',type=int,default=128)
+     a=p.parse_args()
+     if a.max_windows<1:raise ValueError('max-windows must be positive')
+@@ -29,7 +31,8 @@ def main():
+     t,lanes=pairs.unbind(1);at=t[None]+torch.arange(64)[:,None]
+     window={k:v[at,lanes[None]].to(a.device) for k,v in data.items() if v.ndim>=2 and v.shape[:2]==data['episode'].shape}
+     _,adapter,_,launch,_=load_physical_loop(archive=a.archive,physical_checkpoint=a.physical_checkpoint,
+-        ball_checkpoint=a.ball_checkpoint,task_checkpoint=a.task_checkpoint,safety_mapping=a.safety_mapping,device=a.device)
++        ball_checkpoint=a.ball_checkpoint,task_checkpoint=a.task_checkpoint,safety_mapping=a.safety_mapping,
++        action_ball_checkpoint=a.action_ball_checkpoint,device=a.device)
+     baseline={k:v.detach().clone() for k,v in adapter.state_dict().items()}
+     results={}; candidates=[('initial',None)]+[x.split('=',1) for x in a.candidate]
+     aligned=event_aligned_windows(data,val,maximum=a.max_windows)
+diff --git a/tests/test_supermimic_short_alternating.py b/tests/test_supermimic_short_alternating.py
+index a66e56b..9b1e257 100644
+--- a/tests/test_supermimic_short_alternating.py
++++ b/tests/test_supermimic_short_alternating.py
+@@ -177,8 +177,11 @@ def test_launcher_and_configs_match_pair_refresh_and_keep_native_promotion():
+     import json
+     root=Path(__file__).resolve().parents[1]
+     c=json.loads((root/'configs/supermimic_success_guided_v2.json').read_text())
+-    assert c['recovery_updates']==c['approach_updates']==64 and c['head_block_size']==8
+-    assert c['refresh_mode']=='pair' and c['frozen_refresh']['collections_per_cycle']==8
++    assert c['recovery_updates']==c['approach_updates']==128 and c['head_block_size']==8
++    assert c['refresh_mode']=='pair' and c['frozen_refresh']['collections_per_cycle']==16
++    assert c['actor_updates_total']==c['recovery_updates']+c['approach_updates']==256
++    outer=(root/'scripts/run_supermimic_success_guided_large_v1.sh').read_text()
++    assert 'SM_CYCLES:-1' in outer and 'SM_RECOVERY_UPDATES:-128' in outer and 'SM_APPROACH_UPDATES:-128' in outer
+     assert c['imagination_s']==.64 and c['world_window_s']==.16
+     shell=(root/'scripts/run_supermimic_phase1_long_v1.sh').read_text()
+     assert '--sequential-layout short-alternating' in shell
+diff --git a/tests/test_supermimic_wm_validation.py b/tests/test_supermimic_wm_validation.py
+index 336910e..60f2e9a 100644
+--- a/tests/test_supermimic_wm_validation.py
++++ b/tests/test_supermimic_wm_validation.py
+@@ -20,7 +20,8 @@ def fixture():
+ 
+ def test_autoregression_does_not_feed_future_labels(monkeypatch):
+     adapter,w,launch=fixture();seen=[]
+-    def transition(base,ball,s,u,prev,feet,present,elapsed,launch):
++    def transition(base,ball,s,u,prev,feet,present,elapsed,launch,*,action_model=None):
++        assert action_model is None
+         seen.append(s.clone());return s.clone(),feet.clone(),present.clone()
+     monkeypatch.setattr(validation,'ball_transition',transition)
+     w['next_state'][:,:,0]=10.
+@@ -45,7 +46,8 @@ def test_native_stage_labels_do_not_call_pending_ball_side_failure():
+ 
+ def test_action_condition_diagnostic_detects_robot_response_but_no_direct_ball_response(monkeypatch):
+     adapter,w,launch=fixture()
+-    def transition(base,ball,s,u,prev,feet,present,elapsed,launch):
++    def transition(base,ball,s,u,prev,feet,present,elapsed,launch,*,action_model=None):
++        assert action_model is None
+         s=s.clone();s[:,13:31]+=u
+         return s,feet,present
+     monkeypatch.setattr(validation,'ball_transition',transition)
+diff --git a/quadsmash/rl/supermimic_action_ball_v1.py b/quadsmash/rl/supermimic_action_ball_v1.py
+new file mode 100644
+index 0000000..8691310
+--- /dev/null
++++ b/quadsmash/rl/supermimic_action_ball_v1.py
+@@ -0,0 +1,77 @@
++"""Opt-in, supervised action-conditioned racket-sweep correction.
++
++Uses the predicted post-command robot pose (not future/native labels) and
++native racket geometry to estimate a soft collision support. Legacy ball
++predictions remain byte-for-byte unchanged unless a verified candidate is
++explicitly loaded. This is a differentiable surrogate, not a PhysX solver.
++"""
++import torch
++from torch import nn
++from .supermimic_ball_residual_v1 import ball_geometry_features
++from .supermimic_ball_geometry_preview_v1 import BallGeometryPreviewV1
++from .supermimic_v1 import MLP
++
++
++def preimpact_hard_negatives(contact_edge, episode, terminated, timeout):
++    """Offline replay label for the transition immediately before a hit edge.
++
++    Never consumed by Actor/WM forward; does not cross a reset boundary.
++    """
++    if not (contact_edge.shape==episode.shape==terminated.shape==timeout.shape):
++        raise ValueError('Preimpact label shape mismatch')
++    out=torch.zeros_like(contact_edge,dtype=torch.bool)
++    out[:-1]=contact_edge[1:].bool()&(episode[:-1]==episode[1:])&~(
++        terminated[:-1].bool()|timeout[:-1].bool())
++    return out&~contact_edge.bool()
++
++
++class ActionConditionedBallV1(nn.Module):
++    schema = 'action-conditioned-racket-sweep-v1'
++    feature_dim = 48
++
++    def __init__(self, *, preview=None, hidden=(128, 128), softness_m=0.008):
++        super().__init__()
++        if not 0 < softness_m <= 0.05:
++            raise ValueError('Racket sweep support width must be in (0, 0.05] m')
++        self.preview = preview if preview is not None else BallGeometryPreviewV1()
++        self.softness_m = float(softness_m)
++        self.head = MLP(self.feature_dim, hidden, 6)
++        nn.init.zeros_(self.head.net[-1].weight)
++        nn.init.zeros_(self.head.net[-1].bias)
++        one = [3.]*3 + [12.]*3 + [.2]*3 + [12.]*3 + [1.]*3 + [8.]*3 + [15.]*3
++        self.register_buffer('input_scale', torch.tensor(one+one+[.03]*3+[.1]*3))
++        self.register_buffer('output_scale', torch.tensor([.05]*3+[10.]*3))
++
++    def forward(self, state, predicted_robot, free_ball, geometry, present, *, details=False):
++        """Predict [B,6] additional ball correction from current to next pose.
++
++        state is the current 55D physical state, predicted_robot is 55D after
++        the learned robot dynamics for the current final joint target, and
++        free_ball is [B,6] from the causal free-flight model. No future native
++        observations, events, or contact labels are consumed.
++        """
++        if state.ndim != 2 or state.shape[1] != 55 or predicted_robot.shape != state.shape:
++            raise ValueError('Sweep requires [batch,55] current and predicted robot states')
++        if free_ball.shape != (len(state),6) or present.numel() != len(state):
++            raise ValueError('Sweep free-flight/ball-presence batch mismatch')
++        current = ball_geometry_features(state, geometry)
++        future = ball_geometry_features(torch.cat((predicted_robot[:, :49], free_ball),-1), geometry)
++        first = current[:, 6:9]
++        last = future[:, 6:9]
++        middle = (first + last) * .5
++        gaps = torch.stack((self.preview.racket_gap(first),
++                            self.preview.racket_gap(middle),
++                            self.preview.racket_gap(last)),-1)
++        # Soft minimum keeps the impulse pathway differentiable near grazing
++        # trajectories; the original collision geometry is not enlarged.
++        smallest = -self.softness_m * torch.logsumexp(-gaps/self.softness_m,-1)
++        support = torch.sigmoid(-smallest/self.softness_m)
++        features = torch.cat((current[:, :21],future[:, :21],gaps,last-first),-1)
++        normalized = (features/self.input_scale).clamp(-30.,30.)
++        residual = (self.head(normalized)*self.output_scale)*support[:,None]*present.reshape(-1,1).to(state.dtype)
++        if not torch.isfinite(residual).all():
++            raise FloatingPointError('Nonfinite action-conditioned ball response')
++        if details:
++            return residual, dict(support=support, gaps=gaps,
++                                  local_displacement=last-first)
++        return residual
+diff --git a/quadsmash/rl/supermimic_native_pair_capture_v1.py b/quadsmash/rl/supermimic_native_pair_capture_v1.py
+new file mode 100644
+index 0000000..a429586
+--- /dev/null
++++ b/quadsmash/rl/supermimic_native_pair_capture_v1.py
+@@ -0,0 +1,67 @@
++"""Read-only paired-prefix capture. Only an explicit diagnostic evaluation uses it."""
++import hashlib,json
++from pathlib import Path
++import torch
++from .supermimic_physical_capture_v1 import capture_state,capture_controller,tensor_tree_copy
++from .supermimic_physical_dataset_v1 import encode_physical
++
++BRANCHES=('nominal_a','nominal_b','minus','plus')
++
++def tree_digest(value):
++    h=hashlib.sha256()
++    def visit(x):
++        if isinstance(x,torch.Tensor):
++            t=x.detach().cpu().contiguous();h.update(str((t.dtype,tuple(t.shape))).encode());h.update(t.reshape(-1).view(torch.uint8).numpy().tobytes())
++        elif isinstance(x,dict):
++            for key in sorted(x):h.update(str(key).encode());visit(x[key])
++        elif isinstance(x,(tuple,list)):
++            for v in x:visit(v)
++        else:h.update(repr(x).encode())
++    visit(value);return h.hexdigest()
++
++def validate_spec(spec):
++    if spec.get('schema')!='native-paired-prefix-spec-v1':raise ValueError('Unknown probe spec')
++    if type(spec.get('tick'))is not int or not 1<=spec['tick']<799:raise ValueError('Probe tick must be within original episode')
++    if type(spec.get('lane'))is not int or not 0<=spec['lane']<128:raise ValueError('Probe lane outside original128')
++    direction=torch.tensor(spec['request_direction'],dtype=torch.float64)
++    if direction.shape!=(18,) or not torch.isfinite(direction).all() or not direction.norm()>0:raise ValueError('Need finite nonzero18D request direction')
++    epsilon=spec['epsilon_request']
++    if not isinstance(epsilon,(int,float)) or not 0<epsilon<=2:raise ValueError('Declare a positive request perturbation, no actuator changes')
++    if spec.get('head') not in ('recovery','approach'):raise ValueError('Unknown head')
++    return spec
++
++class NativePairCapture:
++    def __init__(self,spec,branch):
++        self.spec=validate_spec(spec);self.branch=branch
++        if branch not in BRANCHES:raise ValueError('Unknown probe branch')
++        self.prefix=hashlib.sha256();self.start=None;self.raw=None
++    def before(self,tick,env,observation,request):
++        if tick==self.spec['tick']:
++            state=capture_state(env)
++            self.start=tensor_tree_copy(dict(before=state,observation=observation,executor_before=capture_controller(env._sm_residual_controller)),cpu=True)
++            self.prefix.update(tree_digest(self.start).encode())
++            action=request.clone();sign={'nominal_a':0.,'nominal_b':0.,'minus':-1.,'plus':1.}[self.branch]
++            action[self.spec['lane']]+=sign*self.spec['epsilon_request']*request.new_tensor(self.spec['request_direction'])
++            self.request_before=request.detach().cpu().clone();self.request_after=action.clamp(-1,1).detach().cpu().clone()
++            return action.clamp(-1,1)
++        self.prefix.update(tree_digest(dict(observation=observation,request=request,physical=capture_state(env)['physical'])).encode())
++        return request
++    def after(self,tick,env,done):
++        if tick<self.spec['tick']:
++            self.prefix.update(tree_digest(dict(targets=env._sm_joint_targets,final=env._sm_final_action,done=done)).encode())
++        elif tick==self.spec['tick']:
++            if done.bool().any():raise ValueError('Probe crosses terminal/reset; reject counterfactual')
++            self.raw=tensor_tree_copy(dict(start=self.start,next_state=encode_physical(capture_state(env)['physical']),
++                final_joint_targets=env._sm_joint_targets,final_normalized=env._sm_final_action,request_before=self.request_before,
++                request_after=self.request_after,task_after=capture_state(env)['task']),cpu=True)
++    def save(self,output,actor,task_contract,policy_execution,physics,seed):
++        if self.raw is None:raise ValueError('Native probe did not finish')
++        from .supermimic_evidence_binding_v1 import runtime_identity
++        static=runtime_identity(actor,torch.nn.Identity(),task_contract,policy_execution,0)
++        value=dict(execution_code_sha256=static['execution_code_sha256'],schema='native-paired-prefix-run-v1',branch=self.branch,spec=self.spec,raw=self.raw,
++            prefix_sha256=self.prefix.hexdigest(),executor_before_sha256=tree_digest(self.start['executor_before']),
++            actor_state=tensor_tree_copy(actor.state_dict(),cpu=True),task_contract=task_contract,policy_execution=policy_execution,
++            physics=physics,seed=seed,restore_mode='from-ground-identical-prefix',actor_updates=0,world_updates=0,critic_updates=0)
++        path=Path(output)/'native_probe.pt';tmp=path.with_suffix('.tmp');torch.save(value,tmp);tmp.replace(path)
++        (Path(output)/'native_probe_manifest.json').write_text(json.dumps(dict(schema=value['schema'],branch=self.branch,
++            spec=self.spec,sha256=hashlib.sha256(path.read_bytes()).hexdigest(),scope='diagnostic only; no score; requires four-branch comparison'),indent=2)+'\n')
+diff --git a/quadsmash/rl/supermimic_probe_region_v1.py b/quadsmash/rl/supermimic_probe_region_v1.py
+new file mode 100644
+index 0000000..44e4f50
+--- /dev/null
++++ b/quadsmash/rl/supermimic_probe_region_v1.py
+@@ -0,0 +1,118 @@
++"""Re-evaluate current dynamics on immutable native paired-prefix evidence.
++
++This is a bounded empirical validity region, not a physical safety guarantee.
++No new optimizer step, native run, threshold fitting or implicit evidence renewal.
++"""
++import hashlib, math, json
++from pathlib import Path
++import torch
++from .supermimic_ball_sequence_v1 import ball_transition
++from .supermimic_physical_loop_loading_v1 import tensor_digest
++
++STATIC=('execution_code_sha256','schema','task_contract_sha256','policy_execution')
++METRICS=('native_repeat_max','native_response_min','response_rmse_max','response_cosine_min',
++         'response_relative_error_max','final_normalized_command_delta_max','final_joint_target_delta_rad_max','accepted_update_age_max')
++
++def load_region(spec,receipt_path):
++    path=Path(receipt_path).parent/spec['path']
++    if hashlib.sha256(path.read_bytes()).hexdigest()!=spec['sha256']:raise ValueError('Native probe bundle hash mismatch')
++    bundle=torch.load(path,map_location='cpu',weights_only=True)
++    if bundle.get('schema')!='native-paired-prefix-region-v1':raise ValueError('Unknown native probe region schema')
++    limits=spec['limits']
++    for key in METRICS:
++        if not isinstance(limits.get(key),(int,float)) or not math.isfinite(limits[key]):raise ValueError('Missing finite calibrated bound: '+key)
++    if limits['native_response_min']<=0 or limits['native_repeat_max']<0 or not -1<=limits['response_cosine_min']<=1:
++        raise ValueError('Invalid native probe bounds')
++    if any(limits[k]<0 for k in METRICS if k.endswith('_max')):raise ValueError('Negative validity bound')
++    calibration=spec.get('calibration')
++    if not calibration:raise ValueError('Missing predeclared limit calibration provenance')
++    raw=(Path(receipt_path).parent/calibration['path']).read_bytes()
++    if hashlib.sha256(raw).hexdigest()!=calibration['sha256']:raise ValueError('Calibration provenance hash mismatch')
++    evidence=json.loads(raw)
++    if evidence.get('limits')!=limits or evidence.get('probe_sha256')!=spec['sha256']:
++        raise ValueError('Bounds must match recorded independent calibration')
++    if not evidence.get('heldout_episode_ids') or not evidence.get('calibration_episode_ids') or set(evidence['heldout_episode_ids'])&set(evidence['calibration_episode_ids']):
++        raise ValueError('Independent calibration/holdout identity required')
++    if not bundle.get('sample_ids') or not set(bundle['sample_ids'])<=set(evidence['heldout_episode_ids']):
++        raise ValueError('Native probe samples not bound to heldout episode identities')
++    if type(spec.get('minimum_samples')) is not int or spec['minimum_samples']<1:raise ValueError('Declare minimum native probe support')
++    if len(bundle['pairs']['state'])<spec['minimum_samples']:raise ValueError('Insufficient native probe coverage')
++    return bundle,limits
++
++def paired_metrics(adapter,pairs,head,limits):
++    """All commands here are measured FINAL commands, not requested perturbations.
++
++    nominal_a/b are independent from-ground same-prefix replays. Branch start
++    state and execution-memory hashes must match; a 55D snapshot is insufficient.
++    """
++    device=next(adapter.parameters()).device
++    p={k:v.to(device) if isinstance(v,torch.Tensor) else v for k,v in pairs.items()}
++    required=('state','targets_minus','targets_plus','previous_action','feet','present','elapsed','launch',
++              'native_minus','native_plus','native_nominal_a','native_nominal_b')
++    if any(k not in p for k in required):raise ValueError('Incomplete measured native probe pairs')
++    if not len(p['state']) or any(not torch.isfinite(p[k]).all() for k in required):raise ValueError('Empty/nonfinite native probe')
++    hashes=p.get('prefix_sha256',{});mem=p.get('executor_before_sha256',{})
++    for values in (hashes,mem):
++        if set(values)!=set(('nominal_a','nominal_b','minus','plus')) or any(not x for x in values.values()) or len(set(values.values()))!=1:
++            raise ValueError('Same-prefix/controller repeatability missing; do not substitute snapshot restore')
++    if p.get('restore_mode')!='from-ground-identical-prefix':raise ValueError('Unsupported native restoration claim')
++    predictions=[]
++    with torch.no_grad():
++        for name in ('targets_minus','targets_plus'):
++            state,feet,_=ball_transition(adapter.physical_model,adapter.ball_model,p['state'],p[name],p['previous_action'],p['feet'],p['present'],p['elapsed'],p['launch'],action_model=getattr(adapter,'action_ball_model',None))
++            predictions.append(state)
++    selection=slice(52,55) if head=='approach' else slice(10,13)
++    native=(p['native_plus']-p['native_minus'])[:,selection]
++    predicted=(predictions[1]-predictions[0])[:,selection]
++    repeat=float((p['native_nominal_a']-p['native_nominal_b']).abs().max())
++    target_delta=(p['targets_plus']-p['targets_minus']).norm(dim=-1)
++    norms=native.norm(dim=-1);supported=(norms>=limits['native_response_min'])&(target_delta>0)
++    missing=int((~supported).sum());failures=[]
++    if repeat>limits['native_repeat_max']:failures.append('native-repeatability')
++    if missing:failures.append('saturated-or-native-response-below-support')
++    # No silent filtering of hard or saturated probes to inflate pass rate.
++    cosine=(native*predicted).sum(-1)/(norms*predicted.norm(dim=-1)).clamp_min(1e-12)
++    relative=(predicted-native).norm(dim=-1)/norms.clamp_min(1e-12)
++    rmse=float((predicted-native).square().mean().sqrt())
++    if rmse>limits['response_rmse_max']:failures.append('response-rmse')
++    if float(cosine.min())<limits['response_cosine_min']:failures.append('response-direction')
++    if float(relative.max())>limits['response_relative_error_max']:failures.append('response-amplitude')
++    # True local model Jacobian projected onto measured executable perturbation.
++    with torch.enable_grad():
++        target=((p['targets_plus']+p['targets_minus'])/2).detach().requires_grad_(True)
++        y,_,_=ball_transition(adapter.physical_model,adapter.ball_model,p['state'],target,p['previous_action'],p['feet'],p['present'],p['elapsed'],p['launch'],action_model=getattr(adapter,'action_ball_model',None))
++        grads=[torch.autograd.grad(y[:,selection][:,j].sum(),target,retain_graph=True,allow_unused=True)[0] for j in range(3)]
++        jac=torch.stack([torch.zeros_like(target) if g is None else g for g in grads],1)
++        projected=(jac*(p['targets_plus']-p['targets_minus'])[:,None]).sum(-1)
++    if not torch.isfinite(projected).all():failures.append('nonfinite-jacobian')
++    jac_cos=(projected*native).sum(-1)/(projected.norm(dim=-1)*norms).clamp_min(1e-12)
++    if float(jac_cos.min())<limits['response_cosine_min']:failures.append('local-jacobian-direction')
++    return dict(native_contact_modes=p.get('native_contact_modes','unknown'),passed=not failures,failures=failures,count=len(native),unsupported_count=missing,
++        native_repeat_max=repeat,response_rmse=rmse,response_cosine=cosine.tolist(),relative_error=relative.tolist(),
++        jacobian_cosine=jac_cos.detach().tolist(),native_delta=native.tolist(),model_delta=predicted.tolist(),
++        projected_jacobian=projected.detach().tolist(),scope='measured final-command pair on repeated native prefix; contact-mode switches reported in raw evidence')
++
++def assess_region(spec,receipt_path,current,adapter,command_preview,head):
++    """command_preview(raw_current_start) restores a separate G07 branch each call."""
++    bundle,limits=load_region(spec,receipt_path);origin=bundle['runtime_identity']
++    if bundle.get('head')!=head:raise ValueError('Native probe belongs to different head')
++    failures=[key for key in STATIC if origin.get(key)!=current.get(key)]
++    age=current['policy_version']-origin['policy_version']
++    if age<0 or age>limits['accepted_update_age_max']:failures.append('policy-age')
++    if tensor_digest(bundle['actor_state'].items())!=origin['actor_state_sha256']:raise ValueError('Probe actor anchor identity mismatch')
++    starts=bundle.get('command_starts',[])
++    if not starts:raise ValueError('Missing full current-state/executor command drift library')
++    normalized=targets=0.
++    with torch.no_grad():
++        for item in starts:
++            final,target=command_preview(item['start'])
++            normalized=max(normalized,float((final.cpu()-item['final_normalized']).abs().max()))
++            targets=max(targets,float((target.cpu()-item['final_joint_targets']).abs().max()))
++    if normalized>limits['final_normalized_command_delta_max']:failures.append('executed-normalized-command-drift')
++    if targets>limits['final_joint_target_delta_rad_max']:failures.append('executed-joint-target-drift')
++    measured=paired_metrics(adapter,bundle['pairs'],head,limits)
++    failures+=measured['failures']
++    return dict(passed=not failures,failures=failures,current_identity=current,evidence_sha256=spec['sha256'],
++        origin_identity=origin,accepted_update_age=age,final_normalized_command_delta=normalized,
++        final_joint_target_delta_rad=targets,metrics=measured,limits=limits,
++        scope='current model rechecked against immutable native responses plus bounded policy drift; not an exact current-policy value guarantee')
+diff --git a/scripts/build_supermimic_probe_region.py b/scripts/build_supermimic_probe_region.py
+new file mode 100644
+index 0000000..4948453
+--- /dev/null
++++ b/scripts/build_supermimic_probe_region.py
+@@ -0,0 +1,58 @@
++#!/usr/bin/env python3
++"""Bundle FOUR actual same-prefix native diagnostics, never synthesize PhysX responses.
++
++This constructs immutable evidence, not an automatic passing receipt. The quality
++receipt must declare independently calibrated bounds and reference this file hash.
++"""
++import argparse,hashlib,json
++from pathlib import Path
++import torch
++from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES,tree_digest
++from quadsmash.rl.supermimic_physical_dataset_v1 import encode_physical
++from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
++
++def build(paths,identity,output):
++    runs={k:torch.load(paths[k],map_location='cpu',weights_only=True) for k in BRANCHES}
++    base=runs['nominal_a']
++    for branch,run in runs.items():
++        if run.get('schema')!='native-paired-prefix-run-v1' or run.get('branch')!=branch:raise ValueError('Not an actual branch record')
++        for key in ('spec','seed','task_contract','policy_execution','physics','prefix_sha256','executor_before_sha256','execution_code_sha256'):
++            if run.get(key)!=base.get(key):raise ValueError('Native paired-prefix mismatch: '+key)
++        if any(run.get(k)!=0 for k in ('actor_updates','world_updates','critic_updates')):raise ValueError('Probe weights were updated')
++        if tree_digest(run['actor_state'])!=tree_digest(base['actor_state']):raise ValueError('Different native actors')
++    if base['execution_code_sha256']!=identity['execution_code_sha256']:raise ValueError('Runtime/probe code differs')
++    if tensor_digest(base['actor_state'].items())!=identity['actor_state_sha256']:raise ValueError('Runtime identity actor mismatch')
++    from quadsmash.rl.supermimic_evidence_binding_v1 import json_sha
++    if json_sha(base['task_contract'])!=identity['task_contract_sha256'] or base['policy_execution']!=identity['policy_execution']:
++        raise ValueError('Probe/runtime task or execution mismatch')
++    row=base['raw']['start'];physical=row['before']['physical'];lane=base['spec']['lane'];sl=slice(lane,lane+1)
++    suite=base['task_contract']['suite'];path=Path(suite['path'])
++    if not path.is_absolute():path=Path(__file__).resolve().parents[1]/path
++    if hashlib.sha256(path.read_bytes()).hexdigest()!=suite['sha256']:raise ValueError('Suite hash mismatch')
++    cases=json.loads(path.read_text())['cases'];launch=torch.tensor([c['launch']['position_m']+c['launch']['velocity_mps'] for c in cases])
++    pairs=dict(state=encode_physical(physical)[sl],previous_action=physical['final_action'][sl],
++        feet=physical['foot_contact'][sl].float(),present=physical['ball_present'][sl],elapsed=physical['elapsed_s'][sl],launch=launch[sl],
++        restore_mode=base['restore_mode'],prefix_sha256={k:v['prefix_sha256'] for k,v in runs.items()},
++        executor_before_sha256={k:v['executor_before_sha256'] for k,v in runs.items()})
++    for branch,run in runs.items():pairs['native_'+branch]=run['raw']['next_state'][sl]
++    for branch in ('minus','plus'):pairs['targets_'+branch]=runs[branch]['raw']['final_joint_targets'][sl]
++    def modes(run):
++        task=run['raw']['task_after']
++        return {k:(v[lane].tolist() if isinstance(v,torch.Tensor) and v.ndim else v) for k,v in task.items()
++                if k in ('had_contact','released','frame_hit','legal_initial_contact','string_hit','airborne_string_hit','rally_fault')}
++    pairs['native_contact_modes']={k:modes(v) for k,v in runs.items()}
++    sample_id=f"{identity['actor_state_sha256']}:{base['seed']}:{lane}:{int(row['before']['episode_index'][lane])}"
++    evidence=dict(sample_ids=[sample_id],schema='native-paired-prefix-region-v1',runtime_identity=identity,actor_state=base['actor_state'],pairs=pairs,
++        command_starts=[dict(start=row,final_normalized=base['raw']['final_normalized'],final_joint_targets=base['raw']['final_joint_targets'])],
++        source_sha256={k:hashlib.sha256(Path(p).read_bytes()).hexdigest() for k,p in paths.items()},
++        source_paths={k:str(Path(p).resolve()) for k,p in paths.items()},
++        head=base['spec']['head'],scope='one measured probe; broader validity needs independent state/event coverage; no automatic pass')
++    output=Path(output)
++    with output.open('xb') as f:torch.save(evidence,f)
++    return dict(path=str(output),sha256=hashlib.sha256(output.read_bytes()).hexdigest(),native_probe_count=1,passed=None)
++
++if __name__=='__main__':
++    p=argparse.ArgumentParser(description=__doc__)
++    for branch in BRANCHES:p.add_argument('--'+branch.replace('_','-'),type=Path,required=True)
++    p.add_argument('--runtime-identity',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
++    a=p.parse_args();print(json.dumps(build({k:getattr(a,k) for k in BRANCHES},json.loads(a.runtime_identity.read_text()),a.output),indent=2))
+diff --git a/scripts/fit_supermimic_action_ball.py b/scripts/fit_supermimic_action_ball.py
+new file mode 100644
+index 0000000..c1363dc
+--- /dev/null
++++ b/scripts/fit_supermimic_action_ball.py
+@@ -0,0 +1,197 @@
++#!/usr/bin/env python3
++"""Offline fit of an opt-in swept-racket ball candidate; never updates Actor/PhysX.
++
++No native paired perturbations are performed. The resulting candidate must be
++validated physically before it is allowed to support policy training.
++"""
++import argparse
++import hashlib
++import json
++from pathlib import Path
++import torch
++from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
++from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
++from quadsmash.rl.supermimic_ball_residual_v1 import ball_geometry_features
++from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,preimpact_hard_negatives
++from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
++from quadsmash.rl.supermimic_wm_validation_v1 import event_aligned_windows
++
++
++def sha256(path):
++    h=hashlib.sha256()
++    with Path(path).open('rb') as handle:
++        for block in iter(lambda:handle.read(1<<20),b''):
++            h.update(block)
++    return h.hexdigest()
++
++
++def one_step(base,ball,sweep,data,pairs,launch):
++    t,l=pairs.to(launch.device).unbind(1)
++    state=data['state'][t,l];target=data['targets'][t,l]
++    other=[data[k][t,l] for k in ('previous_action','feet','present','elapsed')]
++    prediction,_,_=ball_transition(base,ball,state,target,*other,launch[l],action_model=sweep)
++    truth=data['next_state'][t,l,49:55]
++    return prediction[:,49:55],truth
++
++
++def metrics(base,ball,sweep,data,metadata,lanes,launch,*,maximum=128):
++    groups=event_aligned_windows(metadata,lanes,horizon=64,offsets=(-1,0,1),maximum=maximum)
++    out={}
++    with torch.no_grad():
++        for offset,entry in groups.items():
++            pairs=entry['starts']
++            if not len(pairs):
++                out[offset]=dict(count=0,velocity_rmse=None,forward_sign_error=None)
++                continue
++            pred,true=one_step(base,ball,sweep,data,pairs,launch)
++            out[offset]=dict(count=len(pairs),
++                velocity_rmse=float((pred[:,3:]-true[:,3:]).square().mean().sqrt()),
++                forward_sign_error=float(((pred[:,3]>0)!=(true[:,3]>0)).float().mean()),
++                position_rmse=float((pred[:,:3]-true[:,:3]).square().mean().sqrt()))
++    return out
++
++
++@torch.no_grad()
++def autoregressive_metrics(base,ball,sweep,data,metadata,lanes,launch):
++    groups=event_aligned_windows(metadata,lanes,horizon=64,offsets=(-1,0,1),maximum=128)
++    result={}
++    for offset,item in groups.items():
++        pairs=item['starts'].to(launch.device)
++        if not len(pairs):result[offset]={'count':0,'errors':None};continue
++        t,l=pairs.unbind(1);state=data['state'][t,l];feet=data['feet'][t,l].float();present=data['present'][t,l]
++        errors={}
++        for step in range(64):
++            state,feet,present=ball_transition(base,ball,state,data['targets'][t+step,l],data['previous_action'][t+step,l],
++                feet,present,data['elapsed'][t+step,l],launch[l],action_model=sweep)
++            if not torch.isfinite(state).all():raise FloatingPointError('Nonfinite64-step heldout ball rollout')
++            if step+1 in (1,4,16,32,64):
++                true=data['next_state'][t+step,l]
++                errors[str(step+1)]=dict(velocity_rmse=float((state[:,52:55]-true[:,52:55]).square().mean().sqrt()),
++                    position_rmse=float((state[:,49:52]-true[:,49:52]).square().mean().sqrt()),
++                    forward_sign_error=float(((state[:,52]>0)!=(true[:,52]>0)).float().mean()))
++        result[offset]=dict(count=len(pairs),starts=pairs.tolist(),errors=errors)
++    return result
++
++
++def sensitivity(base,ball,sweep,data,pairs,launch):
++    if not len(pairs):return dict(count=0,gradient_norm=None)
++    t,l=pairs.to(launch.device).unbind(1)
++    state=data['state'][t,l]
++    target=data['targets'][t,l].detach().clone().requires_grad_(True)
++    other=[data[k][t,l] for k in ('previous_action','feet','present','elapsed')]
++    pred,_,_=ball_transition(base,ball,state,target,*other,launch[l],action_model=sweep)
++    gradients=[torch.autograd.grad(pred[:,52+j].sum(),target,retain_graph=True,allow_unused=True)[0] for j in range(3)]
++    g=torch.stack([target.new_zeros(target.shape) if v is None else v for v in gradients],1)[:,:,12:18]
++    return dict(count=len(pairs),gradient_norm=float(g.norm()),
++        mean_per_case_norm=float(g.flatten(1).norm(dim=-1).mean()),finite=bool(torch.isfinite(g).all()))
++
++
++def main():
++    p=argparse.ArgumentParser(description=__doc__)
++    for name in ('physical-checkpoint','ball-checkpoint','packed-data','split-manifest','output'):
++        p.add_argument('--'+name,required=True,type=Path)
++    p.add_argument('--updates',type=int,default=400)
++    p.add_argument('--batch',type=int,default=128)
++    p.add_argument('--device',default='cuda:0')
++    a=p.parse_args()
++    if a.output.exists():raise FileExistsError(a.output)
++    if a.updates<1 or a.batch<4 or a.batch%4:raise ValueError('Positive updates and batch multiple of four required')
++    a.output.mkdir(parents=True)
++    device=torch.device(a.device)
++    physical_checkpoint=torch.load(a.physical_checkpoint,map_location='cpu',weights_only=True)
++    if physical_checkpoint['schema']!=PhysicalWorldV2.schema:raise ValueError('Expected physical55 v2')
++    source=physical_checkpoint['source_manifest']['task_contract']
++    asset_sha=source['asset']['sha256']
++    base=PhysicalWorldV2(asset_sha).to(device)
++    base.load_state_dict(physical_checkpoint['model'],strict=True)
++    legacy_checkpoint=torch.load(a.ball_checkpoint,map_location='cpu',weights_only=True)
++    if legacy_checkpoint['schema']!=BallResidualV2.schema:raise ValueError('Expected ball residual v2')
++    ball=BallResidualV2().to(device)
++    ball.load_state_dict(legacy_checkpoint['model'],strict=True)
++    base.eval().requires_grad_(False);ball.eval().requires_grad_(False)
++    sweep=ActionConditionedBallV1().to(device)
++    package=torch.load(a.packed_data,map_location='cpu',weights_only=True)
++    manifest=package.get('source_manifest',package.get('manifest',{}))
++    if manifest.get('task_contract')!=source:
++        raise ValueError('Packed data task/asset/execution contract is missing or differs from physical model')
++    metadata=package['tensors']
++    required=('state','next_state','targets','previous_action','feet','present','elapsed',
++              'event_state','next_event_state','episode','terminated','timeout')
++    if any(name not in metadata for name in required):raise ValueError('Packed data missing transition field')
++    split=json.loads(a.split_manifest.read_text());train=set(split['train_lanes']);val=set(split['validation_lanes'])
++    lanes=metadata['state'].shape[1]
++    if not train or not val or train&val or min(train|val)<0 or max(train|val)>=lanes:
++        raise ValueError('Train/validation lanes must be disjoint and in range')
++    suite=source['suite'];path=Path(suite['path'])
++    path=path if path.is_absolute() else Path(__file__).resolve().parents[1]/path
++    if sha256(path)!=suite['sha256']:raise ValueError('Suite hash mismatch')
++    cases=json.loads(path.read_text())['cases']
++    if len(cases)!=lanes:raise ValueError('Packed lane order must match case order')
++    launch=torch.tensor([c['launch']['position_m']+c['launch']['velocity_mps'] for c in cases],device=device)
++    data={k:v.to(device) for k,v in metadata.items()}
++    events=(data['next_event_state'][...,1]>data['event_state'][...,1]) | (
++        data['next_event_state'][...,6]>data['event_state'][...,6])
++    mask=torch.zeros(lanes,dtype=torch.bool,device=device);mask[list(train)]=True
++    eligible=data['present'].bool()&mask[None]
++    positive=(eligible&events).nonzero()
++    # The native event edge occurs in the NEXT recorded transition. Its
++    # previous transition is a hard negative; training on it prevents the
++    # model from inventing a bounce one control tick too early.
++    preceding=preimpact_hard_negatives(events,data['episode'],data['terminated'],data['timeout'])
++    hard_negative=(eligible&preceding&~events).nonzero()
++    negative=(eligible&~events&~preceding).nonzero()
++    if min(len(positive),len(negative),len(hard_negative))<8:
++        raise ValueError('Need real racket contacts and pre-contact hard negatives')
++    if not len(event_aligned_windows(metadata,val,horizon=64,offsets=(0,),maximum=1)['0']['starts']):
++        raise ValueError('No heldout contact edge for candidate validation')
++    initial=metrics(base,ball,None,data,metadata,val,launch)
++    initial_ar=autoregressive_metrics(base,ball,None,data,metadata,val,launch)
++    generator=torch.Generator(device=device).manual_seed(20261117)
++    optimizer=torch.optim.Adam(sweep.head.parameters(),lr=2e-4)
++    history=[]
++    for update in range(1,a.updates+1):
++        def draw(pool,n):return pool[torch.randint(len(pool),(n,),device=device,generator=generator)]
++        pairs=torch.cat((draw(positive,a.batch//2),draw(hard_negative,a.batch//4),draw(negative,a.batch//4)))
++        t,l=pairs.unbind(1)
++        state=data['state'][t,l];targets=data['targets'][t,l]
++        with torch.no_grad():
++            physical,_,_=base(state,targets,data['previous_action'][t,l],
++                data['feet'][t,l].float(),data['present'][t,l],data['elapsed'][t,l],launch[l])
++            prior,_=base.prior(state,data['present'][t,l],data['elapsed'][t,l],launch[l])
++            legacy,_=ball(ball_geometry_features(state,base.geometry),data['present'][t,l])
++            baseline=prior[:,49:]+legacy
++        correction=sweep(state,physical,prior[:,49:],base.geometry,data['present'][t,l])
++        predicted=baseline+correction
++        true=data['next_state'][t,l,49:]
++        scale=predicted.new_tensor([.1,.1,.1,2.,2.,2.])
++        error=((predicted-true)/scale).square().mean(-1)
++        loss=4.*error[:a.batch//2].mean()+error[a.batch//2:].mean()+.02*correction[a.batch//2:].square().mean()
++        if not torch.isfinite(loss):raise FloatingPointError('Nonfinite action-ball fitting loss')
++        optimizer.zero_grad(set_to_none=True);loss.backward()
++        gradient=torch.nn.utils.clip_grad_norm_(sweep.head.parameters(),10.,error_if_nonfinite=True)
++        optimizer.step()
++        if update==1 or update%25==0 or update==a.updates:
++            history.append(dict(update=update,loss=float(loss.detach()),gradient=float(gradient.detach())))
++    final=metrics(base,ball,sweep,data,metadata,val,launch)
++    candidate_ar=autoregressive_metrics(base,ball,sweep,data,metadata,val,launch)
++    pairs=event_aligned_windows(metadata,val,horizon=64,offsets=(0,),maximum=16)['0']['starts']
++    gradient=sensitivity(base,ball,sweep,data,pairs,launch)
++    torch.save(dict(schema=sweep.schema,model=sweep.state_dict(),asset_sha256=asset_sha,
++        physical_sha256=sha256(a.physical_checkpoint),legacy_ball_sha256=sha256(a.ball_checkpoint),
++        packed_sha256=sha256(a.packed_data),split_sha256=sha256(a.split_manifest),
++        geometry_hashes=sweep.preview.geometry_hashes,softness_m=sweep.softness_m,
++        updates=a.updates,evidence_scope='recorded-command model-only, no native paired perturbations'),
++        a.output/'action_ball_candidate.pt')
++    comparison=dict(initial=initial,candidate=final,initial_autoregressive=initial_ar,candidate_autoregressive=candidate_ar,action_gradient=gradient,history=history,
++        action_ball_optimizer_updates=a.updates,base_world_updates=0,
++        independence_scope="candidate fit heldout lanes; historical base-model holdout independence requires separate provenance",
++        train_contact_transitions=int(len(positive)),train_noncontact_transitions=int(len(negative)),
++        hard_precontact_transitions=int(len(hard_negative)),
++        training_lanes=sorted(train),validation_lanes=sorted(val),native_paired_action_probe=False,
++        actor_updates=0,world_updates=0,critic_updates=0,auto_promoted=False,
++        candidate_sha256=sha256(a.output/'action_ball_candidate.pt'))
++    (a.output/'comparison.json').write_text(json.dumps(comparison,indent=2)+'\n')
++    print(json.dumps(dict(candidate=str(a.output/'action_ball_candidate.pt'),comparison=comparison)))
++
++
++if __name__=='__main__':main()
+diff --git a/scripts/index_supermimic_success_archive.py b/scripts/index_supermimic_success_archive.py
+new file mode 100644
+index 0000000..1c783d7
+--- /dev/null
++++ b/scripts/index_supermimic_success_archive.py
+@@ -0,0 +1,128 @@
++#!/usr/bin/env python3
++"""Read-only source inventory. SQLite stores evidence/indexes, never invented trajectories.
++
++No pickle loading, policy updates, environment steps or automatic reference-bank admission.
++Unknown contracts, aggregate metrics and missing raw chunks remain explicitly ineligible.
++"""
++import argparse, hashlib, json, os, sqlite3
++from pathlib import Path
++
++EXCLUDE={'.git','.cache','site-packages','node_modules','.local','__pycache__','env_isaaclab','envs','.codex','.config','.vscode','.npm','.rustup','.cargo'}
++FLAGS=('qualified_airborne_string_contact','ball_side_complete_except_recovery','recovery_success','complete5')
++
++def digest(path):
++    h=hashlib.sha256()
++    with path.open('rb') as f:
++        for b in iter(lambda:f.read(1<<20),b''):h.update(b)
++    return h.hexdigest()
++
++def rows(value):
++    if isinstance(value,list):
++        # Numerical state vectors are not containers of episode records.
++        for item in value:
++            if isinstance(item,dict) or (isinstance(item,list) and item and isinstance(item[0],dict)):
++                yield from rows(item)
++    elif isinstance(value,dict):
++        if any(k in value for k in FLAGS) and any(k in value for k in ('env_id','case_id','episode_id','lane_id')):
++            yield value
++        else:
++            for v in value.values():
++                if isinstance(v,(list,dict)):yield from rows(v)
++
++def build(roots,output,*,resume=False):
++    output=Path(output);output.mkdir(parents=True,exist_ok=resume)
++    if resume and (output/'inventory.json').exists():raise ValueError('Completed inventory is immutable; create a new directory')
++    db=sqlite3.connect(output/'success_trajectories.sqlite3')
++    db.executescript('''
++    CREATE TABLE IF NOT EXISTS files(path TEXT PRIMARY KEY,sha256 TEXT,size INTEGER,kind TEXT,error TEXT);
++    CREATE TABLE IF NOT EXISTS episodes(id INTEGER PRIMARY KEY,evidence_sha256 TEXT UNIQUE,case_id TEXT,episode_id TEXT,
++      qualified INTEGER,ball_side INTEGER,recovery INTEGER,complete5 INTEGER,scoring_schema TEXT,record_json TEXT);
++    CREATE TABLE IF NOT EXISTS occurrences(episode INTEGER,path TEXT,archive TEXT,identity_known INTEGER,raw_available INTEGER,
++      eligibility TEXT,PRIMARY KEY(episode,path));
++    CREATE TABLE IF NOT EXISTS archives(path TEXT PRIMARY KEY,manifest_sha256 TEXT,manifest_json TEXT,chunk_count INTEGER,
++      missing_chunks INTEGER,hash_status TEXT);
++    CREATE VIEW IF NOT EXISTS successes AS SELECT * FROM episodes WHERE qualified=1 OR ball_side=1 OR recovery=1 OR complete5=1;
++    ''')
++    errors=[];seen=set();count=0
++    for root in roots:
++        def onerror(error):errors.append(str(error))
++        for directory,dirs,names in os.walk(root,followlinks=False,onerror=onerror):
++            kept=[]
++            for d in dirs:
++                if d in EXCLUDE:continue
++                try:
++                    child=Path(directory,d)
++                    if not child.is_symlink() and child.resolve()!=output.resolve():kept.append(d)
++                except OSError as error:errors.append(str(child)+': '+str(error))
++            dirs[:]=kept
++            for name in names:
++                p=Path(directory,name)
++                # All JSON/JSONL evidence, plus inventory opaque trajectory files.
++                if p.suffix not in ('.json','.jsonl','.pt','.npz','.h5','.hdf5'):continue
++                try:
++                    if p.is_symlink():continue
++                    stat=p.stat();key=(stat.st_dev,stat.st_ino)
++                    if key in seen:continue
++                    seen.add(key);count+=1
++                    if count%1000==0:
++                        db.commit();print('INVENTORY_FILES='+str(count),flush=True)
++                    if resume:
++                        old=db.execute('SELECT sha256,size FROM files WHERE path=?',(str(p),)).fetchone()
++                        if old is not None:
++                            if old[1]!=stat.st_size or (old[0] is not None and old[0]!=digest(p)):
++                                errors.append(str(p)+': source changed since partial inventory; retained old evidence, needs separate reindex')
++                            continue
++                    if p.suffix not in ('.json','.jsonl'):
++                        db.execute('INSERT OR IGNORE INTO files VALUES(?,?,?,?,?)',(str(p),None,stat.st_size,'opaque-not-unpickled',None));continue
++                    if stat.st_size>128*1024*1024:
++                        db.execute('INSERT OR IGNORE INTO files VALUES(?,?,?,?,?)',(str(p),None,stat.st_size,'oversized-unparsed','metadata size >128MiB'));continue
++                    # Inventory other JSON files without recursively parsing unrelated configurations.
++                    if not any(token in name.lower() for token in ('episode','metric','eval','rollout','trajectory','manifest','result','trace','native_return')):
++                        db.execute('INSERT OR IGNORE INTO files VALUES(?,?,?,?,?)',(str(p),None,stat.st_size,'other-json-unparsed',None));continue
++                    sha=digest(p);raw=p.read_text()
++                    objects=[json.loads(line) for line in raw.splitlines() if line.strip()] if p.suffix=='.jsonl' else [json.loads(raw)]
++                    db.execute('INSERT OR IGNORE INTO files VALUES(?,?,?,?,?)',(str(p),sha,stat.st_size,'json-evidence',None))
++                    for value in objects:
++                        if name=='manifest.json' and isinstance(value,dict) and isinstance(value.get('chunks'),list):
++                            chunks=value['chunks'];missing=sum(not (p.parent/c['file']).is_file() for c in chunks if isinstance(c,dict) and 'file'in c)
++                            db.execute('INSERT OR REPLACE INTO archives VALUES(?,?,?,?,?,?)',(str(p.parent),sha,json.dumps(value),len(chunks),missing,'not-rehashed; source digests retained'))
++                        for row in rows(value):
++                            # Full physical arrays remain at source. The database is an index,
++                            # not a second multi-gigabyte transition replay.
++                            metadata={k:v for k,v in row.items() if k not in ('physical','observation','action','state','next_state','executor','history','tensors')}
++                            canonical=json.dumps(metadata,sort_keys=True,separators=(',',':'),allow_nan=True)
++                            h=hashlib.sha256(canonical.encode()).hexdigest()
++                            values=[int(row[k]) if type(row.get(k))is bool else None for k in FLAGS]
++                            db.execute('INSERT OR IGNORE INTO episodes(evidence_sha256,case_id,episode_id,qualified,ball_side,recovery,complete5,scoring_schema,record_json) VALUES(?,?,?,?,?,?,?,?,?)',
++                              (h,str(row.get('case_id',row.get('env_id',row.get('lane_id')))),str(row.get('episode_id',row.get('episode_index','unknown'))),*values,row.get('scoring_schema'),canonical))
++                            idx=db.execute('SELECT id FROM episodes WHERE evidence_sha256=?',(h,)).fetchone()[0]
++                            archive=p.parent/'physical_transitions'
++                            db.execute('INSERT OR IGNORE INTO occurrences VALUES(?,?,?,?,?,?)',(idx,str(p),str(archive) if (archive/'manifest.json').is_file() else None,0,0,'not-admitted'))
++                except (OSError,ValueError,KeyError,TypeError) as e:
++                    errors.append(str(p)+': '+str(e))
++                    db.execute('INSERT OR IGNORE INTO files VALUES(?,?,?,?,?)',(str(p),None,None,'unreadable',str(e)))
++    # Admission is deliberately separate from discovery: matching actor/execution/asset
++    # contracts and chunk/episode validation are required by reference-bank tooling.
++    for path,manifest,missing in db.execute('SELECT path,manifest_json,missing_chunks FROM archives').fetchall():
++        m=json.loads(manifest);known=bool(m.get('actor_state_sha256') and m.get('policy_execution') and m.get('task_contract'))
++        available=not missing and bool(m.get('chunks'))
++        db.execute('UPDATE occurrences SET identity_known=?,raw_available=?,eligibility=? WHERE archive=?',
++                   (int(known),int(available),'requires-chunk-hash-episode-and-contract-validation' if known and available else 'missing-identity-or-raw-data',path))
++    db.execute("CREATE VIEW IF NOT EXISTS verified_score_successes AS SELECT * FROM successes WHERE scoring_schema='historical-independent-complete5-v1'")
++    db.commit()
++    totals={k:db.execute('SELECT COUNT(*) FROM episodes WHERE '+column+'=1').fetchone()[0] for k,column in zip(FLAGS,('qualified','ball_side','recovery','complete5'))}
++    report=dict(roots=[str(x) for x in roots],exclusions=sorted(EXCLUDE),scanned_files=count,episode_records=db.execute('SELECT COUNT(*) FROM episodes').fetchone()[0],
++        success_evidence_records=db.execute('SELECT COUNT(*) FROM successes').fetchone()[0],label_counts=totals,
++        independently_scored_success_records=db.execute('SELECT COUNT(*) FROM verified_score_successes').fetchone()[0],
++        linked_success_records=db.execute('SELECT COUNT(DISTINCT e.id) FROM successes e JOIN occurrences o ON e.id=o.episode WHERE o.raw_available=1').fetchone()[0],
++        archives=db.execute('SELECT COUNT(*) FROM archives').fetchone()[0],errors=errors,
++        database_scope='evidence inventory; duplicate identical records collapse; distinct policies/episodes remain separate; not unique physical trajectories',
++        admitted_to_training=0,reason='No automatic admission of unknown, MPC/teacher, unverified hashes, incomplete or incompatible contracts; opaque files inventoried only')
++    db.close();report['database_sha256']=digest(output/'success_trajectories.sqlite3')
++    (output/'inventory.json').write_text(json.dumps(report,indent=2)+'\n')
++    return report
++
++if __name__=='__main__':
++    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--roots',nargs='+',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
++    p.add_argument('--resume-incomplete',action='store_true')
++    a=p.parse_args();r=build(a.roots,a.output,resume=a.resume_incomplete);print(json.dumps({k:v for k,v in r.items() if k!='errors'},indent=2));print('scan_errors='+str(len(r['errors'])))
+diff --git a/scripts/verify_supermimic_catalog_archive.py b/scripts/verify_supermimic_catalog_archive.py
+new file mode 100644
+index 0000000..f0188c3
+--- /dev/null
++++ b/scripts/verify_supermimic_catalog_archive.py
+@@ -0,0 +1,42 @@
++#!/usr/bin/env python3
++"""Verify selected indexed raw chunks, preserving unknown policy/teacher provenance.
++
++No training admission, model loading or imitation. Every source remains immutable.
++"""
++import argparse,hashlib,json,sqlite3
++from pathlib import Path
++
++def sha(path):
++    h=hashlib.sha256()
++    with path.open('rb') as f:
++        for b in iter(lambda:f.read(4<<20),b''):h.update(b)
++    return h.hexdigest()
++
++def verify(database,archive,output):
++    archive=Path(archive).resolve();db=sqlite3.connect(database)
++    row=db.execute('SELECT manifest_sha256,manifest_json FROM archives WHERE path=?',(str(archive),)).fetchone()
++    if row is None:raise ValueError('Archive not indexed')
++    manifest=archive/'manifest.json'
++    if sha(manifest)!=row[0]:raise ValueError('Manifest changed since inventory')
++    value=json.loads(row[1]);chunks=[];failure=[]
++    for item in value['chunks']:
++        path=(archive/item['file']).resolve()
++        if archive not in path.parents:raise ValueError('Chunk escapes archive directory')
++        actual=sha(path) if path.is_file() else None
++        good=actual==item.get('sha256') and actual is not None
++        chunks.append(dict(file=item['file'],sha256=actual,expected_sha256=item.get('sha256'),passed=good))
++        if not good:failure.append(item['file'])
++    passed=bool(chunks) and not failure
++    db.execute('UPDATE archives SET hash_status=? WHERE path=?',('chunks-sha256-verified' if passed else 'chunks-invalid',str(archive)));db.commit();db.close()
++    result=dict(archive=str(archive),manifest_sha256=row[0],chunks=chunks,passed=passed,
++        source_policy_sha256=value.get('source_sha256'),actor_state_sha256=value.get('actor_state_sha256'),
++        policy_execution=value.get('policy_execution'),task_contract=value.get('task_contract'),
++        admitted_to_training=False,scope='byte integrity only; complete episode identity, teacher provenance, split and reference compatibility still required')
++    path=Path(output)
++    with path.open('x') as f:json.dump(result,f,indent=2);f.write('\n')
++    return result
++
++if __name__=='__main__':
++    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--database',type=Path,required=True);p.add_argument('--archive',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
++    a=p.parse_args();r=verify(a.database,a.archive,a.output);print(json.dumps(dict(passed=r['passed'],chunks=len(r['chunks']),admitted_to_training=False)))
++    if not r['passed']:raise SystemExit(1)
+diff --git a/tests/test_supermimic_action_ball_v1.py b/tests/test_supermimic_action_ball_v1.py
+new file mode 100644
+index 0000000..58706f9
+--- /dev/null
++++ b/tests/test_supermimic_action_ball_v1.py
+@@ -0,0 +1,88 @@
++"""CPU contracts for an optional swept-racket candidate; no native physics evidence."""
++import torch
++from torch import nn
++from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,preimpact_hard_negatives
++from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
++
++
++class FakeRacket:
++    ids={'Racket':0}
++    def __call__(self,q,dq,position,rotation,velocity,omega):
++        n=len(q)
++        tool=torch.stack((q[:,12],q[:,12]*0,q[:,12]*0),-1)[:,None]
++        tool_velocity=torch.stack((dq[:,12],dq[:,12]*0,dq[:,12]*0),-1)[:,None]
++        return dict(position=tool,rotation=torch.eye(3,device=q.device).expand(n,1,3,3),
++                    velocity=tool_velocity,angular_velocity=torch.zeros_like(tool_velocity))
++
++
++class FakePreview(nn.Module):
++    def racket_gap(self,local):return local[:,0].abs()-.025
++
++
++class FakeWorld(nn.Module):
++    def __init__(self):super().__init__();self.geometry=FakeRacket()
++    def prior(self,state,present,elapsed,launch):
++        flight=torch.cat((state[:,49:52]+state[:,52:55]*.01,state[:,52:55]),-1)
++        return torch.cat((state[:,:49],flight),-1),present
++    def forward(self,state,target,prev,feet,present,elapsed,launch):
++        # 55D state: joint position indices 13..30; racket arm position = 25.
++        robot=torch.cat((state[:,:25],target[:,12:13],state[:,26:]),-1)
++        return robot,feet.new_zeros(len(state),4),present
++
++
++class FakeBall(nn.Module):
++    def forward(self,features,present):
++        return features.new_zeros(len(features),6),features.new_zeros(len(features))
++
++
++def inputs():
++    state=torch.zeros(4,55);state[:,3]=1.;state[:,49]=.01;state[:,52]=-5.
++    target=torch.zeros(4,18);target[:,12]=torch.tensor([0.,.01,.03,.05])
++    prev=torch.zeros_like(target);feet=torch.ones(4,4);present=torch.ones(4,dtype=torch.bool)
++    elapsed=torch.full((4,),2.5);launch=torch.zeros(4,6)
++    return state,target,prev,feet,present,elapsed,launch
++
++
++def test_legacy_transition_is_exact_until_sweep_candidate_is_trained_and_enabled():
++    w,b=FakeWorld(),FakeBall();sweep=ActionConditionedBallV1(preview=FakePreview())
++    args=inputs()
++    old=ball_transition(w,b,*args)[0]
++    candidate=ball_transition(w,b,*args,action_model=sweep)[0]
++    assert torch.equal(old,candidate)
++
++
++def test_one_step_ball_velocity_is_differentiable_to_current_arm_target_after_fit():
++    w,b=FakeWorld(),FakeBall();sweep=ActionConditionedBallV1(preview=FakePreview())
++    state,target,prev,feet,present,elapsed,launch=inputs()
++    optimizer=torch.optim.Adam(sweep.head.parameters(),lr=.02)
++    for _ in range(3):
++        pred=ball_transition(w,b,state,target,prev,feet,present,elapsed,launch,action_model=sweep)[0]
++        loss=(pred[:,52]-2.).square().mean()
++        optimizer.zero_grad();loss.backward();optimizer.step()
++    changed=target.clone().requires_grad_(True)
++    pred=ball_transition(w,b,state,changed,prev,feet,present,elapsed,launch,action_model=sweep)[0]
++    grad=torch.autograd.grad(pred[:,52].sum(),changed)[0]
++    assert torch.isfinite(grad).all() and grad[:,12].abs().max()>1e-7
++    assert torch.equal(grad[:,:12],torch.zeros_like(grad[:,:12]))
++
++
++def test_absent_ball_never_receives_racket_sweep():
++    w,b=FakeWorld(),FakeBall();sweep=ActionConditionedBallV1(preview=FakePreview())
++    with torch.no_grad():sweep.head.net[-1].bias[3]=1.
++    state,target,prev,feet,present,elapsed,launch=inputs()
++    present.zero_()
++    old=ball_transition(w,b,state,target,prev,feet,present,elapsed,launch)[0]
++    changed=ball_transition(w,b,state,target,prev,feet,present,elapsed,launch,action_model=sweep)[0]
++    assert torch.equal(old,changed)
++
++
++def test_precontact_hard_negative_is_one_tick_before_native_edge_and_reset_safe():
++    contact=torch.tensor([[False],[False],[True],[False],[True],[False]])
++    episode=torch.tensor([[0],[0],[0],[1],[1],[1]])
++    done=torch.tensor([[False],[False],[True],[False],[False],[True]])
++    hard=preimpact_hard_negatives(contact,episode,done,torch.zeros_like(done))
++    assert hard.flatten().tolist()==[False,True,False,True,False,False]
++    # An edge in a new episode must not label the old terminal as a negative.
++    edge=torch.tensor([[False],[True]])
++    assert not preimpact_hard_negatives(edge,torch.tensor([[0],[1]]),
++        torch.tensor([[True],[False]]),torch.zeros(2,1,dtype=torch.bool)).any()
+diff --git a/tests/test_supermimic_probe_region.py b/tests/test_supermimic_probe_region.py
+new file mode 100644
+index 0000000..e39e60c
+--- /dev/null
++++ b/tests/test_supermimic_probe_region.py
+@@ -0,0 +1,106 @@
++import copy,json
++from pathlib import Path
++from types import SimpleNamespace
++import pytest,torch
++from torch import nn
++from quadsmash.rl.supermimic_approach_data_v1 import gate_on_actor_device
++from quadsmash.rl.supermimic_evidence_binding_v1 import probe_applicability
++from quadsmash.rl.supermimic_probe_region_v1 import paired_metrics,load_region
++from quadsmash.rl.supermimic_native_pair_capture_v1 import validate_spec,tree_digest
++
++class Gate(nn.Module):
++    def __init__(self):super().__init__();self.weight=nn.Parameter(torch.ones(1,dtype=torch.float64))
++    def approach_gate(self,obs):
++        assert obs.device==self.weight.device and obs.dtype==self.weight.dtype
++        return obs[:,0]*self.weight
++
++def test_gate_input_obeys_actor_dtype_and_preserves_archive():
++    x=torch.ones(2,794,dtype=torch.float32);before=x.clone()
++    result=gate_on_actor_device(Gate(),{'policy':x})
++    assert result.dtype==torch.float64 and not result.requires_grad and torch.equal(x,before)
++    with pytest.raises(ValueError):gate_on_actor_device(Gate(),x[:,:793])
++
++class World(nn.Module):
++    def __init__(self):super().__init__();self.scale=nn.Parameter(torch.tensor(1.));self.geometry=None
++    def prior(self,s,*args):return s,None
++    def forward(self,s,target,*args):
++        result=s.clone();result[:,10:13]=target[:,:3]*self.scale
++        return result,s.new_zeros(len(s),4),args[2]
++class Ball(nn.Module):
++    def forward(self,features,present):return features.new_zeros(len(features),6),None
++
++def pair_fixture(monkeypatch):
++    # Synthetic response only verifies checks, not real PhysX accuracy.
++    import quadsmash.rl.supermimic_probe_region_v1 as m
++    def transition(base,ball,state,target,*args,**kwargs):
++        out=state.clone();out[:,10:13]=target[:,:3]*base.scale;out[:,52:55]=target[:,:3]*base.scale
++        return out,torch.zeros(len(state),4),torch.ones(len(state))
++    monkeypatch.setattr(m,'ball_transition',transition)
++    adapter=nn.Module();adapter.physical_model=World();adapter.ball_model=Ball();adapter.action_ball_model=None
++    minus=torch.zeros(2,18);plus=minus.clone();plus[:,0]=.02
++    nominal=torch.zeros(2,55);native=nominal.clone();native[:,10]=.02;native[:,52]=.02
++    p=dict(state=nominal,targets_minus=minus,targets_plus=plus,previous_action=minus,feet=torch.zeros(2,4),present=torch.ones(2),elapsed=torch.zeros(2),launch=torch.zeros(2,6),native_minus=nominal,native_plus=native,native_nominal_a=nominal,native_nominal_b=nominal.clone(),
++      restore_mode='from-ground-identical-prefix',prefix_sha256={k:'prefix' for k in ('nominal_a','nominal_b','minus','plus')},executor_before_sha256={k:'memory' for k in ('nominal_a','nominal_b','minus','plus')})
++    limits=dict(native_response_min=.001,native_repeat_max=1e-6,response_rmse_max=.001,response_cosine_min=.9,response_relative_error_max=.1)
++    return adapter,p,limits
++
++@pytest.mark.parametrize('head',['recovery','approach'])
++def test_current_model_rechecked_after_update_and_reversed_gradient_rejected(monkeypatch,head):
++    adapter,p,limits=pair_fixture(monkeypatch)
++    assert paired_metrics(adapter,p,head,limits)['passed']
++    with torch.no_grad():adapter.physical_model.scale.fill_(-1)
++    r=paired_metrics(adapter,p,head,limits)
++    assert not r['passed'] and 'local-jacobian-direction' in r['failures']
++
++def test_no_saturated_response_or_snapshot_restore_pass(monkeypatch):
++    adapter,p,limits=pair_fixture(monkeypatch);p['targets_plus']=p['targets_minus'].clone()
++    assert not paired_metrics(adapter,p,'approach',limits)['passed']
++    p['executor_before_sha256']['plus']='wrong'
++    with pytest.raises(ValueError,match='prefix'):paired_metrics(adapter,p,'approach',limits)
++
++def test_bounded_evidence_does_not_remove_static_contract_checks():
++    origin=dict(execution_code_sha256={'x':'a'},schema='id',actor_state_sha256='a',world_state_sha256='w',task_contract_sha256='t',policy_execution='e',policy_version=0)
++    current=dict(origin,world_state_sha256='updated')
++    probe=dict(runtime_identity=origin,validity_region={'sha256':'raw'})
++    assert not probe_applicability(probe,current)['current_version_valid']
++    assessed=dict(passed=True,current_identity=current,origin_identity=origin,evidence_sha256='raw')
++    assert probe_applicability(probe,current,assessed)['current_version_valid']
++    changed=dict(current,task_contract_sha256='different')
++    assert not probe_applicability(probe,changed,dict(assessed,current_identity=changed))['current_version_valid']
++    assert not probe_applicability(probe,current,dict(assessed,passed=False))['current_version_valid']
++    exact_failure=probe_applicability(probe,origin,dict(assessed,passed=False,current_identity=origin))
++    assert not exact_failure['current_version_valid'] and exact_failure['revalidation_required']
++
++def test_probe_spec_rejects_bad_lane_or_zero_request():
++    spec=dict(schema='native-paired-prefix-spec-v1',tick=270,lane=17,head='approach',epsilon_request=.001,request_direction=[1.]+[0.]*17)
++    assert validate_spec(spec)==spec
++    for bad in (dict(spec,lane=128),dict(spec,request_direction=[0.]*18),dict(spec,tick=800)):
++        with pytest.raises(ValueError):validate_spec(bad)
++    assert tree_digest({'x':torch.tensor(float('nan'))})==tree_digest({'x':torch.tensor(float('nan'))})
++
++
++def test_region_requires_hashed_calibration_and_bound_actor_drift(tmp_path,monkeypatch):
++    import hashlib
++    from quadsmash.rl.supermimic_probe_region_v1 import assess_region
++    from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
++    adapter,pairs,limits=pair_fixture(monkeypatch)
++    actor=Gate();origin=dict(execution_code_sha256={'source':'same'},schema='runtime',actor_state_sha256=tensor_digest(actor.state_dict().items()),
++        world_state_sha256='old',task_contract_sha256='task',policy_execution={'gate':'causal'},policy_version=0)
++    limits.update(final_normalized_command_delta_max=.01,final_joint_target_delta_rad_max=.04,accepted_update_age_max=8)
++    bundle=dict(sample_ids=['holdout'],schema='native-paired-prefix-region-v1',runtime_identity=origin,actor_state=actor.state_dict(),pairs=pairs,head='approach',
++        command_starts=[dict(start={'current':'complete-start-test-double'},final_normalized=torch.zeros(2,18),final_joint_targets=torch.zeros(2,18))])
++    raw=tmp_path/'probe.pt';torch.save(bundle,raw);sha=hashlib.sha256(raw.read_bytes()).hexdigest()
++    calibration=tmp_path/'calibration.json';calibration.write_text(json.dumps(dict(limits=limits,probe_sha256=sha,heldout_episode_ids=['holdout'],calibration_episode_ids=['calibrate'])))
++    spec=dict(path=raw.name,sha256=sha,limits=limits,minimum_samples=2,
++        calibration=dict(path=calibration.name,sha256=hashlib.sha256(calibration.read_bytes()).hexdigest()))
++    current=dict(origin,world_state_sha256='new',policy_version=1)
++    def preview(row):return torch.zeros(2,18),torch.zeros(2,18)
++    report=assess_region(spec,tmp_path/'receipt.json',current,adapter,preview,'approach')
++    assert report['passed'] and report['accepted_update_age']==1
++    def drift(row):return torch.ones(2,18),torch.ones(2,18)
++    report=assess_region(spec,tmp_path/'receipt.json',current,adapter,drift,'approach')
++    assert not report['passed'] and 'executed-joint-target-drift' in report['failures']
++    assert not assess_region(spec,tmp_path/'receipt.json',dict(current,policy_version=9),adapter,preview,'approach')['passed']
++    with pytest.raises(ValueError,match='different head'):assess_region(spec,tmp_path/'receipt.json',current,adapter,preview,'recovery')
++    calibration.write_text('{}')
++    with pytest.raises(ValueError,match='hash'):load_region(spec,tmp_path/'receipt.json')
+diff --git a/tests/test_supermimic_success_inventory.py b/tests/test_supermimic_success_inventory.py
+new file mode 100644
+index 0000000..ad2df97
+--- /dev/null
++++ b/tests/test_supermimic_success_inventory.py
+@@ -0,0 +1,43 @@
++import importlib.util,json,sqlite3
++from pathlib import Path
++
++def load_script():
++    p=Path(__file__).resolve().parents[1]/'scripts/index_supermimic_success_archive.py'
++    spec=importlib.util.spec_from_file_location('inventory',p);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
++
++def test_inventory_deduplicates_reports_but_never_admits_unknown_trajectory(tmp_path):
++    m=load_script();root=tmp_path/'source';root.mkdir()
++    good=dict(case_id='case1',episode_index=0,complete5=True,scoring_schema='historical-independent-complete5-v1')
++    unknown=dict(case_id='case2',episode_index=0,complete5=None)
++    (root/'episodes_summary.json').write_text(json.dumps([good,unknown]))
++    (root/'episodes_copy.json').write_text(json.dumps([good]))
++    (root/'policy.pt').write_bytes(b'not a pickle, must never load')
++    result=m.build([root],tmp_path/'db')
++    assert result['episode_records']==2 and result['success_evidence_records']==1
++    assert result['linked_success_records']==0 and result['admitted_to_training']==0
++    db=sqlite3.connect(tmp_path/'db/success_trajectories.sqlite3')
++    assert db.execute('SELECT COUNT(*) FROM occurrences').fetchone()[0]==3
++    assert db.execute('SELECT complete5 FROM episodes WHERE case_id="case2"').fetchone()[0] is None
++
++def test_missing_archive_chunks_are_not_raw_data(tmp_path):
++    m=load_script();root=tmp_path/'run';raw=root/'physical_transitions';raw.mkdir(parents=True)
++    (root/'episodes_summary.json').write_text(json.dumps([dict(env_id=1,complete5=True)]))
++    (raw/'manifest.json').write_text(json.dumps(dict(chunks=[dict(file='missing.pt',sha256='x')],actor_state_sha256='a',policy_execution={'gate':'causal'},task_contract={'asset':'a'})))
++    result=m.build([root],tmp_path/'db')
++    assert result['archives']==1 and result['linked_success_records']==0
++    assert result['admitted_to_training']==0
++
++def test_resume_preserves_partial_inventory_and_records_unreadable_directory(tmp_path,monkeypatch):
++    m=load_script();root=tmp_path/'source';root.mkdir();bad=root/'broken';bad.mkdir()
++    (root/'episodes_summary.json').write_text(json.dumps([dict(case_id='x',complete5=True)]))
++    original=Path.is_symlink
++    def check(path):
++        if path==bad:raise OSError('simulated unavailable mount')
++        return original(path)
++    monkeypatch.setattr(Path,'is_symlink',check)
++    result=m.build([root],tmp_path/'db')
++    assert any('unavailable mount' in e for e in result['errors'])
++    # Simulate interrupted scan after its last committed chunk, no completed report.
++    (tmp_path/'db/inventory.json').unlink()
++    resumed=m.build([root],tmp_path/'db',resume=True)
++    assert resumed['episode_records']==1 and resumed['success_evidence_records']==1
