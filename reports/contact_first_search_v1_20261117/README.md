@@ -208,3 +208,11 @@ Validation: 77 tests passed (exit 0), including finite body rotation at constant
 world twist, true inertial acceleration expressed in the current body, and
 partial-reset history isolation. Native confirmation of this correction remains
 NOT_RUN. No SuperMimic code, process or weights were changed.
+
+## Joint leg/arm replay interface
+
+See `JOINT_REPLAY_PROGRESS.md`. The full-body evaluator now accepts an explicit
+12-leg target sequence and optional full-state replay evidence. It also fixes
+the contact terminal's extra 10 ms prediction interval. This is CPU-tested
+infrastructure for joint takeoff-hit planning; the causal leg producer, contact
+transition model and native execution integration remain incomplete.

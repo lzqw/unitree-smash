@@ -1,12 +1,13 @@
 """CPU full-body admission for contact-first arm prefixes.
 
 This adapter replays each proposed six-joint prefix through the repository's
-loaded Pinocchio model and original implicit position interface.  It holds the
-12 leg targets at their measured values; it is therefore an Approach-prefix
-admission check, not a flight controller and not a PhysX safety certificate.
+loaded Pinocchio model and original implicit position interface.  It can replay an explicit 12-leg target sequence alongside the six-axis arm
+prefix. Without one it retains the historical measured-leg hold. It is an
+Approach-prefix admission check, not a flight controller or PhysX certificate.
 No ground force is invented when the measured state is airborne.
 """
 from copy import deepcopy
+import hashlib
 from pathlib import Path
 
 import numpy as np
@@ -33,7 +34,8 @@ class ContactFirstFullBodyEvaluatorV1:
                  geometry_path=DEFAULT_GEOMETRY, substeps=4,
                  max_tracking_error_rad=0.25, initial_state=None, model=None,
                  enforce_target_admission_bounds=False,
-                 racket_measure_fn=None):
+                 racket_measure_fn=None, leg_target_sequence_rad=None,
+                 record_state_trace=False):
         if initial_state is None:
             public = np.asarray(public, dtype=np.float64)
             default = np.asarray(default, dtype=np.float64)
@@ -79,6 +81,18 @@ class ContactFirstFullBodyEvaluatorV1:
             raise TypeError("racket_measure_fn must be callable or None")
         self.racket_measure_fn = racket_measure_fn
         self.dt_s = 0.01
+        self.leg_target_sequence_rad = None
+        if leg_target_sequence_rad is not None:
+            legs = np.array(leg_target_sequence_rad, dtype=np.float64, copy=True)
+            if (legs.ndim != 2 or legs.shape[1] != 12 or len(legs) < 2 or
+                    not np.isfinite(legs).all()):
+                raise ValueError("Leg target sequence must be finite [nodes, 12] radians")
+            if (np.any(legs < self.interface.limits[:12, 0]-1e-6) or
+                    np.any(legs > self.interface.limits[:12, 1]+1e-6)):
+                raise ValueError("Leg target sequence outside original position limits")
+            legs.flags.writeable = False
+            self.leg_target_sequence_rad = legs
+        self.record_state_trace = bool(record_state_trace)
 
     @classmethod
     def from_native(cls, env, lane, interface_config, *, default=None,
@@ -122,6 +136,9 @@ class ContactFirstFullBodyEvaluatorV1:
         contact_index = int(contact_index)
         if not 1 <= contact_index < len(q_rad):
             return {"accepted": False, "rejection": "invalid_contact_index"}
+        if (self.leg_target_sequence_rad is not None and
+                len(self.leg_target_sequence_rad) < contact_index):
+            return {"accepted": False, "rejection": "incomplete_leg_target_sequence"}
         arm_velocity_limit = self.interface.velocity[12:]
         velocity_violation = np.maximum(np.abs(qd_rad_s[:contact_index + 1]) - arm_velocity_limit, 0.)
         if np.any(velocity_violation > 3e-4):
@@ -136,9 +153,18 @@ class ContactFirstFullBodyEvaluatorV1:
         maximum_tracking_error = 0.
         minimum_ground_gap = float("inf")
         maximum_diagnostics = {}
-        for node in range(contact_index + 1):
-            target = self.initial_joint_position.copy()
-            target[12:] = q_rad[node]
+        targets = np.repeat(self.initial_joint_position[None], contact_index, axis=0)
+        targets[:, 12:] = q_rad[:contact_index]
+        if self.leg_target_sequence_rad is not None:
+            targets[:, :12] = self.leg_target_sequence_rad[:contact_index]
+        # Hash exactly the replayed absolute commands, not a clipped approximation.
+        command_sha256 = hashlib.sha256(targets.astype('<f8').tobytes()).hexdigest()
+        state_trace = []
+        # q[0] is the boundary at the measured planning state. Command i is
+        # held over [i*dt, (i+1)*dt); contact_index therefore requires exactly
+        # contact_index physical intervals, not contact_index+1.
+        for node in range(contact_index):
+            target = targets[node].copy()
             if self.enforce_target_admission_bounds:
                 low, high = self.interface.admitted_target_bounds(
                     state.joint_position, self.dt_s)
@@ -161,6 +187,11 @@ class ContactFirstFullBodyEvaluatorV1:
                 }
             state = result["state"]
             diagnostics = result["diagnostics"]
+            if self.record_state_trace:
+                state_trace.append(dict(
+                    node=node, elapsed_s=(node+1)*self.dt_s,
+                    final_target_rad=target.tolist(), q=state.q.tolist(), v=state.v.tolist(),
+                    contacts=state.contacts.tolist()))
             violations = self._violations(diagnostics)
             for name, value in diagnostics.items():
                 if isinstance(value, (int, float, np.integer, np.floating)) and np.isfinite(value):
@@ -169,7 +200,7 @@ class ContactFirstFullBodyEvaluatorV1:
             minimum_ground_gap = min(minimum_ground_gap, gap)
             if gap < -1e-6:
                 violations["nonfoot_ground_violation_m"] = -gap
-            tracking_error = float(np.max(np.abs(state.joint_position[12:] - q_rad[node])))
+            tracking_error = float(np.max(np.abs(state.joint_position[12:] - q_rad[node+1])))
             maximum_tracking_error = max(maximum_tracking_error, tracking_error)
             if tracking_error > self.max_tracking_error_rad:
                 violations["arm_tracking_error_rad"] = tracking_error
@@ -187,6 +218,12 @@ class ContactFirstFullBodyEvaluatorV1:
         result = {
             "accepted": True,
             "nodes_checked": contact_index + 1,
+            "prediction_intervals": contact_index,
+            "terminal_elapsed_s": contact_index*self.dt_s,
+            "leg_reference": ("explicit_sequence" if self.leg_target_sequence_rad is not None
+                              else "measured_position_hold"),
+            "replayed_command_sha256": command_sha256,
+            "contact_modes_changed": False,
             "minimum_ground_gap_m": minimum_ground_gap,
             "maximum_tracking_error_rad": maximum_tracking_error,
             "diagnostics": maximum_diagnostics,
@@ -194,6 +231,8 @@ class ContactFirstFullBodyEvaluatorV1:
             "physical_model": "LoadedPinocchioModelV1+implicit_position_interface",
             "airborne_ground_force_policy": "measured_contacts_only",
         }
+        if self.record_state_trace:
+            result["state_trace"] = state_trace
         if self.racket_measure_fn is not None:
             try:
                 measured = self.racket_measure_fn(state)

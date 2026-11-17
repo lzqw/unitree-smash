@@ -152,3 +152,63 @@ def test_contact_prefix_does_not_apply_extra_one_tick_target_slew_by_default():
     restricted_result = restricted(q, qd, 3, {"source": "legacy_envelope"})
     assert restricted_result["accepted"] is False
     assert restricted_result["rejection"] == "native_admitted_target_bounds"
+
+
+def test_explicit_leg_sequence_changes_fullbody_prediction_without_aliasing():
+    public, default, interface = _fixture()
+    arm = np.repeat(default[None, 12:], 6, axis=0)
+    legs = np.repeat(default[None, :12], 6, axis=0)
+    legs[:, 0] += np.linspace(0., .08, 6)
+    evaluator = ContactFirstFullBodyEvaluatorV1(public, default, interface, substeps=1,
+        leg_target_sequence_rad=legs, record_state_trace=True)
+    frozen_legs = legs.copy()
+    # Caller mutation after construction cannot alter a candidate.
+    legs[:] = 999.
+    result = evaluator(arm, np.zeros_like(arm), 5, {})
+    repeated = evaluator(arm, np.zeros_like(arm), 5, {})
+    held = ContactFirstFullBodyEvaluatorV1(public, default, interface, substeps=1,
+        record_state_trace=True)(arm, np.zeros_like(arm), 5, {})
+    assert result['accepted'] and held['accepted']
+    assert result == repeated
+    assert result['leg_reference'] == 'explicit_sequence'
+    np.testing.assert_allclose(np.array([r['final_target_rad'][:12]
+        for r in result['state_trace']]), frozen_legs[:5])
+    # Full inertia couples leg motion back into the floating base.
+    assert np.linalg.norm(np.array(result['state_trace'][-1]['v'])[:6] -
+                          np.array(held['state_trace'][-1]['v'])[:6]) > 1e-6
+    assert result['replayed_command_sha256'] != held['replayed_command_sha256']
+    assert all(not any(r['contacts']) for r in result['state_trace'])
+
+
+def test_explicit_leg_sequence_rejects_missing_nodes_and_original_limit_violation():
+    import pytest
+    public, default, interface = _fixture()
+    legs = np.repeat(default[None, :12], 2, axis=0)
+    evaluator = ContactFirstFullBodyEvaluatorV1(public, default, interface,
+        leg_target_sequence_rad=legs)
+    arm = np.repeat(default[None, 12:], 4, axis=0)
+    assert evaluator(arm, np.zeros_like(arm), 3, {})['rejection'] == 'incomplete_leg_target_sequence'
+    legs[1, 0] = interface['limits'][0][1] + .01
+    with pytest.raises(ValueError, match='original position limits'):
+        ContactFirstFullBodyEvaluatorV1(public, default, interface,
+            leg_target_sequence_rad=legs)
+
+
+def test_contact_terminal_uses_exact_number_of_control_intervals():
+    public, default, interface = _fixture()
+    evaluator = ContactFirstFullBodyEvaluatorV1(public, default, interface,
+        substeps=1, record_state_trace=True)
+    arm = np.repeat(default[None, 12:], 4, axis=0)
+    result = evaluator(arm, np.zeros_like(arm), 3, {})
+    assert result['accepted']
+    assert result['prediction_intervals'] == 3
+    assert result['terminal_elapsed_s'] == .03
+    assert [row['elapsed_s'] for row in result['state_trace']] == [.01, .02, .03]
+    # Independent replay: at t=.03 only targets at t=0,.01,.02 were applied.
+    from scripts.implicit_support_prediction_v1 import predict_implicit_support
+    from copy import deepcopy
+    state = deepcopy(evaluator.initial_state)
+    for _ in range(3):
+        state = predict_implicit_support(evaluator.model, evaluator.interface,
+            state, default, duration_s=.01, substeps=1)['state']
+    np.testing.assert_allclose(result['state_trace'][-1]['q'], state.q, atol=1e-12)
