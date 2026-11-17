@@ -38,6 +38,11 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
     contract and still performs CPU-only replay.
   - original 18-joint position bounds, velocity/torque/contact diagnostics,
     and authored non-foot ground-clearance witness;
+  - contact-prefix mode does not apply the extra one-tick
+    `admitted_target_bounds` software envelope by default; the historical
+    envelope remains an explicit compatibility option.  Original physical
+    joint velocity, position, torque, contact and tracking checks remain
+    active.
   - measured-contact-only policy, so an airborne prefix cannot invent ground
     support; the evaluator is attached through the explicit controller hook.
 
@@ -73,11 +78,11 @@ A 100-sample diagnostic sweep through the same full-body admission showed
 25/25, 18/25, 8/25, and 2/25 accepted at 1, 2.5, 5, and 10 cm local target
 offsets for a 0.30 s contact horizon (`FULLBODY_LOCAL_TASK_SWEEP.json`).  With
 the same seed and targets but a 0.60 s horizon, acceptance was 25/25, 24/25,
-16/25, and 8/25 (`FULLBODY_LOCAL_TASK_SWEEP_0p60.json`).  These are CPU
-feasibility rates only.  The dominant rejection remains the original admitted
-arm-target velocity bound, so the current bottleneck is available approach
-time and whole-body coordination; the gate is not being relaxed to improve a
-number.
+16/25, and 8/25 (`FULLBODY_LOCAL_TASK_SWEEP_0p60.json`).  Those historical
+sweeps used the one-tick envelope and are retained as a baseline.  The current
+contact-prefix evaluator no longer applies that application-level envelope by
+default; a fresh native contact run is still required to measure the resulting
+physical hit rate.  These are CPU feasibility rates only.
 
 The planner applies the inexpensive terminal task residual gate before calling
 the full-body replay callback.  This keeps the same acceptance contract while

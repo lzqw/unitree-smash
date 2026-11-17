@@ -107,3 +107,23 @@ def test_fullbody_evaluator_rejects_arm_velocity_above_original_limit():
     result = evaluator(q, qd, 2, {"source": "cpu_test"})
     assert result["accepted"] is False
     assert result["rejection"] == "physical_arm_velocity_limit"
+
+
+def test_contact_prefix_does_not_apply_extra_one_tick_target_slew_by_default():
+    public, default, interface = _fixture()
+    q = np.repeat(default[None, 12:], 4, axis=0)
+    q[1:, 0] += 0.10
+    qd = np.zeros_like(q)
+    # This target step is outside the historical software envelope, but the
+    # replay remains within the original physical position/velocity/torque
+    # checks.  The contact-first evaluator must not reject it by default.
+    unrestricted = ContactFirstFullBodyEvaluatorV1(
+        public, default, interface, substeps=1)
+    result = unrestricted(q, qd, 3, {"source": "contact_prefix"})
+    assert result["accepted"] is True
+    restricted = ContactFirstFullBodyEvaluatorV1(
+        public, default, interface, substeps=1,
+        enforce_target_admission_bounds=True)
+    restricted_result = restricted(q, qd, 3, {"source": "legacy_envelope"})
+    assert restricted_result["accepted"] is False
+    assert restricted_result["rejection"] == "native_admitted_target_bounds"

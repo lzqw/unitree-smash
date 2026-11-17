@@ -31,7 +31,8 @@ class ContactFirstFullBodyEvaluatorV1:
 
     def __init__(self, public=None, default=None, interface_config=None, *,
                  geometry_path=DEFAULT_GEOMETRY, substeps=4,
-                 max_tracking_error_rad=0.25, initial_state=None, model=None):
+                 max_tracking_error_rad=0.25, initial_state=None, model=None,
+                 enforce_target_admission_bounds=False):
         if initial_state is None:
             public = np.asarray(public, dtype=np.float64)
             default = np.asarray(default, dtype=np.float64)
@@ -66,6 +67,13 @@ class ContactFirstFullBodyEvaluatorV1:
         self.initial_joint_position = self.initial_state.joint_position.copy()
         self.substeps = substeps
         self.max_tracking_error_rad = float(max_tracking_error_rad)
+        # The one-tick target envelope is an application-level command slew,
+        # not an original joint speed/torque/position limit.  Contact-first
+        # search must be allowed to propose a fast arm prefix; the implicit
+        # full-body replay below still rejects actual physical velocity,
+        # torque, position, contact, and tracking violations.  Keep an opt-in
+        # compatibility switch for callers auditing the historical envelope.
+        self.enforce_target_admission_bounds = bool(enforce_target_admission_bounds)
         self.dt_s = 0.01
 
     @classmethod
@@ -127,14 +135,15 @@ class ContactFirstFullBodyEvaluatorV1:
         for node in range(contact_index + 1):
             target = self.initial_joint_position.copy()
             target[12:] = q_rad[node]
-            low, high = self.interface.admitted_target_bounds(
-                state.joint_position, self.dt_s)
-            if np.any(target < low - 1e-6) or np.any(target > high + 1e-6):
-                return {
-                    "accepted": False,
-                    "rejection": "native_admitted_target_bounds",
-                    "node": node,
-                }
+            if self.enforce_target_admission_bounds:
+                low, high = self.interface.admitted_target_bounds(
+                    state.joint_position, self.dt_s)
+                if np.any(target < low - 1e-6) or np.any(target > high + 1e-6):
+                    return {
+                        "accepted": False,
+                        "rejection": "native_admitted_target_bounds",
+                        "node": node,
+                    }
             try:
                 result = predict_implicit_support(
                     self.model, self.interface, state, target,
