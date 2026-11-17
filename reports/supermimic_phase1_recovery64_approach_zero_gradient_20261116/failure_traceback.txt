@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/train_supermimic_physical_block.py", line 520, in run
+    approach_accepted=run_block('approach', APPROACH_NAMES, min(args.approach_update_budget,args.approach_proposal_budget), args.approach_proposal_budget)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/train_supermimic_physical_block.py", line 362, in run_block
+    raise RuntimeError(f'{block_name} accepted update had zero trainable parameter change; no effective gradient')
+RuntimeError: approach accepted update had zero trainable parameter change; no effective gradient
