@@ -37,6 +37,47 @@ def planning_world_pose(public, command_world):
     return rotation, np.asarray(command_world)-rotation@public[760:763]
 
 
+
+def causal_shuttle_target_in_planning_frame(physics, initial_position_world,
+                                            initial_velocity_world,
+                                            reference_incoming_velocity_world,
+                                            world_from_planning, planning_origin_world,
+                                            desired_racket_velocity_planning,
+                                            duration_s):
+    """One candidate-time shuttle target, in the *fixed* planning frame.
+
+    The current intercept predictor supplies the causal shuttle state. Its
+    nominal intercept delta is already present in the propagated position,
+    so the legacy rally-controller prepose displacement MUST NOT be applied
+    again here. Intentional racket geometry offsets belong in the contact FK,
+    not in a second translation of the ball.
+    """
+    basis = np.asarray(world_from_planning, dtype=np.float64)
+    origin = np.asarray(planning_origin_world, dtype=np.float64)
+    initial_position = np.asarray(initial_position_world, dtype=np.float64)
+    initial_velocity = np.asarray(initial_velocity_world, dtype=np.float64)
+    incoming_reference = np.asarray(reference_incoming_velocity_world, dtype=np.float64)
+    racket_velocity = np.asarray(desired_racket_velocity_planning, dtype=np.float64)
+    if (basis.shape != (3, 3) or any(value.shape != (3,) for value in
+            (origin, initial_position, initial_velocity, incoming_reference, racket_velocity)) or
+            not all(np.isfinite(value).all() for value in
+                    (basis, origin, initial_position, initial_velocity,
+                     incoming_reference, racket_velocity))):
+        raise ValueError('Finite shuttle and planning-frame inputs required')
+    if not np.allclose(basis.T @ basis, np.eye(3), atol=2e-5):
+        raise ValueError('World-from-planning basis must be orthonormal')
+    ball_position, ball_velocity = propagate_ball_state(
+        initial_position, initial_velocity, duration_s, physics)
+    return dict(
+        # Retain planner's historical field names; their explicit contract
+        # is the fixed planning frame, not a changing future-base frame.
+        position_world_m=basis.T @ (ball_position - origin),
+        incoming_ball_velocity_world_m_s=basis.T @ ball_velocity,
+        velocity_world_m_s=racket_velocity + basis.T @ (
+            ball_velocity - incoming_reference),
+    )
+
+
 def transported_body_acceleration(current, previous, current_basis,
                                   previous_basis, delta_time, usable):
     """Inertial finite-difference acceleration expressed in the current body.
@@ -454,7 +495,6 @@ class FullRacketRallyControllerV4:
                 initial_ball_velocity=plan['initial_velocity_mps']
                 incoming_ball_velocity=plan['incoming_velocity_mps']
                 command_world=np.array([1.10, 0.0, 1.80], dtype=np.float64)
-                target_offsets=self.target_offset_world[ids].detach().cpu().numpy()
                 impact_evaluators=[]
                 impact_model=None
                 if self.contact_first_planner.config.evaluate_impact_outcome:
@@ -470,22 +510,19 @@ class FullRacketRallyControllerV4:
                     p0=np.asarray(initial_ball_position[local], dtype=float)
                     v0=np.asarray(initial_ball_velocity[local], dtype=float)
                     v_ref=np.asarray(incoming_ball_velocity[local], dtype=float)
-                    offset_body=basis.T@target_offsets[local]
                     desired_body_velocity=desired_velocity[local].detach().cpu().numpy()
                     normal_body=normal_target[local].detach().cpu().numpy()
                     def target_state_fn(duration_s, basis=basis, root=root,
                                         p0=p0, v0=v0, v_ref=v_ref,
-                                        offset_body=offset_body,
                                         desired_body_velocity=desired_body_velocity,
                                         normal_body=normal_body):
-                        ball_position, ball_velocity=propagate_ball_state(
-                            p0, v0, duration_s, self.physics)
-                        body_position=basis.T@(ball_position-root)+offset_body
-                        body_velocity=desired_body_velocity+basis.T@(ball_velocity-v_ref)
-                        return dict(position_world_m=body_position,
-                                    incoming_ball_velocity_world_m_s=basis.T@ball_velocity,
-                                    velocity_world_m_s=body_velocity,
-                                    normal_world=normal_body)
+                        # DO NOT add the legacy plan.position_m - nominal
+                        # intercept delta: ball propagation already places
+                        # this candidate at the predicted interception point.
+                        target=causal_shuttle_target_in_planning_frame(
+                            self.physics, p0, v0, v_ref, basis, root,
+                            desired_body_velocity, duration_s)
+                        return dict(target, normal_world=normal_body)
                     target_state_fns.append(target_state_fn)
                     impact_fn=None
                     if impact_model is not None:
