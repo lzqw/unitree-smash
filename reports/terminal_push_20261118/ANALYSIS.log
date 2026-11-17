@@ -1,0 +1,160 @@
+{
+  "rows": [
+    {
+      "index": 0,
+      "label": "baseline",
+      "cost": 318.01547646189607,
+      "terminal_errors": {
+        "position_m": 0.5846720502248299,
+        "normal": 0.2589042550205783,
+        "velocity_m_s": 4.392869020787196
+      },
+      "root_position": [
+        0.8180385536172016,
+        0.02762205807155313,
+        0.5104107729816648
+      ],
+      "root_rpy_rad": [
+        0.11348335032446849,
+        -0.21290135219281048,
+        -0.40292038500994526
+      ],
+      "momentum": [
+        8.50171168643654,
+        -0.5998677784158453,
+        0.3016427032303106,
+        -0.849916752917296,
+        -2.8912310644863655,
+        -0.35145086983938756
+      ],
+      "reach_bound": {
+        "shoulder_body_m": [
+          0.05,
+          0.0,
+          0.193
+        ],
+        "target_distance_m": 1.209077856470323,
+        "optimistic_reach_upper_bound_m": 1.1593980267105732,
+        "position_budget_m": 0.0005,
+        "outside_reach_bound": true,
+        "conditional_translation_lower_bound_m": 0.04917982975974983,
+        "bound_scope": "fixed base pose/time; current authored string strip; all joint angles",
+        "feasible_if_inside": false,
+        "dynamics_verified": false,
+        "unrealized_base_translation_only": true
+      },
+      "max_command_error_rad": 4.440892098500626e-16,
+      "support_basis_nodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "changed_command_nodes": [],
+      "arm_commands_exact": true
+    },
+    {
+      "index": 13,
+      "label": "proposal",
+      "cost": 299.5582390773297,
+      "terminal_errors": {
+        "position_m": 0.5663113577983299,
+        "normal": 0.2409317572853109,
+        "velocity_m_s": 4.355441790829765
+      },
+      "root_position": [
+        0.8146862144400103,
+        0.03167442581753049,
+        0.5085987526373208
+      ],
+      "root_rpy_rad": [
+        0.12472855640574826,
+        -0.19231626099085553,
+        -0.40498914374677936
+      ],
+      "momentum": [
+        8.261661806811393,
+        -0.3372105557679767,
+        0.11924028739055145,
+        -0.7677913346383034,
+        -2.7903423391515023,
+        -0.3772593603592501
+      ],
+      "reach_bound": {
+        "shoulder_body_m": [
+          0.05,
+          0.0,
+          0.193
+        ],
+        "target_distance_m": 1.2113647520141404,
+        "optimistic_reach_upper_bound_m": 1.1593980267105732,
+        "position_budget_m": 0.0005,
+        "outside_reach_bound": true,
+        "conditional_translation_lower_bound_m": 0.05146672530356716,
+        "bound_scope": "fixed base pose/time; current authored string strip; all joint angles",
+        "feasible_if_inside": false,
+        "dynamics_verified": false,
+        "unrealized_base_translation_only": true
+      },
+      "max_command_error_rad": 4.440892098500626e-16,
+      "support_basis_nodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "changed_command_nodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "arm_commands_exact": true
+    }
+  ],
+  "singular_values": [
+    15.416367599381555,
+    10.001335054272303,
+    3.5850290448003443,
+    2.366762404952362,
+    0.4363076668557406,
+    0.22687148855384134,
+    0.14780744208087088,
+    0.038985858468655474,
+    0.0001934691991741193
+  ],
+  "local_linear_position_axis_change_upper_m": [
+    0.03124934812078521,
+    0.026554725632071598,
+    0.012207953368316194
+  ],
+  "linearization_scope": "first-order fixed temporal basis, not a global robot reach bound",
+  "prediction_error_norm": 0.024270333693783196
+}
