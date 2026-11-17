@@ -367,6 +367,7 @@ class ContactFirstTrajectorySearchV1:
         evaluator_rejection_reasons = Counter()
         candidates_considered = 0
         accepted_candidates = 0
+        best_kinematic_residual = None
         for branch_q, branch_pos, branch_normal, branch_jp, branch_jn, nullspace_offset in branches:
             branch_normal = branch_normal / max(np.linalg.norm(branch_normal), 1e-12)
             task = np.vstack((branch_jp, cfg.normal_weight * branch_jn))
@@ -452,6 +453,22 @@ class ContactFirstTrajectorySearchV1:
                         relative_target_position - achieved_pos))
                     normal_error_norm = float(np.linalg.norm(target_normal - achieved_normal))
                     velocity_error_norm = float(np.linalg.norm(target_velocity - achieved_velocity))
+                    residual_record = {
+                        "position_error_m": position_error_norm,
+                        "normal_error": normal_error_norm,
+                        "velocity_error_m_s": velocity_error_norm,
+                        "normalized_sum": (
+                            position_error_norm / cfg.position_tolerance_m +
+                            normal_error_norm / cfg.normal_tolerance +
+                            velocity_error_norm / cfg.velocity_tolerance_m_s),
+                        "contact_index": contact_index,
+                        "velocity_scale": float(velocity_scale),
+                        "nullspace_offset_rad": float(nullspace_offset),
+                    }
+                    if (best_kinematic_residual is None or
+                            residual_record["normalized_sum"] <
+                            best_kinematic_residual["normalized_sum"]):
+                        best_kinematic_residual = residual_record
                     if (position_error_norm > cfg.position_tolerance_m or
                             normal_error_norm > cfg.normal_tolerance or
                             velocity_error_norm > cfg.velocity_tolerance_m_s):
@@ -501,6 +518,7 @@ class ContactFirstTrajectorySearchV1:
             "accepted_candidates": accepted_candidates,
             "rejection_counts": dict(Counter(rejected)),
             "evaluator_rejection_reasons": dict(evaluator_rejection_reasons),
+            "best_kinematic_residual": best_kinematic_residual,
         }
         if best is None:
             raise RuntimeError(

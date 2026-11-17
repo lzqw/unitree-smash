@@ -203,7 +203,8 @@ class FullRacketRallyControllerV4:
                 self.contact_first_plan_valid[lane]=False
                 self.contact_first_plan_log.append(dict(
                     lane=lane, accepted=False, rejection=type(exc).__name__,
-                    error=str(exc), contact_time_s=contact_time))
+                    error=str(exc), contact_time_s=contact_time,
+                    search_diagnostics=dict(self.contact_first_planner.last_diagnostics)))
                 continue
             self.contact_first_plan_q[lane]=torch.as_tensor(
                 result.q_rad,device=actual.device,dtype=actual.dtype)
