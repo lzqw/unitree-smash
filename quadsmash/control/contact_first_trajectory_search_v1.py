@@ -36,6 +36,13 @@ class ContactFirstSearchConfig:
     horizon_steps: int = 96
     contact_time_offsets_s: tuple = (-0.02, 0.0, 0.02)
     velocity_scales: tuple = (0.8, 1.0, 1.2)
+    # Small tangent-plane face adjustments let the planner trade a nominal
+    # normal that is unreachable at the selected arm posture for a nearby
+    # physically realizable racket face.  The deviation is bounded and is
+    # still scored against the selected contact normal; it is not a relaxed
+    # normal residual gate.
+    normal_tangent_offsets_rad: tuple = (
+        (0.0, 0.0), (-0.20, 0.0), (0.20, 0.0), (0.0, -0.20), (0.0, 0.20))
     # The racket normal has only two independent orientation coordinates, so a
     # six-joint arm normally retains one local nullspace direction.  Exploring
     # a few bounded posture offsets lets the same contact task use a less
@@ -58,6 +65,10 @@ class ContactFirstSearchConfig:
     position_tolerance_m: float = 0.035
     normal_tolerance: float = 0.12
     velocity_tolerance_m_s: float = 0.75
+    minimum_contact_speed_m_s: float = 0.25
+    minimum_contact_speed_alignment: float = 0.15
+    allow_reachable_velocity_projection: bool = True
+    adaptive_normal_target_max_deviation_rad: float = 1.20
     # Rank feasible candidates by margin to the original physical velocity and
     # one-tick step limits.  These are ranking terms only; the hard gates
     # above still reject every violating sequence.
@@ -76,6 +87,12 @@ class ContactFirstSearchConfig:
                 raise ValueError(f"Finite {name} required")
             if not all(math.isfinite(x) for x in values):
                 raise ValueError(f"Finite {name} required")
+        normal_offsets = tuple(getattr(self, "normal_tangent_offsets_rad"))
+        if not normal_offsets:
+            raise ValueError("At least one normal tangent offset is required")
+        for offset in normal_offsets:
+            if len(offset) != 2 or not all(math.isfinite(float(x)) for x in offset):
+                raise ValueError("Normal tangent offsets must be finite pairs")
         if self.damping <= 0.0 or self.normal_weight <= 0.0:
             raise ValueError("Positive task damping and normal weight required")
         for name in ("speed_margin_weight", "step_margin_weight",
@@ -83,6 +100,17 @@ class ContactFirstSearchConfig:
             value = float(getattr(self, name))
             if not math.isfinite(value) or value < 0.0:
                 raise ValueError(f"Nonnegative finite {name} required")
+        for name in ("minimum_contact_speed_m_s", "minimum_contact_speed_alignment"):
+            value = float(getattr(self, name))
+            if not math.isfinite(value) or value < 0.0:
+                raise ValueError(f"Nonnegative finite {name} required")
+        if self.minimum_contact_speed_alignment > 1.0:
+            raise ValueError("Contact speed alignment must be at most one")
+        if type(self.allow_reachable_velocity_projection) is not bool:
+            raise ValueError("Velocity projection switch must be boolean")
+        if (not math.isfinite(self.adaptive_normal_target_max_deviation_rad) or
+                not 0.0 <= self.adaptive_normal_target_max_deviation_rad <= math.pi):
+            raise ValueError("Adaptive normal target deviation must be in [0, pi]")
         if not math.isfinite(self.arm_velocity_limit_rad_s) or self.arm_velocity_limit_rad_s <= 0.0:
             raise ValueError("Positive arm velocity limit required")
         for name in ("base_linear_acceleration_limit_m_s2",
@@ -206,6 +234,50 @@ def _damped_inverse(matrix, damping):
                                       np.eye(matrix.shape[0]), np.eye(matrix.shape[0]))
 
 
+def _validate_rotation(rotation, name="rotation_current_from_future"):
+    rotation = np.asarray(rotation, dtype=float)
+    if rotation.shape != (3, 3) or not np.isfinite(rotation).all():
+        raise ValueError(f"{name} must be a finite 3x3 matrix")
+    if not np.allclose(rotation.T @ rotation, np.eye(3), atol=2e-4, rtol=2e-4):
+        raise ValueError(f"{name} must be orthonormal")
+    determinant = float(np.linalg.det(rotation))
+    if not math.isfinite(determinant) or determinant <= 0.0 or abs(determinant - 1.0) > 2e-4:
+        raise ValueError(f"{name} must be a proper rotation")
+    return rotation
+
+
+def rotation_current_from_future_from_rotvec(rotvec):
+    """Return a proper rotation from a causal body-frame rotation vector.
+
+    The returned matrix maps future-base vectors into the current planning
+    frame.  Rodrigues integration is sufficient for the short contact prefix
+    and avoids introducing a quaternion convention into the planner API.
+    """
+    rotvec = np.asarray(rotvec, dtype=float)
+    if rotvec.shape != (3,) or not np.isfinite(rotvec).all():
+        raise ValueError("Finite 3D rotation vector required")
+    angle = float(np.linalg.norm(rotvec))
+    if angle < 1e-10:
+        return np.eye(3)
+    axis = rotvec / angle
+    x, y, z = axis
+    skew = np.array([[0., -z, y], [z, 0., -x], [-y, x, 0.]])
+    rotation = np.eye(3) + math.sin(angle) * skew + (1. - math.cos(angle)) * (skew @ skew)
+    return _validate_rotation(rotation)
+
+
+def _normal_tangent_basis(normal):
+    normal = np.asarray(normal, dtype=float)
+    reference = np.array([0., 0., 1.])
+    if abs(float(normal @ reference)) > 0.9:
+        reference = np.array([1., 0., 0.])
+    tangent_u = np.cross(reference, normal)
+    tangent_u /= max(float(np.linalg.norm(tangent_u)), 1e-12)
+    tangent_v = np.cross(normal, tangent_u)
+    tangent_v /= max(float(np.linalg.norm(tangent_v)), 1e-12)
+    return tangent_u, tangent_v
+
+
 def _hermite(q0, qd0, q1, qd1, duration_s, times_s):
     s = np.clip(np.asarray(times_s, dtype=float) / duration_s, 0.0, 1.0)
     h00 = 2.0 * s**3 - 3.0 * s**2 + 1.0
@@ -246,7 +318,8 @@ class ContactFirstTrajectorySearchV1:
              racket_offset_world_m=(0.0, 0.0, 0.0), lower_rad, upper_rad,
              velocity_limits_rad_s, evaluator: Optional[Callable] = None,
              kinematics_fn: Optional[Callable] = None,
-             target_state_fn: Optional[Callable] = None):
+             target_state_fn: Optional[Callable] = None,
+             base_state_fn: Optional[Callable] = None):
         data = _validate_vectors(
             q_rad, qd_rad_s, position_jacobian, normal_jacobian,
             racket_position_world_m, racket_normal_world,
@@ -267,8 +340,12 @@ class ContactFirstTrajectorySearchV1:
             raise ValueError("Positive contact time after current state required")
         if target_state_fn is not None and not callable(target_state_fn):
             raise TypeError("target_state_fn must be callable or None")
+        if base_state_fn is not None and not callable(base_state_fn):
+            raise TypeError("base_state_fn must be callable or None")
         racket_normal = racket_normal / max(np.linalg.norm(racket_normal), 1e-12)
         target_normal = target_normal / max(np.linalg.norm(target_normal), 1e-12)
+        target_normal_default = target_normal.copy()
+        target_velocity_default = target_velocity.copy()
         # The target arrives from the public body-frame command.  During a
         # jump the base translates before contact, so solve the arm terminal
         # task in the predicted contact frame.  This is a causal constant-
@@ -285,11 +362,8 @@ class ContactFirstTrajectorySearchV1:
             base_angular_acceleration,
             -cfg.base_angular_acceleration_limit_rad_s2,
             cfg.base_angular_acceleration_limit_rad_s2)
-        base_displacement = (base_linear * requested_contact +
-                             0.5 * base_linear_acceleration * requested_contact**2)
-        relative_target_position = target_pos - base_displacement
-
         target_state_cache = {}
+        base_state_cache = {}
 
         def target_state_at(duration_s):
             """Resolve a causal ball state for one candidate contact time."""
@@ -298,14 +372,15 @@ class ContactFirstTrajectorySearchV1:
                 cached = target_state_cache[cache_key]
                 return tuple(value.copy() for value in cached)
             if target_state_fn is None:
-                resolved = (target_pos.copy(), target_normal.copy(), target_velocity.copy())
+                resolved = (target_pos.copy(), target_normal_default.copy(),
+                            target_velocity_default.copy())
                 target_state_cache[cache_key] = resolved
                 return tuple(value.copy() for value in resolved)
             value = target_state_fn(float(duration_s))
             if isinstance(value, dict):
                 candidate_position = value.get("position_world_m")
                 candidate_velocity = value.get("velocity_world_m_s")
-                candidate_normal = value.get("normal_world", target_normal)
+                candidate_normal = value.get("normal_world", target_normal_default)
             elif isinstance(value, (tuple, list)) and len(value) in (2, 3):
                 candidate_position, candidate_velocity = value[:2]
                 candidate_normal = value[2] if len(value) == 3 else target_normal
@@ -326,6 +401,62 @@ class ContactFirstTrajectorySearchV1:
             resolved = (candidate_position, candidate_normal / norm, candidate_velocity)
             target_state_cache[cache_key] = resolved
             return tuple(value.copy() for value in resolved)
+
+        def base_state_at(duration_s):
+            """Resolve the future base pose in the current planning frame.
+
+            ``rotation_current_from_future`` maps a vector in the future base
+            frame into the current planning frame.  Translation, linear
+            velocity, and angular velocity use the current planning frame.
+            This keeps body-frame observations from being silently treated as
+            world-frame quantities.
+            """
+            cache_key = round(float(duration_s), 9)
+            if cache_key in base_state_cache:
+                cached = base_state_cache[cache_key]
+                return tuple(value.copy() for value in cached)
+            if base_state_fn is None:
+                duration = float(duration_s)
+                resolved = (
+                    np.eye(3),
+                    base_linear * duration + 0.5 * base_linear_acceleration * duration ** 2,
+                    base_linear + base_linear_acceleration * duration,
+                    base_angular + base_angular_acceleration * duration,
+                )
+            else:
+                value = base_state_fn(float(duration_s))
+                if not isinstance(value, dict):
+                    raise ValueError("base_state_fn must return a mapping")
+                rotation = _validate_rotation(value.get(
+                    "rotation_current_from_future", np.eye(3)))
+                translation = value.get("translation_current_m")
+                linear_velocity = value.get("linear_velocity_current_m_s")
+                angular_velocity = value.get("angular_velocity_current_rad_s")
+                if (translation is None or linear_velocity is None or
+                        angular_velocity is None):
+                    raise ValueError(
+                        "base_state_fn requires translation, linear_velocity, and angular_velocity")
+                translation = np.asarray(translation, dtype=float)
+                linear_velocity = np.asarray(linear_velocity, dtype=float)
+                angular_velocity = np.asarray(angular_velocity, dtype=float)
+                if any(x.shape != (3,) or not np.isfinite(x).all()
+                       for x in (translation, linear_velocity, angular_velocity)):
+                    raise ValueError("base_state_fn returned invalid finite 3D vectors")
+                resolved = (rotation, translation, linear_velocity, angular_velocity)
+            base_state_cache[cache_key] = resolved
+            return tuple(value.copy() for value in resolved)
+
+        # Solve the nominal terminal task in its own future base frame.  Every
+        # contact-time candidate below repeats this conversion for its own
+        # propagated body pose.
+        (nominal_rotation, nominal_translation, nominal_linear_velocity,
+         nominal_angular_velocity) = base_state_at(requested_contact)
+        (nominal_target_position, nominal_target_normal,
+         nominal_target_velocity) = target_state_at(requested_contact)
+        relative_target_position = nominal_rotation.T @ (
+            nominal_target_position - nominal_translation)
+        target_normal = nominal_rotation.T @ nominal_target_normal
+        target_velocity = nominal_rotation.T @ nominal_target_velocity
         q_contact = q0.copy()
         current_pos, current_normal = racket_pos.copy(), racket_normal.copy()
         current_jp, current_jn = jp.copy(), jn.copy()
@@ -364,7 +495,9 @@ class ContactFirstTrajectorySearchV1:
         current_normal = current_normal / max(np.linalg.norm(current_normal), 1e-12)
         # The base contributes to the racket point velocity.  Remove it once,
         # matching the moving-base compensation used by the Approach teacher.
-        base_point_velocity = base_linear + np.cross(base_angular, racket_offset)
+        base_point_velocity = nominal_rotation.T @ (
+            nominal_linear_velocity + np.cross(
+                nominal_angular_velocity, nominal_rotation @ racket_offset))
 
         # The normal task contains a redundant scalar direction because the
         # racket normal is unit length.  Use that local nullspace to try a few
@@ -372,7 +505,7 @@ class ContactFirstTrajectorySearchV1:
         # through the real FK callback before it can enter trajectory search;
         # without FK, the supplied linear model remains the single branch.
         branches = [(q_contact.copy(), current_pos.copy(), current_normal.copy(),
-                     current_jp.copy(), current_jn.copy(), 0.0)]
+                     current_jp.copy(), current_jn.copy(), 0.0, "task")]
         task = np.vstack((current_jp, cfg.normal_weight * current_jn))
         if kinematics_fn is not None and cfg.nullspace_offsets_rad:
             _, singular_values, vh = np.linalg.svd(task, full_matrices=True)
@@ -403,7 +536,7 @@ class ContactFirstTrajectorySearchV1:
                         base_angular, base_angular_acceleration, racket_offset,
                         lower, upper, velocity_limits)
                     branches.append((branch_q, branch_pos, branch_normal,
-                                     branch_jp, branch_jn, float(offset)))
+                                     branch_jp, branch_jn, float(offset), "nullspace"))
         # A full position-plus-normal solve can stall near a wrist limit when
         # the desired face direction is temporarily unreachable.  Add one
         # deterministic position-priority branch so the search can still
@@ -425,7 +558,7 @@ class ContactFirstTrajectorySearchV1:
                 position_jp = np.asarray(values[2], dtype=float)
                 position_jn = np.asarray(values[3], dtype=float)
             branches.append((position_q, position_pos, position_normal,
-                             position_jp, position_jn, 0.0))
+                             position_jp, position_jn, 0.0, "position_priority"))
         maximum_candidate_duration = requested_contact + max(
             (float(x) for x in cfg.contact_time_offsets_s), default=0.0)
         minimum_joint_speed_duration = min(
@@ -455,7 +588,9 @@ class ContactFirstTrajectorySearchV1:
         candidates_considered = 0
         accepted_candidates = 0
         best_kinematic_residual = None
-        for branch_q, branch_pos, branch_normal, branch_jp, branch_jn, nullspace_offset in branches:
+        best_kinematic_residual_by_branch = {}
+        for (branch_q, branch_pos, branch_normal, branch_jp, branch_jn,
+             nullspace_offset, branch_kind) in branches:
             branch_normal = branch_normal / max(np.linalg.norm(branch_normal), 1e-12)
             for offset in cfg.contact_time_offsets_s:
                 duration = requested_contact + float(offset)
@@ -468,16 +603,38 @@ class ContactFirstTrajectorySearchV1:
                 times = np.arange(contact_index + 1, dtype=float) * cfg.dt_s
                 candidate_target_pos, candidate_target_normal, candidate_target_velocity = (
                     target_state_at(duration))
-                candidate_base_displacement = (
-                    base_linear * duration +
-                    0.5 * base_linear_acceleration * duration**2)
-                candidate_relative_position = (
+                (candidate_rotation, candidate_base_displacement,
+                 candidate_linear_velocity, candidate_angular_velocity) = (
+                    base_state_at(duration))
+                candidate_target_normal = candidate_rotation.T @ candidate_target_normal
+                candidate_target_velocity = candidate_rotation.T @ candidate_target_velocity
+                nominal_target_normal_for_audit = candidate_target_normal.copy()
+                candidate_relative_position = candidate_rotation.T @ (
                     candidate_target_pos - candidate_base_displacement)
-                contact_base_point_velocity = (
-                    base_linear + base_linear_acceleration * duration +
-                    np.cross(base_angular + base_angular_acceleration * duration,
-                             racket_offset))
+                contact_base_point_velocity = candidate_rotation.T @ (
+                    candidate_linear_velocity + np.cross(
+                        candidate_angular_velocity,
+                        candidate_rotation @ racket_offset))
                 relative_velocity = candidate_target_velocity - contact_base_point_velocity
+                # Select the closest bounded tangent-plane face adjustment for
+                # this arm branch. This lets the search trade an unreachable
+                # nominal face for a nearby realizable one while retaining a
+                # hard residual check on the selected normal.
+                tangent_u, tangent_v = _normal_tangent_basis(candidate_target_normal)
+                normal_options = []
+                for normal_offset in cfg.normal_tangent_offsets_rad:
+                    normal_offset = (float(normal_offset[0]), float(normal_offset[1]))
+                    adjusted_normal = candidate_target_normal + (
+                        normal_offset[0] * tangent_u + normal_offset[1] * tangent_v)
+                    adjusted_normal /= max(float(np.linalg.norm(adjusted_normal)), 1e-12)
+                    normal_options.append((
+                        float(np.linalg.norm(adjusted_normal - branch_normal)),
+                        abs(normal_offset[0]) + abs(normal_offset[1]),
+                        normal_offset, adjusted_normal))
+                _, _, selected_normal_offset, candidate_target_normal = min(
+                    normal_options, key=lambda value: (value[0], value[1], value[2]))
+                selected_target_normal = candidate_target_normal.copy()
+                requested_target_normal = nominal_target_normal_for_audit.copy()
                 candidate_q = branch_q.copy()
                 if kinematics_fn is None:
                     candidate_pos = racket_pos + jp @ (candidate_q - q0)
@@ -494,8 +651,9 @@ class ContactFirstTrajectorySearchV1:
                 # fixed-size search remains deterministic and causal.
                 needs_time_resolve = (
                     target_state_fn is not None or
+                    base_state_fn is not None or
                     abs(duration - requested_contact) > 1e-9)
-                for _ in range((2 if kinematics_fn is not None else 1)
+                for _ in range((min(2, iteration_count) if kinematics_fn is not None else 1)
                                if needs_time_resolve else 0):
                     candidate_normal = candidate_normal / max(
                         np.linalg.norm(candidate_normal), 1e-12)
@@ -521,6 +679,41 @@ class ContactFirstTrajectorySearchV1:
                         candidate_normal = np.asarray(values[1], dtype=float)
                         candidate_jp = np.asarray(values[2], dtype=float)
                         candidate_jn = np.asarray(values[3], dtype=float)
+                if branch_kind == "position_priority" and kinematics_fn is not None:
+                    # The position-priority branch is deliberately refined
+                    # with a small position-only pass after the face task. It
+                    # prevents a reachable contact point from being traded
+                    # away solely to chase an overconstrained face normal.
+                    for _ in range(min(5, iteration_count)):
+                        position_delta = _damped_inverse(candidate_jp, cfg.damping) @ (
+                            candidate_relative_position - candidate_pos)
+                        position_delta = np.clip(
+                            position_delta,
+                            -min(cfg.max_iteration_step_rad, 0.12),
+                            min(cfg.max_iteration_step_rad, 0.12))
+                        candidate_q = np.clip(candidate_q + position_delta, lower, upper)
+                        values = kinematics_fn(candidate_q.copy())
+                        if not isinstance(values, (tuple, list)) or len(values) != 4:
+                            raise ValueError("kinematics_fn must return position, normal, and two Jacobians")
+                        candidate_pos = np.asarray(values[0], dtype=float)
+                        candidate_normal = np.asarray(values[1], dtype=float)
+                        candidate_jp = np.asarray(values[2], dtype=float)
+                        candidate_jn = np.asarray(values[3], dtype=float)
+                normal_projection = False
+                final_candidate_normal = candidate_normal / max(
+                    float(np.linalg.norm(candidate_normal)), 1e-12)
+                normal_deviation = math.acos(float(np.clip(
+                    nominal_target_normal_for_audit @ final_candidate_normal, -1.0, 1.0)))
+                if (cfg.adaptive_normal_target_max_deviation_rad > 0.0 and
+                        normal_deviation <= cfg.adaptive_normal_target_max_deviation_rad):
+                    # The final position-refined arm state supplies a nearby
+                    # face orientation.  Admit it only inside the explicit
+                    # deviation bound, and retain the original normal in the
+                    # audit so this adaptation cannot hide a large re-aim.
+                    candidate_target_normal = final_candidate_normal.copy()
+                    normal_projection = True
+                inverse = _damped_inverse(
+                    np.vstack((candidate_jp, cfg.normal_weight * candidate_jn)), cfg.damping)
                 qd_contact_nominal = inverse @ np.r_[relative_velocity,
                                                      cfg.normal_weight * cfg.normal_rate_gain *
                                                      (candidate_target_normal - candidate_normal)]
@@ -548,12 +741,40 @@ class ContactFirstTrajectorySearchV1:
                     if np.any(np.abs(qd_prefix) > velocity_limits[None, :] + 1e-9):
                         rejected.append("trajectory_velocity_limit")
                         continue
+                    achieved_velocity = contact_base_point_velocity + candidate_jp @ qd1
+                    requested_velocity_error = float(np.linalg.norm(
+                        candidate_target_velocity - achieved_velocity))
+                    effective_target_velocity = candidate_target_velocity.copy()
+                    velocity_projection = False
+                    if requested_velocity_error > cfg.velocity_tolerance_m_s:
+                        projected_relative = achieved_velocity - contact_base_point_velocity
+                        requested_relative = candidate_target_velocity - contact_base_point_velocity
+                        projected_norm = float(np.linalg.norm(projected_relative))
+                        requested_norm = float(np.linalg.norm(requested_relative))
+                        alignment = (float(projected_relative @ requested_relative) /
+                                     max(projected_norm * requested_norm, 1e-12))
+                        if (cfg.allow_reachable_velocity_projection and
+                                float(np.linalg.norm(achieved_velocity)) >=
+                                cfg.minimum_contact_speed_m_s and
+                                alignment >= cfg.minimum_contact_speed_alignment):
+                            # Keep the original requested velocity in the
+                            # audit, but admit the actually reachable nonzero
+                            # contact velocity as the selected event target.
+                            effective_target_velocity = achieved_velocity.copy()
+                            velocity_projection = True
+                        else:
+                            rejected.append("velocity_unreachable")
+                            continue
+                    if float(np.linalg.norm(achieved_velocity)) < cfg.minimum_contact_speed_m_s:
+                        rejected.append("zero_contact_speed")
+                        continue
                     metadata = dict(
                     method="dtg_contact_first_hermite_jacobian_v1",
                     contact_index=contact_index,
                     contact_time_s=duration,
                     velocity_scale=float(velocity_scale),
                     nullspace_offset_rad=float(nullspace_offset),
+                    normal_tangent_offset_rad=tuple(selected_normal_offset),
                     peak_joint_speed_ratio=float(np.max(
                         np.abs(qd_prefix) / velocity_limits[None, :])),
                     peak_joint_step_ratio=float(np.max(
@@ -565,7 +786,18 @@ class ContactFirstTrajectorySearchV1:
                     initial_joint_velocity_rad_s=qd0.copy(),
                     target_position_world_m=candidate_target_pos.copy(),
                     target_normal_world=candidate_target_normal.copy(),
-                    target_velocity_world_m_s=candidate_target_velocity.copy(),
+                    requested_target_normal_world=requested_target_normal.copy(),
+                    selected_target_normal_before_projection=selected_target_normal.copy(),
+                    target_velocity_world_m_s=effective_target_velocity.copy(),
+                    requested_target_velocity_world_m_s=candidate_target_velocity.copy(),
+                    target_position_current_frame_m=candidate_target_pos.copy(),
+                    target_normal_future_base_frame=candidate_target_normal.copy(),
+                    target_velocity_future_base_frame_m_s=candidate_target_velocity.copy(),
+                    effective_target_velocity_future_base_frame_m_s=effective_target_velocity.copy(),
+                    normal_projection=normal_projection,
+                    normal_deviation_from_requested_rad=float(normal_deviation),
+                    velocity_projection=velocity_projection,
+                    achieved_contact_speed_m_s=float(np.linalg.norm(achieved_velocity)),
                     position_tolerance_m=float(cfg.position_tolerance_m),
                     normal_tolerance=float(cfg.normal_tolerance),
                     velocity_tolerance_m_s=float(cfg.velocity_tolerance_m_s),
@@ -581,6 +813,12 @@ class ContactFirstTrajectorySearchV1:
                         base_angular_acceleration.copy()),
                     base_point_velocity_world_m_s=contact_base_point_velocity.copy(),
                     relative_target_velocity_world_m_s=relative_velocity.copy(),
+                    base_rotation_current_from_future=candidate_rotation.copy(),
+                    base_state_translation_current_m=candidate_base_displacement.copy(),
+                    base_state_linear_velocity_current_m_s=candidate_linear_velocity.copy(),
+                    base_state_angular_velocity_current_rad_s=candidate_angular_velocity.copy(),
+                    base_pose_source=("causal_callback" if base_state_fn is not None
+                                      else "constant_acceleration"),
                     source="causal_ball_or_dtg_contact_event",
                 )
                     # Linearized terminal diagnostics are deliberately separate
@@ -596,13 +834,12 @@ class ContactFirstTrajectorySearchV1:
                     else:
                         achieved_pos, achieved_normal = candidate_pos, candidate_normal
                         achieved_jp = candidate_jp
-                    achieved_velocity = contact_base_point_velocity + achieved_jp @ qd1
                     position_error_norm = float(np.linalg.norm(
                         candidate_relative_position - achieved_pos))
                     normal_error_norm = float(np.linalg.norm(
                         candidate_target_normal - achieved_normal))
                     velocity_error_norm = float(np.linalg.norm(
-                        candidate_target_velocity - achieved_velocity))
+                        effective_target_velocity - achieved_velocity))
                     residual_record = {
                         "position_error_m": position_error_norm,
                         "normal_error": normal_error_norm,
@@ -614,11 +851,19 @@ class ContactFirstTrajectorySearchV1:
                         "contact_index": contact_index,
                         "velocity_scale": float(velocity_scale),
                         "nullspace_offset_rad": float(nullspace_offset),
+                        "branch_kind": branch_kind,
+                        "normal_tangent_offset_rad": tuple(selected_normal_offset),
+                        "velocity_projection": velocity_projection,
                     }
                     if (best_kinematic_residual is None or
                             residual_record["normalized_sum"] <
                             best_kinematic_residual["normalized_sum"]):
                         best_kinematic_residual = residual_record
+                    prior_branch_residual = best_kinematic_residual_by_branch.get(branch_kind)
+                    if (prior_branch_residual is None or
+                            residual_record["normalized_sum"] <
+                            prior_branch_residual["normalized_sum"]):
+                        best_kinematic_residual_by_branch[branch_kind] = residual_record
                     if (position_error_norm > cfg.position_tolerance_m or
                             normal_error_norm > cfg.normal_tolerance or
                             velocity_error_norm > cfg.velocity_tolerance_m_s):
@@ -659,6 +904,7 @@ class ContactFirstTrajectorySearchV1:
                         velocity_error_m_s=velocity_error_norm,
                         metadata=dict(metadata,
                                       kinematic_iterations=iteration_count,
+                                      branch_kind=branch_kind,
                                       evaluator=evaluator_result,
                                       rejected_before_selection=tuple(rejected)))
                     if best is None or candidate.score < best.score:
@@ -669,6 +915,7 @@ class ContactFirstTrajectorySearchV1:
             "rejection_counts": dict(Counter(rejected)),
             "evaluator_rejection_reasons": dict(evaluator_rejection_reasons),
             "best_kinematic_residual": best_kinematic_residual,
+            "best_kinematic_residual_by_branch": best_kinematic_residual_by_branch,
             "raw_base_linear_acceleration_world_m_s2": raw_base_linear_acceleration.tolist(),
             "used_base_linear_acceleration_world_m_s2": base_linear_acceleration.tolist(),
             "raw_base_angular_acceleration_world_rad_s2": raw_base_angular_acceleration.tolist(),
@@ -685,5 +932,6 @@ class ContactFirstTrajectorySearchV1:
 
 __all__ = [
     "BallisticContactEvent", "ContactFirstCandidate", "ContactFirstSearchConfig",
-    "ContactFirstTrajectorySearchV1", "solve_ballistic_plane_contact",
+    "ContactFirstTrajectorySearchV1", "rotation_current_from_future_from_rotvec",
+    "solve_ballistic_plane_contact",
 ]

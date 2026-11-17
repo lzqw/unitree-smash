@@ -4,6 +4,7 @@
     "dt_s": 0.01,
     "contact_time_offsets_s": [-0.02, 0.0, 0.02],
     "velocity_scales": [0.8, 1.0, 1.2],
+    "normal_tangent_offsets_rad": [[0.0, 0.0], [-0.20, 0.0], [0.20, 0.0], [0.0, -0.20], [0.0, 0.20]],
     "nullspace_offsets_rad": [-0.12, -0.06, 0.06, 0.12],
     "damping": 0.04,
     "normal_weight": 0.3,
@@ -14,6 +15,10 @@
     "kinematic_iterations": 5,
     "max_iteration_step_rad": 0.25,
     "handoff_duration_s": 0.02,
+    "minimum_contact_speed_m_s": 0.25,
+    "minimum_contact_speed_alignment": 0.15,
+    "allow_reachable_velocity_projection": true,
+    "adaptive_normal_target_max_deviation_rad": 1.20,
     "speed_margin_weight": 0.15,
     "step_margin_weight": 0.10,
     "nullspace_penalty_weight": 0.01

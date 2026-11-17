@@ -4,6 +4,7 @@ import pytest
 from quadsmash.control.contact_first_trajectory_search_v1 import (
     ContactFirstSearchConfig,
     ContactFirstTrajectorySearchV1,
+    rotation_current_from_future_from_rotvec,
     solve_ballistic_plane_contact,
 )
 
@@ -128,6 +129,31 @@ def test_base_acceleration_prediction_is_bounded_and_audited():
     assert result.metadata['used_base_angular_acceleration_world_rad_s2'][1] == pytest.approx(2.)
 
 
+def test_unreachable_velocity_uses_explicit_reachable_projection():
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
+        velocity_tolerance_m_s=.1, minimum_contact_speed_m_s=.1))
+    inputs = _inputs()
+    inputs['target_velocity_world_m_s'] = np.array([10., 0., 0.])
+    result = planner.plan(**inputs)
+    assert result.metadata['velocity_projection'] is True
+    assert result.metadata['achieved_contact_speed_m_s'] >= .1
+    np.testing.assert_allclose(
+        result.metadata['effective_target_velocity_future_base_frame_m_s'],
+        result.metadata['requested_target_velocity_world_m_s'] / 2., atol=1e-6)
+
+
+def test_zero_contact_speed_is_rejected_when_required():
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
+        minimum_contact_speed_m_s=.1))
+    inputs = _inputs()
+    inputs['target_velocity_world_m_s'] = np.zeros(3)
+    with pytest.raises(RuntimeError, match='No contact-first candidate'):
+        planner.plan(**inputs)
+    assert planner.last_diagnostics['rejection_counts']['zero_contact_speed'] == 1
+
+
 def test_time_varying_target_is_queried_for_each_contact_offset():
     calls = []
     planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
@@ -143,9 +169,43 @@ def test_time_varying_target_is_queried_for_each_contact_offset():
         }
 
     result = planner.plan(**_inputs(), target_state_fn=target_state)
-    assert calls == pytest.approx([.18, .20, .22], abs=1e-9)
+    # The nominal event is resolved once for the warm start, then each
+    # distinct candidate offset is queried once from the causal cache.
+    assert calls == pytest.approx([.20, .18, .22], abs=1e-9)
     expected = .1 + .5 * (result.contact_time_s - .2)
     assert result.metadata['target_position_world_m'][0] == pytest.approx(expected)
+
+
+def test_future_base_rotation_transforms_target_into_future_body_frame():
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
+        max_iteration_step_rad=1.0, minimum_contact_speed_m_s=0.0))
+    inputs = _inputs()
+    inputs.update(
+        target_position_world_m=np.array([0., 1., 0.]),
+        target_velocity_world_m_s=np.zeros(3),
+        upper_rad=np.full(6, 2.),
+        velocity_limits_rad_s=np.full(6, 20.),
+    )
+    quarter_turn = rotation_current_from_future_from_rotvec(
+        np.array([0., 0., np.pi / 2.]))
+
+    def base_state(duration_s):
+        return {
+            "rotation_current_from_future": quarter_turn,
+            "translation_current_m": np.zeros(3),
+            "linear_velocity_current_m_s": np.zeros(3),
+            "angular_velocity_current_rad_s": np.zeros(3),
+        }
+
+    result = planner.plan(**inputs, base_state_fn=base_state)
+    # The future body y axis is current-frame -x for this convention, so a
+    # current-frame target at +y appears at +x in the future body frame.
+    np.testing.assert_allclose(
+        result.q_rad[result.contact_index, :3], [1., 0., 0.], atol=3e-3)
+    np.testing.assert_allclose(
+        result.metadata["base_rotation_current_from_future"], quarter_turn)
+    assert result.metadata["base_pose_source"] == "causal_callback"
 
 
 def test_forward_kinematics_callback_relinearizes_before_acceptance():
@@ -174,8 +234,9 @@ def test_forward_kinematics_callback_relinearizes_before_acceptance():
         horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
         kinematic_iterations=4, max_iteration_step_rad=.25))
     result = planner.plan(**inputs, kinematics_fn=forward_kinematics)
-    # Four full task iterations plus eight position-priority refinement calls.
-    assert len(calls) == 12
+    # Four full task iterations, the original position-priority calls, and
+    # four bounded position-only candidate refinements.
+    assert len(calls) == 16
     assert result.position_error_m < 1e-3
     assert result.metadata['kinematic_iterations'] == 4
 
@@ -206,9 +267,9 @@ def test_regular_unit_normal_task_explores_one_joint_nullspace():
         horizon_steps=32, contact_time_offsets_s=(0.,), velocity_scales=(1.,),
         kinematic_iterations=1))
     result = planner.plan(**inputs, kinematics_fn=forward_kinematics)
-    # Initial full-task call, four nullspace branches, and two position-
-    # priority refinement calls.
-    assert len(calls) == 1 + 4 + 2
+    # Initial full-task call, four nullspace branches, two position-priority
+    # setup calls, and three bounded candidate refinements.
+    assert len(calls) == 1 + 4 + 2 + 1
     assert result.metadata['search_diagnostics']['candidates_considered'] == 6
     assert result.metadata['nullspace_offset_rad'] in (-.12, -.06, .06, .12, 0.)
 

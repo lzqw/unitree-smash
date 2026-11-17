@@ -11,6 +11,7 @@ from .full_racket_relative_prepose_v4 import validate_relative_prepose,relative_
 from .full_racket_height_intercept_v4 import validate_height_intercept,predict_height_intercept
 from .contact_first_trajectory_search_v1 import (
     ContactFirstSearchConfig, ContactFirstTrajectorySearchV1,
+    rotation_current_from_future_from_rotvec,
 )
 from .full_racket_contact_normal_search_v4 import contact_normal_body
 
@@ -154,7 +155,8 @@ class FullRacketRallyControllerV4:
                                     base_linear_acceleration, base_angular_acceleration,
                                     forward, left, up,
                                     target, normal_target, desired_velocity, event_time,
-                                    limits, target_state_fns=None):
+                                    limits, target_state_fns=None,
+                                    base_state_fns=None):
         """Build one causal pre-contact arm plan per newly planned lane."""
         if self.contact_first_planner is None:
             return
@@ -200,6 +202,8 @@ class FullRacketRallyControllerV4:
                     kinematics_fn=kinematics_fn,
                     target_state_fn=(None if target_state_fns is None
                                      else target_state_fns[local]),
+                    base_state_fn=(None if base_state_fns is None
+                                   else base_state_fns[local]),
                 )
             except (ValueError, RuntimeError, FloatingPointError) as exc:
                 self.contact_first_plan_valid[lane]=False
@@ -373,6 +377,8 @@ class FullRacketRallyControllerV4:
                 command_world=np.array([1.10, 0.0, 1.80], dtype=np.float64)
                 target_offsets=self.target_offset_world[ids].detach().cpu().numpy()
                 target_state_fns=[]
+                base_state_fns=[]
+                planner_cfg=self.contact_first_planner.config
                 for local in range(len(ids)):
                     basis=np.stack((
                         forward[local].detach().cpu().numpy(),
@@ -398,12 +404,48 @@ class FullRacketRallyControllerV4:
                                     velocity_world_m_s=body_velocity,
                                     normal_world=normal_body)
                     target_state_fns.append(target_state_fn)
+                    base_linear=np.asarray(public[local,:3], dtype=float)
+                    base_angular=np.asarray(public[local,3:6], dtype=float)
+                    raw_linear_acceleration=np.asarray(
+                        base_linear_acceleration[ids[local]].detach().cpu().numpy(), dtype=float)
+                    raw_angular_acceleration=np.asarray(
+                        base_angular_acceleration[ids[local]].detach().cpu().numpy(), dtype=float)
+                    clipped_linear_acceleration=np.clip(
+                        raw_linear_acceleration,
+                        -planner_cfg.base_linear_acceleration_limit_m_s2,
+                        planner_cfg.base_linear_acceleration_limit_m_s2)
+                    clipped_angular_acceleration=np.clip(
+                        raw_angular_acceleration,
+                        -planner_cfg.base_angular_acceleration_limit_rad_s2,
+                        planner_cfg.base_angular_acceleration_limit_rad_s2)
+                    def base_state_fn(duration_s, base_linear=base_linear,
+                                      base_angular=base_angular,
+                                      linear_acceleration=clipped_linear_acceleration,
+                                      angular_acceleration=clipped_angular_acceleration):
+                        duration=float(duration_s)
+                        return dict(
+                            rotation_current_from_future=rotation_current_from_future_from_rotvec(
+                                # Public angular acceleration is a noisy
+                                # finite difference.  Use the measured
+                                # angular velocity for short-horizon attitude
+                                # propagation; the bounded acceleration below
+                                # remains in the point-velocity term inside
+                                # the planner and is audited separately.
+                                base_angular*duration),
+                            translation_current_m=(
+                                base_linear*duration + .5*linear_acceleration*duration**2),
+                            linear_velocity_current_m_s=(
+                                base_linear + linear_acceleration*duration),
+                            angular_velocity_current_rad_s=(
+                                base_angular + angular_acceleration*duration),
+                        )
+                    base_state_fns.append(base_state_fn)
                 self._install_contact_first_plan(
                     ids,public,actual,actual_velocity[ids],base_linear_acceleration[ids],
                     base_angular_acceleration[ids],
                     forward,left,up,target_body,
                     normal_target,desired_velocity,self.event_time[ids],limits,
-                    target_state_fns)
+                    target_state_fns,base_state_fns)
             self.logs.append(dict(input='Current public794D observation, fixed known command and learned no-ball calibration only',
                 env_ids=ids.cpu().tolist(),observation_clock_s=public[:,775].tolist(),
                 used_public_observations=public.tolist(),calibrated_event_time_s=calibrated.tolist(),

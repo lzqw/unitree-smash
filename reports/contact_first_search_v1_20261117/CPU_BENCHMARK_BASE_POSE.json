@@ -1,0 +1,31 @@
+{
+  "kind": "CPU planner benchmark only",
+  "plans": 300,
+  "candidate_grid": 9,
+  "horizon_steps": 96,
+  "target_state": "causal_time_varying_ball_position_velocity",
+  "base_state": "causal_rotation_translation_velocity_callback",
+  "synthetic_target_speed_m_s": 0.8,
+  "linear_path": {
+    "accepted": 300,
+    "mean_ms": 1.5395189666499693,
+    "p50_ms": 1.4308914542198181,
+    "p95_ms": 2.325778943486512,
+    "p99_ms": 3.41244633309543,
+    "max_ms": 3.6517800763249397,
+    "kinematics_callback": false
+  },
+  "fk_path": {
+    "accepted": 300,
+    "mean_ms": 3.549838592298329,
+    "p50_ms": 3.4068571403622627,
+    "p95_ms": 4.015710600651812,
+    "p99_ms": 6.177363074384625,
+    "max_ms": 8.508543949574232,
+    "kinematics_callback": true,
+    "kinematic_iterations": 5,
+    "position_priority_refinement_iterations": 5
+  },
+  "native_evaluation": "NOT_RUN",
+  "formal_hit_rate": "NOT_RUN"
+}

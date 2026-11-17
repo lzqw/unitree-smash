@@ -16,6 +16,11 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
     contact time, defaulting to zero for the historical path;
   - optional causal base angular-acceleration extrapolation for the racket
     offset term, also defaulting to zero;
+  - bounded tangent-plane face search around the requested normal;
+  - position-priority refinement followed by an explicit adaptive face target
+    bounded by `adaptive_normal_target_max_deviation_rad`;
+  - explicit nonzero contact-speed gate and reachable-velocity projection,
+    with the requested and selected velocities kept separately in metadata;
   - six-joint damped task inverse for racket position and face normal;
   - deterministic position-priority IK branch for cases where the full
     position-plus-normal solve stalls near a wrist limit; normal residual
@@ -73,11 +78,40 @@ ball position and velocity, while repeated queries at the same quantized
 candidate time are cached within one plan.  The callback remains deterministic
 and does not read future simulator observations.
 
+The controller now also supplies a causal `base_state_fn(duration_s)` for the
+contact-first path.  It propagates the current body-frame translation and
+linear/angular velocity with bounded acceleration and uses a Rodrigues
+rotation to map future-base racket targets back into the current planning
+frame.  Each timing candidate therefore solves its own ball state and future
+base pose.  The callback is opt-in through the existing contact-first seed;
+without that seed the historical controller path is unchanged.
+
+For a reachable contact whose requested racket velocity is outside the six-axis
+Jacobian/velocity bounds, the planner may project the event velocity onto the
+actually reachable command.  Projection requires a nonzero absolute racket
+speed and a minimum alignment with the requested relative velocity.  The
+requested velocity, selected velocity, projection flag, and speed are all
+audited; a zero-speed candidate is rejected.
+
+The position-priority branch can select the final position-refined racket face
+as the event normal when its angular deviation from the causal requested face
+is within the configured bound.  The requested, pre-projection, and selected
+normals are all recorded.  This is a contact-first feasibility adaptation; it
+does not claim that the selected face gives the desired outgoing shuttle
+trajectory.
+
 `ContactFirstFullBodyEvaluatorV1` also accepts an optional
 `racket_measure_fn(state)` hook.  When supplied, terminal position, face
 normal, and velocity are checked on the predicted actual full-body state after
 implicit-PD replay; a good joint trajectory alone is no longer enough for
 admission.
+
+`BASE_POSE_CPU_REPLAY.json` is a read-only replay of the previously saved
+800-tick, two-lane public observations.  It confirms the updated controller
+path reaches the planner and records the current per-lane residuals and
+rejection counts.  One lane now passes CPU kinematic admission and the other
+remains rejected by the face task residual; this is development evidence and
+is not a native contact result.
 
 After the CPU checks, a native **development probe** was run with the same controller path for 2 environments and 800 control ticks.  The first attempt was preserved and failed at the CUDA-to-NumPy boundary when passing causal base acceleration into the CPU planner.  The explicit `.detach().cpu().numpy()` bridge fixed that engineering fault; the retry exited 0 and completed all 800 ticks with zero numerical failures.  This probe did not launch the ball, recorded zero contacts and zero completes, and is therefore not a hit-rate result.  Evidence is in `native_probe_2env_800tick/`; formal native evaluation remains `NOT_RUN`.
 
@@ -142,6 +176,13 @@ re-linearizations and five posture branches; see `CPU_BENCHMARK.json`.  This
 is a planner timing measurement, not a real-time Isaac guarantee.  The extra
 4 branch evaluations are deliberate: they trade CPU time for fewer
 velocity-bound rejections.
+
+`CPU_BENCHMARK_BASE_POSE.json` records a separate 300-plan measurement with
+time-varying ball state and the future-base pose callback.  The synthetic
+0.8 m/s target-speed path measured 1.54 ms mean and 2.33 ms p95 without the
+FK callback, and 3.55 ms mean, 4.02 ms p95, and 8.51 ms max with five
+kinematic iterations and position-priority refinement.  It is an engineering
+timing result, not a native contact or hit-rate result.
 
 A fixed 100-sample sweep of randomly selected reachable terminal poses accepted
 12/100 with five re-linearizations before the nullspace branch was added; that
