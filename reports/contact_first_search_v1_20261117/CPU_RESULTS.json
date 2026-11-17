@@ -1,7 +1,7 @@
 {
   "command": "bash scripts/python.sh -m pytest -q tests/test_full_racket_residual_v4.py tests/test_contact_first_trajectory_search_v1.py tests/test_contact_first_fullbody_evaluator_v1.py tests/test_full_racket_arm_search_v4.py tests/test_direct_sequence_search_contract.py tests/test_sequence_repair_contract.py tests/test_event_recovery_manager_v1.py tests/test_native_recovery_sequence_replay_v1.py tests/test_native_recovery_sequence_replay_v2.py",
   "exit_code": 0,
-  "passed": 70,
+  "passed": 72,
   "failed": 0,
   "duration_s": 1.74,
   "nonlinear_kinematics_callback_test": "passed",
@@ -20,6 +20,8 @@
   "causal_base_translation": "terminal arm target now compensates v*t + 0.5*a*t^2 before IK; native confirmation pending",
   "base_acceleration_prediction_bounds": "linear 12 m/s^2 and angular 4 rad/s^2 prediction bounds; raw and used values audited",
   "position_priority_ik_branch": "deterministic FK-refined position-priority branch added; normal remains a hard gate",
+  "time_varying_ball_target": "per-candidate causal drag propagation with same-time cache wired through FullRacketRallyControllerV4",
+  "actual_racket_terminal_check": "optional full-body evaluator racket_measure_fn checks predicted position, normal, and velocity after replay",
   "contact_prefix_target_slew": "extra one-tick admitted_target_bounds disabled by default; original physical position/velocity/torque/contact checks remain active; legacy envelope is opt-in",
   "smoke": "py_compile contact_first_trajectory_search_v1.py full_racket_rally_controller_v4.py passed",
   "native_evaluation": "NOT_RUN",

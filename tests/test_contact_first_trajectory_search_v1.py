@@ -128,6 +128,26 @@ def test_base_acceleration_prediction_is_bounded_and_audited():
     assert result.metadata['used_base_angular_acceleration_world_rad_s2'][1] == pytest.approx(2.)
 
 
+def test_time_varying_target_is_queried_for_each_contact_offset():
+    calls = []
+    planner = ContactFirstTrajectorySearchV1(ContactFirstSearchConfig(
+        horizon_steps=32, contact_time_offsets_s=(-.02, 0., .02),
+        velocity_scales=(1.,)))
+
+    def target_state(duration_s):
+        calls.append(float(duration_s))
+        return {
+            "position_world_m": np.array([.1 + .5 * (duration_s - .2), 0., 0.]),
+            "velocity_world_m_s": np.array([.5, 0., 0.]),
+            "normal_world": np.array([0., 0., 1.]),
+        }
+
+    result = planner.plan(**_inputs(), target_state_fn=target_state)
+    assert calls == pytest.approx([.18, .20, .22], abs=1e-9)
+    expected = .1 + .5 * (result.contact_time_s - .2)
+    assert result.metadata['target_position_world_m'][0] == pytest.approx(expected)
+
+
 def test_forward_kinematics_callback_relinearizes_before_acceptance():
     calls = []
 

@@ -8,6 +8,9 @@ This is a CPU-validated first implementation for the DTG Approach teacher. It is
   - deterministic contact-time offsets and contact-velocity scales;
   - ballistic plane-crossing helper for a low-cost event fallback;
   - DTG event-compatible target position/normal/velocity inputs;
+  - optional causal `target_state_fn(duration_s)` so each contact-time
+    candidate re-propagates the shuttle position and velocity instead of
+    reusing one fixed intercept point;
   - moving-base velocity compensation, including base angular velocity crossed with racket offset;
   - optional causal base linear-acceleration extrapolation to the planned
     contact time, defaulting to zero for the historical path;
@@ -63,6 +66,18 @@ training dependencies with that code.
 This is a trajectory generator and Approach integration hook, not a completed native performance claim. The full-body predictor callback must be supplied for physical admission; without it the planner only performs kinematic and actuator prechecks. A 2-environment native development probe exists, but formal native evaluation remains `NOT_RUN`.
 
 The planner is intentionally deterministic and low-dimensional, but it is not a replacement for the existing full-body WBC or Recovery controller.  With a forward-kinematics callback it relinearizes at the proposed six-joint contact state; without one it applies the supplied Jacobian exactly once.  A plan with a large terminal task residual is rejected instead of being silently accepted.
+
+The controller now supplies that callback from the locked drag model using the
+current causal ball state.  Each time offset gets a separately propagated
+ball position and velocity, while repeated queries at the same quantized
+candidate time are cached within one plan.  The callback remains deterministic
+and does not read future simulator observations.
+
+`ContactFirstFullBodyEvaluatorV1` also accepts an optional
+`racket_measure_fn(state)` hook.  When supplied, terminal position, face
+normal, and velocity are checked on the predicted actual full-body state after
+implicit-PD replay; a good joint trajectory alone is no longer enough for
+admission.
 
 After the CPU checks, a native **development probe** was run with the same controller path for 2 environments and 800 control ticks.  The first attempt was preserved and failed at the CUDA-to-NumPy boundary when passing causal base acceleration into the CPU planner.  The explicit `.detach().cpu().numpy()` bridge fixed that engineering fault; the retry exited 0 and completed all 800 ticks with zero numerical failures.  This probe did not launch the ball, recorded zero contacts and zero completes, and is therefore not a hit-rate result.  Evidence is in `native_probe_2env_800tick/`; formal native evaluation remains `NOT_RUN`.
 

@@ -32,7 +32,8 @@ class ContactFirstFullBodyEvaluatorV1:
     def __init__(self, public=None, default=None, interface_config=None, *,
                  geometry_path=DEFAULT_GEOMETRY, substeps=4,
                  max_tracking_error_rad=0.25, initial_state=None, model=None,
-                 enforce_target_admission_bounds=False):
+                 enforce_target_admission_bounds=False,
+                 racket_measure_fn=None):
         if initial_state is None:
             public = np.asarray(public, dtype=np.float64)
             default = np.asarray(default, dtype=np.float64)
@@ -74,6 +75,9 @@ class ContactFirstFullBodyEvaluatorV1:
         # torque, position, contact, and tracking violations.  Keep an opt-in
         # compatibility switch for callers auditing the historical envelope.
         self.enforce_target_admission_bounds = bool(enforce_target_admission_bounds)
+        if racket_measure_fn is not None and not callable(racket_measure_fn):
+            raise TypeError("racket_measure_fn must be callable or None")
+        self.racket_measure_fn = racket_measure_fn
         self.dt_s = 0.01
 
     @classmethod
@@ -180,7 +184,7 @@ class ContactFirstFullBodyEvaluatorV1:
                     "diagnostics": maximum_diagnostics,
                 }
 
-        return {
+        result = {
             "accepted": True,
             "nodes_checked": contact_index + 1,
             "minimum_ground_gap_m": minimum_ground_gap,
@@ -190,6 +194,42 @@ class ContactFirstFullBodyEvaluatorV1:
             "physical_model": "LoadedPinocchioModelV1+implicit_position_interface",
             "airborne_ground_force_policy": "measured_contacts_only",
         }
+        if self.racket_measure_fn is not None:
+            try:
+                measured = self.racket_measure_fn(state)
+                if not isinstance(measured, (tuple, list)) or len(measured) != 3:
+                    raise ValueError("racket_measure_fn must return position, normal, velocity")
+                measured_position = np.asarray(measured[0], dtype=np.float64)
+                measured_normal = np.asarray(measured[1], dtype=np.float64)
+                measured_velocity = np.asarray(measured[2], dtype=np.float64)
+                target_position = np.asarray(metadata["target_position_world_m"], dtype=np.float64)
+                target_normal = np.asarray(metadata["target_normal_world"], dtype=np.float64)
+                target_velocity = np.asarray(metadata["target_velocity_world_m_s"], dtype=np.float64)
+                if any(x.shape != (3,) or not np.isfinite(x).all() for x in (
+                        measured_position, measured_normal, measured_velocity,
+                        target_position, target_normal, target_velocity)):
+                    raise ValueError("racket measure and target vectors must be finite 3D")
+                normal_norm = np.linalg.norm(measured_normal)
+                if normal_norm < 1e-9:
+                    raise ValueError("racket_measure_fn returned a zero normal")
+                measured_normal /= normal_norm
+                position_error = float(np.linalg.norm(measured_position - target_position))
+                normal_error = float(np.linalg.norm(measured_normal - target_normal))
+                velocity_error = float(np.linalg.norm(measured_velocity - target_velocity))
+                result.update(dict(
+                    actual_racket_position_world_m=measured_position,
+                    actual_racket_normal_world=measured_normal,
+                    actual_racket_velocity_world_m_s=measured_velocity,
+                    actual_racket_position_error_m=position_error,
+                    actual_racket_normal_error=normal_error,
+                    actual_racket_velocity_error_m_s=velocity_error))
+                if (position_error > float(metadata.get("position_tolerance_m", .035)) or
+                        normal_error > float(metadata.get("normal_tolerance", .12)) or
+                        velocity_error > float(metadata.get("velocity_tolerance_m_s", .75))):
+                    result.update(accepted=False, rejection="actual_racket_terminal_residual")
+            except (KeyError, TypeError, ValueError, FloatingPointError) as error:
+                result.update(accepted=False, rejection="actual_racket_measurement", error=repr(error))
+        return result
 
 
 __all__ = ["ContactFirstFullBodyEvaluatorV1"]

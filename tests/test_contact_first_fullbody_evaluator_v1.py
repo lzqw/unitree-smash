@@ -109,6 +109,31 @@ def test_fullbody_evaluator_rejects_arm_velocity_above_original_limit():
     assert result["rejection"] == "physical_arm_velocity_limit"
 
 
+def test_fullbody_evaluator_can_check_actual_racket_terminal_state():
+    public, default, interface = _fixture()
+    evaluator = ContactFirstFullBodyEvaluatorV1(
+        public, default, interface, substeps=1,
+        racket_measure_fn=lambda state: (
+            np.array([0., 0., 0.]), np.array([0., 0., 1.]), np.zeros(3)))
+    q = np.repeat(default[None, 12:], 4, axis=0)
+    metadata = {
+        "target_position_world_m": np.array([0., 0., 0.]),
+        "target_normal_world": np.array([0., 0., 1.]),
+        "target_velocity_world_m_s": np.zeros(3),
+    }
+    result = evaluator(q, np.zeros_like(q), 3, metadata)
+    assert result["accepted"] is True
+    assert result["actual_racket_position_error_m"] == 0.
+
+    rejected = ContactFirstFullBodyEvaluatorV1(
+        public, default, interface, substeps=1,
+        racket_measure_fn=lambda state: (
+            np.array([.2, 0., 0.]), np.array([0., 0., 1.]), np.zeros(3)))
+    result = rejected(q, np.zeros_like(q), 3, metadata)
+    assert result["accepted"] is False
+    assert result["rejection"] == "actual_racket_terminal_residual"
+
+
 def test_contact_prefix_does_not_apply_extra_one_tick_target_slew_by_default():
     public, default, interface = _fixture()
     q = np.repeat(default[None, 12:], 4, axis=0)

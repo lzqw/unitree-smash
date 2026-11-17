@@ -245,7 +245,8 @@ class ContactFirstTrajectorySearchV1:
              base_angular_acceleration_world_rad_s2=(0.0, 0.0, 0.0),
              racket_offset_world_m=(0.0, 0.0, 0.0), lower_rad, upper_rad,
              velocity_limits_rad_s, evaluator: Optional[Callable] = None,
-             kinematics_fn: Optional[Callable] = None):
+             kinematics_fn: Optional[Callable] = None,
+             target_state_fn: Optional[Callable] = None):
         data = _validate_vectors(
             q_rad, qd_rad_s, position_jacobian, normal_jacobian,
             racket_position_world_m, racket_normal_world,
@@ -264,6 +265,8 @@ class ContactFirstTrajectorySearchV1:
         requested_contact = float(contact_time_s)
         if not math.isfinite(requested_contact) or requested_contact <= cfg.dt_s:
             raise ValueError("Positive contact time after current state required")
+        if target_state_fn is not None and not callable(target_state_fn):
+            raise TypeError("target_state_fn must be callable or None")
         racket_normal = racket_normal / max(np.linalg.norm(racket_normal), 1e-12)
         target_normal = target_normal / max(np.linalg.norm(target_normal), 1e-12)
         # The target arrives from the public body-frame command.  During a
@@ -285,6 +288,44 @@ class ContactFirstTrajectorySearchV1:
         base_displacement = (base_linear * requested_contact +
                              0.5 * base_linear_acceleration * requested_contact**2)
         relative_target_position = target_pos - base_displacement
+
+        target_state_cache = {}
+
+        def target_state_at(duration_s):
+            """Resolve a causal ball state for one candidate contact time."""
+            cache_key = round(float(duration_s), 9)
+            if cache_key in target_state_cache:
+                cached = target_state_cache[cache_key]
+                return tuple(value.copy() for value in cached)
+            if target_state_fn is None:
+                resolved = (target_pos.copy(), target_normal.copy(), target_velocity.copy())
+                target_state_cache[cache_key] = resolved
+                return tuple(value.copy() for value in resolved)
+            value = target_state_fn(float(duration_s))
+            if isinstance(value, dict):
+                candidate_position = value.get("position_world_m")
+                candidate_velocity = value.get("velocity_world_m_s")
+                candidate_normal = value.get("normal_world", target_normal)
+            elif isinstance(value, (tuple, list)) and len(value) in (2, 3):
+                candidate_position, candidate_velocity = value[:2]
+                candidate_normal = value[2] if len(value) == 3 else target_normal
+            else:
+                raise ValueError(
+                    "target_state_fn must return a mapping or (position, velocity[, normal])")
+            candidate_position = np.asarray(candidate_position, dtype=float)
+            candidate_velocity = np.asarray(candidate_velocity, dtype=float)
+            candidate_normal = np.asarray(candidate_normal, dtype=float)
+            if (candidate_position.shape != (3,) or candidate_velocity.shape != (3,) or
+                    candidate_normal.shape != (3,) or
+                    not all(np.isfinite(x).all() for x in (
+                        candidate_position, candidate_velocity, candidate_normal))):
+                raise ValueError("target_state_fn returned invalid finite 3D vectors")
+            norm = float(np.linalg.norm(candidate_normal))
+            if norm < 1e-9:
+                raise ValueError("target_state_fn returned a zero normal")
+            resolved = (candidate_position, candidate_normal / norm, candidate_velocity)
+            target_state_cache[cache_key] = resolved
+            return tuple(value.copy() for value in resolved)
         q_contact = q0.copy()
         current_pos, current_normal = racket_pos.copy(), racket_normal.copy()
         current_jp, current_jn = jp.copy(), jn.copy()
@@ -416,10 +457,6 @@ class ContactFirstTrajectorySearchV1:
         best_kinematic_residual = None
         for branch_q, branch_pos, branch_normal, branch_jp, branch_jn, nullspace_offset in branches:
             branch_normal = branch_normal / max(np.linalg.norm(branch_normal), 1e-12)
-            task = np.vstack((branch_jp, cfg.normal_weight * branch_jn))
-            inverse = _damped_inverse(task, cfg.damping)
-            normal_error = target_normal - branch_normal
-            normal_rate = cfg.normal_rate_gain * normal_error
             for offset in cfg.contact_time_offsets_s:
                 duration = requested_contact + float(offset)
                 if duration < cfg.dt_s or duration > cfg.dt_s * (cfg.horizon_steps - 1):
@@ -429,22 +466,73 @@ class ContactFirstTrajectorySearchV1:
                 if contact_index < 1 or contact_index >= cfg.horizon_steps:
                     continue
                 times = np.arange(contact_index + 1, dtype=float) * cfg.dt_s
+                candidate_target_pos, candidate_target_normal, candidate_target_velocity = (
+                    target_state_at(duration))
+                candidate_base_displacement = (
+                    base_linear * duration +
+                    0.5 * base_linear_acceleration * duration**2)
+                candidate_relative_position = (
+                    candidate_target_pos - candidate_base_displacement)
                 contact_base_point_velocity = (
                     base_linear + base_linear_acceleration * duration +
                     np.cross(base_angular + base_angular_acceleration * duration,
                              racket_offset))
-                relative_velocity = target_velocity - contact_base_point_velocity
+                relative_velocity = candidate_target_velocity - contact_base_point_velocity
+                candidate_q = branch_q.copy()
+                if kinematics_fn is None:
+                    candidate_pos = racket_pos + jp @ (candidate_q - q0)
+                    candidate_normal = racket_normal + jn @ (candidate_q - q0)
+                    candidate_normal /= max(np.linalg.norm(candidate_normal), 1e-12)
+                else:
+                    candidate_pos = branch_pos.copy()
+                    candidate_normal = branch_normal.copy()
+                candidate_jp = branch_jp.copy()
+                candidate_jn = branch_jn.copy()
+                # Re-solve the terminal task for each time-varying ball state
+                # and its corresponding base displacement.  The correction is
+                # bounded and starts from the branch warm start, so the
+                # fixed-size search remains deterministic and causal.
+                needs_time_resolve = (
+                    target_state_fn is not None or
+                    abs(duration - requested_contact) > 1e-9)
+                for _ in range((2 if kinematics_fn is not None else 1)
+                               if needs_time_resolve else 0):
+                    candidate_normal = candidate_normal / max(
+                        np.linalg.norm(candidate_normal), 1e-12)
+                    task = np.vstack((candidate_jp, cfg.normal_weight * candidate_jn))
+                    inverse = _damped_inverse(task, cfg.damping)
+                    task_error = np.r_[
+                        candidate_relative_position - candidate_pos,
+                        cfg.normal_weight * (candidate_target_normal - candidate_normal)]
+                    candidate_delta = inverse @ task_error
+                    candidate_delta = np.clip(candidate_delta,
+                                              -cfg.max_iteration_step_rad,
+                                              cfg.max_iteration_step_rad)
+                    candidate_q = np.clip(candidate_q + candidate_delta, lower, upper)
+                    if kinematics_fn is None:
+                        candidate_pos = racket_pos + jp @ (candidate_q - q0)
+                        candidate_normal = racket_normal + jn @ (candidate_q - q0)
+                        candidate_jp, candidate_jn = jp, jn
+                    else:
+                        values = kinematics_fn(candidate_q.copy())
+                        if not isinstance(values, (tuple, list)) or len(values) != 4:
+                            raise ValueError("kinematics_fn must return position, normal, and two Jacobians")
+                        candidate_pos = np.asarray(values[0], dtype=float)
+                        candidate_normal = np.asarray(values[1], dtype=float)
+                        candidate_jp = np.asarray(values[2], dtype=float)
+                        candidate_jn = np.asarray(values[3], dtype=float)
                 qd_contact_nominal = inverse @ np.r_[relative_velocity,
-                                                     cfg.normal_weight * normal_rate]
+                                                     cfg.normal_weight * cfg.normal_rate_gain *
+                                                     (candidate_target_normal - candidate_normal)]
                 qd_contact_nominal = np.clip(qd_contact_nominal, -velocity_limits,
                                              velocity_limits)
                 for velocity_scale in cfg.velocity_scales:
                     candidates_considered += 1
                     qd1 = np.clip(qd_contact_nominal * float(velocity_scale),
                                   -velocity_limits, velocity_limits)
-                    q_prefix, qd_prefix = _hermite(q0, qd0, branch_q, qd1,
+                    q_prefix, qd_prefix = _hermite(q0, qd0, candidate_q, qd1,
                                                duration, times)
-                    q_full = np.broadcast_to(branch_q, (cfg.horizon_steps, 6)).copy()
+                    q_full = np.broadcast_to(candidate_q, (cfg.horizon_steps, 6)).copy()
                     qd_full = np.zeros_like(q_full)
                     q_full[:contact_index + 1] = q_prefix
                     qd_full[:contact_index + 1] = qd_prefix
@@ -472,11 +560,17 @@ class ContactFirstTrajectorySearchV1:
                         np.abs(np.diff(q_full, axis=0)) /
                         (velocity_limits[None, :] * cfg.dt_s))),
                     terminal_joint_displacement_rad=float(
-                        np.linalg.norm(branch_q - q0)),
+                        np.linalg.norm(candidate_q - q0)),
                     initial_joint_position_rad=q0.copy(),
                     initial_joint_velocity_rad_s=qd0.copy(),
-                    base_displacement_world_m=base_displacement.copy(),
-                    relative_target_position_world_m=relative_target_position.copy(),
+                    target_position_world_m=candidate_target_pos.copy(),
+                    target_normal_world=candidate_target_normal.copy(),
+                    target_velocity_world_m_s=candidate_target_velocity.copy(),
+                    position_tolerance_m=float(cfg.position_tolerance_m),
+                    normal_tolerance=float(cfg.normal_tolerance),
+                    velocity_tolerance_m_s=float(cfg.velocity_tolerance_m_s),
+                    base_displacement_world_m=candidate_base_displacement.copy(),
+                    relative_target_position_world_m=candidate_relative_position.copy(),
                     raw_base_linear_acceleration_world_m_s2=(
                         raw_base_linear_acceleration.copy()),
                     used_base_linear_acceleration_world_m_s2=(
@@ -495,18 +589,20 @@ class ContactFirstTrajectorySearchV1:
                     # only spent on candidates that satisfy the causal task
                     # residual contract.
                     if kinematics_fn is None:
-                        achieved_pos = racket_pos + jp @ (branch_q - q0)
-                        achieved_normal = racket_normal + jn @ (branch_q - q0)
+                        achieved_pos = racket_pos + jp @ (candidate_q - q0)
+                        achieved_normal = racket_normal + jn @ (candidate_q - q0)
                         achieved_normal /= max(np.linalg.norm(achieved_normal), 1e-12)
                         achieved_jp = jp
                     else:
-                        achieved_pos, achieved_normal = branch_pos, branch_normal
-                        achieved_jp = branch_jp
+                        achieved_pos, achieved_normal = candidate_pos, candidate_normal
+                        achieved_jp = candidate_jp
                     achieved_velocity = contact_base_point_velocity + achieved_jp @ qd1
                     position_error_norm = float(np.linalg.norm(
-                        relative_target_position - achieved_pos))
-                    normal_error_norm = float(np.linalg.norm(target_normal - achieved_normal))
-                    velocity_error_norm = float(np.linalg.norm(target_velocity - achieved_velocity))
+                        candidate_relative_position - achieved_pos))
+                    normal_error_norm = float(np.linalg.norm(
+                        candidate_target_normal - achieved_normal))
+                    velocity_error_norm = float(np.linalg.norm(
+                        candidate_target_velocity - achieved_velocity))
                     residual_record = {
                         "position_error_m": position_error_norm,
                         "normal_error": normal_error_norm,

@@ -5,7 +5,7 @@ import numpy as np
 import torch
 from .full_racket_teacher_v4 import FullRacketTeacherV4
 from .full_racket_geometry_v4 import FullRacketGeometryV4
-from .initial_intercept import predict_initial_intercept
+from .initial_intercept import predict_initial_intercept, propagate_ball_state
 from .full_racket_arm_search_v4 import causal_prepose_delta
 from .full_racket_relative_prepose_v4 import validate_relative_prepose,relative_prepose_delta
 from .full_racket_height_intercept_v4 import validate_height_intercept,predict_height_intercept
@@ -154,7 +154,7 @@ class FullRacketRallyControllerV4:
                                     base_linear_acceleration, base_angular_acceleration,
                                     forward, left, up,
                                     target, normal_target, desired_velocity, event_time,
-                                    limits):
+                                    limits, target_state_fns=None):
         """Build one causal pre-contact arm plan per newly planned lane."""
         if self.contact_first_planner is None:
             return
@@ -198,6 +198,8 @@ class FullRacketRallyControllerV4:
                     velocity_limits_rad_s=np.full(6,cfg.arm_velocity_limit_rad_s),
                     evaluator=evaluator,
                     kinematics_fn=kinematics_fn,
+                    target_state_fn=(None if target_state_fns is None
+                                     else target_state_fns[local]),
                 )
             except (ValueError, RuntimeError, FloatingPointError) as exc:
                 self.contact_first_plan_valid[lane]=False
@@ -361,11 +363,47 @@ class FullRacketRallyControllerV4:
                                   velocity_world[:,1:2]*left+
                                   velocity_world[:,2:3]*up)
                 actual=actual_all[ids]
+                # Re-evaluate the causal shuttle state for every candidate
+                # contact time.  The planner receives body-frame targets, so
+                # transform the propagated world state through the current
+                # public basis; no future simulator state is read.
+                initial_ball_position=plan['initial_position_m']
+                initial_ball_velocity=plan['initial_velocity_mps']
+                incoming_ball_velocity=plan['incoming_velocity_mps']
+                command_world=np.array([1.10, 0.0, 1.80], dtype=np.float64)
+                target_offsets=self.target_offset_world[ids].detach().cpu().numpy()
+                target_state_fns=[]
+                for local in range(len(ids)):
+                    basis=np.stack((
+                        forward[local].detach().cpu().numpy(),
+                        left[local].detach().cpu().numpy(),
+                        up[local].detach().cpu().numpy()), axis=1)
+                    root=command_world-basis@public[local,760:763]
+                    p0=np.asarray(initial_ball_position[local], dtype=float)
+                    v0=np.asarray(initial_ball_velocity[local], dtype=float)
+                    v_ref=np.asarray(incoming_ball_velocity[local], dtype=float)
+                    offset_body=target_offsets[local]
+                    desired_body_velocity=desired_velocity[local].detach().cpu().numpy()
+                    normal_body=normal_target[local].detach().cpu().numpy()
+                    def target_state_fn(duration_s, basis=basis, root=root,
+                                        p0=p0, v0=v0, v_ref=v_ref,
+                                        offset_body=offset_body,
+                                        desired_body_velocity=desired_body_velocity,
+                                        normal_body=normal_body):
+                        ball_position, ball_velocity=propagate_ball_state(
+                            p0, v0, duration_s, self.physics)
+                        body_position=basis.T@(ball_position-root)+offset_body
+                        body_velocity=desired_body_velocity+basis.T@(ball_velocity-v_ref)
+                        return dict(position_world_m=body_position,
+                                    velocity_world_m_s=body_velocity,
+                                    normal_world=normal_body)
+                    target_state_fns.append(target_state_fn)
                 self._install_contact_first_plan(
                     ids,public,actual,actual_velocity[ids],base_linear_acceleration[ids],
                     base_angular_acceleration[ids],
                     forward,left,up,target_body,
-                    normal_target,desired_velocity,self.event_time[ids],limits)
+                    normal_target,desired_velocity,self.event_time[ids],limits,
+                    target_state_fns)
             self.logs.append(dict(input='Current public794D observation, fixed known command and learned no-ball calibration only',
                 env_ids=ids.cpu().tolist(),observation_clock_s=public[:,775].tolist(),
                 used_public_observations=public.tolist(),calibrated_event_time_s=calibrated.tolist(),

@@ -91,3 +91,39 @@ def predict_initial_intercept(observation, command_position, command_normal,
     return dict(valid=valid, arrival_time_s=arrival, position_m=intercept,
                 incoming_velocity_mps=incoming, initial_position_m=initial_position,
                 initial_velocity_mps=initial_velocity)
+
+
+def propagate_ball_state(position_world_m, velocity_world_m_s, duration_s,
+                         physics, dt=0.002):
+    """Causally propagate one observed shuttle state with locked drag physics."""
+    position = np.asarray(position_world_m, dtype=np.float64).copy()
+    velocity = np.asarray(velocity_world_m_s, dtype=np.float64).copy()
+    duration_s = float(duration_s)
+    dt = float(dt)
+    if (position.shape != (3,) or velocity.shape != (3,) or
+            not np.isfinite(position).all() or not np.isfinite(velocity).all() or
+            not np.isfinite(duration_s) or duration_s < 0.0 or
+            not np.isfinite(dt) or dt <= 0.0):
+        raise ValueError("Finite nonnegative ball propagation inputs required")
+    gravity = np.array([0.0, 0.0, -9.81], dtype=np.float64)
+    wind = np.asarray(physics['wind_m_s'], dtype=np.float64)
+    drag = float(physics['quadratic_drag_k_per_m'])
+
+    def acceleration(v):
+        relative = v - wind
+        return gravity - drag * np.linalg.norm(relative) * relative
+
+    remaining = duration_s
+    while remaining > 1e-12:
+        h = min(dt, remaining)
+        k1p, k1v = velocity, acceleration(velocity)
+        v2 = velocity + 0.5 * h * k1v
+        k2p, k2v = v2, acceleration(v2)
+        v3 = velocity + 0.5 * h * k2v
+        k3p, k3v = v3, acceleration(v3)
+        v4 = velocity + h * k3v
+        k4p, k4v = v4, acceleration(v4)
+        position += h * (k1p + 2.0 * k2p + 2.0 * k3p + k4p) / 6.0
+        velocity += h * (k1v + 2.0 * k2v + 2.0 * k3v + k4v) / 6.0
+        remaining -= h
+    return position, velocity
