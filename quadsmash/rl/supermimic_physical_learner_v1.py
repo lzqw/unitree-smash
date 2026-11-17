@@ -202,7 +202,8 @@ class PhysicalHorizonTrainer:
                     tracking_losses.append(self.reference_bank.loss(
                         state.physical, state.clock_goal_context['elapsed'],
                         tracking_reference, self.block_name,
-                        geometry=self.adapter.physical_model.geometry))
+                        geometry=self.adapter.physical_model.geometry,
+                        valid_mask=active))
                 states.append(current.detach());rewards.append(reward*active[:,None]);dones.append(done);valid.append(active)
             if not states:raise ValueError('No active in-episode imagination start')
             final=self.adapter.critic_input(state)
@@ -214,15 +215,19 @@ class PhysicalHorizonTrainer:
             effective_gate_steps=int(sum(int((g > .25).sum().item()) for g in gate_activity))
             effective_gate_lanes=int(max((int((g > .25).sum().item()) for g in gate_activity), default=0))
             no_effective_gate=bool(update_actor and effective_gate_steps == 0)
+            no_effective_gradient=False
             if update_actor and not no_effective_gate:
                 self.actor_attempts+=1
                 loss.backward()
                 parameters=[p for p in self.actor.parameters() if p.requires_grad]
-                gradient=optimizer_step(self.actor_opt,parameters,element_clip=.1)
+                raw_grad=sum(float(p.grad.detach().abs().sum()) for p in parameters if p.grad is not None)
+                no_effective_gradient=not torch.isfinite(loss.new_tensor(raw_grad)) or raw_grad <= 1e-12
+                gradient=loss.new_zeros(()) if no_effective_gradient else optimizer_step(
+                    self.actor_opt,parameters,element_clip=.1)
             else:gradient=loss.new_zeros(())
             critic_data=(torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),
                          final.detach(),torch.stack(valid))
-        if update_actor and not no_effective_gate:self.actor_updates+=1
+        if update_actor and not no_effective_gate and not no_effective_gradient:self.actor_updates+=1
         if before_models!=tensor_digest(self.adapter.state_dict().items()):raise RuntimeError('Actor step changed physical model')
         if self.frozen_hash()!=self.frozen_actor_hash:raise RuntimeError('Frozen base/recovery changed')
         del state,rewards,dones,anchors,final,loss
@@ -252,7 +257,7 @@ class PhysicalHorizonTrainer:
             reference_command_delta=float((updated_preview.final_joint_targets-reference_command).abs().max())
             reference_request_delta=float((updated_request-reference_request).abs().max())
         accepted=True; alpha=1.0; budget_report=self._relative_budget_report()
-        if update_actor and not no_effective_gate:
+        if update_actor and not no_effective_gate and not no_effective_gradient:
             # Same proposal, same model/critic/start/batch: only scale the parameter
             # displacement.  No alternate batch or extra rollout is selected.
             base_state=actor_state_before
@@ -290,7 +295,7 @@ class PhysicalHorizonTrainer:
                 request_change=float((updated_request-initial_request).abs().max())
         else:
             request_change=float((updated_request-initial_request).abs().max())
-            if update_actor and no_effective_gate:
+            if update_actor and (no_effective_gate or no_effective_gradient):
                 self.actor_opt.load_state_dict(optimizer_state_before)
                 self.rejected_actor_updates+=1
                 accepted=False
@@ -319,6 +324,7 @@ class PhysicalHorizonTrainer:
             effective_gate_steps=effective_gate_steps,
             effective_gate_lanes=effective_gate_lanes,
             no_effective_gate=no_effective_gate,
+            no_effective_gradient=no_effective_gradient,
             frozen_base_recovery_unchanged=True,model_unchanged_during_actor=True)
 
     def fit_world_window(self,window,launch):

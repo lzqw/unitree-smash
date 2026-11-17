@@ -33,10 +33,11 @@ def _stage_ids_from_tensors(data):
     stage = torch.where(elapsed < 1.6, torch.zeros_like(elapsed, dtype=torch.long),
             torch.where(elapsed < 3.5, torch.ones_like(elapsed, dtype=torch.long),
             torch.full_like(elapsed, 2, dtype=torch.long)))
-    # Feet touching the ground during the initial standing prefix are not a
-    # recovery event.  Only classify loaded contact after the task's nominal
-    # flight/recovery boundary; actual touchdown below still overrides it.
-    stage = torch.where(feet & (elapsed >= 3.5), torch.full_like(stage, 3), stage)
+    # Replace the coarse clock label once the causal jump/flight evidence is
+    # available.  Initial standing feet therefore remain prepare/approach;
+    # post-touchdown requires an observed jump followed by current support.
+    stage = torch.where(jump_seen & (~feet), torch.full_like(stage, 2), stage)
+    stage = torch.where(jump_seen & feet, torch.full_like(stage, 3), stage)
     stage = torch.where(touchdown, torch.full_like(stage, 4), stage)
     stage = torch.where(stable, torch.full_like(stage, 6), stage)
     stage = torch.where(body_ground, torch.full_like(stage, 5), stage)
@@ -167,11 +168,20 @@ def sample_stratified_windows(stage_pools, source_labels, batch, generator,
     if source_quota:
         chosen_source = source_labels[chosen[:, 0], chosen[:, 1]]
         actual_source = {name: int((chosen_source == name).sum()) for name in names_source}
+    # A window may satisfy more than one event category.  Report this
+    # post-selection coverage separately from the allocator's requested
+    # category counts so TensorBoard cannot be mistaken for an exact quota
+    # histogram after fallback sampling.
+    actual_event_coverage={}
+    for stage, pairs in stage_pools.items():
+        pair_set={tuple(pair.tolist()) for pair in pairs}
+        actual_event_coverage[stage]=sum(tuple(pair.tolist()) in pair_set for pair in chosen)
     return chosen, dict(source_counts=actual_source, stage_counts=actual_stage,
                         source_requested=source_quota, stage_requested=stage_quota,
                         source_shortfall={name: max(0, source_quota.get(name, 0)-actual_source.get(name, 0))
                                           for name in names_source},
                         stage_shortfall=stage_shortfall,
+                        actual_event_coverage=actual_event_coverage,
                         fallback_count=max(0, batch-sum(actual_stage.values())))
 
 
@@ -301,7 +311,13 @@ class PhysicalLoopReplay:
         for lane, stage in enumerate(stages):
             if stage not in self.stage_starts:
                 self.stage_starts[stage] = []
-            self.stage_starts[stage].append(_slice_lane(start, lane, self.lanes))
+            lane_start = _slice_lane(start, lane, self.lanes)
+            # Keep the causal launch lane with the compact start.  The
+            # executor snapshot is already sliced; the training entry point
+            # uses this id to slice the matching [128,6] launch tensor.
+            lane_start['_lane_id'] = int(lane)
+            lane_start['_source_lanes'] = int(self.lanes)
+            self.stage_starts[stage].append(lane_start)
             self.stage_starts[stage] = self.stage_starts[stage][-8:]
         self.new_starts.append(start)
         self.new_starts = self.new_starts[-32:]
@@ -318,7 +334,8 @@ class PhysicalLoopReplay:
                 self.native_ticks[indices])
 
     def window(self, steps=16, batch=128, iteration=0, device='cuda:0',
-               *, source_quota=None, stage_quota=None):
+               *, source_quota=None, stage_quota=None,
+               recent_policy_window=32, recent_tick_window=1024):
         d, streams, stage_ids, source_ids_all, policy_versions, native_ticks = self._ordered()
         if self.count < steps:
             raise RuntimeError(f'Replay has {self.count} ticks; needs {steps}')
@@ -330,17 +347,15 @@ class PhysicalLoopReplay:
         # for both legacy and stratified callers; the old path still reports
         # the same metadata without requiring quotas.
         source_ids = source_ids_all[:valid.shape[0]]
-        online_streams = streams[streams > 1]
-        latest = int(online_streams.max()) if online_streams.numel() else 1
-        source_codes = torch.where(
-            source_ids == 0,
-            torch.zeros_like(source_ids),
-            torch.where(
-                streams[:valid.shape[0], None] >= max(2, latest),
-                torch.ones_like(source_ids),
-                torch.full_like(source_ids, 2),
-            ),
-        )
+        online_mask = source_ids != 0
+        online_policy = policy_versions[:valid.shape[0]][online_mask]
+        latest_policy = int(online_policy.max()) if online_policy.numel() else 0
+        latest_tick = int(native_ticks[:valid.shape[0]][online_mask.any(-1)].max()) if online_mask.any(-1).any() else 0
+        recent = online_mask & (policy_versions[:valid.shape[0]] >= max(0, latest_policy-int(recent_policy_window)))
+        recent &= native_ticks[:valid.shape[0], None] >= max(0, latest_tick-int(recent_tick_window))
+        source_codes = torch.where(source_ids == 0, torch.zeros_like(source_ids),
+                                   torch.where(recent, torch.ones_like(source_ids),
+                                               torch.full_like(source_ids, 2)))
         pools = {'uniform': valid.nonzero()}
         for i in range(8):
             event = ((d['next_event_state'][..., i] > d['event_state'][..., i])

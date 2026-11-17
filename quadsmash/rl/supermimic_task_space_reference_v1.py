@@ -55,12 +55,14 @@ class TaskSpaceReferenceBankV1:
     elapsed: torch.Tensor
     geometry_sha256: str
     source_sha256: str = ''
+    match_distance_threshold: float = float('inf')
     schema: str = 'success-guided-task-space-reference-v1'
 
     def to(self, device):
         return type(self)(*(x.to(device) if torch.is_tensor(x) else x for x in (
             self.approach_sequences, self.recovery_sequences, self.approach_keys,
-            self.recovery_keys, self.elapsed)), self.geometry_sha256, self.source_sha256)
+            self.recovery_keys, self.elapsed)), self.geometry_sha256, self.source_sha256,
+            self.match_distance_threshold)
 
     @property
     def manifest(self):
@@ -101,15 +103,17 @@ class TaskSpaceReferenceBankV1:
         recovery_ok = (final[:, 4] > .5) & ~(final[:, 5] > .5) & ~(final[:, 7] > .5)
         # The bank stores physical states; geometry is applied lazily by the
         # caller when features are computed.  We use root/ball keys now.
-        def sequence(mask):
+        def sequence(mask, event_index):
             ids = mask.nonzero(as_tuple=False).flatten()
             if len(ids) == 0:
                 return states.new_empty((0, t, 0)), states.new_empty((0, 13))
             seq = states[:, ids].permute(1, 0, 2).contiguous()
-            key = cls._key(seq[:, 0])
+            event = events[:, ids, event_index] > .5
+            first = event.float().argmax(0)
+            key = cls._key(seq[torch.arange(len(ids)), first])
             return seq, key
-        approach, approach_keys = sequence(approach_ok)
-        recovery, recovery_keys = sequence(recovery_ok)
+        approach, approach_keys = sequence(approach_ok, 1)
+        recovery, recovery_keys = sequence(recovery_ok, 4)
         # Feature tensors are materialized by bind() after the geometry is
         # available.  Keep the physical sequence schema explicit in the bank.
         elapsed = tensors['elapsed'][:t, 0].detach().clone()
@@ -127,12 +131,19 @@ class TaskSpaceReferenceBankV1:
 
     def bind(self, initial_physical, mode):
         """Return an immutable reference id for each imagination lane."""
-        selected = self._select(initial_physical, mode)
-        if selected is None:
+        keys = self.approach_keys if mode == 'approach' else self.recovery_keys
+        sequences = self.approach_sequences if mode == 'approach' else self.recovery_sequences
+        if sequences.shape[0] == 0:
             return None
-        return dict(indices=selected.detach(), mode=mode)
+        distance=(self._key(initial_physical)[:, None] - keys[None]).square().mean(-1)
+        best=distance.argmin(-1)
+        threshold=float(self.match_distance_threshold)
+        matched=torch.isfinite(distance.gather(1,best[:,None]).squeeze(1))
+        if threshold < float('inf'):
+            matched &= distance.gather(1,best[:,None]).squeeze(1) <= threshold
+        return dict(indices=best.detach(), matched=matched.detach(), mode=mode)
 
-    def loss(self, predicted_physical, elapsed, reference, mode, geometry=None):
+    def loss(self, predicted_physical, elapsed, reference, mode, geometry=None, valid_mask=None):
         """Return task-space loss; geometry is required for live features."""
         if reference is None:
             return predicted_physical.new_zeros(())
@@ -157,6 +168,10 @@ class TaskSpaceReferenceBankV1:
             + selected[torch.arange(len(selected), device=selected.device), hi] * alpha
         target = task_space_features(target_state, geometry, mode).detach()
         actual = task_space_features(predicted_physical, geometry, mode)
+        mask=reference.get('matched',torch.ones(len(actual),dtype=torch.bool,device=actual.device))
+        if valid_mask is not None: mask &= valid_mask.to(mask.device)
+        if not mask.any(): return actual.new_zeros(())
+        actual=actual[mask]; target=target[mask]
         scale = actual.new_tensor(1.).clamp_min(1e-6)
         return (actual-target).square().mean() / scale
 
