@@ -9,8 +9,13 @@
     "normal_weight": 0.3,
     "normal_rate_gain": 2.0,
     "arm_velocity_limit_rad_s": 5.0,
+    "base_linear_acceleration_limit_m_s2": 12.0,
+    "base_angular_acceleration_limit_rad_s2": 4.0,
     "kinematic_iterations": 5,
     "max_iteration_step_rad": 0.25,
-    "handoff_duration_s": 0.02
+    "handoff_duration_s": 0.02,
+    "speed_margin_weight": 0.15,
+    "step_margin_weight": 0.10,
+    "nullspace_penalty_weight": 0.01
   }
 }
