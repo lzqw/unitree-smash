@@ -172,6 +172,51 @@ class ResidualPPOInitializedActor(nn.Module):
         log_prob = dist.log_prob(raw).sum(-1, keepdim=True)
         return action, log_prob, dist.entropy().sum(-1, keepdim=True)
 
+    def forward_with_recovery_gate(self, obs: torch.Tensor, recovery_gate: torch.Tensor,
+                                   sample: bool = False):
+        """Evaluate the full-racket actor with an explicit causal recovery latch.
+
+        The verified exported actor historically gates its recovery head from
+        public phase4 (foot contact).  Phase4 also occurs after a missed ball,
+        so it is not a sufficient post-hit signal.  This path preserves the
+        base and approach computation and replaces only the recovery-head gate
+        with the caller's per-lane ``had_contact & released`` latch.  The
+        ordinary ``forward`` path remains byte-compatible for legacy callers.
+        """
+        if recovery_gate.ndim == 1:
+            recovery_gate = recovery_gate[:, None]
+        if recovery_gate.shape != (obs.shape[0], 1):
+            raise ValueError('recovery_gate must have shape [batch,1]')
+        module = self.actor
+        required = ('normalizer', 'base', 'recovery', 'approach', 'gate',
+                    'recovery_scale', 'approach_scale')
+        if not all(hasattr(module, name) for name in required):
+            raise ValueError('Explicit recovery gate requires FrozenV2 approach export')
+        normalized = module.normalizer(obs)
+        mean = (module.base(normalized)
+                + recovery_gate.to(obs.dtype) * module.recovery(normalized) * module.recovery_scale
+                + module.gate(obs) * module.approach(normalized) * module.approach_scale)
+        std = self.log_std.clamp(-8.0, 1.0).exp().expand_as(mean)
+        dist = Normal(mean, std)
+        raw = dist.rsample() if sample else mean
+        action = raw.clamp(-1.0, 1.0)
+        log_prob = dist.log_prob(raw).sum(-1, keepdim=True)
+        return action, log_prob, dist.entropy().sum(-1, keepdim=True)
+
+    def approach_gate(self, obs: torch.Tensor) -> torch.Tensor:
+        """Return the exported causal Approach gate for start selection/diagnostics."""
+        module = self.actor
+        if not hasattr(module, 'gate'):
+            raise ValueError('Approach gate requires FrozenV2 approach export')
+        return module.gate(obs)
+
+    def recovery_gate(self, obs: torch.Tensor) -> torch.Tensor:
+        """Return the legacy exported recovery gate for diagnostics only."""
+        module = self.actor
+        if not hasattr(module, 'gate'):
+            raise ValueError('Recovery gate requires FrozenV2 approach export')
+        return module.gate(obs)
+
 
 def load_ppo_initialized_actor(path: Path, device: torch.device):
     """Load the native PPO actor with strict, auditable interface checks."""

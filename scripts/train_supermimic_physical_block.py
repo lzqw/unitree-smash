@@ -14,6 +14,24 @@ def write(path,value):
     temp=path.with_suffix(path.suffix+'.tmp');temp.write_text(json.dumps(value,indent=2,default=str)+'\n');temp.replace(path)
 
 
+def parse_quota(text, *, allowed, name):
+    """Parse auditable ``key=count`` quotas without silently dropping keys."""
+    result={}
+    if text is None or not str(text).strip():
+        return result
+    for item in str(text).split(','):
+        if '=' not in item:
+            raise ValueError(f'{name} entries must be key=count: {item!r}')
+        key,value=(part.strip() for part in item.split('=',1))
+        if key not in allowed:
+            raise ValueError(f'Unknown {name} key: {key}')
+        value=int(value)
+        if value < 0:
+            raise ValueError(f'{name} values must be nonnegative')
+        result[key]=value
+    return result
+
+
 def main():
     from isaaclab.app import AppLauncher
     parser=argparse.ArgumentParser(description=__doc__)
@@ -46,16 +64,33 @@ def main():
     parser.add_argument('--video-dir',type=Path)
     parser.add_argument('--command-delta-budget',type=float,default=0.005)
     parser.add_argument('--target-delta-budget-rad',type=float,default=0.04)
+    parser.add_argument('--native-reference-command-budget',type=float,default=None,
+                        help='Optional cumulative final-command budget relative to the accepted native reference')
+    parser.add_argument('--native-reference-target-budget-rad',type=float,default=None,
+                        help='Optional cumulative joint-target budget relative to the accepted native reference')
+    parser.add_argument('--world-updates-per-actor-update',type=int,default=4,
+                        help='World-model optimizer steps before each actor proposal')
+    parser.add_argument('--wm-source-quota',default='recent_online=64,older_online=32,initial_archive=32')
+    parser.add_argument('--wm-stage-quota',default='uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8')
+    parser.add_argument('--task-reference-bank',type=Path,default=None,
+                        help='Optional success-only task-space reference bank')
+    parser.add_argument('--tracking-weight',type=float,default=0.0)
     AppLauncher.add_app_launcher_args(parser);args=parser.parse_args()
     if args.actor_update_budget is not None and args.actor_update_budget < 1: parser.error('actor-update-budget must be positive')
     if args.recovery_update_budget < 0 or args.approach_update_budget < 0: parser.error('block budgets must be non-negative')
     if args.recovery_proposal_budget < 1 or args.approach_proposal_budget < 1: parser.error('proposal budgets must be positive')
     if args.cycles < 1 or args.native_ticks_per_actor_update < 1 or args.replay_capacity_ticks < 64: parser.error('long-run budgets invalid')
     if args.refresh_ticks < 0 or args.refresh_world_updates < 0 or args.refresh_critic_updates < 0 or args.resume_warmup_ticks < 0: parser.error('refresh/resume budgets invalid')
+    if args.world_updates_per_actor_update < 1: parser.error('world-updates-per-actor-update must be positive')
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
     if args.actor_update_budget is not None:
         args.recovery_update_budget=0;args.approach_update_budget=args.actor_update_budget
     args.output=args.output.resolve();args.output.mkdir(parents=True,exist_ok=False)
+    try:
+        args.wm_source_quota=parse_quota(args.wm_source_quota,allowed={'recent_online','older_online','initial_archive'},name='wm-source-quota')
+        args.wm_stage_quota=parse_quota(args.wm_stage_quota,allowed={'uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery'},name='wm-stage-quota')
+    except ValueError as error:
+        parser.error(str(error))
     if args.tensorboard_dir is not None:
         args.tensorboard_dir=args.tensorboard_dir.resolve()
         args.tensorboard_dir.mkdir(parents=True,exist_ok=True)
@@ -118,8 +153,24 @@ def run(args):
         lifecycle_stage(args.output, 'LOADED_PACKED_DATA')
         replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema,capacity_ticks=args.replay_capacity_ticks)
         lifecycle_stage(args.output, 'REPLAY_READY')
+        reference_bank=None
+        if args.task_reference_bank is not None:
+            from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
+            bank_payload=torch.load(args.task_reference_bank,map_location='cpu',weights_only=False)
+            if isinstance(bank_payload,TaskSpaceReferenceBankV1):
+                reference_bank=bank_payload
+            elif isinstance(bank_payload,dict) and bank_payload.get('schema')=='success-guided-task-space-reference-v1':
+                reference_bank=TaskSpaceReferenceBankV1(**{key:bank_payload[key] for key in (
+                    'approach_sequences','recovery_sequences','approach_keys','recovery_keys',
+                    'elapsed','geometry_sha256','source_sha256')})
+            else:
+                raise ValueError('Task reference bank schema mismatch')
+            if reference_bank.geometry_sha256 and reference_bank.geometry_sha256 != adapter.physical_model.geometry.model_sha256:
+                raise ValueError('Task reference bank geometry hash mismatch')
+            reference_bank=reference_bank.to(torch.device('cuda:0'))
+        lifecycle_stage(args.output, 'REFERENCE_BANK_READY', enabled=reference_bank is not None)
         writer=SummaryWriter(str(args.tensorboard_dir or (args.output/'tensorboard')),flush_secs=30)
-        from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache,APPROACH_TICKS,CRITIC_TICKS
+        from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache,APPROACH_TICKS,RECOVERY_TICKS,CRITIC_TICKS
         start_cache=load_start_cache(args.archive,manifest)
         lifecycle_stage(args.output, 'START_CACHE_LOADED')
         starts=[start_cache[t] for t in APPROACH_TICKS]
@@ -130,28 +181,29 @@ def run(args):
         trainer=PhysicalHorizonTrainer(actor,adapter,as_state(starts[1]),timebase,
             command_delta_budget=args.command_delta_budget,
             target_delta_budget_rad=args.target_delta_budget_rad,
-            trainable_names=RECOVERY_NAMES + APPROACH_NAMES,block_name='joint')
+            native_reference_command_budget=args.native_reference_command_budget,
+            native_reference_target_budget_rad=args.native_reference_target_budget_rad,
+            trainable_names=RECOVERY_NAMES + APPROACH_NAMES,block_name='joint',
+            reference_bank=reference_bank,tracking_weight=args.tracking_weight)
         lifecycle_stage(args.output, 'TRAINER_READY')
         trainer.set_budget_state_library([as_state(row) for row in starts+critic_starts[:4]])
         def approach_active(row):
-            """Require at least one lane with the public pre-hit gate active.
-
-            A live replay stage such as ``prepare`` can be a valid dynamics
-            start while still carrying a zero approach gate.  Such a start
-            cannot produce an approach-head gradient and must not be selected
-            for an Approach actor proposal.
-            """
+            """Require a meaningful activation of the actual exported Approach gate."""
             observation=row['observation']
             if isinstance(observation,dict):
                 observation=observation['policy']
-            if observation.ndim != 2 or observation.shape[-1] < 773:
+            if observation.ndim != 2 or observation.shape[-1] != 794:
                 raise ValueError('Approach start observation is not the 794D public contract')
-            return bool((observation[:,771:773].sum(-1) > 0.5).any())
+            gate=actor.approach_gate(observation)
+            if gate.ndim == 2: gate=gate[:,0]
+            # A tiny positive gate is numerically present but does not provide
+            # a useful actor gradient. Keep at least four genuinely active lanes.
+            return bool((gate > 0.25).sum() >= 4)
 
         approach_pool=[start_cache[t] for t in APPROACH_TICKS if approach_active(start_cache[t])]
         if not approach_pool:
             raise RuntimeError('No approach-gated initialization starts available')
-        recovery_pool=[start_cache[t] for t in (272,288,336,384)]
+        recovery_pool=[start_cache[t] for t in RECOVERY_TICKS]
         # Same-policy native RTG calibration labels from the frozen 800-tick archive.
         # This is separate from the 0.64 s imagined objective and never mixed with
         # candidate-policy monitoring.
@@ -209,8 +261,19 @@ def run(args):
                     # needed for Approach proposals and otherwise dominate
                     # memory (many archived rows × full 128-lane state).
                     for row in chunk['rows']:replay.append(row,retain_start=False)
-                replay.new_stream()
+                replay.new_stream(source='online', policy_version=int(resumed_global.get('accepted',0)))
             replay.generator.set_state(resumed['replay_rng'].cpu())
+            replay_state=resumed.get('replay_state',{})
+            replay.current_source=str(replay_state.get('current_source','online'))
+            replay.current_policy_version=int(replay_state.get('current_policy_version',resumed_global.get('accepted',0)))
+            replay._native_tick_counter=int(replay_state.get('native_tick_counter',replay._native_tick_counter))
+            saved_meta=resumed.get('replay_metadata')
+            if saved_meta is not None:
+                for name in ('streams','stage_ids','source_ids','policy_versions','native_ticks'):
+                    value=saved_meta.get(name)
+                    target=getattr(replay,name,None)
+                    if value is not None and target is not None and tuple(value.shape)==tuple(target.shape):
+                        target.copy_(value)
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
         source_path=Path(manifest['source_checkpoint']);source=torch.load(source_path,map_location='cpu',weights_only=False)
         execution_root=Path('/home/autodrive/LZQW/unitree_smash')
@@ -227,6 +290,14 @@ def run(args):
             # Environment seeding must not overwrite the resumed learner RNG.
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
         stage(args.output,'AFTER_RESET')
+        def native_actor_action(observation):
+            # Phase4 only means foot contact.  Recovery corrections are allowed
+            # only after the native rally has both contacted and released the
+            # shuttle; this latch is per lane and resets with the rally.
+            gate=(env.rally.had_contact & env.rally.released)
+            if hasattr(actor,'forward_with_recovery_gate'):
+                return actor.forward_with_recovery_gate(observation['policy'],gate,sample=False)[0]
+            return actor(observation['policy'],sample=False)[0]
         refresh_records=[]
         refresh_rewards=[]; refresh_dones=[]; refresh_stage_records={}; refresh_count=0
         refresh_stage_ticks={0,96,192,288,384,480,576,672}
@@ -243,7 +314,7 @@ def run(args):
                     # durable the explicitly captured frozen-policy refresh.
                     self.rows.clear()
                     return
-                replay.append(self.rows[-1])
+                replay.append(self.rows[-1], policy_version=global_accepted_id, native_tick=tick)
                 if getattr(self,'capture_refresh',False):
                     row=self.rows[-1]
                     # Keep only compact reward/terminal arrays plus the small
@@ -280,27 +351,34 @@ def run(args):
                     self.rows.clear()
                 self._manifest()
         archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,control_ticks=0,transitions=0,chunks=[],
-            scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=args.recovery_update_budget+args.approach_update_budget),chunk_ticks=1000000)
+            scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=args.recovery_update_budget+args.approach_update_budget,
+            replay_source_schema=['recent_online','older_online','initial_archive'],
+            replay_stage_schema=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery']),chunk_ticks=1000000)
         archive.capture_refresh=False
         archive.attach_task_sequence(env);env.physical_transition_archive=archive
         # The packed 800-tick archive is a separate stream from this fresh
         # native rollout.  Prevent windows from crossing the reset boundary
         # even when episode indices are reused by the fixed panel.
-        replay.new_stream()
+        replay.new_stream(source='online', policy_version=0)
         def file_sha(path):
             return hashlib.sha256(Path(path).read_bytes()).hexdigest() if path else None
         reference_path=args.reference_policy_checkpoint or source_path
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=1,
+        config=dict(update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
+            native_reference_command_budget=args.native_reference_command_budget,
+            native_reference_target_budget_rad=args.native_reference_target_budget_rad,
             actor_whitelist={'joint':RECOVERY_NAMES + APPROACH_NAMES,'recovery':RECOVERY_NAMES,'approach':APPROACH_NAMES},source_sha256=manifest['source_sha256'],packed_data_sha256=packed_sha,
             initialization_native_return=expected['native_return_mean'],extra_mpc=0,
             reference_policy=dict(path=str(reference_path),sha256=file_sha(reference_path)),bad_policy=bad_meta,
-            sampling='actor: initial/fresh approach; critic: overlapping full-episode current starts, reverse-time order',
+            sampling='source×event stratified WM windows; actor starts are causal native event states',
+            wm_source_quota=args.wm_source_quota,wm_stage_quota=args.wm_stage_quota,
+            task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
+            tracking_weight=args.tracking_weight,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         write(args.output/'config.json',config)
         metadata=dict(init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
@@ -322,7 +400,16 @@ def run(args):
                 global_counters=dict(attempts=global_attempt_id,accepted=global_accepted_id,
                                      rejected=global_rejected,backtracked=global_backtracked),
                 replay_state=dict(count=int(replay.count),write_pos=int(replay.write_pos),
-                                  current_stream=int(replay.current_stream)),
+                                  current_stream=int(replay.current_stream),
+                                  current_source=str(replay.current_source),
+                                  current_policy_version=int(replay.current_policy_version),
+                                  native_tick_counter=int(replay._native_tick_counter),
+                                  source_names=['initial_archive','online'],
+                                  stage_names=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery']),
+                replay_metadata=dict(
+                    streams=replay.streams.cpu(), stage_ids=replay.stage_ids.cpu(),
+                    source_ids=replay.source_ids.cpu(), policy_versions=replay.policy_versions.cpu(),
+                    native_ticks=replay.native_ticks.cpu()),
                 replay_archives=replay_archives+[str(archive.directory)],replay_rng=replay.generator.get_state(),
                 torch_rng=torch.get_rng_state(),cuda_rng=torch.cuda.get_rng_state()),args.output/name)
         def check_stop():
@@ -368,15 +455,43 @@ def run(args):
         while critic_coverage_blocks<len(critic_starts):cover_critic()
         ensure_critic()
         cursor=0;completed_returns=[];completed_discounted=[];completed_records=[];phase='LEARNING'
+        def run_world_updates(iteration, count=None):
+            """Fit WM with explicit source×event quotas and return audit totals."""
+            total=int(args.world_updates_per_actor_update if count is None else count)
+            reports=[]; started=time.perf_counter()
+            for offset in range(total):
+                window,lanes,sampling=replay.window(
+                    timebase.world_steps,128,iteration*total+offset,
+                    source_quota=args.wm_source_quota,stage_quota=args.wm_stage_quota)
+                stats=trainer.fit_world_window(window,launch[lanes]); del window
+                stats['sampling']=sampling; reports.append(stats)
+                if writer is not None:
+                    step=int(tick*128)
+                    for key in ('world_loss','world_physical_loss','world_contact_loss','world_ball_loss','world_task_loss',
+                                'world_physical_gradient','world_ball_gradient','world_task_gradient'):
+                        if key in stats: writer.add_scalar('wm/'+key.replace('world_',''),float(stats[key]),step)
+                    for source,value in sampling.get('source_counts',{}).items():
+                        writer.add_scalar('wm/source/'+source,float(value)/128.,step)
+                    for stage_name,value in sampling.get('stage_counts',{}).items():
+                        writer.add_scalar('wm/stage/'+stage_name,float(value),step)
+                    for stage_name,value in sampling.get('stage_shortfall',{}).items():
+                        writer.add_scalar('wm/shortfall/'+stage_name,float(value),step)
+            aggregate={}
+            for key in ('world_loss','world_gradient','world_physical_loss','world_contact_loss','world_ball_loss','world_task_loss',
+                        'world_physical_gradient','world_ball_gradient','world_task_gradient','world_seconds'):
+                values=[float(item[key]) for item in reports if key in item]
+                if values: aggregate[key]=sum(values)/len(values)
+            aggregate.update(world_updates=len(reports),world_update_reports=reports,
+                             world_update_seconds=time.perf_counter()-started)
+            return aggregate
         def run_block(block_name, names, budget, proposal_limit):
             nonlocal completed_returns,completed_discounted,completed_records,obs,tick,cursor
             nonlocal global_attempt_id,global_accepted_id,global_rejected,global_backtracked
             if budget<=0:return 0
             trainer.set_trainable_names(names,block_name)
-            dynamic_names=('touchdown','recovery','contact') if block_name=='recovery' else ('prepare','approach','contact','terminal')
+            dynamic_names=('touchdown','post_touchdown','recovery_failure','stable_recovery') if block_name=='recovery' else ('prepare','approach','pre_touchdown')
             dynamic_pool=[item for name in dynamic_names for item in replay.stage_starts.get(name,[])]
-            if block_name=='approach':
-                dynamic_pool=[item for item in dynamic_pool if approach_active(item)]
+            if block_name=='approach': dynamic_pool=[item for item in dynamic_pool if approach_active(item)]
             block_pool=(dynamic_pool + (recovery_pool if block_name=='recovery' else approach_pool))
             trainer.set_budget_state_library([as_state(row) for row in block_pool+critic_starts[:4]])
             accepted=0;attempts=0;max_attempts=proposal_limit
@@ -389,7 +504,7 @@ def run(args):
                 started=time.perf_counter()
                 with torch.inference_mode():
                     for _ in range(args.native_ticks_per_actor_update):
-                        check_stop();action=actor(obs['policy'],sample=False)[0];obs,reward,done,info=wrapper.step(action);tick+=1
+                        check_stop();action=native_actor_action(obs);obs,reward,done,info=wrapper.step(action);tick+=1
                         if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite native observation')
                         for raw in env.rally_records[cursor:]:
                             record=score_terminal_episode(raw,dict(protocol,_root=str(ROOT)));record.update(policy_block=block_name,policy_update_at_end=accepted,scope='mixed-policy monitoring, not frozen score');completed_returns.append(record['native_episode_return']);completed_discounted.append(record['native_episode_discounted_return']);completed_records.append(record)
@@ -404,14 +519,21 @@ def run(args):
                                 writer.flush()
                         cursor=len(env.rally_records)
                 collect_s=time.perf_counter()-started;check_stop()
-                window,lanes,sampling=replay.window(timebase.world_steps,128,accepted);world_stats=trainer.fit_world_window(window,launch[lanes]);del window
-                pool=replay.new_starts if (block_name=='approach' and replay.new_starts and accepted%2) else block_pool
+                world_stats=run_world_updates(global_attempt_id)
+                # Rebuild the start pool for every proposal.  Recovery starts
+                # therefore follow fresh event-aligned native data as it
+                # arrives; the verified archive remains a deterministic
+                # fallback when a stage is temporarily under-populated.
+                dynamic_pool=[item for name in dynamic_names for item in replay.stage_starts.get(name,[])]
+                if block_name=='approach': dynamic_pool=[item for item in dynamic_pool if approach_active(item)]
+                pool=dynamic_pool + (recovery_pool if block_name=='recovery' else approach_pool)
+                if block_name=='approach' and replay.new_starts:
+                    fresh=[item for item in replay.new_starts if approach_active(item)]
+                    if fresh: pool=fresh + approach_pool
+                if not pool: pool=block_pool
+                trainer.set_budget_state_library([as_state(row) for row in pool+critic_starts[:4]])
                 if block_name=='approach':
                     active_pool=[item for item in pool if approach_active(item)]
-                    # Fresh native ticks can legitimately fall between public
-                    # approach gates.  Keep the fresh pool when it contains
-                    # usable starts; otherwise fall back to the verified fixed
-                    # approach pool instead of aborting the whole block.
                     pool=active_pool if active_pool else approach_pool
                 row=pool[accepted%len(pool)];state=as_state(row);check_stop();stats=trainer.imagine_update(state)
                 if stats['update_accepted']:
@@ -423,7 +545,7 @@ def run(args):
                     global_rejected+=1
                 global_backtracked += int(stats.get('backtracked',False))
                 with torch.no_grad():request=actor(state.observation,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
-                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_accepted_updates=accepted,attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=sampling,imagined_start_source='fresh_native' if pool is replay.new_starts else 'initialization_archive')
+                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_accepted_updates=accepted,attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
                 if writer is not None:
                     step=int(tick*128)
                     writer.add_scalar('native/step_reward_mean',float(reward.mean()),step)
@@ -433,6 +555,9 @@ def run(args):
                     writer.add_scalar('model/world_loss',float(world_stats.get('world_loss',0.0)),step)
                     writer.add_scalar('critic/loss',float(stats.get('critic_loss',0.0)),step)
                     writer.add_scalar('actor/%s_updates'%block_name,accepted,step)
+                    writer.add_scalar('actor/%s_gate_active'%block_name,float(stats.get('effective_gate_lanes',0)),step)
+                    writer.add_scalar('actor/effective_updates',float(stats.get('actor_updates',0)),step)
+                    writer.add_scalar('actor/tracking_loss',float(stats.get('tracking_loss',0.0)),step)
                     writer.add_scalar('actor/accepted_updates',global_accepted_id,step)
                     writer.add_scalar('actor/rejected_updates',global_rejected,step)
                     writer.add_scalar('performance/native_collect_s',collect_s,step)
@@ -463,19 +588,19 @@ def run(args):
             with torch.inference_mode():
                 for _ in range(warmup_ticks):
                     check_stop()
-                    action=actor(obs['policy'],sample=False)[0]
+                    action=native_actor_action(obs)
                     obs,reward,done,info=wrapper.step(action)
                     tick+=1
                     if not torch.isfinite(obs['policy']).all():
                         raise FloatingPointError('Nonfinite observation during recovery boundary warmup')
-            replay.new_stream()
+            replay.new_stream(source='online', policy_version=global_accepted_id)
             refresh_records.clear()
             refresh_rewards.clear(); refresh_dones.clear(); refresh_stage_records.clear(); refresh_count=0
             archive.capture_refresh=True
             with torch.inference_mode():
                 for _ in range(args.refresh_ticks):
                     check_stop()
-                    action=actor(obs['policy'],sample=False)[0]
+                    action=native_actor_action(obs)
                     obs,reward,done,info=wrapper.step(action)
                     tick+=1
                     if not torch.isfinite(obs['policy']).all():
@@ -495,10 +620,9 @@ def run(args):
                 rtg_refresh[ti]=running
             stage_ticks_refresh=[0,96,192,288,384,480,576,672]
             refresh_world=0
-            for update in range(args.refresh_world_updates):
-                window,lanes,sampling=replay.window(timebase.world_steps,128,update)
-                trainer.fit_world_window(window,launch[lanes]);del window
-                refresh_world+=1
+            if args.refresh_world_updates:
+                refresh_stats=run_world_updates(global_attempt_id, args.refresh_world_updates)
+                refresh_world=int(refresh_stats['world_updates'])
             refresh_critic=0
             refresh_critic_losses=[]
             for update in range(args.refresh_critic_updates):
@@ -540,20 +664,20 @@ def run(args):
                 started=time.perf_counter()
                 with torch.inference_mode():
                     for _ in range(args.native_ticks_per_actor_update):
-                        check_stop(); action=actor(obs['policy'],sample=False)[0]; obs,reward,done,info=wrapper.step(action); tick+=1
+                        check_stop(); action=native_actor_action(obs); obs,reward,done,info=wrapper.step(action); tick+=1
                         if not torch.isfinite(obs['policy']).all(): raise FloatingPointError('Nonfinite native observation')
                         for raw in env.rally_records[cursor:]:
                             record=score_terminal_episode(raw,dict(protocol,_root=str(ROOT))); record.update(policy_block='joint',policy_update_at_end=accepted,scope='mixed-policy monitoring, not frozen score'); completed_returns.append(record['native_episode_return']); completed_discounted.append(record['native_episode_discounted_return'])
                             with (args.output/'native_episodes.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                         cursor=len(env.rally_records)
                 collect_s=time.perf_counter()-started; check_stop()
-                window,lanes,sampling=replay.window(timebase.world_steps,128,accepted); world_stats=trainer.fit_world_window(window,launch[lanes]); del window
+                world_stats=run_world_updates(global_attempt_id)
                 row=joint_pool[accepted%len(joint_pool)]; state=as_state(row); check_stop(); stats=trainer.imagine_update(state)
                 if stats['update_accepted']:
                     if not any(v>0.0 for v in stats['parameter_max_changes'].values()): raise RuntimeError('joint accepted update had zero trainable parameter change')
                     accepted += 1
                 with torch.no_grad(): request=actor(state.observation,sample=False)[0]; preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
-                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block='joint',block_accepted_updates=accepted,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s,native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=sampling,imagined_start_source='initialization_archive')
+                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block='joint',block_accepted_updates=accepted,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s,native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='initialization_archive')
                 save('latest.pt'); write(args.output/'progress.json',record)
                 with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                 print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
@@ -610,7 +734,7 @@ def run(args):
             with torch.inference_mode():
                 for _ in range(4):
                     check_stop()
-                    action=actor(obs['policy'],sample=False)[0]
+                    action=native_actor_action(obs)
                     obs,reward,done,info=wrapper.step(action);tick+=1
                     if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite native observation')
                     for raw in env.rally_records[cursor:]:
