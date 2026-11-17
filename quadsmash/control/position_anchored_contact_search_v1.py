@@ -166,8 +166,48 @@ def plan_anchored_events(planner,q0,qd0,lower,upper,speed,requested,target_at,ba
         records.append(record)
         if not result['NORMAL_FEASIBLE']:
             rejected['POSE_TASK_INCOMPATIBLE']+=1;continue
-        if not result['VELOCITY_FEASIBLE']:
-            rejected['REQUESTED_VELOCITY_UNREACHABLE']+=1;record['rejection']='REQUESTED_VELOCITY_UNREACHABLE';continue
+        # A fixed desired racket speed is only one possible way to achieve
+        # the original ball-side task. The optional rate search attempts a
+        # DIFFERENT analytic task-valid impact inside the same ±5-rad/s box.
+        # It cannot relabel the original requested-velocity error as zero,
+        # and it must still pass the unchanged trajectory/18D/final impact
+        # admission checks below.
+        adapted_task_rate=False
+        if (not result['VELOCITY_FEASIBLE']
+                and cfg.impact_feasible_rate_retarget
+                and result['NORMAL_FEASIBLE']
+                and 'desired_outgoing_velocity_world_m_s' in extra
+                and 'contact_point_local' in extra):
+            from .impact_feasible_rate_v1 import optimize_impact_feasible_rate
+            _,_,arm_jacobian,_=fk(result['q_rad'])
+            meta_probe=dict(extra,contact_time_s=duration,
+                achieved_position_current_frame_m=displacement+R@result['position'],
+                achieved_normal_current_frame=R@result['normal'],
+                achieved_velocity_current_frame_m_s=R@result['velocity'])
+            trial=optimize_impact_feasible_rate(
+                arm_jacobian,base_velocity(result['position']),
+                result['qd_rad_s'],speed,R,meta_probe,impact,
+                extra['desired_outgoing_velocity_world_m_s'])
+            record['impact_feasible_rate_diagnostic']=trial
+            if trial['accepted']:
+                adapted_task_rate=True
+                result['qd_rad_s']=trial['qd_rad_s'].copy()
+                result['velocity']=R.T@trial['achieved_velocity_current_frame_m_s']
+                result['requested_velocity_error_m_s']=float(np.linalg.norm(
+                    result['velocity']-R.T@velocity))
+                record.update(qd_rad_s=result['qd_rad_s'].copy(),
+                    velocity=result['velocity'].copy(),
+                    requested_velocity_error_m_s=result['requested_velocity_error_m_s'],
+                    TASK_FEASIBLE_RATE=True,
+                    ORIGINAL_REQUEST_VELOCITY_FEASIBLE=False)
+                if 'original_requested_velocity_current_frame_m_s' in extra:
+                    record['original_requested_velocity_error_m_s']=float(np.linalg.norm(
+                        R@result['velocity']-
+                        np.asarray(extra['original_requested_velocity_current_frame_m_s'])))
+        if not (result['VELOCITY_FEASIBLE'] or adapted_task_rate):
+            rejected['REQUESTED_VELOCITY_UNREACHABLE']+=1
+            record['rejection']='REQUESTED_VELOCITY_UNREACHABLE'
+            continue
         q1,qd1=result['q_rad'],result['qd_rad_s']
         q,qd=_hermite(q0,qd0,q1,qd1,duration,np.arange(index+1)*cfg.dt_s)
         if (np.any(q<lower-1e-9) or np.any(q>upper+1e-9) or np.any(np.abs(qd)>speed+1e-9) or
@@ -180,7 +220,10 @@ def plan_anchored_events(planner,q0,qd0,lower,upper,speed,requested,target_at,ba
             achieved_position_current_frame_m=displacement+R@result['position'],
             achieved_normal_current_frame=R@result['normal'],achieved_velocity_current_frame_m_s=R@result['velocity'],
             position_tolerance_m=.003,normal_tolerance=cfg.normal_tolerance,velocity_tolerance_m_s=cfg.velocity_tolerance_m_s,
-            position_anchor=record,velocity_projection=False,velocity_error_from_requested_m_s=result['requested_velocity_error_m_s'])
+            position_anchor=record,velocity_projection=False,
+            task_feasible_velocity_retarget=adapted_task_rate,
+            original_request_velocity_feasible=bool(result['VELOCITY_FEASIBLE']),
+            velocity_error_from_requested_m_s=result['requested_velocity_error_m_s'])
         started=time.perf_counter();out=impact(metadata);record['impact_seconds']=time.perf_counter()-started
         record['impact_outcome']=out
         valid=lambda value:bool(value.get('legal_return_predicted') and value.get('attack5_predicted') and value.get('target_landing_predicted'))
