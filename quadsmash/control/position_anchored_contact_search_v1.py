@@ -222,6 +222,8 @@ def plan_anchored_events(planner,q0,qd0,lower,upper,speed,requested,target_at,ba
             position_tolerance_m=.003,normal_tolerance=cfg.normal_tolerance,velocity_tolerance_m_s=cfg.velocity_tolerance_m_s,
             position_anchor=record,velocity_projection=False,
             task_feasible_velocity_retarget=adapted_task_rate,
+            retargeted_velocity_current_frame_m_s=(
+                R@result['velocity'] if adapted_task_rate else None),
             original_request_velocity_feasible=bool(result['VELOCITY_FEASIBLE']),
             velocity_error_from_requested_m_s=result['requested_velocity_error_m_s'])
         started=time.perf_counter();out=impact(metadata);record['impact_seconds']=time.perf_counter()-started
