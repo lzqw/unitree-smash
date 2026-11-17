@@ -1,0 +1,23 @@
+{
+  "checkpoint": "/tmp/contact_first_candidate_20261117.pt",
+  "checkpoint_sha256": "7ed17ef0ab3330139a1f20c4cc4695a644a0192072423392c63062d72e7b9ca7",
+  "sources": [
+    {
+      "path": "controller.teacher.walk.actor",
+      "kind": "transferred_learned_action_actor",
+      "owner": "quadsmash.control.go2_walk_transfer.Go2WalkTransfer"
+    },
+    {
+      "path": "controller.teacher.standing.actor",
+      "kind": "transferred_learned_action_actor",
+      "owner": "quadsmash.control.go2_standing_transfer.Go2StandingTransfer"
+    },
+    {
+      "path": "controller.teacher.strike",
+      "kind": "learned_piecewise_affine_action_policy",
+      "owner": "quadsmash.control.piecewise_affine.PiecewiseAffinePolicy"
+    }
+  ],
+  "scope": "Actual CPU construction and reachable-type inspection. No actor forward or native rollout executed.",
+  "teacher_only_eligible": false
+}

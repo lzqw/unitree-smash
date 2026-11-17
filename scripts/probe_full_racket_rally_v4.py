@@ -6,6 +6,8 @@ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 from isaaclab.app import AppLauncher
 p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True)
 p.add_argument('--checkpoint',type=Path,required=True);p.add_argument('--count',type=int,default=16)
+p.add_argument('--teacher-only', action='store_true', required=True,
+    help='Require a programmatic base; nested learned walk/standing/strike policies are rejected')
 AppLauncher.add_app_launcher_args(p);args=p.parse_args();app=AppLauncher(args).app
 import numpy as np
 import torch
@@ -14,6 +16,7 @@ from isaacsim.core.utils.stage import get_current_stage
 from quadsmash.tasks.stand.full_racket_env_v4 import full_racket_cfg,FullRacketEnvV4
 from quadsmash.tasks.stand.visual_geometry import export_robot_geometry
 from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
+from scripts.audit_teacher_action_sources_v1 import learned_action_sources, require_no_known_learned_action_sources
 
 stopping=False
 def stop(*_):
@@ -32,6 +35,14 @@ def main():
     all_cases=json.loads(path.read_text())['cases']
     indices=list(range(args.count//2))+list(range(64,64+args.count//2))
     cases=[all_cases[i] for i in indices]
+    # Reject before constructing a native scene or advancing physics. The old
+    # probe silently retained three learned base action sources.
+    controller=FullRacketRallyControllerV4(checkpoint,args.count,'cpu')
+    sources=learned_action_sources(controller)
+    (args.output/'action_source_precheck.json').write_text(json.dumps(dict(
+        learned_action_sources=sources, teacher_only_eligible=not bool(sources),
+        native_steps=0),indent=2)+'\n')
+    require_no_known_learned_action_sources(controller)
     cfg=full_racket_cfg(args.count);cfg.seed=720601
     env=FullRacketEnvV4(cfg,cases=cases);wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
     controller=FullRacketRallyControllerV4(checkpoint,args.count,env.device)

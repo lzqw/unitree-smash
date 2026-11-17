@@ -216,3 +216,25 @@ See `JOINT_REPLAY_PROGRESS.md`. The full-body evaluator now accepts an explicit
 the contact terminal's extra 10 ms prediction interval. This is CPU-tested
 infrastructure for joint takeoff-hit planning; the causal leg producer, contact
 transition model and native execution integration remain incomplete.
+
+## Action-source correction and native gate
+
+`ACTION_SOURCE_AUDIT.json` reconstructs the actual historical two-lane probe
+controller on CPU. Its reachable control path contains learned walk and standing
+actors and a learned PWA strike policy. Therefore the historical probe is **not
+pure programmatic teacher evidence**. Disabling outer residual heads alone is
+insufficient. The probe now requires `--teacher-only` and rejects these known
+nested action sources before constructing the native environment. The existing
+checkpoint is expected to fail that gate. The inspector is a rejection guard
+for known source classes, not a general proof about arbitrary Python code.
+
+The historical full evaluation entry also constructs its nested shared-target
+base before disabling only its outer residual actor; this is a source-level
+concern requiring actual nested-base audit, not grounds to invent historical
+forward counts. The historical source and reports were not overwritten.
+
+Next required integration: locate or implement the authorized programmatic
+base/WBC reference, audit its entire action path, and connect joint planning
+and identical execution. Removing inherited actors by emitting zero actions
+would not preserve base capability and is not an acceptable fix. Native work
+remains gated until this control-source requirement is satisfied.
