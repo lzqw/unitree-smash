@@ -36,6 +36,9 @@ class ContactFirstSearchConfig:
     bounded_replanning: bool = False
     position_anchored_search: bool = False
     velocity_aware_pose: bool = False
+    # Offline only: retarget joint rates against actual analytic task outcome.
+    # No physical velocity or ball-side acceptance threshold is relaxed.
+    impact_feasible_rate_retarget: bool = False
     reachable_impact_targets: bool = False
     dt_s: float = 0.01
     # Approach planning starts around t=2.0 s while contact is commonly near
@@ -114,6 +117,12 @@ class ContactFirstSearchConfig:
                 raise ValueError(f"Nonnegative finite {name} required")
         if self.minimum_contact_speed_alignment > 1.0:
             raise ValueError("Contact speed alignment must be at most one")
+        for flag in ("position_anchored_search", "velocity_aware_pose",
+                     "impact_feasible_rate_retarget"):
+            if type(getattr(self, flag)) is not bool:
+                raise ValueError(f"{flag} must be boolean")
+        if self.impact_feasible_rate_retarget and not self.position_anchored_search:
+            raise ValueError("Impact-feasible rate requires position-anchored search")
         if type(self.allow_reachable_velocity_projection) is not bool:
             raise ValueError("Velocity projection switch must be boolean")
         if (not math.isfinite(self.adaptive_normal_target_max_deviation_rad) or
@@ -398,7 +407,9 @@ class ContactFirstTrajectorySearchV1:
                 target_metadata_cache[cache_key]={k:value[k] for k in
                     ('contact_point_local','optimized_q_rad','reachability',
                      'original_requested_racket_velocity_world_m_s','optimized_requested_racket_velocity_world_m_s',
-                     'original_requested_velocity_current_frame_m_s','inverse_accepted_semantics','inverse_robot_kinematic_valid') if k in value}
+                     'original_requested_velocity_current_frame_m_s',
+                     'desired_outgoing_velocity_world_m_s',
+                     'inverse_accepted_semantics','inverse_robot_kinematic_valid') if k in value}
                 incoming = value.get("incoming_ball_velocity_world_m_s")
                 if incoming is not None:
                     incoming = np.asarray(incoming, dtype=float)
