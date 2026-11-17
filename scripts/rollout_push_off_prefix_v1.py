@@ -17,10 +17,12 @@ from scripts.audit_prediction_contact_geometry_v2 import racket_contact_state
 from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
 from quadsmash.physics.full_racket_v4 import load_racket
 from quadsmash.control.push_off_window_v1 import PushOffWindowV1
+from scripts.nonlinear_push_correction_v1 import correct_push_command
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--contact-window',action='store_true');p.add_argument('--preserve-momentum-rate',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--contact-window',action='store_true');p.add_argument('--preserve-momentum-rate',action='store_true');p.add_argument('--nonlinear-push-correction',action='store_true');a=p.parse_args()
+    if a.nonlinear_push_correction and not a.preserve_momentum_rate:raise ValueError('Explicit momentum task required for correction')
     if a.output.exists():raise ValueError('Preserve prior attempts')
     root=Path(__file__).resolve().parents[1]
     source=root/'reports/push_off_task_20261118/DIAGNOSED.json';seed=json.loads(source.read_text())
@@ -53,6 +55,13 @@ def main():
                         desired_angular_momentum_rate_world=((after['momentum_world'][3:]-before['momentum_world'][3:])/.01 if a.preserve_momentum_rate else None))
                 else:plan=dict(accepted=False,rejection='outside_support_window')
                 target=np.asarray(plan['joint_position_target']) if plan['accepted'] else nominal.copy()
+                correction=None
+                if a.nonlinear_push_correction and plan['accepted']:
+                    correction=correct_push_command(model,interface,predictor,state,target,
+                        (after['com_velocity_world']-before['com_velocity_world'])/.01+delta,
+                        (after['momentum_world'][3:]-before['momentum_world'][3:])/.01,
+                        np.asarray(call['arm_sequence_rad'])[node+1])
+                    if correction['accepted']:target=correction['command'].copy()
                 chosen=(predictor(model,interface,copy.deepcopy(state),target,duration_s=.01,substeps=160,enforce_joint_stops=True)
                         if plan['accepted'] else baseline)
                 diagnostics=chosen['diagnostics'];bad=ContactFirstFullBodyEvaluatorV1._violations(diagnostics)
@@ -66,7 +75,7 @@ def main():
                 if bad:failure=dict(node=node,kind='path_violation',violations=bad);break
                 adopted+=int(plan['accepted']);state=chosen['state']
                 rows.append(dict(node=node,q=state.q,v=state.v,contacts=state.contacts,final_target_rad=target,
-                    elapsed_s=(node+1)*.01,window=decision,qp=plan,diagnostics=diagnostics,command_error_rad=command_error,arm_tracking_error_rad=tracking))
+                    elapsed_s=(node+1)*.01,window=decision,qp=plan,nonlinear_correction=correction,diagnostics=diagnostics,command_error_rad=command_error,arm_tracking_error_rad=tracking))
             except (ValueError,np.linalg.LinAlgError) as error:
                 failure=dict(node=node,kind='MODEL_UNCERTAIN',error=str(error));break
         point,normal,velocity=racket_contact_state(model,state.q,state.v,np.asarray(metadata['contact_point_local'])+np.array([metadata['task_physics']['collision_radius_m'],0,0]))
@@ -87,6 +96,7 @@ def main():
             ('contact_feasible','legal_return_predicted','attack5_predicted','target_landing_predicted')))
         results.append(dict(lane=request['lane'],requested_delta_com_acceleration_world=delta,
             preserve_baseline_angular_momentum_rate=a.preserve_momentum_rate,
+            nonlinear_push_correction=a.nonlinear_push_correction,
             support_window_ticks=(None if a.contact_window else 8),
             support_window_mode=('causal_contact_latched' if a.contact_window else 'legacy_fixed8'),adopted_qp_commands=adopted,steps=len(rows),required_steps=len(commands),
             path_valid=path_valid,failure=failure,terminal_errors=errors,
