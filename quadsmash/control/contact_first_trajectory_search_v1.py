@@ -385,6 +385,13 @@ class ContactFirstTrajectorySearchV1:
                     contact_time_s=duration,
                     velocity_scale=float(velocity_scale),
                     nullspace_offset_rad=float(nullspace_offset),
+                    peak_joint_speed_ratio=float(np.max(
+                        np.abs(qd_prefix) / velocity_limits[None, :])),
+                    peak_joint_step_ratio=float(np.max(
+                        np.abs(np.diff(q_full, axis=0)) /
+                        (velocity_limits[None, :] * cfg.dt_s))),
+                    terminal_joint_displacement_rad=float(
+                        np.linalg.norm(branch_q - q0)),
                     initial_joint_position_rad=q0.copy(),
                     initial_joint_velocity_rad_s=qd0.copy(),
                     base_point_velocity_world_m_s=base_point_velocity.copy(),

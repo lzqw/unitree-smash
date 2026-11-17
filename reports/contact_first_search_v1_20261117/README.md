@@ -84,6 +84,11 @@ allowed timing offsets are below that bound, the search exits before candidate
 generation with `contact_time_below_joint_speed_bound`; this is an explicit
 unreachable-time diagnostic, not a relaxed or substituted trajectory.
 
+Accepted candidates now carry peak joint-speed ratio, peak single-tick step
+ratio, and terminal joint displacement in their metadata.  These values are
+diagnostics for saturation and continuity; they do not replace the original
+execution limits or alter candidate ranking.
+
 With the nullspace branches enabled, 300 repeated 96-node plans with the real
 kinematics callback took 5.38 ms mean (5.69 ms p95), with five
 re-linearizations and five posture branches; see `CPU_BENCHMARK.json`.  This

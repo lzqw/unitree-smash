@@ -75,6 +75,8 @@ def test_base_angular_velocity_is_removed_at_racket_offset():
     # omega x r = [1, 0, 0], exactly consuming the requested racket velocity.
     assert result.metadata['base_point_velocity_world_m_s'][0] == pytest.approx(1.)
     assert result.qd_rad_s[result.contact_index, 0] == pytest.approx(0., abs=2e-3)
+    assert 0.0 <= result.metadata['peak_joint_speed_ratio'] <= 1.0
+    assert 0.0 <= result.metadata['peak_joint_step_ratio'] <= 1.0
 
 
 def test_forward_kinematics_callback_relinearizes_before_acceptance():
