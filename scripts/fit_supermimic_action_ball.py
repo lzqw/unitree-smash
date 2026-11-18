@@ -5,6 +5,7 @@ No native paired perturbations are performed. The resulting candidate must be
 validated physically before it is allowed to support policy training.
 """
 import argparse
+import copy
 import hashlib
 import json
 import time
@@ -91,6 +92,36 @@ def sensitivity(base,ball,sweep,data,pairs,launch):
         mean_per_case_norm=float(g.flatten(1).norm(dim=-1).mean()),finite=bool(torch.isfinite(g).all()))
 
 
+def event_validation_selection_score(initial, candidate, *, adjacent_tolerance=1e-6):
+    """Score event-edge accuracy without trading adjacent-step accuracy away.
+
+    The recorded event edge belongs to the next transition.  A candidate that
+    improves offset 0 while adding a spurious impulse at offset -1 or +1 is
+    unsafe for autoregressive imagination.  Adjacent offsets are hard
+    eligibility checks, then the mean relative velocity RMSE selects among
+    eligible checkpoints. Missing metrics are never interpreted as zero.
+    """
+    offsets = ('-1', '0', '1')
+    for offset in offsets:
+        if offset not in initial or offset not in candidate:
+            return dict(eligible=False, score=None, reason='missing_event_offset')
+        initial_rmse = initial[offset].get('velocity_rmse')
+        candidate_rmse = candidate[offset].get('velocity_rmse')
+        if initial_rmse is None or candidate_rmse is None:
+            return dict(eligible=False, score=None, reason='missing_event_metric')
+        values = torch.tensor([initial_rmse, candidate_rmse], dtype=torch.float32)
+        if not torch.isfinite(values).all():
+            return dict(eligible=False, score=None, reason='nonfinite_event_metric')
+    if candidate['-1']['velocity_rmse'] > initial['-1']['velocity_rmse'] + adjacent_tolerance:
+        return dict(eligible=False, score=None, reason='precontact_degradation')
+    if candidate['1']['velocity_rmse'] > initial['1']['velocity_rmse'] + adjacent_tolerance:
+        return dict(eligible=False, score=None, reason='postcontact_degradation')
+    ratios = [candidate[o]['velocity_rmse'] / max(initial[o]['velocity_rmse'], 1e-8)
+              for o in offsets]
+    return dict(eligible=True, score=float(sum(ratios) / len(ratios)),
+                relative_velocity_rmse=dict(zip(offsets, ratios)), reason='eligible')
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('physical-checkpoint','ball-checkpoint','packed-data','split-manifest','output'):
@@ -103,6 +134,10 @@ def main():
         CausalActionConditionedBallV2.schema,CausalRacketModeActionBallV3.schema),
         default=ActionConditionedBallV1.schema)
     p.add_argument('--post-residual-weight', type=float, default=0.25)
+    p.add_argument('--validation-interval', type=int, default=25,
+        help='Event-aligned validation interval in optimizer updates')
+    p.add_argument('--adjacent-degradation-tolerance', type=float, default=1e-6,
+        help='Absolute velocity-RMSE tolerance for offsets -1 and +1')
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     if a.updates<1 or a.batch<4 or a.batch%4:raise ValueError('Positive updates and batch multiple of four required')
@@ -110,6 +145,10 @@ def main():
         raise ValueError('Contact neighborhood batch must be divisible by eight')
     if a.post_residual_weight < 0:
         raise ValueError('Post-impact residual weight must be nonnegative')
+    if a.validation_interval < 1:
+        raise ValueError('Validation interval must be positive')
+    if a.adjacent_degradation_tolerance < 0:
+        raise ValueError('Adjacent degradation tolerance must be nonnegative')
     a.output.mkdir(parents=True)
     torch.set_num_threads(2);torch.manual_seed(20261117)
     started=time.perf_counter()
@@ -178,7 +217,12 @@ def main():
     initial_ar=autoregressive_metrics(base,ball,None,data,metadata,val,launch)
     generator=torch.Generator(device=device).manual_seed(20261117)
     optimizer=torch.optim.Adam(sweep.head.parameters(),lr=2e-4)
+    initial_sweep_state=copy.deepcopy(sweep.state_dict())
     history=[]
+    validation_history=[]
+    best_selection=None
+    best_sweep_state=None
+    best_optimizer_state=None
     print('ACTION_BALL_STAGE=FIT',flush=True)
     for update in range(1,a.updates+1):
         def draw(pool,n):return pool[torch.randint(len(pool),(n,),device=device,generator=generator)]
@@ -218,11 +262,29 @@ def main():
         optimizer.zero_grad(set_to_none=True);loss.backward()
         gradient=torch.nn.utils.clip_grad_norm_(sweep.head.parameters(),10.,error_if_nonfinite=True)
         optimizer.step()
-        if update==1 or update%25==0 or update==a.updates:
-            record=dict(update=update,loss=float(loss.detach()),gradient=float(gradient.detach()),elapsed_s=time.perf_counter()-started)
+        if update==1 or update%a.validation_interval==0 or update==a.updates:
+            validation_candidate=metrics(base,ball,sweep,data,metadata,val,launch)
+            selection=event_validation_selection_score(
+                initial,validation_candidate,
+                adjacent_tolerance=a.adjacent_degradation_tolerance)
+            validation_record=dict(update=update,candidate=validation_candidate,selection=selection)
+            validation_history.append(validation_record)
+            if selection['eligible'] and (best_selection is None or selection['score'] < best_selection['score']):
+                best_selection=dict(selection,update=update)
+                best_sweep_state=copy.deepcopy(sweep.state_dict())
+                best_optimizer_state=copy.deepcopy(optimizer.state_dict())
+            record=dict(update=update,loss=float(loss.detach()),gradient=float(gradient.detach()),elapsed_s=time.perf_counter()-started,
+                        event_validation=validation_record)
             history.append(record)
             (a.output/'progress.json').write_text(json.dumps(record)+'\n')
             print('ACTION_BALL_UPDATE='+json.dumps(record),flush=True)
+    if best_sweep_state is None:
+        sweep.load_state_dict(initial_sweep_state,strict=True)
+        selection_status=dict(accepted=False,reason='no_event_safe_checkpoint',evaluations=validation_history)
+    else:
+        sweep.load_state_dict(best_sweep_state,strict=True)
+        optimizer.load_state_dict(best_optimizer_state)
+        selection_status=dict(accepted=True,best=best_selection,evaluations=validation_history)
     print('ACTION_BALL_STAGE=FINAL_VALIDATION',flush=True)
     final=metrics(base,ball,sweep,data,metadata,val,launch)
     candidate_ar=autoregressive_metrics(base,ball,sweep,data,metadata,val,launch)
@@ -238,7 +300,7 @@ def main():
         candidate_metadata.update(closing_softness_m=sweep.closing_softness_m,
             contact_margin_m=sweep.contact_margin_m)
     torch.save(candidate_metadata,a.output/'action_ball_candidate.pt')
-    comparison=dict(elapsed_s=time.perf_counter()-started,gpu_peak_memory_bytes=torch.cuda.max_memory_allocated(device) if device.type=='cuda' else 0,initial=initial,candidate=final,initial_autoregressive=initial_ar,candidate_autoregressive=candidate_ar,action_gradient=gradient,history=history,
+    comparison=dict(elapsed_s=time.perf_counter()-started,gpu_peak_memory_bytes=torch.cuda.max_memory_allocated(device) if device.type=='cuda' else 0,initial=initial,candidate=final,initial_autoregressive=initial_ar,candidate_autoregressive=candidate_ar,action_gradient=gradient,history=history,validation_history=validation_history,event_validation_selection=selection_status,
         action_ball_optimizer_updates=a.updates,base_world_updates=0,
         sampling_schema=a.sampling_schema,post_residual_weight=a.post_residual_weight,
         pool_sizes={k:len(v) for k,v in neighborhoods.items()},

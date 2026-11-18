@@ -367,7 +367,12 @@ def main(a):
             for p in ball.gate.parameters() if p.grad is not None),loss.new_zeros(()))))
         foot_contact_gradient=float(torch.sqrt(sum((p.grad.detach().square().sum()
             for p in base.contact.parameters() if p.grad is not None),loss.new_zeros(()))))
-        grad=torch.nn.utils.clip_grad_norm_(parameters,10.,error_if_nonfinite=True);opt.step();torch.cuda.synchronize()
+        grad=torch.nn.utils.clip_grad_norm_(parameters,10.,error_if_nonfinite=True);opt.step()
+        # Keep the GPU stream asynchronous during the inner calibration loop.
+        # Validation and its timing are the synchronization boundaries, so a
+        # per-update synchronize would only serialize optimizer launches.
+        if (update+1)%16==0 or update==255:
+            torch.cuda.synchronize()
         row=dict(update=update+1,loss=float(loss.detach()),autoregressive=float(ar.detach()),point=float(point.detach()),robot_response=float(robot_response.detach()),ball_response=float(ball_response.detach()),ball_response_weight=float(a.ball_response_weight),gradient=float(grad),pair_support=supports[0],pair_sources_support=dict(zip(pair_names,supports)),seconds=time.perf_counter()-begin,peak_gpu_bytes=torch.cuda.max_memory_allocated(),actor_updates=0)
         row['physical_source_sampling']=source_sampling
         row.update(ball_mode_loss=float(mode_loss.detach()),ball_mode_support=mode_support,
