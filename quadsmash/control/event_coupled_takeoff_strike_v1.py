@@ -28,6 +28,31 @@ class EventCoupledTakeoffStrikePlannerV1:
         for key in ('contact_feasible','legal_return_predicted','attack5_predicted','target_landing_predicted'):
             if result.get(key) is not True: return False,'IMPACT_TASK_INVALID' 
         return True,None
+    def optimize(self, seeds, *, iterations=3, step_fraction=.1):
+        if not isinstance(iterations,int) or not 1<=iterations<=16: raise ValueError('Bounded optimization iterations required')
+        if not 0<step_fraction<=.5: raise ValueError('Bounded optimization step required')
+        current=[];trace=[]
+        for seed in seeds[:self.max_candidates]:
+            theta=np.asarray(seed,float).copy();best=None
+            for it in range(iterations):
+                result=self.rollout_fn(theta.copy());ok,reason=self._gate(result)
+                errors=np.asarray([result.get('contact_position_error_m',1e3),result.get('normal_error',1e3),result.get('velocity_error_m_s',1e3)],float)
+                cost=float(np.linalg.norm(errors/np.array([.003,.12,.75]))) if np.isfinite(errors).all() else 1e9
+                record=dict(iteration=it,theta=theta.copy(),result=result,cost=cost,accepted=ok,reason=reason)
+                trace.append(record)
+                if best is None or cost<best['cost']: best=record
+                if ok: break
+                improved=False
+                for j in range(len(theta)):
+                    span=(self.bounds[j,1]-self.bounds[j,0])*step_fraction
+                    for sign in (-1.,1.):
+                        trial=theta.copy();trial[j]=np.clip(trial[j]+sign*span,self.bounds[j,0],self.bounds[j,1]);rr=self.rollout_fn(trial);ee=np.asarray([rr.get('contact_position_error_m',1e3),rr.get('normal_error',1e3),rr.get('velocity_error_m_s',1e3)],float);cc=float(np.linalg.norm(ee/np.array([.003,.12,.75]))) if np.isfinite(ee).all() else 1e9
+                        trace.append(dict(iteration=it,theta=trial.copy(),result=rr,cost=cc,accepted=False,reason='probe'))
+                        if cc<best['cost']: theta=trial;best=dict(iteration=it,theta=trial.copy(),result=rr,cost=cc,accepted=False,reason='probe');improved=True
+                if not improved: break
+            current.append(best)
+        current.sort(key=lambda x:x['cost']);return dict(best=current,trace=trace,calls=len(trace),native_run=False,teacher_eligible=False)
+
     def search(self, seeds):
         accepted=[];failed=[];calls=0
         for seed in seeds[:self.max_candidates]:

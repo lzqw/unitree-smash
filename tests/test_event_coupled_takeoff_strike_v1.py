@@ -16,3 +16,9 @@ def test_hard_gates_reject_without_mutating_state():
 def test_unverified_mass_never_passes():
  def rollout(t): return dict(path_valid=True,contact_position_error_m=.001,normal_error=.01,velocity_error_m_s=.1,finite_mass_status='EFFECTIVE_MASS_UNVERIFIED')
  r=EventCoupledTakeoffStrikePlannerV1(rollout_fn=rollout,bounds=np.array([[0,1]])).search([np.array([.5])]);assert r['failed'][0]['result']
+
+def test_optimize_updates_parameters_and_keeps_best_trace():
+ seen=[]
+ def rollout(t):
+  seen.append(t.copy());return dict(path_valid=True,contact_position_error_m=float(abs(t[0])+.001),normal_error=.1,velocity_error_m_s=.7,finite_mass_status='FINITE_MASS_VERIFIED',contact_feasible=True,legal_return_predicted=True,attack5_predicted=True,target_landing_predicted=True)
+ p=EventCoupledTakeoffStrikePlannerV1(rollout_fn=rollout,bounds=np.array([[-1,1]]),max_candidates=1);r=p.optimize([np.array([.5])],iterations=2);assert r['calls']>1 and r['best'][0]['cost']<100
