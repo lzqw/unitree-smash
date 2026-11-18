@@ -1,0 +1,59 @@
+{"call": 1, "path_valid": true, "errors": {"position_m": 0.05859809428016365, "normal": 0.11801587257404669, "velocity_m_s": 1.8521079321569023}, "failure": null}
+{"call": 2, "path_valid": true, "errors": {"position_m": 0.05859709652645678, "normal": 0.11804441958309159, "velocity_m_s": 1.8519844915790047}, "failure": null}
+{"call": 3, "path_valid": true, "errors": {"position_m": 0.0585971386399735, "normal": 0.11806214827165178, "velocity_m_s": 1.8519605946521516}, "failure": null}
+{"call": 4, "path_valid": true, "errors": {"position_m": 0.058597064871722296, "normal": 0.11799938953579127, "velocity_m_s": 1.8521262650346564}, "failure": null}
+{"call": 5, "path_valid": true, "errors": {"position_m": 0.05859819613919326, "normal": 0.11801199204862943, "velocity_m_s": 1.8521167908350396}, "failure": null}
+{"call": 6, "path_valid": true, "errors": {"position_m": 0.05859928499794903, "normal": 0.11801758642377312, "velocity_m_s": 1.8521084473843974}, "failure": null}
+{"call": 7, "path_valid": true, "errors": {"position_m": 0.05859921857778738, "normal": 0.1180149819089197, "velocity_m_s": 1.8521099828392675}, "failure": null}
+{"call": 8, "path_valid": true, "errors": {"position_m": 0.05860939149841472, "normal": 0.11802949396627184, "velocity_m_s": 1.8522332039791036}, "failure": null}
+{"call": 9, "path_valid": true, "errors": {"position_m": 0.05859831362026722, "normal": 0.11801717670898831, "velocity_m_s": 1.8520825256576585}, "failure": null}
+{"call": 10, "path_valid": true, "errors": {"position_m": 0.0586026259771443, "normal": 0.11796374662955411, "velocity_m_s": 1.851913223177055}, "failure": null}
+{"call": 11, "path_valid": true, "errors": {"position_m": 0.05860078585378721, "normal": 0.11803775943523484, "velocity_m_s": 1.8518634901333157}, "failure": null}
+{"call": 12, "path_valid": true, "errors": {"position_m": 0.05860137524288796, "normal": 0.11801600775268688, "velocity_m_s": 1.8521404281278697}, "failure": null}
+{"call": 13, "path_valid": true, "errors": {"position_m": 0.05859797983032347, "normal": 0.118015445850026, "velocity_m_s": 1.852113776709525}, "failure": null}
+{"call": 14, "path_valid": true, "errors": {"position_m": 0.05859841153056554, "normal": 0.11800751287312597, "velocity_m_s": 1.8521439820171164}, "failure": null}
+{"call": 15, "path_valid": true, "errors": {"position_m": 0.058598396050125415, "normal": 0.11800230907529524, "velocity_m_s": 1.852151075247412}, "failure": null}
+{"call": 16, "path_valid": true, "errors": {"position_m": 0.05859840084857369, "normal": 0.11802096091933216, "velocity_m_s": 1.8521025473334174}, "failure": null}
+{"call": 17, "path_valid": true, "errors": {"position_m": 0.05859806053265642, "normal": 0.11801697712466656, "velocity_m_s": 1.8521051568984064}, "failure": null}
+{"call": 18, "path_valid": true, "errors": {"position_m": 0.05859772770225608, "normal": 0.11801535555179561, "velocity_m_s": 1.8521076968662238}, "failure": null}
+{"call": 19, "path_valid": true, "errors": {"position_m": 0.058597751218429084, "normal": 0.11801616142459191, "velocity_m_s": 1.852107108778649}, "failure": null}
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/refine_contact_event_v1.py", line 190, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/refine_contact_event_v1.py", line 177, in main
+    started=time.perf_counter();result=refine_terminal(evaluate,objective=('velocity' if a.velocity_priority else ('position' if a.position_priority else 'all_tasks')),task_nonregression_tolerance=a.task_nonregression_tolerance,parameter_radii=evaluator.radii,
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/terminal_push_refinement_v1.py", line 78, in refine_terminal
+    a=np.zeros(count);a[j]=step;r=call(a,'derivative_'+str(j))
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/terminal_push_refinement_v1.py", line 42, in call
+    try:r=evaluate(amplitude.copy())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/refine_contact_event_v1.py", line 168, in evaluate
+    result=evaluator(amplitude);calls+=1
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/terminal_push_refinement_v1.py", line 203, in __call__
+    step=self.predictor(model,i,copy.deepcopy(state),command,duration_s=.01,substeps=160,enforce_joint_stops=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/experimental_sphere_admission_v1.py", line 61, in __call__
+    result = predict_speed_limited_spheres(model, interface, state, target, self.spheres,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/predict_speed_limited_spheres_v1.py", line 74, in predict_speed_limited_spheres
+    result=diagnostic_hip_mount_response.step(*arguments,q[model.q_indices],interface.limits,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/hip_mount_collision_response_v1.py", line 47, in step
+    result=position_limited_velocity_step(*values,**kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/frictional_position_limited_step_v1.py", line 73, in position_limited_velocity_step
+    original=speed_limited_velocity_step(mass,velocity,bias,selection,kp,kd,target_error,effort,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/LZQW/unitree_smash_teacher_eval/scripts/frictional_speed_limited_step_v1.py", line 78, in speed_limited_velocity_step
+    solved=np.linalg.solve(effective,np.column_stack([rhs,augmented.T]))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/numpy/linalg/linalg.py", line 409, in solve
+    r = gufunc(a, b, signature=signature, extobj=extobj)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
