@@ -6,14 +6,23 @@ read here; the position command and proprioception are public observations.
 """
 import hashlib
 import json
+import os
 from pathlib import Path
 import torch
+
+
+def _resolve_execution_path(path):
+    path=Path(path).expanduser()
+    if path.is_absolute():
+        return path
+    configured=os.environ.get('QUADSMASH_G07_EXECUTION_ROOT')
+    return ((Path(configured).expanduser().resolve() if configured else Path.cwd())/path).resolve()
 
 
 class Go2WalkTransfer:
     def __init__(self, manifest, num_envs, device):
         spec=json.loads(Path(manifest).read_text())
-        path=Path(spec['policy_path'])
+        path=_resolve_execution_path(spec['policy_path'])
         if hashlib.sha256(path.read_bytes()).hexdigest()!=spec['policy_sha256']:
             raise ValueError('Transferred walking actor hash mismatch')
         self.actor=torch.jit.load(str(path),map_location=device).eval()

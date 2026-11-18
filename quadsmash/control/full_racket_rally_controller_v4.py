@@ -1,5 +1,6 @@
 """Ball-aware execution of a learned reach controller, with causal prediction."""
 import json
+import os
 from pathlib import Path
 import numpy as np
 import torch
@@ -13,16 +14,21 @@ from .full_racket_height_intercept_v4 import validate_height_intercept,predict_h
 ROOT=Path(__file__).resolve().parents[2]
 
 
+def _config_root():
+    configured = os.environ.get('QUADSMASH_G07_EXECUTION_ROOT')
+    return Path(configured).expanduser().resolve() if configured else ROOT
+
+
 class FullRacketRallyControllerV4:
     def __init__(self,checkpoint,count,device):
         self.checkpoint=checkpoint
         self.teacher=FullRacketTeacherV4(checkpoint['backbone'],checkpoint['seed'],
-            ROOT/'configs/g07_go2_walk_transfer.json',count,device)
+            _config_root()/'configs/g07_go2_walk_transfer.json',count,device)
         self.base=checkpoint['parameters'].to(device)
         self.parameters=self.base[None].repeat(count,1)
         self.event_time=torch.full((count,),2.75,device=device)
         self.planned=torch.zeros(count,dtype=torch.bool,device=device)
-        self.physics=json.loads((ROOT/'configs/shuttle_physics_v2.json').read_text())
+        self.physics=json.loads((_config_root()/'configs/shuttle_physics_v2.json').read_text())
         model=FullRacketGeometryV4();q=np.array(checkpoint['seed']['joint_position_rad'])
         self.nominal_target=np.array(checkpoint['seed'].get('desired_ball_center_m',[1.10,0.,1.80]))
         self.jacobian=model.contact_jacobian(q,uv=checkpoint['seed'].get('string_uv_m',[0.,0.]),face=checkpoint['seed'].get('face_sign',1),base_position=(0,0,0))

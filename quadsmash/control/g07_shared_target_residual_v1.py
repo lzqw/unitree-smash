@@ -51,6 +51,11 @@ def _diagnostic_dir(execution_root: Path | None) -> Path:
     return DEFAULT_DIAGNOSTIC_DIR
 
 
+def _execution_root_from_diagnostic(diag: Path) -> Path:
+    """Recover the measured source root for downstream asset/config loaders."""
+    return diag.parents[2]
+
+
 def _validate_source(checkpoint: dict, diag: Path) -> dict:
     if checkpoint.get("schema") != SCHEMA:
         raise ValueError(f"Require {SCHEMA}, got {checkpoint.get('schema')!r}")
@@ -94,6 +99,17 @@ class G07SharedTargetResidualControllerV1:
     def __init__(self, checkpoint: dict, count: int, device: torch.device,
                  execution_root: Path | None = None):
         diag = _diagnostic_dir(execution_root)
+        # The measured factory imports controller modules that read robot and
+        # racket assets through the current Python package.  Pin those reads
+        # to the same explicit source root as the factory, so an isolated
+        # worktree cannot silently mix code from one root with assets from
+        # another.  The environment is process-local and contains no mutable
+        # simulator state.
+        source_root = _execution_root_from_diagnostic(diag)
+        configured_root = os.environ.get("QUADSMASH_G07_EXECUTION_ROOT")
+        if configured_root is not None and Path(configured_root).expanduser().resolve() != source_root:
+            raise ValueError("G07 execution root conflicts with QUADSMASH_G07_EXECUTION_ROOT")
+        os.environ["QUADSMASH_G07_EXECUTION_ROOT"] = str(source_root)
         base = _validate_source(checkpoint, diag)
         factory = _load_module(diag / "native_factory.py", "quadsmash_g07_native_factory")
         self.source_root = diag

@@ -1,5 +1,7 @@
 """Learned clock-partitioned affine feedback policy, without a teacher prefix."""
 import torch
+import os
+from pathlib import Path
 
 FEATURES = [775, 6, *range(27,39)]
 COMPOSED_FEATURES = [775, 6, 7, 0, 1, *range(27,39)]
@@ -19,6 +21,15 @@ def policy_features(observation, indices, transform='none'):
 class PiecewiseAffinePolicy(torch.nn.Module):
     def __init__(self, checkpoint):
         super().__init__()
+        # Nested measured G07 checkpoints may refer to source files relative
+        # to their explicit execution root.  Resolve the path once at load
+        # time so an isolated worktree cannot mix controller code and assets.
+        if isinstance(checkpoint, (str, os.PathLike)):
+            path=Path(checkpoint).expanduser()
+            if not path.is_absolute():
+                configured=os.environ.get('QUADSMASH_G07_EXECUTION_ROOT')
+                path=((Path(configured).expanduser().resolve() if configured else Path.cwd())/path).resolve()
+            checkpoint=torch.load(path,map_location='cpu',weights_only=False)
         if checkpoint['schema'] != 'learned-pwa-actions-v1':
             raise ValueError('Unknown learned action policy schema')
         for name in ('thresholds','mean','scale','weights'):

@@ -2,6 +2,7 @@
 from pathlib import Path
 import json
 import math
+import os
 from functools import lru_cache
 
 import numpy as np
@@ -9,12 +10,17 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def _config_root():
+    configured = os.environ.get("QUADSMASH_G07_EXECUTION_ROOT")
+    return Path(configured).expanduser().resolve() if configured else ROOT
+
+
 def load_racket(config_path='configs/full_racket_v4_r3.json'):
-    return json.loads((ROOT/config_path).read_text())
+    return json.loads((_config_root()/config_path).read_text())
 
 
 def apply_neutral_arm_reset(cfg):
-    reset=json.loads((ROOT/'configs/full_racket_reset_v4.json').read_text())
+    reset=json.loads((_config_root()/'configs/full_racket_reset_v4.json').read_text())
     cfg.robot.init_state.joint_pos.update({f'joint{i+1}':q for i,q in enumerate(reset['arm_joint_positions_rad'])})
     return cfg
 

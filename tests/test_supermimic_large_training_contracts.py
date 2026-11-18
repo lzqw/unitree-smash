@@ -69,7 +69,8 @@ def test_contact_receipt_requires_real_artifacts_matching_models_and_bounded_met
     r=dict(schema='supermimic-contact-validation-v1',model_sha256={k:sha256(v) for k,v in models.items()},
            task_contract_sha256=hashlib.sha256(json.dumps(contract,sort_keys=True,separators=(',',':')).encode()).hexdigest(),
            training_episode_ids=['train/1'],validation_episode_ids=['val/1'],
-           native_action_probe=dict(same_prefix_verified=True,paired_samples=2),thresholds_declared_before_validation=True,
+           native_action_probe=dict(same_prefix_verified=True,paired_samples=2,
+                                    response_direction_verified=True,independent_episode_count=1),thresholds_declared_before_validation=True,
            event_aligned_errors={'ball':.1},action_response_errors={'direction':.1},
            upper_bounds={'event_aligned_errors':{'ball':.2},'action_response_errors':{'direction':.2}},
            evidence_files=[dict(path=raw.name,sha256=sha256(raw))])
@@ -79,6 +80,8 @@ def test_contact_receipt_requires_real_artifacts_matching_models_and_bounded_met
     with pytest.raises(ValueError,match='validation failed'):verify_contact_receipt(receipt,models,contract)
     r['action_response_errors']['direction']=.1;r['native_action_probe']['same_prefix_verified']=False;receipt.write_text(json.dumps(r))
     with pytest.raises(ValueError,match='repeatable native'):verify_contact_receipt(receipt,models,contract)
+    r['native_action_probe']['same_prefix_verified']=True;r['native_action_probe']['response_direction_verified']=False;receipt.write_text(json.dumps(r))
+    with pytest.raises(ValueError,match='direction'):verify_contact_receipt(receipt,models,contract)
 
 
 def test_event_alignment_is_relative_to_edge_not_arbitrary_64step_window():

@@ -28,6 +28,10 @@ def verify_contact_receipt(path,model_paths,task_contract):
     if not val or train&val:raise ValueError('Contact validation must hold out complete episodes')
     native=r['native_action_probe']
     if native.get('same_prefix_verified') is not True or native.get('paired_samples',0)<1:raise ValueError('Missing repeatable native action-response evidence')
+    if native.get('response_direction_verified') is not True:
+        raise ValueError('Native action-response direction was not verified')
+    if native.get('independent_episode_count', 0) < 1:
+        raise ValueError('Native action-response evidence lacks independent episode support')
     if r.get('thresholds_declared_before_validation') is not True:raise ValueError('Contact bounds must be declared before validation')
     for group in ('event_aligned_errors','action_response_errors'):
         values=r[group];limits=r['upper_bounds'][group]

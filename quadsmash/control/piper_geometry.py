@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import itertools
 import json
+import os
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -17,7 +18,11 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class PiperGeometry:
-    def __init__(self, root: Path = ROOT):
+    def __init__(self, root: Path | None = None):
+        if root is None:
+            configured = os.environ.get("QUADSMASH_G07_EXECUTION_ROOT")
+            root = Path(configured).expanduser().resolve() if configured else ROOT
+        root = Path(root).resolve()
         self.assembly = json.loads((root / "configs/assembly_v2.json").read_text())
         self.urdf = root / self.assembly["piper"]["source"]
         tree = ET.parse(self.urdf).getroot()
