@@ -56,7 +56,7 @@ def tensor_digest(named):
     return h.hexdigest()
 
 
-def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkpoint,safety_mapping,device='cuda:0',action_ball_checkpoint=None):
+def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkpoint,safety_mapping,device='cuda:0',action_ball_checkpoint=None,execution_root=None):
     manifest=json.loads((Path(archive)/'manifest.json').read_text())
     paths=dict(source=Path(manifest['source_checkpoint']),physical=Path(physical_checkpoint),
                ball=Path(ball_checkpoint),task=Path(task_checkpoint))
@@ -68,8 +68,21 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
     names=dict(actor.named_parameters())
     if not set(HEAD_NAMES)<=names.keys():raise ValueError('Actor head parameter contract mismatch')
     set_actor_trainable(actor, APPROACH_NAMES)
+    if execution_root is None:
+        recorded = manifest.get('g07_execution_root')
+        if recorded is None:
+            recorded = manifest.get('init_policy_checkpoint', {}).get('g07_execution_root')
+        if recorded is None:
+            raise ValueError(
+                'G07 execution root is required. Pass execution_root explicitly or record '
+                'g07_execution_root in the archive manifest.'
+            )
+        execution_root = Path(recorded)
+    execution_root = Path(execution_root).expanduser().resolve()
+    if not execution_root.is_dir():
+        raise FileNotFoundError(f'G07 execution root does not exist: {execution_root}')
     controller=make_g07_residual_controller(torch.load(paths['source'],map_location='cpu',weights_only=False),
-        manifest['num_envs'],torch.device(device),'/home/autodrive/LZQW/unitree_smash')
+        manifest['num_envs'],torch.device(device),execution_root)
     freeze_execution_modules(controller)
     executor=G07MemoryPreviewV1(controller);executor.mixer.to(device)
     physical_state=torch.load(paths['physical'],map_location='cpu',weights_only=True)
@@ -107,6 +120,7 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
     adapter=PhysicalImaginationAdapter(physical,ball,task,executor,safety_body_names=safety['safety_body_names'],
         action_ball_model=action_ball,
         manifest=dict(checkpoint_paths={k:str(v) for k,v in paths.items()},checkpoint_sha256=hashes,
+                      g07_execution_root=str(execution_root),
                       task_schema=schema.manifest(),actor_whitelist=APPROACH_NAMES,
                       actor_heads={'approach':APPROACH_NAMES,'recovery':RECOVERY_NAMES})).to(device)
     suite=Path(__file__).resolve().parents[2]/manifest['task_contract']['suite']['path']

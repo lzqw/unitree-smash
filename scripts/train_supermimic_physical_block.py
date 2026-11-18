@@ -70,6 +70,8 @@ def main():
     parser.add_argument('--contact-validation-receipt',type=Path)
     parser.add_argument('--action-ball-checkpoint',type=Path,default=None,
                         help='Opt-in fitted swept-racket candidate; never silently replaces legacy ball response')
+    parser.add_argument('--g07-execution-root',type=Path,default=None,
+                        help='Explicit root containing the measured G07 execution contract and diagnostics')
     parser.add_argument('--train-action-ball-in-wm',action='store_true',
                         help='Allow WM optimizer steps to update the action-conditioned ball head')
     parser.add_argument('--resume-start-block',choices=('recovery','approach'),default='recovery',
@@ -77,9 +79,9 @@ def main():
     parser.add_argument('--resume-warmup-ticks',type=int,default=0,
                         help='Optional native ticks before a resumed stream; zero preserves exact block budgets')
     parser.add_argument('--actor-update-budget',type=int,default=None,help='Legacy single-block budget')
-    parser.add_argument('--recovery-update-budget',type=int,default=128,
+    parser.add_argument('--recovery-update-budget',type=int,default=256,
                         help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
-    parser.add_argument('--approach-update-budget',type=int,default=128,
+    parser.add_argument('--approach-update-budget',type=int,default=256,
                         help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
     parser.add_argument('--joint-update-budget',type=int,default=16)
     parser.add_argument('--update-mode',choices=('sequential','joint'),default='sequential')
@@ -88,8 +90,8 @@ def main():
     parser.add_argument('--refresh-mode',choices=('pair','per-head'),default='pair',
                         help='pair: R8/A8 then one combined refresh; per-head: integration diagnostic only')
     parser.add_argument('--ball-side-mode',choices=('shadow','enforce'),default='shadow')
-    parser.add_argument('--recovery-proposal-budget',type=int,default=256)
-    parser.add_argument('--approach-proposal-budget',type=int,default=256)
+    parser.add_argument('--recovery-proposal-budget',type=int,default=512)
+    parser.add_argument('--approach-proposal-budget',type=int,default=512)
     parser.add_argument('--refresh-ticks',type=int,default=800)
     parser.add_argument('--cycles',type=int,default=1)
     parser.add_argument('--native-ticks-per-actor-update',type=int,default=16)
@@ -252,7 +254,7 @@ def run(args, *, alternating=None):
         actor,adapter,template,launch,manifest=load_physical_loop(archive=args.archive,
             physical_checkpoint=args.physical_checkpoint,ball_checkpoint=args.ball_checkpoint,
             task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping,
-            action_ball_checkpoint=args.action_ball_checkpoint)
+            action_ball_checkpoint=args.action_ball_checkpoint,execution_root=args.g07_execution_root)
         action_ball_trainable=bool(args.train_action_ball_in_wm or args.training_stage!='wm_calibrate')
         if adapter.action_ball_model is not None and not action_ball_trainable:
             adapter.action_ball_model.requires_grad_(False)
@@ -446,7 +448,7 @@ def run(args, *, alternating=None):
             trainer.native_accepted_snapshot={k:v.detach().clone() for k,v in actor.state_dict().items()}
             write(args.output/'native_reference_promotion.json',promotion)
         source_path=Path(manifest['source_checkpoint']);source=torch.load(source_path,map_location='cpu',weights_only=False)
-        execution_root=Path('/home/autodrive/LZQW/unitree_smash')
+        execution_root=Path(manifest['g07_execution_root'])
         contract,protocol,cases,receipt=resolve_task_contract(source,source_path,execution_root=execution_root)
         if contract!=manifest['task_contract']:raise ValueError('Native task contract changed')
         cfg=make_task_cfg(128,contract,protocol,receipt);cfg.seed=882072;cfg.sim.device='cuda:0'
