@@ -23,7 +23,7 @@ def arm_basis(s):
 
 
 class CoupledContactRollout(TerminalPushRollout):
-    radii=np.r_[np.full(12,.06),np.full(6,.1),np.full(6,.05)]
+    radii=np.r_[np.full(12,.1),np.full(6,.1),np.full(6,.05)]
     rate_window_ticks=None
 
     def basis_at_nodes(self,nodes):
