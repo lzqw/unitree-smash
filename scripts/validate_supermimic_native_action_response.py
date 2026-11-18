@@ -94,6 +94,14 @@ def _response_errors(measured):
     return {name: _finite_number(value, name) for name, value in values.items()}
 
 
+def validate_native_sample_ids(sample_ids, validation_episode_ids):
+    """Require every measured probe identity to be declared held-out."""
+    values = list(sample_ids)
+    allowed = set(validation_episode_ids)
+    if not values or not set(values) <= allowed:
+        raise ValueError('Native probe samples are outside the declared validation episode set')
+
+
 def build_receipt(*, bounds, event_errors, response_errors, models, contract,
                   probe_path, event_path, measured, identity):
     limits = bounds['limits']
@@ -207,6 +215,7 @@ def main():
         accepted_update_age_max=limits.get('accepted_update_age_max', float('inf')),
     ))
     measured['sample_ids'] = bundle.get('sample_ids', [])
+    validate_native_sample_ids(measured['sample_ids'], bounds['validation_episode_ids'])
     response_errors = _response_errors(measured)
     result = dict(passed=False, runtime_identity=current, code_scope=code_scope,
                   event_aligned_errors=event_errors, response_errors=response_errors,

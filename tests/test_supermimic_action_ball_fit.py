@@ -1,5 +1,20 @@
+import pytest
+
 from scripts.fit_supermimic_action_ball import (event_validation_selection_score,
-    autoregressive_validation_selection_score)
+    autoregressive_validation_selection_score, parse_rollout_horizons,
+    rollout_batch_sizes)
+
+
+def test_rollout_curriculum_is_unique_bounded_and_long_horizon_is_subsampled():
+    assert parse_rollout_horizons('64,4,16,16') == (4, 16, 64)
+    assert rollout_batch_sizes(128, (4, 16, 64)) == {4: 128, 16: 64, 64: 32}
+
+
+def test_rollout_curriculum_rejects_invalid_horizons():
+    with pytest.raises(ValueError):
+        parse_rollout_horizons('0,4')
+    with pytest.raises(ValueError):
+        parse_rollout_horizons('4,65')
 
 
 def _metrics(pre, contact, post):

@@ -11,6 +11,30 @@ from pathlib import Path
 import torch
 
 
+def make_event_aligned_spec(row, head, epsilon):
+    """Represent exactly the lanes whose recorded edge selected this tick."""
+    lanes = list(row['lanes'])
+    directions = []
+    for lane in lanes:
+        direction = [0.0] * 18
+        direction[12 + (lane % 6)] = 1.0
+        directions.append(direction)
+    return dict(
+        schema='native-paired-prefix-batch-spec-v2',
+        tick=row['tick'],
+        head=head,
+        lanes=lanes,
+        epsilon_request=epsilon,
+        request_directions=directions,
+        capture_substeps=False,
+        event_alignment=dict(
+            contact_validation_lanes=list(row['contact']),
+            frame_validation_lanes=list(row['frame']),
+            source='recorded event edge only',
+        ),
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--packed-data', type=Path, required=True)
@@ -61,13 +85,16 @@ def main():
         chosen.append(row)
         covered.update(row['lanes'])
 
-    all_lanes = list(range(128))
-    directions = []
-    for lane in all_lanes:
-        direction = [0.0] * 18
-        direction[12 + (lane % 6)] = 1.0
-        directions.append(direction)
+    # Keep the intervention lane set equal to the recorded event-aligned
+    # candidates.  Expanding every spec to all 128 lanes dilutes a contact
+    # probe with unrelated no-contact lanes and makes the native direction
+    # gate measure the wrong population.
     args.output.mkdir(parents=True)
+    for index, row in enumerate(chosen):
+        spec = make_event_aligned_spec(row, args.head, args.epsilon)
+        (args.output / f'spec_{index:02d}_tick{row["tick"]:03d}.json').write_text(
+            json.dumps(spec, indent=2) + '\n'
+        )
     manifest = dict(
         schema='event-aligned-native-probe-spec-set-v1',
         packed_data_sha256=__import__('hashlib').sha256(args.packed_data.read_bytes()).hexdigest(),
@@ -80,24 +107,6 @@ def main():
         native_response_support_is_not_certified=True,
     )
     (args.output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-    for index, row in enumerate(chosen):
-        spec = dict(
-            schema='native-paired-prefix-batch-spec-v2',
-            tick=row['tick'],
-            head=args.head,
-            lanes=all_lanes,
-            epsilon_request=args.epsilon,
-            request_directions=directions,
-            capture_substeps=False,
-            event_alignment=dict(
-                contact_validation_lanes=row['contact'],
-                frame_validation_lanes=row['frame'],
-                source='recorded event edge only',
-            ),
-        )
-        (args.output / f'spec_{index:02d}_tick{row["tick"]:03d}.json').write_text(
-            json.dumps(spec, indent=2) + '\n'
-        )
 
 
 if __name__ == '__main__':

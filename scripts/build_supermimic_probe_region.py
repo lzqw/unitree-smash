@@ -11,7 +11,26 @@ from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES,tree_digest,
 from quadsmash.rl.supermimic_physical_dataset_v1 import encode_physical
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
 
-def build(paths,identity,output,selected_lanes=None):
+
+def event_validation_lanes(spec, selected_lanes=None, *, include_frame_lanes=False):
+    """Select evidence lanes without treating frame-only events as hits."""
+    intervention=set(int(i) for i in probe_lanes(spec))
+    alignment=spec.get('event_alignment', {})
+    if spec['head']=='approach' and not include_frame_lanes and 'event_alignment' in spec:
+        allowed=set(int(i) for i in alignment.get('contact_validation_lanes', []))
+        if not allowed:
+            raise ValueError('Approach probe has no recorded contact-validation lanes')
+    else:
+        allowed=intervention
+    lanes=sorted(allowed) if selected_lanes is None else list(selected_lanes)
+    if not lanes or any(type(i) is not int or i not in intervention for i in lanes):
+        raise ValueError('Evidence lanes must be unique measured intervention lanes')
+    if len(set(lanes)) != len(lanes) or any(i not in allowed for i in lanes):
+        raise ValueError('Approach region cannot use frame-only lanes as contact evidence')
+    return lanes
+
+
+def build(paths,identity,output,selected_lanes=None,include_frame_lanes=False):
     runs={k:torch.load(paths[k],map_location='cpu',weights_only=True) for k in BRANCHES}
     base=runs['nominal_a']
     for branch,run in runs.items():
@@ -29,9 +48,9 @@ def build(paths,identity,output,selected_lanes=None):
         raise ValueError('Probe/runtime task or execution mismatch')
     validate_spec(base['spec'])
     row=base['raw']['start'];physical=row['before']['physical'];intervention_lanes=probe_lanes(base['spec'])
-    lanes=intervention_lanes if selected_lanes is None else list(selected_lanes)
-    if not lanes or any(type(i)is not int or i not in intervention_lanes for i in lanes) or len(set(lanes))!=len(lanes):
-        raise ValueError('Evidence lanes must be unique measured intervention lanes')
+    alignment=base['spec'].get('event_alignment', {})
+    lanes=event_validation_lanes(base['spec'], selected_lanes,
+                                 include_frame_lanes=include_frame_lanes)
     sl=torch.tensor(lanes)
     for run in runs.values():
         if tree_digest(run['raw']['start'])!=tree_digest(row):raise ValueError('Different full native start state')
@@ -55,7 +74,9 @@ def build(paths,identity,output,selected_lanes=None):
         return result
     pairs['native_contact_modes']={k:([modes(v,lane) for lane in lanes] if len(lanes)>1 else modes(v,lanes[0])) for k,v in runs.items()}
     sample_ids=[f"{identity['actor_state_sha256']}:{base['seed']}:{lane}:{int(row['before']['episode_index'][lane])}" for lane in lanes]
-    evidence=dict(sample_ids=sample_ids,lane_ids=lanes,intervention_lanes=intervention_lanes,schema='native-paired-prefix-region-v1',runtime_identity=identity,actor_state=base['actor_state'],pairs=pairs,
+    evidence=dict(sample_ids=sample_ids,lane_ids=lanes,intervention_lanes=intervention_lanes,
+        event_alignment=alignment,include_frame_lanes=bool(include_frame_lanes),
+        schema='native-paired-prefix-region-v1',runtime_identity=identity,actor_state=base['actor_state'],pairs=pairs,
         command_starts=[dict(start=row,final_normalized=base['raw']['final_normalized'],final_joint_targets=base['raw']['final_joint_targets'],
                             valid_lanes=base['raw'].get('command_valid_lanes',torch.ones(len(launch),dtype=torch.bool)))],
         source_sha256={k:hashlib.sha256(Path(p).read_bytes()).hexdigest() for k,p in paths.items()},
@@ -71,4 +92,5 @@ if __name__=='__main__':
     for branch in BRANCHES:p.add_argument('--'+branch.replace('_','-'),type=Path,required=True)
     p.add_argument('--runtime-identity',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
     p.add_argument('--selected-lanes',type=int,nargs='+',help='Predeclared calibration OR heldout subset, never selected by measured response')
-    a=p.parse_args();print(json.dumps(build({k:getattr(a,k) for k in BRANCHES},json.loads(a.runtime_identity.read_text()),a.output,a.selected_lanes),indent=2))
+    p.add_argument('--include-frame-lanes',action='store_true',help='Diagnostic only: include non-contact frame lanes in an Approach bundle')
+    a=p.parse_args();print(json.dumps(build({k:getattr(a,k) for k in BRANCHES},json.loads(a.runtime_identity.read_text()),a.output,a.selected_lanes,a.include_frame_lanes),indent=2))

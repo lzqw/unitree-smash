@@ -30,6 +30,10 @@ DEFAULT_PROTECTED_METRICS = (
     # contact and longer-horizon metrics retain their calibrated tolerances.
     MetricBound("event_aligned/-1/1/ball_velocity_rmse", 0., 0.),
     MetricBound("event_aligned/1/1/ball_velocity_rmse", 0., 0.),
+    # Protect the pre-impact autoregressive neighborhood as well. A model
+    # that improves the contact-edge frame by moving the impulse earlier is
+    # unsafe for BPTT even when its one-step pre-impact error improves.
+    MetricBound("event_aligned/-1/4/ball_velocity_rmse", 0., 0.),
     MetricBound("event_aligned/0/4/ball_velocity_rmse", .03, .10),
 )
 

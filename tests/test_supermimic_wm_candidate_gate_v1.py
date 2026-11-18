@@ -5,7 +5,8 @@ from quadsmash.rl.supermimic_wm_candidate_gate_v1 import compare_candidate_to_an
 
 def record(contact, pre=1.0, post=.1):
     return {'event_aligned': {
-        '-1': {'1': {'ball_velocity_rmse': pre}},
+        '-1': {'1': {'ball_velocity_rmse': pre},
+               '4': {'ball_velocity_rmse': .4}},
         '0': {'1': {'ball_velocity_rmse': contact,
                     'ball_forward_sign_error': .1},
                '4': {'ball_velocity_rmse': .5}},
@@ -38,4 +39,13 @@ def test_contact_gain_with_adjacent_impulse_is_rejected():
                                            record(.8, pre=1.0, post=.100001))
     assert not decision['passed']
     assert any(row['metric'] == 'event_aligned/1/1/ball_velocity_rmse'
+               for row in decision['failures'])
+
+
+def test_preimpact_autoregressive_degradation_is_rejected():
+    candidate = record(.8, pre=1.0, post=.1)
+    candidate['event_aligned']['-1']['4']['ball_velocity_rmse'] = .6
+    decision = compare_candidate_to_anchor(record(1.0), candidate)
+    assert not decision['passed']
+    assert any(row['metric'] == 'event_aligned/-1/4/ball_velocity_rmse'
                for row in decision['failures'])

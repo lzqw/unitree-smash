@@ -23,6 +23,23 @@ from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES, validate_sp
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def kit_args_option(value: str) -> str:
+    """Keep a Kit argument beginning with ``--`` as one argparse value."""
+    if not value:
+        raise ValueError('Kit arguments must not be empty')
+    return f'--kit_args={value}'
+
+
+def child_environment(existing: dict[str, str] | None = None) -> dict[str, str]:
+    """Build a deterministic environment for direct Python child launchers."""
+    env = dict(os.environ if existing is None else existing)
+    project_path = str(ROOT)
+    pythonpath = env.get('PYTHONPATH')
+    env['PYTHONPATH'] = project_path if not pythonpath else project_path + os.pathsep + pythonpath
+    env['PYTHONUNBUFFERED'] = '1'
+    return env
+
+
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open('rb') as stream:
@@ -103,11 +120,15 @@ def main() -> int:
 
     completed = []
     evaluate = ROOT / 'scripts' / 'evaluate_supermimic_v1.py'
+    child_env = child_environment()
     for spec_path, spec in specs:
         spec_name = spec_path.stem
         for branch in BRANCHES:
             branch_output = args.output / spec_name / branch
-            branch_output.mkdir(parents=True)
+            # The child owns creation of its unique output directory.  The
+            # evaluator intentionally uses exist_ok=False so creating this
+            # directory here would make every probe fail before Isaac starts.
+            branch_output.parent.mkdir(parents=True, exist_ok=True)
             command = [
                 sys.executable, str(evaluate), *source_args,
                 '--output', str(branch_output),
@@ -116,13 +137,18 @@ def main() -> int:
                 '--headless',
                 '--native-action-probe-spec', str(spec_path.resolve()),
                 '--native-action-probe-branch', branch,
-                '--kit_args', args.kit_args,
+                # AppLauncher receives a single value.  Using the equals
+                # form is required when the Kit value itself starts with
+                # ``--`` or argparse treats it as another option.
+                kit_args_option(args.kit_args),
             ]
-            log_path = branch_output / 'launcher.log'
+            # Keep the child output path absent until the evaluator creates it
+            # with exist_ok=False.  Store the launcher log beside it.
+            log_path = branch_output.parent / f'{branch}.launcher.log'
             started = time.time()
             with log_path.open('w') as log:
                 result = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT,
-                                        env=os.environ.copy())
+                                        env=child_env)
             probe_path = branch_output / 'native_probe.pt'
             item = dict(spec=spec_name, branch=branch, command=command,
                         exit_code=result.returncode, elapsed_s=time.time() - started,

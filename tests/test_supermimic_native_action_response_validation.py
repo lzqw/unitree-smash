@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from scripts.validate_supermimic_native_action_response import (
-    _load_bounds, _response_errors, build_receipt,
+    _load_bounds, _response_errors, build_receipt, validate_native_sample_ids,
 )
 
 
@@ -74,3 +74,19 @@ def test_receipt_rejects_response_outside_declared_bound(tmp_path):
             response_errors=_response_errors(measured),models={'physical':model},
             contract={'asset':{'sha256':'asset'}},probe_path=probe,event_path=events,
             measured=measured,identity={'schema':'runtime'})
+
+
+def test_native_samples_must_belong_to_declared_validation_set(tmp_path):
+    probe=tmp_path/'probe.pt'; probe.write_bytes(b'probe')
+    events=tmp_path/'events.json'; events.write_text(json.dumps({'event_aligned_errors': {'contact_rmse': .1}}))
+    model=tmp_path/'model.pt'; model.write_bytes(b'model')
+    bounds=dict(schema='contact-validation-bounds-v1', thresholds_declared_before_validation=True,
+        limits=dict(native_repeat_max=.01,native_response_min=.001,response_rmse=1.,
+                    response_cosine_error_max=1.,response_relative_error_max=2.),
+        event_limits={'contact_rmse':1.}, minimum_paired_samples=1,
+        minimum_independent_validation_episodes=1, training_episode_ids=['train'],
+        validation_episode_ids=['valid'])
+    measured=dict(native_repeat_max=.001,response_rmse=.05,response_cosine=[.9],
+                  relative_error=[.2],count=1,sample_ids=['other'],passed=True,failures=[])
+    with pytest.raises(ValueError, match='validation episode set'):
+        validate_native_sample_ids(measured['sample_ids'], bounds['validation_episode_ids'])
