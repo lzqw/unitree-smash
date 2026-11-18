@@ -31,3 +31,11 @@ def test_missing_protected_metric_is_not_treated_as_zero():
     decision = compare_candidate_to_anchor(record(1.0), candidate)
     assert not decision['passed']
     assert any(row.get('status') == 'missing' for row in decision['failures'])
+
+
+def test_contact_gain_with_adjacent_impulse_is_rejected():
+    decision = compare_candidate_to_anchor(record(1.0, pre=1.0, post=.1),
+                                           record(.8, pre=1.0, post=.100001))
+    assert not decision['passed']
+    assert any(row['metric'] == 'event_aligned/1/1/ball_velocity_rmse'
+               for row in decision['failures'])

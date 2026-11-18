@@ -24,8 +24,12 @@ class MetricBound:
 DEFAULT_PROTECTED_METRICS = (
     MetricBound("event_aligned/0/1/ball_velocity_rmse"),
     MetricBound("event_aligned/0/1/ball_forward_sign_error", .01, .05),
-    MetricBound("event_aligned/-1/1/ball_velocity_rmse"),
-    MetricBound("event_aligned/1/1/ball_velocity_rmse", .01, .10),
+    # The event edge is a one-step timing contract.  A contact-edge gain is
+    # not admissible when it introduces any measurable pre/post impulse, so
+    # adjacent offsets use a strict non-degradation bound.  The absolute
+    # contact and longer-horizon metrics retain their calibrated tolerances.
+    MetricBound("event_aligned/-1/1/ball_velocity_rmse", 0., 0.),
+    MetricBound("event_aligned/1/1/ball_velocity_rmse", 0., 0.),
     MetricBound("event_aligned/0/4/ball_velocity_rmse", .03, .10),
 )
 
