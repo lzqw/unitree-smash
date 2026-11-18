@@ -68,3 +68,28 @@ def test_continuation_rejects_target_partial_or_reference_drift():
         if mode=='partial':record['trials'][0]['result']['path_valid']=False
         if mode=='reference':record['selected_arm_reference_rad'][-1,0]+=.01
         with pytest.raises(ValueError):fn(record,metadata,np.full(6,.1),np.arange(7,13))
+
+
+def test_projected_goal_rechecks_task_and_preserves_event_and_history():
+    import json, copy
+    from pathlib import Path
+    from scripts.refine_contact_event_v1 import projected_event_metadata
+    from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
+    from quadsmash.physics.full_racket_v4 import load_racket
+    record=json.loads(Path('reports/tracking_model_reserve_20261118/RESULTS.json').read_text())
+    projection=json.loads(Path('reports/task_goal_projection_20261118/RESULTS.json').read_text())
+    q=json.loads(Path('reports/push_off_task_20261118/DIAGNOSED.json').read_text())['rows'][0]['initial_q']
+    m=record['metadata'];before=copy.deepcopy(m)
+    impact=ImpactOutcomeEvaluator(m['task_physics'],m['task_court'],load_racket())
+    updated=projected_event_metadata(m,projection,q,impact)
+    assert m==before
+    for key in ('contact_index','contact_time_s','target_position_world_m','incoming_velocity_planning','contact_point_local','task_physics','task_court'):
+        assert updated[key]==m[key]
+    assert updated['retimed_task_margins']['valid']
+    assert not updated['robot_target_verified']
+    bad=copy.deepcopy(projection);bad['ball_world_m'][2]+=.001
+    with pytest.raises(ValueError,match='causal ball'):projected_event_metadata(m,bad,q,impact)
+    bad=copy.deepcopy(projection);bad['selected']['racket_velocity_world_m_s']=bad['incoming_world_m_s']
+    with pytest.raises(ValueError,match='forward task'):projected_event_metadata(m,bad,q,impact)
+    bad=copy.deepcopy(projection);bad['contact_time_s']+=.01
+    with pytest.raises(ValueError,match='event'):projected_event_metadata(m,bad,q,impact)

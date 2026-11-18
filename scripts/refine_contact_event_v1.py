@@ -65,8 +65,37 @@ def continued_event_reference(record,metadata,initial_reference,arm_q_indices):
     return trace,commands.copy(),reference
 
 
+def projected_event_metadata(metadata, projection, initial_q, impact):
+    """Explicit retarget after exact old-target/history restoration, never silent drift."""
+    q=np.asarray(initial_q,float)
+    if q.shape!=(25,) or not np.isfinite(q).all() or abs(np.linalg.norm(q[3:7])-1)>1e-6:
+        raise ValueError('Finite original root state required')
+    R=pin.Quaternion(q[3:7]).matrix()
+    ball=q[:3]+R@np.asarray(metadata['target_position_world_m'])
+    incoming=R@np.asarray(metadata['incoming_velocity_planning'])
+    if projection['contact_time_s']!=metadata['contact_time_s']:
+        raise ValueError('Projection event changed')
+    for key,expected in [('ball_world_m',ball),('incoming_world_m_s',incoming)]:
+        if not np.allclose(projection[key],expected,atol=1e-10,rtol=0):
+            raise ValueError('Projection causal ball changed')
+    normal=np.asarray(projection['selected']['normal_world'],float)
+    velocity=np.asarray(projection['selected']['racket_velocity_world_m_s'],float)
+    if any(x.shape!=(3,) or not np.isfinite(x).all() for x in (normal,velocity)) or abs(np.linalg.norm(normal)-1)>1e-8:
+        raise ValueError('Finite projected target and unit normal required')
+    forward=impact.evaluate(ball,incoming,ball-impact.physics['collision_radius_m']*normal,
+                           velocity,normal,metadata['contact_point_local'])
+    margins=task_margins(forward,impact.court)
+    if not margins['valid']:raise ValueError('Projected forward task rejected')
+    updated=copy.deepcopy(metadata)
+    updated.update(target_normal_world=R.T@normal,target_velocity_world_m_s=R.T@velocity,
+        retargeted_velocity_current_frame_m_s=R.T@velocity,retimed_forward_goal=forward,
+        retimed_task_margins=margins,robot_target_verified=False)
+    return updated
+
+
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);p.add_argument('--tracking-model-reserve',action='store_true');p.add_argument('--late-arm-rate',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);p.add_argument('--tracking-model-reserve',action='store_true');p.add_argument('--late-arm-rate',action='store_true');p.add_argument('--projected-goal',type=Path);a=p.parse_args()
+    if a.projected_goal is not None and a.previous_refinement is None:raise ValueError('Projected goal requires its complete source prefix')
     if a.tracking_model_reserve and (a.previous_refinement is None or not a.constrain_arm_tracking):raise ValueError('Tracking reserve requires a constrained verified predecessor')
     if a.output.exists():raise ValueError('Preserve all prior attempts')
     r=json.loads(a.event_source.read_text())
@@ -107,6 +136,19 @@ def main():
         trace,commands,reference=continued_event_reference(previous,metadata,reference[0],model.q_indices[12:])
         if a.tracking_model_reserve:reserve,reserve_audit=tracking_linearization_reserve(previous,model.q_indices[12:])
         input_paths.append(a.previous_refinement)
+    projection_audit=None
+    if a.projected_goal is not None:
+        projection=json.loads(a.projected_goal.read_text())
+        if hashlib.sha256(a.projected_goal.read_bytes()).hexdigest()!=a.projected_goal.with_suffix('.sha256').read_text().strip():
+            raise ValueError('Projection artifact hash mismatch')
+        if projection['prefix_sha256']!=hashlib.sha256(a.previous_refinement.read_bytes()).hexdigest():
+            raise ValueError('Projection prefix mismatch')
+        if projection['input_sha256']!=previous['input_sha256']:raise ValueError('Projection ancestry mismatch')
+        old_metadata=copy.deepcopy(metadata)
+        metadata=projected_event_metadata(metadata,projection,q,impact)
+        projection_audit=dict(original_metadata=old_metadata,source=str(a.projected_goal),
+            baseline_recomputed_under_new_goal=True,commands_changed_by_projection=False)
+        input_paths.append(a.projected_goal)
     geometry=AuthoredGroundClearance('configs/go2_piper_authored_ground_geometry_v1.json',model,margin_m=0.)
     predictor=ExperimentalSphereAdmissionV1(model,geometry,Path('reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json'))
     rollout_class=LateRateContactRollout if a.late_arm_rate else CoupledContactRollout
@@ -124,7 +166,7 @@ def main():
         amplitude_bounds=evaluator.amplitude_bounds(),linear_constraints=evaluator.combined_arm_constraints(),backtracking=True,protect_terminal_tasks=True,
         path_response_fn=(lambda result:arm_tracking_response(result,model.q_indices[12:],n)) if a.constrain_arm_tracking else None,path_response_reserve=reserve)
     selected=result['trials'][result['selected_index']]['result']
-    result.update(rate_window_ticks=evaluator.rate_window_ticks,tracking_model_reserve_audit=reserve_audit,constrain_arm_tracking=a.constrain_arm_tracking,seconds=time.perf_counter()-started,event_time_s=a.event_time,metadata=metadata,base_arm_reference_rad=reference,
+    result.update(projection_audit=projection_audit,rate_window_ticks=evaluator.rate_window_ticks,tracking_model_reserve_audit=reserve_audit,constrain_arm_tracking=a.constrain_arm_tracking,seconds=time.perf_counter()-started,event_time_s=a.event_time,metadata=metadata,base_arm_reference_rad=reference,
         selected_arm_reference_rad=np.vstack([reference[0],[t['planned_arm_reference_rad'] for t in selected['trajectory']]]),
         original_prefix_exact=True,input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in input_paths},
         native_execution=False,valid_teacher_reference=False)
