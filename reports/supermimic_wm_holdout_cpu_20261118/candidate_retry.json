@@ -1,0 +1,1698 @@
+{
+  "results": {
+    "initial": {
+      "checkpoint_sha256": {
+        "source": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+        "physical": "17a6577035bcf0832b544d692e493d6ef7b74bc7aa58b652461d43edd162381f",
+        "ball": "1935f10c3e085ce96a751bf39065fe38b8f046e8aaf17a0a778cc7d64db220ca",
+        "task": "e66be47371733822e3fc6dc1c22f00e4159fea72f7066bf4a579d44687e8331c",
+        "action_ball": "80f0610827342ed6ee85cc08176fd52463c034f4f75fa413b02421c0e2bd262d"
+      },
+      "errors": {
+        "1": {
+          "state_rmse": 0.29578256607055664,
+          "root_position_rmse": 0.0001422356435796246,
+          "orientation_rad": 0.0004273351514711976,
+          "angular_velocity_rmse": 0.05361156910657883,
+          "joint_velocity_rmse": 0.5165426135063171,
+          "ball_position_rmse": 0.0,
+          "ball_velocity_rmse": 2.2263699130803394e-12,
+          "ball_forward_sign_error": 0.0,
+          "ball_forward_sign_accuracy": 1.0,
+          "foot_contact_brier": 0.05065533518791199,
+          "body_ground_brier": 8.86538042976781e-09,
+          "task_event_brier": 5.913995515527404e-09,
+          "touchdown_matched": 0,
+          "touchdown_presence_mismatch": 0,
+          "touchdown_timing_mae_s": null,
+          "body_positive_count": 0,
+          "body_positive_brier": null,
+          "body_negative_count": 32,
+          "body_negative_brier": 8.86538042976781e-09,
+          "racket_position_rmse": 0.0007172498153522611,
+          "racket_velocity_rmse": 0.08890300244092941,
+          "racket_normal_error_rad": 0.001482720603235066
+        },
+        "4": {
+          "state_rmse": 0.28278931975364685,
+          "root_position_rmse": 0.00044247187906876206,
+          "orientation_rad": 0.0028634306509047747,
+          "angular_velocity_rmse": 0.08749159425497055,
+          "joint_velocity_rmse": 0.4928036332130432,
+          "ball_position_rmse": 0.0,
+          "ball_velocity_rmse": 2.2263699130803394e-12,
+          "ball_forward_sign_error": 0.0,
+          "ball_forward_sign_accuracy": 1.0,
+          "foot_contact_brier": 0.048090770840644836,
+          "body_ground_brier": 1.4594515107546613e-07,
+          "task_event_brier": 6.119377360391809e-08,
+          "touchdown_matched": 0,
+          "touchdown_presence_mismatch": 0,
+          "touchdown_timing_mae_s": null,
+          "body_positive_count": 0,
+          "body_positive_brier": null,
+          "body_negative_count": 32,
+          "body_negative_brier": 1.4594515107546613e-07,
+          "racket_position_rmse": 0.0024924082681536674,
+          "racket_velocity_rmse": 0.12898631393909454,
+          "racket_normal_error_rad": 0.005143368616700172
+        },
+        "16": {
+          "state_rmse": 0.3351380527019501,
+          "root_position_rmse": 0.0023446434643119574,
+          "orientation_rad": 0.007982233539223671,
+          "angular_velocity_rmse": 0.11074315011501312,
+          "joint_velocity_rmse": 0.5837555527687073,
+          "ball_position_rmse": 0.0,
+          "ball_velocity_rmse": 2.2263699130803394e-12,
+          "ball_forward_sign_error": 0.0,
+          "ball_forward_sign_accuracy": 1.0,
+          "foot_contact_brier": 0.037242643535137177,
+          "body_ground_brier": 1.7622933228267357e-06,
+          "task_event_brier": 7.565211035398534e-07,
+          "touchdown_matched": 0,
+          "touchdown_presence_mismatch": 0,
+          "touchdown_timing_mae_s": null,
+          "body_positive_count": 0,
+          "body_positive_brier": null,
+          "body_negative_count": 32,
+          "body_negative_brier": 1.7622933228267357e-06,
+          "racket_position_rmse": 0.008707037195563316,
+          "racket_velocity_rmse": 0.1495002806186676,
+          "racket_normal_error_rad": 0.010524071753025055
+        },
+        "32": {
+          "state_rmse": 0.3412020206451416,
+          "root_position_rmse": 0.004327103495597839,
+          "orientation_rad": 0.014143729582428932,
+          "angular_velocity_rmse": 0.10540381073951721,
+          "joint_velocity_rmse": 0.5944861173629761,
+          "ball_position_rmse": 0.0,
+          "ball_velocity_rmse": 2.2263699130803394e-12,
+          "ball_forward_sign_error": 0.0,
+          "ball_forward_sign_accuracy": 1.0,
+          "foot_contact_brier": 0.021612240001559258,
+          "body_ground_brier": 4.744420493807411e-06,
+          "task_event_brier": 3.008556859640521e-06,
+          "touchdown_matched": 0,
+          "touchdown_presence_mismatch": 0,
+          "touchdown_timing_mae_s": null,
+          "body_positive_count": 0,
+          "body_positive_brier": null,
+          "body_negative_count": 32,
+          "body_negative_brier": 4.744420493807411e-06,
+          "racket_position_rmse": 0.014176012948155403,
+          "racket_velocity_rmse": 0.14266978204250336,
+          "racket_normal_error_rad": 0.014626250602304935
+        },
+        "64": {
+          "state_rmse": 0.3589572310447693,
+          "root_position_rmse": 0.005619545467197895,
+          "orientation_rad": 0.021206507459282875,
+          "angular_velocity_rmse": 0.11507438868284225,
+          "joint_velocity_rmse": 0.6253440380096436,
+          "ball_position_rmse": 0.0,
+          "ball_velocity_rmse": 2.2263699130803394e-12,
+          "ball_forward_sign_error": 0.0,
+          "ball_forward_sign_accuracy": 1.0,
+          "foot_contact_brier": 0.019717205315828323,
+          "body_ground_brier": 1.4541477867169306e-05,
+          "task_event_brier": 1.2278790563868824e-05,
+          "touchdown_matched": 0,
+          "touchdown_presence_mismatch": 0,
+          "touchdown_timing_mae_s": null,
+          "body_positive_count": 0,
+          "body_positive_brier": null,
+          "body_negative_count": 32,
+          "body_negative_brier": 1.4541477867169306e-05,
+          "racket_position_rmse": 0.017565995454788208,
+          "racket_velocity_rmse": 0.11563066393136978,
+          "racket_normal_error_rad": 0.013811558485031128
+        }
+      },
+      "command_sensitivity": [
+        {
+          "joint": 12,
+          "robot_derivative_norm": 4.635047435760498,
+          "ball_derivative_norm": 0.0,
+          "scope": "model only; perturbs final targets; native slew/contact-cache replay not performed"
+        },
+        {
+          "joint": 13,
+          "robot_derivative_norm": 25.08196449279785,
+          "ball_derivative_norm": 0.0,
+          "scope": "model only; perturbs final targets; native slew/contact-cache replay not performed"
+        },
+        {
+          "joint": 14,
+          "robot_derivative_norm": 18.95187759399414,
+          "ball_derivative_norm": 0.0,
+          "scope": "model only; perturbs final targets; native slew/contact-cache replay not performed"
+        },
+        {
+          "joint": 15,
+          "robot_derivative_norm": 4.536777973175049,
+          "ball_derivative_norm": 0.0,
+          "scope": "model only; perturbs final targets; native slew/contact-cache replay not performed"
+        },
+        {
+          "joint": 16,
+          "robot_derivative_norm": 39.972618103027344,
+          "ball_derivative_norm": 0.0,
+          "scope": "model only; perturbs final targets; native slew/contact-cache replay not performed"
+        },
+        {
+          "joint": 17,
+          "robot_derivative_norm": 7.070029258728027,
+          "ball_derivative_norm": 0.0,
+          "scope": "model only; perturbs final targets; native slew/contact-cache replay not performed"
+        }
+      ],
+      "native_stage_groups": {
+        "contact": {
+          "windows": 0,
+          "errors": null
+        },
+        "touchdown": {
+          "windows": 0,
+          "errors": null
+        },
+        "recovery_failure": {
+          "windows": 0,
+          "errors": null
+        },
+        "stable_recovery": {
+          "windows": 0,
+          "errors": null
+        },
+        "contact_ball_side_pending": {
+          "windows": 0,
+          "errors": null
+        }
+      },
+      "event_aligned": {
+        "-4": {
+          "event_ticks": [
+            263,
+            265,
+            266,
+            266,
+            267,
+            267,
+            267,
+            267,
+            270,
+            270,
+            271,
+            271,
+            272,
+            272,
+            274,
+            275,
+            276,
+            277,
+            277,
+            278,
+            282,
+            282,
+            284
+          ],
+          "offset_control_ticks": -4,
+          "source": "native qualified-contact/frame latch edge, not substep timestamp",
+          "windows": 23,
+          "starts": [
+            [
+              259,
+              101
+            ],
+            [
+              261,
+              119
+            ],
+            [
+              262,
+              98
+            ],
+            [
+              262,
+              111
+            ],
+            [
+              263,
+              96
+            ],
+            [
+              263,
+              99
+            ],
+            [
+              263,
+              102
+            ],
+            [
+              263,
+              115
+            ],
+            [
+              266,
+              114
+            ],
+            [
+              266,
+              125
+            ],
+            [
+              267,
+              112
+            ],
+            [
+              267,
+              126
+            ],
+            [
+              268,
+              121
+            ],
+            [
+              268,
+              127
+            ],
+            [
+              270,
+              97
+            ],
+            [
+              271,
+              109
+            ],
+            [
+              272,
+              107
+            ],
+            [
+              273,
+              106
+            ],
+            [
+              273,
+              118
+            ],
+            [
+              274,
+              103
+            ],
+            [
+              278,
+              100
+            ],
+            [
+              278,
+              120
+            ],
+            [
+              280,
+              123
+            ]
+          ],
+          "errors": {
+            "1": {
+              "state_rmse": 0.4403708279132843,
+              "root_position_rmse": 0.00038080071681179106,
+              "orientation_rad": 0.0017665710765868425,
+              "angular_velocity_rmse": 0.1693301498889923,
+              "joint_velocity_rmse": 0.7125979661941528,
+              "ball_position_rmse": 0.0015198804903775454,
+              "ball_velocity_rmse": 0.6919621825218201,
+              "ball_forward_sign_error": 0.0,
+              "ball_forward_sign_accuracy": 1.0,
+              "foot_contact_brier": 4.112956048629712e-06,
+              "body_ground_brier": 1.4839858231141534e-09,
+              "task_event_brier": 4.712418740382418e-05,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 1.4839858231141534e-09,
+              "racket_position_rmse": 0.0014449795708060265,
+              "racket_velocity_rmse": 0.24432581663131714,
+              "racket_normal_error_rad": 0.003916808869689703
+            },
+            "4": {
+              "state_rmse": 0.9363405704498291,
+              "root_position_rmse": 0.0019878288730978966,
+              "orientation_rad": 0.009295322000980377,
+              "angular_velocity_rmse": 0.41903626918792725,
+              "joint_velocity_rmse": 0.9075357913970947,
+              "ball_position_rmse": 0.03972724825143814,
+              "ball_velocity_rmse": 3.3080222606658936,
+              "ball_forward_sign_error": 0.21739129722118378,
+              "ball_forward_sign_accuracy": 0.782608687877655,
+              "foot_contact_brier": 4.2620824387995526e-05,
+              "body_ground_brier": 1.0740522249363949e-08,
+              "task_event_brier": 0.003369403537362814,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 1.0740522249363949e-08,
+              "racket_position_rmse": 0.009487267583608627,
+              "racket_velocity_rmse": 0.6329377889633179,
+              "racket_normal_error_rad": 0.02514760196208954
+            },
+            "16": {
+              "state_rmse": 1.0117732286453247,
+              "root_position_rmse": 0.01155281625688076,
+              "orientation_rad": 0.03843278810381889,
+              "angular_velocity_rmse": 0.33979153633117676,
+              "joint_velocity_rmse": 1.4422612190246582,
+              "ball_position_rmse": 0.24990329146385193,
+              "ball_velocity_rmse": 2.465670585632324,
+              "ball_forward_sign_error": 0.21739129722118378,
+              "ball_forward_sign_accuracy": 0.782608687877655,
+              "foot_contact_brier": 0.00042802176903933287,
+              "body_ground_brier": 6.245400982152205e-06,
+              "task_event_brier": 0.11855720728635788,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 6.245400982152205e-06,
+              "racket_position_rmse": 0.04504750296473503,
+              "racket_velocity_rmse": 0.4852210581302643,
+              "racket_normal_error_rad": 0.06501401215791702
+            },
+            "32": {
+              "state_rmse": 1.2481645345687866,
+              "root_position_rmse": 0.0228581540286541,
+              "orientation_rad": 0.06318379938602448,
+              "angular_velocity_rmse": 0.27741649746894836,
+              "joint_velocity_rmse": 1.9272304773330688,
+              "ball_position_rmse": 0.6199153065681458,
+              "ball_velocity_rmse": 2.4027273654937744,
+              "ball_forward_sign_error": 0.30434781312942505,
+              "ball_forward_sign_accuracy": 0.695652186870575,
+              "foot_contact_brier": 0.02388966642320156,
+              "body_ground_brier": 0.0002105052990373224,
+              "task_event_brier": 0.12274524569511414,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 2,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 0.0002105052990373224,
+              "racket_position_rmse": 0.04851548373699188,
+              "racket_velocity_rmse": 0.5108562707901001,
+              "racket_normal_error_rad": 0.1104838103055954
+            },
+            "64": {
+              "state_rmse": 0.9044601321220398,
+              "root_position_rmse": 0.036785438656806946,
+              "orientation_rad": 0.10675074905157089,
+              "angular_velocity_rmse": 0.3624483644962311,
+              "joint_velocity_rmse": 1.0294508934020996,
+              "ball_position_rmse": 1.2256267070770264,
+              "ball_velocity_rmse": 2.633800506591797,
+              "ball_forward_sign_error": 0.3478260934352875,
+              "ball_forward_sign_accuracy": 0.6521739363670349,
+              "foot_contact_brier": 0.08781833201646805,
+              "body_ground_brier": 0.0010983181418851018,
+              "task_event_brier": 0.14865738153457642,
+              "touchdown_matched": 23,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": 0.012608695775270462,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 0.0010983181418851018,
+              "racket_position_rmse": 0.08711464703083038,
+              "racket_velocity_rmse": 0.3382054567337036,
+              "racket_normal_error_rad": 0.15587405860424042
+            }
+          }
+        },
+        "-1": {
+          "event_ticks": [
+            263,
+            265,
+            266,
+            266,
+            267,
+            267,
+            267,
+            267,
+            270,
+            270,
+            271,
+            271,
+            272,
+            272,
+            274,
+            275,
+            276,
+            277,
+            277,
+            278,
+            282,
+            282,
+            284
+          ],
+          "offset_control_ticks": -1,
+          "source": "native qualified-contact/frame latch edge, not substep timestamp",
+          "windows": 23,
+          "starts": [
+            [
+              262,
+              101
+            ],
+            [
+              264,
+              119
+            ],
+            [
+              265,
+              98
+            ],
+            [
+              265,
+              111
+            ],
+            [
+              266,
+              96
+            ],
+            [
+              266,
+              99
+            ],
+            [
+              266,
+              102
+            ],
+            [
+              266,
+              115
+            ],
+            [
+              269,
+              114
+            ],
+            [
+              269,
+              125
+            ],
+            [
+              270,
+              112
+            ],
+            [
+              270,
+              126
+            ],
+            [
+              271,
+              121
+            ],
+            [
+              271,
+              127
+            ],
+            [
+              273,
+              97
+            ],
+            [
+              274,
+              109
+            ],
+            [
+              275,
+              107
+            ],
+            [
+              276,
+              106
+            ],
+            [
+              276,
+              118
+            ],
+            [
+              277,
+              103
+            ],
+            [
+              281,
+              100
+            ],
+            [
+              281,
+              120
+            ],
+            [
+              283,
+              123
+            ]
+          ],
+          "errors": {
+            "1": {
+              "state_rmse": 0.8739743828773499,
+              "root_position_rmse": 0.0004583263071253896,
+              "orientation_rad": 0.0014485790161415935,
+              "angular_velocity_rmse": 0.32435187697410583,
+              "joint_velocity_rmse": 0.7360488176345825,
+              "ball_position_rmse": 0.011406484991312027,
+              "ball_velocity_rmse": 3.2628333568573,
+              "ball_forward_sign_error": 0.17391304671764374,
+              "ball_forward_sign_accuracy": 0.8260869383811951,
+              "foot_contact_brier": 3.998308329755673e-06,
+              "body_ground_brier": 4.0392400535438355e-10,
+              "task_event_brier": 0.0026284214109182358,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 4.0392400535438355e-10,
+              "racket_position_rmse": 0.002456594491377473,
+              "racket_velocity_rmse": 0.4173142910003662,
+              "racket_normal_error_rad": 0.0035995992366224527
+            },
+            "4": {
+              "state_rmse": 0.8950507044792175,
+              "root_position_rmse": 0.0020186249166727066,
+              "orientation_rad": 0.014844759367406368,
+              "angular_velocity_rmse": 0.4654109477996826,
+              "joint_velocity_rmse": 1.0341521501541138,
+              "ball_position_rmse": 0.06472446769475937,
+              "ball_velocity_rmse": 2.8352291584014893,
+              "ball_forward_sign_error": 0.30434781312942505,
+              "ball_forward_sign_accuracy": 0.695652186870575,
+              "foot_contact_brier": 4.2909847252303734e-05,
+              "body_ground_brier": 5.270820668812348e-09,
+              "task_event_brier": 0.08275947719812393,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 5.270820668812348e-09,
+              "racket_position_rmse": 0.01340054627507925,
+              "racket_velocity_rmse": 0.7876091003417969,
+              "racket_normal_error_rad": 0.029236365109682083
+            },
+            "16": {
+              "state_rmse": 1.085715651512146,
+              "root_position_rmse": 0.010250281542539597,
+              "orientation_rad": 0.04101630300283432,
+              "angular_velocity_rmse": 0.35187631845474243,
+              "joint_velocity_rmse": 1.5530169010162354,
+              "ball_position_rmse": 0.32956549525260925,
+              "ball_velocity_rmse": 2.62368106842041,
+              "ball_forward_sign_error": 0.30434781312942505,
+              "ball_forward_sign_accuracy": 0.695652186870575,
+              "foot_contact_brier": 0.0004367416840977967,
+              "body_ground_brier": 2.777760073513491e-06,
+              "task_event_brier": 0.10920518636703491,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 2.777760073513491e-06,
+              "racket_position_rmse": 0.03871169686317444,
+              "racket_velocity_rmse": 0.5601821541786194,
+              "racket_normal_error_rad": 0.06794784218072891
+            },
+            "32": {
+              "state_rmse": 1.8492627143859863,
+              "root_position_rmse": 0.019297229126095772,
+              "orientation_rad": 0.06508314609527588,
+              "angular_velocity_rmse": 0.29730334877967834,
+              "joint_velocity_rmse": 3.0460450649261475,
+              "ball_position_rmse": 0.7308774590492249,
+              "ball_velocity_rmse": 2.5226025581359863,
+              "ball_forward_sign_error": 0.30434781312942505,
+              "ball_forward_sign_accuracy": 0.695652186870575,
+              "foot_contact_brier": 0.08637027442455292,
+              "body_ground_brier": 0.00027775426860898733,
+              "task_event_brier": 0.11060560494661331,
+              "touchdown_matched": 7,
+              "touchdown_presence_mismatch": 6,
+              "touchdown_timing_mae_s": 0.009999999776482582,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 0.00027775426860898733,
+              "racket_position_rmse": 0.04998571425676346,
+              "racket_velocity_rmse": 0.5696620941162109,
+              "racket_normal_error_rad": 0.100979745388031
+            },
+            "64": {
+              "state_rmse": 0.9328039884567261,
+              "root_position_rmse": 0.034480661153793335,
+              "orientation_rad": 0.10129676014184952,
+              "angular_velocity_rmse": 0.395546019077301,
+              "joint_velocity_rmse": 1.1078780889511108,
+              "ball_position_rmse": 1.3840465545654297,
+              "ball_velocity_rmse": 2.539876937866211,
+              "ball_forward_sign_error": 0.260869562625885,
+              "ball_forward_sign_accuracy": 0.739130437374115,
+              "foot_contact_brier": 0.12218531221151352,
+              "body_ground_brier": 0.0017262838082388043,
+              "task_event_brier": 0.1366792619228363,
+              "touchdown_matched": 23,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": 0.01304347813129425,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 0.0017262838082388043,
+              "racket_position_rmse": 0.0824718251824379,
+              "racket_velocity_rmse": 0.4276830554008484,
+              "racket_normal_error_rad": 0.1511356234550476
+            }
+          }
+        },
+        "0": {
+          "event_ticks": [
+            263,
+            265,
+            266,
+            266,
+            267,
+            267,
+            267,
+            267,
+            270,
+            270,
+            271,
+            271,
+            272,
+            272,
+            274,
+            275,
+            276,
+            277,
+            277,
+            278,
+            282,
+            282,
+            284
+          ],
+          "offset_control_ticks": 0,
+          "source": "native qualified-contact/frame latch edge, not substep timestamp",
+          "windows": 23,
+          "starts": [
+            [
+              263,
+              101
+            ],
+            [
+              265,
+              119
+            ],
+            [
+              266,
+              98
+            ],
+            [
+              266,
+              111
+            ],
+            [
+              267,
+              96
+            ],
+            [
+              267,
+              99
+            ],
+            [
+              267,
+              102
+            ],
+            [
+              267,
+              115
+            ],
+            [
+              270,
+              114
+            ],
+            [
+              270,
+              125
+            ],
+            [
+              271,
+              112
+            ],
+            [
+              271,
+              126
+            ],
+            [
+              272,
+              121
+            ],
+            [
+              272,
+              127
+            ],
+            [
+              274,
+              97
+            ],
+            [
+              275,
+              109
+            ],
+            [
+              276,
+              107
+            ],
+            [
+              277,
+              106
+            ],
+            [
+              277,
+              118
+            ],
+            [
+              278,
+              103
+            ],
+            [
+              282,
+              100
+            ],
+            [
+              282,
+              120
+            ],
+            [
+              284,
+              123
+            ]
+          ],
+          "errors": {
+            "1": {
+              "state_rmse": 0.8024231791496277,
+              "root_position_rmse": 0.0004362393810879439,
+              "orientation_rad": 0.001168181886896491,
+              "angular_velocity_rmse": 0.40036824345588684,
+              "joint_velocity_rmse": 0.907122790813446,
+              "ball_position_rmse": 0.011866762302815914,
+              "ball_velocity_rmse": 2.5894627571105957,
+              "ball_forward_sign_error": 0.30434781312942505,
+              "ball_forward_sign_accuracy": 0.695652186870575,
+              "foot_contact_brier": 4.00256431021262e-06,
+              "body_ground_brier": 2.8280966457572276e-10,
+              "task_event_brier": 0.08511882275342941,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 2.8280966457572276e-10,
+              "racket_position_rmse": 0.002826338866725564,
+              "racket_velocity_rmse": 0.6090747117996216,
+              "racket_normal_error_rad": 0.004658432677388191
+            },
+            "4": {
+              "state_rmse": 0.8500750064849854,
+              "root_position_rmse": 0.0018025561003014445,
+              "orientation_rad": 0.017249820753932,
+              "angular_velocity_rmse": 0.4636829197406769,
+              "joint_velocity_rmse": 1.1095759868621826,
+              "ball_position_rmse": 0.07023129612207413,
+              "ball_velocity_rmse": 2.3728952407836914,
+              "ball_forward_sign_error": 0.21739129722118378,
+              "ball_forward_sign_accuracy": 0.782608687877655,
+              "foot_contact_brier": 4.321796222939156e-05,
+              "body_ground_brier": 5.045265094594242e-09,
+              "task_event_brier": 0.0680871307849884,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 5.045265094594242e-09,
+              "racket_position_rmse": 0.013189024291932583,
+              "racket_velocity_rmse": 0.7092485427856445,
+              "racket_normal_error_rad": 0.024767184630036354
+            },
+            "16": {
+              "state_rmse": 0.9200090765953064,
+              "root_position_rmse": 0.009756852872669697,
+              "orientation_rad": 0.03821011632680893,
+              "angular_velocity_rmse": 0.33181217312812805,
+              "joint_velocity_rmse": 1.3061802387237549,
+              "ball_position_rmse": 0.31030213832855225,
+              "ball_velocity_rmse": 2.247692823410034,
+              "ball_forward_sign_error": 0.30434781312942505,
+              "ball_forward_sign_accuracy": 0.695652186870575,
+              "foot_contact_brier": 0.0004384097410365939,
+              "body_ground_brier": 3.791804147112998e-06,
+              "task_event_brier": 0.09710772335529327,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 3.791804147112998e-06,
+              "racket_position_rmse": 0.037467993795871735,
+              "racket_velocity_rmse": 0.5019892454147339,
+              "racket_normal_error_rad": 0.07110083848237991
+            },
+            "32": {
+              "state_rmse": 1.9867298603057861,
+              "root_position_rmse": 0.018027547746896744,
+              "orientation_rad": 0.06530427187681198,
+              "angular_velocity_rmse": 0.3264106512069702,
+              "joint_velocity_rmse": 3.341015100479126,
+              "ball_position_rmse": 0.6503521203994751,
+              "ball_velocity_rmse": 2.194319725036621,
+              "ball_forward_sign_error": 0.30434781312942505,
+              "ball_forward_sign_accuracy": 0.695652186870575,
+              "foot_contact_brier": 0.11642350256443024,
+              "body_ground_brier": 0.00021731076412834227,
+              "task_event_brier": 0.09788636863231659,
+              "touchdown_matched": 12,
+              "touchdown_presence_mismatch": 9,
+              "touchdown_timing_mae_s": 0.010833333246409893,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 0.00021731076412834227,
+              "racket_position_rmse": 0.05328312888741493,
+              "racket_velocity_rmse": 0.5573092699050903,
+              "racket_normal_error_rad": 0.09046868979930878
+            },
+            "64": {
+              "state_rmse": 0.9080324769020081,
+              "root_position_rmse": 0.03269102796912193,
+              "orientation_rad": 0.1053944081068039,
+              "angular_velocity_rmse": 0.40468528866767883,
+              "joint_velocity_rmse": 1.0781280994415283,
+              "ball_position_rmse": 1.2854865789413452,
+              "ball_velocity_rmse": 2.502807378768921,
+              "ball_forward_sign_error": 0.30434781312942505,
+              "ball_forward_sign_accuracy": 0.695652186870575,
+              "foot_contact_brier": 0.0779440626502037,
+              "body_ground_brier": 0.001864024787209928,
+              "task_event_brier": 0.12466820329427719,
+              "touchdown_matched": 23,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": 0.013478260487318039,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 0.001864024787209928,
+              "racket_position_rmse": 0.08070090413093567,
+              "racket_velocity_rmse": 0.4361158311367035,
+              "racket_normal_error_rad": 0.1451166570186615
+            }
+          }
+        },
+        "1": {
+          "event_ticks": [
+            263,
+            265,
+            266,
+            266,
+            267,
+            267,
+            267,
+            267,
+            270,
+            270,
+            271,
+            271,
+            272,
+            272,
+            274,
+            275,
+            276,
+            277,
+            277,
+            278,
+            282,
+            282,
+            284
+          ],
+          "offset_control_ticks": 1,
+          "source": "native qualified-contact/frame latch edge, not substep timestamp",
+          "windows": 23,
+          "starts": [
+            [
+              264,
+              101
+            ],
+            [
+              266,
+              119
+            ],
+            [
+              267,
+              98
+            ],
+            [
+              267,
+              111
+            ],
+            [
+              268,
+              96
+            ],
+            [
+              268,
+              99
+            ],
+            [
+              268,
+              102
+            ],
+            [
+              268,
+              115
+            ],
+            [
+              271,
+              114
+            ],
+            [
+              271,
+              125
+            ],
+            [
+              272,
+              112
+            ],
+            [
+              272,
+              126
+            ],
+            [
+              273,
+              121
+            ],
+            [
+              273,
+              127
+            ],
+            [
+              275,
+              97
+            ],
+            [
+              276,
+              109
+            ],
+            [
+              277,
+              107
+            ],
+            [
+              278,
+              106
+            ],
+            [
+              278,
+              118
+            ],
+            [
+              279,
+              103
+            ],
+            [
+              283,
+              100
+            ],
+            [
+              283,
+              120
+            ],
+            [
+              285,
+              123
+            ]
+          ],
+          "errors": {
+            "1": {
+              "state_rmse": 0.6912248134613037,
+              "root_position_rmse": 0.00045456262887455523,
+              "orientation_rad": 0.00496061984449625,
+              "angular_velocity_rmse": 0.43554696440696716,
+              "joint_velocity_rmse": 1.194875955581665,
+              "ball_position_rmse": 0.000728579587303102,
+              "ball_velocity_rmse": 0.04350830242037773,
+              "ball_forward_sign_error": 0.0,
+              "ball_forward_sign_accuracy": 1.0,
+              "foot_contact_brier": 4.11921837439877e-06,
+              "body_ground_brier": 4.649079787810706e-09,
+              "task_event_brier": 0.00011040519166272134,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 4.649079787810706e-09,
+              "racket_position_rmse": 0.002864603651687503,
+              "racket_velocity_rmse": 0.2733753025531769,
+              "racket_normal_error_rad": 0.006011465098708868
+            },
+            "4": {
+              "state_rmse": 0.7530912160873413,
+              "root_position_rmse": 0.0016866145888343453,
+              "orientation_rad": 0.01818479225039482,
+              "angular_velocity_rmse": 0.390287846326828,
+              "joint_velocity_rmse": 1.3020732402801514,
+              "ball_position_rmse": 0.005478010047227144,
+              "ball_velocity_rmse": 0.24226601421833038,
+              "ball_forward_sign_error": 0.0,
+              "ball_forward_sign_accuracy": 1.0,
+              "foot_contact_brier": 4.4143860577605665e-05,
+              "body_ground_brier": 5.7036885436900775e-08,
+              "task_event_brier": 0.0036139225121587515,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 5.7036885436900775e-08,
+              "racket_position_rmse": 0.008593740873038769,
+              "racket_velocity_rmse": 0.5549381971359253,
+              "racket_normal_error_rad": 0.02399192936718464
+            },
+            "16": {
+              "state_rmse": 0.763270378112793,
+              "root_position_rmse": 0.009769979864358902,
+              "orientation_rad": 0.03805426508188248,
+              "angular_velocity_rmse": 0.30400338768959045,
+              "joint_velocity_rmse": 1.2218173742294312,
+              "ball_position_rmse": 0.10040106624364853,
+              "ball_velocity_rmse": 1.2644155025482178,
+              "ball_forward_sign_error": 0.08695652335882187,
+              "ball_forward_sign_accuracy": 0.9130434989929199,
+              "foot_contact_brier": 0.00044404767686501145,
+              "body_ground_brier": 1.3291000868775882e-06,
+              "task_event_brier": 0.027627043426036835,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 1.3291000868775882e-06,
+              "racket_position_rmse": 0.030656931921839714,
+              "racket_velocity_rmse": 0.4130268394947052,
+              "racket_normal_error_rad": 0.06662637740373611
+            },
+            "32": {
+              "state_rmse": 1.4984855651855469,
+              "root_position_rmse": 0.015728408470749855,
+              "orientation_rad": 0.060643862932920456,
+              "angular_velocity_rmse": 0.3582899570465088,
+              "joint_velocity_rmse": 2.5564281940460205,
+              "ball_position_rmse": 0.30013591051101685,
+              "ball_velocity_rmse": 1.2934423685073853,
+              "ball_forward_sign_error": 0.17391304671764374,
+              "ball_forward_sign_accuracy": 0.8260869383811951,
+              "foot_contact_brier": 0.07921436429023743,
+              "body_ground_brier": 0.0002445251157041639,
+              "task_event_brier": 0.029297541826963425,
+              "touchdown_matched": 18,
+              "touchdown_presence_mismatch": 4,
+              "touchdown_timing_mae_s": 0.012222222052514553,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 0.0002445251157041639,
+              "racket_position_rmse": 0.05066037178039551,
+              "racket_velocity_rmse": 0.459246426820755,
+              "racket_normal_error_rad": 0.08536028116941452
+            },
+            "64": {
+              "state_rmse": 0.8199227452278137,
+              "root_position_rmse": 0.03225268796086311,
+              "orientation_rad": 0.10991334170103073,
+              "angular_velocity_rmse": 0.4400811493396759,
+              "joint_velocity_rmse": 1.1373084783554077,
+              "ball_position_rmse": 0.693986713886261,
+              "ball_velocity_rmse": 1.956553339958191,
+              "ball_forward_sign_error": 0.17391304671764374,
+              "ball_forward_sign_accuracy": 0.8260869383811951,
+              "foot_contact_brier": 0.07487163692712784,
+              "body_ground_brier": 0.0045834253542125225,
+              "task_event_brier": 0.056940194219350815,
+              "touchdown_matched": 23,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": 0.01434782613068819,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 0.0045834253542125225,
+              "racket_position_rmse": 0.07999582588672638,
+              "racket_velocity_rmse": 0.47996678948402405,
+              "racket_normal_error_rad": 0.13562622666358948
+            }
+          }
+        },
+        "4": {
+          "event_ticks": [
+            263,
+            265,
+            266,
+            266,
+            267,
+            267,
+            267,
+            267,
+            270,
+            270,
+            271,
+            271,
+            272,
+            272,
+            274,
+            275,
+            276,
+            277,
+            277,
+            278,
+            282,
+            282,
+            284
+          ],
+          "offset_control_ticks": 4,
+          "source": "native qualified-contact/frame latch edge, not substep timestamp",
+          "windows": 23,
+          "starts": [
+            [
+              267,
+              101
+            ],
+            [
+              269,
+              119
+            ],
+            [
+              270,
+              98
+            ],
+            [
+              270,
+              111
+            ],
+            [
+              271,
+              96
+            ],
+            [
+              271,
+              99
+            ],
+            [
+              271,
+              102
+            ],
+            [
+              271,
+              115
+            ],
+            [
+              274,
+              114
+            ],
+            [
+              274,
+              125
+            ],
+            [
+              275,
+              112
+            ],
+            [
+              275,
+              126
+            ],
+            [
+              276,
+              121
+            ],
+            [
+              276,
+              127
+            ],
+            [
+              278,
+              97
+            ],
+            [
+              279,
+              109
+            ],
+            [
+              280,
+              107
+            ],
+            [
+              281,
+              106
+            ],
+            [
+              281,
+              118
+            ],
+            [
+              282,
+              103
+            ],
+            [
+              286,
+              100
+            ],
+            [
+              286,
+              120
+            ],
+            [
+              288,
+              123
+            ]
+          ],
+          "errors": {
+            "1": {
+              "state_rmse": 0.6484695076942444,
+              "root_position_rmse": 0.0003920513263437897,
+              "orientation_rad": 0.003835440380498767,
+              "angular_velocity_rmse": 0.3052870035171509,
+              "joint_velocity_rmse": 1.1264479160308838,
+              "ball_position_rmse": 0.0002734581648837775,
+              "ball_velocity_rmse": 0.04355103522539139,
+              "ball_forward_sign_error": 0.0,
+              "ball_forward_sign_accuracy": 1.0,
+              "foot_contact_brier": 3.962065875384724e-06,
+              "body_ground_brier": 1.7841650379324392e-09,
+              "task_event_brier": 0.00031226419378072023,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 1.7841650379324392e-09,
+              "racket_position_rmse": 0.0024531763046979904,
+              "racket_velocity_rmse": 0.3189855217933655,
+              "racket_normal_error_rad": 0.0044396365992724895
+            },
+            "4": {
+              "state_rmse": 0.7543535828590393,
+              "root_position_rmse": 0.0016694803489372134,
+              "orientation_rad": 0.010274114087224007,
+              "angular_velocity_rmse": 0.36259138584136963,
+              "joint_velocity_rmse": 1.3061916828155518,
+              "ball_position_rmse": 0.004855648148804903,
+              "ball_velocity_rmse": 0.22898973524570465,
+              "ball_forward_sign_error": 0.0,
+              "ball_forward_sign_accuracy": 1.0,
+              "foot_contact_brier": 4.4417993194656447e-05,
+              "body_ground_brier": 4.45119958669693e-08,
+              "task_event_brier": 0.01348623726516962,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 4.45119958669693e-08,
+              "racket_position_rmse": 0.007660784758627415,
+              "racket_velocity_rmse": 0.43556076288223267,
+              "racket_normal_error_rad": 0.027784379199147224
+            },
+            "16": {
+              "state_rmse": 0.8231833577156067,
+              "root_position_rmse": 0.0075752087868750095,
+              "orientation_rad": 0.0399920828640461,
+              "angular_velocity_rmse": 0.20885832607746124,
+              "joint_velocity_rmse": 1.3477413654327393,
+              "ball_position_rmse": 0.11821166425943375,
+              "ball_velocity_rmse": 1.201488971710205,
+              "ball_forward_sign_error": 0.1304347813129425,
+              "ball_forward_sign_accuracy": 0.8695651888847351,
+              "foot_contact_brier": 0.00043277328950352967,
+              "body_ground_brier": 4.770976374857128e-06,
+              "task_event_brier": 0.026870639994740486,
+              "touchdown_matched": 0,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": null,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 4.770976374857128e-06,
+              "racket_position_rmse": 0.03824514523148537,
+              "racket_velocity_rmse": 0.35059458017349243,
+              "racket_normal_error_rad": 0.08033642172813416
+            },
+            "32": {
+              "state_rmse": 2.101691484451294,
+              "root_position_rmse": 0.017255304381251335,
+              "orientation_rad": 0.0630972683429718,
+              "angular_velocity_rmse": 0.6641889810562134,
+              "joint_velocity_rmse": 3.6147079467773438,
+              "ball_position_rmse": 0.3109382390975952,
+              "ball_velocity_rmse": 1.2814116477966309,
+              "ball_forward_sign_error": 0.17391304671764374,
+              "ball_forward_sign_accuracy": 0.8260869383811951,
+              "foot_contact_brier": 0.10061043500900269,
+              "body_ground_brier": 0.00034819773281924427,
+              "task_event_brier": 0.027706550434231758,
+              "touchdown_matched": 23,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": 0.013913043774664402,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 0.00034819773281924427,
+              "racket_position_rmse": 0.05241861194372177,
+              "racket_velocity_rmse": 0.850696325302124,
+              "racket_normal_error_rad": 0.1047518327832222
+            },
+            "64": {
+              "state_rmse": 0.8937138915061951,
+              "root_position_rmse": 0.03432617336511612,
+              "orientation_rad": 0.1149693951010704,
+              "angular_velocity_rmse": 0.4994789958000183,
+              "joint_velocity_rmse": 1.2904164791107178,
+              "ball_position_rmse": 0.7043883204460144,
+              "ball_velocity_rmse": 1.9614406824111938,
+              "ball_forward_sign_error": 0.21739129722118378,
+              "ball_forward_sign_accuracy": 0.782608687877655,
+              "foot_contact_brier": 0.12166944891214371,
+              "body_ground_brier": 0.006886690855026245,
+              "task_event_brier": 0.05535247176885605,
+              "touchdown_matched": 23,
+              "touchdown_presence_mismatch": 0,
+              "touchdown_timing_mae_s": 0.013913043774664402,
+              "body_positive_count": 0,
+              "body_positive_brier": null,
+              "body_negative_count": 23,
+              "body_negative_brier": 0.006886690855026245,
+              "racket_position_rmse": 0.08271733671426773,
+              "racket_velocity_rmse": 0.540109395980835,
+              "racket_normal_error_rad": 0.1481620818376541
+            }
+          }
+        }
+      }
+    }
+  },
+  "window_starts": [
+    [
+      0,
+      96
+    ],
+    [
+      2,
+      96
+    ],
+    [
+      4,
+      96
+    ],
+    [
+      6,
+      96
+    ],
+    [
+      8,
+      96
+    ],
+    [
+      10,
+      96
+    ],
+    [
+      12,
+      96
+    ],
+    [
+      14,
+      96
+    ],
+    [
+      16,
+      96
+    ],
+    [
+      18,
+      96
+    ],
+    [
+      20,
+      96
+    ],
+    [
+      22,
+      96
+    ],
+    [
+      24,
+      96
+    ],
+    [
+      26,
+      96
+    ],
+    [
+      28,
+      96
+    ],
+    [
+      30,
+      96
+    ],
+    [
+      32,
+      96
+    ],
+    [
+      34,
+      96
+    ],
+    [
+      36,
+      96
+    ],
+    [
+      38,
+      96
+    ],
+    [
+      40,
+      96
+    ],
+    [
+      42,
+      96
+    ],
+    [
+      44,
+      96
+    ],
+    [
+      46,
+      96
+    ],
+    [
+      48,
+      96
+    ],
+    [
+      50,
+      96
+    ],
+    [
+      52,
+      96
+    ],
+    [
+      54,
+      96
+    ],
+    [
+      56,
+      96
+    ],
+    [
+      58,
+      96
+    ],
+    [
+      60,
+      96
+    ],
+    [
+      62,
+      96
+    ]
+  ],
+  "split": {
+    "train_lanes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95
+    ],
+    "validation_lanes": [
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127
+    ]
+  },
+  "packed_sha256": "03463185ebcb5a211e0ee458edee10a1e577fbdd5f17c59934f7fae6a89a4295",
+  "native_simulation": false,
+  "limitations": [
+    "Split manifest must match fitting provenance; this script cannot certify unseen training data.",
+    "Recorded final-command autoregression is not closed-loop policy evaluation.",
+    "No PhysX action perturbation evidence; native success is not inferred."
+  ]
+}
