@@ -5,7 +5,7 @@ Task adaptation: measured final-command finite differences supplement native
 point/multistep supervision. This is not an Actor update, a native scoring run,
 or a passing evidence receipt. No counterfactual response is synthesized.
 """
-import argparse,hashlib,json,subprocess,sys,time,traceback
+import argparse,copy,hashlib,json,subprocess,sys,time,traceback
 from pathlib import Path
 import torch
 from quadsmash.rl.supermimic_native_response_data_v1 import load_response_data,normalized_response_loss
@@ -107,6 +107,32 @@ def response_summary(base,ball,sweep,pairs,lanes):
           for b in ('minus','plus') if 'next_feet_'+b in p}
     return dict(rows=rows,count=len(rows),saturated_count=int((command<1e-6).sum()),foot_contact=foot,
                 scope='all declared lanes reported; zero responses are not successful gradient probes')
+
+
+def native_ball_response_validation(base,ball,sweep,pair_sets,lanes):
+    """Score measured ball response on lanes excluded from fitting.
+
+    Only rows with a non-zero measured ball response are scored.  A validation
+    set containing no such rows is explicitly unusable, rather than silently
+    making a candidate look good because both predictions are zero.
+    """
+    errors=[]
+    for pair in pair_sets:
+        p={k:v[lanes] for k,v in pair.items()}
+        other=[p[k] for k in ('previous_action','feet','present','elapsed','launch')]
+        with torch.no_grad():
+            minus=forward(base,ball,sweep,p['state'],p['target_minus'],other)[0]
+            plus=forward(base,ball,sweep,p['state'],p['target_plus'],other)[0]
+        measured=p['next_plus'][:,52:55]-p['next_minus'][:,52:55]
+        predicted=plus[:,52:55]-minus[:,52:55]
+        mask=measured.norm(dim=-1)>1e-7
+        if mask.any():
+            errors.append(((predicted[mask]-measured[mask])/2.).square().mean())
+    if not errors:
+        return float('inf'),0
+    return float(torch.stack(errors).mean().item()),sum(int(x.numel()) for x in [
+        (p['next_plus'][lanes,52:55]-p['next_minus'][lanes,52:55]).norm(dim=-1)>1e-7
+        for p in pair_sets])
 
 
 def main(a):
@@ -273,6 +299,12 @@ def main(a):
     opt=torch.optim.Adam(parameters,lr=2e-4)
     generator=torch.Generator().manual_seed(20261118)
     other_sets=[[data[k][train] for k in ('previous_action','feet','present','elapsed','launch')] for data in pair_sets]
+    best_validation_score=float('inf')
+    best_validation_update=0
+    best_validation_rows=0
+    best_model_state=None
+    best_optimizer_state=None
+    validation_history=[]
     for update in range(256):
         begin=time.perf_counter()
         selected,source_sampling=draw_source_windows(source_pools,config['sampling'],generator)
@@ -332,8 +364,36 @@ def main(a):
                    ball_gate_gradient=ball_gate_gradient,repair_ball_gate=bool(a.repair_ball_gate),
                    contact_loss=float(contact_loss.detach()),foot_contact_gradient=foot_contact_gradient,
                    repair_foot_contact=bool(a.repair_foot_contact))
+        if (update+1)%16==0 or update==255:
+            validation_score,validation_rows=native_ball_response_validation(
+                base,ball,sweep,pair_sets,val)
+            validation_record=dict(update=update+1,score=validation_score,
+                                   nonzero_native_ball_rows=validation_rows)
+            validation_history.append(validation_record)
+            row['native_ball_response_validation']=validation_record
+            if validation_rows>0 and validation_score<best_validation_score:
+                best_validation_score=validation_score
+                best_validation_update=update+1
+                best_validation_rows=validation_rows
+                best_model_state=dict(
+                    base=copy.deepcopy(base.state_dict()),
+                    ball=copy.deepcopy(ball.state_dict()),
+                    sweep=copy.deepcopy(sweep.state_dict()))
+                best_optimizer_state=copy.deepcopy(opt.state_dict())
         with (a.output/'history.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
         if update%16==0 or update==255:print(json.dumps(row),flush=True)
+    if best_model_state is None:
+        raise RuntimeError('Native response validation had no nonzero held-out ball response rows')
+    base.load_state_dict(best_model_state['base'],strict=True)
+    ball.load_state_dict(best_model_state['ball'],strict=True)
+    sweep.load_state_dict(best_model_state['sweep'],strict=True)
+    if best_optimizer_state is not None:
+        opt.load_state_dict(best_optimizer_state)
+    config['native_ball_response_validation_history']=validation_history
+    config['best_validation_update']=best_validation_update
+    config['best_native_ball_response_validation']=best_validation_score
+    config['best_native_ball_response_rows']=best_validation_rows
+    dump(a.output/'config.json',config)
     contact_changed=tensor_digest(base.contact.state_dict().items())!=contact_hash
     if contact_changed and not a.repair_foot_contact:
         raise RuntimeError('Frozen contact changed')
@@ -377,6 +437,9 @@ def main(a):
         repair_ball_gate=bool(a.repair_ball_gate),
         repair_foot_contact=bool(a.repair_foot_contact),foot_contact_parameters_changed=contact_changed,
         adjacent_step_non_degradation=admission,native_admission=False,
+        best_validation_update=best_validation_update,
+        best_native_ball_response_validation=best_validation_score,
+        best_native_ball_response_rows=best_validation_rows,
         elapsed_s=time.perf_counter()-started,peak_gpu_bytes=torch.cuda.max_memory_allocated(),
         scope='one bounded calibrated candidate; no optimizer/policy promotion; independent Recovery and broader contact checks still required'))
 
