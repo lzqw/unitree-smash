@@ -1,5 +1,13 @@
 # World-model accuracy repair
 
+## Reproducibility
+
+- Git commit: `7391564409c64b7d805bec824d17e45f88a85111`
+- Branch: `feat/supermimic-native-physical-loop-20261114`
+- Worktree: clean after the commit was pushed.
+- Interpreter: `/home/autodrive/Isaac/env_isaaclab/bin/python`
+- Torch: `2.7.0+cu128`
+
 ## Code changes
 
 - `fit_supermimic_action_ball.py` now optimizes every trainable parameter in the selected action-ball model. This includes the material/inertia `mechanical_head` used by V4/V5/V6 candidates.
@@ -24,10 +32,27 @@ This confirms the new loss path runs on real data and that the event-safety rule
 ## Tests
 
 - `tests/test_supermimic_action_ball_fit.py` and `tests/test_supermimic_action_ball_v1.py`: 13 passed.
+- The combined targeted contract set passed: 63 passed, 0 failed, 0 skipped.
 - Python syntax check: passed.
+
+The command used for the combined set was:
+
+```text
+python -m pytest -q -ra --maxfail=1 \
+  tests/test_supermimic_indexed_references.py \
+  tests/test_supermimic_success_inventory.py \
+  tests/test_supermimic_success_guided_reference_v1.py \
+  tests/test_supermimic_action_ball_fit.py \
+  tests/test_supermimic_action_ball_v1.py \
+  tests/test_supermimic_wm_candidate_gate_v1.py \
+  tests/test_supermimic_probe_region.py \
+  tests/test_supermimic_native_response_data.py \
+  tests/test_supermimic_batch_probe.py \
+  tests/test_supermimic_large_training_contracts.py
+```
 
 ## Remaining validation
 
-The fitted candidate still lacks same-prefix PhysX action perturbation evidence. CUDA is unavailable on this host, so no native event-aligned probe, GPU fit, actor update, or R→A→R canary was run.
+The fitted candidate still lacks same-prefix PhysX action perturbation evidence. The current host reports `nvidia-smi` exit code 9, `torch.cuda.is_available() == False`, and zero CUDA devices. No native event-aligned probe, GPU fit, actor update, or R→A→R canary was run.
 
 Large-scale training remains stopped until the driver is restored and the repaired candidate passes independent event-aligned holdout plus native response-direction validation.
