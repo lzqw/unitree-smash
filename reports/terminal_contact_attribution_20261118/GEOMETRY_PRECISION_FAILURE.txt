@@ -1,0 +1,38 @@
+...F..........................                                           [100%]
+=================================== FAILURES ===================================
+_____ test_loaded_model_matches_geometry_used_for_conservative_reach_bound _____
+
+    def test_loaded_model_matches_geometry_used_for_conservative_reach_bound():
+        from quadsmash.control.full_racket_geometry_v4 import FullRacketGeometryV4
+        model=LoadedPinocchioModelV1();geometry=FullRacketGeometryV4()
+        offset=np.array([.0256,.003,.07])
+        for angles in ([.2,.4,-.8,.3,.5,-.2],[-.7,1.1,-1.2,.8,.9,1.7]):
+            q=pin.neutral(model.model);q[model.q_indices[12:]]=angles
+            p,n,_,_=contact_kinematics(model,q,offset)
+            center,rotation=geometry.forward(angles,base_position=(0,0,0))
+>           np.testing.assert_allclose(p,center+rotation@offset,atol=1e-9)
+
+tests/test_contact_terminal_attribution_v1.py:50: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<function assert_allclose.<locals>.compare at 0x729c90ba7600>, array([ 0.15720336,  0.07552449, -0.04288039]), array([ 0.15720335,  0.07552446, -0.04288044]))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Not equal to tolerance rtol=1e-07, atol=1e-09', 'equal_nan': True}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Not equal to tolerance rtol=1e-07, atol=1e-09
+E           
+E           Mismatched elements: 2 / 3 (66.7%)
+E           Max absolute difference: 5.02468971e-08
+E           Max relative difference: 1.17179048e-06
+E            x: array([ 0.157203,  0.075524, -0.04288 ])
+E            y: array([ 0.157203,  0.075524, -0.04288 ])
+
+../../Isaac/env_isaaclab/lib/python3.11/contextlib.py:81: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_contact_terminal_attribution_v1.py::test_loaded_model_matches_geometry_used_for_conservative_reach_bound
+1 failed, 29 passed in 0.88s

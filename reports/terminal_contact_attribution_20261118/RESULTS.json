@@ -1,0 +1,296 @@
+{
+  "prefix_sha256": "ad72729a21bde0dc0e7557be55277e3577003f32c6ac403b8d0b8183e183b9f4",
+  "input_sha256": {
+    "reports/push_off_task_20261118/DIAGNOSED.json": "ed0cb283e7bb48a2130324d703227aa2e6b3e57391e865c5638f616a4cc6e6c6",
+    "reports/coupled_prefix_20261118/RESULTS.json": "98f252ac0518da8512cc95c833611e453e28556f030d9de3cb1f2262d08bd669",
+    "reports/experimental_fullbody_gate_20261118/REPLAY.json.gz": "74d1c56fd8f9c5b0266cc13e90b7a1695b54cd6d1001bb9d502d83eb8dfe460f"
+  },
+  "semantics": "fixed predicted terminal base; counterfactual arm IK is not a dynamic trajectory",
+  "position_decomposition": {
+    "actual_minus_target_world_m": [
+      -0.286910415036121,
+      0.11294077253358735,
+      -0.23216167937660548
+    ],
+    "actual_minus_reference_world_m": [
+      -0.0609395454732784,
+      -0.24104152789725533,
+      0.1122385443909355
+    ],
+    "reference_minus_target_world_m": [
+      -0.22597086956284262,
+      0.35398230043084267,
+      -0.344400223767541
+    ],
+    "vector_identity_error_m": 0.0,
+    "actual_error_m": 0.38596923417242535,
+    "reference_error_m": 0.5431186031065691,
+    "tracking_displacement_m": 0.27278588163709844,
+    "norms_are_not_additive": true
+  },
+  "command_pose_error_m": 0.4925847467837347,
+  "actual_contact_world_m": [
+    0.8779348538462544,
+    0.18390187131593969,
+    1.6323259938121357
+  ],
+  "reference_contact_world_m": [
+    0.9388743993195328,
+    0.424943399213195,
+    1.5200874494212002
+  ],
+  "target_contact_world_m": [
+    1.1648452688823754,
+    0.07096109878235234,
+    1.8644876731887412
+  ],
+  "terminal_root_position_world_m": [
+    0.808794678447497,
+    0.029355103025938308,
+    0.5093797473614906
+  ],
+  "terminal_root_rotation_world": [
+    [
+      0.8886543220163254,
+      0.40559545467419744,
+      -0.21397622089693982
+    ],
+    [
+      -0.39747177002030787,
+      0.9139682031712708,
+      0.08172096199141426
+    ],
+    [
+      0.22871311286987547,
+      0.012427821189160922,
+      0.9734145372151897
+    ]
+  ],
+  "velocity_decomposition": {
+    "actual_world_m_s": [
+      -0.761853423564224,
+      1.4708393508404898,
+      -0.6670873189795465
+    ],
+    "base_world_m_s": [
+      -1.8944369046093652,
+      -0.7994201113320234,
+      0.2994980153638471
+    ],
+    "arm_world_m_s": [
+      1.132583481045141,
+      2.270259462172513,
+      -0.9665853343433937
+    ],
+    "base_formula_error_m_s": 2.220446049250313e-16
+  },
+  "position_anchor": {
+    "q_anchor": [
+      0.34182973442395276,
+      1.9485220985656848,
+      -2.127690416582533,
+      1.570532865524593,
+      0.9061969650037135,
+      2.0943996906280513
+    ],
+    "position_anchor": [
+      1.104538316030538,
+      0.0631500131823261,
+      1.666980180432125
+    ],
+    "normal_anchor": [
+      0.610724552778746,
+      0.7554174833898781,
+      0.2374024987697086
+    ],
+    "position_error_anchor_m": 0.20665708629400906,
+    "solver_success": false,
+    "nfev": 48,
+    "position_seconds": 0.006630592048168182
+  },
+  "pose_diagnosis": {
+    "target_position_m": [
+      1.1648452688823754,
+      0.07096109878235234,
+      1.8644876731887412
+    ],
+    "target_normal": [
+      0.9574507404357141,
+      -0.24076131462658848,
+      0.15912909544888262
+    ],
+    "target_velocity_m_s": [
+      1.381570722506642,
+      4.279626580832128,
+      1.5376888619641835
+    ],
+    "stages": {
+      "position_only": {
+        "q_rad": [
+          0.3418304652216772,
+          1.9485205297898303,
+          -2.127691986811343,
+          1.5705338419600288,
+          0.9061976690907162,
+          2.0943996904276667
+        ],
+        "qd_rad_s": [
+          4.999999999999999,
+          0.4363441469750186,
+          0.30923955492826094,
+          -4.999999999999999,
+          4.999999999999999,
+          4.438569170225148
+        ],
+        "position_m": [
+          1.1045357488048075,
+          0.06315034364187457,
+          1.6669809512447107
+        ],
+        "normal": [
+          0.6107223265064711,
+          0.7554186731229432,
+          0.23740444015159748
+        ],
+        "velocity_m_s": [
+          0.9254105621139415,
+          3.659016209865649,
+          0.24081256313754928
+        ],
+        "position_error_m": 0.2066570863070697,
+        "normal_vector_error": 1.057696643942333,
+        "normal_angle_rad": 1.1144860523544438,
+        "velocity_error_m_s": 1.5083525645348683,
+        "joint_limit_margin_rad": [
+          1.826169279193606,
+          1.1914793366957654,
+          0.8393077823994726,
+          0.17446604359905327,
+          0.31380224031022375,
+          2.003850418930142e-10
+        ],
+        "speed_margin_rad_s": [
+          8.881784197001252e-16,
+          4.563655853024981,
+          4.690760445071739,
+          8.881784197001252e-16,
+          8.881784197001252e-16,
+          0.561430829774852
+        ],
+        "position_jacobian_singular_values": [
+          1.306948650790254,
+          0.7895880867489569,
+          0.113048842940454
+        ],
+        "task_jacobian_singular_values": [
+          1.6288598129774972,
+          1.4972126831083903,
+          0.860098352281411,
+          0.2310775799902183,
+          0.1021564687446866,
+          1.21068769458251e-16
+        ],
+        "solver_success": true,
+        "solver_status": 2,
+        "nfev": 2,
+        "velocity_solver_success": true,
+        "kinematic_feasible": false,
+        "first_failed_check": "position"
+      },
+      "position_normal": {
+        "q_rad": [
+          -0.19626591469378468,
+          1.87285947027812,
+          -2.147768783879841,
+          0.9181599805945043,
+          0.5959952908165408,
+          2.0943996906280016
+        ],
+        "qd_rad_s": [
+          4.999999999999999,
+          1.8791265431288733,
+          -4.068706882301238,
+          -4.999999999999999,
+          4.999999999999999,
+          0.24572711377004108
+        ],
+        "position_m": [
+          1.0946132344767359,
+          0.049459104380006266,
+          1.652232084223129
+        ],
+        "normal": [
+          0.9692073613923462,
+          -0.1451363808174896,
+          0.19892843332737487
+        ],
+        "velocity_m_s": [
+          0.45552523937266454,
+          3.708816283408439,
+          -0.3589044018237141
+        ],
+        "position_error_m": 0.2246047850495896,
+        "normal_vector_error": 0.10424170661438178,
+        "normal_angle_rad": 0.10428896128503332,
+        "velocity_error_m_s": 2.1864241676132723,
+        "joint_limit_margin_rad": [
+          2.364265659109068,
+          1.2671403962074756,
+          0.8192309853309743,
+          0.8268399049645777,
+          0.6240046185843992,
+          5.0182080713057076e-14
+        ],
+        "speed_margin_rad_s": [
+          8.881784197001252e-16,
+          3.1208734568711267,
+          0.931293117698762,
+          8.881784197001252e-16,
+          8.881784197001252e-16,
+          4.754272886229959
+        ],
+        "position_jacobian_singular_values": [
+          1.218321170498295,
+          0.8311175317409069,
+          0.10242951101524718
+        ],
+        "task_jacobian_singular_values": [
+          1.8916556397478017,
+          1.3725701130757968,
+          0.757304373714916,
+          0.2457417148636448,
+          0.07752951437582441,
+          0.0
+        ],
+        "solver_success": true,
+        "solver_status": 2,
+        "nfev": 19,
+        "velocity_solver_success": true,
+        "kinematic_feasible": false,
+        "first_failed_check": "position"
+      }
+    },
+    "seconds": 0.004584651906043291,
+    "global_infeasibility_proven": false,
+    "dynamics_verified": false
+  },
+  "reach_bound": {
+    "shoulder_body_m": [
+      0.05,
+      0.0,
+      0.193
+    ],
+    "target_distance_m": 1.2093467470241483,
+    "optimistic_reach_upper_bound_m": 1.1593980267105732,
+    "position_budget_m": 0.0005,
+    "outside_reach_bound": true,
+    "conditional_translation_lower_bound_m": 0.04944872031357511,
+    "bound_scope": "fixed base pose/time; current authored string strip; all joint angles",
+    "feasible_if_inside": false,
+    "dynamics_verified": false,
+    "unrealized_base_translation_only": true
+  },
+  "future_native_states_read": false,
+  "native_execution": false,
+  "valid_teacher_reference": false
+}
