@@ -9,7 +9,7 @@ class StrikeStateImpactBuilderV1:
     def __init__(self, model, impact_admission, *, initial_state_hash, command_sequence_hash):
         self.model=model;self.admission=impact_admission
         self.initial_state_hash=str(initial_state_hash);self.command_sequence_hash=str(command_sequence_hash)
-    def __call__(self, terminal, *, ball_position, ball_velocity, contact_point_local, contact_time_s, support_mode):
+    def __call__(self, terminal, *, ball_position, ball_velocity, contact_point_local, contact_time_s, support_mode, candidate_theta=None, metadata=None):
         q=np.asarray(terminal['q'],float);v=np.asarray(terminal['v'],float)
         if q.shape!=(self.model.model.nq,) or v.shape!=(self.model.model.nv,) or not np.isfinite(np.r_[q,v]).all(): raise ValueError('Finite terminal full-body state required')
         offset=np.asarray(contact_point_local,float).copy();offset[0]+=self.admission.evaluator.physics['collision_radius_m']
@@ -23,9 +23,10 @@ class StrikeStateImpactBuilderV1:
             frame=self.model.body_frames[foot];J=pin.getFrameJacobian(self.model.model,self.model.data,frame,pin.ReferenceFrame.LOCAL_WORLD_ALIGNED);rows.append(J[:3])
         support=np.vstack([rows[i] for i in range(4) if support_mask[i]]) if support_mask.any() else np.zeros((0,self.model.model.nv))
         mass=pin.crba(self.model.model,self.model.data,q);mass=.5*(mass+mass.T)
+        candidate_command_hash=(metadata or {}).get('candidate_command_sequence_hash',self.command_sequence_hash)
         state={'mass_matrix':mass,'contact_jacobian_world':jac,'support_jacobian':support,'support_mode':support_mode,
                'support_model':'same_candidate_pinocchio_state','initial_state_hash':self.initial_state_hash,
-               'command_sequence_hash':self.command_sequence_hash,'terminal_state_hash':hashlib.sha256(np.r_[q,v].tobytes()).hexdigest()}
+               'command_sequence_hash':candidate_command_hash,'terminal_state_hash':hashlib.sha256(np.r_[q,v].tobytes()).hexdigest()}
         # Record mass-model construction independently of contact validity.
         jn=normal@jac; response=np.linalg.solve(mass,jn)
         if support.size:
@@ -39,6 +40,32 @@ class StrikeStateImpactBuilderV1:
             robot_state=state,task_context={'event_order':True,'no_numerical_failure':True})
         if result.get('strict_status')=='EFFECTIVE_MASS_UNVERIFIED' and result.get('rejection_reason') in ('ball_string_contact_position_mismatch','outside_authored_string_surface'):
             result['strict_status']=mass_status
-        result.update(mass_model_computed=True,inverse_effective_mass_kg_inv=inverse_mass,same_candidate_state=True,terminal_state_hash=state['terminal_state_hash'],contact_time_s=float(contact_time_s),support_mode=support_mode,
-                      actual_contact_position_world_m=position.tolist(),actual_contact_normal_world=normal.tolist(),actual_contact_velocity_world_m_s=(jac@v).tolist())
+        # Keep the complete analytic result nested.  Its generic fields (for
+        # example contact_position_error_m) must never overwrite the rollout's
+        # terminal errors in the planner evidence record.
+        impact_result=result
+        result={
+            'finite_mass_status':mass_status if mass_status!='EFFECTIVE_MASS_UNVERIFIED' else impact_result.get('strict_status','EFFECTIVE_MASS_UNVERIFIED'),
+            'finite_mass_verified':bool(impact_result.get('strict_status')=='FINITE_MASS_VERIFIED'),
+            'contact_feasible':bool(impact_result.get('contact_feasible',False)),
+            'legal_return_predicted':bool(impact_result.get('legal_return_predicted',False)),
+            'attack5_predicted':bool(impact_result.get('attack5_predicted',False)),
+            'target_landing_predicted':bool(impact_result.get('target_landing_predicted',False)),
+            'final_impact':impact_result,
+            'rejection_reason':impact_result.get('rejection_reason'),
+            'mass_model_computed':True,
+            'inverse_effective_mass_kg_inv':inverse_mass,
+            'same_candidate_state':True,
+            'terminal_state_hash':state['terminal_state_hash'],
+            'command_sequence_hash':candidate_command_hash,
+            'contact_time_s':float(contact_time_s),
+            'support_mode':support_mode,
+            'actual_contact_position_world_m':position.tolist(),
+            'actual_contact_normal_world':normal.tolist(),
+            'actual_contact_velocity_world_m_s':(jac@v).tolist(),
+        }
+        if candidate_theta is not None:
+            result['candidate_theta_sha256']=hashlib.sha256(np.asarray(candidate_theta,float).tobytes()).hexdigest()
+        if metadata is not None:
+            result['metadata_contact_index']=int(metadata.get('contact_index',-1))
         return result

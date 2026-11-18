@@ -55,7 +55,9 @@ class EventCoupledTakeoffStrikePlannerV1:
                 base=evaluate(theta,it,'center')
                 if base is None or base['accepted']:break
                 current=base['cost'];candidate=base
-                for j in range(len(theta)):
+                order=getattr(self,'probe_order',None)
+                if order is None: order=range(len(theta))
+                for j in order:
                     span=(self.bounds[j,1]-self.bounds[j,0])*step_fraction
                     for sign in (-1.,1.):
                         trial=theta.copy();trial[j]=np.clip(trial[j]+sign*span,self.bounds[j,0],self.bounds[j,1]);probe=evaluate(trial,it,'trust_probe')

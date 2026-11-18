@@ -23,3 +23,8 @@ def test_support_and_flight_modes_are_explicit():
  assert r['strict_status']=='FINITE_MASS_VERIFIED' and r['finite_mass_verified']
  with pytest.raises(ValueError,match='support Jacobian'):
   s.evaluate(**common,robot_state={'mass_matrix':M,'contact_jacobian_world':J,'support_jacobian':np.ones((1,24)),'support_mode':'flight'})
+
+def test_support_mode_rejects_empty_jacobian():
+ s,m=fixture(); common=dict(shuttle_position=[.7,0,2],shuttle_velocity_before=[-8,0,-3],racket_contact_position=[.675,0,2],racket_contact_velocity=[1,0,-2],racket_normal=[1,0,0],contact_point_local=[.0006,0,.07])
+ with pytest.raises(ValueError,match='Non-empty'):
+  s.evaluate(**common,robot_state={'mass_matrix':np.eye(24),'contact_jacobian_world':np.zeros((3,24)),'support_jacobian':np.zeros((0,24)),'support_mode':'support'})

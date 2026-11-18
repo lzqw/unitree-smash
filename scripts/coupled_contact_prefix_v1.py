@@ -42,7 +42,13 @@ class CoupledContactRollout(TerminalPushRollout):
     def command_at_node(self,amplitude,reference,node,weight):
         f,g=self.basis_at_nodes(node)
         delta=f*amplitude[12:18]+g*amplitude[18:24]
-        command=reference.copy();command[:12]+=weight*amplitude[:12];command[12:]+=delta
+        command=reference.copy();command[:12]+=weight*amplitude[:12]
+        external=getattr(self,'external_leg_corrections',None)
+        if external is not None:
+            ext=np.asarray(external,float)
+            if ext.shape!=(len(self.commands),12): raise ValueError('External WBC leg sequence shape mismatch')
+            command[:12]+=ext[node]
+        command[12:]+=delta
         arm_reference=self.arm_reference[node+1]+delta
         if np.any(arm_reference<self.interface.limits[12:,0]-1e-6) or np.any(arm_reference>self.interface.limits[12:,1]+1e-6):
             raise ValueError('Original arm reference position limit at node '+str(node))
@@ -109,7 +115,13 @@ class LegRateCoupledContactRollout(CoupledContactRollout):
         f,g=self._leg_basis(node); af,ag=self.basis_at_nodes(node)
         leg=weight*(f*amplitude[:12]+g*amplitude[12:24])
         arm=af*amplitude[24:30]+ag*amplitude[30:36]
-        command=reference.copy();command[:12]+=leg;command[12:]+=arm
+        command=reference.copy();command[:12]+=leg
+        external=getattr(self,'external_leg_corrections',None)
+        if external is not None:
+            ext=np.asarray(external,float)
+            if ext.shape!=(len(self.commands),12): raise ValueError('External WBC leg sequence shape mismatch')
+            command[:12]+=ext[node]
+        command[12:]+=arm
         arm_reference=self.arm_reference[node+1]+arm
         if np.any(arm_reference<self.interface.limits[12:,0]-1e-6) or np.any(arm_reference>self.interface.limits[12:,1]+1e-6):
             raise ValueError('Original arm reference position limit at node '+str(node))
