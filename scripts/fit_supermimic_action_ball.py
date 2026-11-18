@@ -122,6 +122,35 @@ def event_validation_selection_score(initial, candidate, *, adjacent_tolerance=1
                 relative_velocity_rmse=dict(zip(offsets, ratios)), reason='eligible')
 
 
+def autoregressive_validation_selection_score(initial, candidate, *, adjacent_tolerance=1e-6):
+    """Check multi-step ball drift on the same event-aligned holdout.
+
+    One-step contact accuracy is insufficient for SuperMimic because the
+    actor receives a multi-step imagined state.  The pre/post event offsets
+    must remain non-degraded at every reported horizon.  The returned score is
+    the mean relative velocity RMSE over all available offset/horizon pairs.
+    """
+    offsets = ('-1', '0', '1')
+    horizons = ('4', '16', '32', '64')
+    ratios = []
+    for offset in offsets:
+        for horizon in horizons:
+            before = ((initial.get(offset) or {}).get('errors') or {}).get(horizon, {})
+            after = ((candidate.get(offset) or {}).get('errors') or {}).get(horizon, {})
+            before_rmse, after_rmse = before.get('velocity_rmse'), after.get('velocity_rmse')
+            if before_rmse is None or after_rmse is None:
+                return dict(eligible=False, score=None, reason='missing_autoregressive_metric')
+            values = torch.tensor([before_rmse, after_rmse], dtype=torch.float32)
+            if not torch.isfinite(values).all():
+                return dict(eligible=False, score=None, reason='nonfinite_autoregressive_metric')
+            if offset in ('-1', '1') and after_rmse > before_rmse + adjacent_tolerance:
+                return dict(eligible=False, score=None,
+                            reason=f'adjacent_autoregressive_degradation_{offset}_{horizon}')
+            ratios.append(after_rmse / max(before_rmse, 1e-8))
+    return dict(eligible=True, score=float(sum(ratios) / len(ratios)),
+                relative_velocity_rmse=ratios, reason='eligible')
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('physical-checkpoint','ball-checkpoint','packed-data','split-manifest','output'):
@@ -136,6 +165,8 @@ def main():
     p.add_argument('--post-residual-weight', type=float, default=0.25)
     p.add_argument('--validation-interval', type=int, default=25,
         help='Event-aligned validation interval in optimizer updates')
+    p.add_argument('--autoregressive-validation-interval', type=int, default=50,
+        help='Multi-step validation interval; zero disables intermediate checks')
     p.add_argument('--adjacent-degradation-tolerance', type=float, default=1e-6,
         help='Absolute velocity-RMSE tolerance for offsets -1 and +1')
     a=p.parse_args()
@@ -147,6 +178,8 @@ def main():
         raise ValueError('Post-impact residual weight must be nonnegative')
     if a.validation_interval < 1:
         raise ValueError('Validation interval must be positive')
+    if a.autoregressive_validation_interval < 0:
+        raise ValueError('Autoregressive validation interval must be nonnegative')
     if a.adjacent_degradation_tolerance < 0:
         raise ValueError('Adjacent degradation tolerance must be nonnegative')
     a.output.mkdir(parents=True)
@@ -267,10 +300,24 @@ def main():
             selection=event_validation_selection_score(
                 initial,validation_candidate,
                 adjacent_tolerance=a.adjacent_degradation_tolerance)
-            validation_record=dict(update=update,candidate=validation_candidate,selection=selection)
+            ar_candidate=None
+            ar_selection=None
+            if (update==a.updates or
+                    (a.autoregressive_validation_interval and
+                     update%a.autoregressive_validation_interval==0)):
+                ar_candidate=autoregressive_metrics(base,ball,sweep,data,metadata,val,launch)
+                ar_selection=autoregressive_validation_selection_score(
+                    initial_ar,ar_candidate,
+                    adjacent_tolerance=a.adjacent_degradation_tolerance)
+            validation_record=dict(update=update,candidate=validation_candidate,selection=selection,
+                                   autoregressive_candidate=ar_candidate,
+                                   autoregressive_selection=ar_selection)
             validation_history.append(validation_record)
-            if selection['eligible'] and (best_selection is None or selection['score'] < best_selection['score']):
-                best_selection=dict(selection,update=update)
+            eligible=(selection['eligible'] and ar_selection is not None and ar_selection['eligible'])
+            combined_score=(selection['score']+ar_selection['score']) if eligible else None
+            if eligible and (best_selection is None or combined_score < best_selection['combined_score']):
+                best_selection=dict(selection,update=update,
+                                    autoregressive=ar_selection,combined_score=combined_score)
                 best_sweep_state=copy.deepcopy(sweep.state_dict())
                 best_optimizer_state=copy.deepcopy(optimizer.state_dict())
             record=dict(update=update,loss=float(loss.detach()),gradient=float(gradient.detach()),elapsed_s=time.perf_counter()-started,
