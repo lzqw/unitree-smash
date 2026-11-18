@@ -11,7 +11,7 @@ from pathlib import Path
 import torch
 
 
-def make_event_aligned_spec(row, head, epsilon):
+def make_event_aligned_spec(row, head, epsilon, capture_substeps=False):
     """Represent exactly the lanes whose recorded edge selected this tick."""
     lanes = list(row['lanes'])
     directions = []
@@ -26,7 +26,7 @@ def make_event_aligned_spec(row, head, epsilon):
         lanes=lanes,
         epsilon_request=epsilon,
         request_directions=directions,
-        capture_substeps=False,
+        capture_substeps=bool(capture_substeps),
         event_alignment=dict(
             contact_validation_lanes=list(row['contact']),
             frame_validation_lanes=list(row['frame']),
@@ -43,6 +43,8 @@ def main():
     parser.add_argument('--max-specs', type=int, default=5)
     parser.add_argument('--epsilon', type=float, default=0.001)
     parser.add_argument('--head', choices=('approach', 'recovery'), default='approach')
+    parser.add_argument('--capture-substeps', action='store_true',
+                        help='Record a bounded native substep trace for each probe.')
     args = parser.parse_args()
     if args.max_specs < 1 or args.epsilon <= 0:
         raise ValueError('max-specs and epsilon must be positive')
@@ -91,7 +93,8 @@ def main():
     # gate measure the wrong population.
     args.output.mkdir(parents=True)
     for index, row in enumerate(chosen):
-        spec = make_event_aligned_spec(row, args.head, args.epsilon)
+        spec = make_event_aligned_spec(row, args.head, args.epsilon,
+                                       args.capture_substeps)
         (args.output / f'spec_{index:02d}_tick{row["tick"]:03d}.json').write_text(
             json.dumps(spec, indent=2) + '\n'
         )
@@ -101,6 +104,7 @@ def main():
         split_manifest_sha256=__import__('hashlib').sha256(args.split_manifest.read_bytes()).hexdigest(),
         head=args.head,
         epsilon_request=args.epsilon,
+        capture_substeps=bool(args.capture_substeps),
         validation_lanes=validation,
         selected_ticks=chosen,
         covered_validation_lanes=sorted(covered),

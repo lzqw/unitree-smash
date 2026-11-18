@@ -19,3 +19,10 @@ def test_approach_region_rejects_frame_only_lane():
     import pytest
     with pytest.raises(ValueError, match='frame-only'):
         event_validation_lanes(spec, [2])
+
+
+def test_event_probe_spec_can_request_substep_trace():
+    spec = make_event_aligned_spec(
+        dict(tick=12, lanes=[2], contact=[2], frame=[]),
+        'approach', 0.01, capture_substeps=True)
+    assert spec['capture_substeps'] is True
