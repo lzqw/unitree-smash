@@ -21,6 +21,7 @@ from quadsmash.rl.supermimic_action_ball_v1 import (ActionConditionedBallV1,
     preimpact_hard_negatives,contact_neighborhood_pools)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_wm_validation_v1 import event_aligned_windows
+from quadsmash.rl.supermimic_physical_dataset_v1 import valid_windows
 
 
 def sha256(path):
@@ -90,6 +91,31 @@ def sensitivity(base,ball,sweep,data,pairs,launch):
     g=torch.stack([target.new_zeros(target.shape) if v is None else v for v in gradients],1)[:,:,12:18]
     return dict(count=len(pairs),gradient_norm=float(g.norm()),
         mean_per_case_norm=float(g.flatten(1).norm(dim=-1).mean()),finite=bool(torch.isfinite(g).all()))
+
+
+def rollout_ball_loss(base, ball, sweep, data, pairs, launch, horizon, scale):
+    """Compute causal multi-step ball loss from recorded-command starts.
+
+    The recorded transition targets are supervision only.  Future native
+    states and event labels are never fed into the rollout.  This keeps the
+    candidate fit aligned with the same autoregressive path used by WM
+    validation and imagination while reducing long-horizon drift.
+    """
+    if horizon < 1:
+        raise ValueError('rollout horizon must be positive')
+    t, lane = pairs.unbind(1)
+    state = data['state'][t, lane]
+    feet = data['feet'][t, lane].float()
+    present = data['present'][t, lane]
+    total = state.new_zeros(())
+    for step in range(horizon):
+        prediction, feet, present = ball_transition(
+            base, ball, state, data['targets'][t + step, lane],
+            data['previous_action'][t + step, lane], feet, present,
+            data['elapsed'][t + step, lane], launch[lane], action_model=sweep)
+        total = total + ((prediction[:, 49:] - data['next_state'][t + step, lane, 49:]) / scale).square().mean()
+        state = prediction
+    return total / horizon
 
 
 def event_validation_selection_score(initial, candidate, *, adjacent_tolerance=1e-6):
@@ -163,6 +189,12 @@ def main():
         CausalActionConditionedBallV2.schema,CausalRacketModeActionBallV3.schema),
         default=ActionConditionedBallV1.schema)
     p.add_argument('--post-residual-weight', type=float, default=0.25)
+    p.add_argument('--precontact-loss-weight', type=float, default=4.0,
+        help='Extra weight for the hard-negative transition immediately before contact')
+    p.add_argument('--rollout-loss-weight', type=float, default=0.5,
+        help='Weight for causal multi-step ball supervision in addition to one-step loss')
+    p.add_argument('--rollout-horizon', type=int, default=4,
+        help='Recorded-command rollout horizon for candidate fitting')
     p.add_argument('--validation-interval', type=int, default=25,
         help='Event-aligned validation interval in optimizer updates')
     p.add_argument('--autoregressive-validation-interval', type=int, default=50,
@@ -176,6 +208,10 @@ def main():
         raise ValueError('Contact neighborhood batch must be divisible by eight')
     if a.post_residual_weight < 0:
         raise ValueError('Post-impact residual weight must be nonnegative')
+    if a.precontact_loss_weight < 0:
+        raise ValueError('Precontact loss weight must be nonnegative')
+    if a.rollout_loss_weight < 0 or a.rollout_horizon < 1:
+        raise ValueError('Rollout loss settings must be nonnegative/positive')
     if a.validation_interval < 1:
         raise ValueError('Validation interval must be positive')
     if a.autoregressive_validation_interval < 0:
@@ -237,6 +273,10 @@ def main():
     preceding=preimpact_hard_negatives(events,data['episode'],data['terminated'],data['timeout'])
     hard_negative=(eligible&preceding&~events).nonzero()
     negative=(eligible&~events&~preceding).nonzero()
+    rollout_valid=valid_windows(data['episode'],data['terminated'],data['timeout'],a.rollout_horizon)
+    rollout_pool=(rollout_valid&eligible[:len(rollout_valid)]).nonzero()
+    if len(rollout_pool)<a.batch:
+        raise ValueError('Need enough reset-safe multi-step rollout starts')
     neighborhoods=contact_neighborhood_pools(events,data['episode'],data['terminated'],data['timeout'],eligible)
     if a.sampling_schema=='contact-neighborhood-v2' and any(len(v)<8 for v in neighborhoods.values()):
         raise ValueError('Need at least eight real transitions in each contact neighborhood pool')
@@ -249,7 +289,10 @@ def main():
     initial=metrics(base,ball,None,data,metadata,val,launch)
     initial_ar=autoregressive_metrics(base,ball,None,data,metadata,val,launch)
     generator=torch.Generator(device=device).manual_seed(20261117)
-    optimizer=torch.optim.Adam(sweep.head.parameters(),lr=2e-4)
+    trainable_parameters=[parameter for parameter in sweep.parameters() if parameter.requires_grad]
+    if not trainable_parameters:
+        raise ValueError('Action-ball candidate has no trainable parameters')
+    optimizer=torch.optim.Adam(trainable_parameters,lr=2e-4)
     initial_sweep_state=copy.deepcopy(sweep.state_dict())
     history=[]
     validation_history=[]
@@ -284,7 +327,19 @@ def main():
         true=data['next_state'][t,l,49:]
         scale=predicted.new_tensor([.1,.1,.1,2.,2.,2.])
         error=((ball_prediction-true)/scale).square().mean(-1)
-        loss=4.*error[:a.batch//2].mean()+error[a.batch//2:].mean()+.02*correction[a.batch//2:].square().mean()
+        contact_end=a.batch//2
+        pre_end=contact_end+a.batch//4
+        post_end=pre_end+a.batch//8
+        contact_loss=error[:contact_end].mean()
+        precontact_loss=error[contact_end:pre_end].mean()
+        post_loss=error[pre_end:post_end].mean()
+        background_loss=error[post_end:].mean()
+        loss=(4.*contact_loss + a.precontact_loss_weight*precontact_loss +
+              post_loss + .5*background_loss + .02*correction[contact_end:].square().mean())
+        rollout_pairs=rollout_pool[torch.randint(len(rollout_pool),(a.batch,),device=device,generator=generator)]
+        rollout_scale=predicted.new_tensor([.1,.1,.1,2.,2.,2.])
+        rollout=rollout_ball_loss(base,ball,sweep,data,rollout_pairs,launch,a.rollout_horizon,rollout_scale)
+        loss=loss+a.rollout_loss_weight*rollout
         if a.sampling_schema=='contact-neighborhood-v2' and a.post_residual_weight:
             post_start=a.batch//2+a.batch//4
             post_end=post_start+a.batch//8
@@ -293,7 +348,7 @@ def main():
             loss=loss+a.post_residual_weight*post_response
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite action-ball fitting loss')
         optimizer.zero_grad(set_to_none=True);loss.backward()
-        gradient=torch.nn.utils.clip_grad_norm_(sweep.head.parameters(),10.,error_if_nonfinite=True)
+        gradient=torch.nn.utils.clip_grad_norm_(trainable_parameters,10.,error_if_nonfinite=True)
         optimizer.step()
         if update==1 or update%a.validation_interval==0 or update==a.updates:
             validation_candidate=metrics(base,ball,sweep,data,metadata,val,launch)
@@ -320,7 +375,10 @@ def main():
                                     autoregressive=ar_selection,combined_score=combined_score)
                 best_sweep_state=copy.deepcopy(sweep.state_dict())
                 best_optimizer_state=copy.deepcopy(optimizer.state_dict())
-            record=dict(update=update,loss=float(loss.detach()),gradient=float(gradient.detach()),elapsed_s=time.perf_counter()-started,
+            record=dict(update=update,loss=float(loss.detach()),contact_loss=float(contact_loss.detach()),
+                        precontact_loss=float(precontact_loss.detach()),post_loss=float(post_loss.detach()),
+                        background_loss=float(background_loss.detach()),rollout_loss=float(rollout.detach()),
+                        gradient=float(gradient.detach()),elapsed_s=time.perf_counter()-started,
                         event_validation=validation_record)
             history.append(record)
             (a.output/'progress.json').write_text(json.dumps(record)+'\n')
@@ -343,6 +401,9 @@ def main():
         geometry_hashes=sweep.preview.geometry_hashes,softness_m=sweep.softness_m,
         updates=a.updates,evidence_scope='recorded-command model-only, no native paired perturbations',
         model_schema=a.model_schema,post_residual_weight=a.post_residual_weight,
+        precontact_loss_weight=a.precontact_loss_weight,
+        rollout_loss_weight=a.rollout_loss_weight,rollout_horizon=a.rollout_horizon,
+        trainable_parameter_names=[name for name,parameter in sweep.named_parameters() if parameter.requires_grad],
         event_validation_selection=selection_status,
         accepted_update=None if best_selection is None else best_selection['update'],
         accepted_parameter_update=bool(best_sweep_state is not None))
@@ -358,6 +419,7 @@ def main():
         independence_scope="candidate fit heldout lanes; historical base-model holdout independence requires separate provenance",
         train_contact_transitions=int(len(positive)),train_noncontact_transitions=int(len(negative)),
         hard_precontact_transitions=int(len(hard_negative)),
+        reset_safe_rollout_starts=int(len(rollout_pool)),
         training_lanes=sorted(train),validation_lanes=sorted(val),native_paired_action_probe=False,
         actor_updates=0,world_updates=0,critic_updates=0,auto_promoted=False,
         candidate_sha256=sha256(a.output/'action_ball_candidate.pt'))
