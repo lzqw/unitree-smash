@@ -73,6 +73,68 @@ class CoupledContactRollout(TerminalPushRollout):
         return np.array(rows),np.array(low),np.array(high)
 
 
+
+def _bounded_linear_parameter_bounds(sequences, bases, limits, count):
+    out=[]
+    for j in range(bases.shape[1]):
+        low,high=-np.inf,np.inf
+        for sequence in sequences:
+            for node in range(len(sequence)):
+                coeff=bases[node,j] if abs(bases[node,j])>1e-12 else 0.
+                if coeff==0: continue
+                a=(limits[j,0]-sequence[node,j])/coeff; b=(limits[j,1]-sequence[node,j])/coeff
+                low=max(low,min(a,b)); high=min(high,max(a,b))
+        out.append([min(low,0.),max(high,0.)])
+    return np.asarray(out)
+
+
+class LegRateCoupledContactRollout(CoupledContactRollout):
+    """Optional 36-parameter support correction with leg endpoint-rate terms.
+
+    Layout: leg position 12, leg endpoint-rate 12, arm position 6, arm rate 6.
+    The rate terms are target references only; the original dynamics gates remain
+    the authority. This mode is explicit and never changes the default 24-D path.
+    """
+    radii=np.r_[np.full(12,.1),np.full(12,.05),np.full(6,.1),np.full(6,.05)]
+
+    def validate_amplitude(self, amplitude):
+        if amplitude.shape!=(36,) or not np.isfinite(amplitude).all() or np.any(abs(amplitude)>self.radii+1e-10):
+            raise ValueError('Bounded 36-parameter leg-rate prefix required')
+
+    def _leg_basis(self,node):
+        s=(node+1)/len(self.commands)
+        return 3*s*s-2*s*s*s,s*s*s-s*s
+
+    def command_at_node(self,amplitude,reference,node,weight):
+        f,g=self._leg_basis(node); af,ag=self.basis_at_nodes(node)
+        leg=weight*(f*amplitude[:12]+g*amplitude[12:24])
+        arm=af*amplitude[24:30]+ag*amplitude[30:36]
+        command=reference.copy();command[:12]+=leg;command[12:]+=arm
+        arm_reference=self.arm_reference[node+1]+arm
+        if np.any(arm_reference<self.interface.limits[12:,0]-1e-6) or np.any(arm_reference>self.interface.limits[12:,1]+1e-6):
+            raise ValueError('Original arm reference position limit at node '+str(node))
+        return command,arm_reference
+
+    def amplitude_bounds(self):
+        f=np.array([self._leg_basis(n)[0] for n in range(len(self.commands))]);g=np.array([self._leg_basis(n)[1] for n in range(len(self.commands))])
+        # Construct the twelve independent leg-rate columns explicitly.
+        bases=np.zeros((len(self.commands),12));
+        for j in range(12): bases[:,j]=g
+        leg_rate=_bounded_linear_parameter_bounds([self.commands[:,:12]],bases,self.interface.limits[:12],len(self.commands))
+        leg_pos=super().amplitude_bounds()[:12]
+        arm=super().amplitude_bounds()[12:]
+        return np.vstack((leg_pos,leg_rate,arm))
+
+    def combined_arm_constraints(self):
+        rows=[];lo=[];hi=[];f=np.array([self._leg_basis(n)[0] for n in range(len(self.commands))]);g=np.array([self._leg_basis(n)[1] for n in range(len(self.commands))]);af,ag=self.basis_at_nodes(np.arange(len(self.commands)))
+        for node in range(len(self.commands)):
+            for j in range(12):
+                row=np.zeros(36);row[j]=f[node];row[12+j]=g[node];rows.append(row);lo.append(self.interface.limits[j,0]-self.commands[node,j]);hi.append(self.interface.limits[j,1]-self.commands[node,j])
+            for j in range(6):
+                row=np.zeros(36);row[24+j]=af[node];row[30+j]=ag[node];rows.append(row);lo.append(self.interface.limits[12+j,0]-self.commands[node,12+j]);hi.append(self.interface.limits[12+j,1]-self.commands[node,12+j])
+                row=np.zeros(36);row[24+j]=af[node];row[30+j]=ag[node];rows.append(row);lo.append(self.interface.limits[12+j,0]-self.arm_reference[node+1,j]);hi.append(self.interface.limits[12+j,1]-self.arm_reference[node+1,j])
+        return np.asarray(rows),np.asarray(lo),np.asarray(hi)
+
 class LateRateContactRollout(CoupledContactRollout):
     """Same amplitude budget, C1 rate correction in the last 80ms only.
 

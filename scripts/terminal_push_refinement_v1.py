@@ -27,7 +27,7 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
         raise ValueError('Nonnegative reserve requires a path response')
     if not 0<epsilon_rad<radius_rad<=.03:raise ValueError('Bounded offline step required')
     radii=np.full(12,radius_rad) if parameter_radii is None else np.asarray(parameter_radii,float).copy()
-    if radii.ndim!=1 or not 1<=len(radii)<=24 or not np.isfinite(radii).all() or np.any(radii<=epsilon_rad) or np.any(radii>.1):
+    if radii.ndim!=1 or not 1<=len(radii)<=48 or not np.isfinite(radii).all() or np.any(radii<=epsilon_rad) or np.any(radii>.1):
         raise ValueError('Explicit bounded parameter radii required')
     count=len(radii)
     bounds=np.c_[-radii,radii] if amplitude_bounds is None else np.asarray(amplitude_bounds,float).copy()

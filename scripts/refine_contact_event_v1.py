@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pinocchio as pin
 from scripts.full_prefix_tracking_v1 import arm_tracking_response,tracking_linearization_reserve
-from scripts.coupled_contact_prefix_v1 import CoupledContactRollout,LateRateContactRollout
+from scripts.coupled_contact_prefix_v1 import CoupledContactRollout,LateRateContactRollout,LegRateCoupledContactRollout
 from scripts.terminal_push_refinement_v1 import refine_terminal
 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1,PublicState
 from scripts.whole_body_support_qp_v1 import PositionPDInterface
@@ -94,7 +94,8 @@ def projected_event_metadata(metadata, projection, initial_q, impact):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);p.add_argument('--tracking-model-reserve',action='store_true');p.add_argument('--late-arm-rate',action='store_true');p.add_argument('--projected-goal',type=Path);p.add_argument('--velocity-priority',action='store_true');p.add_argument('--position-priority',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);p.add_argument('--tracking-model-reserve',action='store_true');p.add_argument('--late-arm-rate',action='store_true');p.add_argument('--projected-goal',type=Path);p.add_argument('--velocity-priority',action='store_true');p.add_argument('--position-priority',action='store_true');p.add_argument('--leg-rate',action='store_true');a=p.parse_args()
+    if a.leg_rate and a.late_arm_rate:raise ValueError('Leg-rate and late-arm-rate are exclusive')
     if a.velocity_priority and a.position_priority:raise ValueError('At most one objective priority')
     if a.projected_goal is not None and a.previous_refinement is None:raise ValueError('Projected goal requires its complete source prefix')
     if a.tracking_model_reserve and (a.previous_refinement is None or not a.constrain_arm_tracking):raise ValueError('Tracking reserve requires a constrained verified predecessor')
@@ -160,7 +161,7 @@ def main():
         input_paths.append(a.projected_goal)
     geometry=AuthoredGroundClearance('configs/go2_piper_authored_ground_geometry_v1.json',model,margin_m=0.)
     predictor=ExperimentalSphereAdmissionV1(model,geometry,Path('reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json'))
-    rollout_class=LateRateContactRollout if a.late_arm_rate else CoupledContactRollout
+    rollout_class=(LegRateCoupledContactRollout if a.leg_rate else (LateRateContactRollout if a.late_arm_rate else CoupledContactRollout))
     evaluator=rollout_class(model,interface,predictor,state,commands,reference,metadata);calls=0
     def evaluate(amplitude):
         nonlocal calls
