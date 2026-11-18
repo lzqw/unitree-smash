@@ -25,6 +25,8 @@ class EventCoupledTakeoffStrikePlannerV1:
         if vals[1]>0.12:return False,'NORMAL_INFEASIBLE'
         if vals[2]>0.75:return False,'VELOCITY_INFEASIBLE'
         if result.get('finite_mass_status')!='FINITE_MASS_VERIFIED':return False,'FINITE_MASS_UNVERIFIED'
+        for key in ('contact_feasible','legal_return_predicted','attack5_predicted','target_landing_predicted'):
+            if result.get(key) is not True: return False,'IMPACT_TASK_INVALID' 
         return True,None
     def search(self, seeds):
         accepted=[];failed=[];calls=0

@@ -6,7 +6,7 @@ def test_planner_uses_rollout_state_and_fail_closed():
  def rollout(t):
   seen.append(t.copy());return dict(path_valid=True,contact_position_error_m=.002,normal_error=.1,velocity_error_m_s=.7,finite_mass_status='FINITE_MASS_VERIFIED')
  p=EventCoupledTakeoffStrikePlannerV1(rollout_fn=rollout,bounds=np.array([[0,1],[0,1]]),max_candidates=2)
- r=p.search([np.array([.2,.3]),np.array([.4,.5])]);assert len(r['accepted'])==2 and len(seen)==2;assert not r['accepted'][0]['teacher_eligible']
+ r=p.search([np.array([.2,.3]),np.array([.4,.5])]);assert len(r['accepted'])==0 and len(r['failed'])==2 and len(seen)==2
 
 def test_hard_gates_reject_without_mutating_state():
  state=np.array([.2,.3])
