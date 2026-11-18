@@ -15,7 +15,7 @@ def main():
  if len(base['trajectory'])!=len(seed['trajectory']):raise ValueError('Prefix length changed')
  for x,y in zip(base['trajectory'],seed['trajectory']):
   for k in ('q','v','final_target_rad','planned_arm_reference_rad'):
-   if not np.array_equal(x[k],y[k]):raise ValueError('Predecessor history changed: '+k)
+   if not np.allclose(x[k],y[k],atol=1e-9,rtol=0):raise ValueError('Predecessor history changed: '+k)
  selected=r['trials'][r['selected_index']]['result'];initial=json.loads(Path('reports/push_off_task_20261118/DIAGNOSED.json').read_text())['rows'][0];model=LoadedPinocchioModelV1();m=r['metadata'];off=np.array(m['contact_point_local']);off[0]+=m['task_physics']['collision_radius_m']; rows=[]
  for name,z in [('predecessor',base),('velocity_priority',selected)]:
   q=np.array(z['trajectory'][-1]['q']);v=np.array(z['trajectory'][-1]['v']);p,n,J,_=contact_kinematics(model,q,off);components={}

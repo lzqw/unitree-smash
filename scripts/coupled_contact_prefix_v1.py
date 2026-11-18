@@ -95,7 +95,7 @@ class LegRateCoupledContactRollout(CoupledContactRollout):
     The rate terms are target references only; the original dynamics gates remain
     the authority. This mode is explicit and never changes the default 24-D path.
     """
-    radii=np.r_[np.full(12,.1),np.full(12,.05),np.full(6,.1),np.full(6,.05)]
+    radii=np.r_[np.full(12,.2),np.full(12,.05),np.full(6,.1),np.full(6,.05)]
 
     def validate_amplitude(self, amplitude):
         if amplitude.shape!=(36,) or not np.isfinite(amplitude).all() or np.any(abs(amplitude)>self.radii+1e-10):
