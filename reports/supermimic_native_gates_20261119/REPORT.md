@@ -69,6 +69,13 @@ tick. The change is covered by CPU contract tests and is intended to diagnose
 actuator-delay and contact-edge alignment. It does not alter the policy action
 contract and it has not been used to issue a receipt.
 
+A fixed lane-37 lead-two-tick probe completed with four branches and exact
+same-prefix hashes. The first racket contact force appeared at substep index
+4 in all branches. The lead-two-tick native ball-velocity response was
+`[1.084e-3, 4.646e-3, -1.188e-2]`, while the legacy candidate response cosine
+was only `0.0847`. This is diagnostic evidence of a timing-sensitive response,
+not a passing direction result.
+
 ## Training status
 
 - Actor updates: 0

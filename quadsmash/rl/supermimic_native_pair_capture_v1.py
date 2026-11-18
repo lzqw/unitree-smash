@@ -89,11 +89,13 @@ class NativePairCapture:
         if tick == event_tick and self.spec.get('capture_substeps',False):
             from .supermimic_native_substep_trace_v1 import NativeSubstepTraceV1
             self.substep_trace=NativeSubstepTraceV1(env)
-        self.prefix.update(tree_digest(dict(observation=observation,request=request,physical=capture_state(env)['physical'])).encode())
+        if tick < action_tick:
+            self.prefix.update(tree_digest(dict(observation=observation,request=request,physical=capture_state(env)['physical'])).encode())
         return request
     def after(self,tick,env,done):
+        action_tick = self.spec.get('action_tick', self.spec['tick'])
         event_tick = self.spec['tick']
-        if tick<event_tick:
+        if tick < action_tick:
             self.prefix.update(tree_digest(dict(targets=env._sm_joint_targets,final=env._sm_final_action,done=done)).encode())
         elif tick==event_tick:
             trace=None if self.substep_trace is None else self.substep_trace.finish()
