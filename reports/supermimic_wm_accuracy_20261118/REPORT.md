@@ -58,10 +58,16 @@ initialize. The candidate calibration was completed before this driver state
 was observed. A GPU/driver recovery is required before another GPU fit or
 large-scale training run.
 
-The original `/tmp` source archives referenced by the calibration command are
-not currently present. Their hashes and provenance remain recorded in the
-candidate `config.json` and completion metadata. No missing source is replaced
-with a fabricated transition.
+The original `/tmp` paths referenced by the calibration command are not
+currently present. A separate, contract-compatible frozen archive was found at
+`/home/autodrive/LZQW/experiments/supermimic_frozen_closure_20261117_223243/packed/data.pt`.
+It contains 102,400 transitions and has SHA256
+`03463185ebcb5a211e0ee458edee10a1e577fbdd5f17c59934f7fae6a89a4295`, with
+the same source policy and task/execution contract but a different recorded
+frozen run and mean return `-10.8740057216`. It is retained as an explicitly
+labelled historical anchor, not substituted for the missing `-12.5267843497`
+archive or its validation split. No missing source is replaced with a
+fabricated transition.
 
 ## Decision
 
