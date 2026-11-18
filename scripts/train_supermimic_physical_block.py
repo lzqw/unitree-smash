@@ -129,6 +129,13 @@ def main():
                         help='Optional success-only task-space reference bank')
     parser.add_argument('--tracking-weight',type=float,default=0.0)
     AppLauncher.add_app_launcher_args(parser);args=parser.parse_args()
+    # Every training stage uses the GPU-resident actor, WM and 128-lane
+    # physical loop.  Fail before AppLauncher/Isaac startup when the driver is
+    # absent, instead of spending minutes constructing a simulator that can
+    # only fail later on a hard-coded cuda:0 tensor allocation.
+    import torch
+    if not torch.cuda.is_available() or torch.cuda.device_count() < 1:
+        parser.error('CUDA GPU is required for SuperMimic training; no usable CUDA device is visible')
     from quadsmash.rl.supermimic_training_stage_v1 import resolve_training_stage
     training_stage=resolve_training_stage(args.training_stage)
     args.contact_bptt_mode=args.contact_bptt_mode or training_stage.contact_bptt_mode
