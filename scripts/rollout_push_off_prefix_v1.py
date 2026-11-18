@@ -21,7 +21,8 @@ from scripts.nonlinear_push_correction_v1 import correct_push_command
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--contact-window',action='store_true');p.add_argument('--preserve-momentum-rate',action='store_true');p.add_argument('--nonlinear-push-correction',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--contact-window',action='store_true');p.add_argument('--preserve-momentum-rate',action='store_true');p.add_argument('--nonlinear-push-correction',action='store_true');p.add_argument('--com-scale',type=float,default=1.);a=p.parse_args()
+    if not np.isfinite(a.com_scale) or not 0<=a.com_scale<=1:raise ValueError('Bounded COM request scale required')
     if a.nonlinear_push_correction and not a.preserve_momentum_rate:raise ValueError('Explicit momentum task required for correction')
     if a.output.exists():raise ValueError('Preserve prior attempts')
     root=Path(__file__).resolve().parents[1]
@@ -41,7 +42,7 @@ def main():
         qp=PushOffSupportQPV1(interface);rows=[];failure=None;adopted=0
         initial_witness=geometry.minimum_witness(state.q)
         if initial_witness['gap_m'] < -1e-6:raise ValueError('Initial nonfoot geometry violation')
-        delta=np.asarray(request['requested_extra_com_acceleration_world']);start=time.perf_counter()
+        delta=np.asarray(request['requested_extra_com_acceleration_world'])*a.com_scale;start=time.perf_counter()
         window=PushOffWindowV1(len(commands)) if a.contact_window else None
         for node,nominal in enumerate(commands):
             decision=(window.step(node,state.contacts) if window else dict(enabled=node<8 and bool(state.contacts.any()),phase='legacy_fixed_window'))
@@ -94,7 +95,7 @@ def main():
                 velocity,normal,metadata['contact_point_local'])
         ball_valid=bool(impact and all(impact.get(k) is True for k in
             ('contact_feasible','legal_return_predicted','attack5_predicted','target_landing_predicted')))
-        results.append(dict(lane=request['lane'],requested_delta_com_acceleration_world=delta,
+        results.append(dict(lane=request['lane'],com_request_scale=a.com_scale,requested_delta_com_acceleration_world=delta,
             preserve_baseline_angular_momentum_rate=a.preserve_momentum_rate,
             nonlinear_push_correction=a.nonlinear_push_correction,
             support_window_ticks=(None if a.contact_window else 8),
