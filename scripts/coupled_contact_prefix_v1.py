@@ -127,7 +127,7 @@ def selected_arm_reference(record,source,arm_q_indices):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--reuse-responses',type=Path);p.add_argument('--previous',type=Path,default=Path('reports/terminal_push_20261118/RESULTS.json'));p.add_argument('--backtracking',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--reuse-responses',type=Path);p.add_argument('--previous',type=Path,default=Path('reports/terminal_push_20261118/RESULTS.json'));p.add_argument('--backtracking',action='store_true');p.add_argument('--protect-terminal-tasks',action='store_true');a=p.parse_args()
     if a.output.exists():raise ValueError('Preserve attempts')
     root=Path(__file__).resolve().parents[1]
     initial_path=root/'reports/push_off_task_20261118/DIAGNOSED.json'
@@ -179,7 +179,7 @@ def main():
         return result
     start=time.perf_counter()
     result=refine_terminal(evaluate,amplitude_bounds=evaluator.amplitude_bounds(),parameter_radii=evaluator.radii,
-        linear_constraints=evaluator.combined_arm_constraints(),backtracking=a.backtracking)
+        linear_constraints=evaluator.combined_arm_constraints(),backtracking=a.backtracking,protect_terminal_tasks=a.protect_terminal_tasks)
     result.update(seconds=time.perf_counter()-start,parameterization='12 support leg radians, 6 arm endpoint radians, 6 arm rate-basis radians',
         horizon_s=len(evaluator.commands)*.01,input_sha256=inputs,fresh_model_calls=fresh,cached_calls=count-fresh,
         base_arm_reference_rad=reference,reference_continuation_audit=reference_audit)

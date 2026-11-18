@@ -19,7 +19,7 @@ from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
 from quadsmash.physics.full_racket_v4 import load_racket
 
 
-def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False):
+def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False,protect_terminal_tasks=False):
     if not 0<epsilon_rad<radius_rad<=.03:raise ValueError('Bounded offline step required')
     radii=np.full(12,radius_rad) if parameter_radii is None else np.asarray(parameter_radii,float).copy()
     if radii.ndim!=1 or not 1<=len(radii)<=24 or not np.isfinite(radii).all() or np.any(radii<=epsilon_rad) or np.any(radii>.1):
@@ -59,17 +59,34 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
     A=np.vstack((J[:,active]*radii[active],.1*np.eye(len(active))))
     b=np.r_[-y,np.zeros(len(active))]
     low,high=bounds[active,0]/radii[active],bounds[active,1]/radii[active]
-    if linear_constraints is None:
+    constraints=[]
+    if linear_constraints is None and not protect_terminal_tasks:
         sol=lsq_linear(A,b,bounds=(low,high),tol=1e-10,max_iter=100)
     else:
-        C,clow,chigh=(np.asarray(x,float) for x in linear_constraints)
-        if C.ndim!=2 or C.shape[1]!=count or clow.shape!=(len(C),) or chigh.shape!=clow.shape or not all(np.isfinite(x).all() for x in (C,clow,chigh)) or np.any(clow>chigh):
-            raise ValueError('Finite original combined parameter constraints required')
+        if linear_constraints is not None:
+            C,clow,chigh=(np.asarray(x,float) for x in linear_constraints)
+            if C.ndim!=2 or C.shape[1]!=count or clow.shape!=(len(C),) or chigh.shape!=clow.shape or not all(np.isfinite(x).all() for x in (C,clow,chigh)) or np.any(clow>chigh):
+                raise ValueError('Finite original combined parameter constraints required')
+            constraints.append(LinearConstraint(C[:,active]*radii[active],clow,chigh))
+            out['linear_constraint_rows']=len(C)
+        if protect_terminal_tasks:
+            # Position, normal and velocity are separate tasks. The local
+            # model may reduce their total cost only inside all three bounds.
+            D=J[:,active]*radii[active]
+            baseline_squared=np.sum(y.reshape(3,3)**2,axis=1)
+            def task_margins(z):
+                residual=(y+D@z).reshape(3,3)
+                return baseline_squared-np.sum(residual**2,axis=1)
+            def task_jacobian(z):
+                residual=(y+D@z).reshape(3,3)
+                return -2*np.einsum('gi,gij->gj',residual,D.reshape(3,3,-1))
+            constraints.append(dict(type='ineq',fun=task_margins,jac=task_jacobian))
+            out['protected_task_norms']=np.sqrt(baseline_squared)
+            out['task_nonregression_tolerance_normalized']=1e-9
         sol=minimize(lambda z:.5*np.sum((A@z-b)**2),np.zeros(len(active)),
             jac=lambda z:A.T@(A@z-b),bounds=Bounds(low,high),
-            constraints=[LinearConstraint(C[:,active]*radii[active],clow,chigh)],method='SLSQP',
+            constraints=constraints,method='SLSQP',
             options=dict(maxiter=100,ftol=1e-10))
-        out['linear_constraint_rows']=len(C)
     if not sol.success or not np.isfinite(sol.x).all():out['rejection']='LOCAL_SOLVE_FAILED';return out
     a=np.zeros(count);a[active]=radii[active]*sol.x;out['predicted_residual']=y+J@a
     # Each scaled sequence starts from the original state via evaluate(). A
@@ -79,7 +96,13 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
     out['rejection']='NO_VERIFIED_TERMINAL_IMPROVEMENT'
     for scale in scales:
         final=call(a*scale,'proposal' if scale==1. else 'backtrack_'+str(scale))
-        if final['valid'] and final['cost']<base['cost']-1e-10:
+        nonregression=True
+        if protect_terminal_tasks and final['valid']:
+            actual=np.linalg.norm(np.asarray(final['result']['normalized_residual']).reshape(3,3),axis=1)
+            nonregression=bool(np.all(actual<=out['protected_task_norms']+1e-9))
+            final['terminal_task_norms']=actual
+            final['terminal_task_nonregression']=nonregression
+        if final['valid'] and nonregression and final['cost']<base['cost']-1e-10:
             out.update(improved=True,selected_index=len(trials)-1,rejection=None,accepted_step_scale=scale)
             break
     return out

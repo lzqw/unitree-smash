@@ -1,0 +1,133 @@
+diff --git a/scripts/coupled_contact_prefix_v1.py b/scripts/coupled_contact_prefix_v1.py
+index f993de2..44aa19d 100644
+--- a/scripts/coupled_contact_prefix_v1.py
++++ b/scripts/coupled_contact_prefix_v1.py
+@@ -127,7 +127,7 @@ def selected_arm_reference(record,source,arm_q_indices):
+ 
+ 
+ def main():
+-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--reuse-responses',type=Path);p.add_argument('--previous',type=Path,default=Path('reports/terminal_push_20261118/RESULTS.json'));p.add_argument('--backtracking',action='store_true');a=p.parse_args()
++    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);p.add_argument('--reuse-responses',type=Path);p.add_argument('--previous',type=Path,default=Path('reports/terminal_push_20261118/RESULTS.json'));p.add_argument('--backtracking',action='store_true');p.add_argument('--protect-terminal-tasks',action='store_true');a=p.parse_args()
+     if a.output.exists():raise ValueError('Preserve attempts')
+     root=Path(__file__).resolve().parents[1]
+     initial_path=root/'reports/push_off_task_20261118/DIAGNOSED.json'
+@@ -179,7 +179,7 @@ def main():
+         return result
+     start=time.perf_counter()
+     result=refine_terminal(evaluate,amplitude_bounds=evaluator.amplitude_bounds(),parameter_radii=evaluator.radii,
+-        linear_constraints=evaluator.combined_arm_constraints(),backtracking=a.backtracking)
++        linear_constraints=evaluator.combined_arm_constraints(),backtracking=a.backtracking,protect_terminal_tasks=a.protect_terminal_tasks)
+     result.update(seconds=time.perf_counter()-start,parameterization='12 support leg radians, 6 arm endpoint radians, 6 arm rate-basis radians',
+         horizon_s=len(evaluator.commands)*.01,input_sha256=inputs,fresh_model_calls=fresh,cached_calls=count-fresh,
+         base_arm_reference_rad=reference,reference_continuation_audit=reference_audit)
+diff --git a/scripts/terminal_push_refinement_v1.py b/scripts/terminal_push_refinement_v1.py
+index 868a5e9..7aea27b 100644
+--- a/scripts/terminal_push_refinement_v1.py
++++ b/scripts/terminal_push_refinement_v1.py
+@@ -19,7 +19,7 @@ from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
+ from quadsmash.physics.full_racket_v4 import load_racket
+ 
+ 
+-def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False):
++def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False,protect_terminal_tasks=False):
+     if not 0<epsilon_rad<radius_rad<=.03:raise ValueError('Bounded offline step required')
+     radii=np.full(12,radius_rad) if parameter_radii is None else np.asarray(parameter_radii,float).copy()
+     if radii.ndim!=1 or not 1<=len(radii)<=24 or not np.isfinite(radii).all() or np.any(radii<=epsilon_rad) or np.any(radii>.1):
+@@ -59,17 +59,34 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
+     A=np.vstack((J[:,active]*radii[active],.1*np.eye(len(active))))
+     b=np.r_[-y,np.zeros(len(active))]
+     low,high=bounds[active,0]/radii[active],bounds[active,1]/radii[active]
+-    if linear_constraints is None:
++    constraints=[]
++    if linear_constraints is None and not protect_terminal_tasks:
+         sol=lsq_linear(A,b,bounds=(low,high),tol=1e-10,max_iter=100)
+     else:
+-        C,clow,chigh=(np.asarray(x,float) for x in linear_constraints)
+-        if C.ndim!=2 or C.shape[1]!=count or clow.shape!=(len(C),) or chigh.shape!=clow.shape or not all(np.isfinite(x).all() for x in (C,clow,chigh)) or np.any(clow>chigh):
+-            raise ValueError('Finite original combined parameter constraints required')
++        if linear_constraints is not None:
++            C,clow,chigh=(np.asarray(x,float) for x in linear_constraints)
++            if C.ndim!=2 or C.shape[1]!=count or clow.shape!=(len(C),) or chigh.shape!=clow.shape or not all(np.isfinite(x).all() for x in (C,clow,chigh)) or np.any(clow>chigh):
++                raise ValueError('Finite original combined parameter constraints required')
++            constraints.append(LinearConstraint(C[:,active]*radii[active],clow,chigh))
++            out['linear_constraint_rows']=len(C)
++        if protect_terminal_tasks:
++            # Position, normal and velocity are separate tasks. The local
++            # model may reduce their total cost only inside all three bounds.
++            D=J[:,active]*radii[active]
++            baseline_squared=np.sum(y.reshape(3,3)**2,axis=1)
++            def task_margins(z):
++                residual=(y+D@z).reshape(3,3)
++                return baseline_squared-np.sum(residual**2,axis=1)
++            def task_jacobian(z):
++                residual=(y+D@z).reshape(3,3)
++                return -2*np.einsum('gi,gij->gj',residual,D.reshape(3,3,-1))
++            constraints.append(dict(type='ineq',fun=task_margins,jac=task_jacobian))
++            out['protected_task_norms']=np.sqrt(baseline_squared)
++            out['task_nonregression_tolerance_normalized']=1e-9
+         sol=minimize(lambda z:.5*np.sum((A@z-b)**2),np.zeros(len(active)),
+             jac=lambda z:A.T@(A@z-b),bounds=Bounds(low,high),
+-            constraints=[LinearConstraint(C[:,active]*radii[active],clow,chigh)],method='SLSQP',
++            constraints=constraints,method='SLSQP',
+             options=dict(maxiter=100,ftol=1e-10))
+-        out['linear_constraint_rows']=len(C)
+     if not sol.success or not np.isfinite(sol.x).all():out['rejection']='LOCAL_SOLVE_FAILED';return out
+     a=np.zeros(count);a[active]=radii[active]*sol.x;out['predicted_residual']=y+J@a
+     # Each scaled sequence starts from the original state via evaluate(). A
+@@ -79,7 +96,13 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
+     out['rejection']='NO_VERIFIED_TERMINAL_IMPROVEMENT'
+     for scale in scales:
+         final=call(a*scale,'proposal' if scale==1. else 'backtrack_'+str(scale))
+-        if final['valid'] and final['cost']<base['cost']-1e-10:
++        nonregression=True
++        if protect_terminal_tasks and final['valid']:
++            actual=np.linalg.norm(np.asarray(final['result']['normalized_residual']).reshape(3,3),axis=1)
++            nonregression=bool(np.all(actual<=out['protected_task_norms']+1e-9))
++            final['terminal_task_norms']=actual
++            final['terminal_task_nonregression']=nonregression
++        if final['valid'] and nonregression and final['cost']<base['cost']-1e-10:
+             out.update(improved=True,selected_index=len(trials)-1,rejection=None,accepted_step_scale=scale)
+             break
+     return out
+diff --git a/tests/test_terminal_push_refinement_v1.py b/tests/test_terminal_push_refinement_v1.py
+index 843a582..eb3b900 100644
+--- a/tests/test_terminal_push_refinement_v1.py
++++ b/tests/test_terminal_push_refinement_v1.py
+@@ -80,3 +80,37 @@ def test_backtracking_exhaustion_keeps_verified_baseline():
+     assert len(result['trials'])==16 and result['selected_index']==0
+     assert not result['improved']
+     assert all(not t['valid'] for t in result['trials'][-3:])
++
++
++def test_task_constraints_prevent_position_gain_buying_normal_regression():
++    def evaluate(a):
++        y=np.zeros(9);y[0]=10-100*a[0];y[3]=1+10*a[0];y[6]=1
++        return dict(path_valid=True,normalized_residual=y)
++    unconstrained=refine_terminal(evaluate)
++    constrained=refine_terminal(evaluate,protect_terminal_tasks=True,backtracking=True)
++    assert unconstrained['improved']
++    selected=constrained['trials'][constrained['selected_index']]['result']['normalized_residual']
++    assert selected[3]<=1+1e-9
++    assert constrained['selected_index']==0 or constrained['trials'][constrained['selected_index']]['terminal_task_nonregression']
++
++
++def test_full_rollout_rejects_nonlinear_regression_even_when_local_model_passes():
++    def evaluate(a):
++        y=np.zeros(9);y[0]=10-100*a[0];y[3]=1+(0.1 if abs(a[0])>.002 else 0);y[6]=1
++        return dict(path_valid=True,normalized_residual=y)
++    result=refine_terminal(evaluate,protect_terminal_tasks=True,backtracking=True)
++    assert not result['improved'] and result['selected_index']==0
++    proposals=result['trials'][-3:]
++    assert all(t['valid'] and not t['terminal_task_nonregression'] for t in proposals)
++    assert all(t['cost']<result['trials'][0]['cost'] for t in proposals)
++
++
++def test_separate_tasks_can_all_improve_without_changing_teacher_gate():
++    def evaluate(a):
++        return dict(path_valid=True,normalized_residual=100*(np.full(9,.02)-a[:9]))
++    result=refine_terminal(evaluate,protect_terminal_tasks=True,backtracking=True)
++    assert result['improved']
++    selected=result['trials'][result['selected_index']]
++    assert selected['terminal_task_nonregression']
++    assert np.all(selected['terminal_task_norms']<result['protected_task_norms'])
++    assert not result['valid_teacher_reference']

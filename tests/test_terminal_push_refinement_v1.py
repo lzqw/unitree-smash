@@ -80,3 +80,37 @@ def test_backtracking_exhaustion_keeps_verified_baseline():
     assert len(result['trials'])==16 and result['selected_index']==0
     assert not result['improved']
     assert all(not t['valid'] for t in result['trials'][-3:])
+
+
+def test_task_constraints_prevent_position_gain_buying_normal_regression():
+    def evaluate(a):
+        y=np.zeros(9);y[0]=10-100*a[0];y[3]=1+10*a[0];y[6]=1
+        return dict(path_valid=True,normalized_residual=y)
+    unconstrained=refine_terminal(evaluate)
+    constrained=refine_terminal(evaluate,protect_terminal_tasks=True,backtracking=True)
+    assert unconstrained['improved']
+    selected=constrained['trials'][constrained['selected_index']]['result']['normalized_residual']
+    assert selected[3]<=1+1e-9
+    assert constrained['selected_index']==0 or constrained['trials'][constrained['selected_index']]['terminal_task_nonregression']
+
+
+def test_full_rollout_rejects_nonlinear_regression_even_when_local_model_passes():
+    def evaluate(a):
+        y=np.zeros(9);y[0]=10-100*a[0];y[3]=1+(0.1 if abs(a[0])>.002 else 0);y[6]=1
+        return dict(path_valid=True,normalized_residual=y)
+    result=refine_terminal(evaluate,protect_terminal_tasks=True,backtracking=True)
+    assert not result['improved'] and result['selected_index']==0
+    proposals=result['trials'][-3:]
+    assert all(t['valid'] and not t['terminal_task_nonregression'] for t in proposals)
+    assert all(t['cost']<result['trials'][0]['cost'] for t in proposals)
+
+
+def test_separate_tasks_can_all_improve_without_changing_teacher_gate():
+    def evaluate(a):
+        return dict(path_valid=True,normalized_residual=100*(np.full(9,.02)-a[:9]))
+    result=refine_terminal(evaluate,protect_terminal_tasks=True,backtracking=True)
+    assert result['improved']
+    selected=result['trials'][result['selected_index']]
+    assert selected['terminal_task_nonregression']
+    assert np.all(selected['terminal_task_norms']<result['protected_task_norms'])
+    assert not result['valid_teacher_reference']
