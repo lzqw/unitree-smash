@@ -1,0 +1,4 @@
+OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m pytest -q tests/test_strict_impact_admission_v1.py tests/test_contact_reachability_atlas_v1.py tests/test_event_coupled_takeoff_strike_v1.py tests/test_event_coupled_rollout_adapter_v1.py tests/test_event_coupled_fullbody_rollout_v1.py tests/test_impact_outcome_evaluator_v1.py tests/test_terminal_push_refinement_v1.py tests/test_refine_contact_event_v1.py tests/test_coupled_contact_prefix_v1.py
+
+exit_code=0
+result=48 passed in 1.02s
