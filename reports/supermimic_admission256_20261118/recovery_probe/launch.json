@@ -1,0 +1,22 @@
+{
+  "command": [
+    "systemd-run",
+    "--user",
+    "--unit=supermimic-native-recovery-t302-20261118",
+    "--property=RuntimeMaxSec=14400",
+    "--property=Restart=no",
+    "--property=WorkingDirectory=/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290",
+    "--property=StandardOutput=append:/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_probe_recovery_t302_nvajhn5u/series.log",
+    "--property=StandardError=append:/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_probe_recovery_t302_nvajhn5u/series.log",
+    "--setenv=CUDA_VISIBLE_DEVICES=0",
+    "--setenv=QUADSMASH_PYTHON=/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "--setenv=PYTHONUNBUFFERED=1",
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_probe_recovery_t302_nvajhn5u/run_series.py"
+  ],
+  "cwd": "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290",
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "0",
+    "QUADSMASH_PYTHON": "/home/autodrive/Isaac/env_isaaclab/bin/python"
+  }
+}

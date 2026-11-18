@@ -8,11 +8,54 @@ def json_sha(value):
     return hashlib.sha256(json.dumps(value,sort_keys=True,separators=(',',':')).encode()).hexdigest()
 
 
+# Only prediction modules absent from the real native action/physics path may
+# differ when immutable native responses are re-evaluated. Unknown/new files,
+# actor, G07, mixer, rate limits and execution preview remain exact checks.
+MODEL_ONLY_CODE = frozenset((
+    'supermimic_ball_sequence_v1.py', 'supermimic_action_ball_v1.py',
+    'supermimic_articulated_inertia_v1.py', 'supermimic_racket_material_contract_v1.py',
+    'supermimic_impact_timing_v1.py',
+))
+NATIVE_REQUIRED_CODE = frozenset((
+    'supermimic_policy_execution_v1.py', 'supermimic_v1.py',
+    'control/g07_shared_target_residual_v1.py', 'control/full_racket_residual_v4.py',
+    'control/full_racket_rally_controller_v4.py', 'control/full_racket_arm_target_rate_v4.py',
+    'control/persistent_recovery_assistance_v1.py',
+))
+
+
+def native_code_compatibility(recorded, current):
+    """Source applicability only; never a model accuracy/policy admission pass.
+
+    The complete old and new maps are retained. A model code change requires
+    current-model native-response rechecking in assess_region/probe_applicability.
+    """
+    if not isinstance(recorded, dict) or not isinstance(current, dict) or not recorded or not current:
+        return dict(compatible=False, reason='missing-code-identity', differences={})
+    diff={k:dict(recorded=recorded.get(k), current=current.get(k))
+          for k in recorded.keys() | current.keys() if recorded.get(k)!=current.get(k)}
+    if not diff:
+        return dict(compatible=True, reason='exact-source-identity', differences={})
+    missing=sorted(NATIVE_REQUIRED_CODE - (recorded.keys() & current.keys()))
+    forbidden=sorted(set(diff)-MODEL_ONLY_CODE)
+    return dict(compatible=not missing and not forbidden,
+        reason='prediction-code-only-requires-current-response-check' if not missing and not forbidden else 'native-or-unknown-code-changed',
+        missing_native_files=missing, forbidden_changes=forbidden, differences=diff,
+        scope='native measured transition can be re-used; current model accuracy is not certified')
+
+
+def static_identity_failures(origin, current):
+    failures=[k for k in ('schema','task_contract_sha256','policy_execution') if origin.get(k)!=current.get(k)]
+    if not native_code_compatibility(origin.get('execution_code_sha256'),current.get('execution_code_sha256'))['compatible']:
+        failures.append('execution_code_sha256')
+    return failures
+
+
 def runtime_identity(actor,adapter,task_contract,execution,policy_version):
     root=Path(__file__).parent
     code_hashes={name:hashlib.sha256((root/name).read_bytes()).hexdigest() for name in
         ('supermimic_policy_execution_v1.py','supermimic_v1.py','supermimic_physical_imagination_adapter_v1.py',
-         'supermimic_probe_region_v1.py','supermimic_native_pair_capture_v1.py','supermimic_ball_sequence_v1.py','supermimic_action_ball_v1.py','supermimic_g07_memory_preview_v1.py','supermimic_execution_preview_v1.py')}
+         'supermimic_probe_region_v1.py','supermimic_native_pair_capture_v1.py','supermimic_native_substep_trace_v1.py','supermimic_ball_sequence_v1.py','supermimic_action_ball_v1.py','supermimic_articulated_inertia_v1.py','supermimic_racket_material_contract_v1.py','supermimic_impact_timing_v1.py','supermimic_g07_memory_preview_v1.py','supermimic_execution_preview_v1.py')}
     for name in ('g07_shared_target_residual_v1.py','full_racket_residual_v4.py','full_racket_rally_controller_v4.py','full_racket_arm_target_rate_v4.py','persistent_recovery_assistance_v1.py'):
         code_hashes['control/'+name]=hashlib.sha256((root.parent/'control'/name).read_bytes()).hexdigest()
     return dict(execution_code_sha256=code_hashes,schema='supermimic-runtime-identity-v1',actor_state_sha256=tensor_digest(actor.state_dict().items()),
@@ -25,11 +68,11 @@ def probe_applicability(probe,current,region=None):
     required=('execution_code_sha256','schema','actor_state_sha256','world_state_sha256','task_contract_sha256','policy_execution','policy_version')
     mismatch={k:dict(evidence=None if declared is None else declared.get(k),current=current[k])
               for k in required if declared is None or declared.get(k)!=current[k]}
-    static=('execution_code_sha256','schema','task_contract_sha256','policy_execution')
+    static_failures=static_identity_failures(declared or {},current)
     bounded=(region is not None and region.get('passed') is True
              and region.get('current_identity')==current and region.get('origin_identity')==declared
              and region.get('evidence_sha256')==probe.get('validity_region',{}).get('sha256')
-             and not any(k in mismatch for k in static))
+             and not static_failures)
     valid=(not mismatch or bounded) and (region is None or region.get('passed') is True)
     return dict(current_version_valid=valid,
                 scope='current-exact-version' if not mismatch else ('bounded-native-response-rechecked' if bounded else 'historical-reference-only'),

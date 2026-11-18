@@ -48,7 +48,8 @@ def validate_windows(adapter,window,launch,horizons=(1,4,16,32,64)):
         ttd=(~window['feet'][t].bool().any(-1))&window['next_feet'][t].bool().any(-1)&(window['event_state'][t,:,0]>.5)
         predicted_first=torch.where((predicted_first<0)&ptd,t+1,predicted_first)
         true_first=torch.where((true_first<0)&ttd,t+1,true_first)
-        state,feet=next_state,newfeet;values=task['numeric'];valid=task['valid_logits'].sigmoid()
+        state,feet=next_state,newfeet
+        values,valid=adapter.task_model.memory_schema.feedback_values(task['numeric'],task['valid_logits'].sigmoid())
         if t+1 in horizons:
             target=window['next_state'][t];delta=state-target
             q=torch.nn.functional.normalize(state[:,3:7],dim=-1);qt=torch.nn.functional.normalize(target[:,3:7],dim=-1)

@@ -1,0 +1,85 @@
+"""Mixture semantics only: synthetic tests are not physical admission."""
+import pytest
+import torch
+from torch import nn
+from quadsmash.rl.supermimic_action_ball_v1 import (
+    ActionConditionedBallV1, RacketModeActionBallV2, action_ball_for_schema)
+from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
+from test_supermimic_action_ball_v1 import FakeWorld, FakePreview, FakeBall, inputs
+
+
+class ModeBall(nn.Module):
+    def __init__(self, probability, mode='racket'):
+        super().__init__()
+        self.probability = probability
+        self.mode = mode
+
+    def components(self, features):
+        p = self.probability.expand(len(features))
+        zero = torch.zeros_like(p)
+        if self.mode == 'frame':
+            return torch.stack((1-p, zero, zero, zero, p), -1), features.new_zeros(len(features),4,6)
+        return torch.stack((1-p, p, zero, zero, zero), -1), features.new_zeros(len(features),4,6)
+
+
+def correction_model():
+    model = RacketModeActionBallV2(preview=FakePreview())
+    with torch.no_grad():
+        model.head.net[-1].bias[3] = 1.
+    return model
+
+
+def test_free_mode_suppresses_extra_impulse_without_changing_robot_command():
+    world = FakeWorld();args = inputs();model = correction_model()
+    old = ball_transition(world, FakeBall(), *args)[0]
+    new = ball_transition(world, ModeBall(torch.tensor(0.)), *args, action_model=model)[0]
+    assert torch.equal(new, old)
+
+
+def test_mode_probability_scales_impulse_without_probability_renormalization():
+    world = FakeWorld();args = inputs();model = correction_model()
+    free = ball_transition(world, FakeBall(), *args)[0]
+    full = ball_transition(world, ModeBall(torch.tensor(1.)), *args, action_model=model)[0]
+    half = ball_transition(world, ModeBall(torch.tensor(.5)), *args, action_model=model)[0]
+    assert torch.allclose(half[:,49:]-free[:,49:], .5*(full[:,49:]-free[:,49:]))
+    assert torch.equal(half[:,:49],full[:,:49])
+
+
+def test_joint_target_and_predicted_mode_both_keep_gradients():
+    world=FakeWorld();state,target,*other=inputs()
+    target.requires_grad_(True);probability=torch.tensor(.6,requires_grad=True)
+    predicted=ball_transition(world,ModeBall(probability),state,target,*other,
+                              action_model=correction_model())[0]
+    command_grad,mode_grad=torch.autograd.grad(predicted[:,52].sum(),(target,probability))
+    assert torch.isfinite(command_grad).all() and command_grad[:,12].abs().max()>1e-7
+    assert torch.isfinite(mode_grad) and mode_grad.abs()>1e-7
+
+
+def test_frame_aware_candidate_uses_frame_probability_without_changing_v4():
+    world=FakeWorld();args=inputs();model=correction_model()
+    model.requires_frame_probability=True
+    frame=ball_transition(world,ModeBall(torch.tensor(1.),mode='frame'),*args,action_model=model)[0]
+    free=ball_transition(world,ModeBall(torch.tensor(0.),mode='frame'),*args,action_model=model)[0]
+    assert (frame[:,49:]-free[:,49:]).abs().sum()>0
+    legacy=ball_transition(world,ModeBall(torch.tensor(1.),mode='frame'),*args,action_model=correction_model())[0]
+    assert torch.equal(legacy,free)
+
+
+def test_checkpoint_schema_dispatch_preserves_old_computation_and_strict_shapes():
+    old=ActionConditionedBallV1(preview=FakePreview())
+    restored=action_ball_for_schema(old.schema,preview=FakePreview())
+    restored.load_state_dict(old.state_dict(),strict=True)
+    new=action_ball_for_schema(RacketModeActionBallV2.schema,preview=FakePreview())
+    new.load_state_dict(old.state_dict(),strict=True)
+    assert type(restored) is ActionConditionedBallV1
+    assert type(new) is RacketModeActionBallV2
+    assert old.schema != new.schema
+    assert torch.equal(ball_transition(FakeWorld(),FakeBall(),*inputs(),action_model=old)[0],
+                       ball_transition(FakeWorld(),FakeBall(),*inputs(),action_model=restored)[0])
+    with pytest.raises(ValueError,match='Unknown'):
+        action_ball_for_schema('unrecognized')
+
+
+def test_no_silent_fallback_when_ball_model_has_no_mode_outputs():
+    with pytest.raises(ValueError,match='object-separated'):
+        ball_transition(FakeWorld(),FakeBall(),*inputs(),action_model=correction_model())

@@ -32,6 +32,19 @@ def parse_quota(text, *, allowed, name):
     return result
 
 
+def scale_wm_quotas(quotas, batch_size):
+    """CLI quotas retain their documented128-window unit; scale ratios exactly.
+
+    This only changes supervised model minibatch size, never native lanes or
+    imagination/world temporal horizons. No implicit OOM retry/ratio change.
+    """
+    if type(batch_size) is not int or batch_size<128 or batch_size%128:
+        raise ValueError('WM batch must be a positive multiple of128')
+    if not quotas or any(type(v) is not int or v<0 for v in quotas.values()) or sum(quotas.values())!=128:
+        raise ValueError('WM quota units must sum to128 before batch scaling')
+    return {k:v*(batch_size//128) for k,v in quotas.items()}
+
+
 def select_launch_for_start(row, launch):
     """Select the causal launch batch for a full or compact lane start."""
     lane_id=row.get('_lane_id') if isinstance(row,dict) else None
@@ -78,6 +91,9 @@ def main():
     parser.add_argument('--native-ticks-per-actor-update',type=int,default=16)
     parser.add_argument('--replay-capacity-ticks',type=int,default=16384)
     parser.add_argument('--tensorboard-dir',type=Path)
+    parser.add_argument('--native-return-drop-tolerance',type=float,default=.10)
+    parser.add_argument('--native-return-flat-tolerance',type=float,default=.05)
+    parser.add_argument('--native-return-patience',type=int,default=2)
     parser.add_argument('--refresh-world-updates',type=int,default=32)
     parser.add_argument('--refresh-critic-updates',type=int,default=20)
     parser.add_argument('--reference-policy-checkpoint',type=Path)
@@ -91,6 +107,7 @@ def main():
                         help='Optional cumulative joint-target budget relative to the accepted native reference')
     parser.add_argument('--world-updates-per-actor-update',type=int,default=4,
                         help='World-model optimizer steps before each actor proposal')
+    parser.add_argument('--wm-batch-size',type=int,default=128,help='Supervised WM minibatch, multiple of128; native environments remain128')
     parser.add_argument('--wm-source-quota',default='recent_online=64,older_online=32,initial_archive=32')
     parser.add_argument('--approach-refresh-interval',type=int,default=8)
     parser.add_argument('--wm-approach-stage-quota',default='uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8')
@@ -107,9 +124,13 @@ def main():
     if args.cycles < 1 or args.native_ticks_per_actor_update < 1 or args.replay_capacity_ticks < 64: parser.error('long-run budgets invalid')
     if args.refresh_ticks < 0 or args.refresh_world_updates < 0 or args.refresh_critic_updates < 0 or args.resume_warmup_ticks < 0: parser.error('refresh/resume budgets invalid')
     if args.world_updates_per_actor_update < 1: parser.error('world-updates-per-actor-update must be positive')
+    if args.wm_batch_size < 128 or args.wm_batch_size%128: parser.error('wm-batch-size must be a positive multiple of128')
     if args.wm_recent_policy_window < 0 or args.wm_recent_tick_window < 1: parser.error('WM freshness windows invalid')
     if args.approach_refresh_interval < 1: parser.error('approach-refresh-interval must be positive')
     if args.refresh_ticks not in (0,800): parser.error('Frozen refresh requires the original 800-tick task')
+    from quadsmash.rl.supermimic_frozen_return_monitor_v1 import FrozenReturnMonitor
+    try:FrozenReturnMonitor(args.native_return_drop_tolerance,args.native_return_flat_tolerance,args.native_return_patience)
+    except ValueError as exc:parser.error(str(exc))
     if args.tracking_weight < 0 or (args.tracking_weight > 0 and args.task_reference_bank is None): parser.error('Positive tracking needs a validated reference bank')
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
     if args.actor_update_budget is not None:
@@ -134,7 +155,7 @@ def main():
             alternating=AlternatingSchedule(make_plan(args.recovery_update_budget,args.approach_update_budget,
                 args.recovery_proposal_budget,args.approach_proposal_budget,block_size=args.head_block_size,
                 cycles=args.cycles,refresh_mode=args.refresh_mode),execution_config=dict(
-                    native_ticks_per_proposal=args.native_ticks_per_actor_update,world_updates_per_proposal=args.world_updates_per_actor_update,
+                    native_ticks_per_proposal=args.native_ticks_per_actor_update,world_updates_per_proposal=args.world_updates_per_actor_update,wm_batch_size=args.wm_batch_size,
                     refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,
                     training_profile=args.training_profile,contact_receipt_sha256=hashlib.sha256(args.contact_validation_receipt.read_bytes()).hexdigest() if args.contact_validation_receipt else None))
         except ValueError as error:parser.error(str(error))
@@ -142,8 +163,9 @@ def main():
     try:
         args.wm_approach_stage_quota=parse_quota(args.wm_approach_stage_quota,allowed={'uniform','approach_active','hit_prepare','contact_release','approach_failure','post_hit'},name='wm-approach-stage-quota')
         args.wm_source_quota=parse_quota(args.wm_source_quota,allowed={'recent_online','older_online','initial_archive'},name='wm-source-quota')
-        if sum(args.wm_source_quota.values())!=128:raise ValueError('WM source quotas must sum to the fixed batch size 128')
         args.wm_stage_quota=parse_quota(args.wm_stage_quota,allowed={'uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery'},name='wm-stage-quota')
+        for field in ('wm_source_quota','wm_stage_quota','wm_approach_stage_quota'):
+            setattr(args,field,scale_wm_quotas(getattr(args,field),args.wm_batch_size))
     except ValueError as error:
         parser.error(str(error))
     if args.tensorboard_dir is not None:
@@ -225,6 +247,7 @@ def run(args):
             from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
             bank_payload=torch.load(args.task_reference_bank,map_location='cpu',weights_only=False)
             reference_bank=TaskSpaceReferenceBankV1.from_payload(bank_payload)
+            reference_bank.assert_excludes(wm_holdout_lanes)
             if not reference_bank.manifest['protocol_verified']:raise ValueError('Tracking requires independently scored complete native references')
             if reference_bank.geometry_sha256 and reference_bank.geometry_sha256 != adapter.physical_model.geometry.model_sha256:
                 raise ValueError('Task reference bank geometry hash mismatch')
@@ -290,6 +313,7 @@ def run(args):
             if resumed.get('reference_bank') is not None:
                 from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
                 trainer.reference_bank=TaskSpaceReferenceBankV1.from_payload(resumed['reference_bank']).to('cuda:0')
+                trainer.reference_bank.assert_excludes(wm_holdout_lanes)
             for attr,key in (('accepted_snapshot','step'),('block_start_snapshot','block'),('native_accepted_snapshot','native')):
                 if key in resumed.get('actor_references',{}):setattr(trainer,attr,resumed['actor_references'][key])
             trainer.critic.load_state_dict(resumed['critic'],strict=True)
@@ -444,10 +468,17 @@ def run(args):
             return state
         from quadsmash.rl.supermimic_frozen_refresh_v1 import FrozenRefresh
         from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
+        from quadsmash.rl.supermimic_frozen_return_monitor_v1 import FrozenReturnMonitor
+        frozen_return_monitor=FrozenReturnMonitor(args.native_return_drop_tolerance,args.native_return_flat_tolerance,args.native_return_patience)
+        if args.resume_training and resumed.get('frozen_return_monitor') is not None:
+            frozen_return_monitor.load_state_dict(resumed['frozen_return_monitor'])
+        elif args.resume_training and args.training_profile=='large':
+            raise ValueError('Large resume requires saved native-return monitoring state; do not reset trend history')
         refresh_collector=None; frozen_policy_id=None; refresh_serial=int(resumed.get('refresh_serial',0)) if args.resume_training else 0
         archive_flush_rows=max(32,int(os.environ.get('QUADSMASH_ARCHIVE_FLUSH_ROWS','32')))
         archive_refresh_only=os.environ.get('QUADSMASH_ARCHIVE_REFRESH_ONLY','0')=='1'
         if archive_refresh_only:raise ValueError('ARCHIVE_REFRESH_ONLY drops live training transitions; unsupported in the data-closed-loop path')
+        from quadsmash.rl.supermimic_archive_storage_v1 import require_archive_space,write_archive_chunk
         class TrainingArchive(PhysicalTransitionArchive):
             def finish_record(self,*values):
                 nonlocal refresh_collector
@@ -466,28 +497,16 @@ def run(args):
                 if refresh_collector is not None: refresh_collector.append(row)
                 if len(self.rows)>=archive_flush_rows:self.flush()
             def flush(self):
-                if os.environ.get('QUADSMASH_ZSTD_ARCHIVE','0') != '1':
-                    return super().flush()
                 if self.rows:
-                    name=f'chunk_{len(self.chunks):05d}.pt.zst'
+                    compress=os.environ.get('QUADSMASH_ZSTD_ARCHIVE','0')=='1'
+                    name=f'chunk_{len(self.chunks):05d}.pt'+('.zst' if compress else '')
                     path=self.directory/name
-                    out=path.open('wb')
-                    proc=subprocess.Popen(['zstd','-q','-T0','-3','-c'],stdin=subprocess.PIPE,stdout=out)
-                    try:
-                        # torch.save needs a seekable stream; serialize one
-                        # chunk in memory, then stream its bytes through zstd.
-                        payload=io.BytesIO()
-                        torch.save(dict(schema=self.schema,rows=tensor_tree_copy(self.rows,cpu=True)),payload)
-                        proc.stdin.write(payload.getbuffer())
-                        proc.stdin.close(); rc=proc.wait()
-                    except BaseException:
-                        proc.kill(); proc.wait(); raise
-                    finally:
-                        out.close()
-                    if rc != 0: raise RuntimeError(f'zstd archive compression failed: {rc}')
+                    require_archive_space(self.directory)
+                    payload=io.BytesIO()
+                    torch.save(dict(schema=self.schema,rows=tensor_tree_copy(self.rows,cpu=True)),payload)
+                    saved=write_archive_chunk(path,payload.getbuffer(),compress=compress)
                     self.chunks.append(dict(file=name,ticks=len(self.rows),
-                                            sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
-                                            compression='zstd'))
+                                            **saved,**({'compression':'zstd'} if compress else {})))
                     self.rows.clear()
                 self._manifest()
         archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,policy_execution=policy_execution,control_ticks=0,transitions=0,chunks=[],
@@ -507,6 +526,7 @@ def run(args):
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
         config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
+            native_return_monitor=frozen_return_monitor.config,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
             native_reference_command_budget=args.native_reference_command_budget,
@@ -515,7 +535,7 @@ def run(args):
             initialization_native_return=expected['native_return_mean'],extra_mpc=0,
             reference_policy=dict(path=str(reference_path),sha256=file_sha(reference_path)),bad_policy=bad_meta,
             sampling='source×event stratified WM windows; actor starts are causal native event states',
-            wm_source_quota=args.wm_source_quota,wm_stage_quota=args.wm_stage_quota,
+            wm_batch_size=args.wm_batch_size,wm_source_quota=args.wm_source_quota,wm_stage_quota=args.wm_stage_quota,
             wm_approach_stage_quota=args.wm_approach_stage_quota,approach_sampling_thresholds=dict(gate=.25,minimum_gate_steps=4,near_distance_m=.30),approach_refresh_interval=args.approach_refresh_interval,
             wm_recent_policy_window=args.wm_recent_policy_window,wm_recent_tick_window=args.wm_recent_tick_window,
             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
@@ -560,6 +580,7 @@ def run(args):
                 wm_fit_provenance=dict(verified=loaded_fit['verified'],world_state_sha256=tensor_digest(adapter.state_dict().items()),
                     excluded_lanes=wm_holdout_lanes,initial_manifest_sha256=initial_fit_provenance.get('manifest_sha256')),
                 alternating_schedule=alternating.state_dict() if alternating is not None else None,refresh_serial=refresh_serial,
+                frozen_return_monitor=frozen_return_monitor.state_dict(),
                 native_value_bank=native_value_bank,sequential_progress=schedule.state_dict(),actor_start_bank=replay.actor_start_bank.state_dict(),dynamic_stage_starts=replay.stage_starts,
                 reference_bank=trainer.reference_bank.payload() if trainer.reference_bank else None,
                 actor_references=dict(step=trainer.accepted_snapshot,block=trainer.block_start_snapshot,native=trainer.native_accepted_snapshot),
@@ -572,6 +593,7 @@ def run(args):
                 torch_rng=torch.get_rng_state(),cuda_rng=torch.cuda.get_rng_state()),args.output/name)
         def check_stop():
             if args.stop_request['signal'] is not None:raise InterruptedError(args.stop_request['signal'])
+            if frozen_return_monitor.stop_reason:raise RuntimeError('Native return stop remains active: '+frozen_return_monitor.stop_reason)
         def ensure_critic():
             for retry in range(32):
                 if critic_ready(trainer.critic_updates,trainer.last_critic_loss):return
@@ -684,7 +706,7 @@ def run(args):
             for offset in range(total):
                 sampling_started=time.perf_counter()
                 window,lanes,sampling=replay.window(
-                    timebase.world_steps,128,iteration*total+offset,
+                    timebase.world_steps,args.wm_batch_size,iteration*total+offset,
                     source_quota=args.wm_source_quota,stage_quota=quotas,head=head,
                     recent_policy_window=args.wm_recent_policy_window,
                     recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes)
@@ -699,7 +721,7 @@ def run(args):
                                 'world_physical_gradient','world_ball_gradient','world_task_gradient'):
                         if key in stats: writer.add_scalar('wm/'+key.replace('world_',''),float(stats[key]),step)
                     for source,value in sampling.get('source_counts',{}).items():
-                        writer.add_scalar('wm/source/'+source,float(value)/128.,step)
+                        writer.add_scalar('wm/source/'+source,float(value)/args.wm_batch_size,step)
                     for stage_name,value in sampling.get('stage_counts',{}).items():
                         writer.add_scalar('wm/stage/'+stage_name,float(value),step)
                     for stage_name,value in sampling.get('stage_shortfall',{}).items():
@@ -870,6 +892,7 @@ def run(args):
                 with torch.inference_mode():
                     for _ in range(1601):
                         check_stop()
+                        if _%archive_flush_rows==0:require_archive_space(args.output)
                         obs,reward,done,info=wrapper.step(native_actor_action(obs)); tick+=1
                         if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite frozen refresh')
                         if refresh_collector.complete.all():break
@@ -877,7 +900,13 @@ def run(args):
                 rtg_refresh,receipt=collector.result()
             finally:
                 refresh_collector=None;frozen_policy_id=None
-                archive.flush()
+                primary=sys.exc_info()[1]
+                try:archive.flush()
+                except BaseException as cleanup_error:
+                    if primary is None:raise
+                    primary.add_note('Archive flush during exception cleanup also failed: '+repr(cleanup_error))
+                    write(refresh_dir/'archive_flush_failure.json',dict(type=type(cleanup_error).__name__,message=str(cleanup_error),
+                        original_type=type(primary).__name__,original_message=str(primary)))
             if actor_hash!=tensor_digest(actor.state_dict().items()):raise RuntimeError('Frozen collection changed actor')
             wanted={(lane,int(ep)) for lane,ep in enumerate(collector.ids.tolist())}
             native_records=[score_terminal_episode(r,dict(protocol,_root=str(ROOT))) for r in env.rally_records[record_cursor:]
@@ -896,6 +925,20 @@ def run(args):
             runtime_validation_data=packed
             atomic_torch_save(dict(tensors=packed,policy_id=policy_id,receipt=receipt),refresh_dir/'complete_episodes.pt')
             runtime_validation_path=str(refresh_dir/'complete_episodes.pt')
+            native_contract_sha=hashlib.sha256(json.dumps(dict(task=manifest['task_contract'],execution=policy_execution),sort_keys=True).encode()).hexdigest()
+            trend=frozen_return_monitor.observe(native_records,policy_id=policy_id,actor_sha256=actor_hash,contract_sha256=native_contract_sha)
+            receipt['native_return_trend']=trend
+            write(refresh_dir/'native_return_trend.json',trend)
+            if writer is not None:
+                writer.add_scalar('native_frozen/episode_return_mean',trend['mean'],tick*128)
+                writer.add_scalar('native_frozen/decline_streak',trend['decline_streak'],tick*128)
+                writer.add_scalar('native_frozen/plateau_streak',trend['flat_streak'],tick*128)
+                writer.flush()
+            if trend['stop_reason']:
+                write(refresh_dir/'manifest.json',dict(receipt,complete_episodes=128,actor_unchanged=True,model_refresh_not_run=True))
+                save('native_return_stopped.pt')
+                write(args.output/'training_stopped.json',dict(reason=trend['stop_reason'],trend=trend,actor_updates=global_accepted_id,complete=False))
+                raise RuntimeError('Stopped before further optimizer updates: '+trend['stop_reason'])
             wm_budgets=refresh_world_budgets(args.refresh_world_updates,consumer_heads)
             wm_fits={h:run_world_updates(global_attempt_id,n,head=h) for h,n in wm_budgets.items() if n}
             refresh_stats=dict(world_updates=sum(x['world_updates'] for x in wm_fits.values()))
@@ -942,7 +985,8 @@ def run(args):
                     device=next(adapter.parameters()).device
                     additions=TaskSpaceReferenceBankV1.from_packed({k:v.to(device) for k,v in packed.items()},
                         adapter.physical_model.geometry,source_sha256=source_hash,policy_id=policy_id,
-                        match_distance_threshold=trainer.reference_bank.match_distance_threshold,terminal_records=native_records)
+                        match_distance_threshold=trainer.reference_bank.match_distance_threshold,terminal_records=native_records,
+                        excluded_lanes=wm_holdout_lanes)
                 trainer.reference_bank.extend(additions)
                 atomic_torch_save(trainer.reference_bank.payload(),refresh_dir/'reference_bank.pt')
                 receipt['reference_bank']=trainer.reference_bank.manifest

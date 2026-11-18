@@ -2,6 +2,7 @@
 from types import SimpleNamespace
 import torch
 import pytest
+from quadsmash.rl.supermimic_task_memory_schema_v1 import TaskMemorySchemaV1, MemoryField
 from quadsmash.rl import supermimic_wm_validation_v1 as validation
 
 def fixture():
@@ -13,6 +14,7 @@ def fixture():
         values=torch.zeros(t,n,2),valid=torch.ones(t,n,2),event_state=torch.zeros(t,n,8),
         next_event_state=torch.zeros(t,n,8))
     class Task:
+        memory_schema=TaskMemorySchemaV1([MemoryField("rally/a",(),"float",1),MemoryField("rally/b",(),"bool",1)])
         def forward_values(self,s,ns,u,prev,feet,elapsed,values,valid):
             return dict(numeric=values,valid_logits=torch.full_like(valid,30),hazards=torch.full((n,8),-80.))
     adapter=SimpleNamespace(physical_model=SimpleNamespace(),ball_model=None,task_model=Task())

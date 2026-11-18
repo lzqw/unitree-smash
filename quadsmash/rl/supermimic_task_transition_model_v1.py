@@ -13,6 +13,7 @@ from .supermimic_event_hazard_v1 import event_hazard_loss,advance_event_latches
 
 class NativeTaskTransitionSurrogateV1(nn.Module):
     schema='physical-transition-native-task-memory-surrogate-v1'
+    supervision_contract='task-memory-numeric-and-boolean-logits-v2'
 
     def __init__(self,memory_schema,torque_dim,hidden=(512,512)):
         super().__init__()
@@ -56,22 +57,83 @@ class NativeTaskTransitionSurrogateV1(nn.Module):
         numeric=values+delta*self.memory_scale
         # Soft boolean predictions carry the previous flag as a persistence
         # prior. This is a learned approximation, not exact event certification.
-        probability=torch.sigmoid(torch.logit(values.clamp(1e-4,1-1e-4))+delta)
+        boolean_logits=self.boolean_logits(values,delta)
+        probability=torch.sigmoid(boolean_logits)
         numeric=torch.where(self.bool_columns,probability,numeric)
-        return dict(numeric=numeric,valid_logits=valid_logits,
+        return dict(numeric=numeric,boolean_logits=boolean_logits,valid_logits=valid_logits,
                     torque=torque,hazards=hazards,terminal_logit=terminal,
                     complete_logit=complete)
+
+    def boolean_logits(self,values,delta):
+        return torch.logit(values.clamp(1e-4,1-1e-4))+delta
 
     def supervision_loss(self,output,before,after,torque,terminated,complete):
         target,valid=self.memory_schema.encode(after)
         return self.supervision_loss_values(output,target,valid,before['paid_events'],after['paid_events'],torque,terminated,complete)
 
     def supervision_loss_values(self,output,target,valid,paid_before,paid_after,torque,terminated,complete):
-        numeric=((output['numeric']-target)/self.memory_scale).square()*valid
-        loss=numeric.sum()/valid.sum().clamp_min(1.)
+        loss=self.memory_supervision_loss(output,target,valid)
         loss=loss+.1*nn.functional.binary_cross_entropy_with_logits(output['valid_logits'],valid)
         loss=loss+event_hazard_loss(output['hazards'],paid_before,paid_after)
         loss=loss+.1*((output['torque']-torque)/20.).square().mean()
         loss=loss+nn.functional.binary_cross_entropy_with_logits(output['terminal_logit'],terminated.float().reshape(-1,1))
         loss=loss+nn.functional.binary_cross_entropy_with_logits(output['complete_logit'],complete.float().reshape(-1,1))
         return loss
+
+    def memory_supervision_loss(self,output,target,valid):
+        """Native booleans use logit BCE, not near-saturated probability MSE.
+
+        Forward and checkpoint parameter layout are unchanged. This explicit
+        WM supervision adaptation keeps real-valued memory in its existing
+        normalized units. Unknown fields never become negative examples.
+        """
+        continuous=valid*(~self.bool_columns).to(valid.dtype)
+        categorical=valid*self.bool_columns.to(valid.dtype)
+        numeric=((output['numeric']-target)/self.memory_scale).square()
+        binary=nn.functional.binary_cross_entropy_with_logits(
+            output['boolean_logits'],target.clamp(0.,1.),reduction='none')
+        return ((numeric*continuous).sum()/continuous.sum().clamp_min(1.)
+                +(binary*categorical).sum()/categorical.sum().clamp_min(1.))
+
+
+class AbsoluteBooleanTaskSurrogateV2(NativeTaskTransitionSurrogateV1):
+    """Explicit candidate: absolute Bernoulli logits, continuous deltas intact.
+
+    Previous boolean state remains an input. Unlike V1, an observed False
+    does not impose a fixed -9.21 output prior that rare transitions must
+    overcome. This changes surrogate parameter semantics, never native task
+    state/scoring. Old checkpoints must be explicitly migrated or dispatched
+    to V1; neither conversion nor model quality is inferred from tensor shape.
+    """
+    schema='physical-transition-task-absolute-boolean-v2'
+    supervision_contract='absolute-boolean-logits-native-memory-v3'
+
+    def boolean_logits(self,values,delta):
+        return delta
+
+    @torch.no_grad()
+    def initialize_boolean_outputs(self,training_values,training_validity):
+        """Explicit migration initializer; caller supplies training rows only."""
+        if (training_values.shape!=training_validity.shape or training_values.ndim!=2
+                or training_values.shape[-1]!=self.memory_schema.width):
+            raise ValueError('Boolean initialization needs aligned training memory rows')
+        columns=torch.where(self.bool_columns)[0]
+        target=training_values[:,columns];valid=training_validity[:,columns]
+        if not ((valid==0)|(valid==1)).all() or not torch.isfinite(target).all():
+            raise ValueError('Invalid native boolean initialization values')
+        if not (((target==0)|(target==1)) | (valid==0)).all():
+            raise ValueError('Initialization requires native binary labels')
+        count=valid.sum(0)
+        if (count==0).any():
+            raise ValueError('Boolean field has no known training labels')
+        frequency=((target*valid).sum(0)/count).clamp(1e-4,1-1e-4)
+        self.net.net[-1].weight[columns]=0.
+        self.net.net[-1].bias[columns]=torch.logit(frequency)
+        return dict(known_training_counts=count.tolist(),boolean_frequency=frequency.tolist())
+
+
+def task_model_for_schema(schema,memory_schema,torque_dim,**kwargs):
+    classes={cls.schema:cls for cls in (NativeTaskTransitionSurrogateV1,AbsoluteBooleanTaskSurrogateV2)}
+    if schema not in classes:
+        raise ValueError('Unknown task transition checkpoint schema: '+str(schema))
+    return classes[schema](memory_schema,torque_dim,**kwargs)

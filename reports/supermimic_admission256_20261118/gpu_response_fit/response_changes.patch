@@ -1,0 +1,603 @@
+diff --git a/quadsmash/rl/supermimic_native_pair_capture_v1.py b/quadsmash/rl/supermimic_native_pair_capture_v1.py
+index a429586..a25d6db 100644
+--- a/quadsmash/rl/supermimic_native_pair_capture_v1.py
++++ b/quadsmash/rl/supermimic_native_pair_capture_v1.py
+@@ -7,6 +7,16 @@ from .supermimic_physical_dataset_v1 import encode_physical
+ 
+ BRANCHES=('nominal_a','nominal_b','minus','plus')
+ 
++def probe_lanes(spec):
++    return [spec['lane']] if spec['schema']=='native-paired-prefix-spec-v1' else list(spec['lanes'])
++
++def probe_valid_lanes(done,lane):
++    valid=~done.detach().bool().reshape(-1)
++    lanes=[lane] if isinstance(lane,int) else list(lane)
++    if not lanes or any(not 0<=i<len(valid) or not bool(valid[i]) for i in lanes):
++        raise ValueError('Target probe lane crosses terminal/reset; reject counterfactual')
++    return valid
++
+ def tree_digest(value):
+     h=hashlib.sha256()
+     def visit(x):
+@@ -20,16 +30,39 @@ def tree_digest(value):
+     visit(value);return h.hexdigest()
+ 
+ def validate_spec(spec):
+-    if spec.get('schema')!='native-paired-prefix-spec-v1':raise ValueError('Unknown probe spec')
++    if spec.get('schema') not in ('native-paired-prefix-spec-v1','native-paired-prefix-batch-spec-v2'):raise ValueError('Unknown probe spec')
+     if type(spec.get('tick'))is not int or not 1<=spec['tick']<799:raise ValueError('Probe tick must be within original episode')
+-    if type(spec.get('lane'))is not int or not 0<=spec['lane']<128:raise ValueError('Probe lane outside original128')
+-    direction=torch.tensor(spec['request_direction'],dtype=torch.float64)
+-    if direction.shape!=(18,) or not torch.isfinite(direction).all() or not direction.norm()>0:raise ValueError('Need finite nonzero18D request direction')
++    if spec['schema']=='native-paired-prefix-spec-v1':
++        if 'lanes' in spec or 'request_directions' in spec:raise ValueError('Mixed probe schemas')
++        if type(spec.get('lane'))is not int or not 0<=spec['lane']<128:raise ValueError('Probe lane outside original128')
++        direction=torch.tensor(spec['request_direction'],dtype=torch.float64).unsqueeze(0)
++    else:
++        if 'lane' in spec or 'request_direction' in spec:raise ValueError('Mixed probe schemas')
++        lanes=spec.get('lanes')
++        if not isinstance(lanes,list) or not lanes or any(type(i)is not int or not 0<=i<128 for i in lanes) or len(set(lanes))!=len(lanes):
++            raise ValueError('Batch probe needs unique original128 lane IDs')
++        direction=torch.tensor(spec['request_directions'],dtype=torch.float64)
++    if direction.shape!=(len(probe_lanes(spec)),18) or not torch.isfinite(direction).all() or not (direction.norm(dim=-1)>0).all():
++        raise ValueError('Need finite nonzero18D request direction per lane')
+     epsilon=spec['epsilon_request']
+     if not isinstance(epsilon,(int,float)) or not 0<epsilon<=2:raise ValueError('Declare a positive request perturbation, no actuator changes')
+     if spec.get('head') not in ('recovery','approach'):raise ValueError('Unknown head')
+     return spec
+ 
++def perturb_request(request,spec,branch):
++    """Diagnostic intervention at one shared tick; original actuator runs next.
++
++    No lane-specific policy rule. Full pre-intervention prefix is identical for
++    all selected lanes, and no previous perturbation is hidden in their state.
++    """
++    validate_spec(spec)
++    if branch not in BRANCHES:raise ValueError('Unknown probe branch')
++    if request.shape!=(128,18):raise ValueError('Probe requires original128 request shape')
++    direction=([spec['request_direction']] if spec['schema']=='native-paired-prefix-spec-v1' else spec['request_directions'])
++    action=request.clone();sign={'nominal_a':0.,'nominal_b':0.,'minus':-1.,'plus':1.}[branch]
++    action[probe_lanes(spec)]+=sign*spec['epsilon_request']*request.new_tensor(direction)
++    return action.clamp(-1,1)
++
+ class NativePairCapture:
+     def __init__(self,spec,branch):
+         self.spec=validate_spec(spec);self.branch=branch
+@@ -40,20 +73,21 @@ class NativePairCapture:
+             state=capture_state(env)
+             self.start=tensor_tree_copy(dict(before=state,observation=observation,executor_before=capture_controller(env._sm_residual_controller)),cpu=True)
+             self.prefix.update(tree_digest(self.start).encode())
+-            action=request.clone();sign={'nominal_a':0.,'nominal_b':0.,'minus':-1.,'plus':1.}[self.branch]
+-            action[self.spec['lane']]+=sign*self.spec['epsilon_request']*request.new_tensor(self.spec['request_direction'])
+-            self.request_before=request.detach().cpu().clone();self.request_after=action.clamp(-1,1).detach().cpu().clone()
+-            return action.clamp(-1,1)
++            action=perturb_request(request,self.spec,self.branch)
++            self.request_before=request.detach().cpu().clone();self.request_after=action.detach().cpu().clone()
++            return action
+         self.prefix.update(tree_digest(dict(observation=observation,request=request,physical=capture_state(env)['physical'])).encode())
+         return request
+     def after(self,tick,env,done):
+         if tick<self.spec['tick']:
+             self.prefix.update(tree_digest(dict(targets=env._sm_joint_targets,final=env._sm_final_action,done=done)).encode())
+         elif tick==self.spec['tick']:
+-            if done.bool().any():raise ValueError('Probe crosses terminal/reset; reject counterfactual')
+-            self.raw=tensor_tree_copy(dict(start=self.start,next_state=encode_physical(capture_state(env)['physical']),
++            valid=probe_valid_lanes(done,probe_lanes(self.spec))
++            captured=capture_state(env)
++            self.raw=tensor_tree_copy(dict(start=self.start,next_state=encode_physical(captured['physical']),
+                 final_joint_targets=env._sm_joint_targets,final_normalized=env._sm_final_action,request_before=self.request_before,
+-                request_after=self.request_after,task_after=capture_state(env)['task']),cpu=True)
++                request_after=self.request_after,task_after=captured['task'],recovery_after=captured['recovery'],
++                next_feet=captured['physical']['foot_contact'],command_valid_lanes=valid),cpu=True)
+     def save(self,output,actor,task_contract,policy_execution,physics,seed):
+         if self.raw is None:raise ValueError('Native probe did not finish')
+         from .supermimic_evidence_binding_v1 import runtime_identity
+diff --git a/scripts/build_supermimic_probe_region.py b/scripts/build_supermimic_probe_region.py
+index 4948453..6a99594 100644
+--- a/scripts/build_supermimic_probe_region.py
++++ b/scripts/build_supermimic_probe_region.py
+@@ -7,11 +7,11 @@ receipt must declare independently calibrated bounds and reference this file has
+ import argparse,hashlib,json
+ from pathlib import Path
+ import torch
+-from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES,tree_digest
++from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES,tree_digest,probe_lanes,validate_spec
+ from quadsmash.rl.supermimic_physical_dataset_v1 import encode_physical
+ from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+ 
+-def build(paths,identity,output):
++def build(paths,identity,output,selected_lanes=None):
+     runs={k:torch.load(paths[k],map_location='cpu',weights_only=True) for k in BRANCHES}
+     base=runs['nominal_a']
+     for branch,run in runs.items():
+@@ -25,7 +25,14 @@ def build(paths,identity,output):
+     from quadsmash.rl.supermimic_evidence_binding_v1 import json_sha
+     if json_sha(base['task_contract'])!=identity['task_contract_sha256'] or base['policy_execution']!=identity['policy_execution']:
+         raise ValueError('Probe/runtime task or execution mismatch')
+-    row=base['raw']['start'];physical=row['before']['physical'];lane=base['spec']['lane'];sl=slice(lane,lane+1)
++    validate_spec(base['spec'])
++    row=base['raw']['start'];physical=row['before']['physical'];intervention_lanes=probe_lanes(base['spec'])
++    lanes=intervention_lanes if selected_lanes is None else list(selected_lanes)
++    if not lanes or any(type(i)is not int or i not in intervention_lanes for i in lanes) or len(set(lanes))!=len(lanes):
++        raise ValueError('Evidence lanes must be unique measured intervention lanes')
++    sl=torch.tensor(lanes)
++    for run in runs.values():
++        if tree_digest(run['raw']['start'])!=tree_digest(row):raise ValueError('Different full native start state')
+     suite=base['task_contract']['suite'];path=Path(suite['path'])
+     if not path.is_absolute():path=Path(__file__).resolve().parents[1]/path
+     if hashlib.sha256(path.read_bytes()).hexdigest()!=suite['sha256']:raise ValueError('Suite hash mismatch')
+@@ -36,23 +43,29 @@ def build(paths,identity,output):
+         executor_before_sha256={k:v['executor_before_sha256'] for k,v in runs.items()})
+     for branch,run in runs.items():pairs['native_'+branch]=run['raw']['next_state'][sl]
+     for branch in ('minus','plus'):pairs['targets_'+branch]=runs[branch]['raw']['final_joint_targets'][sl]
+-    def modes(run):
++    def modes(run,lane):
+         task=run['raw']['task_after']
+-        return {k:(v[lane].tolist() if isinstance(v,torch.Tensor) and v.ndim else v) for k,v in task.items()
++        result={k:(v[lane].tolist() if isinstance(v,torch.Tensor) and v.ndim else v) for k,v in task.items()
+                 if k in ('had_contact','released','frame_hit','legal_initial_contact','string_hit','airborne_string_hit','rally_fault')}
+-    pairs['native_contact_modes']={k:modes(v) for k,v in runs.items()}
+-    sample_id=f"{identity['actor_state_sha256']}:{base['seed']}:{lane}:{int(row['before']['episode_index'][lane])}"
+-    evidence=dict(sample_ids=[sample_id],schema='native-paired-prefix-region-v1',runtime_identity=identity,actor_state=base['actor_state'],pairs=pairs,
+-        command_starts=[dict(start=row,final_normalized=base['raw']['final_normalized'],final_joint_targets=base['raw']['final_joint_targets'])],
++        if 'next_feet' in run['raw']:result['foot_contact']=run['raw']['next_feet'][lane].bool().tolist()
++        recovery=run['raw'].get('recovery_after',{})
++        if 'body_ground_seen' in recovery:result['body_ground_seen']=bool(recovery['body_ground_seen'][lane])
++        return result
++    pairs['native_contact_modes']={k:([modes(v,lane) for lane in lanes] if len(lanes)>1 else modes(v,lanes[0])) for k,v in runs.items()}
++    sample_ids=[f"{identity['actor_state_sha256']}:{base['seed']}:{lane}:{int(row['before']['episode_index'][lane])}" for lane in lanes]
++    evidence=dict(sample_ids=sample_ids,lane_ids=lanes,intervention_lanes=intervention_lanes,schema='native-paired-prefix-region-v1',runtime_identity=identity,actor_state=base['actor_state'],pairs=pairs,
++        command_starts=[dict(start=row,final_normalized=base['raw']['final_normalized'],final_joint_targets=base['raw']['final_joint_targets'],
++                            valid_lanes=base['raw'].get('command_valid_lanes',torch.ones(len(launch),dtype=torch.bool)))],
+         source_sha256={k:hashlib.sha256(Path(p).read_bytes()).hexdigest() for k,p in paths.items()},
+         source_paths={k:str(Path(p).resolve()) for k,p in paths.items()},
+-        head=base['spec']['head'],scope='one measured probe; broader validity needs independent state/event coverage; no automatic pass')
++        head=base['spec']['head'],scope='measured same-tick native probes; no automatic pass or calibrated validity bounds')
+     output=Path(output)
+     with output.open('xb') as f:torch.save(evidence,f)
+-    return dict(path=str(output),sha256=hashlib.sha256(output.read_bytes()).hexdigest(),native_probe_count=1,passed=None)
++    return dict(path=str(output),sha256=hashlib.sha256(output.read_bytes()).hexdigest(),native_probe_count=len(lanes),passed=None)
+ 
+ if __name__=='__main__':
+     p=argparse.ArgumentParser(description=__doc__)
+     for branch in BRANCHES:p.add_argument('--'+branch.replace('_','-'),type=Path,required=True)
+     p.add_argument('--runtime-identity',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+-    a=p.parse_args();print(json.dumps(build({k:getattr(a,k) for k in BRANCHES},json.loads(a.runtime_identity.read_text()),a.output),indent=2))
++    p.add_argument('--selected-lanes',type=int,nargs='+',help='Predeclared calibration OR heldout subset, never selected by measured response')
++    a=p.parse_args();print(json.dumps(build({k:getattr(a,k) for k in BRANCHES},json.loads(a.runtime_identity.read_text()),a.output,a.selected_lanes),indent=2))
+diff --git a/quadsmash/rl/supermimic_native_response_data_v1.py b/quadsmash/rl/supermimic_native_response_data_v1.py
+new file mode 100644
+index 0000000..71fbbc3
+--- /dev/null
++++ b/quadsmash/rl/supermimic_native_response_data_v1.py
+@@ -0,0 +1,74 @@
++"""Immutable from-ground paired transitions, separate from rollout inputs.
++
++These labels identify executable local responses. Native next states never
++become inputs of a deployed prediction or an imagined policy step.
++"""
++import hashlib,json
++from pathlib import Path
++import torch
++from .supermimic_native_pair_capture_v1 import BRANCHES,tree_digest,probe_lanes,validate_spec
++from .supermimic_physical_dataset_v1 import encode_physical
++from .supermimic_data_split_v1 import explicit_lane_split
++
++
++def load_response_data(directory,split_path):
++    directory=Path(directory)
++    status=json.loads((directory/'status.json').read_text())
++    if status.get('status')!='COLLECTION_FINISHED' or status.get('actor_updates')!=0:
++        raise ValueError('Native four-branch collection is not complete')
++    records={r['branch']:r for r in status['completed']}
++    if len(status['completed'])!=4 or set(records)!=set(BRANCHES):raise ValueError('Missing or duplicated native branch')
++    runs={};hashes={}
++    for branch in BRANCHES:
++        path=directory/branch/'native_probe.pt';digest=hashlib.sha256(path.read_bytes()).hexdigest()
++        if records[branch]['exit_code']!=0 or records[branch]['probe_sha256']!=digest:raise ValueError('Native branch failed or hash changed')
++        hashes[branch]=digest;runs[branch]=torch.load(path,map_location='cpu',weights_only=True)
++    base=runs['nominal_a'];validate_spec(base['spec'])
++    lanes=probe_lanes(base['spec'])
++    if lanes!=list(range(128)):raise ValueError('Response fitting requires original128 ordered measured interventions')
++    train,validation=explicit_lane_split(json.loads(Path(split_path).read_text()),128)
++    start=base['raw']['start'];physical=start['before']['physical']
++    for branch,run in runs.items():
++        if run.get('schema')!='native-paired-prefix-run-v1' or run.get('branch')!=branch:raise ValueError('Wrong branch schema')
++        for key in ('spec','seed','task_contract','policy_execution','physics','prefix_sha256','executor_before_sha256','execution_code_sha256','restore_mode'):
++            if run[key]!=base[key]:raise ValueError('Native prefix/contract mismatch: '+key)
++        if any(run.get(k)!=0 for k in ('actor_updates','world_updates','critic_updates')):raise ValueError('Updated probe policy/model')
++        if tree_digest(run['actor_state'])!=tree_digest(base['actor_state']) or tree_digest(run['raw']['start'])!=tree_digest(start):
++            raise ValueError('Native full start/actor mismatch')
++        if not run['raw']['command_valid_lanes'].all():raise ValueError('Measured native transition crosses reset')
++    if base['restore_mode']!='from-ground-identical-prefix':raise ValueError('Snapshot restoration is not same-prefix evidence')
++    repeat=float((runs['nominal_a']['raw']['next_state']-runs['nominal_b']['raw']['next_state']).abs().max())
++    # Measured deterministic probe was specified to repeat exactly; no new
++    # tolerance is inferred from the observed response magnitude.
++    if repeat!=0:raise ValueError('Native repeatability failed')
++    suite=Path(base['task_contract']['suite']['path'])
++    if not suite.is_absolute():suite=Path(__file__).resolve().parents[2]/suite
++    if hashlib.sha256(suite.read_bytes()).hexdigest()!=base['task_contract']['suite']['sha256']:raise ValueError('Suite changed')
++    cases=json.loads(suite.read_text())['cases']
++    tensors=dict(state=encode_physical(physical),previous_action=physical['final_action'],feet=physical['foot_contact'].float(),
++                 present=physical['ball_present'],elapsed=physical['elapsed_s'],launch=torch.tensor([c['launch']['position_m']+c['launch']['velocity_mps'] for c in cases]))
++    for branch,run in runs.items():
++        tensors['target_'+branch]=run['raw']['final_joint_targets']
++        tensors['next_'+branch]=run['raw']['next_state']
++    if any(not torch.isfinite(v).all() for v in tensors.values()):raise ValueError('Nonfinite measured data')
++    return tensors,dict(source_sha256=hashes,spec=base['spec'],train_lanes=train.tolist(),validation_lanes=validation.tolist(),
++        split_sha256=hashlib.sha256(Path(split_path).read_bytes()).hexdigest(),task_contract=base['task_contract'],
++        policy_execution=base['policy_execution'],native_repeat_max=repeat,actor_state_sha256=tree_digest(base['actor_state']),
++        scope='fixed-time executable paired labels; no fitted trust bounds; neither success labels nor future actor inputs')
++
++
++def normalized_response_loss(prediction_minus,prediction_plus,native_minus,native_plus,targets_minus,targets_plus,scale,*,minimum_command_delta=1e-6):
++    """Finite-difference supervision per measured final-command radian.
++
++    Saturated interventions have no identifiable directional derivative. They
++    remain in pointwise supervision and in diagnostics, rather than inventing
++    a derivative or silently reporting them as supported probes.
++    """
++    if prediction_minus.shape!=prediction_plus.shape or native_minus.shape!=prediction_minus.shape or native_plus.shape!=prediction_minus.shape:
++        raise ValueError('Native/predicted response shape mismatch')
++    amplitude=(targets_plus-targets_minus).norm(dim=-1)
++    supported=amplitude>=minimum_command_delta
++    error=((prediction_plus-prediction_minus)-(native_plus-native_minus))/amplitude.clamp_min(minimum_command_delta)[:,None]/scale
++    per=error.square().mean(-1)
++    loss=(per*supported.to(per.dtype)).sum()/supported.sum().clamp_min(1)
++    return loss,dict(supported=int(supported.sum()),saturated=int((~supported).sum()))
+diff --git a/scripts/fit_supermimic_native_response.py b/scripts/fit_supermimic_native_response.py
+new file mode 100644
+index 0000000..8d01514
+--- /dev/null
++++ b/scripts/fit_supermimic_native_response.py
+@@ -0,0 +1,177 @@
++#!/usr/bin/env python3
++"""One bounded GPU calibration of measured robot/ball action responses.
++
++Task adaptation: measured final-command finite differences supplement native
++point/multistep supervision. This is not an Actor update, a native scoring run,
++or a passing evidence receipt. No counterfactual response is synthesized.
++"""
++import argparse,hashlib,json,subprocess,sys,time,traceback
++from pathlib import Path
++import torch
++from quadsmash.rl.supermimic_native_response_data_v1 import load_response_data,normalized_response_loss
++from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
++from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
++from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,contact_neighborhood_pools
++from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition,ball_error
++from quadsmash.rl.supermimic_physical_dataset_v1 import valid_windows
++from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest,SOURCE_SHA
++from scripts.fit_supermimic_action_ball import metrics,autoregressive_metrics,sha256
++
++
++def dump(path,value):
++    temporary=path.with_suffix(path.suffix+'.pending')
++    temporary.write_text(json.dumps(value,indent=2)+'\n');temporary.replace(path)
++
++
++def forward(base,ball,sweep,state,target,other):
++    return ball_transition(base,ball,state,target,*other,action_model=sweep)
++
++def aligned_robot(prediction,native):
++    same=(prediction[:,3:7]*native[:,3:7]).sum(-1,keepdim=True)>=0
++    return torch.cat((prediction[:,:3],torch.where(same,prediction[:,3:7],-prediction[:,3:7]),prediction[:,7:49]),-1)
++
++
++def robot_point_loss(prediction,native,scale):
++    return ((aligned_robot(prediction,native)-native[:,:49])/scale[:49]).square().mean()
++
++
++def response_summary(base,ball,sweep,pairs,lanes):
++    p={k:v[lanes] for k,v in pairs.items()}
++    other=[p[k] for k in ('previous_action','feet','present','elapsed','launch')]
++    with torch.no_grad():
++        out={b:forward(base,ball,sweep,p['state'],p['target_'+b],other)[0] for b in ('nominal_a','minus','plus')}
++    true=p['next_plus']-p['next_minus'];pred=out['plus']-out['minus']
++    command=(p['target_plus']-p['target_minus']).norm(dim=-1)
++    rows=[]
++    for i,lane in enumerate(lanes.tolist()):
++        item=dict(lane=lane,final_command_pair_delta_rad=float(command[i]),errors={})
++        for name,sl in (('joint_position',slice(13,31)),('joint_velocity',slice(31,49)),('root_angular_velocity',slice(10,13)),('ball_velocity',slice(52,55))):
++            a=true[i,sl];b=pred[i,sl];an=float(a.norm());bn=float(b.norm())
++            item['errors'][name]=dict(native_norm=an,predicted_norm=bn,delta_error_norm=float((b-a).norm()),
++                cosine=float((a*b).sum()/(an*bn)) if an>1e-7 and bn>1e-7 else None,
++                amplitude_ratio=bn/an if an>1e-7 else None,native_delta=a.tolist(),predicted_delta=b.tolist())
++        rows.append(item)
++    return dict(rows=rows,count=len(rows),saturated_count=int((command<1e-6).sum()),
++                scope='all declared lanes reported; zero responses are not successful gradient probes')
++
++
++def main(a):
++    if a.output.exists():raise FileExistsError(a.output)
++    a.output.mkdir(parents=True)
++    a._output_created=True
++    if a.updates!=256:raise ValueError('This diagnostic has one predeclared256-update budget; no sweep')
++    if not torch.cuda.is_available():raise RuntimeError('GPU required for model fitting')
++    torch.set_num_threads(2);torch.manual_seed(20261118);torch.cuda.set_device(0);torch.cuda.init();torch.cuda.reset_peak_memory_stats()
++    device=torch.device('cuda:0');started=time.perf_counter()
++    native,provenance=load_response_data(a.probe_directory,a.split_manifest)
++    pairs={k:v.to(device) for k,v in native.items()}
++    train=torch.tensor(provenance['train_lanes'],device=device);val=torch.tensor(provenance['validation_lanes'],device=device)
++    source=torch.load(a.physical_checkpoint,map_location='cpu',weights_only=True)
++    ball_source=torch.load(a.ball_checkpoint,map_location='cpu',weights_only=True)
++    sweep_source=torch.load(a.action_ball_checkpoint,map_location='cpu',weights_only=True)
++    if source['schema']!=PhysicalWorldV2.schema or ball_source['schema']!=BallResidualV2.schema or sweep_source['schema']!=ActionConditionedBallV1.schema:
++        raise ValueError('Explicit model schema mismatch')
++    contract=source['source_manifest']['task_contract']
++    if provenance['task_contract']!=contract:raise ValueError('Native response/physical model task contract mismatch')
++    if sweep_source['physical_sha256']!=sha256(a.physical_checkpoint) or sweep_source['legacy_ball_sha256']!=sha256(a.ball_checkpoint):
++        raise ValueError('Action-ball candidate belongs to a different base model')
++    package=torch.load(a.packed_data,map_location='cpu',weights_only=True);cpu=package['tensors']
++    manifest=package['source_manifest']
++    if manifest['task_contract']!=contract or manifest['source_sha256']!=SOURCE_SHA or manifest.get('policy_execution')!=provenance['policy_execution']:
++        raise ValueError('Native archive/probe source or execution differs')
++    receipt=json.loads((a.packed_data.parent/'completed.json').read_text())
++    if receipt['sha256']!=sha256(a.packed_data) or not bool(package['first_done'].all()):raise ValueError('Packed archive incomplete or changed')
++    base=PhysicalWorldV2(contract['asset']['sha256']).to(device);base.load_state_dict(source['model'],strict=True)
++    ball=BallResidualV2().to(device);ball.load_state_dict(ball_source['model'],strict=True)
++    sweep=ActionConditionedBallV1().to(device);sweep.load_state_dict(sweep_source['model'],strict=True)
++    if sweep_source['geometry_hashes']!=sweep.preview.geometry_hashes:raise ValueError('Racket geometry changed')
++    base.requires_grad_(False);ball.eval().requires_grad_(False);base.body.requires_grad_(True);sweep.requires_grad_(True)
++    contact_hash=tensor_digest(base.contact.state_dict().items());ball_hash=tensor_digest(ball.state_dict().items())
++    normalization_hash=tensor_digest((k,v) for k,v in base.state_dict().items() if not k.startswith('body.') and not k.startswith('contact.'))
++    before_base=tensor_digest(base.body.state_dict().items());before_sweep=tensor_digest(sweep.state_dict().items())
++    needed=('state','next_state','targets','previous_action','feet','present','elapsed','event_state','next_event_state','episode','terminated','timeout')
++    data={k:cpu[k].to(device) for k in needed}
++    suite=Path(contract['suite']['path'])
++    if not suite.is_absolute():suite=Path(__file__).resolve().parents[1]/suite
++    if sha256(suite)!=contract['suite']['sha256']:raise ValueError('Task suite changed')
++    cases=json.loads(suite.read_text())['cases'];launch=torch.tensor([c['launch']['position_m']+c['launch']['velocity_mps'] for c in cases],device=device)
++    edges=(cpu['next_event_state'][...,1]>cpu['event_state'][...,1])|(cpu['next_event_state'][...,6]>cpu['event_state'][...,6])
++    eligible=torch.zeros_like(edges);valid=valid_windows(cpu['episode'],cpu['terminated'],cpu['timeout'],16)
++    eligible[:len(valid)]=valid;allowed=torch.zeros(128,dtype=torch.bool);allowed[train.cpu()]=True;eligible&=allowed[None]
++    pools=contact_neighborhood_pools(edges,cpu['episode'],cpu['terminated'],cpu['timeout'],eligible)
++    if any(len(pool)==0 for pool in pools.values()):raise ValueError('Missing source event windows')
++    config=dict(argv=sys.argv,commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
++        updates=256,batch=128,window_steps=16,control_dt_s=.01,lr=2e-4,seed=20261118,actor_updates=0,critic_updates=0,
++        provenance=provenance,source_sha256={k:sha256(v) for k,v in dict(physical=a.physical_checkpoint,ball=a.ball_checkpoint,action_ball=a.action_ball_checkpoint,packed=a.packed_data).items()},
++        optimized='existing robot body and action-conditioned ball only; original schemas/normalization/contact/legacy ball frozen',
++        loss='mean16(robot normalized state loss + physical-unit ball error) + measured pair point loss + per-radian robot/ball finite-difference loss; all unit weights',
++        sampling=dict(contact=64,pre_contact=32,post_contact=16,background=16),
++        validation='original32 heldout lanes excluded from every fitting term; one time/direction is not complete physical admission',
++        mode_switch='raw finite-difference transition supervision permitted; never called a smooth Jacobian target',
++        reference='failed candidate remains diagnostic; no actor resumes it')
++    dump(a.output/'config.json',config)
++    initial=dict(legacy=metrics(base,ball,None,data,cpu,val.tolist(),launch),candidate=metrics(base,ball,sweep,data,cpu,val.tolist(),launch),
++                 response=response_summary(base,ball,sweep,pairs,val))
++    dump(a.output/'validation_initial.json',initial)
++    parameters=list(base.body.parameters())+list(sweep.parameters());opt=torch.optim.Adam(parameters,lr=2e-4)
++    generator=torch.Generator().manual_seed(20261118)
++    other=[pairs[k][train] for k in ('previous_action','feet','present','elapsed','launch')]
++    for update in range(256):
++        begin=time.perf_counter()
++        selected=torch.cat([pools[k][torch.randint(len(pools[k]),(n,),generator=generator)] for k,n in config['sampling'].items()]).to(device)
++        t,l=selected.unbind(1);state=data['state'][t,l];feet=data['feet'][t,l].float();present=data['present'][t,l]
++        ar=state.new_zeros(())
++        for j in range(16):
++            state,feet,present=forward(base,ball,sweep,state,data['targets'][t+j,l],[data['previous_action'][t+j,l],feet,present,data['elapsed'][t+j,l],launch[l]])
++            truth=data['next_state'][t+j,l]
++            ar=ar+(robot_point_loss(state,truth,base.delta_scale)+ball_error(state[:,49:],truth[:,49:]))/16
++        predicted={b:forward(base,ball,sweep,pairs['state'][train],pairs['target_'+b][train],other)[0] for b in ('minus','plus')}
++        pm,pp=predicted['minus'],predicted['plus'];nm,np=pairs['next_minus'][train],pairs['next_plus'][train]
++        point=sum((robot_point_loss(predicted[b],pairs['next_'+b][train],base.delta_scale)+ball_error(predicted[b][:,49:],pairs['next_'+b][train,49:])) for b in ('minus','plus'))/2
++        robot_response,support=normalized_response_loss(aligned_robot(pm,nm),aligned_robot(pp,np),nm[:,:49],np[:,:49],pairs['target_minus'][train],pairs['target_plus'][train],base.delta_scale[:49])
++        ball_response,_=normalized_response_loss(pm[:,52:55],pp[:,52:55],nm[:,52:55],np[:,52:55],pairs['target_minus'][train],pairs['target_plus'][train],state.new_full((3,),2.))
++        if support['supported']==0:raise RuntimeError('No executable native response in calibration set')
++        loss=ar+point+robot_response+ball_response
++        if not torch.isfinite(loss):raise FloatingPointError('Nonfinite native-response loss')
++        opt.zero_grad(set_to_none=True);loss.backward()
++        grad=torch.nn.utils.clip_grad_norm_(parameters,10.,error_if_nonfinite=True);opt.step();torch.cuda.synchronize()
++        row=dict(update=update+1,loss=float(loss.detach()),autoregressive=float(ar.detach()),point=float(point.detach()),robot_response=float(robot_response.detach()),ball_response=float(ball_response.detach()),gradient=float(grad),pair_support=support,seconds=time.perf_counter()-begin,peak_gpu_bytes=torch.cuda.max_memory_allocated(),actor_updates=0)
++        with (a.output/'history.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
++        if update%16==0 or update==255:print(json.dumps(row),flush=True)
++    if tensor_digest(base.contact.state_dict().items())!=contact_hash or tensor_digest(ball.state_dict().items())!=ball_hash:
++        raise RuntimeError('Frozen contact/legacy ball changed')
++    if tensor_digest((k,v) for k,v in base.state_dict().items() if not k.startswith('body.') and not k.startswith('contact.'))!=normalization_hash:
++        raise RuntimeError('Frozen physical normalization/geometry changed')
++    base_path=a.output/'world.pt';ball_path=a.output/'action_ball_candidate.pt'
++    clean_source={k:v for k,v in source.items() if 'optimizer' not in k}
++    torch.save(dict(clean_source,model=base.state_dict(),world_updates=int(source.get('world_updates',0))+256,
++                    response_fit_updates=256,response_fit_config=config,response_optimizer=opt.state_dict(),
++                    optimizer_contract='new combined robot-body/action-ball optimizer; old standalone optimizer states deliberately not reused'),base_path)
++    new_ball=dict({k:v for k,v in sweep_source.items() if 'optimizer' not in k},model=sweep.state_dict(),
++                  physical_sha256=sha256(base_path),updates=int(sweep_source['updates'])+256,response_fit_config=config)
++    torch.save(new_ball,ball_path)
++    final=dict(candidate=metrics(base,ball,sweep,data,cpu,val.tolist(),launch),response=response_summary(base,ball,sweep,pairs,val),
++               autoregressive=autoregressive_metrics(base,ball,sweep,data,cpu,val.tolist(),launch))
++    dump(a.output/'validation_final.json',final)
++    admission={k:final['candidate'][k]['velocity_rmse']<=initial['legacy'][k]['velocity_rmse'] for k in initial['legacy']}
++    dump(a.output/'completed.json',dict(status='FIT_COMPLETED_NOT_ADMITTED',world_response_updates=256,actor_updates=0,critic_updates=0,
++        world_sha256=sha256(base_path),action_ball_sha256=sha256(ball_path),
++        robot_parameters_changed=tensor_digest(base.body.state_dict().items())!=before_base,
++        action_ball_parameters_changed=tensor_digest(sweep.state_dict().items())!=before_sweep,
++        adjacent_step_non_degradation=admission,native_admission=False,
++        elapsed_s=time.perf_counter()-started,peak_gpu_bytes=torch.cuda.max_memory_allocated(),
++        scope='one bounded calibrated candidate; no optimizer/policy promotion; independent Recovery and broader contact checks still required'))
++
++
++if __name__=='__main__':
++    parser=argparse.ArgumentParser(description=__doc__)
++    for name in ('probe-directory','split-manifest','physical-checkpoint','ball-checkpoint','action-ball-checkpoint','packed-data','output'):
++        parser.add_argument('--'+name,type=Path,required=True)
++    parser.add_argument('--updates',type=int,default=256)
++    args=parser.parse_args()
++    try:main(args)
++    except BaseException as e:
++        if getattr(args,'_output_created',False):
++            dump(args.output/'failure.json',dict(type=type(e).__name__,message=str(e),actor_updates=0))
++            (args.output/'failure_traceback.txt').write_text(traceback.format_exc())
++        raise
+diff --git a/tests/test_supermimic_batch_probe.py b/tests/test_supermimic_batch_probe.py
+new file mode 100644
+index 0000000..d399771
+--- /dev/null
++++ b/tests/test_supermimic_batch_probe.py
+@@ -0,0 +1,93 @@
++import pytest
++import torch
++from quadsmash.rl.supermimic_native_pair_capture_v1 import (
++    validate_spec,probe_lanes,probe_valid_lanes,perturb_request,
++)
++
++
++def spec():
++    return dict(schema='native-paired-prefix-batch-spec-v2',tick=272,head='approach',
++                lanes=[17,30],request_directions=[[0.]*12+[1.]+[0.]*5,[0.]*13+[-1.]+[0.]*4],epsilon_request=.02)
++
++
++def test_batch_intervention_only_selected_lanes_and_coordinates():
++    s=spec();before=torch.zeros(128,18)
++    plus=perturb_request(before,s,'plus');minus=perturb_request(before,s,'minus')
++    expected=torch.zeros_like(before);expected[17,12]=.02;expected[30,13]=-.02
++    assert torch.equal(plus,expected) and torch.equal(minus,-expected)
++    assert before.count_nonzero()==0
++    assert torch.equal(perturb_request(before,s,'nominal_a'),before)
++    assert probe_lanes(s)==[17,30]
++
++
++def test_single_lane_legacy_and_batch_are_identical():
++    s=spec();s['lanes']=[17];s['request_directions']=s['request_directions'][:1]
++    old=dict(schema='native-paired-prefix-spec-v1',tick=272,head='approach',lane=17,
++             request_direction=s['request_directions'][0],epsilon_request=.02)
++    request=torch.randn(128,18).clamp(-1,1)
++    for branch in ('nominal_a','nominal_b','minus','plus'):
++        assert torch.equal(perturb_request(request,s,branch),perturb_request(request,old,branch))
++
++
++@pytest.mark.parametrize('change',[
++    {'lanes':[17,17]}, {'lanes':[]}, {'lanes':[True,30]}, {'lane':17},
++    {'request_directions':[[0.]*18,[0.]*18]}, {'request_directions':[[1.]*18]},
++    {'request_directions':[[float('nan')]*18,[1.]*18]},
++])
++def test_invalid_batch_specs_rejected(change):
++    with pytest.raises(ValueError):validate_spec(dict(spec(),**change))
++
++
++def test_target_reset_is_rejected_unrelated_reset_is_explicit():
++    done=torch.zeros(128,dtype=torch.bool);done[7]=True
++    valid=probe_valid_lanes(done,[17,30]);assert not valid[7] and valid[17] and valid[30]
++    done[30]=True
++    with pytest.raises(ValueError,match='Target probe lane'):probe_valid_lanes(done,[17,30])
++
++
++def test_saturation_not_faked_as_executable_request_delta():
++    request=torch.ones(128,18);result=perturb_request(request,spec(),'plus')
++    assert result[17,12]==1 and result[30,13]==pytest.approx(.98)
++    assert torch.equal(request,torch.ones_like(request))
++
++
++def test_batch_bundle_preserves_lane_alignment_and_explicit_holdout_subset(tmp_path):
++    import json,hashlib
++    from scripts.build_supermimic_probe_region import build
++    from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES,tree_digest
++    from quadsmash.rl.supermimic_physical_dataset_v1 import STATE_FIELDS
++    from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
++    from quadsmash.rl.supermimic_evidence_binding_v1 import json_sha
++    suite=tmp_path/'suite.json'
++    suite.write_text(json.dumps({'cases':[{'launch':{'position_m':[i,0,1],'velocity_mps':[1,2,3]}} for i in range(128)]}))
++    contract={'suite':{'path':str(suite),'sha256':hashlib.sha256(suite.read_bytes()).hexdigest()}}
++    actor={'weight':torch.ones(1)};code={'capture':'fixed'};execution={'gate':'causal'}
++    identity=dict(execution_code_sha256=code,actor_state_sha256=tensor_digest(actor.items()),
++                  task_contract_sha256=json_sha(contract),policy_execution=execution)
++    physical={name:torch.zeros(128,width) for name,width in STATE_FIELDS}
++    physical.update(final_action=torch.zeros(128,18),foot_contact=torch.zeros(128,4),ball_present=torch.ones(128,dtype=torch.bool),elapsed_s=torch.full((128,),2.72))
++    start={'before':{'physical':physical,'episode_index':torch.zeros(128,dtype=torch.long)}}
++    paths={}
++    for b in BRANCHES:
++        raw=dict(start=start,next_state=torch.arange(128.)[:,None].expand(-1,55).clone(),
++                 final_joint_targets=torch.arange(128.)[:,None].expand(-1,18).clone(),final_normalized=torch.zeros(128,18),
++                 task_after={k:torch.ones(128,dtype=torch.bool) for k in ('had_contact','released','frame_hit','string_hit')},
++                 next_feet=torch.zeros(128,4),recovery_after={'body_ground_seen':torch.zeros(128,dtype=torch.bool)},command_valid_lanes=torch.ones(128,dtype=torch.bool))
++        run=dict(schema='native-paired-prefix-run-v1',branch=b,spec=spec(),seed=1,task_contract=contract,policy_execution=execution,
++                 physics={'device':'cuda:0'},prefix_sha256='same',executor_before_sha256='same',execution_code_sha256=code,
++                 actor_updates=0,world_updates=0,critic_updates=0,actor_state=actor,raw=raw,restore_mode='from-ground-identical-prefix')
++        paths[b]=tmp_path/(b+'.pt');torch.save(run,paths[b])
++    result=build(paths,identity,tmp_path/'bundle.pt',selected_lanes=[30])
++    assert result['native_probe_count']==1 and result['passed'] is None
++    bundle=torch.load(tmp_path/'bundle.pt',weights_only=True)
++    assert bundle['lane_ids']==[30] and bundle['intervention_lanes']==[17,30]
++    assert bundle['pairs']['native_plus'].shape==(1,55)
++    assert bundle['pairs']['native_plus'][0,0]==30 and bundle['pairs']['launch'][0,0]==30
++    assert bundle['sample_ids'][0].endswith(':30:0')
++    with pytest.raises(ValueError,match='unique measured'):build(paths,identity,tmp_path/'wrong.pt',[7])
++    build(paths,identity,tmp_path/'both.pt')
++    both=torch.load(tmp_path/'both.pt',weights_only=True)
++    assert len(both['pairs']['native_contact_modes']['plus'])==2
++    changed=torch.load(paths['plus'],weights_only=True);changed['raw']['start']['before']['physical']['elapsed_s'][30]+=.01
++    torch.save(changed,paths['plus'])
++    with pytest.raises(ValueError,match='Different full native start'):build(paths,identity,tmp_path/'bad.pt')
+diff --git a/tests/test_supermimic_native_response_data.py b/tests/test_supermimic_native_response_data.py
+new file mode 100644
+index 0000000..b93030c
+--- /dev/null
++++ b/tests/test_supermimic_native_response_data.py
+@@ -0,0 +1,68 @@
++import torch
++import pytest
++from quadsmash.rl.supermimic_native_response_data_v1 import normalized_response_loss
++
++
++def test_response_supervision_uses_final_command_and_has_model_gradient():
++    p=torch.tensor([[.02,0.],[.99,.5]],requires_grad=True)
++    target_minus=torch.zeros(2,18);target_plus=target_minus.clone();target_plus[0,12]=.02
++    truth=torch.tensor([[.04,0.],[0.,0.]])
++    loss,counts=normalized_response_loss(torch.zeros_like(p),p,torch.zeros_like(truth),truth,target_minus,target_plus,torch.ones(2))
++    assert float(loss.detach())==pytest.approx(.5) and counts=={'supported':1,'saturated':1}
++    loss.backward();assert p.grad[0,0]<0 and torch.equal(p.grad[1],torch.zeros(2))
++
++
++def test_exact_response_zero_even_with_shared_prediction_bias():
++    minus=torch.tensor([[10.,20.]])
++    plus=minus+torch.tensor([[.5,1.]])
++    t=torch.zeros(1,18);u=t.clone();u[0,12]=.02
++    loss,_=normalized_response_loss(minus,plus,torch.zeros(1,2),torch.tensor([[.5,1.]]),t,u,torch.ones(2))
++    assert loss==0
++
++
++def test_no_supported_probes_not_claimed_as_valid():
++    p=torch.ones(2,3,requires_grad=True);t=torch.zeros(2,18)
++    loss,counts=normalized_response_loss(p,p,p.detach(),p.detach(),t,t,torch.ones(3))
++    assert counts['supported']==0 and counts['saturated']==2
++    loss.backward();assert torch.equal(p.grad,torch.zeros_like(p))
++
++
++def test_robot_point_supervision_respects_quaternion_double_cover():
++    from scripts.fit_supermimic_native_response import robot_point_loss
++    truth=torch.zeros(2,55);truth[:,3]=1
++    prediction=truth.clone();prediction[:,3]=-1;prediction.requires_grad_(True)
++    loss=robot_point_loss(prediction,truth,torch.ones(55))
++    assert loss==0
++    loss.backward();assert torch.isfinite(prediction.grad).all()
++
++
++def test_native_response_loader_requires_real_complete_hashed_prefixes(tmp_path):
++    import json,hashlib
++    from quadsmash.rl.supermimic_native_response_data_v1 import load_response_data
++    from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES
++    from quadsmash.rl.supermimic_physical_dataset_v1 import STATE_FIELDS
++    (tmp_path/'status.json').write_text(json.dumps({'status':'RUNNING'}))
++    split=tmp_path/'split.json';split.write_text(json.dumps({'train_lanes':list(range(96)),'validation_lanes':list(range(96,128))}))
++    with pytest.raises(ValueError,match='not complete'):load_response_data(tmp_path,split)
++    suite=tmp_path/'suite.json';suite.write_text(json.dumps({'cases':[{'launch':{'position_m':[0,0,1],'velocity_mps':[1,2,3]}} for _ in range(128)]}))
++    contract={'suite':{'path':str(suite),'sha256':hashlib.sha256(suite.read_bytes()).hexdigest()}}
++    spec=dict(schema='native-paired-prefix-batch-spec-v2',head='approach',tick=272,lanes=list(range(128)),epsilon_request=.02,request_directions=[[0.]*12+[1.]+[0.]*5 for _ in range(128)])
++    physical={name:torch.zeros(128,width) for name,width in STATE_FIELDS}
++    physical.update(final_action=torch.zeros(128,18),foot_contact=torch.zeros(128,4),ball_present=torch.ones(128,dtype=torch.bool),elapsed_s=torch.ones(128))
++    start={'before':{'physical':physical,'episode_index':torch.zeros(128,dtype=torch.long)}}
++    records=[]
++    for b in BRANCHES:
++        raw=dict(start=start,next_state=torch.zeros(128,55),final_joint_targets=torch.zeros(128,18),command_valid_lanes=torch.ones(128,dtype=torch.bool))
++        value=dict(schema='native-paired-prefix-run-v1',branch=b,spec=spec,seed=1,task_contract=contract,policy_execution={'gate':'causal'},physics={'device':'cuda:0'},prefix_sha256='same',executor_before_sha256='same',execution_code_sha256={'capture':'same'},restore_mode='from-ground-identical-prefix',actor_state={'p':torch.ones(1)},actor_updates=0,world_updates=0,critic_updates=0,raw=raw)
++        folder=tmp_path/b;folder.mkdir();path=folder/'native_probe.pt';torch.save(value,path)
++        records.append({'branch':b,'exit_code':0,'probe_sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
++    status={'status':'COLLECTION_FINISHED','actor_updates':0,'completed':records}
++    (tmp_path/'status.json').write_text(json.dumps(status))
++    data,meta=load_response_data(tmp_path,split)
++    assert data['state'].shape==(128,55) and set(meta['train_lanes']).isdisjoint(meta['validation_lanes'])
++    target=tmp_path/'plus/native_probe.pt';value=torch.load(target,weights_only=True)
++    value['raw']['next_state'][0,0]=float('nan');torch.save(value,target)
++    with pytest.raises(ValueError,match='hash changed'):load_response_data(tmp_path,split)
++    status['completed'][-1]['probe_sha256']=hashlib.sha256(target.read_bytes()).hexdigest()
++    (tmp_path/'status.json').write_text(json.dumps(status))
++    with pytest.raises(ValueError,match='Nonfinite'):load_response_data(tmp_path,split)

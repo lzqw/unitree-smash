@@ -1,0 +1,63 @@
+{
+  "schema": "bounded-native-response-calibration-plan-v1",
+  "created_utc": "2026-11-17T18:41:32.053639+00:00",
+  "command": [
+    "bash",
+    "scripts/python.sh",
+    "scripts/fit_supermimic_native_response.py",
+    "--probe-directory",
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_probe_batch128_t272",
+    "--split-manifest",
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/fixed_split.json",
+    "--physical-checkpoint",
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_response_fit_01/world.pt",
+    "--ball-checkpoint",
+    "/tmp/supermimic_ball_sequence_20261114_axsonnit/run/ball.pt",
+    "--action-ball-checkpoint",
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_response_fit_01/action_ball_candidate.pt",
+    "--packed-data",
+    "/home/autodrive/LZQW/experiments/supermimic_frozen_closure_20261117_223243/packed/data.pt",
+    "--output",
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/ball_gate_repair_candidate_01",
+    "--updates",
+    "256",
+    "--repair-ball-gate"
+  ],
+  "cwd": "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290",
+  "env": {
+    "CUDA_VISIBLE_DEVICES": "0",
+    "QUADSMASH_PYTHON": "/home/autodrive/Isaac/env_isaaclab/bin/python"
+  },
+  "fixed_budget": {
+    "model_optimizer_steps": 256,
+    "actor_optimizer_steps": 0,
+    "batch": 128,
+    "world_steps": 16,
+    "lr": 0.0002,
+    "seed": 20261118
+  },
+  "sources": {
+    "probe": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_probe_batch128_t272",
+    "split": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/fixed_split.json"
+  },
+  "fit_scope": "same 256 model-step diagnostic, explicitly train existing legacy ball gate as well as robot body/action-ball; no actor, network expansion, native run or threshold change",
+  "data_conditions": [
+    "all four native branches complete with exit0 and SHA matches",
+    "all128 exact same-prefix starts and nominal repeat0",
+    "source actor/asset/execution contract match",
+    "original96/32 split; heldout rows excluded from every loss",
+    "no GPU overlap with native series"
+  ],
+  "evaluation": "report all32 heldout native response pairs including weak/saturated/mode-switch cases; pre/at/post contact1step and4/16/32/64 AR; unchanged adjacent-step no-worsening criterion vs legacy",
+  "admission": "never automatic; one time/action direction does not certify Recovery or complete Approach; failure retained, no automatic model-budget extension or second fit",
+  "source_hashes": {
+    "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/fit_supermimic_native_response.py": "8cae49a86fbe34345530a6b503950aef5dc48586636cea64de014247e456c819",
+    "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_ball_mode_supervision_v1.py": "09cce5b2f7dc62713dac5b1315aae29d0d08934667d1552e332fbda90164e281",
+    "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/tests/test_supermimic_ball_mode_supervision.py": "1cab6fef961b9d211f571330b9047b1ff0a485d84a314582ea4c43b5b36ed830"
+  },
+  "status": "CODE_READY_NOT_LAUNCHED_PENDING_REVISION_AUTHORIZATION",
+  "reason": "Observed pre-contact free-flight data conflicts with frozen legacy gate mean racket probability0.93474; sampling/robot response repair alone did not fix the ball response",
+  "authorization_reason": "AGENTS.md requires at most three hypothesis-driven training revisions; initial400, neighborhood400 and response256 candidates have already run",
+  "new_native_steps": 0,
+  "actor_updates": 0
+}

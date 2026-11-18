@@ -77,5 +77,8 @@
     "checkpoint": "explicit SM_ACTION_BALL_CHECKPOINT",
     "validation": "immutable native paired-prefix response evidence and current model holdout checks",
     "native_verified": false
-  }
+  },
+  "world_batch_size": 512,
+  "quota_unit_size": 128,
+  "world_batch_scope": "Supervised GPU minibatch only; source/stage counts are128-unit ratios scaled at launch. Native128 and temporal horizons unchanged."
 }

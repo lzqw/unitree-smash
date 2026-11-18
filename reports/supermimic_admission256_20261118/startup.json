@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "scripts/fit_supermimic_action_ball.py",
+    "--physical-checkpoint",
+    "/tmp/supermimic_racket_dynamics_20261114_YRFhKS/run/world.pt",
+    "--ball-checkpoint",
+    "/tmp/supermimic_ball_sequence_20261114_axsonnit/run/ball.pt",
+    "--packed-data",
+    "/home/autodrive/LZQW/experiments/supermimic_frozen_closure_20261117_223243/packed/data.pt",
+    "--split-manifest",
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/fixed_split.json",
+    "--output",
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/action_ball_fit_fixed",
+    "--updates",
+    "400",
+    "--batch",
+    "128",
+    "--device",
+    "cuda:0"
+  ],
+  "commit": "0e417225f2b75c5978e6f72856d0f423d79a31c8",
+  "seed": 20261117,
+  "device": "cuda:0",
+  "updates": 400,
+  "batch": 128,
+  "actor_updates": 0
+}

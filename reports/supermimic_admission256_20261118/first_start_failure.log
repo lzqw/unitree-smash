@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/fit_supermimic_action_ball.py", line 211, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/fit_supermimic_action_ball.py", line 106, in main
+    if device.type=='cuda':torch.cuda.reset_peak_memory_stats(device)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/autodrive/Isaac/env_isaaclab/lib/python3.11/site-packages/torch/cuda/memory.py", line 374, in reset_peak_memory_stats
+    return torch._C._cuda_resetPeakMemoryStats(device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Invalid device argument 

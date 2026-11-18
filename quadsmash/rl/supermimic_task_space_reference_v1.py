@@ -35,15 +35,28 @@ class TaskSpaceReferenceBankV1:
     match_distance_threshold: float = 1.0
     max_per_head: int = 128
     schema: str = 'success-guided-task-space-reference-v2'
+    excluded_lanes: tuple = ()
 
     def __post_init__(self):
         if not math.isfinite(self.match_distance_threshold) or self.match_distance_threshold<=0:
             raise ValueError('Tracking requires a finite positive matching threshold')
         if self.max_per_head<1: raise ValueError('Reference capacity must be positive')
+        self.excluded_lanes=tuple(sorted(set(self.excluded_lanes)))
+        self.assert_excludes(self.excluded_lanes)
+
+    def assert_excludes(self,lanes):
+        """Never silently reuse a holdout trajectory as an Actor reference."""
+        excluded=set(lanes)
+        if not excluded:return
+        if any('lane_id' not in e for e in self.entries):
+            raise ValueError('Reference lane identity missing; cannot verify holdout independence')
+        if any(e['lane_id'] in excluded for e in self.entries):
+            raise ValueError('Reference bank contains heldout lane trajectories')
 
     def to(self,device):
         return type(self)([{k:v.to(device) if torch.is_tensor(v) else v for k,v in e.items()} for e in self.entries],
-                          self.geometry_sha256,self.source_sha256,self.match_distance_threshold,self.max_per_head)
+                          self.geometry_sha256,self.source_sha256,self.match_distance_threshold,self.max_per_head,
+                          excluded_lanes=self.excluded_lanes)
 
     @property
     def manifest(self):
@@ -51,6 +64,7 @@ class TaskSpaceReferenceBankV1:
                     approach_count=sum(e['mode']=='approach' for e in self.entries),
                     recovery_count=sum(e['mode']=='recovery' for e in self.entries),
                     match_distance_threshold=self.match_distance_threshold,max_per_head=self.max_per_head,
+                    excluded_lanes=list(self.excluded_lanes),
                     protocol_verified=bool(self.entries) and all(e.get('score_schema')=='historical-independent-complete5-v1' for e in self.entries),
                     native_contact_certification=False,alignment='current causal event estimate / current-state phase match')
 
@@ -63,7 +77,7 @@ class TaskSpaceReferenceBankV1:
         return cls(**payload)
 
     @classmethod
-    def from_packed(cls,tensors,geometry,*,source_sha256='',policy_id='unknown',match_distance_threshold=1.,horizon=None,terminal_records=None):
+    def from_packed(cls,tensors,geometry,*,source_sha256='',policy_id='unknown',match_distance_threshold=1.,horizon=None,terminal_records=None,excluded_lanes=()):
         if horizon is not None: raise ValueError('Do not truncate reference episodes')
         for name in ('state','next_state','event_state','next_event_state','episode','elapsed','terminated','timeout','feet','next_feet'):
             if name not in tensors: raise ValueError('Reference evidence missing: '+name)
@@ -76,7 +90,11 @@ class TaskSpaceReferenceBankV1:
                 if record.get('scoring_schema')!='historical-independent-complete5-v1':raise ValueError('Reference requires original independent task scoring')
                 labels[key]=record
         entries=[]; d=tensors; T,N=d['episode'].shape
+        excluded=set(excluded_lanes)
+        if any(isinstance(x,bool) or not isinstance(x,int) or x<0 or x>=N for x in excluded):
+            raise ValueError('Invalid excluded reference lane')
         for lane in range(N):
+            if lane in excluded:continue
             start=0
             for end in torch.where(d['terminated'][:,lane]|d['timeout'][:,lane])[0].tolist():
                 same=bool((d['episode'][start:end+1,lane]==d['episode'][end,lane]).all())
@@ -109,16 +127,19 @@ class TaskSpaceReferenceBankV1:
                                         digest=digest,source_sha256=source_sha256,terminal_verified=True,
                                         score_schema=label['scoring_schema'] if label else 'event-flags-only'))
                 start=end+1
-        return cls(entries,geometry.model_sha256,source_sha256,match_distance_threshold)
+        return cls(entries,geometry.model_sha256,source_sha256,match_distance_threshold,excluded_lanes=tuple(excluded))
 
     def extend(self,other):
         if other.geometry_sha256!=self.geometry_sha256: raise ValueError('Reference geometry differs')
+        excluded=set(self.excluded_lanes)|set(other.excluded_lanes)
+        self.assert_excludes(excluded);other.assert_excludes(excluded)
         seen=set(); kept=[]
         for e in reversed(self.entries+other.entries):
             if e['digest'] in seen: continue
             if sum(x['mode']==e['mode'] for x in kept)>=self.max_per_head: continue
             seen.add(e['digest']);kept.append(e)
         self.entries=list(reversed(kept))
+        self.excluded_lanes=tuple(sorted(excluded))
 
     def bind(self,initial_physical,mode,*,geometry,elapsed,event_time=None):
         current=task_space_features(initial_physical,geometry,mode).detach()

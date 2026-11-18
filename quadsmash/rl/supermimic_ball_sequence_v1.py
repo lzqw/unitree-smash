@@ -26,10 +26,30 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
     the command-conditioned robot prediction. Legacy mode is unchanged.
     """
     prior,_=base.prior(state,present,elapsed,launch)
-    correction,_=ball(ball_geometry_features(state,base.geometry),present)
+    features=ball_geometry_features(state,base.geometry)
+    mode_conditioned=getattr(action_model,'requires_racket_probability',False)
+    if mode_conditioned:
+        if not hasattr(ball,'components'):
+            raise ValueError('Mode-conditioned sweep requires object-separated ball components')
+        probability,response=ball.components(features)
+        if probability.shape != (len(state),5) or response.shape != (len(state),4,6):
+            raise ValueError('Unexpected object-separated ball mode schema')
+        correction=present[:,None].to(response.dtype)*(probability[:,1:,None]*response).sum(1)
+    else:
+        correction,_=ball(features,present)
     physical,logits,active=base(state,targets,previous_action,feet,present,elapsed,launch)
     ball_prediction=prior[:,49:]+correction
     if action_model is not None:
-        ball_prediction=ball_prediction+action_model(state,physical,prior[:,49:],base.geometry,present)
+        # V4 preserves its historical string-only contract. V5 explicitly
+        # includes the learned frame-contact mode as a second causal impact
+        # probability; native/future event labels never enter forward().
+        if mode_conditioned:
+            impact_probability=probability[:,1]
+            if getattr(action_model,'requires_frame_probability',False):
+                impact_probability=impact_probability+probability[:,4]
+            kwargs={'racket_probability':impact_probability}
+        else:
+            kwargs={}
+        ball_prediction=ball_prediction+action_model(state,physical,prior[:,49:],base.geometry,present,**kwargs)
     state=torch.cat((physical[:,:49],ball_prediction),-1)
     return state,logits.sigmoid(),active

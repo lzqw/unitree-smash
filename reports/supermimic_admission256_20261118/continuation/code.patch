@@ -1,0 +1,596 @@
+diff --git a/quadsmash/rl/supermimic_action_ball_v1.py b/quadsmash/rl/supermimic_action_ball_v1.py
+index 8691310..90af352 100644
+--- a/quadsmash/rl/supermimic_action_ball_v1.py
++++ b/quadsmash/rl/supermimic_action_ball_v1.py
+@@ -25,6 +25,34 @@ def preimpact_hard_negatives(contact_edge, episode, terminated, timeout):
+     return out&~contact_edge.bool()
+ 
+ 
++def postimpact_hard_negatives(contact_edge, episode, terminated, timeout):
++    """Observed transition after an edge, excluding another edge or reset.
++
++    This is an offline sampling index, not a claim that the ball has separated
++    and not an extra input to the model. Native next state remains the label.
++    """
++    if not (contact_edge.shape == episode.shape == terminated.shape == timeout.shape):
++        raise ValueError('Postimpact label shape mismatch')
++    out = torch.zeros_like(contact_edge, dtype=torch.bool)
++    out[1:] = contact_edge[:-1].bool() & (episode[1:] == episode[:-1]) & ~(
++        terminated[:-1].bool() | timeout[:-1].bool())
++    return out & ~contact_edge.bool()
++
++
++def contact_neighborhood_pools(contact_edge, episode, terminated, timeout, eligible):
++    """Disjoint contact/pre/post/background pools; future labels stay offline."""
++    if eligible.shape != contact_edge.shape:
++        raise ValueError('Contact eligibility shape mismatch')
++    pre = preimpact_hard_negatives(contact_edge, episode, terminated, timeout)
++    post = postimpact_hard_negatives(contact_edge, episode, terminated, timeout)
++    # Consecutive impacts may place a row in both neighborhoods; retain its
++    # previous-impact association so post-impact coverage remains explicit.
++    pre = pre & ~post
++    masks = dict(contact=contact_edge.bool(), pre_contact=pre, post_contact=post,
++                 background=~(contact_edge.bool() | pre | post))
++    return {key: (mask & eligible.bool()).nonzero() for key, mask in masks.items()}
++
++
+ class ActionConditionedBallV1(nn.Module):
+     schema = 'action-conditioned-racket-sweep-v1'
+     feature_dim = 48
+diff --git a/quadsmash/rl/supermimic_native_pair_capture_v1.py b/quadsmash/rl/supermimic_native_pair_capture_v1.py
+index a429586..38d2829 100644
+--- a/quadsmash/rl/supermimic_native_pair_capture_v1.py
++++ b/quadsmash/rl/supermimic_native_pair_capture_v1.py
+@@ -7,6 +7,12 @@ from .supermimic_physical_dataset_v1 import encode_physical
+ 
+ BRANCHES=('nominal_a','nominal_b','minus','plus')
+ 
++def probe_valid_lanes(done,lane):
++    valid=~done.detach().bool().reshape(-1)
++    if not 0<=lane<len(valid) or not bool(valid[lane]):
++        raise ValueError('Target probe lane crosses terminal/reset; reject counterfactual')
++    return valid
++
+ def tree_digest(value):
+     h=hashlib.sha256()
+     def visit(x):
+@@ -50,10 +56,12 @@ class NativePairCapture:
+         if tick<self.spec['tick']:
+             self.prefix.update(tree_digest(dict(targets=env._sm_joint_targets,final=env._sm_final_action,done=done)).encode())
+         elif tick==self.spec['tick']:
+-            if done.bool().any():raise ValueError('Probe crosses terminal/reset; reject counterfactual')
+-            self.raw=tensor_tree_copy(dict(start=self.start,next_state=encode_physical(capture_state(env)['physical']),
++            valid=probe_valid_lanes(done,self.spec['lane'])
++            captured=capture_state(env)
++            self.raw=tensor_tree_copy(dict(start=self.start,next_state=encode_physical(captured['physical']),
+                 final_joint_targets=env._sm_joint_targets,final_normalized=env._sm_final_action,request_before=self.request_before,
+-                request_after=self.request_after,task_after=capture_state(env)['task']),cpu=True)
++                request_after=self.request_after,task_after=captured['task'],recovery_after=captured['recovery'],
++                next_feet=captured['physical']['foot_contact'],command_valid_lanes=valid),cpu=True)
+     def save(self,output,actor,task_contract,policy_execution,physics,seed):
+         if self.raw is None:raise ValueError('Native probe did not finish')
+         from .supermimic_evidence_binding_v1 import runtime_identity
+diff --git a/quadsmash/rl/supermimic_probe_region_v1.py b/quadsmash/rl/supermimic_probe_region_v1.py
+index 44e4f50..d832eef 100644
+--- a/quadsmash/rl/supermimic_probe_region_v1.py
++++ b/quadsmash/rl/supermimic_probe_region_v1.py
+@@ -13,6 +13,24 @@ STATIC=('execution_code_sha256','schema','task_contract_sha256','policy_executio
+ METRICS=('native_repeat_max','native_response_min','response_rmse_max','response_cosine_min',
+          'response_relative_error_max','final_normalized_command_delta_max','final_joint_target_delta_rad_max','accepted_update_age_max')
+ 
++def contact_mode_groups(modes,count,head):
++    """Mode switches are finite differences, not a smooth Jacobian oracle."""
++    required=('had_contact','released','frame_hit','string_hit') if head=='approach' else ('foot_contact','body_ground_seen')
++    groups=[]
++    for i in range(count):
++        rows=[]
++        for branch in ('nominal_a','nominal_b','minus','plus'):
++            row=modes.get(branch) if isinstance(modes,dict) else None
++            if isinstance(row,list):row=row[i] if len(row)==count else None
++            elif count!=1:row=None
++            if not isinstance(row,dict) or any(k not in row or row[k] is None for k in required):break
++            rows.append({k:row[k] for k in required})
++        if len(rows)!=4:groups.append('unknown')
++        elif rows[0]!=rows[1]:groups.append('nominal-mode-mismatch')
++        elif all(row==rows[0] for row in rows):groups.append('smooth-mode')
++        else:groups.append('mode-switch')
++    return groups
++
+ def load_region(spec,receipt_path):
+     path=Path(receipt_path).parent/spec['path']
+     if hashlib.sha256(path.read_bytes()).hexdigest()!=spec['sha256']:raise ValueError('Native probe bundle hash mismatch')
+@@ -37,6 +55,7 @@ def load_region(spec,receipt_path):
+         raise ValueError('Native probe samples not bound to heldout episode identities')
+     if type(spec.get('minimum_samples')) is not int or spec['minimum_samples']<1:raise ValueError('Declare minimum native probe support')
+     if len(bundle['pairs']['state'])<spec['minimum_samples']:raise ValueError('Insufficient native probe coverage')
++    if len(set(bundle['sample_ids']))<spec['minimum_samples']:raise ValueError('Insufficient independent probe episodes')
+     return bundle,limits
+ 
+ def paired_metrics(adapter,pairs,head,limits):
+@@ -53,7 +72,12 @@ def paired_metrics(adapter,pairs,head,limits):
+     if not len(p['state']) or any(not torch.isfinite(p[k]).all() for k in required):raise ValueError('Empty/nonfinite native probe')
+     hashes=p.get('prefix_sha256',{});mem=p.get('executor_before_sha256',{})
+     for values in (hashes,mem):
+-        if set(values)!=set(('nominal_a','nominal_b','minus','plus')) or any(not x for x in values.values()) or len(set(values.values()))!=1:
++        if set(values)!=set(('nominal_a','nominal_b','minus','plus')):
++            raise ValueError('Same-prefix/controller repeatability missing; do not substitute snapshot restore')
++        rows=[]
++        for value in values.values():
++            rows.append(value if isinstance(value,list) else [value]*len(p['state']))
++        if any(len(row)!=len(p['state']) for row in rows) or any(not all(col) or len(set(col))!=1 for col in zip(*rows)):
+             raise ValueError('Same-prefix/controller repeatability missing; do not substitute snapshot restore')
+     if p.get('restore_mode')!='from-ground-identical-prefix':raise ValueError('Unsupported native restoration claim')
+     predictions=[]
+@@ -68,6 +92,10 @@ def paired_metrics(adapter,pairs,head,limits):
+     target_delta=(p['targets_plus']-p['targets_minus']).norm(dim=-1)
+     norms=native.norm(dim=-1);supported=(norms>=limits['native_response_min'])&(target_delta>0)
+     missing=int((~supported).sum());failures=[]
++    groups=contact_mode_groups(p.get('native_contact_modes'),len(native),head)
++    if 'unknown' in groups:failures.append('unknown-native-contact-mode')
++    if 'nominal-mode-mismatch' in groups:failures.append('native-contact-mode-repeatability')
++    if 'mode-switch' in groups:failures.append('non-smooth-contact-boundary-needs-separate-validation')
+     if repeat>limits['native_repeat_max']:failures.append('native-repeatability')
+     if missing:failures.append('saturated-or-native-response-below-support')
+     # No silent filtering of hard or saturated probes to inflate pass rate.
+@@ -86,10 +114,11 @@ def paired_metrics(adapter,pairs,head,limits):
+         projected=(jac*(p['targets_plus']-p['targets_minus'])[:,None]).sum(-1)
+     if not torch.isfinite(projected).all():failures.append('nonfinite-jacobian')
+     jac_cos=(projected*native).sum(-1)/(projected.norm(dim=-1)*norms).clamp_min(1e-12)
+-    if float(jac_cos.min())<limits['response_cosine_min']:failures.append('local-jacobian-direction')
++    smooth=torch.tensor([g=='smooth-mode' for g in groups],device=device)
++    if smooth.any() and float(jac_cos[smooth].min())<limits['response_cosine_min']:failures.append('local-jacobian-direction')
+     return dict(native_contact_modes=p.get('native_contact_modes','unknown'),passed=not failures,failures=failures,count=len(native),unsupported_count=missing,
+         native_repeat_max=repeat,response_rmse=rmse,response_cosine=cosine.tolist(),relative_error=relative.tolist(),
+-        jacobian_cosine=jac_cos.detach().tolist(),native_delta=native.tolist(),model_delta=predicted.tolist(),
++        contact_mode_groups=groups,jacobian_cosine=[float(jac_cos[i].detach()) if groups[i]=='smooth-mode' else None for i in range(len(groups))],native_delta=native.tolist(),model_delta=predicted.tolist(),
+         projected_jacobian=projected.detach().tolist(),scope='measured final-command pair on repeated native prefix; contact-mode switches reported in raw evidence')
+ 
+ def assess_region(spec,receipt_path,current,adapter,command_preview,head):
+@@ -106,8 +135,10 @@ def assess_region(spec,receipt_path,current,adapter,command_preview,head):
+     with torch.no_grad():
+         for item in starts:
+             final,target=command_preview(item['start'])
+-            normalized=max(normalized,float((final.cpu()-item['final_normalized']).abs().max()))
+-            targets=max(targets,float((target.cpu()-item['final_joint_targets']).abs().max()))
++            mask=item.get('valid_lanes',torch.ones(len(final),dtype=torch.bool)).cpu().bool()
++            if mask.shape!=(len(final),) or not mask.any():raise ValueError('Invalid native command comparison lane mask')
++            normalized=max(normalized,float((final.cpu()-item['final_normalized'])[mask].abs().max()))
++            targets=max(targets,float((target.cpu()-item['final_joint_targets'])[mask].abs().max()))
+     if normalized>limits['final_normalized_command_delta_max']:failures.append('executed-normalized-command-drift')
+     if targets>limits['final_joint_target_delta_rad_max']:failures.append('executed-joint-target-drift')
+     measured=paired_metrics(adapter,bundle['pairs'],head,limits)
+diff --git a/quadsmash/rl/supermimic_task_space_reference_v1.py b/quadsmash/rl/supermimic_task_space_reference_v1.py
+index 041ab96..a19a316 100644
+--- a/quadsmash/rl/supermimic_task_space_reference_v1.py
++++ b/quadsmash/rl/supermimic_task_space_reference_v1.py
+@@ -35,15 +35,28 @@ class TaskSpaceReferenceBankV1:
+     match_distance_threshold: float = 1.0
+     max_per_head: int = 128
+     schema: str = 'success-guided-task-space-reference-v2'
++    excluded_lanes: tuple = ()
+ 
+     def __post_init__(self):
+         if not math.isfinite(self.match_distance_threshold) or self.match_distance_threshold<=0:
+             raise ValueError('Tracking requires a finite positive matching threshold')
+         if self.max_per_head<1: raise ValueError('Reference capacity must be positive')
++        self.excluded_lanes=tuple(sorted(set(self.excluded_lanes)))
++        self.assert_excludes(self.excluded_lanes)
++
++    def assert_excludes(self,lanes):
++        """Never silently reuse a holdout trajectory as an Actor reference."""
++        excluded=set(lanes)
++        if not excluded:return
++        if any('lane_id' not in e for e in self.entries):
++            raise ValueError('Reference lane identity missing; cannot verify holdout independence')
++        if any(e['lane_id'] in excluded for e in self.entries):
++            raise ValueError('Reference bank contains heldout lane trajectories')
+ 
+     def to(self,device):
+         return type(self)([{k:v.to(device) if torch.is_tensor(v) else v for k,v in e.items()} for e in self.entries],
+-                          self.geometry_sha256,self.source_sha256,self.match_distance_threshold,self.max_per_head)
++                          self.geometry_sha256,self.source_sha256,self.match_distance_threshold,self.max_per_head,
++                          excluded_lanes=self.excluded_lanes)
+ 
+     @property
+     def manifest(self):
+@@ -51,6 +64,7 @@ class TaskSpaceReferenceBankV1:
+                     approach_count=sum(e['mode']=='approach' for e in self.entries),
+                     recovery_count=sum(e['mode']=='recovery' for e in self.entries),
+                     match_distance_threshold=self.match_distance_threshold,max_per_head=self.max_per_head,
++                    excluded_lanes=list(self.excluded_lanes),
+                     protocol_verified=bool(self.entries) and all(e.get('score_schema')=='historical-independent-complete5-v1' for e in self.entries),
+                     native_contact_certification=False,alignment='current causal event estimate / current-state phase match')
+ 
+@@ -63,7 +77,7 @@ class TaskSpaceReferenceBankV1:
+         return cls(**payload)
+ 
+     @classmethod
+-    def from_packed(cls,tensors,geometry,*,source_sha256='',policy_id='unknown',match_distance_threshold=1.,horizon=None,terminal_records=None):
++    def from_packed(cls,tensors,geometry,*,source_sha256='',policy_id='unknown',match_distance_threshold=1.,horizon=None,terminal_records=None,excluded_lanes=()):
+         if horizon is not None: raise ValueError('Do not truncate reference episodes')
+         for name in ('state','next_state','event_state','next_event_state','episode','elapsed','terminated','timeout','feet','next_feet'):
+             if name not in tensors: raise ValueError('Reference evidence missing: '+name)
+@@ -76,7 +90,11 @@ class TaskSpaceReferenceBankV1:
+                 if record.get('scoring_schema')!='historical-independent-complete5-v1':raise ValueError('Reference requires original independent task scoring')
+                 labels[key]=record
+         entries=[]; d=tensors; T,N=d['episode'].shape
++        excluded=set(excluded_lanes)
++        if any(isinstance(x,bool) or not isinstance(x,int) or x<0 or x>=N for x in excluded):
++            raise ValueError('Invalid excluded reference lane')
+         for lane in range(N):
++            if lane in excluded:continue
+             start=0
+             for end in torch.where(d['terminated'][:,lane]|d['timeout'][:,lane])[0].tolist():
+                 same=bool((d['episode'][start:end+1,lane]==d['episode'][end,lane]).all())
+@@ -109,16 +127,19 @@ class TaskSpaceReferenceBankV1:
+                                         digest=digest,source_sha256=source_sha256,terminal_verified=True,
+                                         score_schema=label['scoring_schema'] if label else 'event-flags-only'))
+                 start=end+1
+-        return cls(entries,geometry.model_sha256,source_sha256,match_distance_threshold)
++        return cls(entries,geometry.model_sha256,source_sha256,match_distance_threshold,excluded_lanes=tuple(excluded))
+ 
+     def extend(self,other):
+         if other.geometry_sha256!=self.geometry_sha256: raise ValueError('Reference geometry differs')
++        excluded=set(self.excluded_lanes)|set(other.excluded_lanes)
++        self.assert_excludes(excluded);other.assert_excludes(excluded)
+         seen=set(); kept=[]
+         for e in reversed(self.entries+other.entries):
+             if e['digest'] in seen: continue
+             if sum(x['mode']==e['mode'] for x in kept)>=self.max_per_head: continue
+             seen.add(e['digest']);kept.append(e)
+         self.entries=list(reversed(kept))
++        self.excluded_lanes=tuple(sorted(excluded))
+ 
+     def bind(self,initial_physical,mode,*,geometry,elapsed,event_time=None):
+         current=task_space_features(initial_physical,geometry,mode).detach()
+diff --git a/scripts/build_supermimic_probe_region.py b/scripts/build_supermimic_probe_region.py
+index 4948453..d026907 100644
+--- a/scripts/build_supermimic_probe_region.py
++++ b/scripts/build_supermimic_probe_region.py
+@@ -38,12 +38,17 @@ def build(paths,identity,output):
+     for branch in ('minus','plus'):pairs['targets_'+branch]=runs[branch]['raw']['final_joint_targets'][sl]
+     def modes(run):
+         task=run['raw']['task_after']
+-        return {k:(v[lane].tolist() if isinstance(v,torch.Tensor) and v.ndim else v) for k,v in task.items()
++        result={k:(v[lane].tolist() if isinstance(v,torch.Tensor) and v.ndim else v) for k,v in task.items()
+                 if k in ('had_contact','released','frame_hit','legal_initial_contact','string_hit','airborne_string_hit','rally_fault')}
++        if 'next_feet' in run['raw']:result['foot_contact']=run['raw']['next_feet'][lane].bool().tolist()
++        recovery=run['raw'].get('recovery_after',{})
++        if 'body_ground_seen' in recovery:result['body_ground_seen']=bool(recovery['body_ground_seen'][lane])
++        return result
+     pairs['native_contact_modes']={k:modes(v) for k,v in runs.items()}
+     sample_id=f"{identity['actor_state_sha256']}:{base['seed']}:{lane}:{int(row['before']['episode_index'][lane])}"
+     evidence=dict(sample_ids=[sample_id],schema='native-paired-prefix-region-v1',runtime_identity=identity,actor_state=base['actor_state'],pairs=pairs,
+-        command_starts=[dict(start=row,final_normalized=base['raw']['final_normalized'],final_joint_targets=base['raw']['final_joint_targets'])],
++        command_starts=[dict(start=row,final_normalized=base['raw']['final_normalized'],final_joint_targets=base['raw']['final_joint_targets'],
++                            valid_lanes=base['raw'].get('command_valid_lanes',torch.ones(len(launch),dtype=torch.bool)))],
+         source_sha256={k:hashlib.sha256(Path(p).read_bytes()).hexdigest() for k,p in paths.items()},
+         source_paths={k:str(Path(p).resolve()) for k,p in paths.items()},
+         head=base['spec']['head'],scope='one measured probe; broader validity needs independent state/event coverage; no automatic pass')
+diff --git a/scripts/build_supermimic_task_references.py b/scripts/build_supermimic_task_references.py
+index 83e86e0..3eaccc7 100644
+--- a/scripts/build_supermimic_task_references.py
++++ b/scripts/build_supermimic_task_references.py
+@@ -5,19 +5,23 @@ from pathlib import Path
+ import torch
+ from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1,MODEL
+ from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
++from quadsmash.rl.supermimic_data_split_v1 import explicit_lane_split
+ 
+ def main():
+     p=argparse.ArgumentParser(description=__doc__)
+     p.add_argument('--packed-data',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+     p.add_argument('--policy-id',required=True);p.add_argument('--match-distance-threshold',type=float,required=True)
+     p.add_argument('--episodes-summary',type=Path,required=True,help='Original independently scored terminal records, matching packed episode identities')
++    p.add_argument('--split-manifest',type=Path,required=True,help='Whole-lane split; validation trajectories cannot enter Tracking')
+     a=p.parse_args()
+     if a.output.exists():raise FileExistsError(a.output)
+     data=torch.load(a.packed_data,map_location='cpu',weights_only=True)
++    _,heldout=explicit_lane_split(json.loads(a.split_manifest.read_text()),data['tensors']['episode'].shape[1])
+     asset=json.loads(MODEL.read_text())['asset_sha256'];geometry=FullBodyGeometryV1(asset)
+     with torch.no_grad():bank=TaskSpaceReferenceBankV1.from_packed(data['tensors'],geometry,
+         source_sha256=hashlib.sha256(a.packed_data.read_bytes()).hexdigest(),policy_id=a.policy_id,
+-        match_distance_threshold=a.match_distance_threshold,terminal_records=json.loads(a.episodes_summary.read_text()))
++        match_distance_threshold=a.match_distance_threshold,terminal_records=json.loads(a.episodes_summary.read_text()),
++        excluded_lanes=heldout.tolist())
+     if not bank.entries:raise ValueError('No complete verified success reference; do not enable tracking')
+     a.output.parent.mkdir(parents=True,exist_ok=True);torch.save(bank.payload(),a.output)
+     a.output.with_suffix('.json').write_text(json.dumps(bank.manifest,indent=2)+'\n')
+diff --git a/scripts/fit_supermimic_action_ball.py b/scripts/fit_supermimic_action_ball.py
+index c1363dc..7cb115c 100644
+--- a/scripts/fit_supermimic_action_ball.py
++++ b/scripts/fit_supermimic_action_ball.py
+@@ -7,12 +7,15 @@ validated physically before it is allowed to support policy training.
+ import argparse
+ import hashlib
+ import json
++import time
++import subprocess
++import sys
+ from pathlib import Path
+ import torch
+ from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
+ from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
+ from quadsmash.rl.supermimic_ball_residual_v1 import ball_geometry_features
+-from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,preimpact_hard_negatives
++from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,preimpact_hard_negatives,contact_neighborhood_pools
+ from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
+ from quadsmash.rl.supermimic_wm_validation_v1 import event_aligned_windows
+ 
+@@ -93,11 +96,22 @@ def main():
+     p.add_argument('--updates',type=int,default=400)
+     p.add_argument('--batch',type=int,default=128)
+     p.add_argument('--device',default='cuda:0')
++    p.add_argument('--sampling-schema', choices=('legacy-v1','contact-neighborhood-v2'), default='contact-neighborhood-v2')
+     a=p.parse_args()
+     if a.output.exists():raise FileExistsError(a.output)
+     if a.updates<1 or a.batch<4 or a.batch%4:raise ValueError('Positive updates and batch multiple of four required')
++    if a.sampling_schema=='contact-neighborhood-v2' and a.batch%8:
++        raise ValueError('Contact neighborhood batch must be divisible by eight')
+     a.output.mkdir(parents=True)
++    torch.set_num_threads(2);torch.manual_seed(20261117)
++    started=time.perf_counter()
+     device=torch.device(a.device)
++    if device.type=='cuda':
++        torch.cuda.set_device(device)
++        torch.cuda.init()
++        torch.cuda.reset_peak_memory_stats(device)
++    (a.output/'startup.json').write_text(json.dumps(dict(argv=sys.argv,commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),seed=20261117,device=str(device),updates=a.updates,batch=a.batch,actor_updates=0),indent=2)+'\n')
++    print('ACTION_BALL_STAGE=LOAD',flush=True)
+     physical_checkpoint=torch.load(a.physical_checkpoint,map_location='cpu',weights_only=True)
+     if physical_checkpoint['schema']!=PhysicalWorldV2.schema:raise ValueError('Expected physical55 v2')
+     source=physical_checkpoint['source_manifest']['task_contract']
+@@ -140,18 +154,29 @@ def main():
+     preceding=preimpact_hard_negatives(events,data['episode'],data['terminated'],data['timeout'])
+     hard_negative=(eligible&preceding&~events).nonzero()
+     negative=(eligible&~events&~preceding).nonzero()
++    neighborhoods=contact_neighborhood_pools(events,data['episode'],data['terminated'],data['timeout'],eligible)
++    if a.sampling_schema=='contact-neighborhood-v2' and any(len(v)<8 for v in neighborhoods.values()):
++        raise ValueError('Need at least eight real transitions in each contact neighborhood pool')
++    allocated_draws={k:0 for k in neighborhoods}
+     if min(len(positive),len(negative),len(hard_negative))<8:
+         raise ValueError('Need real racket contacts and pre-contact hard negatives')
+     if not len(event_aligned_windows(metadata,val,horizon=64,offsets=(0,),maximum=1)['0']['starts']):
+         raise ValueError('No heldout contact edge for candidate validation')
++    print('ACTION_BALL_STAGE=INITIAL_VALIDATION',flush=True)
+     initial=metrics(base,ball,None,data,metadata,val,launch)
+     initial_ar=autoregressive_metrics(base,ball,None,data,metadata,val,launch)
+     generator=torch.Generator(device=device).manual_seed(20261117)
+     optimizer=torch.optim.Adam(sweep.head.parameters(),lr=2e-4)
+     history=[]
++    print('ACTION_BALL_STAGE=FIT',flush=True)
+     for update in range(1,a.updates+1):
+         def draw(pool,n):return pool[torch.randint(len(pool),(n,),device=device,generator=generator)]
+-        pairs=torch.cat((draw(positive,a.batch//2),draw(hard_negative,a.batch//4),draw(negative,a.batch//4)))
++        if a.sampling_schema=='legacy-v1':
++            pairs=torch.cat((draw(positive,a.batch//2),draw(hard_negative,a.batch//4),draw(negative,a.batch//4)))
++        else:
++            quota=dict(contact=a.batch//2,pre_contact=a.batch//4,post_contact=a.batch//8,background=a.batch//8)
++            pairs=torch.cat([draw(neighborhoods[k],n) for k,n in quota.items()])
++            for k,n in quota.items():allocated_draws[k]+=n
+         t,l=pairs.unbind(1)
+         state=data['state'][t,l];targets=data['targets'][t,l]
+         with torch.no_grad():
+@@ -171,7 +196,11 @@ def main():
+         gradient=torch.nn.utils.clip_grad_norm_(sweep.head.parameters(),10.,error_if_nonfinite=True)
+         optimizer.step()
+         if update==1 or update%25==0 or update==a.updates:
+-            history.append(dict(update=update,loss=float(loss.detach()),gradient=float(gradient.detach())))
++            record=dict(update=update,loss=float(loss.detach()),gradient=float(gradient.detach()),elapsed_s=time.perf_counter()-started)
++            history.append(record)
++            (a.output/'progress.json').write_text(json.dumps(record)+'\n')
++            print('ACTION_BALL_UPDATE='+json.dumps(record),flush=True)
++    print('ACTION_BALL_STAGE=FINAL_VALIDATION',flush=True)
+     final=metrics(base,ball,sweep,data,metadata,val,launch)
+     candidate_ar=autoregressive_metrics(base,ball,sweep,data,metadata,val,launch)
+     pairs=event_aligned_windows(metadata,val,horizon=64,offsets=(0,),maximum=16)['0']['starts']
+@@ -182,8 +211,10 @@ def main():
+         geometry_hashes=sweep.preview.geometry_hashes,softness_m=sweep.softness_m,
+         updates=a.updates,evidence_scope='recorded-command model-only, no native paired perturbations'),
+         a.output/'action_ball_candidate.pt')
+-    comparison=dict(initial=initial,candidate=final,initial_autoregressive=initial_ar,candidate_autoregressive=candidate_ar,action_gradient=gradient,history=history,
++    comparison=dict(elapsed_s=time.perf_counter()-started,gpu_peak_memory_bytes=torch.cuda.max_memory_allocated(device) if device.type=='cuda' else 0,initial=initial,candidate=final,initial_autoregressive=initial_ar,candidate_autoregressive=candidate_ar,action_gradient=gradient,history=history,
+         action_ball_optimizer_updates=a.updates,base_world_updates=0,
++        sampling_schema=a.sampling_schema,pool_sizes={k:len(v) for k,v in neighborhoods.items()},
++        allocated_draws=allocated_draws if a.sampling_schema!='legacy-v1' else None,
+         independence_scope="candidate fit heldout lanes; historical base-model holdout independence requires separate provenance",
+         train_contact_transitions=int(len(positive)),train_noncontact_transitions=int(len(negative)),
+         hard_precontact_transitions=int(len(hard_negative)),
+diff --git a/scripts/fit_supermimic_task_transition.py b/scripts/fit_supermimic_task_transition.py
+index 3d73ce0..ec135db 100644
+--- a/scripts/fit_supermimic_task_transition.py
++++ b/scripts/fit_supermimic_task_transition.py
+@@ -13,6 +13,7 @@ from quadsmash.rl.supermimic_task_transition_model_v1 import NativeTaskTransitio
+ from quadsmash.rl.supermimic_physical_dataset_v1 import valid_windows,split_lanes
+ from quadsmash.rl.supermimic_physical_world_v2 import sample_event_windows
+ from quadsmash.rl.supermimic_event_hazard_v1 import advance_event_latches
++from quadsmash.rl.supermimic_data_split_v1 import explicit_lane_split
+ 
+ 
+ def metrics(probability,label,eligible):
+@@ -28,6 +29,7 @@ def metrics(probability,label,eligible):
+ def main():
+     parser=argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--data',type=Path,required=True);parser.add_argument('--output',type=Path,required=True)
++    parser.add_argument('--split-manifest',type=Path,help='Explicit complete lane partition; use the same heldout cases as physical/ball models')
+     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=False)
+     torch.set_num_threads(2);torch.manual_seed(20261114)
+     updates,batch,steps,lr=512,256,16,2e-4
+@@ -35,7 +37,11 @@ def main():
+     sha=hashlib.sha256(args.data.read_bytes()).hexdigest()
+     if sha!=receipt['sha256']:raise ValueError('Packed data hash mismatch')
+     package=torch.load(args.data,map_location='cpu',weights_only=True)
+-    raw=package['tensors'];train,val=split_lanes(128,16,20261114)
++    raw=package['tensors']
++    if raw['state'].shape[:2] != (800,128) or not bool(package['first_done'].all()):
++        raise ValueError('Task fit requires complete original128 first episodes over 800 ticks')
++    train,val=(explicit_lane_split(json.loads(args.split_manifest.read_text()),128) if args.split_manifest
++               else split_lanes(128,16,20261114))
+     schema=TaskMemorySchemaV1([MemoryField(**dict(f,shape=tuple(f['shape']))) for f in package['task_schema']['fields']])
+     model=NativeTaskTransitionSurrogateV1(schema,raw['torque'].shape[-1]).cuda()
+     needed=('state','next_state','targets','previous_action','feet','elapsed','values','valid',
+@@ -60,6 +66,8 @@ def main():
+     config=dict(data_sha256=sha,updates=updates,batch=batch,world_steps=steps,lr=lr,
+                 actor_updates=0,physical_model_updates=0,seed=20261114,train_lanes=train.tolist(),validation_lanes=val.tolist(),
+                 sampling='50% uniform windows, 50% cyclic native event windows',
++                split_manifest_sha256=hashlib.sha256(args.split_manifest.read_bytes()).hexdigest() if args.split_manifest else None,
++                source_manifest=package.get('source_manifest'),initialization='random; no legacy task parameters or optimizer restored',
+                 physical_input='teacher-forced native transition; task memory autoregressive',
+                 event_prior=frequencies.tolist(),window_pools={k:len(v) for k,v in pools.items()})
+     (args.output/'config.json').write_text(json.dumps(config,indent=2)+'\n')
+diff --git a/scripts/train_supermimic_physical_block.py b/scripts/train_supermimic_physical_block.py
+index 8a5a39a..deb3895 100644
+--- a/scripts/train_supermimic_physical_block.py
++++ b/scripts/train_supermimic_physical_block.py
+@@ -225,6 +225,7 @@ def run(args):
+             from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
+             bank_payload=torch.load(args.task_reference_bank,map_location='cpu',weights_only=False)
+             reference_bank=TaskSpaceReferenceBankV1.from_payload(bank_payload)
++            reference_bank.assert_excludes(wm_holdout_lanes)
+             if not reference_bank.manifest['protocol_verified']:raise ValueError('Tracking requires independently scored complete native references')
+             if reference_bank.geometry_sha256 and reference_bank.geometry_sha256 != adapter.physical_model.geometry.model_sha256:
+                 raise ValueError('Task reference bank geometry hash mismatch')
+@@ -290,6 +291,7 @@ def run(args):
+             if resumed.get('reference_bank') is not None:
+                 from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
+                 trainer.reference_bank=TaskSpaceReferenceBankV1.from_payload(resumed['reference_bank']).to('cuda:0')
++                trainer.reference_bank.assert_excludes(wm_holdout_lanes)
+             for attr,key in (('accepted_snapshot','step'),('block_start_snapshot','block'),('native_accepted_snapshot','native')):
+                 if key in resumed.get('actor_references',{}):setattr(trainer,attr,resumed['actor_references'][key])
+             trainer.critic.load_state_dict(resumed['critic'],strict=True)
+@@ -942,7 +944,8 @@ def run(args):
+                     device=next(adapter.parameters()).device
+                     additions=TaskSpaceReferenceBankV1.from_packed({k:v.to(device) for k,v in packed.items()},
+                         adapter.physical_model.geometry,source_sha256=source_hash,policy_id=policy_id,
+-                        match_distance_threshold=trainer.reference_bank.match_distance_threshold,terminal_records=native_records)
++                        match_distance_threshold=trainer.reference_bank.match_distance_threshold,terminal_records=native_records,
++                        excluded_lanes=wm_holdout_lanes)
+                 trainer.reference_bank.extend(additions)
+                 atomic_torch_save(trainer.reference_bank.payload(),refresh_dir/'reference_bank.pt')
+                 receipt['reference_bank']=trainer.reference_bank.manifest
+diff --git a/tests/test_supermimic_action_ball_v1.py b/tests/test_supermimic_action_ball_v1.py
+index 58706f9..a21fb41 100644
+--- a/tests/test_supermimic_action_ball_v1.py
++++ b/tests/test_supermimic_action_ball_v1.py
+@@ -3,6 +3,7 @@ import torch
+ from torch import nn
+ from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,preimpact_hard_negatives
+ from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
++from quadsmash.rl.supermimic_action_ball_v1 import postimpact_hard_negatives,contact_neighborhood_pools
+ 
+ 
+ class FakeRacket:
+@@ -86,3 +87,23 @@ def test_precontact_hard_negative_is_one_tick_before_native_edge_and_reset_safe(
+     edge=torch.tensor([[False],[True]])
+     assert not preimpact_hard_negatives(edge,torch.tensor([[0],[1]]),
+         torch.tensor([[True],[False]]),torch.zeros(2,1,dtype=torch.bool)).any()
++
++
++def test_postimpact_never_crosses_terminal_reset_or_labels_another_contact_negative():
++    edge=torch.tensor([[True],[True],[False],[True],[False],[True],[False]])
++    episode=torch.tensor([[0],[0],[0],[0],[1],[1],[1]])
++    done=torch.tensor([[False],[False],[False],[True],[False],[True],[False]])
++    result=postimpact_hard_negatives(edge,episode,done,torch.zeros_like(done))
++    assert result.flatten().tolist()==[False,False,True,False,False,False,False]
++
++
++def test_contact_pools_cover_eligible_rows_once_and_do_not_include_holdout_lanes():
++    edge=torch.zeros(10,2,dtype=torch.bool);edge[2,0]=True;edge[4,0]=True;edge[6,1]=True
++    episode=torch.zeros(10,2,dtype=torch.long);done=torch.zeros_like(edge)
++    eligible=torch.ones_like(edge);eligible[:,1]=False
++    pools=contact_neighborhood_pools(edge,episode,done,done,eligible)
++    rows=[tuple(row) for pool in pools.values() for row in pool.tolist()]
++    assert len(rows)==len(set(rows))==10
++    assert all(lane==0 for tick,lane in rows)
++    assert (3,0) in map(tuple,pools['post_contact'].tolist())
++    assert (3,0) not in map(tuple,pools['pre_contact'].tolist())
+diff --git a/tests/test_supermimic_probe_region.py b/tests/test_supermimic_probe_region.py
+index e39e60c..c4113d9 100644
+--- a/tests/test_supermimic_probe_region.py
++++ b/tests/test_supermimic_probe_region.py
+@@ -6,7 +6,7 @@ from torch import nn
+ from quadsmash.rl.supermimic_approach_data_v1 import gate_on_actor_device
+ from quadsmash.rl.supermimic_evidence_binding_v1 import probe_applicability
+ from quadsmash.rl.supermimic_probe_region_v1 import paired_metrics,load_region
+-from quadsmash.rl.supermimic_native_pair_capture_v1 import validate_spec,tree_digest
++from quadsmash.rl.supermimic_native_pair_capture_v1 import validate_spec,tree_digest,probe_valid_lanes
+ 
+ class Gate(nn.Module):
+     def __init__(self):super().__init__();self.weight=nn.Parameter(torch.ones(1,dtype=torch.float64))
+@@ -42,6 +42,8 @@ def pair_fixture(monkeypatch):
+     p=dict(state=nominal,targets_minus=minus,targets_plus=plus,previous_action=minus,feet=torch.zeros(2,4),present=torch.ones(2),elapsed=torch.zeros(2),launch=torch.zeros(2,6),native_minus=nominal,native_plus=native,native_nominal_a=nominal,native_nominal_b=nominal.clone(),
+       restore_mode='from-ground-identical-prefix',prefix_sha256={k:'prefix' for k in ('nominal_a','nominal_b','minus','plus')},executor_before_sha256={k:'memory' for k in ('nominal_a','nominal_b','minus','plus')})
+     limits=dict(native_response_min=.001,native_repeat_max=1e-6,response_rmse_max=.001,response_cosine_min=.9,response_relative_error_max=.1)
++    mode=dict(had_contact=True,released=True,frame_hit=False,string_hit=True,foot_contact=[True,False,False,False],body_ground_seen=False)
++    p['native_contact_modes']={k:[copy.deepcopy(mode) for _ in range(2)] for k in ('nominal_a','nominal_b','minus','plus')}
+     return adapter,p,limits
+ 
+ @pytest.mark.parametrize('head',['recovery','approach'])
+@@ -87,10 +89,10 @@ def test_region_requires_hashed_calibration_and_bound_actor_drift(tmp_path,monke
+     actor=Gate();origin=dict(execution_code_sha256={'source':'same'},schema='runtime',actor_state_sha256=tensor_digest(actor.state_dict().items()),
+         world_state_sha256='old',task_contract_sha256='task',policy_execution={'gate':'causal'},policy_version=0)
+     limits.update(final_normalized_command_delta_max=.01,final_joint_target_delta_rad_max=.04,accepted_update_age_max=8)
+-    bundle=dict(sample_ids=['holdout'],schema='native-paired-prefix-region-v1',runtime_identity=origin,actor_state=actor.state_dict(),pairs=pairs,head='approach',
++    bundle=dict(sample_ids=['holdout1','holdout2'],schema='native-paired-prefix-region-v1',runtime_identity=origin,actor_state=actor.state_dict(),pairs=pairs,head='approach',
+         command_starts=[dict(start={'current':'complete-start-test-double'},final_normalized=torch.zeros(2,18),final_joint_targets=torch.zeros(2,18))])
+     raw=tmp_path/'probe.pt';torch.save(bundle,raw);sha=hashlib.sha256(raw.read_bytes()).hexdigest()
+-    calibration=tmp_path/'calibration.json';calibration.write_text(json.dumps(dict(limits=limits,probe_sha256=sha,heldout_episode_ids=['holdout'],calibration_episode_ids=['calibrate'])))
++    calibration=tmp_path/'calibration.json';calibration.write_text(json.dumps(dict(limits=limits,probe_sha256=sha,heldout_episode_ids=['holdout1','holdout2'],calibration_episode_ids=['calibrate'])))
+     spec=dict(path=raw.name,sha256=sha,limits=limits,minimum_samples=2,
+         calibration=dict(path=calibration.name,sha256=hashlib.sha256(calibration.read_bytes()).hexdigest()))
+     current=dict(origin,world_state_sha256='new',policy_version=1)
+@@ -104,3 +106,21 @@ def test_region_requires_hashed_calibration_and_bound_actor_drift(tmp_path,monke
+     with pytest.raises(ValueError,match='different head'):assess_region(spec,tmp_path/'receipt.json',current,adapter,preview,'recovery')
+     calibration.write_text('{}')
+     with pytest.raises(ValueError,match='hash'):load_region(spec,tmp_path/'receipt.json')
++
++
++def test_unrelated_lane_terminal_does_not_invalidate_target_probe():
++    done=torch.zeros(128,dtype=torch.bool);done[7]=True
++    mask=probe_valid_lanes(done,17)
++    assert mask[17] and not mask[7]
++    with pytest.raises(ValueError,match='Target probe lane'):probe_valid_lanes(done,7)
++
++
++def test_non_smooth_or_missing_contact_modes_cannot_certify_a_jacobian(monkeypatch):
++    adapter,p,limits=pair_fixture(monkeypatch)
++    p['native_contact_modes']['plus'][0]['had_contact']=False
++    result=paired_metrics(adapter,p,'approach',limits)
++    assert not result['passed'] and result['contact_mode_groups'][0]=='mode-switch'
++    assert result['jacobian_cosine'][0] is None
++    del p['native_contact_modes']
++    result=paired_metrics(adapter,p,'approach',limits)
++    assert not result['passed'] and result['contact_mode_groups']==['unknown','unknown']
+diff --git a/tests/test_supermimic_success_guided_reference_v1.py b/tests/test_supermimic_success_guided_reference_v1.py
+index e85a57e..f85c28e 100644
+--- a/tests/test_supermimic_success_guided_reference_v1.py
++++ b/tests/test_supermimic_success_guided_reference_v1.py
+@@ -62,3 +62,28 @@ def test_paid_event_latches_cannot_override_independent_ball_side_rejection():
+     assert bank.manifest['protocol_verified']
+     with pytest.raises(ValueError,match='Missing terminal score'):
+         TaskSpaceReferenceBankV1.from_packed(d,g,terminal_records=rows[:1])
++
++
++def test_holdout_never_enters_tracking_and_exclusion_survives_resume_and_extend():
++    g,d=fixture()
++    bank=TaskSpaceReferenceBankV1.from_packed(d,g,excluded_lanes=[0])
++    assert not bank.entries
++    restored=TaskSpaceReferenceBankV1.from_payload(bank.payload()).to('cpu')
++    assert restored.manifest['excluded_lanes']==[0]
++    leaking=TaskSpaceReferenceBankV1.from_packed(d,g)
++    with pytest.raises(ValueError,match='heldout'):
++        restored.extend(leaking)
++    with pytest.raises(ValueError,match='heldout'):
++        leaking.assert_excludes([0])
++    clean=TaskSpaceReferenceBankV1.from_packed(d,g,excluded_lanes=[1,2])
++    clean.assert_excludes([1,2])
++    clean.extend(clean)
++    assert clean.manifest['approach_count']==1 and clean.manifest['recovery_count']==1
++    assert clean.manifest['excluded_lanes']==[1,2]
++
++
++def test_unknown_reference_identity_cannot_claim_holdout_independence():
++    g,d=fixture();bank=TaskSpaceReferenceBankV1.from_packed(d,g)
++    del bank.entries[0]['lane_id']
++    with pytest.raises(ValueError,match='identity missing'):
++        bank.assert_excludes([2])

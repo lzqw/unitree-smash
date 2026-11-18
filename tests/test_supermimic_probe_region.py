@@ -6,7 +6,7 @@ from torch import nn
 from quadsmash.rl.supermimic_approach_data_v1 import gate_on_actor_device
 from quadsmash.rl.supermimic_evidence_binding_v1 import probe_applicability
 from quadsmash.rl.supermimic_probe_region_v1 import paired_metrics,load_region
-from quadsmash.rl.supermimic_native_pair_capture_v1 import validate_spec,tree_digest
+from quadsmash.rl.supermimic_native_pair_capture_v1 import validate_spec,tree_digest,probe_valid_lanes
 
 class Gate(nn.Module):
     def __init__(self):super().__init__();self.weight=nn.Parameter(torch.ones(1,dtype=torch.float64))
@@ -42,6 +42,8 @@ def pair_fixture(monkeypatch):
     p=dict(state=nominal,targets_minus=minus,targets_plus=plus,previous_action=minus,feet=torch.zeros(2,4),present=torch.ones(2),elapsed=torch.zeros(2),launch=torch.zeros(2,6),native_minus=nominal,native_plus=native,native_nominal_a=nominal,native_nominal_b=nominal.clone(),
       restore_mode='from-ground-identical-prefix',prefix_sha256={k:'prefix' for k in ('nominal_a','nominal_b','minus','plus')},executor_before_sha256={k:'memory' for k in ('nominal_a','nominal_b','minus','plus')})
     limits=dict(native_response_min=.001,native_repeat_max=1e-6,response_rmse_max=.001,response_cosine_min=.9,response_relative_error_max=.1)
+    mode=dict(had_contact=True,released=True,frame_hit=False,string_hit=True,foot_contact=[True,False,False,False],body_ground_seen=False)
+    p['native_contact_modes']={k:[copy.deepcopy(mode) for _ in range(2)] for k in ('nominal_a','nominal_b','minus','plus')}
     return adapter,p,limits
 
 @pytest.mark.parametrize('head',['recovery','approach'])
@@ -87,10 +89,10 @@ def test_region_requires_hashed_calibration_and_bound_actor_drift(tmp_path,monke
     actor=Gate();origin=dict(execution_code_sha256={'source':'same'},schema='runtime',actor_state_sha256=tensor_digest(actor.state_dict().items()),
         world_state_sha256='old',task_contract_sha256='task',policy_execution={'gate':'causal'},policy_version=0)
     limits.update(final_normalized_command_delta_max=.01,final_joint_target_delta_rad_max=.04,accepted_update_age_max=8)
-    bundle=dict(sample_ids=['holdout'],schema='native-paired-prefix-region-v1',runtime_identity=origin,actor_state=actor.state_dict(),pairs=pairs,head='approach',
+    bundle=dict(sample_ids=['holdout1','holdout2'],schema='native-paired-prefix-region-v1',runtime_identity=origin,actor_state=actor.state_dict(),pairs=pairs,head='approach',
         command_starts=[dict(start={'current':'complete-start-test-double'},final_normalized=torch.zeros(2,18),final_joint_targets=torch.zeros(2,18))])
     raw=tmp_path/'probe.pt';torch.save(bundle,raw);sha=hashlib.sha256(raw.read_bytes()).hexdigest()
-    calibration=tmp_path/'calibration.json';calibration.write_text(json.dumps(dict(limits=limits,probe_sha256=sha,heldout_episode_ids=['holdout'],calibration_episode_ids=['calibrate'])))
+    calibration=tmp_path/'calibration.json';calibration.write_text(json.dumps(dict(limits=limits,probe_sha256=sha,heldout_episode_ids=['holdout1','holdout2'],calibration_episode_ids=['calibrate'])))
     spec=dict(path=raw.name,sha256=sha,limits=limits,minimum_samples=2,
         calibration=dict(path=calibration.name,sha256=hashlib.sha256(calibration.read_bytes()).hexdigest()))
     current=dict(origin,world_state_sha256='new',policy_version=1)
@@ -104,3 +106,21 @@ def test_region_requires_hashed_calibration_and_bound_actor_drift(tmp_path,monke
     with pytest.raises(ValueError,match='different head'):assess_region(spec,tmp_path/'receipt.json',current,adapter,preview,'recovery')
     calibration.write_text('{}')
     with pytest.raises(ValueError,match='hash'):load_region(spec,tmp_path/'receipt.json')
+
+
+def test_unrelated_lane_terminal_does_not_invalidate_target_probe():
+    done=torch.zeros(128,dtype=torch.bool);done[7]=True
+    mask=probe_valid_lanes(done,17)
+    assert mask[17] and not mask[7]
+    with pytest.raises(ValueError,match='Target probe lane'):probe_valid_lanes(done,7)
+
+
+def test_non_smooth_or_missing_contact_modes_cannot_certify_a_jacobian(monkeypatch):
+    adapter,p,limits=pair_fixture(monkeypatch)
+    p['native_contact_modes']['plus'][0]['had_contact']=False
+    result=paired_metrics(adapter,p,'approach',limits)
+    assert not result['passed'] and result['contact_mode_groups'][0]=='mode-switch'
+    assert result['jacobian_cosine'][0] is None
+    del p['native_contact_modes']
+    result=paired_metrics(adapter,p,'approach',limits)
+    assert not result['passed'] and result['contact_mode_groups']==['unknown','unknown']

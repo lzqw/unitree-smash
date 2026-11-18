@@ -62,3 +62,28 @@ def test_paid_event_latches_cannot_override_independent_ball_side_rejection():
     assert bank.manifest['protocol_verified']
     with pytest.raises(ValueError,match='Missing terminal score'):
         TaskSpaceReferenceBankV1.from_packed(d,g,terminal_records=rows[:1])
+
+
+def test_holdout_never_enters_tracking_and_exclusion_survives_resume_and_extend():
+    g,d=fixture()
+    bank=TaskSpaceReferenceBankV1.from_packed(d,g,excluded_lanes=[0])
+    assert not bank.entries
+    restored=TaskSpaceReferenceBankV1.from_payload(bank.payload()).to('cpu')
+    assert restored.manifest['excluded_lanes']==[0]
+    leaking=TaskSpaceReferenceBankV1.from_packed(d,g)
+    with pytest.raises(ValueError,match='heldout'):
+        restored.extend(leaking)
+    with pytest.raises(ValueError,match='heldout'):
+        leaking.assert_excludes([0])
+    clean=TaskSpaceReferenceBankV1.from_packed(d,g,excluded_lanes=[1,2])
+    clean.assert_excludes([1,2])
+    clean.extend(clean)
+    assert clean.manifest['approach_count']==1 and clean.manifest['recovery_count']==1
+    assert clean.manifest['excluded_lanes']==[1,2]
+
+
+def test_unknown_reference_identity_cannot_claim_holdout_independence():
+    g,d=fixture();bank=TaskSpaceReferenceBankV1.from_packed(d,g)
+    del bank.entries[0]['lane_id']
+    with pytest.raises(ValueError,match='identity missing'):
+        bank.assert_excludes([2])

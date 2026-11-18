@@ -1,0 +1,167 @@
+diff --git a/quadsmash/rl/supermimic_native_pair_capture_v1.py b/quadsmash/rl/supermimic_native_pair_capture_v1.py
+index a429586..a25d6db 100644
+--- a/quadsmash/rl/supermimic_native_pair_capture_v1.py
++++ b/quadsmash/rl/supermimic_native_pair_capture_v1.py
+@@ -7,6 +7,16 @@ from .supermimic_physical_dataset_v1 import encode_physical
+ 
+ BRANCHES=('nominal_a','nominal_b','minus','plus')
+ 
++def probe_lanes(spec):
++    return [spec['lane']] if spec['schema']=='native-paired-prefix-spec-v1' else list(spec['lanes'])
++
++def probe_valid_lanes(done,lane):
++    valid=~done.detach().bool().reshape(-1)
++    lanes=[lane] if isinstance(lane,int) else list(lane)
++    if not lanes or any(not 0<=i<len(valid) or not bool(valid[i]) for i in lanes):
++        raise ValueError('Target probe lane crosses terminal/reset; reject counterfactual')
++    return valid
++
+ def tree_digest(value):
+     h=hashlib.sha256()
+     def visit(x):
+@@ -20,16 +30,39 @@ def tree_digest(value):
+     visit(value);return h.hexdigest()
+ 
+ def validate_spec(spec):
+-    if spec.get('schema')!='native-paired-prefix-spec-v1':raise ValueError('Unknown probe spec')
++    if spec.get('schema') not in ('native-paired-prefix-spec-v1','native-paired-prefix-batch-spec-v2'):raise ValueError('Unknown probe spec')
+     if type(spec.get('tick'))is not int or not 1<=spec['tick']<799:raise ValueError('Probe tick must be within original episode')
+-    if type(spec.get('lane'))is not int or not 0<=spec['lane']<128:raise ValueError('Probe lane outside original128')
+-    direction=torch.tensor(spec['request_direction'],dtype=torch.float64)
+-    if direction.shape!=(18,) or not torch.isfinite(direction).all() or not direction.norm()>0:raise ValueError('Need finite nonzero18D request direction')
++    if spec['schema']=='native-paired-prefix-spec-v1':
++        if 'lanes' in spec or 'request_directions' in spec:raise ValueError('Mixed probe schemas')
++        if type(spec.get('lane'))is not int or not 0<=spec['lane']<128:raise ValueError('Probe lane outside original128')
++        direction=torch.tensor(spec['request_direction'],dtype=torch.float64).unsqueeze(0)
++    else:
++        if 'lane' in spec or 'request_direction' in spec:raise ValueError('Mixed probe schemas')
++        lanes=spec.get('lanes')
++        if not isinstance(lanes,list) or not lanes or any(type(i)is not int or not 0<=i<128 for i in lanes) or len(set(lanes))!=len(lanes):
++            raise ValueError('Batch probe needs unique original128 lane IDs')
++        direction=torch.tensor(spec['request_directions'],dtype=torch.float64)
++    if direction.shape!=(len(probe_lanes(spec)),18) or not torch.isfinite(direction).all() or not (direction.norm(dim=-1)>0).all():
++        raise ValueError('Need finite nonzero18D request direction per lane')
+     epsilon=spec['epsilon_request']
+     if not isinstance(epsilon,(int,float)) or not 0<epsilon<=2:raise ValueError('Declare a positive request perturbation, no actuator changes')
+     if spec.get('head') not in ('recovery','approach'):raise ValueError('Unknown head')
+     return spec
+ 
++def perturb_request(request,spec,branch):
++    """Diagnostic intervention at one shared tick; original actuator runs next.
++
++    No lane-specific policy rule. Full pre-intervention prefix is identical for
++    all selected lanes, and no previous perturbation is hidden in their state.
++    """
++    validate_spec(spec)
++    if branch not in BRANCHES:raise ValueError('Unknown probe branch')
++    if request.shape!=(128,18):raise ValueError('Probe requires original128 request shape')
++    direction=([spec['request_direction']] if spec['schema']=='native-paired-prefix-spec-v1' else spec['request_directions'])
++    action=request.clone();sign={'nominal_a':0.,'nominal_b':0.,'minus':-1.,'plus':1.}[branch]
++    action[probe_lanes(spec)]+=sign*spec['epsilon_request']*request.new_tensor(direction)
++    return action.clamp(-1,1)
++
+ class NativePairCapture:
+     def __init__(self,spec,branch):
+         self.spec=validate_spec(spec);self.branch=branch
+@@ -40,20 +73,21 @@ class NativePairCapture:
+             state=capture_state(env)
+             self.start=tensor_tree_copy(dict(before=state,observation=observation,executor_before=capture_controller(env._sm_residual_controller)),cpu=True)
+             self.prefix.update(tree_digest(self.start).encode())
+-            action=request.clone();sign={'nominal_a':0.,'nominal_b':0.,'minus':-1.,'plus':1.}[self.branch]
+-            action[self.spec['lane']]+=sign*self.spec['epsilon_request']*request.new_tensor(self.spec['request_direction'])
+-            self.request_before=request.detach().cpu().clone();self.request_after=action.clamp(-1,1).detach().cpu().clone()
+-            return action.clamp(-1,1)
++            action=perturb_request(request,self.spec,self.branch)
++            self.request_before=request.detach().cpu().clone();self.request_after=action.detach().cpu().clone()
++            return action
+         self.prefix.update(tree_digest(dict(observation=observation,request=request,physical=capture_state(env)['physical'])).encode())
+         return request
+     def after(self,tick,env,done):
+         if tick<self.spec['tick']:
+             self.prefix.update(tree_digest(dict(targets=env._sm_joint_targets,final=env._sm_final_action,done=done)).encode())
+         elif tick==self.spec['tick']:
+-            if done.bool().any():raise ValueError('Probe crosses terminal/reset; reject counterfactual')
+-            self.raw=tensor_tree_copy(dict(start=self.start,next_state=encode_physical(capture_state(env)['physical']),
++            valid=probe_valid_lanes(done,probe_lanes(self.spec))
++            captured=capture_state(env)
++            self.raw=tensor_tree_copy(dict(start=self.start,next_state=encode_physical(captured['physical']),
+                 final_joint_targets=env._sm_joint_targets,final_normalized=env._sm_final_action,request_before=self.request_before,
+-                request_after=self.request_after,task_after=capture_state(env)['task']),cpu=True)
++                request_after=self.request_after,task_after=captured['task'],recovery_after=captured['recovery'],
++                next_feet=captured['physical']['foot_contact'],command_valid_lanes=valid),cpu=True)
+     def save(self,output,actor,task_contract,policy_execution,physics,seed):
+         if self.raw is None:raise ValueError('Native probe did not finish')
+         from .supermimic_evidence_binding_v1 import runtime_identity
+diff --git a/scripts/build_supermimic_probe_region.py b/scripts/build_supermimic_probe_region.py
+index 4948453..6a99594 100644
+--- a/scripts/build_supermimic_probe_region.py
++++ b/scripts/build_supermimic_probe_region.py
+@@ -7,11 +7,11 @@ receipt must declare independently calibrated bounds and reference this file has
+ import argparse,hashlib,json
+ from pathlib import Path
+ import torch
+-from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES,tree_digest
++from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES,tree_digest,probe_lanes,validate_spec
+ from quadsmash.rl.supermimic_physical_dataset_v1 import encode_physical
+ from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+ 
+-def build(paths,identity,output):
++def build(paths,identity,output,selected_lanes=None):
+     runs={k:torch.load(paths[k],map_location='cpu',weights_only=True) for k in BRANCHES}
+     base=runs['nominal_a']
+     for branch,run in runs.items():
+@@ -25,7 +25,14 @@ def build(paths,identity,output):
+     from quadsmash.rl.supermimic_evidence_binding_v1 import json_sha
+     if json_sha(base['task_contract'])!=identity['task_contract_sha256'] or base['policy_execution']!=identity['policy_execution']:
+         raise ValueError('Probe/runtime task or execution mismatch')
+-    row=base['raw']['start'];physical=row['before']['physical'];lane=base['spec']['lane'];sl=slice(lane,lane+1)
++    validate_spec(base['spec'])
++    row=base['raw']['start'];physical=row['before']['physical'];intervention_lanes=probe_lanes(base['spec'])
++    lanes=intervention_lanes if selected_lanes is None else list(selected_lanes)
++    if not lanes or any(type(i)is not int or i not in intervention_lanes for i in lanes) or len(set(lanes))!=len(lanes):
++        raise ValueError('Evidence lanes must be unique measured intervention lanes')
++    sl=torch.tensor(lanes)
++    for run in runs.values():
++        if tree_digest(run['raw']['start'])!=tree_digest(row):raise ValueError('Different full native start state')
+     suite=base['task_contract']['suite'];path=Path(suite['path'])
+     if not path.is_absolute():path=Path(__file__).resolve().parents[1]/path
+     if hashlib.sha256(path.read_bytes()).hexdigest()!=suite['sha256']:raise ValueError('Suite hash mismatch')
+@@ -36,23 +43,29 @@ def build(paths,identity,output):
+         executor_before_sha256={k:v['executor_before_sha256'] for k,v in runs.items()})
+     for branch,run in runs.items():pairs['native_'+branch]=run['raw']['next_state'][sl]
+     for branch in ('minus','plus'):pairs['targets_'+branch]=runs[branch]['raw']['final_joint_targets'][sl]
+-    def modes(run):
++    def modes(run,lane):
+         task=run['raw']['task_after']
+-        return {k:(v[lane].tolist() if isinstance(v,torch.Tensor) and v.ndim else v) for k,v in task.items()
++        result={k:(v[lane].tolist() if isinstance(v,torch.Tensor) and v.ndim else v) for k,v in task.items()
+                 if k in ('had_contact','released','frame_hit','legal_initial_contact','string_hit','airborne_string_hit','rally_fault')}
+-    pairs['native_contact_modes']={k:modes(v) for k,v in runs.items()}
+-    sample_id=f"{identity['actor_state_sha256']}:{base['seed']}:{lane}:{int(row['before']['episode_index'][lane])}"
+-    evidence=dict(sample_ids=[sample_id],schema='native-paired-prefix-region-v1',runtime_identity=identity,actor_state=base['actor_state'],pairs=pairs,
+-        command_starts=[dict(start=row,final_normalized=base['raw']['final_normalized'],final_joint_targets=base['raw']['final_joint_targets'])],
++        if 'next_feet' in run['raw']:result['foot_contact']=run['raw']['next_feet'][lane].bool().tolist()
++        recovery=run['raw'].get('recovery_after',{})
++        if 'body_ground_seen' in recovery:result['body_ground_seen']=bool(recovery['body_ground_seen'][lane])
++        return result
++    pairs['native_contact_modes']={k:([modes(v,lane) for lane in lanes] if len(lanes)>1 else modes(v,lanes[0])) for k,v in runs.items()}
++    sample_ids=[f"{identity['actor_state_sha256']}:{base['seed']}:{lane}:{int(row['before']['episode_index'][lane])}" for lane in lanes]
++    evidence=dict(sample_ids=sample_ids,lane_ids=lanes,intervention_lanes=intervention_lanes,schema='native-paired-prefix-region-v1',runtime_identity=identity,actor_state=base['actor_state'],pairs=pairs,
++        command_starts=[dict(start=row,final_normalized=base['raw']['final_normalized'],final_joint_targets=base['raw']['final_joint_targets'],
++                            valid_lanes=base['raw'].get('command_valid_lanes',torch.ones(len(launch),dtype=torch.bool)))],
+         source_sha256={k:hashlib.sha256(Path(p).read_bytes()).hexdigest() for k,p in paths.items()},
+         source_paths={k:str(Path(p).resolve()) for k,p in paths.items()},
+-        head=base['spec']['head'],scope='one measured probe; broader validity needs independent state/event coverage; no automatic pass')
++        head=base['spec']['head'],scope='measured same-tick native probes; no automatic pass or calibrated validity bounds')
+     output=Path(output)
+     with output.open('xb') as f:torch.save(evidence,f)
+-    return dict(path=str(output),sha256=hashlib.sha256(output.read_bytes()).hexdigest(),native_probe_count=1,passed=None)
++    return dict(path=str(output),sha256=hashlib.sha256(output.read_bytes()).hexdigest(),native_probe_count=len(lanes),passed=None)
+ 
+ if __name__=='__main__':
+     p=argparse.ArgumentParser(description=__doc__)
+     for branch in BRANCHES:p.add_argument('--'+branch.replace('_','-'),type=Path,required=True)
+     p.add_argument('--runtime-identity',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+-    a=p.parse_args();print(json.dumps(build({k:getattr(a,k) for k in BRANCHES},json.loads(a.runtime_identity.read_text()),a.output),indent=2))
++    p.add_argument('--selected-lanes',type=int,nargs='+',help='Predeclared calibration OR heldout subset, never selected by measured response')
++    a=p.parse_args();print(json.dumps(build({k:getattr(a,k) for k in BRANCHES},json.loads(a.runtime_identity.read_text()),a.output,a.selected_lanes),indent=2))

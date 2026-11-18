@@ -14,7 +14,12 @@ BALL="${SM_BALL_CHECKPOINT:?set SM_BALL_CHECKPOINT to ball.pt}"
 TASK="${SM_TASK_CHECKPOINT:?set SM_TASK_CHECKPOINT to task.pt}"
 SAFETY="${SM_SAFETY_MAPPING:-$ROOT/reports/supermimic_native_physical_loop_20261114/safety_mapping.json}"
 REFERENCE="${SM_REFERENCE_POLICY:-/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt}"
-mkdir -p "$RUN_ROOT" "$RUN_ROOT/tensorboard"
+mkdir -p "$(dirname "$RUN_ROOT")"
+if ! mkdir "$RUN_ROOT"; then
+  echo "Refusing to reuse training output: $RUN_ROOT; set a new SM_RUN_ROOT, including for resume." >&2
+  exit 15
+fi
+mkdir "$RUN_ROOT/tensorboard"
 REF_BANK="${SM_TASK_REFERENCE_BANK:?set SM_TASK_REFERENCE_BANK to a terminal-verified v2 bank}"
 TRACK_WEIGHT="${SM_TRACKING_WEIGHT:?declare SM_TRACKING_WEIGHT before this experiment}"
 R_UPDATES="${SM_RECOVERY_UPDATES:-128}"
@@ -62,12 +67,14 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     --cycles 1 --native-ticks-per-actor-update 16
     --replay-capacity-ticks 16384 --refresh-ticks 800
     --refresh-world-updates 32 --refresh-critic-updates 20
-    --world-updates-per-actor-update 4
+    --world-updates-per-actor-update 4 --wm-batch-size "${SM_WM_BATCH_SIZE:-512}"
     --wm-stage-quota uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8
     --wm-approach-stage-quota uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8
     --task-reference-bank "$REF_BANK" --tracking-weight "$TRACK_WEIGHT"
     --command-delta-budget 0.005 --target-delta-budget-rad 0.04
     --tensorboard-dir "$RUN_ROOT/tensorboard"
+    --native-return-drop-tolerance "$RETURN_DROP_TOL" --native-return-flat-tolerance "$CONVERGENCE_TOL"
+    --native-return-patience "$CONVERGENCE_PATIENCE"
     --output "$OUT" --headless --device cuda:0
     --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false
   )

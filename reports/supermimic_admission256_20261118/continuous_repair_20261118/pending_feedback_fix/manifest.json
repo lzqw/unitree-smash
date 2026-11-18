@@ -1,0 +1,22 @@
+{
+  "status": "STAGED_NOT_APPLIED",
+  "files": {
+    "quadsmash/rl/supermimic_task_memory_schema_v1.py": {
+      "original_sha256": "9604f96b4e83eb77cc3c8d06532f0b0615408efbd82f6e078f5c8eccbf471d6f",
+      "proposed_sha256": "445945aa0bc7612d9732eb027236ff8b055afecfcff61b7d7efe86cb65c733b3"
+    },
+    "scripts/fit_supermimic_task_transition.py": {
+      "original_sha256": "9275ec15fb56ca1357de46b933fbbe005c3d889672d40bd3822d673f08acf58b",
+      "proposed_sha256": "294d58f07ceda3a4eda507ce0f7e6494299a78ce3d85ff63c245f2014cbcff58"
+    },
+    "quadsmash/rl/supermimic_physical_learner_v1.py": {
+      "original_sha256": "231a6f9d5cdad1008f01fabf1560591f1488ad1d9c130babb0364d951a51c78f",
+      "proposed_sha256": "651d9d27603ce6ef7171583cbe0d8d310d25f5f0436040cc0aed9472b6775f26"
+    }
+  },
+  "reason": "Running native collection and queued model fit pin source hashes; apply only after both finish and check source unchanged",
+  "scope": "Training feedback matches existing schema decode/encode. Physical actor execution, native scoring, reward, optimizer budgets and task forward remain unchanged.",
+  "remaining": "Deterministic clock/action/geometry overwrite is separately audited, not claimed solved by this decoder fix.",
+  "implementation": "Batched Torch field masks, immutable schema masks cached per device; no per-field tensor dispatch in recurrent feedback",
+  "metadata": "Explicit feedback_contract in offline task checkpoint config and online WM per-update report; original schema and parameter layout unchanged"
+}

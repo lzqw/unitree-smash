@@ -13,6 +13,24 @@ STATIC=('execution_code_sha256','schema','task_contract_sha256','policy_executio
 METRICS=('native_repeat_max','native_response_min','response_rmse_max','response_cosine_min',
          'response_relative_error_max','final_normalized_command_delta_max','final_joint_target_delta_rad_max','accepted_update_age_max')
 
+def contact_mode_groups(modes,count,head):
+    """Mode switches are finite differences, not a smooth Jacobian oracle."""
+    required=('had_contact','released','frame_hit','string_hit') if head=='approach' else ('foot_contact','body_ground_seen')
+    groups=[]
+    for i in range(count):
+        rows=[]
+        for branch in ('nominal_a','nominal_b','minus','plus'):
+            row=modes.get(branch) if isinstance(modes,dict) else None
+            if isinstance(row,list):row=row[i] if len(row)==count else None
+            elif count!=1:row=None
+            if not isinstance(row,dict) or any(k not in row or row[k] is None for k in required):break
+            rows.append({k:row[k] for k in required})
+        if len(rows)!=4:groups.append('unknown')
+        elif rows[0]!=rows[1]:groups.append('nominal-mode-mismatch')
+        elif all(row==rows[0] for row in rows):groups.append('smooth-mode')
+        else:groups.append('mode-switch')
+    return groups
+
 def load_region(spec,receipt_path):
     path=Path(receipt_path).parent/spec['path']
     if hashlib.sha256(path.read_bytes()).hexdigest()!=spec['sha256']:raise ValueError('Native probe bundle hash mismatch')
@@ -37,6 +55,7 @@ def load_region(spec,receipt_path):
         raise ValueError('Native probe samples not bound to heldout episode identities')
     if type(spec.get('minimum_samples')) is not int or spec['minimum_samples']<1:raise ValueError('Declare minimum native probe support')
     if len(bundle['pairs']['state'])<spec['minimum_samples']:raise ValueError('Insufficient native probe coverage')
+    if len(set(bundle['sample_ids']))<spec['minimum_samples']:raise ValueError('Insufficient independent probe episodes')
     return bundle,limits
 
 def paired_metrics(adapter,pairs,head,limits):
@@ -53,7 +72,12 @@ def paired_metrics(adapter,pairs,head,limits):
     if not len(p['state']) or any(not torch.isfinite(p[k]).all() for k in required):raise ValueError('Empty/nonfinite native probe')
     hashes=p.get('prefix_sha256',{});mem=p.get('executor_before_sha256',{})
     for values in (hashes,mem):
-        if set(values)!=set(('nominal_a','nominal_b','minus','plus')) or any(not x for x in values.values()) or len(set(values.values()))!=1:
+        if set(values)!=set(('nominal_a','nominal_b','minus','plus')):
+            raise ValueError('Same-prefix/controller repeatability missing; do not substitute snapshot restore')
+        rows=[]
+        for value in values.values():
+            rows.append(value if isinstance(value,list) else [value]*len(p['state']))
+        if any(len(row)!=len(p['state']) for row in rows) or any(not all(col) or len(set(col))!=1 for col in zip(*rows)):
             raise ValueError('Same-prefix/controller repeatability missing; do not substitute snapshot restore')
     if p.get('restore_mode')!='from-ground-identical-prefix':raise ValueError('Unsupported native restoration claim')
     predictions=[]
@@ -68,6 +92,10 @@ def paired_metrics(adapter,pairs,head,limits):
     target_delta=(p['targets_plus']-p['targets_minus']).norm(dim=-1)
     norms=native.norm(dim=-1);supported=(norms>=limits['native_response_min'])&(target_delta>0)
     missing=int((~supported).sum());failures=[]
+    groups=contact_mode_groups(p.get('native_contact_modes'),len(native),head)
+    if 'unknown' in groups:failures.append('unknown-native-contact-mode')
+    if 'nominal-mode-mismatch' in groups:failures.append('native-contact-mode-repeatability')
+    if 'mode-switch' in groups:failures.append('non-smooth-contact-boundary-needs-separate-validation')
     if repeat>limits['native_repeat_max']:failures.append('native-repeatability')
     if missing:failures.append('saturated-or-native-response-below-support')
     # No silent filtering of hard or saturated probes to inflate pass rate.
@@ -86,17 +114,20 @@ def paired_metrics(adapter,pairs,head,limits):
         projected=(jac*(p['targets_plus']-p['targets_minus'])[:,None]).sum(-1)
     if not torch.isfinite(projected).all():failures.append('nonfinite-jacobian')
     jac_cos=(projected*native).sum(-1)/(projected.norm(dim=-1)*norms).clamp_min(1e-12)
-    if float(jac_cos.min())<limits['response_cosine_min']:failures.append('local-jacobian-direction')
+    smooth=torch.tensor([g=='smooth-mode' for g in groups],device=device)
+    if smooth.any() and float(jac_cos[smooth].min())<limits['response_cosine_min']:failures.append('local-jacobian-direction')
     return dict(native_contact_modes=p.get('native_contact_modes','unknown'),passed=not failures,failures=failures,count=len(native),unsupported_count=missing,
         native_repeat_max=repeat,response_rmse=rmse,response_cosine=cosine.tolist(),relative_error=relative.tolist(),
-        jacobian_cosine=jac_cos.detach().tolist(),native_delta=native.tolist(),model_delta=predicted.tolist(),
+        contact_mode_groups=groups,jacobian_cosine=[float(jac_cos[i].detach()) if groups[i]=='smooth-mode' else None for i in range(len(groups))],native_delta=native.tolist(),model_delta=predicted.tolist(),
         projected_jacobian=projected.detach().tolist(),scope='measured final-command pair on repeated native prefix; contact-mode switches reported in raw evidence')
 
 def assess_region(spec,receipt_path,current,adapter,command_preview,head):
     """command_preview(raw_current_start) restores a separate G07 branch each call."""
     bundle,limits=load_region(spec,receipt_path);origin=bundle['runtime_identity']
     if bundle.get('head')!=head:raise ValueError('Native probe belongs to different head')
-    failures=[key for key in STATIC if origin.get(key)!=current.get(key)]
+    from .supermimic_evidence_binding_v1 import static_identity_failures, native_code_compatibility
+    failures=static_identity_failures(origin,current)
+    code_scope=native_code_compatibility(origin.get('execution_code_sha256'),current.get('execution_code_sha256'))
     age=current['policy_version']-origin['policy_version']
     if age<0 or age>limits['accepted_update_age_max']:failures.append('policy-age')
     if tensor_digest(bundle['actor_state'].items())!=origin['actor_state_sha256']:raise ValueError('Probe actor anchor identity mismatch')
@@ -106,13 +137,15 @@ def assess_region(spec,receipt_path,current,adapter,command_preview,head):
     with torch.no_grad():
         for item in starts:
             final,target=command_preview(item['start'])
-            normalized=max(normalized,float((final.cpu()-item['final_normalized']).abs().max()))
-            targets=max(targets,float((target.cpu()-item['final_joint_targets']).abs().max()))
+            mask=item.get('valid_lanes',torch.ones(len(final),dtype=torch.bool)).cpu().bool()
+            if mask.shape!=(len(final),) or not mask.any():raise ValueError('Invalid native command comparison lane mask')
+            normalized=max(normalized,float((final.cpu()-item['final_normalized'])[mask].abs().max()))
+            targets=max(targets,float((target.cpu()-item['final_joint_targets'])[mask].abs().max()))
     if normalized>limits['final_normalized_command_delta_max']:failures.append('executed-normalized-command-drift')
     if targets>limits['final_joint_target_delta_rad_max']:failures.append('executed-joint-target-drift')
     measured=paired_metrics(adapter,bundle['pairs'],head,limits)
     failures+=measured['failures']
     return dict(passed=not failures,failures=failures,current_identity=current,evidence_sha256=spec['sha256'],
-        origin_identity=origin,accepted_update_age=age,final_normalized_command_delta=normalized,
+        origin_identity=origin,code_scope=code_scope,accepted_update_age=age,final_normalized_command_delta=normalized,
         final_joint_target_delta_rad=targets,metrics=measured,limits=limits,
         scope='current model rechecked against immutable native responses plus bounded policy drift; not an exact current-policy value guarantee')

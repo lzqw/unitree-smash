@@ -384,7 +384,7 @@ class PhysicalHorizonTrainer:
                 action_ball_loss=action_ball_loss+extra
                 loss=loss+extra
             state,feet,present=prediction,newfeet,newpresent
-            values,validity=out['numeric'],out['valid_logits'].sigmoid()
+            values,validity=task.memory_schema.feedback_values(out['numeric'],out['valid_logits'].sigmoid())
         loss=loss/cfg.world_steps
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical multistep model loss')
         self.world_opt.zero_grad(set_to_none=True);loss.backward()
@@ -411,6 +411,7 @@ class PhysicalHorizonTrainer:
                     world_physical_gradient=group_gradients[0],
                     world_ball_gradient=group_gradients[1],
                     world_task_gradient=group_gradients[2],
+                    task_feedback_contract=task.memory_schema.feedback_contract,
                     world_seconds=time.perf_counter()-started)
 
     def calibrate_critic_native(self, states, returns, *, epochs=2, masks=None):

@@ -1,0 +1,49 @@
+{
+  "status": "RUNNING",
+  "branch": "plus",
+  "completed": [
+    {
+      "branch": "nominal_a",
+      "exit_code": 0,
+      "elapsed_s": 406.496027469635,
+      "probe_sha256": "c483b61f0621f16382f242ea789ebabb6d92f391d0bba4f4779bfbba73a6bac4"
+    },
+    {
+      "branch": "nominal_b",
+      "exit_code": 0,
+      "elapsed_s": 409.26094484329224,
+      "probe_sha256": "5e09565bb246d1354b92b2f975badc77faae43ca32a8844536eeeda50f7bad64"
+    },
+    {
+      "branch": "minus",
+      "exit_code": 0,
+      "elapsed_s": 405.3566656112671,
+      "probe_sha256": "7638529ffc7c44f949d80e6e908d4aa74253c415c7294246b375747a081a72bb"
+    }
+  ],
+  "pid": 2818815,
+  "command": [
+    "bash",
+    "scripts/python.sh",
+    "scripts/evaluate_supermimic_v1.py",
+    "--init-policy-checkpoint",
+    "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+    "--init-policy-recovery-gate",
+    "causal",
+    "--g07-execution-root",
+    "/home/autodrive/LZQW/unitree_smash",
+    "--seed",
+    "882072",
+    "--physics-device",
+    "cuda:0",
+    "--device",
+    "cuda:0",
+    "--headless",
+    "--native-action-probe-spec",
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_probe_approach17/spec.json",
+    "--native-action-probe-branch",
+    "plus",
+    "--output",
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_probe_approach17/plus"
+  ]
+}

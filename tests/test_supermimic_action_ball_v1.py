@@ -3,6 +3,7 @@ import torch
 from torch import nn
 from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,preimpact_hard_negatives
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
+from quadsmash.rl.supermimic_action_ball_v1 import postimpact_hard_negatives,contact_neighborhood_pools
 
 
 class FakeRacket:
@@ -86,3 +87,23 @@ def test_precontact_hard_negative_is_one_tick_before_native_edge_and_reset_safe(
     edge=torch.tensor([[False],[True]])
     assert not preimpact_hard_negatives(edge,torch.tensor([[0],[1]]),
         torch.tensor([[True],[False]]),torch.zeros(2,1,dtype=torch.bool)).any()
+
+
+def test_postimpact_never_crosses_terminal_reset_or_labels_another_contact_negative():
+    edge=torch.tensor([[True],[True],[False],[True],[False],[True],[False]])
+    episode=torch.tensor([[0],[0],[0],[0],[1],[1],[1]])
+    done=torch.tensor([[False],[False],[False],[True],[False],[True],[False]])
+    result=postimpact_hard_negatives(edge,episode,done,torch.zeros_like(done))
+    assert result.flatten().tolist()==[False,False,True,False,False,False,False]
+
+
+def test_contact_pools_cover_eligible_rows_once_and_do_not_include_holdout_lanes():
+    edge=torch.zeros(10,2,dtype=torch.bool);edge[2,0]=True;edge[4,0]=True;edge[6,1]=True
+    episode=torch.zeros(10,2,dtype=torch.long);done=torch.zeros_like(edge)
+    eligible=torch.ones_like(edge);eligible[:,1]=False
+    pools=contact_neighborhood_pools(edge,episode,done,done,eligible)
+    rows=[tuple(row) for pool in pools.values() for row in pool.tolist()]
+    assert len(rows)==len(set(rows))==10
+    assert all(lane==0 for tick,lane in rows)
+    assert (3,0) in map(tuple,pools['post_contact'].tolist())
+    assert (3,0) not in map(tuple,pools['pre_contact'].tolist())

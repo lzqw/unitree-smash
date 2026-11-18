@@ -1,0 +1,95 @@
+{
+  "results": {
+    "train_lanes": {
+      "recovery/rally_recovery_success": {
+        "-16": {
+          "count": 28,
+          "hazard_mean": 0.06229865923523903,
+          "bool_prediction_mean": 0.0002598929568193853,
+          "native_bool_mean": 0.0
+        },
+        "-1": {
+          "count": 28,
+          "hazard_mean": 0.0990452915430069,
+          "bool_prediction_mean": 0.0003206626570317894,
+          "native_bool_mean": 0.0
+        },
+        "0": {
+          "count": 28,
+          "hazard_mean": 0.10171177238225937,
+          "bool_prediction_mean": 0.00032473038299940526,
+          "native_bool_mean": 1.0
+        }
+      },
+      "recovery/body_ground_seen": {
+        "-16": {
+          "count": 45,
+          "hazard_mean": 0.02995620295405388,
+          "bool_prediction_mean": 0.00018636576714925468,
+          "native_bool_mean": 0.0
+        },
+        "-1": {
+          "count": 45,
+          "hazard_mean": 0.12129393965005875,
+          "bool_prediction_mean": 0.00030732841696590185,
+          "native_bool_mean": 0.0
+        },
+        "0": {
+          "count": 45,
+          "hazard_mean": 0.23773032426834106,
+          "bool_prediction_mean": 0.0003695749619510025,
+          "native_bool_mean": 1.0
+        }
+      }
+    },
+    "validation_lanes": {
+      "recovery/rally_recovery_success": {
+        "-16": {
+          "count": 9,
+          "hazard_mean": 0.06412675976753235,
+          "bool_prediction_mean": 0.00025551352882757783,
+          "native_bool_mean": 0.0
+        },
+        "-1": {
+          "count": 9,
+          "hazard_mean": 0.10300865769386292,
+          "bool_prediction_mean": 0.0003144306247122586,
+          "native_bool_mean": 0.0
+        },
+        "0": {
+          "count": 9,
+          "hazard_mean": 0.10763087868690491,
+          "bool_prediction_mean": 0.00032045511761680245,
+          "native_bool_mean": 1.0
+        }
+      },
+      "recovery/body_ground_seen": {
+        "-16": {
+          "count": 16,
+          "hazard_mean": 0.03864354267716408,
+          "bool_prediction_mean": 0.00019871763652190566,
+          "native_bool_mean": 0.0
+        },
+        "-1": {
+          "count": 16,
+          "hazard_mean": 0.10120051354169846,
+          "bool_prediction_mean": 0.00026749359676614404,
+          "native_bool_mean": 0.0
+        },
+        "0": {
+          "count": 16,
+          "hazard_mean": 0.1343059092760086,
+          "bool_prediction_mean": 0.00028864212799817324,
+          "native_bool_mean": 1.0
+        }
+      }
+    }
+  },
+  "evidence": {
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/task_feedback_repair_d6l7l46z/event_boolean_disagreement.json": "2da078d0039e83721b1406c471fd044c51ad43012209da91012bfe6c95093d76",
+    "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/task_feedback_repair_d6l7l46z/recovery_hazard_components.json": "a46049dfa691144d8e89644ae856c15a26f31770035ef06c113a0f20f4700768"
+  },
+  "interpretation": "True physical state and true memory still produce broad premature recovery hazards while predicted recovery/body boolean flips remain near zero. Feedback mismatch was real but is not the only task-model deficiency.",
+  "native_scoring_changed": false,
+  "actor_updates": 0
+}

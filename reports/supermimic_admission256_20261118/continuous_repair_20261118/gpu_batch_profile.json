@@ -1,0 +1,114 @@
+{
+  "scope": "Bounded read-only GPU minibatch throughput, no optimizer or native evaluation.",
+  "device": "NVIDIA GeForce RTX 5080",
+  "records": [
+    {
+      "batch": 128,
+      "window": 16,
+      "trials": [
+        {
+          "repeat": 0,
+          "forward_s": 1.2703971369192004,
+          "backward_s": 1.4599878480657935,
+          "elapsed_s": 2.7430288433097303,
+          "peak_allocated_bytes": 477627392,
+          "peak_reserved_bytes": 522190848,
+          "loss": 18.093250274658203
+        },
+        {
+          "repeat": 1,
+          "forward_s": 0.8774738209322095,
+          "backward_s": 1.4084856500849128,
+          "elapsed_s": 2.3009900618344545,
+          "peak_allocated_bytes": 486147072,
+          "peak_reserved_bytes": 522190848,
+          "loss": 18.093250274658203
+        }
+      ],
+      "supervised_positions_per_second": 890.0516494918021,
+      "optimizer_steps": 0
+    },
+    {
+      "batch": 512,
+      "window": 16,
+      "trials": [
+        {
+          "repeat": 0,
+          "forward_s": 0.9260379537008703,
+          "backward_s": 1.4203832019120455,
+          "elapsed_s": 2.360543161164969,
+          "peak_allocated_bytes": 1686201856,
+          "peak_reserved_bytes": 1772093440,
+          "loss": 19.233261108398438
+        },
+        {
+          "repeat": 1,
+          "forward_s": 0.937845058273524,
+          "backward_s": 1.4377435930073261,
+          "elapsed_s": 2.393266316037625,
+          "peak_allocated_bytes": 1685939712,
+          "peak_reserved_bytes": 1772093440,
+          "loss": 19.233261108398438
+        }
+      ],
+      "supervised_positions_per_second": 3422.937073531775,
+      "optimizer_steps": 0
+    },
+    {
+      "batch": 1024,
+      "window": 16,
+      "trials": [
+        {
+          "repeat": 0,
+          "forward_s": 0.9686164218001068,
+          "backward_s": 1.4172027693130076,
+          "elapsed_s": 2.398284126073122,
+          "peak_allocated_bytes": 3259758080,
+          "peak_reserved_bytes": 3422552064,
+          "loss": 17.932979583740234
+        },
+        {
+          "repeat": 1,
+          "forward_s": 0.9689609478227794,
+          "backward_s": 1.38106045499444,
+          "elapsed_s": 2.3636970850639045,
+          "peak_allocated_bytes": 3267098112,
+          "peak_reserved_bytes": 3422552064,
+          "loss": 17.932979583740234
+        }
+      ],
+      "supervised_positions_per_second": 6931.514238237107,
+      "optimizer_steps": 0
+    },
+    {
+      "batch": 2048,
+      "window": 16,
+      "trials": [
+        {
+          "repeat": 0,
+          "forward_s": 1.1355429640971124,
+          "backward_s": 1.3887554840184748,
+          "elapsed_s": 2.538495120126754,
+          "peak_allocated_bytes": 6432019968,
+          "peak_reserved_bytes": 6723469312,
+          "loss": 13.909565925598145
+        },
+        {
+          "repeat": 1,
+          "forward_s": 1.1018256647512317,
+          "backward_s": 1.3953603841364384,
+          "elapsed_s": 2.5133961820974946,
+          "peak_allocated_bytes": 6438712832,
+          "peak_reserved_bytes": 6723469312,
+          "loss": 13.909565925598145
+        }
+      ],
+      "supervised_positions_per_second": 13037.339768955268,
+      "optimizer_steps": 0
+    }
+  ],
+  "weights_unchanged": true,
+  "optimizer_steps": 0,
+  "actor_updates": 0,
+  "limitations": "Model-only16-step workload, no task model or native Isaac allocation; not measured full64-step actor BPTT or combined native training peak. No hyperparameter or checkpoint selection."
+}

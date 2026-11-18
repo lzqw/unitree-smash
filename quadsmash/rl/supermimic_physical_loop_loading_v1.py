@@ -5,9 +5,9 @@ import torch
 from .supermimic_v1 import load_ppo_initialized_actor
 from .supermimic_physical_world_v2 import PhysicalWorldV2
 from .supermimic_ball_residual_v2 import BallResidualV2
-from .supermimic_action_ball_v1 import ActionConditionedBallV1
+from .supermimic_action_ball_v1 import action_ball_from_checkpoint
 from .supermimic_task_memory_schema_v1 import TaskMemorySchemaV1,MemoryField
-from .supermimic_task_transition_model_v1 import NativeTaskTransitionSurrogateV1
+from .supermimic_task_transition_model_v1 import task_model_for_schema
 from .supermimic_physical_imagination_adapter_v1 import PhysicalImaginationAdapter
 from .supermimic_g07_memory_preview_v1 import G07MemoryPreviewV1
 from quadsmash.control.g07_shared_target_residual_v1 import make_g07_residual_controller
@@ -81,13 +81,12 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
     action_ball=None
     if action_ball_checkpoint is not None:
         candidate=torch.load(paths['action_ball'],map_location='cpu',weights_only=True)
-        if (candidate.get('schema')!=ActionConditionedBallV1.schema or
-                candidate.get('physical_sha256')!=hashes['physical'] or
+        action_ball=action_ball_from_checkpoint(candidate).to(device)
+        if (candidate.get('physical_sha256')!=hashes['physical'] or
                 candidate.get('legacy_ball_sha256')!=hashes['ball'] or
                 candidate.get('asset_sha256')!=manifest['task_contract']['asset']['sha256'] or
                 int(candidate.get('updates',0))<1):
             raise ValueError('Action-conditioned ball candidate checkpoint/source mismatch')
-        action_ball=ActionConditionedBallV1().to(device)
         if (candidate.get('geometry_hashes')!=action_ball.preview.geometry_hashes or
                 candidate.get('softness_m')!=action_ball.softness_m):
             raise ValueError('Action-ball candidate racket/net geometry or support width mismatch')
@@ -97,7 +96,7 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
     output_key=max((key for key in task_state['model'] if key.startswith('net.net.') and key.endswith('.bias')),
                    key=lambda key:int(key.split('.')[2]))
     width=task_state['model'][output_key].numel()-2*schema.width-10
-    task=NativeTaskTransitionSurrogateV1(schema,width).to(device)
+    task=task_model_for_schema(task_state.get('schema'),schema,width).to(device)
     task.load_state_dict(task_state['model'],strict=True)
     safety=json.loads(Path(safety_mapping).read_text())
     if safety['asset_sha256']!=manifest['task_contract']['asset']['sha256']:raise ValueError('Safety geometry asset mismatch')

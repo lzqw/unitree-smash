@@ -1,0 +1,130 @@
+{
+  "recorded_utc": "2026-11-17T18:29:28.685951+00:00",
+  "head": "0e417225f2b75c5978e6f72856d0f423d79a31c8",
+  "cwd": "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290",
+  "experiment": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k",
+  "service": "supermimic-response-reviewed-20261118.service",
+  "process": 2834119,
+  "config": {
+    "schema": "bounded-native-response-calibration-plan-v1",
+    "created_utc": "2026-11-17T18:04:29.732441+00:00",
+    "command": [
+      "bash",
+      "scripts/python.sh",
+      "scripts/fit_supermimic_native_response.py",
+      "--probe-directory",
+      "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_probe_batch128_t272",
+      "--split-manifest",
+      "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/fixed_split.json",
+      "--physical-checkpoint",
+      "/tmp/supermimic_racket_dynamics_20261114_YRFhKS/run/world.pt",
+      "--ball-checkpoint",
+      "/tmp/supermimic_ball_sequence_20261114_axsonnit/run/ball.pt",
+      "--action-ball-checkpoint",
+      "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/action_ball_neighborhood/action_ball_candidate.pt",
+      "--packed-data",
+      "/home/autodrive/LZQW/experiments/supermimic_frozen_closure_20261117_223243/packed/data.pt",
+      "--output",
+      "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_response_fit_01",
+      "--updates",
+      "256"
+    ],
+    "cwd": "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290",
+    "env": {
+      "CUDA_VISIBLE_DEVICES": "0",
+      "QUADSMASH_PYTHON": "/home/autodrive/Isaac/env_isaaclab/bin/python"
+    },
+    "fixed_budget": {
+      "model_optimizer_steps": 256,
+      "actor_optimizer_steps": 0,
+      "batch": 128,
+      "world_steps": 16,
+      "lr": 0.0002,
+      "seed": 20261118
+    },
+    "sources": {
+      "probe": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_probe_batch128_t272",
+      "split": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/fixed_split.json"
+    },
+    "fit_scope": "existing robot body + action-ball; native measured response supervision supplements original state transitions; no network/physics/reward/actuator change",
+    "data_conditions": [
+      "all four native branches complete with exit0 and SHA matches",
+      "all128 exact same-prefix starts and nominal repeat0",
+      "source actor/asset/execution contract match",
+      "original96/32 split; heldout rows excluded from every loss",
+      "no GPU overlap with native series"
+    ],
+    "evaluation": "report all32 heldout native response pairs including weak/saturated/mode-switch cases; pre/at/post contact1step and4/16/32/64 AR; unchanged adjacent-step no-worsening criterion vs legacy",
+    "admission": "never automatic; one time/action direction does not certify Recovery or complete Approach; failure retained, no automatic model-budget extension or second fit",
+    "source_hashes": {
+      "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/scripts/fit_supermimic_native_response.py": "4a3e4af29f0be27b386a73537dbbed965317a5618a4805c6190343728ec519fd",
+      "/tmp/unitree_smash_task_horizon_v2_20261113_174158_1440290/quadsmash/rl/supermimic_native_response_data_v1.py": "d163bee0ebe6ea8e6ea6cfe0b234fdbbfdc4e3abea89b5b0075e0e7007deb307"
+    }
+  },
+  "unchanged_native_contract": true,
+  "actor_updates": 0,
+  "test_log": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/batch_response_suite.log",
+  "tests": {
+    "passed": 309,
+    "failed": 0,
+    "skipped": 0
+  },
+  "native_collection": {
+    "status": "COLLECTION_FINISHED",
+    "completed": [
+      {
+        "branch": "nominal_a",
+        "exit_code": 0,
+        "elapsed_s": 403.5925793647766,
+        "probe_sha256": "c5850855f21d54733acde18fbf37e13f7ed23c68fd82f8e1347f8127a9f41b2f"
+      },
+      {
+        "branch": "nominal_b",
+        "exit_code": 0,
+        "elapsed_s": 407.7630286216736,
+        "probe_sha256": "6bbb58317c7e8e2a5f385e5539ba86d0ce7a3928a880f94c4fb597577dd160d2"
+      },
+      {
+        "branch": "minus",
+        "exit_code": 0,
+        "elapsed_s": 403.1640591621399,
+        "probe_sha256": "b6ffa3a976ee5edbdcf178f8a312a29cbccb29f8986b6dcbc1a2f155e9db78f9"
+      },
+      {
+        "branch": "plus",
+        "exit_code": 0,
+        "elapsed_s": 404.3816075325012,
+        "probe_sha256": "01a312be1011b5f256fcd6d15e5377ab2822ffe8b67764fbe7dae3b23a3c2985"
+      }
+    ],
+    "actor_updates": 0,
+    "physical_validation_passed": null,
+    "formal_evaluation": false
+  },
+  "batch_isolation": {
+    "status": "MEASURED_NOT_PHYSICAL_ADMISSION",
+    "lane": 17,
+    "single_delta": [
+      -0.04473066329956055,
+      0.03305983543395996,
+      -0.037154555320739746
+    ],
+    "batch_delta": [
+      -0.04537391662597656,
+      0.03552103042602539,
+      -0.03456246852874756
+    ],
+    "response_cosine": 0.998542845249176,
+    "relative_response_difference": 0.054295677691698074,
+    "amplitude_ratio": 1.004555106163025,
+    "branch_max_ball_velocity_difference": {
+      "minus": 0.0025920867919921875,
+      "plus": 0.0
+    },
+    "nominal_repeat": 0.0,
+    "pairs": 128,
+    "train_count": 96,
+    "validation_count": 32,
+    "scope": "Batch-dependent discrepancy quantified; batch samples are actual native transitions. They are not certified isolated per-lane Jacobians. No threshold changed or derivative admission granted."
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "status": {
+    "status": "MODEL_FIT_FINISHED_NOT_ADMITTED",
+    "time_utc": "2026-11-17T23:42:21.171766+00:00",
+    "process": "MainPID=0\nExecMainStatus=0\nActiveState=inactive\n",
+    "source_changes": [],
+    "model_updates": 256,
+    "actor_updates": 0,
+    "critic_updates": 0,
+    "review": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/racket_mode_repair_0m0b0i4r/review.json",
+    "checkpoint_sha256": {
+      "world_sha256": "1f095bab19023b985d6a6dd6c058924f804cc05c2c000ea5913afc71d5e0a751",
+      "action_ball_sha256": "93d413dceb53c45890c44ae5a89c82aa3e8cda0c5cb2499fc0bbbcd0270e6e44",
+      "legacy_ball_sha256": "12f4f667d3ae5c4c57d5ca9ee53580859ccc433c3a09c56905f258436a404566"
+    },
+    "native_admission": false
+  },
+  "summary": {
+    "original_legacy_comparison": {
+      "contact_velocity_improved": true,
+      "contact_sign_error_improved": false,
+      "precontact_not_worse": true,
+      "postcontact_not_worse": true
+    },
+    "heldout_contact_pairs": 7,
+    "positive_contact_response_directions": 4,
+    "negative_contact_response_directions": 3,
+    "undefined_contact_response_directions": 0,
+    "actual_model_updates": 256,
+    "actor_updates": 0,
+    "critic_updates": 0,
+    "median_update_seconds": 1.835571632022038,
+    "elapsed_seconds": 489.76154832728207,
+    "no_automatic_promotion": true,
+    "native_admission": false
+  },
+  "metrics": {
+    "-1": {
+      "count": 30,
+      "velocity_rmse": 0.77837073802948,
+      "forward_sign_error": 0.0,
+      "position_rmse": 0.0014548363396897912
+    },
+    "0": {
+      "count": 30,
+      "velocity_rmse": 1.9572242498397827,
+      "forward_sign_error": 0.06666667014360428,
+      "position_rmse": 0.016623254865407944
+    },
+    "1": {
+      "count": 30,
+      "velocity_rmse": 0.019203433766961098,
+      "forward_sign_error": 0.0,
+      "position_rmse": 0.00022731401259079576
+    }
+  },
+  "initial_reference": {
+    "-1": {
+      "count": 30,
+      "velocity_rmse": 6.61234188079834,
+      "forward_sign_error": 0.9666666984558105,
+      "position_rmse": 0.01343396957963705
+    },
+    "0": {
+      "count": 30,
+      "velocity_rmse": 2.2824132442474365,
+      "forward_sign_error": 0.06666667014360428,
+      "position_rmse": 0.016938751563429832
+    },
+    "1": {
+      "count": 30,
+      "velocity_rmse": 0.026636501774191856,
+      "forward_sign_error": 0.0,
+      "position_rmse": 0.0002970749919768423
+    }
+  },
+  "diagnostic": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/racket_mode_repair_0m0b0i4r/endpoint_sensitivity_attribution.json"
+}

@@ -1,0 +1,81 @@
+--- a/quadsmash/rl/supermimic_task_memory_schema_v1.py
++++ b/quadsmash/rl/supermimic_task_memory_schema_v1.py
+@@ -27,6 +27,7 @@
+ 
+ class TaskMemorySchemaV1:
+     version = 'native-named-task-memory-value-valid-v1'
++    feedback_contract = 'schema-decode-encode-equivalent-feedback-v1'
+ 
+     def __init__(self,fields):
+         self.fields=tuple(fields)
+@@ -64,6 +65,32 @@
+                     absent_timestamps='explicit validity mask; not a real zero timestamp',
+                     future_transition='not implemented by this encoding')
+ 
++    def feedback_values(self,values,validity):
++        """Exact value feedback of encode(decode_surrogate(...)).
++
++        Fitting must not feed soft validity back when imagination thresholds
++        missing float fields. Boolean/counter predictions stay finite current
++        state values; the validity threshold is the existing discrete branch.
++        No future native field or event is introduced by this conversion.
++        """
++        if values.shape!=validity.shape or values.ndim!=2 or values.shape[-1]!=self.width:
++            raise ValueError('Task surrogate feedback width mismatch')
++        # Schema-only masks are immutable; cache by device rather than
++        # copying them from CPU at every autoregressive step. No causal state
++        # or per-lane execution history is cached here.
++        cache=getattr(self,'_feedback_masks',None)
++        if cache is None:self._feedback_masks={};cache=self._feedback_masks
++        key=str(values.device)
++        if key not in cache:
++            boolean=[f.kind=='bool' for f in self.fields for _ in range(f.width)]
++            floating=[f.kind=='float' for f in self.fields for _ in range(f.width)]
++            cache[key]=(torch.tensor(boolean,device=values.device,dtype=torch.bool),
++                        torch.tensor(floating,device=values.device,dtype=torch.bool))
++        boolean,floating=cache[key]
++        numeric=torch.where(boolean,values.clamp(0.,1.),values)
++        valid=torch.isfinite(numeric)&(~floating | (validity>.5))
++        return torch.where(valid,numeric,torch.zeros_like(numeric)).float(),valid.float()
++
+     def decode_surrogate(self,values,validity,template):
+         """Decode predicted fields; validity selection is explicitly discrete.
+ 
+--- a/scripts/fit_supermimic_task_transition.py
++++ b/scripts/fit_supermimic_task_transition.py
+@@ -88,6 +88,7 @@
+                 split_manifest_sha256=hashlib.sha256(args.split_manifest.read_bytes()).hexdigest() if args.split_manifest else None,
+                 source_manifest=package.get('source_manifest'),initialization='random; no legacy task parameters or optimizer restored',
+                 supervision_contract=model.supervision_contract,
++                feedback_contract=schema.feedback_contract,
+                 physical_input='teacher-forced native transition; task memory autoregressive',
+                 event_prior=frequencies.tolist(),window_pools={k:len(v) for k,v in pools.items()})
+     if initialized is not None:
+@@ -110,7 +111,7 @@
+             loss=loss+model.supervision_loss_values(out,data['next_values'][at,l],data['next_valid'][at,l],
+                 data['event_state'][at,l],data['next_event_state'][at,l],data['torque'][at,l],
+                 data['terminated'][at,l],data['complete_reward'][at,l])
+-            values,validity=out['numeric'],out['valid_logits'].sigmoid()
++            values,validity=model.memory_schema.feedback_values(out['numeric'],out['valid_logits'].sigmoid())
+         loss=loss/steps
+         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite task-memory sequence loss')
+         optimizer.zero_grad(set_to_none=True);loss.backward()
+--- a/quadsmash/rl/supermimic_physical_learner_v1.py
++++ b/quadsmash/rl/supermimic_physical_learner_v1.py
+@@ -384,7 +384,7 @@
+                 action_ball_loss=action_ball_loss+extra
+                 loss=loss+extra
+             state,feet,present=prediction,newfeet,newpresent
+-            values,validity=out['numeric'],out['valid_logits'].sigmoid()
++            values,validity=task.memory_schema.feedback_values(out['numeric'],out['valid_logits'].sigmoid())
+         loss=loss/cfg.world_steps
+         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical multistep model loss')
+         self.world_opt.zero_grad(set_to_none=True);loss.backward()
+@@ -411,6 +411,7 @@
+                     world_physical_gradient=group_gradients[0],
+                     world_ball_gradient=group_gradients[1],
+                     world_task_gradient=group_gradients[2],
++                    task_feedback_contract=task.memory_schema.feedback_contract,
+                     world_seconds=time.perf_counter()-started)
+ 
+     def calibrate_critic_native(self, states, returns, *, epochs=2, masks=None):

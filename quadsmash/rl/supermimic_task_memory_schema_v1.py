@@ -27,6 +27,7 @@ class MemoryField:
 
 class TaskMemorySchemaV1:
     version = 'native-named-task-memory-value-valid-v1'
+    feedback_contract = 'schema-decode-encode-equivalent-feedback-v1'
 
     def __init__(self,fields):
         self.fields=tuple(fields)
@@ -63,6 +64,32 @@ class TaskMemorySchemaV1:
                     fields=[asdict(f) for f in self.fields],
                     absent_timestamps='explicit validity mask; not a real zero timestamp',
                     future_transition='not implemented by this encoding')
+
+    def feedback_values(self,values,validity):
+        """Exact value feedback of encode(decode_surrogate(...)).
+
+        Fitting must not feed soft validity back when imagination thresholds
+        missing float fields. Boolean/counter predictions stay finite current
+        state values; the validity threshold is the existing discrete branch.
+        No future native field or event is introduced by this conversion.
+        """
+        if values.shape!=validity.shape or values.ndim!=2 or values.shape[-1]!=self.width:
+            raise ValueError('Task surrogate feedback width mismatch')
+        # Schema-only masks are immutable; cache by device rather than
+        # copying them from CPU at every autoregressive step. No causal state
+        # or per-lane execution history is cached here.
+        cache=getattr(self,'_feedback_masks',None)
+        if cache is None:self._feedback_masks={};cache=self._feedback_masks
+        key=str(values.device)
+        if key not in cache:
+            boolean=[f.kind=='bool' for f in self.fields for _ in range(f.width)]
+            floating=[f.kind=='float' for f in self.fields for _ in range(f.width)]
+            cache[key]=(torch.tensor(boolean,device=values.device,dtype=torch.bool),
+                        torch.tensor(floating,device=values.device,dtype=torch.bool))
+        boolean,floating=cache[key]
+        numeric=torch.where(boolean,values.clamp(0.,1.),values)
+        valid=torch.isfinite(numeric)&(~floating | (validity>.5))
+        return torch.where(valid,numeric,torch.zeros_like(numeric)).float(),valid.float()
 
     def decode_surrogate(self,values,validity,template):
         """Decode predicted fields; validity selection is explicitly discrete.

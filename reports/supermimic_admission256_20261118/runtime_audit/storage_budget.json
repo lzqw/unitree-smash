@@ -1,0 +1,37 @@
+{
+  "measurements": [
+    {
+      "chunk": "chunk_00000.pt",
+      "raw_bytes": 228150663,
+      "compressed_bytes": 6373765,
+      "seconds": 0.25356372632086277,
+      "lossless_hash_verified": true
+    },
+    {
+      "chunk": "chunk_00012.pt",
+      "raw_bytes": 1448209873,
+      "compressed_bytes": 84020512,
+      "seconds": 1.3408273351378739,
+      "lossless_hash_verified": true
+    },
+    {
+      "chunk": "chunk_00024.pt",
+      "raw_bytes": 1476682171,
+      "compressed_bytes": 78109486,
+      "seconds": 1.4864329546689987,
+      "lossless_hash_verified": true
+    }
+  ],
+  "raw_bytes_per_tick": 35247632.46,
+  "measured_worst_ratio": 0.058016806518484496,
+  "train_native_tick_min": 16896,
+  "train_native_tick_max": 33808,
+  "uncompressed_train_bytes_min": 595543998044.16,
+  "uncompressed_train_bytes_max": 1191651958207.68,
+  "sampled_compressed_train_bytes_max": 69135841096.70815,
+  "conservative_2x_sampled_compressed_train_bytes_max": 138271682193.4163,
+  "free_bytes": 271071518720,
+  "limitation": "Three measured chunks are not a compression guarantee. Packed refreshes/checkpoints/optimizer/replay snapshots need additional budget. Every chunk checks raw serialized worst-case space plus8GiB reserve.",
+  "formal_eval_ticks": 800,
+  "formal_eval_archive": false
+}

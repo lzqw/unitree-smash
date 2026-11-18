@@ -1,0 +1,60 @@
+...F
+=================================== FAILURES ===================================
+_______ test_combination_preserves_lane_split_and_never_spans_stream_gap _______
+
+    def test_combination_preserves_lane_split_and_never_spans_stream_gap():
+        from quadsmash.rl.supermimic_response_fit_sources_v1 import combine_sources
+        from quadsmash.rl.supermimic_physical_dataset_v1 import valid_windows
+        n=48
+        def dataset():
+            d=dict(state=torch.zeros(n,128,55),next_state=torch.zeros(n,128,55),episode=torch.zeros(n,128,dtype=torch.long),terminated=torch.zeros(n,128,dtype=torch.bool),timeout=torch.zeros(n,128,dtype=torch.bool),event_state=torch.zeros(n,128,8),next_event_state=torch.zeros(n,128,8))
+            d['event_state'][21:,:,1]=1;d['next_event_state'][20:,:,1]=1
+            return d
+        initial=dataset();extra=dataset();ticks=list(range(n));ticks[30:]=list(range(100,100+n-30))
+        v=valid_windows(extra['episode'],extra['terminated'],extra['timeout'],16)
+        v&=(torch.tensor(ticks).unfold(0,16,1).diff(dim=-1)==1).all(-1)[:,None]
+        package=dict(tensors=extra,native_metadata=[dict(native_tick=t) for t in ticks],window16_valid=v)
+>       merged,pools,ids=combine_sources(initial,[package,package],list(initial),list(range(96)),16)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_supermimic_response_fit_sources.py:40: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+initial = {'state': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ......     [False, False, False,  ..., False, False, False],
+        [False, False, False,  ..., False, False, False]]), ...}
+extras = [{'tensors': {'state': tensor([[[0., 0., 0.,  ..., 0., 0., 0.],
+         [0., 0., 0.,  ..., 0., 0., 0.],
+         [0.,...True, True],
+        [True, True, True,  ..., True, True, True],
+        [True, True, True,  ..., True, True, True]])}]
+keys = ['state', 'next_state', 'episode', 'terminated', 'timeout', 'event_state', ...]
+train_lanes = [0, 1, 2, 3, 4, 5, ...], steps = 16
+
+    def combine_sources(initial,extras,keys,train_lanes,steps=16):
+        packages=[dict(tensors=initial,native_metadata=None)]+extras
+        parts=[];valids=[];source_ids=[];offset=0;episode_offset=0;pool_by_source=[]
+        train=torch.zeros(128,dtype=torch.bool);train[train_lanes]=True
+        for index,p in enumerate(packages):
+            d={k:p['tensors'][k].clone() for k in keys}
+            n=len(d['state'])
+            if n<steps or d['state'].shape[1]!=128:raise ValueError('Original128 contiguous windows required')
+            local=valid_windows(d['episode'],d['terminated'],d['timeout'],steps)
+            if p.get('native_metadata') is not None:
+                ticks=torch.tensor([x['native_tick'] for x in p['native_metadata']])
+                if len(ticks)!=n:raise ValueError('Missing historical native tick identity')
+                local&=(ticks.unfold(0,steps,1).diff(dim=-1)==1).all(-1)[:,None]
+                if not torch.equal(local,p['window16_valid']):raise ValueError('Historical window validity changed')
+            eligible=torch.zeros_like(d['episode'],dtype=torch.bool);eligible[:len(local)]=local;eligible&=train[None]
+            edges=(d['next_event_state'][...,1]>d['event_state'][...,1])|(d['next_event_state'][...,6]>d['event_state'][...,6])
+            pools=contact_neighborhood_pools(edges,d['episode'],d['terminated'],d['timeout'],eligible)
+>           if any(not len(v) for v in pools.values()):raise ValueError('Historical source lacks required contact/neighbourhood support')
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: Historical source lacks required contact/neighbourhood support
+
+quadsmash/rl/supermimic_response_fit_sources_v1.py:61: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_supermimic_response_fit_sources.py::test_combination_preserves_lane_split_and_never_spans_stream_gap
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 3 passed in 0.85s

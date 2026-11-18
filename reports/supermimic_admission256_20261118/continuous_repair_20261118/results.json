@@ -1,0 +1,343 @@
+{
+  "timestamp": "2026-11-17T22:23:11.837888+00:00",
+  "goal": "\u6301\u7eed\u4fee\u6b63\u5e76\u5f00\u59cb\u539f\u5b9a\u7684\u5927\u89c4\u6a21\u8bad\u7ec3",
+  "actor_goal": 256,
+  "native_envs": 128,
+  "actor_updates": 0,
+  "ball_gate_revision": {
+    "status": "FIT_COMPLETED_NOT_ADMITTED",
+    "world_response_updates": 256,
+    "actor_updates": 0,
+    "critic_updates": 0,
+    "world_sha256": "74f538fcc44d601686336401db16135eaf801bf980e014f57e951145e77c28a7",
+    "action_ball_sha256": "14a535022107f1d3956e0a161a52a632192145f8ebc36b0a63085835dfb244e9",
+    "robot_parameters_changed": true,
+    "action_ball_parameters_changed": true,
+    "legacy_ball_sha256": "6b535a671251a626810446e887f8cbdd1f2f6959ef6a37df563387dbbdd28aa9",
+    "legacy_ball_path": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/ball_gate_repair_candidate_01/ball.pt",
+    "legacy_ball_gate_changed": true,
+    "repair_ball_gate": true,
+    "adjacent_step_non_degradation": {
+      "-1": true,
+      "0": true,
+      "1": false
+    },
+    "native_admission": false,
+    "elapsed_s": 418.2086028819904,
+    "peak_gpu_bytes": 326990336,
+    "scope": "one bounded calibrated candidate; no optimizer/policy promotion; independent Recovery and broader contact checks still required"
+  },
+  "ball_heldout": {
+    "-1": {
+      "count": 30,
+      "velocity_rmse": 1.123404860496521,
+      "forward_sign_error": 0.0,
+      "position_rmse": 0.0026172001380473375
+    },
+    "0": {
+      "count": 30,
+      "velocity_rmse": 1.7300606966018677,
+      "forward_sign_error": 0.10000000894069672,
+      "position_rmse": 0.016565823927521706
+    },
+    "1": {
+      "count": 30,
+      "velocity_rmse": 0.32815954089164734,
+      "forward_sign_error": 0.0,
+      "position_rmse": 0.0038056685589253902
+    }
+  },
+  "task_revision": {
+    "sha256": "d98b26b3e4017c511f5b02831b900bffd98efed5bb30c89382ac0a4fc7fd785a",
+    "actual_optimizer_updates": 512,
+    "task_updates": 1024,
+    "validation_events": {
+      "jump": {
+        "count": 9410,
+        "positives": 32,
+        "tp": 32,
+        "fp": 0,
+        "fn": 0,
+        "mean_positive_probability": 0.9953274726867676,
+        "mean_negative_probability": 2.824917646648828e-05,
+        "brier": 1.2063471785950242e-06,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "hit": {
+        "count": 16000,
+        "positives": 19,
+        "tp": 16,
+        "fp": 4,
+        "fn": 3,
+        "mean_positive_probability": 0.6377233266830444,
+        "mean_negative_probability": 0.0002503773139324039,
+        "brier": 0.0002714154252316803,
+        "precision": 0.8,
+        "recall": 0.8421052631578947
+      },
+      "cross": {
+        "count": 18537,
+        "positives": 14,
+        "tp": 1,
+        "fp": 2,
+        "fn": 13,
+        "mean_positive_probability": 0.31760913133621216,
+        "mean_negative_probability": 0.0010829090606421232,
+        "brier": 0.0005879247328266501,
+        "precision": 0.3333333333333333,
+        "recall": 0.07142857142857142
+      },
+      "target": {
+        "count": 19055,
+        "positives": 14,
+        "tp": 14,
+        "fp": 10,
+        "fn": 0,
+        "mean_positive_probability": 0.9913192987442017,
+        "mean_negative_probability": 0.0004875128506682813,
+        "brier": 0.000382410449674353,
+        "precision": 0.5833333333333334,
+        "recall": 1.0
+      },
+      "recovery": {
+        "count": 23329,
+        "positives": 9,
+        "tp": 0,
+        "fp": 0,
+        "fn": 9,
+        "mean_positive_probability": 0.12947481870651245,
+        "mean_negative_probability": 0.0025697429664433002,
+        "brier": 0.00044682680163532495,
+        "precision": null,
+        "recall": 0.0
+      },
+      "body": {
+        "count": 21849,
+        "positives": 16,
+        "tp": 0,
+        "fp": 0,
+        "fn": 16,
+        "mean_positive_probability": 0.1121007651090622,
+        "mean_negative_probability": 0.0021432663779705763,
+        "brier": 0.0006596304010599852,
+        "precision": null,
+        "recall": 0.0
+      },
+      "frame": {
+        "count": 20317,
+        "positives": 11,
+        "tp": 5,
+        "fp": 3,
+        "fn": 6,
+        "mean_positive_probability": 0.5293749570846558,
+        "mean_negative_probability": 0.0005022681434638798,
+        "brier": 0.00031171017326414585,
+        "precision": 0.625,
+        "recall": 0.45454545454545453
+      },
+      "fault": {
+        "count": 23511,
+        "positives": 4,
+        "tp": 0,
+        "fp": 0,
+        "fn": 4,
+        "mean_positive_probability": 0.2506405711174011,
+        "mean_negative_probability": 0.000250006967689842,
+        "brier": 0.0001248072658199817,
+        "precision": null,
+        "recall": 0.0
+      }
+    },
+    "validation_normalized_memory_mse": 0.3614901006221771,
+    "elapsed_seconds": 8.51678742095828
+  },
+  "collection": {
+    "path": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/native_contact_coverage_g7h9mqsy",
+    "unit": "supermimic-native-contact-coverage-20261118.service",
+    "latest_verified_stage": "7 of8 branches exit0; t267 plus live"
+  },
+  "tests": [
+    {
+      "scope": "ball mode/native response/action ball",
+      "passed": 19,
+      "exit_code": 0
+    },
+    {
+      "scope": "task boolean supervision/physical components/memory schema",
+      "passed": 8,
+      "exit_code": 0
+    },
+    {
+      "scope": "native response multi-source provenance/data",
+      "passed": 13,
+      "exit_code": 0
+    }
+  ],
+  "status": "MODEL_REPAIR_AND_NATIVE_DATA_COLLECTION_IN_PROGRESS",
+  "long_training_started": false,
+  "no_threshold_relaxation": true,
+  "test_followup": [
+    {
+      "scope": "tests/test_supermimic*.py after task repair",
+      "passed": 329,
+      "exit_code": 0,
+      "log": "cpu_suite_after_task_repair.log"
+    },
+    {
+      "scope": "paired contact labels",
+      "passed": 23,
+      "exit_code": 0,
+      "log": "paired_contact_cpu.log"
+    },
+    {
+      "scope": "paired contact metrics/data/physical world",
+      "passed": 26,
+      "exit_code": 0,
+      "log": "paired_contact_metrics_cpu.log"
+    }
+  ],
+  "multisource_repair": {
+    "path": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/multisource_response_repair_33mv4wvy",
+    "unit": "supermimic-multisource-repair-20261118.service",
+    "status_at_report": "WAITING_FOR_NATIVE_COLLECTION",
+    "model_update_budget": 256,
+    "actor_updates": 0
+  },
+  "task_rollout_diagnostic": {
+    "physical_inputs": "recorded real transitions, not model predicted",
+    "task_memory": "autoregressive64",
+    "heldout_contact_cases": 30,
+    "exact_gate_timing": {
+      "lead1": 30,
+      "lead16": 30,
+      "lead32": 25
+    },
+    "full_imagination_passed": false
+  },
+  "all_event_rollout_audit": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/task_boolean_repair_01/all_event_rollouts.json",
+  "new_contact_source_t271": {
+    "tick": 271,
+    "native_repeat_max": 0.0,
+    "exit_code": 0,
+    "identity_compatible": true,
+    "summary": {
+      "train_lanes": {
+        "count": 96,
+        "contact_edge": {
+          "nominal_a": 10,
+          "nominal_b": 10,
+          "minus": 10,
+          "plus": 10
+        },
+        "differing_contact_boundary": 0,
+        "nonzero_native_ball_response": 10,
+        "saturated_final_command": 0,
+        "contact_response_rows": [
+          {
+            "lane": 2,
+            "native_ball_delta_norm": 0.02606220357120037,
+            "final_command_pair_delta_rad": 0.016000032424926758
+          },
+          {
+            "lane": 16,
+            "native_ball_delta_norm": 0.007690436206758022,
+            "final_command_pair_delta_rad": 0.015999913215637207
+          },
+          {
+            "lane": 21,
+            "native_ball_delta_norm": 0.010513940826058388,
+            "final_command_pair_delta_rad": 0.016000032424926758
+          },
+          {
+            "lane": 33,
+            "native_ball_delta_norm": 0.09382440894842148,
+            "final_command_pair_delta_rad": 0.015999913215637207
+          },
+          {
+            "lane": 34,
+            "native_ball_delta_norm": 0.01044011302292347,
+            "final_command_pair_delta_rad": 0.015999913215637207
+          },
+          {
+            "lane": 47,
+            "native_ball_delta_norm": 0.20957371592521667,
+            "final_command_pair_delta_rad": 0.015999913215637207
+          },
+          {
+            "lane": 54,
+            "native_ball_delta_norm": 0.11944855749607086,
+            "final_command_pair_delta_rad": 0.016000032424926758
+          },
+          {
+            "lane": 87,
+            "native_ball_delta_norm": 0.013203753158450127,
+            "final_command_pair_delta_rad": 0.01600015163421631
+          },
+          {
+            "lane": 112,
+            "native_ball_delta_norm": 0.01477892603725195,
+            "final_command_pair_delta_rad": 0.015999913215637207
+          },
+          {
+            "lane": 126,
+            "native_ball_delta_norm": 0.03273666277527809,
+            "final_command_pair_delta_rad": 0.016000032424926758
+          }
+        ]
+      },
+      "validation_lanes": {
+        "count": 32,
+        "contact_edge": {
+          "nominal_a": 2,
+          "nominal_b": 2,
+          "minus": 2,
+          "plus": 2
+        },
+        "differing_contact_boundary": 0,
+        "nonzero_native_ball_response": 2,
+        "saturated_final_command": 0,
+        "contact_response_rows": [
+          {
+            "lane": 8,
+            "native_ball_delta_norm": 0.1367710530757904,
+            "final_command_pair_delta_rad": 0.015999794006347656
+          },
+          {
+            "lane": 15,
+            "native_ball_delta_norm": 0.001051391358487308,
+            "final_command_pair_delta_rad": 0.015999913215637207
+          }
+        ]
+      }
+    },
+    "limitation": "Measured finite differences and boundary modes only; no smooth-Jacobian or model-admission claim",
+    "actor_updates": 0
+  },
+  "feedback_contract_diagnosis": {
+    "path": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/task_boolean_repair_01/feedback_roundtrip_contract.json",
+    "actual_decode_value_error": 0,
+    "actual_decode_gradient_error": 0,
+    "training_vs_runtime_mismatch_verified": true,
+    "patch_status": "STAGED_NOT_APPLIED",
+    "isolated_tests_passed": 9,
+    "actor_updates": 0
+  },
+  "frozen_runtime_source_snapshot": {
+    "path": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/frozen_execution_and_fit_sources_20261118.tar.gz",
+    "sha256": "18c3c0d73d0b99c97190b5aac0b53097aed387b5600254fd7654b5debceba6eb",
+    "files": 254,
+    "bytes": 398893,
+    "all_payloads_rehashed": true
+  },
+  "ball_component_audit": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/ball_gate_repair_candidate_01/component_audit.json",
+  "output_directory_guard": {
+    "exit_code": 15,
+    "existing_log_preserved": true,
+    "tensorboard_not_started": true,
+    "isaac_not_started": true,
+    "stdout": "",
+    "stderr": "mkdir: cannot create directory \u2018/tmp/supermimic_output_guard_4td58n75/existing\u2019: File exists\nRefusing to reuse training output: /tmp/supermimic_output_guard_4td58n75/existing; set a new SM_RUN_ROOT, including for resume.\n",
+    "scope": "Existing-directory failure path only; not training launch validation"
+  }
+}

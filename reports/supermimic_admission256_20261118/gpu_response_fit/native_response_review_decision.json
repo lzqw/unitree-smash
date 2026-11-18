@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-11-17T18:24:38.799670+00:00",
+  "decision": "Run predeclared bounded fit, not Actor training",
+  "reason": "All four real branches complete and repeatability exact. Measured single-vs-batch response cosine0.9985428, relative difference0.0542957 is explicitly retained as batch-dependent uncertainty. Valid native transitions for supervision, not certified isolated Jacobians.",
+  "limitations": [
+    "single time and direction",
+    "no physical admission granted",
+    "Recovery unvalidated",
+    "fixed original train96/heldout32",
+    "no thresholds relaxed",
+    "prior queue stopped before any fit; do not overwrite its status"
+  ]
+}
