@@ -1,0 +1,4 @@
+OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.project_contact_task_goal_v1 --prefix reports/tracking_model_reserve_20261118/RESULTS.json --output reports/task_goal_projection_20261118/RESULTS.json
+# replay.exit: 0
+OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m pytest -q tests/test_task_goal_projection_v1.py tests/test_task_constrained_hit_v2.py tests/test_impact_outcome_evaluator_v1.py tests/test_offline_reference_bundle_v1.py tests/test_joint_prefix_execution_v1.py
+# tests.exit: 0; 30 passed
