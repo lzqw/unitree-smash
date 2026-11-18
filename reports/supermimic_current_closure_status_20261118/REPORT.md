@@ -42,3 +42,7 @@
 新增针对性测试结果：`20 passed`，语法检查退出码为0。
 
 本次仍未启动 Isaac、Actor/Critic 更新或大规模训练。服务器当前没有可用 NVIDIA 驱动，GPU 原生训练需在驱动恢复后执行。
+
+## 最新提交（`c5d84d3`）
+
+候选元数据现在会记录 `accepted_update`、`accepted_parameter_update` 和完整的事件安全选择结果。若所有训练保存点都使接触前或接触后邻接误差恶化，最终 checkpoint 明确恢复为零初始化 sweep，而不是把最后一次退化权重当作候选。
