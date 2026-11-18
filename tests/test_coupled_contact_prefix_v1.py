@@ -77,3 +77,31 @@ def test_cache_signature_changes_when_rollout_semantics_change(monkeypatch):
     after=evaluation_signature()
     assert before['rollout_method_sha256']!=after['rollout_method_sha256']
     assert before['source_sha256']==after['source_sha256']
+
+
+def test_late_rate_basis_preserves_position_endpoint_and_c1_start():
+    from scripts.coupled_contact_prefix_v1 import LateRateContactRollout
+    obj=fixture();obj.__class__=LateRateContactRollout
+    first=len(obj.commands)-8
+    nodes=np.arange(len(obj.commands));f,g=obj.basis_at_nodes(nodes)
+    np.testing.assert_array_equal(g[:first],np.zeros(first))
+    np.testing.assert_allclose(f,arm_basis((nodes+1)/len(nodes))[0])
+    assert g[-1]==0 and f[-1]==1
+    eps=1e-6
+    _,onset=obj.basis_at_nodes(first-1+eps)
+    assert abs(onset/eps)<1e-6
+    _,near_end=obj.basis_at_nodes(len(nodes)-1-eps)
+    assert abs(-near_end/eps-1/8)<1e-7
+
+
+def test_late_rate_constraints_match_actual_commands_without_larger_amplitudes():
+    from scripts.coupled_contact_prefix_v1 import LateRateContactRollout
+    obj=fixture();obj.__class__=LateRateContactRollout
+    a=np.r_[np.zeros(18),np.full(6,.05)]
+    C,lo,hi=obj.combined_arm_constraints()
+    actual=np.array([obj.command_at_node(a,obj.commands[k],k,0.)[0][12:] for k in range(len(obj.commands))])
+    np.testing.assert_allclose((C@a)[:len(actual)*6].reshape(-1,6),actual)
+    np.testing.assert_array_equal(actual[:-8],0.)
+    assert np.max(abs(actual))<=.05*4/27+1e-12
+    np.testing.assert_array_equal(obj.radii,CoupledContactRollout.radii)
+    assert obj.amplitude_bounds().shape==(24,2)

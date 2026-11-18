@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 import pinocchio as pin
 from scripts.full_prefix_tracking_v1 import arm_tracking_response,tracking_linearization_reserve
-from scripts.coupled_contact_prefix_v1 import CoupledContactRollout
+from scripts.coupled_contact_prefix_v1 import CoupledContactRollout,LateRateContactRollout
 from scripts.terminal_push_refinement_v1 import refine_terminal
 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1,PublicState
 from scripts.whole_body_support_qp_v1 import PositionPDInterface
@@ -66,7 +66,7 @@ def continued_event_reference(record,metadata,initial_reference,arm_q_indices):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);p.add_argument('--tracking-model-reserve',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);p.add_argument('--tracking-model-reserve',action='store_true');p.add_argument('--late-arm-rate',action='store_true');a=p.parse_args()
     if a.tracking_model_reserve and (a.previous_refinement is None or not a.constrain_arm_tracking):raise ValueError('Tracking reserve requires a constrained verified predecessor')
     if a.output.exists():raise ValueError('Preserve all prior attempts')
     r=json.loads(a.event_source.read_text())
@@ -109,7 +109,8 @@ def main():
         input_paths.append(a.previous_refinement)
     geometry=AuthoredGroundClearance('configs/go2_piper_authored_ground_geometry_v1.json',model,margin_m=0.)
     predictor=ExperimentalSphereAdmissionV1(model,geometry,Path('reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json'))
-    evaluator=CoupledContactRollout(model,interface,predictor,state,commands,reference,metadata);calls=0
+    rollout_class=LateRateContactRollout if a.late_arm_rate else CoupledContactRollout
+    evaluator=rollout_class(model,interface,predictor,state,commands,reference,metadata);calls=0
     def evaluate(amplitude):
         nonlocal calls
         result=evaluator(amplitude);calls+=1
@@ -123,7 +124,7 @@ def main():
         amplitude_bounds=evaluator.amplitude_bounds(),linear_constraints=evaluator.combined_arm_constraints(),backtracking=True,protect_terminal_tasks=True,
         path_response_fn=(lambda result:arm_tracking_response(result,model.q_indices[12:],n)) if a.constrain_arm_tracking else None,path_response_reserve=reserve)
     selected=result['trials'][result['selected_index']]['result']
-    result.update(tracking_model_reserve_audit=reserve_audit,constrain_arm_tracking=a.constrain_arm_tracking,seconds=time.perf_counter()-started,event_time_s=a.event_time,metadata=metadata,base_arm_reference_rad=reference,
+    result.update(rate_window_ticks=evaluator.rate_window_ticks,tracking_model_reserve_audit=reserve_audit,constrain_arm_tracking=a.constrain_arm_tracking,seconds=time.perf_counter()-started,event_time_s=a.event_time,metadata=metadata,base_arm_reference_rad=reference,
         selected_arm_reference_rad=np.vstack([reference[0],[t['planned_arm_reference_rad'] for t in selected['trajectory']]]),
         original_prefix_exact=True,input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in input_paths},
         native_execution=False,valid_teacher_reference=False)

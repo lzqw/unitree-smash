@@ -24,13 +24,23 @@ def arm_basis(s):
 
 class CoupledContactRollout(TerminalPushRollout):
     radii=np.r_[np.full(12,.03),np.full(6,.1),np.full(6,.05)]
+    rate_window_ticks=None
+
+    def basis_at_nodes(self,nodes):
+        nodes=np.asarray(nodes,float);count=len(self.commands)
+        f,g=arm_basis((nodes+1)/count)
+        if self.rate_window_ticks is not None:
+            window=self.rate_window_ticks
+            if not isinstance(window,int) or not 1<=window<=count:raise ValueError('Explicit valid local rate window required')
+            _,g=arm_basis(np.clip((nodes+1-(count-window))/window,0.,1.))
+        return f,g
 
     def validate_amplitude(self,amplitude):
         if amplitude.shape!=(24,) or not np.isfinite(amplitude).all() or np.any(abs(amplitude)>self.radii+1e-10):
             raise ValueError('Bounded 24-parameter prefix required')
 
     def command_at_node(self,amplitude,reference,node,weight):
-        f,g=arm_basis((node+1)/len(self.commands))
+        f,g=self.basis_at_nodes(node)
         delta=f*amplitude[12:18]+g*amplitude[18:24]
         command=reference.copy();command[:12]+=weight*amplitude[:12];command[12:]+=delta
         arm_reference=self.arm_reference[node+1]+delta
@@ -40,7 +50,7 @@ class CoupledContactRollout(TerminalPushRollout):
 
     def amplitude_bounds(self):
         bounds=[*super().amplitude_bounds()]
-        f,g=arm_basis((np.arange(len(self.commands))+1)/len(self.commands))
+        f,g=self.basis_at_nodes(np.arange(len(self.commands)))
         for basis in (f,g):
             mask=abs(basis)>1e-12
             for j in range(6):
@@ -53,7 +63,7 @@ class CoupledContactRollout(TerminalPushRollout):
 
     def combined_arm_constraints(self):
         rows=[];low=[];high=[]
-        f,g=arm_basis((np.arange(len(self.commands))+1)/len(self.commands))
+        f,g=self.basis_at_nodes(np.arange(len(self.commands)))
         for sequence in (self.commands[:,12:],self.arm_reference[1:]):
             for node in range(len(sequence)):
                 for j in range(6):
@@ -63,10 +73,19 @@ class CoupledContactRollout(TerminalPushRollout):
         return np.array(rows),np.array(low),np.array(high)
 
 
+class LateRateContactRollout(CoupledContactRollout):
+    """Same amplitude budget, C1 rate correction in the last 80ms only.
+
+    No new samples/parameters. Actual speed/torque remain prediction gates;
+    the endpoint reference derivative is not claimed realized velocity.
+    """
+    rate_window_ticks=8
+
+
 def evaluation_signature(evaluator=None):
     """Exact-response cache excludes optimizer code, not rollout semantics."""
     root=Path(__file__).resolve().parents[1]
-    methods=(arm_basis,CoupledContactRollout.command_at_node,CoupledContactRollout.validate_amplitude,
+    methods=(arm_basis,CoupledContactRollout.basis_at_nodes,CoupledContactRollout.command_at_node,CoupledContactRollout.validate_amplitude,
         TerminalPushRollout.__init__,TerminalPushRollout.__call__,selected_arm_reference,main)
     code='\n'.join(inspect.getsource(m) for m in methods)
     files=[p for directory in ('scripts','quadsmash','configs') for p in (root/directory).rglob('*')
@@ -76,7 +95,7 @@ def evaluation_signature(evaluator=None):
         'reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json'))
     signature=dict(rollout_method_sha256=hashlib.sha256(code.encode()).hexdigest(),
         source_sha256={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(files)},
-        radii=CoupledContactRollout.radii.tolist(),python=sys.executable,numpy=np.__version__,pinocchio=pin.__version__)
+        rate_window_ticks=getattr(evaluator,'rate_window_ticks',None),radii=CoupledContactRollout.radii.tolist(),python=sys.executable,numpy=np.__version__,pinocchio=pin.__version__)
     if evaluator is not None:
         context=dict(state=evaluator.initial.__dict__,commands=evaluator.commands,
             reference=evaluator.arm_reference,metadata=evaluator.metadata,model=evaluator.model.sha256,

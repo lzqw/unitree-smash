@@ -1,0 +1,3 @@
+OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.refine_contact_event_v1 --event-source reports/contact_event_window_20261118/POSE_DIAGNOSIS.json --event-time 0.33 --constrain-arm-tracking --previous-refinement reports/tracking_model_reserve_20261118/RESULTS.json --tracking-model-reserve --late-arm-rate --output reports/late_rate_prefix_20261118/RESULTS.json
+
+OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.compare_rate_basis_response_v1 --source reports/late_rate_prefix_20261118/RESULTS.json --output reports/late_rate_prefix_20261118/MATCHED_RATE_AUDIT.json
