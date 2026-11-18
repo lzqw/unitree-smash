@@ -25,6 +25,7 @@
 - 旧候选验证显示接触前 offset -1 速度 RMSE 约 5.17 到 5.35 m/s，符号错误率约 47.8% 到 60.9%；接触时刻 offset 0 RMSE 约 1.77 到 2.17 m/s，符号错误率 26.1% 到 21.7%；offset +1 RMSE 约 0.0818，符号错误率为 0。该结果仍不足以证明 PhysX 动作梯度方向正确。
 - 已有成功轨迹索引数据库位于 `/home/autodrive/LZQW/datasets/supermimic_success_inventory_20261118_v2/`。扫描 210302 个文件，索引 510697 条 episode 证据，包含 2422 条合格空中触球、1710 条球侧完成（不含恢复）、48539 条恢复成功和 989 条 complete5 证据。独立评分记录 1307 条，原始哈希已核验的成功 episode 74 条，按 archive/lane/episode 去重后 148 条。数据库 SHA256 为 `935a3407ab9e030f95498760b7ab18b8dc0aac58f7b353b93590df7e4df9fdd1`，清单中的 `admitted_to_training` 保持为 0。
 - 这批成功记录当前只能作为可追溯候选来源。未知执行合同、MPC/教师来源、缺失 chunk、无法确认 policy/asset/normalizer 的记录不会进入 WM、Actor 起点或参考库。数据库中的 74 条完整哈希记录仍需与当前物理资产、执行合同和留出划分逐项匹配后，才能形成可训练 reference bank。
+- 使用显式 `--contract-root /home/autodrive/LZQW/unitree_smash_contact_recovery_9cb_baseline` 完成了一次只读 reference-bank 构建审计。产物为 `/home/autodrive/LZQW/experiments/supermimic_verified_reference_bank_20261118_retry/reference_bank.pt`，SHA256 `f8dfd70efb05a128cf08bedb24d9135e6d1ec81136b0ff9faac2330b54215534`，包含 Approach 40 条、Recovery 28 条，`protocol_verified=true`，留出 lane 已排除。`native_contact_certification=false`，因此该 bank 只具备成功轨迹 Tracking 参考资格，不能单独放行 contact BPTT 或完整策略晋升。
 
 ## 尚未完成
 

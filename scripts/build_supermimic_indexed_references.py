@@ -47,6 +47,9 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('database', 'archive', 'packed-data', 'episodes-summary', 'split-manifest', 'output'):
         p.add_argument('--' + name, type=Path, required=True)
+    p.add_argument('--contract-root', type=Path,
+                   help='Root containing the exact asset/config files named by the archive contract. '
+                        'Defaults to this checkout and never searches other worktrees implicitly.')
     p.add_argument('--match-distance-threshold', type=float, default=1.0)
     a = p.parse_args()
     if a.output.exists():
@@ -68,7 +71,7 @@ def main():
     task = manifest['task_contract']
     if task.get('control_dt_s') != .01 or task.get('episode_s') != 8.:
         raise ValueError('Task timebase differs')
-    repo = Path(__file__).resolve().parents[1]
+    repo = (a.contract_root or Path(__file__).resolve().parents[1]).resolve()
     def verify_file(path, expected):
         path = Path(path)
         if not path.is_absolute():
