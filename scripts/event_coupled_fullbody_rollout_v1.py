@@ -134,7 +134,10 @@ class EventCoupledFullBodyEventRolloutV1:
         push_phase=np.exp(-((s-(.38+takeoff/.12))/.28)**2)
         hit_phase=np.exp(-((s-(.86+hit/.12))/.18)**2)
         event_local=local.copy()
-        event_local[:12]+=push_phase[-1]*np.r_[np.full(4,com_x*.02),np.full(4,com_z*.02),np.full(4,pitch*.01)]
+        # The event task is expressed as a bounded WBC reference correction.
+        # The scale is deliberately within the existing leg amplitude bounds;
+        # it changes commanded joint targets and never injects base state.
+        event_local[:12]+=push_phase[-1]*np.r_[np.full(4,com_x*.10),np.full(4,com_z*.20),np.full(4,pitch*.10)]
         if len(event_local)==24:
             event_local[12:18]+=np.array([u,v,0.,-v,u,0.])*hit_phase[-1]
             event_local[18:24]+=np.array([u,v,-u,-v,u,-v])*hit_phase[-1]*.5

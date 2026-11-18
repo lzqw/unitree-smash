@@ -38,7 +38,11 @@ The event search changed the actual prefix. A hit offset of `+0.03 s`
 produced `contact_index=36` instead of 33 and a different full-body terminal
 state. Its position error was 171.580 mm, so it was rejected. The best result
 remained the 51.449 mm candidate. The WBC-connected candidate was also
-rejected. The earlier fixed-prefix reference remains 58.598 mm.
+rejected. The later bounded event sweep tested the same event-time and COM
+variables. Positive COM requests that would have raised the body were rejected
+by the original joint target limits at node 3; the other event-time candidates
+were 185.531 mm and 236.478 mm away. The earlier fixed-prefix reference
+remains 58.598 mm.
 
 The common first physical rejection is:
 

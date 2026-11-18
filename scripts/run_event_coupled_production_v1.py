@@ -26,7 +26,7 @@ from scripts.event_wbc_command_generator_v1 import EventWBCCommandGeneratorV1
 ROOT=Path(__file__).resolve().parents[1]
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--max-rollouts',type=int,default=6);ap.add_argument('--iterations',type=int,default=1);ap.add_argument('--search-only',action='store_true');ap.add_argument('--output',type=Path,default=ROOT/'reports/event_coupled_production_20261118/RESULTS_v2.json');args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--max-rollouts',type=int,default=6);ap.add_argument('--iterations',type=int,default=1);ap.add_argument('--search-only',action='store_true');ap.add_argument('--no-wbc',action='store_true');ap.add_argument('--output',type=Path,default=ROOT/'reports/event_coupled_production_20261118/RESULTS_v2.json');args=ap.parse_args()
     out=args.output if args.output.is_absolute() else ROOT/args.output
     if out.exists(): raise ValueError('Preserve prior production search')
     initial=json.loads((ROOT/'reports/push_off_task_20261118/DIAGNOSED.json').read_text())['rows'][0]
@@ -57,7 +57,7 @@ def main():
     admission=StrictImpactAdmissionV1(impact)
     builder=StrikeStateImpactBuilderV1(model,admission,initial_state_hash=hashlib.sha256(np.r_[q,v].tobytes()).hexdigest(),command_sequence_hash=hashlib.sha256(commands.tobytes()).hexdigest())
     base=EventCoupledFullBodyRolloutV1(model,interface,predictor,state,commands,reference,metadata,impact_builder=builder,rollout_class=LegRateCoupledContactRollout)
-    wbc_generator=EventWBCCommandGeneratorV1(interface)
+    wbc_generator=None if args.no_wbc else EventWBCCommandGeneratorV1(interface)
     event_rollout=EventCoupledFullBodyEventRolloutV1(base,event_metadata_fn=event_metadata,wbc_event_fn=wbc_generator)
     local_bounds=np.asarray(base.rollout.amplitude_bounds(),float)
     bounds=np.vstack([event_rollout.event_bounds,local_bounds])
@@ -68,7 +68,9 @@ def main():
     event_seed_u=zero.copy(); event_seed_u[6]=.12; event_seed_u[7]=-.12
     event_seed_v=zero.copy(); event_seed_v[6]=-.12; event_seed_v[7]=.12
     event_seed_hit=zero.copy(); event_seed_hit[2]=-.03; event_seed_hit[3]=-.2; event_seed_hit[4]=-.3; event_seed_hit[5]=-.15
-    seeds=[seed,event_seed,event_seed_u,event_seed_v,event_seed_hit,zero]
+    selected_hit_plus=seed.copy(); selected_hit_plus[2]=.03
+    selected_hit_minus=seed.copy(); selected_hit_minus[2]=-.03
+    seeds=[seed,selected_hit_plus,selected_hit_minus,event_seed,event_seed_u,event_seed_v,event_seed_hit,zero]
     started=time.perf_counter()
     try:
         result=planner.search(seeds) if args.search_only else planner.optimize(seeds,iterations=args.iterations,step_fraction=.08,max_rollouts=args.max_rollouts)
