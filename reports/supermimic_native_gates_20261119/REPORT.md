@@ -60,6 +60,15 @@ No native response-direction receipt was issued. The current evidence shows inco
 4. A native receipt cannot be issued until an independently declared held-out split passes direction, amplitude, repeatability and local-Jacobian checks.
 5. The GPU probe path is operational, but this does not authorize Actor or WM training.
 
+## Follow-up timing correction
+
+The probe specification now supports an explicit `action_lead_ticks` field and
+`capture_substeps=true`. This allows a perturbation to be applied before the
+recorded contact edge while the native substep trace is captured at the event
+tick. The change is covered by CPU contract tests and is intended to diagnose
+actuator-delay and contact-edge alignment. It does not alter the policy action
+contract and it has not been used to issue a receipt.
+
 ## Training status
 
 - Actor updates: 0
