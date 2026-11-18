@@ -11,8 +11,10 @@ from pathlib import Path
 import torch
 
 
-def make_event_aligned_spec(row, head, epsilon, capture_substeps=False):
+def make_event_aligned_spec(row, head, epsilon, capture_substeps=False, action_lead_ticks=0):
     """Represent exactly the lanes whose recorded edge selected this tick."""
+    if action_lead_ticks < 0 or action_lead_ticks >= row['tick']:
+        raise ValueError('Action lead must leave a positive action tick')
     lanes = list(row['lanes'])
     directions = []
     for lane in lanes:
@@ -27,6 +29,7 @@ def make_event_aligned_spec(row, head, epsilon, capture_substeps=False):
         epsilon_request=epsilon,
         request_directions=directions,
         capture_substeps=bool(capture_substeps),
+        action_tick=int(row['tick']) - int(action_lead_ticks),
         event_alignment=dict(
             contact_validation_lanes=list(row['contact']),
             frame_validation_lanes=list(row['frame']),
@@ -45,9 +48,11 @@ def main():
     parser.add_argument('--head', choices=('approach', 'recovery'), default='approach')
     parser.add_argument('--capture-substeps', action='store_true',
                         help='Record a bounded native substep trace for each probe.')
+    parser.add_argument('--action-lead-ticks', type=int, default=0,
+                        help='Apply the perturbation before the recorded event tick.')
     args = parser.parse_args()
-    if args.max_specs < 1 or args.epsilon <= 0:
-        raise ValueError('max-specs and epsilon must be positive')
+    if args.max_specs < 1 or args.epsilon <= 0 or args.action_lead_ticks < 0:
+        raise ValueError('max-specs and epsilon must be positive, with nonnegative action lead')
     if args.output.exists():
         raise FileExistsError(args.output)
 
@@ -94,7 +99,7 @@ def main():
     args.output.mkdir(parents=True)
     for index, row in enumerate(chosen):
         spec = make_event_aligned_spec(row, args.head, args.epsilon,
-                                       args.capture_substeps)
+                                       args.capture_substeps, args.action_lead_ticks)
         (args.output / f'spec_{index:02d}_tick{row["tick"]:03d}.json').write_text(
             json.dumps(spec, indent=2) + '\n'
         )
@@ -105,6 +110,7 @@ def main():
         head=args.head,
         epsilon_request=args.epsilon,
         capture_substeps=bool(args.capture_substeps),
+        action_lead_ticks=int(args.action_lead_ticks),
         validation_lanes=validation,
         selected_ticks=chosen,
         covered_validation_lanes=sorted(covered),

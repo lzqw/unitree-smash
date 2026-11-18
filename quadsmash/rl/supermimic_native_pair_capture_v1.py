@@ -32,6 +32,9 @@ def tree_digest(value):
 def validate_spec(spec):
     if spec.get('schema') not in ('native-paired-prefix-spec-v1','native-paired-prefix-batch-spec-v2'):raise ValueError('Unknown probe spec')
     if type(spec.get('tick'))is not int or not 1<=spec['tick']<799:raise ValueError('Probe tick must be within original episode')
+    action_tick = spec.get('action_tick', spec['tick'])
+    if type(action_tick) is not int or not 1 <= action_tick <= spec['tick']:
+        raise ValueError('Action tick must be an integer at or before the event tick')
     if spec['schema']=='native-paired-prefix-spec-v1':
         if 'lanes' in spec or 'request_directions' in spec:raise ValueError('Mixed probe schemas')
         if type(spec.get('lane'))is not int or not 0<=spec['lane']<128:raise ValueError('Probe lane outside original128')
@@ -71,22 +74,28 @@ class NativePairCapture:
         if branch not in BRANCHES:raise ValueError('Unknown probe branch')
         self.prefix=hashlib.sha256();self.start=None;self.raw=None;self.substep_trace=None
     def before(self,tick,env,observation,request):
-        if tick==self.spec['tick']:
+        action_tick = self.spec.get('action_tick', self.spec['tick'])
+        event_tick = self.spec['tick']
+        if tick==action_tick:
             state=capture_state(env)
             self.start=tensor_tree_copy(dict(before=state,observation=observation,executor_before=capture_controller(env._sm_residual_controller)),cpu=True)
             self.prefix.update(tree_digest(self.start).encode())
-            if self.spec.get('capture_substeps',False):
-                from .supermimic_native_substep_trace_v1 import NativeSubstepTraceV1
-                self.substep_trace=NativeSubstepTraceV1(env)
             action=perturb_request(request,self.spec,self.branch)
             self.request_before=request.detach().cpu().clone();self.request_after=action.detach().cpu().clone()
+            if action_tick == event_tick and self.spec.get('capture_substeps',False):
+                from .supermimic_native_substep_trace_v1 import NativeSubstepTraceV1
+                self.substep_trace=NativeSubstepTraceV1(env)
             return action
+        if tick == event_tick and self.spec.get('capture_substeps',False):
+            from .supermimic_native_substep_trace_v1 import NativeSubstepTraceV1
+            self.substep_trace=NativeSubstepTraceV1(env)
         self.prefix.update(tree_digest(dict(observation=observation,request=request,physical=capture_state(env)['physical'])).encode())
         return request
     def after(self,tick,env,done):
-        if tick<self.spec['tick']:
+        event_tick = self.spec['tick']
+        if tick<event_tick:
             self.prefix.update(tree_digest(dict(targets=env._sm_joint_targets,final=env._sm_final_action,done=done)).encode())
-        elif tick==self.spec['tick']:
+        elif tick==event_tick:
             trace=None if self.substep_trace is None else self.substep_trace.finish()
             valid=probe_valid_lanes(done,probe_lanes(self.spec))
             captured=capture_state(env)
