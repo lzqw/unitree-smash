@@ -1,0 +1,2 @@
+bash scripts/python.sh -m scripts.refine_contact_event_v1 --event-source reports/contact_event_window_20261118/POSE_DIAGNOSIS.json --event-time .33 --constrain-arm-tracking --previous-refinement reports/wide_leg_position_20261118/RESULTS.json --tracking-model-reserve --projected-goal reports/task_goal_projection_wide_20261118/RESULTS.json --position-priority --leg-rate --task-nonregression-tolerance .005 --output reports/push_basis_leg_rate_20261118/RESULTS.json
+# replay.exit: 143; no RESULTS.json was produced

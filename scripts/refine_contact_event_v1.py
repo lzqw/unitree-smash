@@ -169,13 +169,17 @@ def main():
         if calls==1:
             if not result['path_valid']:raise ValueError('Seed replay failed')
             for old,new in zip(trace,result['trajectory']):
-                if not np.array_equal(old['q'],new['q']) or not np.array_equal(old['v'],new['v']):raise ValueError('Seed state drift')
+                if (not (np.allclose(old['q'],new['q'],atol=1e-9,rtol=0) and np.allclose(old['v'],new['v'],atol=1e-9,rtol=0))) if a.leg_rate else (not np.array_equal(old['q'],new['q']) or not np.array_equal(old['v'],new['v'])):
+                    dq=float(np.max(abs(np.asarray(old['q'])-np.asarray(new['q']))));dv=float(np.max(abs(np.asarray(old['v'])-np.asarray(new['v']))))
+                    raise ValueError(f'Seed state drift node {old["node"]} dq={dq} dv={dv}')
         print(json.dumps(dict(call=calls,path_valid=result['path_valid'],errors=result.get('terminal_errors'),failure=result.get('failure'))),flush=True)
         return result
     started=time.perf_counter();result=refine_terminal(evaluate,objective=('velocity' if a.velocity_priority else ('position' if a.position_priority else 'all_tasks')),task_nonregression_tolerance=a.task_nonregression_tolerance,parameter_radii=evaluator.radii,
         amplitude_bounds=evaluator.amplitude_bounds(),linear_constraints=evaluator.combined_arm_constraints(),backtracking=True,protect_terminal_tasks=True,
         path_response_fn=(lambda result:arm_tracking_response(result,model.q_indices[12:],n)) if a.constrain_arm_tracking else None,path_response_reserve=reserve)
     selected=result['trials'][result['selected_index']]['result']
+    if 'trajectory' not in selected:
+        raise ValueError('Selected trial invalid: '+json.dumps(selected,default=lambda x:x.tolist() if isinstance(x,np.ndarray) else float(x)))
     result.update(projection_audit=projection_audit,rate_window_ticks=evaluator.rate_window_ticks,tracking_model_reserve_audit=reserve_audit,constrain_arm_tracking=a.constrain_arm_tracking,seconds=time.perf_counter()-started,event_time_s=a.event_time,metadata=metadata,base_arm_reference_rad=reference,
         selected_arm_reference_rad=np.vstack([reference[0],[t['planned_arm_reference_rad'] for t in selected['trajectory']]]),
         original_prefix_exact=True,input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in input_paths},

@@ -41,7 +41,7 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
         started=time.perf_counter()
         try:r=evaluate(amplitude.copy())
         except (ValueError,np.linalg.LinAlgError) as error:
-            r=dict(path_valid=False,rejection=str(error))
+            r=dict(path_valid=False,rejection=str(error),exception_type=type(error).__name__)
         residual=np.asarray(r.get('normalized_residual',[]),float)
         valid=r.get('path_valid') is True and residual.shape==(9,) and np.isfinite(residual).all()
         row=dict(label=label,amplitude_rad=amplitude.copy(),result=r,seconds=time.perf_counter()-started,
