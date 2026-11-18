@@ -295,7 +295,10 @@ def main():
         packed_sha256=sha256(a.packed_data),split_sha256=sha256(a.split_manifest),
         geometry_hashes=sweep.preview.geometry_hashes,softness_m=sweep.softness_m,
         updates=a.updates,evidence_scope='recorded-command model-only, no native paired perturbations',
-        model_schema=a.model_schema,post_residual_weight=a.post_residual_weight)
+        model_schema=a.model_schema,post_residual_weight=a.post_residual_weight,
+        event_validation_selection=selection_status,
+        accepted_update=None if best_selection is None else best_selection['update'],
+        accepted_parameter_update=bool(best_sweep_state is not None))
     if isinstance(sweep,CausalActionConditionedBallV2):
         candidate_metadata.update(closing_softness_m=sweep.closing_softness_m,
             contact_margin_m=sweep.contact_margin_m)
