@@ -20,7 +20,9 @@ from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
 from quadsmash.physics.full_racket_v4 import load_racket
 
 
-def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False,protect_terminal_tasks=False,path_response_fn=None,path_response_reserve=0.):
+def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False,protect_terminal_tasks=False,path_response_fn=None,path_response_reserve=0.,objective="all_tasks"):
+    if objective not in ('all_tasks','velocity') or (objective=='velocity' and not protect_terminal_tasks):
+        raise ValueError('Velocity objective requires separate terminal task protection')
     if not np.isfinite(path_response_reserve) or path_response_reserve<0 or (path_response_reserve and path_response_fn is None):
         raise ValueError('Nonnegative reserve requires a path response')
     if not 0<epsilon_rad<radius_rad<=.03:raise ValueError('Bounded offline step required')
@@ -41,11 +43,12 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
         residual=np.asarray(r.get('normalized_residual',[]),float)
         valid=r.get('path_valid') is True and residual.shape==(9,) and np.isfinite(residual).all()
         row=dict(label=label,amplitude_rad=amplitude.copy(),result=r,seconds=time.perf_counter()-started,
-                 valid=bool(valid),cost=float(residual@residual) if valid else None)
+                 valid=bool(valid),cost=float(residual@residual) if valid else None,
+                 objective_cost=float(residual[6:]@residual[6:]) if valid and objective=='velocity' else (float(residual@residual) if valid else None))
         trials.append(row)
         return row
     base=call(np.zeros(count),'baseline')
-    out=dict(improved=False,selected_index=0,trials=trials,radius_rad=radius_rad,
+    out=dict(objective=objective,improved=False,selected_index=0,trials=trials,radius_rad=radius_rad,
         epsilon_rad=epsilon_rad,parameter_radii_rad=radii,amplitude_bounds=bounds,native_execution=False,valid_teacher_reference=False)
     if not base['valid']:out['rejection']='BASELINE_PATH_UNVERIFIED';return out
     def read_path(result):
@@ -84,8 +87,9 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
     out['usable_columns']=usable
     if not usable:out['rejection']='NO_VALID_LOCAL_RESPONSE';return out
     active=np.array(usable)
-    A=np.vstack((J[:,active]*radii[active],.1*np.eye(len(active))))
-    b=np.r_[-y,np.zeros(len(active))]
+    objective_rows=slice(6,9) if objective=='velocity' else slice(0,9)
+    A=np.vstack((J[objective_rows][:,active]*radii[active],.1*np.eye(len(active))))
+    b=np.r_[-y[objective_rows],np.zeros(len(active))]
     low,high=bounds[active,0]/radii[active],bounds[active,1]/radii[active]
     constraints=[]
     if linear_constraints is None and not protect_terminal_tasks and path_response_fn is None:
@@ -144,7 +148,7 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
             nonregression=bool(np.all(actual<=out['protected_task_norms']+1e-9))
             final['terminal_task_norms']=actual
             final['terminal_task_nonregression']=nonregression
-        if final['valid'] and nonregression and final['cost']<base['cost']-1e-10:
+        if final['valid'] and nonregression and final['objective_cost']<base['objective_cost']-1e-10:
             out.update(improved=True,selected_index=len(trials)-1,rejection=None,accepted_step_scale=scale)
             break
     return out

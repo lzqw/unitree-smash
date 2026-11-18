@@ -1,0 +1,112 @@
+{
+  "control_sha256": "e9aea7acac9948ac3af2f97bf58fef031dd2a4984ee2b18bdac52660402b6808",
+  "candidate_sha256": "dd561015a334a33f0006bfd53a48607c34a8204d244e603735c2eb3fa82df82b",
+  "matched_baseline_and_derivatives": true,
+  "local_optimistic_speed_error_direction_m_s": {
+    "legs": 0.06590734892835814,
+    "arm_endpoint": 0.33752523848581595,
+    "arm_rate": 0.10061972904781857
+  },
+  "optimistic_scope": "Local linear projection with independent amplitude boxes; ignores path and task coupling. Not a feasible control bound.",
+  "target_velocity_planning_m_s": [
+    1.3121387196477334,
+    0.6114571159334641,
+    -1.578373510307584
+  ],
+  "rows": [
+    {
+      "objective": "total_objective",
+      "errors": {
+        "position_m": 0.11158845750645864,
+        "normal": 0.1873432683539294,
+        "velocity_m_s": 2.775041652507858
+      },
+      "selected_scale": 0.5,
+      "velocity_planning_m_s": [
+        -1.401157832300843,
+        0.8907674686767426,
+        -1.0676253128678534
+      ],
+      "velocity_components_planning_m_s": {
+        "floating_base": [
+          -1.508523240557296,
+          -0.8792150441414124,
+          -0.7488294283296957
+        ],
+        "legs": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "arm": [
+          0.1073654082564531,
+          1.7699825128181548,
+          -0.3187958845381577
+        ]
+      },
+      "arm_joint_velocity_rad_s": [
+        -0.1605947271898919,
+        -1.6112386901648736,
+        -0.23581251800638436,
+        -1.014653191977003,
+        0.35752490399548637,
+        -0.7656168329075443
+      ],
+      "normal_planning": [
+        0.895337800395306,
+        -0.1559132535705119,
+        0.4172065202562758
+      ],
+      "max_arm_tracking_rad": 0.24994020065037992,
+      "max_mapping_error_rad": 4.440892098500626e-16
+    },
+    {
+      "objective": "velocity_objective",
+      "errors": {
+        "position_m": 0.11922379926274759,
+        "normal": 0.2254217926049479,
+        "velocity_m_s": 2.729535532906849
+      },
+      "selected_scale": 0.25,
+      "velocity_planning_m_s": [
+        -1.3557916605551459,
+        0.9116372221996325,
+        -1.0860284934813458
+      ],
+      "velocity_components_planning_m_s": {
+        "floating_base": [
+          -1.527621094007866,
+          -0.9101231990346897,
+          -0.7451244492378352
+        ],
+        "legs": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "arm": [
+          0.1718294334527201,
+          1.8217604212343221,
+          -0.3409040442435105
+        ]
+      },
+      "arm_joint_velocity_rad_s": [
+        -0.2085675330027696,
+        -1.6765554181577587,
+        -0.2561642830610359,
+        -0.9893530306886322,
+        0.33795816661112704,
+        -0.8079502585303738
+      ],
+      "normal_planning": [
+        0.8849848637724017,
+        -0.19420619927995808,
+        0.4231852349208023
+      ],
+      "max_arm_tracking_rad": 0.2499020974600239,
+      "max_mapping_error_rad": 4.440892098500626e-16
+    }
+  ],
+  "native_execution": false,
+  "valid_teacher_reference": false
+}

@@ -114,3 +114,36 @@ def test_separate_tasks_can_all_improve_without_changing_teacher_gate():
     assert selected['terminal_task_nonregression']
     assert np.all(selected['terminal_task_norms']<result['protected_task_norms'])
     assert not result['valid_teacher_reference']
+
+
+def test_velocity_objective_preserves_position_and_normal_and_changes_choice():
+    def evaluate(a):
+        # Both choices reduce all tasks. Total least squares prefers position,
+        # while explicit velocity priority uses the second command direction.
+        y=np.zeros(9);y[0]=2-20*a[0]-a[1];y[3]=.3;y[6]=1-a[0]-10*a[1]
+        return dict(path_valid=True,normalized_residual=y)
+    constraint=(np.array([[1.,1.]]),np.array([-1.]),np.array([.03]))
+    args=dict(parameter_radii=np.array([.03,.03]),linear_constraints=constraint,protect_terminal_tasks=True)
+    total=refine_terminal(evaluate,**args)
+    speed=refine_terminal(evaluate,objective='velocity',**args)
+    ts=total['trials'][total['selected_index']]['result']['normalized_residual']
+    vs=speed['trials'][speed['selected_index']]['result']['normalized_residual']
+    assert speed['improved'] and vs[6]<ts[6]-.1
+    assert vs[0]<=2 and vs[3]<=.3 and vs[6]<1
+    assert speed['trials'][-1]['terminal_task_nonregression']
+
+
+def test_velocity_mode_cannot_disable_task_protection():
+    import pytest
+    with pytest.raises(ValueError,match='protection'):
+        refine_terminal(lambda _:None,objective='velocity')
+
+
+def test_velocity_proposal_cannot_trade_actual_position_for_speed():
+    def evaluate(a):
+        y=np.zeros(9);y[0]=1;y[3]=.2;y[6]=1-10*a[0]
+        if abs(a[0])>.002:y[0]=1.001 # nonlinear response absent from local derivative
+        return dict(path_valid=True,normalized_residual=y)
+    r=refine_terminal(evaluate,parameter_radii=np.array([.03]),objective='velocity',protect_terminal_tasks=True)
+    assert not r['improved'] and r['selected_index']==0
+    assert not r['trials'][-1]['terminal_task_nonregression']

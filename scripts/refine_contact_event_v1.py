@@ -94,7 +94,7 @@ def projected_event_metadata(metadata, projection, initial_q, impact):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);p.add_argument('--tracking-model-reserve',action='store_true');p.add_argument('--late-arm-rate',action='store_true');p.add_argument('--projected-goal',type=Path);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);p.add_argument('--tracking-model-reserve',action='store_true');p.add_argument('--late-arm-rate',action='store_true');p.add_argument('--projected-goal',type=Path);p.add_argument('--velocity-priority',action='store_true');a=p.parse_args()
     if a.projected_goal is not None and a.previous_refinement is None:raise ValueError('Projected goal requires its complete source prefix')
     if a.tracking_model_reserve and (a.previous_refinement is None or not a.constrain_arm_tracking):raise ValueError('Tracking reserve requires a constrained verified predecessor')
     if a.output.exists():raise ValueError('Preserve all prior attempts')
@@ -133,6 +133,14 @@ def main():
             if previous['input_sha256'].get(str(path))!=hashlib.sha256(path.read_bytes()).hexdigest():raise ValueError('Continuation core input drift')
         for path,digest in previous['input_sha256'].items():
             if hashlib.sha256(Path(path).read_bytes()).hexdigest()!=digest:raise ValueError('Continuation ancestry drift')
+        # A previous prefix may already carry an explicitly verified projected
+        # goal. Continue from that exact metadata; never silently retarget an
+        # arbitrary artifact. The projection audit is the provenance proof.
+        encode_meta=lambda x:json.dumps(x,sort_keys=True,allow_nan=False,default=lambda z:z.tolist() if isinstance(z,np.ndarray) else float(z))
+        if previous.get('projection_audit') is not None and encode_meta(previous.get('metadata')) != encode_meta(metadata):
+            if previous['metadata'].get('contact_time_s') != metadata.get('contact_time_s'):
+                raise ValueError('Continuation event changed')
+            metadata=copy.deepcopy(previous['metadata'])
         trace,commands,reference=continued_event_reference(previous,metadata,reference[0],model.q_indices[12:])
         if a.tracking_model_reserve:reserve,reserve_audit=tracking_linearization_reserve(previous,model.q_indices[12:])
         input_paths.append(a.previous_refinement)
@@ -162,7 +170,7 @@ def main():
                 if not np.array_equal(old['q'],new['q']) or not np.array_equal(old['v'],new['v']):raise ValueError('Seed state drift')
         print(json.dumps(dict(call=calls,path_valid=result['path_valid'],errors=result.get('terminal_errors'),failure=result.get('failure'))),flush=True)
         return result
-    started=time.perf_counter();result=refine_terminal(evaluate,parameter_radii=evaluator.radii,
+    started=time.perf_counter();result=refine_terminal(evaluate,objective='velocity' if a.velocity_priority else 'all_tasks',parameter_radii=evaluator.radii,
         amplitude_bounds=evaluator.amplitude_bounds(),linear_constraints=evaluator.combined_arm_constraints(),backtracking=True,protect_terminal_tasks=True,
         path_response_fn=(lambda result:arm_tracking_response(result,model.q_indices[12:],n)) if a.constrain_arm_tracking else None,path_response_reserve=reserve)
     selected=result['trials'][result['selected_index']]['result']
