@@ -9,7 +9,7 @@ evaluation, or a successful contact-validation receipt.
 ## Current code
 
 - Branch: `feat/supermimic-native-physical-loop-20261114`
-- Commit: `3db6e32c5df2d98026255f7491437af48fdafd0b`
+- Commit: `d7f8b71` (the support gate is now in the following working change)
 - The calibration script now evaluates held-out native ball-response rows every
   16 updates and restores the best validation state before writing a candidate.
 - CPU checks after the change: 16 passed. The broader previously recorded
@@ -49,6 +49,12 @@ eligible for Actor contact BPTT or promotion.
 The native paired-response bundle has SHA256
 `04957798ee77a294ea969fbab405fe6cb8e8bf5033b984ae8a29fb3a2b5c6dad`. Its
 receipt remains uncalibrated, so it is diagnostic evidence only.
+
+The two available probe times contain four held-out nonzero ball-response rows
+but only two unique held-out lanes, `121` and `127`. The calibration entrypoint
+now requires at least eight held-out rows by default and records unique-lane
+coverage. The existing probes therefore fail the new preflight and cannot be
+used to justify a contact-gradient fit.
 
 ## Runtime status
 

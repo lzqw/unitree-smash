@@ -8,7 +8,7 @@ or a passing evidence receipt. No counterfactual response is synthesized.
 import argparse,copy,hashlib,json,subprocess,sys,time,traceback
 from pathlib import Path
 import torch
-from quadsmash.rl.supermimic_native_response_data_v1 import load_response_data,normalized_response_loss
+from quadsmash.rl.supermimic_native_response_data_v1 import load_response_data,measured_ball_response_support,normalized_response_loss
 from quadsmash.rl.supermimic_ball_mode_supervision_v1 import observed_ball_mode_targets,observed_ball_mode_loss
 from quadsmash.rl.supermimic_ball_residual_v1 import ball_geometry_features
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
@@ -141,6 +141,7 @@ def main(a):
     a._output_created=True
     if a.batch<128 or a.batch%128:raise ValueError('Model batch must be a positive multiple of the original128 quota unit')
     if a.updates!=256:raise ValueError('This diagnostic has one predeclared256-update budget; no sweep')
+    if a.min_native_ball_validation_rows<1:raise ValueError('Minimum held-out ball-response support must be positive')
     if not torch.cuda.is_available():raise RuntimeError('GPU required for model fitting')
     torch.set_num_threads(2);torch.manual_seed(20261118);torch.cuda.set_device(0);torch.cuda.init();torch.cuda.reset_peak_memory_stats()
     device=torch.device('cuda:0');started=time.perf_counter()
@@ -157,6 +158,13 @@ def main(a):
         for pair,name,p in zip(pair_sets,pair_names,pair_provenance):
             pair.update({k:v.to(device) for k,v in measured_foot_labels(name,p).items()})
     train=torch.tensor(provenance['train_lanes'],device=device);val=torch.tensor(provenance['validation_lanes'],device=device)
+    native_ball_support=measured_ball_response_support(pair_sets,val)
+    if native_ball_support['rows'] < a.min_native_ball_validation_rows:
+        raise RuntimeError(
+            'Insufficient held-out native ball-response support: '
+            f"{native_ball_support['rows']} rows from {native_ball_support['unique_lanes']} lanes, "
+            f"need at least {a.min_native_ball_validation_rows}. Collect probes at event-aligned ticks."
+        )
     source=torch.load(a.physical_checkpoint,map_location='cpu',weights_only=True)
     ball_source=torch.load(a.ball_checkpoint,map_location='cpu',weights_only=True)
     sweep_source=torch.load(a.action_ball_checkpoint,map_location='cpu',weights_only=True)
@@ -257,6 +265,8 @@ def main(a):
         validation='original32 heldout lanes excluded from every fitting term; one time/direction is not complete physical admission',
         mode_switch='raw finite-difference transition supervision permitted; never called a smooth Jacobian target',
         reference='failed candidate remains diagnostic; no actor resumes it')
+    config['native_ball_response_support']=native_ball_support
+    config['minimum_native_ball_validation_rows']=int(a.min_native_ball_validation_rows)
     config['policy_execution_provenance']=execution_provenance
     config['policy_execution_sidecar']=str(a.policy_execution.resolve()) if a.policy_execution is not None else None
     config['historical_physical_sources']=history_provenance
@@ -449,6 +459,8 @@ if __name__=='__main__':
     for name in ('probe-directory','split-manifest','physical-checkpoint','ball-checkpoint','action-ball-checkpoint','packed-data','output'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--updates',type=int,default=256)
+    parser.add_argument('--min-native-ball-validation-rows',type=int,default=8,
+                        help='Minimum nonzero held-out measured ball-response rows before fitting')
     parser.add_argument('--historical-physical-data',type=Path,default=None,help='Explicit verified two-history physics-only package; unknown actor identities never become RTG labels')
     parser.add_argument('--batch',type=int,default=128,help='GPU model batch; multiple of128, original event ratios and16-step horizon preserved')
     parser.add_argument('--native-material-receipt',type=Path,default=None,help='Explicit V3-to-V4 migration using measured native component materials and differentiable authored inertia')

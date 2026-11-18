@@ -1,6 +1,16 @@
 import torch
 import pytest
-from quadsmash.rl.supermimic_native_response_data_v1 import normalized_response_loss
+from quadsmash.rl.supermimic_native_response_data_v1 import measured_ball_response_support,normalized_response_loss
+
+
+def test_ball_response_support_counts_unique_heldout_lanes():
+    lanes=torch.tensor([0,1,2,3])
+    minus=torch.zeros(4,55);plus=minus.clone()
+    plus[1,52]=.01;plus[3,53]=.02
+    pairs=[dict(next_minus=minus,next_plus=plus),dict(next_minus=minus,next_plus=plus)]
+    summary=measured_ball_response_support(pairs,lanes)
+    assert summary['rows']==4 and summary['unique_lanes']==2
+    assert summary['lanes']==[1,3]
 
 
 def test_response_supervision_uses_final_command_and_has_model_gradient():

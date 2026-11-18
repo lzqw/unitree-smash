@@ -72,3 +72,29 @@ def normalized_response_loss(prediction_minus,prediction_plus,native_minus,nativ
     per=error.square().mean(-1)
     loss=(per*supported.to(per.dtype)).sum()/supported.sum().clamp_min(1)
     return loss,dict(supported=int(supported.sum()),saturated=int((~supported).sum()))
+
+
+def measured_ball_response_support(pair_sets, lanes, *, threshold=1e-7):
+    """Count independently measured nonzero ball responses.
+
+    A paired command probe with zero measured ball delta carries no directional
+    evidence for contact dynamics.  Count both rows and unique lanes so a
+    repeated probe at one lane cannot masquerade as broad validation support.
+    """
+    if lanes.ndim != 1:
+        raise ValueError('Validation lanes must be a one-dimensional tensor')
+    row_count=0
+    unique=set()
+    per_source=[]
+    for pair in pair_sets:
+        if 'next_minus' not in pair or 'next_plus' not in pair:
+            raise ValueError('Native response pair is missing next states')
+        delta=pair['next_plus'][lanes,52:55]-pair['next_minus'][lanes,52:55]
+        mask=delta.norm(dim=-1)>threshold
+        ids=lanes[mask].detach().cpu().tolist()
+        row_count+=len(ids)
+        unique.update(ids)
+        per_source.append(dict(rows=len(ids),unique_lanes=sorted(set(ids))))
+    return dict(rows=row_count,unique_lanes=len(unique),lanes=sorted(unique),per_source=per_source,
+                threshold=float(threshold),
+                usable=bool(row_count>0 and len(unique)>0))
