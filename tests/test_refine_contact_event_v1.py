@@ -40,3 +40,31 @@ def test_old_event_claims_are_nested_not_relabelled_as_current():
     assert 'attack_geometry' not in m and 'task_feasible_velocity_retarget' not in m
     assert m['seed_metadata']['attack_geometry']['predicted_contact_height']==99
     assert m['robot_target_verified'] is False and m['retimed_task_margins']['valid']
+
+
+def continuation_fixture():
+    from scripts.refine_contact_event_v1 import continued_event_reference
+    metadata=dict(contact_time_s=.02,contact_index=2,target_position_world_m=np.array([1,2,3]))
+    reference=np.full((3,6),.1);trace=[]
+    for k in range(2):
+        trace.append(dict(node=k,q=np.r_[np.zeros(7),np.full(6,.12)],planned_arm_reference_rad=reference[k+1].copy(),arm_tracking_error_rad=.02,final_target_rad=np.zeros(18)))
+    record=dict(metadata=copy.deepcopy(metadata),event_time_s=.02,selected_index=0,selected_arm_reference_rad=reference,trials=[dict(result=dict(path_valid=True,trajectory=trace))])
+    return continued_event_reference,record,metadata,reference
+
+
+def test_continuation_preserves_history_and_storage_isolation():
+    fn,record,metadata,reference=continuation_fixture()
+    trace,commands,restored=fn(record,metadata,reference[0],np.arange(7,13))
+    np.testing.assert_array_equal(restored,reference)
+    trace[0]['q'][:]=99;commands[:]=99;restored[:]=99
+    assert record['trials'][0]['result']['trajectory'][0]['q'][0]==0
+    assert reference[0,0]==.1
+
+
+def test_continuation_rejects_target_partial_or_reference_drift():
+    for mode in ('target','partial','reference'):
+        fn,record,metadata,reference=continuation_fixture()
+        if mode=='target':metadata['target_position_world_m'][0]+=1
+        if mode=='partial':record['trials'][0]['result']['path_valid']=False
+        if mode=='reference':record['selected_arm_reference_rad'][-1,0]+=.01
+        with pytest.raises(ValueError):fn(record,metadata,np.full(6,.1),np.arange(7,13))

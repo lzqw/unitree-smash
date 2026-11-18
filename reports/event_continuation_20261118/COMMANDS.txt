@@ -1,0 +1,1 @@
+OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 bash scripts/python.sh -m scripts.refine_contact_event_v1 --event-source reports/contact_event_window_20261118/POSE_DIAGNOSIS.json --event-time 0.33 --constrain-arm-tracking --previous-refinement reports/path_constrained_event_20261118/RESULTS.json --output reports/event_continuation_20261118/RESULTS.json

@@ -47,8 +47,26 @@ def retimed_metadata(original,row,initial_q,impact):
     return m
 
 
+def continued_event_reference(record,metadata,initial_reference,arm_q_indices):
+    """Restore only a complete same-event model prefix, never a partial plan."""
+    encode=lambda value:json.dumps(value,sort_keys=True,allow_nan=False,default=lambda x:x.tolist() if isinstance(x,np.ndarray) else float(x))
+    if encode(record['metadata'])!=encode(metadata) or record['event_time_s']!=metadata['contact_time_s']:
+        raise ValueError('Continuation event or target changed')
+    selected=record['trials'][record['selected_index']]['result'];n=metadata['contact_index']
+    arm_tracking_response(selected,arm_q_indices,n)
+    trace=copy.deepcopy(selected['trajectory'])
+    commands=np.asarray([t['final_target_rad'] for t in trace],float)
+    reference=np.asarray(record['selected_arm_reference_rad'],float).copy()
+    if commands.shape!=(n,18) or not np.isfinite(commands).all():raise ValueError('Complete finite final commands required')
+    if (reference.shape!=(n+1,6) or not np.isfinite(reference).all()
+            or not np.array_equal(reference[0],np.asarray(initial_reference))
+            or not np.array_equal(reference[1:],np.asarray([t['planned_arm_reference_rad'] for t in trace]))):
+        raise ValueError('Continuation reference history changed')
+    return trace,commands.copy(),reference
+
+
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);a=p.parse_args()
     if a.output.exists():raise ValueError('Preserve all prior attempts')
     r=json.loads(a.event_source.read_text())
     for path,digest in r['input_sha256'].items():
@@ -75,6 +93,17 @@ def main():
     state=PublicState(q.copy(),v.copy(),pin.Quaternion(q[3:7]).matrix(),q[:3].copy(),q[model.q_indices].copy(),v[model.v_indices].copy(),np.array(initial['baseline_initial_contacts'],bool),0.)
     state.previous_command_target=np.array(initial['previous_final_command'])
     cfg_path=Path('reports/codex_teacher_joint_eval_20261116/controller.json');interface=PositionPDInterface(**json.loads(cfg_path.read_text())['interface'])
+    input_paths=[a.event_source,initial_path,original_path,obs_path,cfg_path]
+    if a.previous_refinement is not None:
+        previous=json.loads(a.previous_refinement.read_text())
+        if hashlib.sha256(a.previous_refinement.read_bytes()).hexdigest()!=a.previous_refinement.with_suffix('.sha256').read_text().strip():
+            raise ValueError('Continuation artifact hash mismatch')
+        for path in input_paths:
+            if previous['input_sha256'].get(str(path))!=hashlib.sha256(path.read_bytes()).hexdigest():raise ValueError('Continuation core input drift')
+        for path,digest in previous['input_sha256'].items():
+            if hashlib.sha256(Path(path).read_bytes()).hexdigest()!=digest:raise ValueError('Continuation ancestry drift')
+        trace,commands,reference=continued_event_reference(previous,metadata,reference[0],model.q_indices[12:])
+        input_paths.append(a.previous_refinement)
     geometry=AuthoredGroundClearance('configs/go2_piper_authored_ground_geometry_v1.json',model,margin_m=0.)
     predictor=ExperimentalSphereAdmissionV1(model,geometry,Path('reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json'))
     evaluator=CoupledContactRollout(model,interface,predictor,state,commands,reference,metadata);calls=0
@@ -93,7 +122,7 @@ def main():
     selected=result['trials'][result['selected_index']]['result']
     result.update(constrain_arm_tracking=a.constrain_arm_tracking,seconds=time.perf_counter()-started,event_time_s=a.event_time,metadata=metadata,base_arm_reference_rad=reference,
         selected_arm_reference_rad=np.vstack([reference[0],[t['planned_arm_reference_rad'] for t in selected['trajectory']]]),
-        original_prefix_exact=True,input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (a.event_source,initial_path,original_path,obs_path,cfg_path)},
+        original_prefix_exact=True,input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in input_paths},
         native_execution=False,valid_teacher_reference=False)
     a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(result,indent=2,allow_nan=False,default=lambda x:x.tolist() if isinstance(x,np.ndarray) else float(x))+'\n')
     a.output.with_suffix('.sha256').write_text(hashlib.sha256(a.output.read_bytes()).hexdigest()+'\n')
