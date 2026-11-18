@@ -73,12 +73,14 @@ class NativePairCapture:
         self.spec=validate_spec(spec);self.branch=branch
         if branch not in BRANCHES:raise ValueError('Unknown probe branch')
         self.prefix=hashlib.sha256();self.start=None;self.raw=None;self.substep_trace=None
+        self.step_records=[]
     def before(self,tick,env,observation,request):
         action_tick = self.spec.get('action_tick', self.spec['tick'])
         event_tick = self.spec['tick']
         if tick==action_tick:
             state=capture_state(env)
             self.start=tensor_tree_copy(dict(before=state,observation=observation,executor_before=capture_controller(env._sm_residual_controller)),cpu=True)
+            self.step_records=[]
             self.prefix.update(tree_digest(self.start).encode())
             action=perturb_request(request,self.spec,self.branch)
             self.request_before=request.detach().cpu().clone();self.request_after=action.detach().cpu().clone()
@@ -95,6 +97,17 @@ class NativePairCapture:
     def after(self,tick,env,done):
         action_tick = self.spec.get('action_tick', self.spec['tick'])
         event_tick = self.spec['tick']
+        if action_tick <= tick <= event_tick and self.start is not None:
+            current=capture_state(env)
+            self.step_records.append(dict(
+                next_state=encode_physical(current['physical']),
+                final_action=current['physical']['final_action'],
+                final_joint_targets=env._sm_joint_targets,
+                foot_contact=current['physical']['foot_contact'],
+                ball_present=current['physical']['ball_present'],
+                elapsed_s=current['physical']['elapsed_s'],
+                done=done,
+            ))
         if tick < action_tick:
             self.prefix.update(tree_digest(dict(targets=env._sm_joint_targets,final=env._sm_final_action,done=done)).encode())
         elif tick==event_tick:
@@ -105,6 +118,7 @@ class NativePairCapture:
                 final_joint_targets=env._sm_joint_targets,final_normalized=env._sm_final_action,request_before=self.request_before,
                 request_after=self.request_after,task_after=captured['task'],recovery_after=captured['recovery'],
                 next_feet=captured['physical']['foot_contact'],command_valid_lanes=valid),cpu=True)
+            self.raw['step_sequence']=tensor_tree_copy(self.step_records,cpu=True)
             if trace is not None:self.raw['substep_trace']=tensor_tree_copy(trace,cpu=True)
     def save(self,output,actor,task_contract,policy_execution,physics,seed):
         if self.raw is None:raise ValueError('Native probe did not finish')

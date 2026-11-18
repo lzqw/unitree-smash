@@ -48,6 +48,13 @@ def aggregate(paths,output):
         if len(shapes)!=1:raise ValueError('Probe tensor shape mismatch: '+key)
         pairs[key]=torch.cat([b['pairs'][key] for b in bundles])
     pairs['restore_mode']='from-ground-identical-prefix'
+    temporal_keys=('temporal_horizon','action_tick','event_tick')
+    for key in temporal_keys:
+        values=[b['pairs'].get(key) for b in bundles]
+        if any(value is not None for value in values):
+            if any(value is None for value in values) or len(set(values))!=1:
+                raise ValueError('Probe temporal metadata mismatch: '+key)
+            pairs[key]=values[0]
     for key in ('prefix_sha256','executor_before_sha256'):
         pairs[key]={branch:[b['pairs'][key][branch] for b in bundles] for branch in BRANCHES}
         for values in zip(*pairs[key].values()):

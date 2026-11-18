@@ -60,6 +60,28 @@ def test_no_saturated_response_or_snapshot_restore_pass(monkeypatch):
     p['executor_before_sha256']['plus']='wrong'
     with pytest.raises(ValueError,match='prefix'):paired_metrics(adapter,p,'approach',limits)
 
+def test_temporal_probe_uses_action_lead_rollout(monkeypatch):
+    adapter,p,limits=pair_fixture(monkeypatch)
+    import quadsmash.rl.supermimic_probe_region_v1 as module
+    def additive_transition(base,ball,state,target,*args,**kwargs):
+        out=state.clone();out[:,52:55]=out[:,52:55]+target[:,:3]*base.scale
+        return out,torch.zeros(len(state),4),torch.ones(len(state))
+    monkeypatch.setattr(module,'ball_transition',additive_transition)
+    zero=torch.zeros(2,2,18)
+    p['step_targets_nominal_a']=zero.clone()
+    p['step_targets_nominal_b']=zero.clone()
+    p['step_targets_minus']=zero.clone()
+    p['step_targets_plus']=zero.clone()
+    p['step_targets_plus'][:,0,0]=.02
+    p['step_final_actions_nominal_a']=zero.clone()
+    p['step_final_actions_nominal_b']=zero.clone()
+    p['step_final_actions_minus']=zero.clone()
+    p['step_final_actions_plus']=zero.clone()
+    p.update(temporal_horizon=2,action_tick=10,event_tick=11)
+    result=paired_metrics(adapter,p,'approach',limits)
+    assert result['passed']
+    assert result['temporal_horizon']==2
+
 def test_bounded_evidence_does_not_remove_static_contract_checks():
     origin=dict(execution_code_sha256={'x':'a'},schema='id',actor_state_sha256='a',world_state_sha256='w',task_contract_sha256='t',policy_execution='e',policy_version=0)
     current=dict(origin,world_state_sha256='updated')

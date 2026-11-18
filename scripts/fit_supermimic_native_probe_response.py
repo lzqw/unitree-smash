@@ -52,17 +52,42 @@ def load_rows(paths, device):
 def concat_pairs(rows, device):
     keys = ('state', 'targets_minus', 'targets_plus', 'previous_action',
             'feet', 'present', 'elapsed', 'launch', 'native_minus', 'native_plus')
-    return {key: torch.cat([row['pairs'][key].to(device) for row in rows], dim=0)
+    result={key: torch.cat([row['pairs'][key].to(device) for row in rows], dim=0)
             for key in keys}
+    temporal_keys=tuple(key for key,value in rows[0]['pairs'].items()
+                        if key.startswith('step_') and torch.is_tensor(value))
+    if temporal_keys and any(
+        tuple(key for key,value in row['pairs'].items()
+              if key.startswith('step_') and torch.is_tensor(value)) != temporal_keys
+        for row in rows):
+        raise ValueError('Temporal probe tensor schemas differ')
+    for key in temporal_keys:
+        result[key]=torch.cat([row['pairs'][key].to(device) for row in rows], dim=0)
+    for key in ('temporal_horizon','action_tick','event_tick'):
+        values=[row['pairs'].get(key) for row in rows]
+        if any(value is not None for value in values):
+            if any(value is None for value in values) or len(set(values))!=1:
+                raise ValueError('Temporal probe metadata differs: '+key)
+            result[key]=values[0]
+    return result
 
 
 def response(model, physical, ball, pairs):
-    common = (pairs['state'], pairs['previous_action'], pairs['feet'],
-              pairs['present'], pairs['elapsed'], pairs['launch'])
-    minus, _, _ = ball_transition(physical, ball, common[0], pairs['targets_minus'],
-                                  *common[1:], action_model=model)
-    plus, _, _ = ball_transition(physical, ball, common[0], pairs['targets_plus'],
-                                 *common[1:], action_model=model)
+    temporal='step_targets_minus' in pairs
+    def rollout(name):
+        if not temporal:
+            common=(pairs['state'],pairs['previous_action'],pairs['feet'],
+                    pairs['present'],pairs['elapsed'],pairs['launch'])
+            return ball_transition(physical,ball,common[0],pairs['targets_'+name],
+                                   *common[1:],action_model=model)[0]
+        state=pairs['state'];previous=pairs['previous_action'];feet=pairs['feet']
+        present=pairs['present'];elapsed=pairs['elapsed']
+        targets=pairs['step_targets_'+name];actions=pairs['step_final_actions_'+name]
+        for i in range(targets.shape[1]):
+            state,contact,_=ball_transition(physical,ball,state,targets[:,i],previous,feet,present,elapsed,pairs['launch'],action_model=model)
+            previous=actions[:,i];feet=contact[:,:feet.shape[1]];elapsed=elapsed+elapsed.new_tensor(.01)
+        return state
+    minus=rollout('minus');plus=rollout('plus')
     return plus[:, 52:55] - minus[:, 52:55]
 
 

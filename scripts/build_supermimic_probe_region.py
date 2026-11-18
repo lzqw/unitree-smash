@@ -64,6 +64,26 @@ def build(paths,identity,output,selected_lanes=None,include_frame_lanes=False):
         executor_before_sha256={k:v['executor_before_sha256'] for k,v in runs.items()})
     for branch,run in runs.items():pairs['native_'+branch]=run['raw']['next_state'][sl]
     for branch in ('minus','plus'):pairs['targets_'+branch]=runs[branch]['raw']['final_joint_targets'][sl]
+    sequences={branch:runs[branch]['raw'].get('step_sequence') for branch in BRANCHES}
+    if all(sequence is not None for sequence in sequences.values()):
+        lengths={branch:len(sequence) for branch,sequence in sequences.items()}
+        if len(set(lengths.values()))!=1 or not lengths['nominal_a']:
+            raise ValueError('Native temporal probe step sequences are incomplete')
+        expected_horizon=int(base['spec']['tick'])-int(base['spec'].get('action_tick',base['spec']['tick']))+1
+        if lengths['nominal_a']!=expected_horizon:
+            raise ValueError('Native temporal probe horizon does not match declared action/event ticks')
+        fields=('next_state','final_action','final_joint_targets','foot_contact','ball_present','elapsed_s','done')
+        for branch,sequence in sequences.items():
+            if any(any(field not in row for field in fields) for row in sequence):
+                raise ValueError('Native temporal probe step record is incomplete')
+            pairs['step_targets_'+branch]=torch.stack([row['final_joint_targets'][sl] for row in sequence],1)
+            pairs['step_final_actions_'+branch]=torch.stack([row['final_action'][sl] for row in sequence],1)
+            pairs['step_feet_'+branch]=torch.stack([row['foot_contact'][sl] for row in sequence],1)
+            pairs['step_present_'+branch]=torch.stack([row['ball_present'][sl] for row in sequence],1)
+            pairs['step_elapsed_'+branch]=torch.stack([row['elapsed_s'][sl] for row in sequence],1)
+        pairs['temporal_horizon']=lengths['nominal_a']
+        pairs['action_tick']=int(base['spec'].get('action_tick',base['spec']['tick']))
+        pairs['event_tick']=int(base['spec']['tick'])
     def modes(run,lane):
         task=run['raw']['task_after']
         result={k:(v[lane].tolist() if isinstance(v,torch.Tensor) and v.ndim else v) for k,v in task.items()

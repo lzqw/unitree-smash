@@ -80,16 +80,45 @@ def paired_metrics(adapter,pairs,head,limits):
         if any(len(row)!=len(p['state']) for row in rows) or any(not all(col) or len(set(col))!=1 for col in zip(*rows)):
             raise ValueError('Same-prefix/controller repeatability missing; do not substitute snapshot restore')
     if p.get('restore_mode')!='from-ground-identical-prefix':raise ValueError('Unsupported native restoration claim')
+    temporal = all(k in p for k in (
+        'temporal_horizon', 'step_targets_nominal_a',
+        'step_targets_nominal_b', 'step_targets_minus', 'step_targets_plus',
+        'step_final_actions_nominal_a', 'step_final_actions_nominal_b',
+        'step_final_actions_minus', 'step_final_actions_plus'))
+    if temporal:
+        for key in ('step_targets_nominal_a','step_targets_nominal_b',
+                    'step_targets_minus','step_targets_plus',
+                    'step_final_actions_nominal_a','step_final_actions_nominal_b',
+                    'step_final_actions_minus','step_final_actions_plus'):
+            if not torch.isfinite(p[key]).all():
+                raise ValueError('Nonfinite native temporal probe tensor: '+key)
+    def rollout(targets, actions):
+        state=p['state']; previous=p['previous_action']; feet=p['feet']
+        present=p['present']; elapsed=p['elapsed']
+        for i in range(targets.shape[1]):
+            state,contact_prob,_=ball_transition(
+                adapter.physical_model,adapter.ball_model,state,targets[:,i],
+                previous,feet,present,elapsed,p['launch'],
+                action_model=getattr(adapter,'action_ball_model',None))
+            previous=actions[:,i]
+            feet=contact_prob[:,:feet.shape[1]]
+            elapsed=elapsed+elapsed.new_tensor(0.01)
+        return state
     predictions=[]
-    with torch.no_grad():
-        for name in ('targets_minus','targets_plus'):
-            state,feet,_=ball_transition(adapter.physical_model,adapter.ball_model,p['state'],p[name],p['previous_action'],p['feet'],p['present'],p['elapsed'],p['launch'],action_model=getattr(adapter,'action_ball_model',None))
-            predictions.append(state)
+    if temporal:
+        with torch.no_grad():
+            for name in ('minus','plus'):
+                predictions.append(rollout(p['step_targets_'+name],p['step_final_actions_'+name]))
+    else:
+        with torch.no_grad():
+            for name in ('targets_minus','targets_plus'):
+                state,feet,_=ball_transition(adapter.physical_model,adapter.ball_model,p['state'],p[name],p['previous_action'],p['feet'],p['present'],p['elapsed'],p['launch'],action_model=getattr(adapter,'action_ball_model',None))
+                predictions.append(state)
     selection=slice(52,55) if head=='approach' else slice(10,13)
     native=(p['native_plus']-p['native_minus'])[:,selection]
     predicted=(predictions[1]-predictions[0])[:,selection]
     repeat=float((p['native_nominal_a']-p['native_nominal_b']).abs().max())
-    target_delta=(p['targets_plus']-p['targets_minus']).norm(dim=-1)
+    target_delta=(p['step_targets_plus'][:,0]-p['step_targets_minus'][:,0]).norm(dim=-1) if temporal else (p['targets_plus']-p['targets_minus']).norm(dim=-1)
     norms=native.norm(dim=-1);supported=(norms>=limits['native_response_min'])&(target_delta>0)
     missing=int((~supported).sum());failures=[]
     groups=contact_mode_groups(p.get('native_contact_modes'),len(native),head)
@@ -107,11 +136,27 @@ def paired_metrics(adapter,pairs,head,limits):
     if float(relative.max())>limits['response_relative_error_max']:failures.append('response-amplitude')
     # True local model Jacobian projected onto measured executable perturbation.
     with torch.enable_grad():
-        target=((p['targets_plus']+p['targets_minus'])/2).detach().requires_grad_(True)
-        y,_,_=ball_transition(adapter.physical_model,adapter.ball_model,p['state'],target,p['previous_action'],p['feet'],p['present'],p['elapsed'],p['launch'],action_model=getattr(adapter,'action_ball_model',None))
-        grads=[torch.autograd.grad(y[:,selection][:,j].sum(),target,retain_graph=True,allow_unused=True)[0] for j in range(3)]
-        jac=torch.stack([torch.zeros_like(target) if g is None else g for g in grads],1)
-        projected=(jac*(p['targets_plus']-p['targets_minus'])[:,None]).sum(-1)
+        if temporal:
+            target=((p['step_targets_plus'][:,0]+p['step_targets_minus'][:,0])/2).detach().requires_grad_(True)
+            nominal_targets=p['step_targets_nominal_a']; nominal_actions=p['step_final_actions_nominal_a']
+            state=p['state']; previous=p['previous_action']; feet=p['feet']
+            present=p['present']; elapsed=p['elapsed']
+            for i in range(nominal_targets.shape[1]):
+                current_target=target if i==0 else nominal_targets[:,i]
+                state,contact_prob,_=ball_transition(adapter.physical_model,adapter.ball_model,state,current_target,previous,feet,present,elapsed,p['launch'],action_model=getattr(adapter,'action_ball_model',None))
+                previous=nominal_actions[:,i]
+                feet=contact_prob[:,:feet.shape[1]]
+                elapsed=elapsed+elapsed.new_tensor(0.01)
+            grads=[torch.autograd.grad(state[:,selection][:,j].sum(),target,retain_graph=True,allow_unused=True)[0] for j in range(3)]
+            jac=torch.stack([torch.zeros_like(target) if g is None else g for g in grads],1)
+            command_delta=p['step_targets_plus'][:,0]-p['step_targets_minus'][:,0]
+        else:
+            target=((p['targets_plus']+p['targets_minus'])/2).detach().requires_grad_(True)
+            y,_,_=ball_transition(adapter.physical_model,adapter.ball_model,p['state'],target,p['previous_action'],p['feet'],p['present'],p['elapsed'],p['launch'],action_model=getattr(adapter,'action_ball_model',None))
+            grads=[torch.autograd.grad(y[:,selection][:,j].sum(),target,retain_graph=True,allow_unused=True)[0] for j in range(3)]
+            jac=torch.stack([torch.zeros_like(target) if g is None else g for g in grads],1)
+            command_delta=p['targets_plus']-p['targets_minus']
+        projected=(jac*command_delta[:,None]).sum(-1)
     if not torch.isfinite(projected).all():failures.append('nonfinite-jacobian')
     jac_cos=(projected*native).sum(-1)/(projected.norm(dim=-1)*norms).clamp_min(1e-12)
     smooth=torch.tensor([g=='smooth-mode' for g in groups],device=device)
@@ -119,7 +164,9 @@ def paired_metrics(adapter,pairs,head,limits):
     return dict(native_contact_modes=p.get('native_contact_modes','unknown'),passed=not failures,failures=failures,count=len(native),unsupported_count=missing,
         native_repeat_max=repeat,response_rmse=rmse,response_cosine=cosine.tolist(),relative_error=relative.tolist(),
         contact_mode_groups=groups,jacobian_cosine=[float(jac_cos[i].detach()) if groups[i]=='smooth-mode' else None for i in range(len(groups))],native_delta=native.tolist(),model_delta=predicted.tolist(),
-        projected_jacobian=projected.detach().tolist(),scope='measured final-command pair on repeated native prefix; contact-mode switches reported in raw evidence')
+        projected_jacobian=projected.detach().tolist(),temporal_horizon=int(p.get('temporal_horizon',1)),
+        action_tick=int(p.get('action_tick',p.get('event_tick',0))),event_tick=int(p.get('event_tick',0)),
+        scope='measured final-command pair on repeated native prefix; temporal rollout used when action precedes event; contact-mode switches reported in raw evidence')
 
 def assess_region(spec,receipt_path,current,adapter,command_preview,head):
     """command_preview(raw_current_start) restores a separate G07 branch each call."""
