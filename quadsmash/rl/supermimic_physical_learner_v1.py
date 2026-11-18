@@ -20,7 +20,7 @@ class PhysicalHorizonTrainer:
                  target_delta_budget_rad=0.04,native_reference_command_budget=None,
                  native_reference_target_budget_rad=None,trainable_names=None,
                  block_name='approach',actor_lr=5e-5,reference_bank=None,
-                 tracking_weight=0.0):
+                 tracking_weight=0.0,world_lr=2e-4):
         self.actor,self.adapter,self.timebase=actor,adapter,timebase
         width=adapter.critic_input(initial_state).shape[-1]
         self.critic=MLP(width,(512,256,128),1).to(initial_state.physical.device)
@@ -34,6 +34,8 @@ class PhysicalHorizonTrainer:
         self.block_name=block_name
         self.reference_bank=reference_bank
         self.tracking_weight=float(tracking_weight)
+        self.ball_loss_weight=4.0
+        self.contact_ball_loss_weight=8.0
         if self.tracking_weight < 0:
             raise ValueError('tracking_weight must be nonnegative')
         self.actor_lr=float(actor_lr)
@@ -41,7 +43,10 @@ class PhysicalHorizonTrainer:
         self._actor_optimizers={}
         self.actor_opt=torch.optim.Adam([p for p in actor.parameters() if p.requires_grad],lr=actor_lr,betas=(.9,.95))
         self._actor_optimizers[self.block_name]=self.actor_opt
-        self.world_opt=torch.optim.Adam(adapter.parameters(),lr=2e-4)
+        if world_lr <= 0:
+            raise ValueError('world_lr must be positive')
+        self.world_lr=float(world_lr)
+        self.world_opt=torch.optim.Adam(adapter.parameters(),lr=self.world_lr)
         self.critic_opt=torch.optim.Adam(self.critic.parameters(),lr=2e-4)
         self.actor_updates=self.world_updates=self.critic_updates=0
         self.last_critic_loss=None
@@ -372,17 +377,18 @@ class PhysicalHorizonTrainer:
                 window['terminated'][i],window['complete_reward'][i])
             physical_loss=physical_loss+physical_i;contact_loss=contact_loss+contact_i
             ball_loss_value=ball_loss_value+ball_i;task_loss=task_loss+task_i
-            loss=loss+physical_i+contact_i+task_i
-            if self.adapter.action_ball_model is not None:
-                # Explicit physical-unit ball loss for the optional fitted
-                # swept-contact candidate. The legacy WM objective is unchanged.
-                event=(window['next_event_state'][i,:,1]>window['event_state'][i,:,1]) | (
-                    window['next_event_state'][i,:,6]>window['event_state'][i,:,6])
-                scale=prediction.new_tensor([.1,.1,.1,2.,2.,2.])
-                error=((prediction[:,49:]-window['next_state'][i][:,49:])/scale).square().mean(-1)
-                extra=(error*(1.+3.*event.to(error.dtype))).mean()
-                action_ball_loss=action_ball_loss+extra
-                loss=loss+extra
+            # Ball state is a sparse, high-amplitude target.  Keep it as an
+            # explicit WM objective even for the legacy ball path.  Contact
+            # weighting is driven only by current/next recorded event deltas,
+            # never by future rollout labels.
+            event=(window['next_event_state'][i,:,1]>window['event_state'][i,:,1]) | (
+                window['next_event_state'][i,:,6]>window['event_state'][i,:,6])
+            scale=prediction.new_tensor([.1,.1,.1,2.,2.,2.])
+            error=((prediction[:,49:]-window['next_state'][i][:,49:])/scale).square().mean(-1)
+            weight=1.+(self.contact_ball_loss_weight-1.)*event.to(error.dtype)
+            extra=(error*weight).mean()*self.ball_loss_weight
+            action_ball_loss=action_ball_loss+extra
+            loss=loss+physical_i+contact_i+task_i+extra
             state,feet,present=prediction,newfeet,newpresent
             values,validity=task.memory_schema.feedback_values(out['numeric'],out['valid_logits'].sigmoid())
         loss=loss/cfg.world_steps

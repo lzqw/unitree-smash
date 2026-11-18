@@ -90,6 +90,10 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
         if (candidate.get('geometry_hashes')!=action_ball.preview.geometry_hashes or
                 candidate.get('softness_m')!=action_ball.softness_m):
             raise ValueError('Action-ball candidate racket/net geometry or support width mismatch')
+        if candidate.get('schema') == 'causal-action-conditioned-racket-sweep-v2':
+            if (candidate.get('closing_softness_m') != action_ball.closing_softness_m or
+                    candidate.get('contact_margin_m') != action_ball.contact_margin_m):
+                raise ValueError('Causal action-ball gate contract mismatch')
         action_ball.load_state_dict(candidate['model'],strict=True)
     task_state=torch.load(paths['task'],map_location='cpu',weights_only=True)
     schema=TaskMemorySchemaV1([MemoryField(**dict(f,shape=tuple(f['shape']))) for f in task_state['task_schema']['fields']])

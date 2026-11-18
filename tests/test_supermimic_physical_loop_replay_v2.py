@@ -73,3 +73,26 @@ def test_replay_legacy_window_reports_source_without_stratification_bug():
     assert approach['stage_shortfall']['approach_active']==4
     assert approach['actual_event_coverage']['approach_active']==0
     assert approach['fallback_count']==4
+
+
+def test_contact_sampler_uses_event_windows_without_approach_metadata():
+    t, lanes = 32, 2
+    tensors = {
+        'state': torch.zeros(t, lanes, 55), 'next_state': torch.zeros(t, lanes, 55),
+        'values': torch.zeros(t, lanes, 8), 'valid': torch.ones(t, lanes, 8),
+        'next_values': torch.zeros(t, lanes, 8), 'next_valid': torch.ones(t, lanes, 8),
+        'event_state': torch.zeros(t, lanes, 8), 'next_event_state': torch.zeros(t, lanes, 8),
+        'targets': torch.zeros(t, lanes, 18), 'previous_action': torch.zeros(t, lanes, 18),
+        'feet': torch.zeros(t, lanes, 4, dtype=torch.bool), 'next_feet': torch.zeros(t, lanes, 4, dtype=torch.bool),
+        'present': torch.ones(t, lanes, dtype=torch.bool), 'elapsed': torch.arange(t)[:, None].expand(t, lanes).float(),
+        'episode': torch.zeros(t, lanes, dtype=torch.long), 'terminated': torch.zeros(t, lanes, dtype=torch.bool),
+        'timeout': torch.zeros(t, lanes, dtype=torch.bool), 'torque': torch.zeros(t, lanes, 18),
+        'complete_reward': torch.zeros(t, lanes, dtype=torch.bool),
+    }
+    tensors['next_event_state'][8, :, 1] = 1.
+    replay = PhysicalLoopReplay({'tensors': tensors}, None, capacity_ticks=64)
+    _, _, report = replay.window(steps=16, batch=8, device='cpu', head='contact',
+        source_quota={'initial_archive': 8},
+        stage_quota={'uniform': 2, 'hit_prepare': 2, 'contact_release': 2, 'post_hit': 2})
+    assert report['actual_event_coverage']['contact_release'] > 0
+    assert report['stage_shortfall']['contact_release'] == 0

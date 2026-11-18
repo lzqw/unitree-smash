@@ -1,7 +1,8 @@
 """CPU contracts for an optional swept-racket candidate; no native physics evidence."""
 import torch
 from torch import nn
-from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,preimpact_hard_negatives
+from quadsmash.rl.supermimic_action_ball_v1 import (ActionConditionedBallV1,
+    CausalActionConditionedBallV2,preimpact_hard_negatives)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_action_ball_v1 import postimpact_hard_negatives,contact_neighborhood_pools
 
@@ -75,6 +76,30 @@ def test_absent_ball_never_receives_racket_sweep():
     old=ball_transition(w,b,state,target,prev,feet,present,elapsed,launch)[0]
     changed=ball_transition(w,b,state,target,prev,feet,present,elapsed,launch,action_model=sweep)[0]
     assert torch.equal(old,changed)
+
+
+def test_causal_sweep_suppresses_separating_postimpact_geometry():
+    world,ball=FakeWorld(),FakeBall()
+    model=CausalActionConditionedBallV2(preview=FakePreview())
+    state,target,prev,feet,present,elapsed,launch=inputs()
+    state[:,49]=.04
+    target[:,12]=-0.05
+    predicted,_,_=world(state,target,prev,feet,present,elapsed,launch)
+    residual,details=model(state,predicted,state[:,49:],world.geometry,present,details=True)
+    assert torch.isfinite(residual).all()
+    assert (details['causal_gate'] < details['support']).all()
+    assert float(details['causal_gate'].max()) < .2
+
+
+def test_causal_sweep_keeps_entry_geometry_active():
+    world,ball=FakeWorld(),FakeBall()
+    model=CausalActionConditionedBallV2(preview=FakePreview())
+    state,target,prev,feet,present,elapsed,launch=inputs()
+    state[:,49]=.04
+    target[:,12]=.03
+    predicted,_,_=world(state,target,prev,feet,present,elapsed,launch)
+    _,details=model(state,predicted,state[:,49:],world.geometry,present,details=True)
+    assert (details['causal_gate'] > .45).all()
 
 
 def test_precontact_hard_negative_is_one_tick_before_native_edge_and_reset_safe():

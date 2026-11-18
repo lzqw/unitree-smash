@@ -65,9 +65,13 @@ def main():
     parser.add_argument('--resume-next-cycle',action='store_true',help='Start a new cycle only after checkpoint-matched native acceptance')
     parser.add_argument('--native-acceptance-receipt',type=Path)
     parser.add_argument('--training-profile',choices=('bounded','large'),default='bounded')
+    parser.add_argument('--training-stage',choices=('wm_calibrate','shadow_policy','precontact_only','contact_detached','full_contact'),default='full_contact')
+    parser.add_argument('--contact-bptt-mode',choices=('blocked','detached','precontact','enabled'))
     parser.add_argument('--contact-validation-receipt',type=Path)
     parser.add_argument('--action-ball-checkpoint',type=Path,default=None,
                         help='Opt-in fitted swept-racket candidate; never silently replaces legacy ball response')
+    parser.add_argument('--train-action-ball-in-wm',action='store_true',
+                        help='Allow WM optimizer steps to update the action-conditioned ball head')
     parser.add_argument('--resume-start-block',choices=('recovery','approach'),default='recovery',
                         help='Resume a completed Recovery checkpoint directly at Approach')
     parser.add_argument('--resume-warmup-ticks',type=int,default=0,
@@ -107,10 +111,17 @@ def main():
                         help='Optional cumulative joint-target budget relative to the accepted native reference')
     parser.add_argument('--world-updates-per-actor-update',type=int,default=4,
                         help='World-model optimizer steps before each actor proposal')
+    parser.add_argument('--world-learning-rate',type=float,default=2e-4)
+    parser.add_argument('--wm-calibration-updates',type=int,default=256,
+                        help='GPU world-model updates for wm_calibrate stage')
+    parser.add_argument('--wm-ball-loss-weight',type=float,default=4.0)
+    parser.add_argument('--wm-contact-ball-loss-weight',type=float,default=8.0)
+    parser.add_argument('--cpu-threads',type=int,default=4)
     parser.add_argument('--wm-batch-size',type=int,default=128,help='Supervised WM minibatch, multiple of128; native environments remain128')
     parser.add_argument('--wm-source-quota',default='recent_online=64,older_online=32,initial_archive=32')
     parser.add_argument('--approach-refresh-interval',type=int,default=8)
     parser.add_argument('--wm-approach-stage-quota',default='uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8')
+    parser.add_argument('--wm-contact-stage-quota',default='uniform=24,hit_prepare=32,contact_release=48,post_hit=24')
     parser.add_argument('--wm-stage-quota',default='uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8')
     parser.add_argument('--wm-recent-policy-window',type=int,default=32)
     parser.add_argument('--wm-recent-tick-window',type=int,default=1024)
@@ -118,6 +129,15 @@ def main():
                         help='Optional success-only task-space reference bank')
     parser.add_argument('--tracking-weight',type=float,default=0.0)
     AppLauncher.add_app_launcher_args(parser);args=parser.parse_args()
+    from quadsmash.rl.supermimic_training_stage_v1 import resolve_training_stage
+    training_stage=resolve_training_stage(args.training_stage)
+    args.contact_bptt_mode=args.contact_bptt_mode or training_stage.contact_bptt_mode
+    if args.training_stage=='full_contact' and args.contact_bptt_mode!='enabled':
+        parser.error('full_contact requires contact-bptt-mode=enabled')
+    if args.wm_calibration_updates<1 or args.wm_ball_loss_weight<=0 or args.wm_contact_ball_loss_weight<1:
+        parser.error('WM calibration/loss settings invalid')
+    if args.world_learning_rate<=0: parser.error('world-learning-rate must be positive')
+    if args.cpu_threads<1: parser.error('cpu-threads must be positive')
     if args.actor_update_budget is not None and args.actor_update_budget < 1: parser.error('actor-update-budget must be positive')
     if args.recovery_update_budget < 0 or args.approach_update_budget < 0: parser.error('block budgets must be non-negative')
     if args.recovery_proposal_budget < 1 or args.approach_proposal_budget < 1: parser.error('proposal budgets must be positive')
@@ -138,14 +158,14 @@ def main():
     from quadsmash.rl.supermimic_long_run_contract_v1 import validate_budgets
     try:validate_budgets(args.recovery_update_budget,args.approach_update_budget,args.recovery_proposal_budget,args.approach_proposal_budget)
     except ValueError as error:parser.error(str(error))
-    if args.action_ball_checkpoint is not None and args.contact_validation_receipt is None:
+    if args.action_ball_checkpoint is not None and args.contact_validation_receipt is None and args.training_stage=='full_contact':
         parser.error('Action-ball candidate requires a current, calibrated native contact-validation receipt')
-    if args.training_profile=='large' and args.contact_validation_receipt is None:parser.error('Large training requires contact-validation-receipt; model-only sensitivity is insufficient')
+    if args.training_profile=='large' and args.training_stage=='full_contact' and args.contact_validation_receipt is None:parser.error('Large training requires contact-validation-receipt; model-only sensitivity is insufficient')
     if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
     if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
     from quadsmash.rl.supermimic_alternating_schedule_v1 import make_plan,AlternatingSchedule,refresh_world_budgets,run_schedule
     alternating=None
-    if args.update_mode=='sequential' and args.sequential_layout=='short-alternating':
+    if args.update_mode=='sequential' and args.sequential_layout=='short-alternating' and args.training_stage!='wm_calibrate':
         if args.resume_start_block!='recovery' or args.actor_update_budget is not None:
             parser.error('Short alternating resumes its saved event cursor, not resume-start-block/legacy actor budget')
         if args.refresh_ticks!=800:parser.error('Short alternating requires full frozen refresh; cannot disable it')
@@ -162,9 +182,10 @@ def main():
     args.output=args.output.resolve();args.output.mkdir(parents=True,exist_ok=False)
     try:
         args.wm_approach_stage_quota=parse_quota(args.wm_approach_stage_quota,allowed={'uniform','approach_active','hit_prepare','contact_release','approach_failure','post_hit'},name='wm-approach-stage-quota')
+        args.wm_contact_stage_quota=parse_quota(args.wm_contact_stage_quota,allowed={'uniform','hit_prepare','contact_release','post_hit'},name='wm-contact-stage-quota')
         args.wm_source_quota=parse_quota(args.wm_source_quota,allowed={'recent_online','older_online','initial_archive'},name='wm-source-quota')
         args.wm_stage_quota=parse_quota(args.wm_stage_quota,allowed={'uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery'},name='wm-stage-quota')
-        for field in ('wm_source_quota','wm_stage_quota','wm_approach_stage_quota'):
+        for field in ('wm_source_quota','wm_stage_quota','wm_approach_stage_quota','wm_contact_stage_quota'):
             setattr(args,field,scale_wm_quotas(getattr(args,field),args.wm_batch_size))
     except ValueError as error:
         parser.error(str(error))
@@ -179,7 +200,9 @@ def main():
         },indent=2)+'\n')
     write(args.output/'startup.json',dict(argv=sys.argv,cwd=os.getcwd(),executable=sys.executable,
         commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
-        dirty_diff=subprocess.check_output(['git','diff'],text=True),script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()))
+        dirty_diff=subprocess.check_output(['git','diff'],text=True),script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        training_stage=training_stage.manifest(),wm_ball_loss_weight=args.wm_ball_loss_weight,
+        wm_contact_ball_loss_weight=args.wm_contact_ball_loss_weight,cpu_threads=args.cpu_threads))
     from quadsmash.rl.supermimic_run_lifecycle import execute_scoped_native,stage
     stage(args.output,'BEFORE_APP');app=AppLauncher(args,fast_shutdown=False).app
     stage(args.output,'AFTER_APP')
@@ -187,10 +210,10 @@ def main():
     def request_stop(signum,frame):args.stop_request['signal']=signal.Signals(signum).name
     # Override Kit's handler: it shuts down plugins before Python can save.
     signal.signal(signal.SIGINT,request_stop);signal.signal(signal.SIGTERM,request_stop)
-    execute_scoped_native(args.output,lambda:run(args),app)
+    execute_scoped_native(args.output,lambda:run(args, alternating=alternating),app)
 
 
-def run(args):
+def run(args, *, alternating=None):
     from quadsmash.rl.supermimic_run_lifecycle import stage as lifecycle_stage
     lifecycle_stage(args.output, 'RUN_ENTER')
     import torch
@@ -216,13 +239,23 @@ def run(args):
     from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
     lifecycle_stage(args.output, 'IMPORT_ALL')
     env=trainer=archive=None;writer=None;failed=False;tick=0;phase='LOAD'
-    torch.set_num_threads(2);torch.manual_seed(20261114)
+    torch.set_num_threads(args.cpu_threads);torch.manual_seed(20261114)
     try:
         lifecycle_stage(args.output, 'BEFORE_LOAD_PHYSICAL_LOOP')
         actor,adapter,template,launch,manifest=load_physical_loop(archive=args.archive,
             physical_checkpoint=args.physical_checkpoint,ball_checkpoint=args.ball_checkpoint,
             task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping,
             action_ball_checkpoint=args.action_ball_checkpoint)
+        action_ball_trainable=bool(args.train_action_ball_in_wm or args.training_stage!='wm_calibrate')
+        if adapter.action_ball_model is not None and not action_ball_trainable:
+            adapter.action_ball_model.requires_grad_(False)
+        adapter.set_contact_bptt_mode(args.contact_bptt_mode)
+        manifest['training_stage']=dict(name=args.training_stage,contact_bptt_mode=args.contact_bptt_mode,
+                                        actor_updates_allowed=args.training_stage!='wm_calibrate',
+                                        promotable=args.training_stage=='full_contact')
+        manifest['action_ball_trainable_in_wm']=action_ball_trainable
+        adapter.manifest['training_stage']=manifest['training_stage']
+        adapter.manifest['action_ball_trainable_in_wm']=action_ball_trainable
         lifecycle_stage(args.output, 'AFTER_LOAD_PHYSICAL_LOOP')
         contact_validation=None;wm_holdout_lanes=[];runtime_wm_bounds={};runtime_validation_data=None;dual_quality=None;native_value_bank=None
         if args.contact_validation_receipt is not None:
@@ -272,7 +305,10 @@ def run(args):
             native_reference_command_budget=args.native_reference_command_budget,
             native_reference_target_budget_rad=args.native_reference_target_budget_rad,
             trainable_names=RECOVERY_NAMES + APPROACH_NAMES,block_name='joint',
-            reference_bank=reference_bank,tracking_weight=args.tracking_weight)
+            reference_bank=reference_bank,tracking_weight=args.tracking_weight,
+            world_lr=args.world_learning_rate)
+        trainer.ball_loss_weight=float(args.wm_ball_loss_weight)
+        trainer.contact_ball_loss_weight=float(args.wm_contact_ball_loss_weight)
         lifecycle_stage(args.output, 'TRAINER_READY')
         trainer.set_budget_state_library([as_state(row) for row in starts+critic_starts[:4]])
         def approach_active(row):
@@ -435,18 +471,27 @@ def run(args):
                                          current,adapter,preview,head)
             return probe_applicability(probe,current,assessment)
         if args.action_ball_checkpoint is not None:
-            # An offline-fit candidate is never admitted to native Actor updates
-            # using stale pre-candidate action probes or a baseline-only receipt.
+            # A model-only candidate is permitted for the calibration stages, where
+            # the actor is blocked or contact gradients are detached.  It must not
+            # silently enter a promotable actor run without current paired-action
+            # evidence for the exact actor and WM that will be updated.
             from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability
-            if dual_quality is None:
-                raise ValueError('Action-ball candidate requires calibrated dual-head physical evidence')
-            version=int(resumed_global.get('accepted',0)) if args.resume_training else 0
-            current=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,version)
-            invalid={head:applicable_probe(head,current)
-                     for head in ('recovery','approach')}
-            if any(not result['current_version_valid'] for result in invalid.values()):
-                write(args.output/'action_ball_native_probe_rejected.json',invalid)
-                raise ValueError('Action-ball candidate lacks CURRENT actor/WM native paired-action evidence')
+            if args.training_stage == 'full_contact':
+                if dual_quality is None:
+                    raise ValueError('Action-ball candidate requires calibrated dual-head physical evidence')
+                version=int(resumed_global.get('accepted',0)) if args.resume_training else 0
+                current=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,version)
+                invalid={head:applicable_probe(head,current)
+                         for head in ('recovery','approach')}
+                if any(not result['current_version_valid'] for result in invalid.values()):
+                    write(args.output/'action_ball_native_probe_rejected.json',invalid)
+                    raise ValueError('Action-ball candidate lacks CURRENT actor/WM native paired-action evidence')
+            else:
+                write(args.output/'action_ball_native_probe_deferred.json',dict(
+                    training_stage=args.training_stage,
+                    reason='Actor contact updates are not promotable in this stage',
+                    action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()),
+                    dual_head_quality_available=dual_quality is not None))
         def native_actor_action(observation):
             return policy_forward(actor,observation['policy'],env.rally,sample=False)[0]
         def encode_native_value_start(row):
@@ -525,7 +570,7 @@ def run(args):
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
         config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
-            world_batch=128,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=2e-4,critic_lr=2e-4,
+            world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=args.world_learning_rate,critic_lr=2e-4,
             native_return_monitor=frozen_return_monitor.config,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
@@ -536,7 +581,8 @@ def run(args):
             reference_policy=dict(path=str(reference_path),sha256=file_sha(reference_path)),bad_policy=bad_meta,
             sampling='source×event stratified WM windows; actor starts are causal native event states',
             wm_batch_size=args.wm_batch_size,wm_source_quota=args.wm_source_quota,wm_stage_quota=args.wm_stage_quota,
-            wm_approach_stage_quota=args.wm_approach_stage_quota,approach_sampling_thresholds=dict(gate=.25,minimum_gate_steps=4,near_distance_m=.30),approach_refresh_interval=args.approach_refresh_interval,
+            wm_approach_stage_quota=args.wm_approach_stage_quota,wm_contact_stage_quota=args.wm_contact_stage_quota,
+            approach_sampling_thresholds=dict(gate=.25,minimum_gate_steps=4,near_distance_m=.30),approach_refresh_interval=args.approach_refresh_interval,
             wm_recent_policy_window=args.wm_recent_policy_window,wm_recent_tick_window=args.wm_recent_tick_window,
             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
             action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()) if args.action_ball_checkpoint else None,
@@ -692,15 +738,22 @@ def run(args):
             print('PHYSICAL_CRITIC_COVERAGE='+json.dumps(stats),flush=True)
             save('latest.pt')
         phase='CRITIC'
-        # Cover terminal and all preceding task phases before further actor updates.
-        # Overlapping 0.64s windows, unchanged BPTT/GAE and discount formula.
-        while critic_coverage_blocks<len(critic_starts):cover_critic()
-        ensure_critic()
+        # WM calibration is an actor-blocked model-fitting stage.  It should
+        # consume native windows directly instead of spending a full critic
+        # coverage pass first.  Normal policy stages retain the complete
+        # multi-phase critic warmup below.
+        if args.training_stage != 'wm_calibrate':
+            # Cover terminal and all preceding task phases before further actor
+            # updates. Overlapping 0.64s windows, unchanged BPTT/GAE and
+            # discount formula.
+            while critic_coverage_blocks<len(critic_starts):cover_critic()
+            ensure_critic()
         cursor=0;completed_returns=[];completed_discounted=[];completed_records=[];phase='LEARNING'
         def run_world_updates(iteration, count=None, head=None):
             """Fit WM with explicit source×event quotas and return audit totals."""
             head=head or trainer.block_name
-            quotas=args.wm_approach_stage_quota if head=='approach' else args.wm_stage_quota
+            quotas=(args.wm_approach_stage_quota if head=='approach' else
+                    args.wm_contact_stage_quota if head=='contact' else args.wm_stage_quota)
             total=int(args.world_updates_per_actor_update if count is None else count)
             reports=[]; started=time.perf_counter()
             for offset in range(total):
@@ -717,8 +770,8 @@ def run(args):
                 stats['sampling']=sampling; reports.append(stats)
                 if writer is not None:
                     step=int(tick*128)
-                    for key in ('world_loss','world_physical_loss','world_contact_loss','world_ball_loss','world_task_loss',
-                                'world_physical_gradient','world_ball_gradient','world_task_gradient'):
+                    for key in ('world_loss','world_physical_loss','world_contact_loss','world_ball_loss','world_action_ball_loss','world_task_loss',
+                                'world_physical_gradient','world_ball_gradient','world_action_ball_gradient','world_task_gradient'):
                         if key in stats: writer.add_scalar('wm/'+key.replace('world_',''),float(stats[key]),step)
                     for source,value in sampling.get('source_counts',{}).items():
                         writer.add_scalar('wm/source/'+source,float(value)/args.wm_batch_size,step)
@@ -729,13 +782,31 @@ def run(args):
                     for stage_name,value in sampling.get('actual_event_coverage',{}).items():
                         writer.add_scalar('wm/coverage/'+stage_name,float(value),step)
             aggregate={}
-            for key in ('world_loss','world_gradient','world_physical_loss','world_contact_loss','world_ball_loss','world_task_loss',
-                        'world_physical_gradient','world_ball_gradient','world_task_gradient','world_seconds'):
+            for key in ('world_loss','world_gradient','world_physical_loss','world_contact_loss','world_ball_loss','world_action_ball_loss','world_task_loss',
+                        'world_physical_gradient','world_ball_gradient','world_action_ball_gradient','world_task_gradient','world_seconds'):
                 values=[float(item[key]) for item in reports if key in item]
                 if values: aggregate[key]=sum(values)/len(values)
             aggregate.update(world_updates=len(reports),world_update_reports=reports,
                              world_update_seconds=time.perf_counter()-started)
             return aggregate
+        if args.training_stage=='wm_calibrate':
+            calibration=run_world_updates(0,count=args.wm_calibration_updates,head='contact')
+            write(args.output/'wm_calibration_completed.json',dict(training_stage=args.training_stage,
+                contact_bptt_mode=args.contact_bptt_mode,**calibration,actor_updates=0,
+                critic_updates=trainer.critic_updates,formal_evaluation=False,
+                promotion_status='candidate_unverified',
+                promotion_contract='Run validate_supermimic_physical_wm.py on the fixed holdout and pass supermimic_wm_candidate_gate_v1 before actor training'))
+            # This is deliberately a candidate artifact.  A model-loss
+            # decrease is not sufficient to replace the historical anchor.
+            save('wm_calibration_candidate.pt')
+            write(args.output/'wm_calibration_promotion_required.json',dict(
+                status='candidate_unverified',
+                candidate=str(args.output/'wm_calibration_candidate.pt'),
+                validation_required='same-window held-out event-aligned comparison',
+                promotion_script='scripts/promote_supermimic_wm_candidate.py'))
+            stage(args.output,'TRAINING_FINISHED',actor_updates=0,world_updates=trainer.world_updates,
+                  training_stage=args.training_stage)
+            return
         def run_block(block_name, names, budget, proposal_limit,cycle_index=0,*,managed_refresh=False):
             nonlocal completed_returns,completed_discounted,completed_records,obs,tick,cursor
             nonlocal global_attempt_id,global_accepted_id,global_rejected,global_backtracked

@@ -288,7 +288,23 @@ class PhysicalLoopReplay:
             if event.any():
                 pools[str(i)] = event.nonzero()
         if source_quota or stage_quota:
-            if head == 'approach':
+            if head == 'contact':
+                contact = ((d['next_event_state'][..., 1] > d['event_state'][..., 1]) |
+                           (d['next_event_state'][..., 6] > d['event_state'][..., 6]))
+                contact = contact.unfold(0, steps, 1).any(-1) & valid
+                pre = torch.zeros_like(contact)
+                post = torch.zeros_like(contact)
+                if len(contact) > 1:
+                    edge = contact
+                    pre_rows = torch.zeros_like(edge)
+                    post_rows = torch.zeros_like(edge)
+                    pre_rows[:-1] = edge[1:]
+                    post_rows[1:] = edge[:-1]
+                    pre = pre_rows & valid
+                    post = post_rows & valid & ~contact
+                stage_pools = dict(uniform=valid, hit_prepare=pre,
+                                   contact_release=contact, post_hit=post)
+            elif head == 'approach':
                 meta=dict(self._ordered_approach)
                 for key in ('completed_miss','failed_net_crossing','failed_target_landing'):meta[key]=torch.zeros_like(d['terminated'])
                 # Build labels only from a completed episode in this stream.

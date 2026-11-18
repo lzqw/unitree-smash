@@ -15,7 +15,9 @@ import torch
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
 from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
 from quadsmash.rl.supermimic_ball_residual_v1 import ball_geometry_features
-from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,preimpact_hard_negatives,contact_neighborhood_pools
+from quadsmash.rl.supermimic_action_ball_v1 import (ActionConditionedBallV1,
+    CausalActionConditionedBallV2,CausalRacketModeActionBallV3,
+    preimpact_hard_negatives,contact_neighborhood_pools)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_wm_validation_v1 import event_aligned_windows
 
@@ -97,11 +99,17 @@ def main():
     p.add_argument('--batch',type=int,default=128)
     p.add_argument('--device',default='cuda:0')
     p.add_argument('--sampling-schema', choices=('legacy-v1','contact-neighborhood-v2'), default='contact-neighborhood-v2')
+    p.add_argument('--model-schema', choices=(ActionConditionedBallV1.schema,
+        CausalActionConditionedBallV2.schema,CausalRacketModeActionBallV3.schema),
+        default=ActionConditionedBallV1.schema)
+    p.add_argument('--post-residual-weight', type=float, default=0.25)
     a=p.parse_args()
     if a.output.exists():raise FileExistsError(a.output)
     if a.updates<1 or a.batch<4 or a.batch%4:raise ValueError('Positive updates and batch multiple of four required')
     if a.sampling_schema=='contact-neighborhood-v2' and a.batch%8:
         raise ValueError('Contact neighborhood batch must be divisible by eight')
+    if a.post_residual_weight < 0:
+        raise ValueError('Post-impact residual weight must be nonnegative')
     a.output.mkdir(parents=True)
     torch.set_num_threads(2);torch.manual_seed(20261117)
     started=time.perf_counter()
@@ -123,7 +131,10 @@ def main():
     ball=BallResidualV2().to(device)
     ball.load_state_dict(legacy_checkpoint['model'],strict=True)
     base.eval().requires_grad_(False);ball.eval().requires_grad_(False)
-    sweep=ActionConditionedBallV1().to(device)
+    model_cls = {ActionConditionedBallV1.schema: ActionConditionedBallV1,
+                 CausalActionConditionedBallV2.schema: CausalActionConditionedBallV2,
+                 CausalRacketModeActionBallV3.schema: CausalRacketModeActionBallV3}[a.model_schema]
+    sweep=model_cls().to(device)
     package=torch.load(a.packed_data,map_location='cpu',weights_only=True)
     manifest=package.get('source_manifest',package.get('manifest',{}))
     if manifest.get('task_contract')!=source:
@@ -185,12 +196,24 @@ def main():
             prior,_=base.prior(state,data['present'][t,l],data['elapsed'][t,l],launch[l])
             legacy,_=ball(ball_geometry_features(state,base.geometry),data['present'][t,l])
             baseline=prior[:,49:]+legacy
-        correction=sweep(state,physical,prior[:,49:],base.geometry,data['present'][t,l])
-        predicted=baseline+correction
+        # Use the same transition function as validation and imagination.  In
+        # particular, mode-conditioned candidates receive only the current
+        # ball-mode probability from the legacy object-separated model.
+        predicted,_,_=ball_transition(base,ball,state,targets,
+            data['previous_action'][t,l],data['feet'][t,l].float(),
+            data['present'][t,l],data['elapsed'][t,l],launch[l],action_model=sweep)
+        correction=predicted[:,49:]-baseline
+        ball_prediction=predicted[:,49:]
         true=data['next_state'][t,l,49:]
         scale=predicted.new_tensor([.1,.1,.1,2.,2.,2.])
-        error=((predicted-true)/scale).square().mean(-1)
+        error=((ball_prediction-true)/scale).square().mean(-1)
         loss=4.*error[:a.batch//2].mean()+error[a.batch//2:].mean()+.02*correction[a.batch//2:].square().mean()
+        if a.sampling_schema=='contact-neighborhood-v2' and a.post_residual_weight:
+            post_start=a.batch//2+a.batch//4
+            post_end=post_start+a.batch//8
+            response_scale=correction.new_tensor([.05,.05,.05,10.,10.,10.])
+            post_response=(correction[post_start:post_end]/response_scale).square().mean()
+            loss=loss+a.post_residual_weight*post_response
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite action-ball fitting loss')
         optimizer.zero_grad(set_to_none=True);loss.backward()
         gradient=torch.nn.utils.clip_grad_norm_(sweep.head.parameters(),10.,error_if_nonfinite=True)
@@ -205,15 +228,20 @@ def main():
     candidate_ar=autoregressive_metrics(base,ball,sweep,data,metadata,val,launch)
     pairs=event_aligned_windows(metadata,val,horizon=64,offsets=(0,),maximum=16)['0']['starts']
     gradient=sensitivity(base,ball,sweep,data,pairs,launch)
-    torch.save(dict(schema=sweep.schema,model=sweep.state_dict(),asset_sha256=asset_sha,
+    candidate_metadata=dict(schema=sweep.schema,model=sweep.state_dict(),asset_sha256=asset_sha,
         physical_sha256=sha256(a.physical_checkpoint),legacy_ball_sha256=sha256(a.ball_checkpoint),
         packed_sha256=sha256(a.packed_data),split_sha256=sha256(a.split_manifest),
         geometry_hashes=sweep.preview.geometry_hashes,softness_m=sweep.softness_m,
-        updates=a.updates,evidence_scope='recorded-command model-only, no native paired perturbations'),
-        a.output/'action_ball_candidate.pt')
+        updates=a.updates,evidence_scope='recorded-command model-only, no native paired perturbations',
+        model_schema=a.model_schema,post_residual_weight=a.post_residual_weight)
+    if isinstance(sweep,CausalActionConditionedBallV2):
+        candidate_metadata.update(closing_softness_m=sweep.closing_softness_m,
+            contact_margin_m=sweep.contact_margin_m)
+    torch.save(candidate_metadata,a.output/'action_ball_candidate.pt')
     comparison=dict(elapsed_s=time.perf_counter()-started,gpu_peak_memory_bytes=torch.cuda.max_memory_allocated(device) if device.type=='cuda' else 0,initial=initial,candidate=final,initial_autoregressive=initial_ar,candidate_autoregressive=candidate_ar,action_gradient=gradient,history=history,
         action_ball_optimizer_updates=a.updates,base_world_updates=0,
-        sampling_schema=a.sampling_schema,pool_sizes={k:len(v) for k,v in neighborhoods.items()},
+        sampling_schema=a.sampling_schema,post_residual_weight=a.post_residual_weight,
+        pool_sizes={k:len(v) for k,v in neighborhoods.items()},
         allocated_draws=allocated_draws if a.sampling_schema!='legacy-v1' else None,
         independence_scope="candidate fit heldout lanes; historical base-model holdout independence requires separate provenance",
         train_contact_transitions=int(len(positive)),train_noncontact_transitions=int(len(negative)),

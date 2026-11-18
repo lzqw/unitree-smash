@@ -36,7 +36,8 @@ def matrix_quaternion(matrix):
 class PhysicalImaginationAdapter(nn.Module):
     schema='g07-physical-task-observation-loop-v1'
 
-    def __init__(self,physical_model,ball_model,task_model,executor,*,safety_body_names,manifest,dt=.01,action_ball_model=None):
+    def __init__(self,physical_model,ball_model,task_model,executor,*,safety_body_names,manifest,dt=.01,action_ball_model=None,
+                 contact_bptt_mode='enabled'):
         super().__init__()
         if physical_model.schema!='physical55-separated-contact-transitions-v2':
             raise ValueError('PhysicalWorldV2 required; legacy observation predictor is forbidden')
@@ -44,6 +45,8 @@ class PhysicalImaginationAdapter(nn.Module):
         self.physical_model=physical_model
         self.ball_model=ball_model
         self.action_ball_model=action_ball_model
+        from .supermimic_training_stage_v1 import validate_contact_bptt_mode
+        self.contact_bptt_mode=validate_contact_bptt_mode(contact_bptt_mode)
         self.task_model=task_model
         self.executor=executor
         self.observer=PhysicalPolicyObservationV1().to(dtype=physical_model.input_mean.dtype)
@@ -55,10 +58,16 @@ class PhysicalImaginationAdapter(nn.Module):
             event_semantics='supervised soft hazards; not native contacts',
             discrete_approximations=['task timestamp validity > 0.5','observation phase/contact flags > 0.5',
                                      'historical NumPy planning/requests stop-gradient'])
+        self.manifest['contact_bptt_mode']=self.contact_bptt_mode
         if action_ball_model is not None:
             self.manifest['action_ball_schema']=action_ball_model.schema
             self.manifest['action_ball_native_certified']=False
         self.calls=0
+
+    def set_contact_bptt_mode(self, mode):
+        from .supermimic_training_stage_v1 import validate_contact_bptt_mode
+        self.contact_bptt_mode=validate_contact_bptt_mode(mode)
+        self.manifest['contact_bptt_mode']=self.contact_bptt_mode
 
     def forward(self,state:PhysicalImaginationStateV1,actor_action):
         if int(self.task_model.fit_updates)==0:
@@ -69,6 +78,22 @@ class PhysicalImaginationAdapter(nn.Module):
         predicted,feet,present=ball_transition(self.physical_model,self.ball_model,
             state.physical,preview.final_joint_targets,c['final_action'],c['foot_contact'],
             c['ball_present'],c['elapsed'],c['launch'],action_model=self.action_ball_model)
+        # Keep robot dynamics differentiable while controlling when the
+        # unverified ball/contact Jacobian can reach the actor.  This only
+        # affects imagination gradients.  World-model supervision continues to
+        # use the complete native ball target in fit_world_window().
+        if self.contact_bptt_mode in ('blocked', 'detached', 'precontact'):
+            detach_ball = torch.ones(len(predicted), dtype=torch.bool,
+                                     device=predicted.device)
+            if self.contact_bptt_mode == 'precontact':
+                rally = state.task_memory.get('rally', {})
+                had_contact = rally.get('had_contact')
+                if had_contact is not None:
+                    detach_ball = had_contact.reshape(-1) > .5
+            predicted = torch.cat((predicted[:, :49],
+                                   torch.where(detach_ball[:, None],
+                                               predicted[:, 49:].detach(),
+                                               predicted[:, 49:])), dim=1)
         task=self.task_model(state.physical,predicted,preview.final_joint_targets,
                              c['final_action'],c['foot_contact'],c['elapsed'],state.task_memory)
         next_task=task['memory'];p=decode_physical(predicted)

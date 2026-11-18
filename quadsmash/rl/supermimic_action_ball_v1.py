@@ -105,6 +105,98 @@ class ActionConditionedBallV1(nn.Module):
         return residual
 
 
+class CausalActionConditionedBallV2(ActionConditionedBallV1):
+    """V1 response with a causal entry/separation gate.
+
+    The original V1 support is symmetric in the swept segment.  That lets a
+    learned correction remain active when the racket is already moving away
+    from the shuttle after impact.  This candidate keeps V1's learned
+    features and parameter shapes, then gates them using only current and
+    predicted-endpoint geometry.  A response is active when the current
+    racket is inside the contact envelope or when the sweep is closing on it.
+    It never consumes a future native event label.
+
+    This is a differentiable surrogate and requires native paired-action
+    validation before it can enable contact gradients for the actor.
+    """
+    schema = 'causal-action-conditioned-racket-sweep-v2'
+
+    def __init__(self, *, preview=None, hidden=(128, 128), softness_m=0.008,
+                 closing_softness_m=0.004, contact_margin_m=0.003):
+        super().__init__(preview=preview, hidden=hidden, softness_m=softness_m)
+        if closing_softness_m <= 0 or closing_softness_m > 0.05:
+            raise ValueError('Closing gate width must be in (0, 0.05] m')
+        if contact_margin_m < 0 or contact_margin_m > 0.05:
+            raise ValueError('Contact gate margin must be in [0, 0.05] m')
+        self.closing_softness_m = float(closing_softness_m)
+        self.contact_margin_m = float(contact_margin_m)
+
+    def forward(self, state, predicted_robot, free_ball, geometry, present, *,
+                details=False):
+        if state.ndim != 2 or state.shape[1] != 55 or predicted_robot.shape != state.shape:
+            raise ValueError('Sweep requires [batch,55] current and predicted robot states')
+        if free_ball.shape != (len(state), 6) or present.numel() != len(state):
+            raise ValueError('Sweep free-flight/ball-presence batch mismatch')
+        current = ball_geometry_features(state, geometry)
+        future = ball_geometry_features(torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
+        first = current[:, 6:9]
+        last = future[:, 6:9]
+        middle = (first + last) * .5
+        gaps = torch.stack((self.preview.racket_gap(first),
+                            self.preview.racket_gap(middle),
+                            self.preview.racket_gap(last)), -1)
+        smallest = -self.softness_m * torch.logsumexp(-gaps / self.softness_m, -1)
+        support = torch.sigmoid(-smallest / self.softness_m)
+        current_gap = gaps[:, 0]
+        future_gap = gaps[:, 2]
+        closing_gate = torch.sigmoid((current_gap - future_gap) / self.closing_softness_m)
+        inside_gate = torch.sigmoid((self.contact_margin_m - current_gap) /
+                                    self.closing_softness_m)
+        # Smooth union.  Inside-contact states remain active even when the
+        # endpoint is separating, while post-impact separated states decay.
+        causal_gate = inside_gate + (1. - inside_gate) * closing_gate
+        features = torch.cat((current[:, :21], future[:, :21], gaps, last - first), -1)
+        normalized = (features / self.input_scale).clamp(-30., 30.)
+        residual = ((self.head(normalized) * self.output_scale) * support[:, None] *
+                    causal_gate[:, None] * present.reshape(-1, 1).to(state.dtype))
+        if not torch.isfinite(residual).all():
+            raise FloatingPointError('Nonfinite causal action-conditioned ball response')
+        if details:
+            return residual, dict(support=support, gaps=gaps,
+                                  local_displacement=last - first,
+                                  closing_gate=closing_gate,
+                                  inside_gate=inside_gate,
+                                  causal_gate=causal_gate)
+        return residual
+
+
+class CausalRacketModeActionBallV3(CausalActionConditionedBallV2):
+    """Causal sweep response gated by the current learned racket mode.
+
+    The mode probability is predicted from the current physical state by the
+    object-separated ball model. It is not a future contact label. Combining
+    it with the entry/separation gate prevents a sweep residual from persisting
+    through ordinary free-flight transitions after a hit.
+    """
+    schema = 'causal-racket-mode-action-sweep-v3'
+    requires_racket_probability = True
+
+    def forward(self, state, predicted_robot, free_ball, geometry, present, *,
+                racket_probability, details=False):
+        if racket_probability.shape != (len(state),):
+            raise ValueError('Racket mode probability must be [batch]')
+        if (not torch.isfinite(racket_probability).all() or
+                not ((racket_probability >= 0) & (racket_probability <= 1)).all()):
+            raise ValueError('Invalid predicted racket mode probability')
+        residual, info = super().forward(state, predicted_robot, free_ball,
+                                         geometry, present, details=True)
+        residual = residual * racket_probability[:, None]
+        if details:
+            return residual, dict(info, racket_probability=racket_probability,
+                                  effective_support=info['support'] * info['causal_gate'] * racket_probability)
+        return residual
+
+
 class RacketModeActionBallV2(ActionConditionedBallV1):
     """Action correction belongs to the predicted racket mixture component.
 
@@ -294,6 +386,10 @@ def migrate_material_inertia_v4(source,material_contract):
 
 def action_ball_from_checkpoint(checkpoint):
     kwargs={}
+    if checkpoint.get('schema') in (CausalActionConditionedBallV2.schema,
+                                    CausalRacketModeActionBallV3.schema):
+        kwargs.update(closing_softness_m=float(checkpoint.get('closing_softness_m', .004)),
+                      contact_margin_m=float(checkpoint.get('contact_margin_m', .003)))
     if checkpoint.get('schema') in (MaterialInertiaActionBallV4.schema,
                                     FrameAwareMaterialInertiaActionBallV5.schema,
                                     FrameAwareMaterialInertiaActionBallV6.schema):
@@ -304,7 +400,9 @@ def action_ball_from_checkpoint(checkpoint):
 
 def action_ball_for_schema(schema, **kwargs):
     """Explicit dispatch: old checkpoints retain their original computation."""
-    classes = {cls.schema: cls for cls in (ActionConditionedBallV1, RacketModeActionBallV2, ImpactTimeActionBallV3, MaterialInertiaActionBallV4, FrameAwareMaterialInertiaActionBallV5, FrameAwareMaterialInertiaActionBallV6)}
+    classes = {cls.schema: cls for cls in (ActionConditionedBallV1, CausalActionConditionedBallV2,
+        CausalRacketModeActionBallV3, RacketModeActionBallV2, ImpactTimeActionBallV3, MaterialInertiaActionBallV4,
+        FrameAwareMaterialInertiaActionBallV5, FrameAwareMaterialInertiaActionBallV6)}
     if schema not in classes:
         raise ValueError('Unknown action-ball checkpoint schema: '+str(schema))
     return classes[schema](**kwargs)
