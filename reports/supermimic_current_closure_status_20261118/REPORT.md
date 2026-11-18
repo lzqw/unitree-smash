@@ -46,3 +46,7 @@
 ## 最新提交（`c5d84d3`）
 
 候选元数据现在会记录 `accepted_update`、`accepted_parameter_update` 和完整的事件安全选择结果。若所有训练保存点都使接触前或接触后邻接误差恶化，最终 checkpoint 明确恢复为零初始化 sweep，而不是把最后一次退化权重当作候选。
+
+## GPU启动保护（提交 `0f44f7b`）
+
+训练入口现在在 `AppLauncher`/Isaac 启动前检查 CUDA 设备。当前服务器不可见 GPU 时会立即报出明确的非零错误，不再先启动仿真再在 `cuda:0` 张量分配处失败，也不会静默退回 CPU。
