@@ -1,0 +1,54 @@
+{
+  "event_time_s": 0.33,
+  "improved": false,
+  "selected_index": 0,
+  "baseline_errors": {
+    "position_m": 0.2024012439534338,
+    "normal": 0.33449843571204324,
+    "velocity_m_s": 2.999898896547877
+  },
+  "proposal_failures": [
+    {
+      "label": "proposal",
+      "failure": {
+        "node": 14,
+        "reason": "PATH_CONSTRAINT",
+        "violations": {
+          "arm_tracking_error_rad": 0.25540607567254603
+        }
+      }
+    },
+    {
+      "label": "backtrack_0.5",
+      "failure": {
+        "node": 15,
+        "reason": "PATH_CONSTRAINT",
+        "violations": {
+          "arm_tracking_error_rad": 0.2535077529479779
+        }
+      }
+    },
+    {
+      "label": "backtrack_0.25",
+      "failure": {
+        "node": 16,
+        "reason": "PATH_CONSTRAINT",
+        "violations": {
+          "arm_tracking_error_rad": 0.25205255138655613
+        }
+      }
+    }
+  ],
+  "full_model_calls": 28,
+  "seconds": 220.88072911603376,
+  "POSITION_FEASIBLE": false,
+  "NORMAL_FEASIBLE": false,
+  "TASK_FEASIBLE_RACKET_VELOCITY": false,
+  "ANALYTIC_GOAL_VALID": true,
+  "FULLBODY_PREDICTION_VALID": false,
+  "PHYSX_REFERENCE_VALID": "NOT_RUN",
+  "NATIVE_HIT": "NOT_RUN",
+  "RECOVERY_SUCCESS": "NOT_RUN",
+  "COMPLETE5": "NOT_RUN",
+  "valid_teacher_reference": false
+}
