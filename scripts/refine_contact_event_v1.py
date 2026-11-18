@@ -7,6 +7,7 @@ import argparse,copy,gzip,hashlib,json,time
 from pathlib import Path
 import numpy as np
 import pinocchio as pin
+from scripts.full_prefix_tracking_v1 import arm_tracking_response
 from scripts.coupled_contact_prefix_v1 import CoupledContactRollout
 from scripts.terminal_push_refinement_v1 import refine_terminal
 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1,PublicState
@@ -21,7 +22,9 @@ from quadsmash.physics.full_racket_v4 import load_racket
 
 def retimed_metadata(original,row,initial_q,impact):
     """Recheck the actual forward ball task; accepted labels alone are insufficient."""
-    m=copy.deepcopy(original);t=float(row['time_s']);k=round(t/.01)
+    m={k:copy.deepcopy(original[k]) for k in ('task_physics','task_court','task_string_strip','contact_point_local') if k in original}
+    m['seed_metadata']=copy.deepcopy(original)
+    t=float(row['time_s']);k=round(t/.01)
     if not np.isfinite(t) or k<1 or abs(k*.01-t)>1e-9:raise ValueError('Control-grid event required')
     goal=row['analytic_goal']
     if goal.get('accepted') is not True:raise ValueError('Unverified analytic goal')
@@ -45,7 +48,7 @@ def retimed_metadata(original,row,initial_q,impact):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');a=p.parse_args()
     if a.output.exists():raise ValueError('Preserve all prior attempts')
     r=json.loads(a.event_source.read_text())
     for path,digest in r['input_sha256'].items():
@@ -85,9 +88,10 @@ def main():
         print(json.dumps(dict(call=calls,path_valid=result['path_valid'],errors=result.get('terminal_errors'),failure=result.get('failure'))),flush=True)
         return result
     started=time.perf_counter();result=refine_terminal(evaluate,parameter_radii=evaluator.radii,
-        amplitude_bounds=evaluator.amplitude_bounds(),linear_constraints=evaluator.combined_arm_constraints(),backtracking=True,protect_terminal_tasks=True)
+        amplitude_bounds=evaluator.amplitude_bounds(),linear_constraints=evaluator.combined_arm_constraints(),backtracking=True,protect_terminal_tasks=True,
+        path_response_fn=(lambda result:arm_tracking_response(result,model.q_indices[12:],n)) if a.constrain_arm_tracking else None)
     selected=result['trials'][result['selected_index']]['result']
-    result.update(seconds=time.perf_counter()-started,event_time_s=a.event_time,metadata=metadata,base_arm_reference_rad=reference,
+    result.update(constrain_arm_tracking=a.constrain_arm_tracking,seconds=time.perf_counter()-started,event_time_s=a.event_time,metadata=metadata,base_arm_reference_rad=reference,
         selected_arm_reference_rad=np.vstack([reference[0],[t['planned_arm_reference_rad'] for t in selected['trajectory']]]),
         original_prefix_exact=True,input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (a.event_source,initial_path,original_path,obs_path,cfg_path)},
         native_execution=False,valid_teacher_reference=False)

@@ -1,0 +1,17 @@
+F.............................                                           [100%]
+=================================== FAILURES ===================================
+_________ test_signed_responses_keep_each_node_joint_and_copy_storage __________
+
+    def test_signed_responses_keep_each_node_joint_and_copy_storage():
+        r=trace();y,lo,hi=arm_tracking_response(r,np.arange(7,13),3)
+        assert y.shape==(18,) and ARM_TRACKING_LIMIT_RAD==.25
+        np.testing.assert_allclose(y.reshape(3,6)[-1],[.2,-.1,.05,-.03,0,.01])
+        np.testing.assert_array_equal(lo,np.full(18,-.25));np.testing.assert_array_equal(hi,np.full(18,.25))
+>       y[:]=99;assert r['trajectory'][-1]['q'][7]==.2
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert 0.20000000000000004 == 0.2
+
+tests/test_full_prefix_tracking_v1.py:21: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_full_prefix_tracking_v1.py::test_signed_responses_keep_each_node_joint_and_copy_storage
+1 failed, 29 passed in 0.29s

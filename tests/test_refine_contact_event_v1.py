@@ -31,3 +31,12 @@ def test_missing_or_invalid_event_cannot_reuse_accepted_label():
     with pytest.raises(ValueError,match='Forward task'):retimed_metadata(original,row,q,impact)
     original,row,q,impact,forward=fixture();row['time_s']=.331
     with pytest.raises(ValueError,match='Control-grid'):retimed_metadata(original,row,q,impact)
+
+
+def test_old_event_claims_are_nested_not_relabelled_as_current():
+    original,row,q,impact,forward=fixture()
+    original.update(attack_geometry={'predicted_contact_height':99},achieved_position_current_frame_m=[9,9,9],task_feasible_velocity_retarget=True)
+    m=retimed_metadata(original,row,q,impact)
+    assert 'attack_geometry' not in m and 'task_feasible_velocity_retarget' not in m
+    assert m['seed_metadata']['attack_geometry']['predicted_contact_height']==99
+    assert m['robot_target_verified'] is False and m['retimed_task_margins']['valid']

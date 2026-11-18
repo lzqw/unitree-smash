@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 import pinocchio as pin
 from scipy.optimize import lsq_linear, minimize, LinearConstraint, Bounds
+from scripts.full_prefix_tracking_v1 import ARM_TRACKING_LIMIT_RAD
 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1,PublicState
 from scripts.whole_body_support_qp_v1 import PositionPDInterface
 from scripts.authored_ground_clearance_v1 import AuthoredGroundClearance
@@ -19,7 +20,7 @@ from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
 from quadsmash.physics.full_racket_v4 import load_racket
 
 
-def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False,protect_terminal_tasks=False):
+def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False,protect_terminal_tasks=False,path_response_fn=None):
     if not 0<epsilon_rad<radius_rad<=.03:raise ValueError('Bounded offline step required')
     radii=np.full(12,radius_rad) if parameter_radii is None else np.asarray(parameter_radii,float).copy()
     if radii.ndim!=1 or not 1<=len(radii)<=24 or not np.isfinite(radii).all() or np.any(radii<=epsilon_rad) or np.any(radii>.1):
@@ -45,12 +46,32 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
     out=dict(improved=False,selected_index=0,trials=trials,radius_rad=radius_rad,
         epsilon_rad=epsilon_rad,parameter_radii_rad=radii,amplitude_bounds=bounds,native_execution=False,valid_teacher_reference=False)
     if not base['valid']:out['rejection']='BASELINE_PATH_UNVERIFIED';return out
+    def read_path(result):
+        values,lower,upper=(np.asarray(x,float).copy() for x in path_response_fn(result))
+        if (values.ndim!=1 or not len(values) or lower.shape!=values.shape or upper.shape!=values.shape
+                or not all(np.isfinite(x).all() for x in (values,lower,upper)) or np.any(lower>upper)):
+            raise ValueError('Finite consistent full-path response bounds required')
+        return values,lower,upper
+    if path_response_fn is not None:
+        path_base,path_low,path_high=read_path(base['result'])
+        if np.any(path_base<path_low) or np.any(path_base>path_high):
+            out['rejection']='BASELINE_PATH_RESPONSE_OUTSIDE_BOUNDS';return out
+        path_jac=np.zeros((len(path_base),count))
+        out.update(path_response_baseline=path_base,path_response_lower=path_low,path_response_upper=path_high)
     y=np.array(base['result']['normalized_residual']);J=np.zeros((9,count));usable=[]
     for j in range(count):
         room=bounds[j,1] if bounds[j,1]>=-bounds[j,0] else bounds[j,0]
         step=np.sign(room)*min(epsilon_rad,abs(room))
         if abs(step)<1e-8:continue
         a=np.zeros(count);a[j]=step;r=call(a,'derivative_'+str(j))
+        if r['valid'] and path_response_fn is not None:
+            try:
+                values,lower,upper=read_path(r['result'])
+                if values.shape!=path_base.shape or not np.array_equal(lower,path_low) or not np.array_equal(upper,path_high):
+                    raise ValueError('Path response shape or physical bounds changed')
+                path_jac[:,j]=(values-path_base)/step
+            except ValueError as error:
+                r['valid']=False;r['path_response_rejection']=str(error)
         if r['valid']:
             J[:,j]=(np.asarray(r['result']['normalized_residual'])-y)/step;usable.append(j)
     out['usable_columns']=usable
@@ -60,7 +81,7 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
     b=np.r_[-y,np.zeros(len(active))]
     low,high=bounds[active,0]/radii[active],bounds[active,1]/radii[active]
     constraints=[]
-    if linear_constraints is None and not protect_terminal_tasks:
+    if linear_constraints is None and not protect_terminal_tasks and path_response_fn is None:
         sol=lsq_linear(A,b,bounds=(low,high),tol=1e-10,max_iter=100)
     else:
         if linear_constraints is not None:
@@ -69,6 +90,9 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
                 raise ValueError('Finite original combined parameter constraints required')
             constraints.append(LinearConstraint(C[:,active]*radii[active],clow,chigh))
             out['linear_constraint_rows']=len(C)
+        if path_response_fn is not None:
+            constraints.append(LinearConstraint(path_jac[:,active]*radii[active],path_low-path_base,path_high-path_base))
+            out['path_response_constraint_rows']=len(path_base)
         if protect_terminal_tasks:
             # Position, normal and velocity are separate tasks. The local
             # model may reduce their total cost only inside all three bounds.
@@ -89,6 +113,7 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
             options=dict(maxiter=100,ftol=1e-10))
     if not sol.success or not np.isfinite(sol.x).all():out['rejection']='LOCAL_SOLVE_FAILED';return out
     a=np.zeros(count);a[active]=radii[active]*sol.x;out['predicted_residual']=y+J@a
+    if path_response_fn is not None:out['predicted_path_response']=path_base+path_jac@a
     # Each scaled sequence starts from the original state via evaluate(). A
     # feasible prefix or interpolated endpoint is never an execution certificate.
     scales=(1.,.5,.25) if backtracking else (1.,)
@@ -96,6 +121,16 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
     out['rejection']='NO_VERIFIED_TERMINAL_IMPROVEMENT'
     for scale in scales:
         final=call(a*scale,'proposal' if scale==1. else 'backtrack_'+str(scale))
+        if final['valid'] and path_response_fn is not None:
+            try:
+                values,lower,upper=read_path(final['result'])
+                final['path_response_valid']=bool(values.shape==path_base.shape and np.array_equal(lower,path_low)
+                    and np.array_equal(upper,path_high) and np.all(values>=path_low) and np.all(values<=path_high))
+                final['actual_path_response']=values
+                final['predicted_path_response']=path_base+path_jac@(a*scale)
+                final['valid']=final['path_response_valid']
+            except ValueError as error:
+                final['valid']=False;final['path_response_rejection']=str(error)
         nonregression=True
         if protect_terminal_tasks and final['valid']:
             actual=np.linalg.norm(np.asarray(final['result']['normalized_residual']).reshape(3,3),axis=1)
@@ -157,7 +192,7 @@ class TerminalPushRollout:
                 if d['nonfoot_ground_violation_m']>1e-6:bad['nonfoot_ground_violation_m']=d['nonfoot_ground_violation_m']
                 if d['nonfoot_contact_substeps']>0:bad['nonfoot_contact_substeps']=d['nonfoot_contact_substeps']
                 tracking=float(np.max(abs(step['state'].joint_position[12:]-arm_reference)))
-                if tracking>.25:bad['arm_tracking_error_rad']=tracking
+                if tracking>ARM_TRACKING_LIMIT_RAD:bad['arm_tracking_error_rad']=tracking
                 roundtrip=i.limits[:,0]+.5*(i.normalized_action(command)+1)*np.diff(i.limits,axis=1)[:,0]
                 err=float(np.max(abs(roundtrip-command)))
                 if err>2e-6:bad['command_roundtrip_rad']=err
