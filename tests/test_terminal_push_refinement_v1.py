@@ -133,6 +133,15 @@ def test_velocity_objective_preserves_position_and_normal_and_changes_choice():
     assert speed['trials'][-1]['terminal_task_nonregression']
 
 
+def test_position_objective_preserves_normal_and_velocity():
+    def evaluate(a):
+        y=np.zeros(9);y[0]=1-10*a[0];y[3]=.2-.1*a[0];y[6]=.3-.1*a[0]
+        return dict(path_valid=True,normalized_residual=y)
+    r=refine_terminal(evaluate,objective='position',parameter_radii=np.array([.03]),protect_terminal_tasks=True)
+    assert r['improved'] and r['trials'][r['selected_index']]['result']['normalized_residual'][0] < 1
+    assert r['trials'][-1]['terminal_task_nonregression']
+
+
 def test_velocity_mode_cannot_disable_task_protection():
     import pytest
     with pytest.raises(ValueError,match='protection'):

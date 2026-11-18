@@ -21,7 +21,7 @@ from quadsmash.physics.full_racket_v4 import load_racket
 
 
 def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False,protect_terminal_tasks=False,path_response_fn=None,path_response_reserve=0.,objective="all_tasks"):
-    if objective not in ('all_tasks','velocity') or (objective=='velocity' and not protect_terminal_tasks):
+    if objective not in ('all_tasks','position','velocity') or (objective=='velocity' and not protect_terminal_tasks):
         raise ValueError('Velocity objective requires separate terminal task protection')
     if not np.isfinite(path_response_reserve) or path_response_reserve<0 or (path_response_reserve and path_response_fn is None):
         raise ValueError('Nonnegative reserve requires a path response')
@@ -87,7 +87,7 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
     out['usable_columns']=usable
     if not usable:out['rejection']='NO_VALID_LOCAL_RESPONSE';return out
     active=np.array(usable)
-    objective_rows=slice(6,9) if objective=='velocity' else slice(0,9)
+    objective_rows=(slice(0,3) if objective=='position' else (slice(6,9) if objective=='velocity' else slice(0,9)))
     A=np.vstack((J[objective_rows][:,active]*radii[active],.1*np.eye(len(active))))
     b=np.r_[-y[objective_rows],np.zeros(len(active))]
     low,high=bounds[active,0]/radii[active],bounds[active,1]/radii[active]
