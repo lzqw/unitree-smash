@@ -20,7 +20,9 @@ from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
 from quadsmash.physics.full_racket_v4 import load_racket
 
 
-def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False,protect_terminal_tasks=False,path_response_fn=None):
+def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False,protect_terminal_tasks=False,path_response_fn=None,path_response_reserve=0.):
+    if not np.isfinite(path_response_reserve) or path_response_reserve<0 or (path_response_reserve and path_response_fn is None):
+        raise ValueError('Nonnegative reserve requires a path response')
     if not 0<epsilon_rad<radius_rad<=.03:raise ValueError('Bounded offline step required')
     radii=np.full(12,radius_rad) if parameter_radii is None else np.asarray(parameter_radii,float).copy()
     if radii.ndim!=1 or not 1<=len(radii)<=24 or not np.isfinite(radii).all() or np.any(radii<=epsilon_rad) or np.any(radii>.1):
@@ -56,7 +58,12 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
         path_base,path_low,path_high=read_path(base['result'])
         if np.any(path_base<path_low) or np.any(path_base>path_high):
             out['rejection']='BASELINE_PATH_RESPONSE_OUTSIDE_BOUNDS';return out
+        # Tighten only the local planning model, preserving zero-step
+        # feasibility even when an existing verified path is near a bound.
+        local_low=path_low+np.minimum(path_response_reserve,.5*(path_base-path_low))
+        local_high=path_high-np.minimum(path_response_reserve,.5*(path_high-path_base))
         path_jac=np.zeros((len(path_base),count))
+        out.update(path_response_reserve=path_response_reserve,path_local_lower=local_low,path_local_upper=local_high)
         out.update(path_response_baseline=path_base,path_response_lower=path_low,path_response_upper=path_high)
     y=np.array(base['result']['normalized_residual']);J=np.zeros((9,count));usable=[]
     for j in range(count):
@@ -91,7 +98,7 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
             constraints.append(LinearConstraint(C[:,active]*radii[active],clow,chigh))
             out['linear_constraint_rows']=len(C)
         if path_response_fn is not None:
-            constraints.append(LinearConstraint(path_jac[:,active]*radii[active],path_low-path_base,path_high-path_base))
+            constraints.append(LinearConstraint(path_jac[:,active]*radii[active],local_low-path_base,local_high-path_base))
             out['path_response_constraint_rows']=len(path_base)
         if protect_terminal_tasks:
             # Position, normal and velocity are separate tasks. The local

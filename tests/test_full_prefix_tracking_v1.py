@@ -55,3 +55,26 @@ def test_nonlinear_path_violation_is_not_admitted_by_feasible_linear_model():
     assert not r['improved'] and r['selected_index']==0
     assert all(not row['valid'] for row in r['trials'][-3:])
     assert r['predicted_path_response'][0]<=.25+1e-10
+
+
+def test_model_reserve_is_derived_from_verified_responses_not_case_labels():
+    from scripts.full_prefix_tracking_v1 import tracking_linearization_reserve
+    r=trace();actual,_,_=arm_tracking_response(r,np.arange(7,13),3)
+    trial=dict(result=r,path_response_valid=True,actual_path_response=actual.copy(),predicted_path_response=actual-.00001)
+    record=dict(trials=[trial],selected_index=0,accepted_step_scale=.5,metadata=dict(contact_index=3))
+    reserve,audit=tracking_linearization_reserve(record,np.arange(7,13))
+    assert abs(reserve-.00004)<1e-15 and not audit['guaranteed_bound']
+    trial['actual_path_response'][0]+=.001
+    with pytest.raises(ValueError):tracking_linearization_reserve(record,np.arange(7,13))
+
+
+def test_reserve_tightens_local_bounds_but_never_changes_physical_gate():
+    def evaluate(a):return dict(path_valid=True,normalized_residual=np.r_[100*(a[0]-.04),np.zeros(8)],tracking=np.array([.249+2*a[0]]))
+    def response(r):return r['tracking'],np.array([-.25]),np.array([.25])
+    r=refine_terminal(evaluate,path_response_fn=response,path_response_reserve=.01,backtracking=True)
+    assert r['path_response_upper'][0]==.25
+    assert abs(r['path_local_upper'][0]-.2495)<1e-14
+    assert r['path_local_lower'][0]<=r['path_response_baseline'][0]<=r['path_local_upper'][0]
+    if r['improved']:
+        assert r['trials'][r['selected_index']]['actual_path_response'][0]<=.25
+    with pytest.raises(ValueError):refine_terminal(evaluate,path_response_reserve=.001)

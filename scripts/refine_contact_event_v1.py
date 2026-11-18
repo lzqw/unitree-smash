@@ -7,7 +7,7 @@ import argparse,copy,gzip,hashlib,json,time
 from pathlib import Path
 import numpy as np
 import pinocchio as pin
-from scripts.full_prefix_tracking_v1 import arm_tracking_response
+from scripts.full_prefix_tracking_v1 import arm_tracking_response,tracking_linearization_reserve
 from scripts.coupled_contact_prefix_v1 import CoupledContactRollout
 from scripts.terminal_push_refinement_v1 import refine_terminal
 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1,PublicState
@@ -66,7 +66,8 @@ def continued_event_reference(record,metadata,initial_reference,arm_q_indices):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);p.add_argument('--tracking-model-reserve',action='store_true');a=p.parse_args()
+    if a.tracking_model_reserve and (a.previous_refinement is None or not a.constrain_arm_tracking):raise ValueError('Tracking reserve requires a constrained verified predecessor')
     if a.output.exists():raise ValueError('Preserve all prior attempts')
     r=json.loads(a.event_source.read_text())
     for path,digest in r['input_sha256'].items():
@@ -93,6 +94,7 @@ def main():
     state=PublicState(q.copy(),v.copy(),pin.Quaternion(q[3:7]).matrix(),q[:3].copy(),q[model.q_indices].copy(),v[model.v_indices].copy(),np.array(initial['baseline_initial_contacts'],bool),0.)
     state.previous_command_target=np.array(initial['previous_final_command'])
     cfg_path=Path('reports/codex_teacher_joint_eval_20261116/controller.json');interface=PositionPDInterface(**json.loads(cfg_path.read_text())['interface'])
+    reserve=0.;reserve_audit=None
     input_paths=[a.event_source,initial_path,original_path,obs_path,cfg_path]
     if a.previous_refinement is not None:
         previous=json.loads(a.previous_refinement.read_text())
@@ -103,6 +105,7 @@ def main():
         for path,digest in previous['input_sha256'].items():
             if hashlib.sha256(Path(path).read_bytes()).hexdigest()!=digest:raise ValueError('Continuation ancestry drift')
         trace,commands,reference=continued_event_reference(previous,metadata,reference[0],model.q_indices[12:])
+        if a.tracking_model_reserve:reserve,reserve_audit=tracking_linearization_reserve(previous,model.q_indices[12:])
         input_paths.append(a.previous_refinement)
     geometry=AuthoredGroundClearance('configs/go2_piper_authored_ground_geometry_v1.json',model,margin_m=0.)
     predictor=ExperimentalSphereAdmissionV1(model,geometry,Path('reports/prediction_model_validation_20261118/AUTHORED_SPHERES.json'))
@@ -118,9 +121,9 @@ def main():
         return result
     started=time.perf_counter();result=refine_terminal(evaluate,parameter_radii=evaluator.radii,
         amplitude_bounds=evaluator.amplitude_bounds(),linear_constraints=evaluator.combined_arm_constraints(),backtracking=True,protect_terminal_tasks=True,
-        path_response_fn=(lambda result:arm_tracking_response(result,model.q_indices[12:],n)) if a.constrain_arm_tracking else None)
+        path_response_fn=(lambda result:arm_tracking_response(result,model.q_indices[12:],n)) if a.constrain_arm_tracking else None,path_response_reserve=reserve)
     selected=result['trials'][result['selected_index']]['result']
-    result.update(constrain_arm_tracking=a.constrain_arm_tracking,seconds=time.perf_counter()-started,event_time_s=a.event_time,metadata=metadata,base_arm_reference_rad=reference,
+    result.update(tracking_model_reserve_audit=reserve_audit,constrain_arm_tracking=a.constrain_arm_tracking,seconds=time.perf_counter()-started,event_time_s=a.event_time,metadata=metadata,base_arm_reference_rad=reference,
         selected_arm_reference_rad=np.vstack([reference[0],[t['planned_arm_reference_rad'] for t in selected['trajectory']]]),
         original_prefix_exact=True,input_sha256={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in input_paths},
         native_execution=False,valid_teacher_reference=False)

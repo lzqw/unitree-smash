@@ -24,3 +24,27 @@ def arm_tracking_response(result,arm_q_indices,expected_steps):
         values.extend(signed)
     vector=np.asarray(values,float)
     return vector,np.full_like(vector,-ARM_TRACKING_LIMIT_RAD),np.full_like(vector,ARM_TRACKING_LIMIT_RAD)
+
+
+def tracking_linearization_reserve(record,arm_q_indices):
+    """Empirical local-model headroom, not a physical or probabilistic bound.
+
+    Scale the last accepted discrepancy by inverse step-scale squared, a
+    smooth-model truncation-error heuristic. Contact changes can invalidate it;
+    complete nonlinear validation remains mandatory.
+    """
+    trial=record['trials'][record['selected_index']]
+    if trial.get('path_response_valid') is not True:raise ValueError('Verified tracking response required')
+    actual,_,_=arm_tracking_response(trial['result'],arm_q_indices,record['metadata']['contact_index'])
+    logged=np.asarray(trial.get('actual_path_response'),float)
+    predicted=np.asarray(trial.get('predicted_path_response'),float)
+    scale=float(record.get('accepted_step_scale',np.nan))
+    if (logged.shape!=actual.shape or not np.array_equal(logged,actual) or predicted.shape!=actual.shape
+            or not np.isfinite(predicted).all() or not np.isfinite(scale) or not 0<scale<=1):
+        raise ValueError('Matching finite predicted/actual responses and accepted scale required')
+    error=float(np.max(abs(actual-predicted)));reserve=error/(scale*scale)
+    if not np.isfinite(reserve):raise ValueError('Finite model reserve required')
+    return reserve,dict(observed_max_error_rad=error,accepted_step_scale=scale,
+        requested_reserve_rad=reserve,scaling='inverse accepted step scale squared',
+        guaranteed_bound=False,physical_limit_rad=ARM_TRACKING_LIMIT_RAD,
+        final_nonlinear_validation_required=True)
