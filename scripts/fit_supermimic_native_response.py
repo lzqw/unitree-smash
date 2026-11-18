@@ -142,7 +142,24 @@ def main(a):
         raise ValueError('Action-ball candidate belongs to a different base model')
     package=torch.load(a.packed_data,map_location='cpu',weights_only=True);cpu=package['tensors']
     manifest=package['source_manifest']
-    if manifest['task_contract']!=contract or manifest['source_sha256']!=SOURCE_SHA or manifest.get('policy_execution')!=provenance['policy_execution']:
+    archive_execution=manifest.get('policy_execution')
+    execution_provenance='archive_manifest'
+    if archive_execution is None:
+        if a.policy_execution is None:
+            raise ValueError(
+                'Packed archive has no policy_execution. Supply an explicit '
+                '--policy-execution sidecar bound to this archive source.'
+            )
+        sidecar=json.loads(a.policy_execution.read_text())
+        if sidecar.get('source_sha256')!=manifest['source_sha256']:
+            raise ValueError('Policy execution sidecar source SHA differs from packed archive')
+        if sidecar.get('task_contract_sha256') != hashlib.sha256(
+                json.dumps(manifest['task_contract'],sort_keys=True,separators=(',',':')).encode()
+        ).hexdigest():
+            raise ValueError('Policy execution sidecar task contract differs from packed archive')
+        archive_execution=sidecar.get('policy_execution')
+        execution_provenance='explicit_sidecar'
+    if manifest['task_contract']!=contract or manifest['source_sha256']!=SOURCE_SHA or archive_execution!=provenance['policy_execution']:
         raise ValueError('Native archive/probe source or execution differs')
     receipt=json.loads((a.packed_data.parent/'completed.json').read_text())
     if receipt['sha256']!=sha256(a.packed_data) or not bool(package['first_done'].all()):raise ValueError('Packed archive incomplete or changed')
@@ -214,6 +231,8 @@ def main(a):
         validation='original32 heldout lanes excluded from every fitting term; one time/direction is not complete physical admission',
         mode_switch='raw finite-difference transition supervision permitted; never called a smooth Jacobian target',
         reference='failed candidate remains diagnostic; no actor resumes it')
+    config['policy_execution_provenance']=execution_provenance
+    config['policy_execution_sidecar']=str(a.policy_execution.resolve()) if a.policy_execution is not None else None
     config['historical_physical_sources']=history_provenance
     config['physical_source_sampling']='initial50/history25/history25' if historical else 'original-only'
     config['historical_scope']='measured physical transitions only; unknown policy identities are not filled, no critic labels or actor starts; every source excludes the same32 fitting lanes'
@@ -388,6 +407,8 @@ if __name__=='__main__':
         help='Explicit V1-to-V2 candidate migration: weight action correction by shared predicted racket mode; no native change')
     parser.add_argument('--impact-time-state',action='store_true',
         help='Explicit V2-to-V3 migration: causal collision-time robot interpolation; no future native input')
+    parser.add_argument('--policy-execution',type=Path,default=None,
+        help='Explicit execution-contract sidecar required when packed archive lacks policy_execution metadata')
     args=parser.parse_args()
     if not (args.ball_response_weight>0 and torch.isfinite(torch.tensor(args.ball_response_weight))):
         parser.error('ball-response-weight must be finite and positive')

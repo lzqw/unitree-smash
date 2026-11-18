@@ -39,7 +39,26 @@ def main():
     if len({x[0] for x in candidates})!=len(candidates):raise ValueError('Duplicate candidate name')
     for name,path in candidates:
         adapter.load_state_dict(baseline,strict=True)
-        if path:adapter.load_state_dict(torch.load(path,map_location=a.device,weights_only=False)['world'],strict=True)
+        if path:
+            payload=torch.load(path,map_location=a.device,weights_only=False)
+            # Training checkpoints wrap the adapter under ``world``.  The
+            # bounded native-response fitter writes a standalone world.pt
+            # with ``model`` instead.  Accept both explicit formats while
+            # refusing an unrecognised artifact, so validation cannot silently
+            # inspect the wrong state dictionary.
+            if isinstance(payload,dict) and 'world' in payload:
+                world_state=payload['world']
+            elif isinstance(payload,dict) and payload.get('schema') in (
+                    'physical-imagination-adapter-v1', 'physical-imagination-adapter-v2') and 'model' in payload:
+                world_state=payload['model']
+            elif isinstance(payload,dict) and 'model' in payload:
+                world_state=payload['model']
+            else:
+                raise ValueError('Candidate checkpoint has no explicit world/model state')
+            if payload.get('schema') == 'physical55-separated-contact-transitions-v2':
+                adapter.physical_model.load_state_dict(world_state,strict=True)
+            else:
+                adapter.load_state_dict(world_state,strict=True)
         adapter.eval()
         results[name]=dict(checkpoint_sha256=hashlib.sha256(Path(path).read_bytes()).hexdigest() if path else adapter.manifest['checkpoint_sha256'],
                            errors=validate_windows(adapter,window,launch[lanes.to(a.device)]),
