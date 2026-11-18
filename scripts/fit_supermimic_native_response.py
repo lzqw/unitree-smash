@@ -17,7 +17,8 @@ from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,Racke
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition,ball_error
 from quadsmash.rl.supermimic_physical_dataset_v1 import valid_windows
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest,SOURCE_SHA
-from scripts.fit_supermimic_action_ball import metrics,autoregressive_metrics,sha256
+from scripts.fit_supermimic_action_ball import (metrics,autoregressive_metrics,sha256,
+    event_validation_selection_score)
 from quadsmash.rl.supermimic_response_fit_sources_v1 import load_history,combine_sources,draw_source_windows
 
 
@@ -307,11 +308,17 @@ def main(a):
     if a.repair_ball_gate:parameters+=list(ball.gate.parameters())
     if a.repair_foot_contact:parameters+=list(base.contact.parameters())
     opt=torch.optim.Adam(parameters,lr=2e-4)
+    initial_model_state=dict(
+        base=copy.deepcopy(base.state_dict()),
+        ball=copy.deepcopy(ball.state_dict()),
+        sweep=copy.deepcopy(sweep.state_dict()))
     generator=torch.Generator().manual_seed(20261118)
     other_sets=[[data[k][train] for k in ('previous_action','feet','present','elapsed','launch')] for data in pair_sets]
     best_validation_score=float('inf')
     best_validation_update=0
     best_validation_rows=0
+    best_event_selection=None
+    best_selection_key=None
     best_model_state=None
     best_optimizer_state=None
     validation_history=[]
@@ -382,14 +389,22 @@ def main(a):
         if (update+1)%16==0 or update==255:
             validation_score,validation_rows=native_ball_response_validation(
                 base,ball,sweep,pair_sets,val)
+            event_candidate=metrics(base,ball,sweep,validation_data,cpu,val.tolist(),launch)
+            event_selection=event_validation_selection_score(initial['legacy'],event_candidate)
             validation_record=dict(update=update+1,score=validation_score,
-                                   nonzero_native_ball_rows=validation_rows)
+                                   nonzero_native_ball_rows=validation_rows,
+                                   event_candidate=event_candidate,
+                                   event_selection=event_selection)
             validation_history.append(validation_record)
             row['native_ball_response_validation']=validation_record
-            if validation_rows>0 and validation_score<best_validation_score:
+            selection_key=(event_selection['score'],validation_score) if event_selection['eligible'] else None
+            if (validation_rows>0 and selection_key is not None and
+                    (best_selection_key is None or selection_key<best_selection_key)):
                 best_validation_score=validation_score
                 best_validation_update=update+1
                 best_validation_rows=validation_rows
+                best_event_selection=event_selection
+                best_selection_key=selection_key
                 best_model_state=dict(
                     base=copy.deepcopy(base.state_dict()),
                     ball=copy.deepcopy(ball.state_dict()),
@@ -398,7 +413,10 @@ def main(a):
         with (a.output/'history.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
         if update%16==0 or update==255:print(json.dumps(row),flush=True)
     if best_model_state is None:
-        raise RuntimeError('Native response validation had no nonzero held-out ball response rows')
+        base.load_state_dict(initial_model_state['base'],strict=True)
+        ball.load_state_dict(initial_model_state['ball'],strict=True)
+        sweep.load_state_dict(initial_model_state['sweep'],strict=True)
+        raise RuntimeError('Native response validation found no event-safe held-out checkpoint')
     base.load_state_dict(best_model_state['base'],strict=True)
     ball.load_state_dict(best_model_state['ball'],strict=True)
     sweep.load_state_dict(best_model_state['sweep'],strict=True)
@@ -408,6 +426,7 @@ def main(a):
     config['best_validation_update']=best_validation_update
     config['best_native_ball_response_validation']=best_validation_score
     config['best_native_ball_response_rows']=best_validation_rows
+    config['best_event_validation_selection']=best_event_selection
     dump(a.output/'config.json',config)
     contact_changed=tensor_digest(base.contact.state_dict().items())!=contact_hash
     if contact_changed and not a.repair_foot_contact:
