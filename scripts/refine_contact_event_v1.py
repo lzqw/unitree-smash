@@ -94,7 +94,7 @@ def projected_event_metadata(metadata, projection, initial_q, impact):
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);p.add_argument('--tracking-model-reserve',action='store_true');p.add_argument('--late-arm-rate',action='store_true');p.add_argument('--projected-goal',type=Path);p.add_argument('--velocity-priority',action='store_true');p.add_argument('--position-priority',action='store_true');p.add_argument('--leg-rate',action='store_true');a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--event-source',type=Path,required=True);p.add_argument('--event-time',type=float,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--constrain-arm-tracking',action='store_true');p.add_argument('--previous-refinement',type=Path);p.add_argument('--tracking-model-reserve',action='store_true');p.add_argument('--late-arm-rate',action='store_true');p.add_argument('--projected-goal',type=Path);p.add_argument('--velocity-priority',action='store_true');p.add_argument('--position-priority',action='store_true');p.add_argument('--leg-rate',action='store_true');p.add_argument('--task-nonregression-tolerance',type=float,default=1e-9);a=p.parse_args()
     if a.leg_rate and a.late_arm_rate:raise ValueError('Leg-rate and late-arm-rate are exclusive')
     if a.velocity_priority and a.position_priority:raise ValueError('At most one objective priority')
     if a.projected_goal is not None and a.previous_refinement is None:raise ValueError('Projected goal requires its complete source prefix')
@@ -172,7 +172,7 @@ def main():
                 if not np.array_equal(old['q'],new['q']) or not np.array_equal(old['v'],new['v']):raise ValueError('Seed state drift')
         print(json.dumps(dict(call=calls,path_valid=result['path_valid'],errors=result.get('terminal_errors'),failure=result.get('failure'))),flush=True)
         return result
-    started=time.perf_counter();result=refine_terminal(evaluate,objective=('velocity' if a.velocity_priority else ('position' if a.position_priority else 'all_tasks')),parameter_radii=evaluator.radii,
+    started=time.perf_counter();result=refine_terminal(evaluate,objective=('velocity' if a.velocity_priority else ('position' if a.position_priority else 'all_tasks')),task_nonregression_tolerance=a.task_nonregression_tolerance,parameter_radii=evaluator.radii,
         amplitude_bounds=evaluator.amplitude_bounds(),linear_constraints=evaluator.combined_arm_constraints(),backtracking=True,protect_terminal_tasks=True,
         path_response_fn=(lambda result:arm_tracking_response(result,model.q_indices[12:],n)) if a.constrain_arm_tracking else None,path_response_reserve=reserve)
     selected=result['trials'][result['selected_index']]['result']

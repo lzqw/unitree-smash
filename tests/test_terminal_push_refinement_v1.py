@@ -1,3 +1,4 @@
+import pytest
 import numpy as np
 from scripts.terminal_push_refinement_v1 import refine_terminal
 
@@ -156,3 +157,14 @@ def test_velocity_proposal_cannot_trade_actual_position_for_speed():
     r=refine_terminal(evaluate,parameter_radii=np.array([.03]),objective='velocity',protect_terminal_tasks=True)
     assert not r['improved'] and r['selected_index']==0
     assert not r['trials'][-1]['terminal_task_nonregression']
+
+
+def test_bounded_nonregression_tolerance_is_explicit_and_cannot_change_physical_gates():
+    def evaluate(a):
+        y=np.zeros(9);y[0]=1-10*a[0];y[3]=.2-.1*a[0];y[6]=1+.001*a[0]/.03
+        return dict(path_valid=True,normalized_residual=y)
+    strict=refine_terminal(evaluate,objective='position',parameter_radii=np.array([.03]),protect_terminal_tasks=True)
+    tolerant=refine_terminal(evaluate,objective='position',parameter_radii=np.array([.03]),protect_terminal_tasks=True,task_nonregression_tolerance=.005)
+    assert tolerant['task_nonregression_tolerance']==.005
+    assert tolerant['protected_task_norms'][0]==1.
+    with pytest.raises(ValueError): refine_terminal(evaluate,task_nonregression_tolerance=.011)

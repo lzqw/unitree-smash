@@ -20,7 +20,9 @@ from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
 from quadsmash.physics.full_racket_v4 import load_racket
 
 
-def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False,protect_terminal_tasks=False,path_response_fn=None,path_response_reserve=0.,objective="all_tasks"):
+def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False,protect_terminal_tasks=False,path_response_fn=None,path_response_reserve=0.,objective="all_tasks",task_nonregression_tolerance=1e-9):
+    if not np.isfinite(task_nonregression_tolerance) or task_nonregression_tolerance<0 or task_nonregression_tolerance>.01:
+        raise ValueError('Bounded terminal non-regression tolerance required')
     if objective not in ('all_tasks','position','velocity') or (objective=='velocity' and not protect_terminal_tasks):
         raise ValueError('Velocity objective requires separate terminal task protection')
     if not np.isfinite(path_response_reserve) or path_response_reserve<0 or (path_response_reserve and path_response_fn is None):
@@ -48,7 +50,7 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
         trials.append(row)
         return row
     base=call(np.zeros(count),'baseline')
-    out=dict(objective=objective,improved=False,selected_index=0,trials=trials,radius_rad=radius_rad,
+    out=dict(objective=objective,task_nonregression_tolerance=task_nonregression_tolerance,improved=False,selected_index=0,trials=trials,radius_rad=radius_rad,
         epsilon_rad=epsilon_rad,parameter_radii_rad=radii,amplitude_bounds=bounds,native_execution=False,valid_teacher_reference=False)
     if not base['valid']:out['rejection']='BASELINE_PATH_UNVERIFIED';return out
     def read_path(result):
@@ -117,7 +119,7 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
                 return -2*np.einsum('gi,gij->gj',residual,D.reshape(3,3,-1))
             constraints.append(dict(type='ineq',fun=task_margins,jac=task_jacobian))
             out['protected_task_norms']=np.sqrt(baseline_squared)
-            out['task_nonregression_tolerance_normalized']=1e-9
+            out['task_nonregression_tolerance_normalized']=task_nonregression_tolerance
         sol=minimize(lambda z:.5*np.sum((A@z-b)**2),np.zeros(len(active)),
             jac=lambda z:A.T@(A@z-b),bounds=Bounds(low,high),
             constraints=constraints,method='SLSQP',
@@ -145,7 +147,7 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
         nonregression=True
         if protect_terminal_tasks and final['valid']:
             actual=np.linalg.norm(np.asarray(final['result']['normalized_residual']).reshape(3,3),axis=1)
-            nonregression=bool(np.all(actual<=out['protected_task_norms']+1e-9))
+            nonregression=bool(np.all(actual<=out['protected_task_norms']+task_nonregression_tolerance))
             final['terminal_task_norms']=actual
             final['terminal_task_nonregression']=nonregression
         if final['valid'] and nonregression and final['objective_cost']<base['objective_cost']-1e-10:
