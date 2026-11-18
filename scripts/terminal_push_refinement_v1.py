@@ -19,7 +19,7 @@ from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
 from quadsmash.physics.full_racket_v4 import load_racket
 
 
-def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None):
+def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None,backtracking=False):
     if not 0<epsilon_rad<radius_rad<=.03:raise ValueError('Bounded offline step required')
     radii=np.full(12,radius_rad) if parameter_radii is None else np.asarray(parameter_radii,float).copy()
     if radii.ndim!=1 or not 1<=len(radii)<=24 or not np.isfinite(radii).all() or np.any(radii<=epsilon_rad) or np.any(radii>.1):
@@ -72,10 +72,16 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
         out['linear_constraint_rows']=len(C)
     if not sol.success or not np.isfinite(sol.x).all():out['rejection']='LOCAL_SOLVE_FAILED';return out
     a=np.zeros(count);a[active]=radii[active]*sol.x;out['predicted_residual']=y+J@a
-    final=call(a,'proposal')
-    if final['valid'] and final['cost']<base['cost']-1e-10:
-        out.update(improved=True,selected_index=len(trials)-1,rejection=None)
-    else:out['rejection']='NO_VERIFIED_TERMINAL_IMPROVEMENT'
+    # Each scaled sequence starts from the original state via evaluate(). A
+    # feasible prefix or interpolated endpoint is never an execution certificate.
+    scales=(1.,.5,.25) if backtracking else (1.,)
+    out['backtracking_scales']=scales
+    out['rejection']='NO_VERIFIED_TERMINAL_IMPROVEMENT'
+    for scale in scales:
+        final=call(a*scale,'proposal' if scale==1. else 'backtrack_'+str(scale))
+        if final['valid'] and final['cost']<base['cost']-1e-10:
+            out.update(improved=True,selected_index=len(trials)-1,rejection=None,accepted_step_scale=scale)
+            break
     return out
 
 
@@ -135,7 +141,7 @@ class TerminalPushRollout:
                 if bad:failure=dict(node=node,reason='PATH_CONSTRAINT',violations=bad);break
                 state=step['state']
                 trace.append(dict(node=node,q=state.q.copy(),v=state.v.copy(),contacts=state.contacts.copy(),
-                    final_target_rad=command,weight=weight,window=decision,diagnostics=d,
+                    final_target_rad=command,planned_arm_reference_rad=arm_reference.copy(),weight=weight,window=decision,diagnostics=d,
                     command_error_rad=err,arm_tracking_error_rad=tracking))
             except (ValueError,np.linalg.LinAlgError) as error:
                 failure=dict(node=node,reason='MODEL_UNCERTAIN',error=str(error));break

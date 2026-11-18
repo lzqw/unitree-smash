@@ -56,3 +56,27 @@ def test_fixed_parameter_is_not_perturbed_or_granted_an_artificial_interval():
     result=refine_terminal(evaluate,amplitude_bounds=bounds)
     assert 0 not in result['usable_columns']
     assert len(result['trials'])==13
+
+
+def test_backtracking_revalidates_entire_scaled_sequence():
+    seen=[]
+    def evaluate(a):
+        seen.append(a.copy())
+        return dict(path_valid=bool(np.max(abs(a))<.015),
+                    normalized_residual=100*(np.full(9,.02)-a[:9]))
+    result=refine_terminal(evaluate,backtracking=True)
+    assert result['improved'] and result['accepted_step_scale']==.5
+    assert len(seen)==15 and not result['trials'][-2]['valid']
+    np.testing.assert_allclose(seen[-1],seen[-2]*.5)
+    assert result['selected_index']==14
+    assert not result['valid_teacher_reference']
+
+
+def test_backtracking_exhaustion_keeps_verified_baseline():
+    def evaluate(a):
+        return dict(path_valid=bool(np.max(abs(a))<=.0011),
+                    normalized_residual=100*(np.full(9,.02)-a[:9]))
+    result=refine_terminal(evaluate,backtracking=True)
+    assert len(result['trials'])==16 and result['selected_index']==0
+    assert not result['improved']
+    assert all(not t['valid'] for t in result['trials'][-3:])

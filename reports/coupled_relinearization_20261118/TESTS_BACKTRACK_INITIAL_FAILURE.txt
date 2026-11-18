@@ -1,0 +1,31 @@
+......FF...........                                                      [100%]
+=================================== FAILURES ===================================
+_____________ test_backtracking_revalidates_entire_scaled_sequence _____________
+
+    def test_backtracking_revalidates_entire_scaled_sequence():
+        seen=[]
+        def evaluate(a):
+            seen.append(a.copy())
+            return dict(path_valid=bool(np.max(abs(a))<.015),
+                        normalized_residual=np.full(9,.02)-a[:9])
+        result=refine_terminal(evaluate,backtracking=True)
+>       assert result['improved'] and result['accepted_step_scale']==.5
+E       assert (True and 1.0 == 0.5)
+
+tests/test_terminal_push_refinement_v1.py:68: AssertionError
+_____________ test_backtracking_exhaustion_keeps_verified_baseline _____________
+
+    def test_backtracking_exhaustion_keeps_verified_baseline():
+        def evaluate(a):
+            return dict(path_valid=bool(np.max(abs(a))<=.0011),
+                        normalized_residual=np.full(9,.02)-a[:9])
+        result=refine_terminal(evaluate,backtracking=True)
+>       assert len(result['trials'])==16 and result['selected_index']==0
+E       AssertionError: assert (15 == 16)
+E        +  where 15 = len([{'label': 'baseline', 'amplitude_rad': array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]), 'result': {'path_vali...: array([0.02 , 0.02 , 0.02 , 0.02 , 0.019, 0.02 , 0.02 , 0.02 , 0.02 ])}, 'seconds': 4.625879228115082e-06, ...}, ...])
+
+tests/test_terminal_push_refinement_v1.py:80: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_terminal_push_refinement_v1.py::test_backtracking_revalidates_entire_scaled_sequence
+FAILED tests/test_terminal_push_refinement_v1.py::test_backtracking_exhaustion_keeps_verified_baseline
+2 failed, 17 passed in 0.25s
