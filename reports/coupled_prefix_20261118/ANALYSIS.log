@@ -1,0 +1,229 @@
+{
+  "rows": [
+    {
+      "index": 0,
+      "label": "baseline",
+      "cost": 299.5582390773297,
+      "terminal_errors": {
+        "position_m": 0.5663113577983299,
+        "normal": 0.2409317572853109,
+        "velocity_m_s": 4.355441790829765
+      },
+      "racket_velocity_at_planned_event_current_frame_m_s": [
+        -0.7118292440300045,
+        1.6513500771522933,
+        -1.5118562562153381
+      ],
+      "root_position": [
+        0.8146862144400103,
+        0.03167442581753049,
+        0.5085987526373208
+      ],
+      "root_rpy_rad": [
+        0.12472855640574826,
+        -0.19231626099085553,
+        -0.40498914374677936
+      ],
+      "actual_arm_q": [
+        -0.8967710796976684,
+        0.8480220227653775,
+        -1.7275042659307158,
+        1.3055500309753527,
+        1.180454376720987,
+        1.9359628504001616
+      ],
+      "actual_arm_v": [
+        -0.02611470697956054,
+        -2.8651766907861096,
+        0.31880686135554864,
+        -1.7281378370075833,
+        0.6086685310591041,
+        -1.7895158426230435
+      ],
+      "momentum": [
+        8.261661806811393,
+        -0.3372105557679767,
+        0.11924028739055145,
+        -0.7677913346383034,
+        -2.7903423391515023,
+        -0.3772593603592501
+      ],
+      "reach_bound": {
+        "shoulder_body_m": [
+          0.05,
+          0.0,
+          0.193
+        ],
+        "target_distance_m": 1.2113647520141404,
+        "optimistic_reach_upper_bound_m": 1.1593980267105732,
+        "position_budget_m": 0.0005,
+        "outside_reach_bound": true,
+        "conditional_translation_lower_bound_m": 0.05146672530356716,
+        "bound_scope": "fixed base pose/time; current authored string strip; all joint angles",
+        "feasible_if_inside": false,
+        "dynamics_verified": false,
+        "unrealized_base_translation_only": true
+      },
+      "max_command_error_rad": 4.440892098500626e-16,
+      "support_basis_nodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "changed_command_nodes": [],
+      "arm_commands_exact": true
+    },
+    {
+      "index": 25,
+      "label": "proposal",
+      "cost": 180.18217286938878,
+      "terminal_errors": {
+        "position_m": 0.4252487111499623,
+        "normal": 0.14188100450969535,
+        "velocity_m_s": 4.1867627868482025
+      },
+      "racket_velocity_at_planned_event_current_frame_m_s": [
+        -0.7837877946960901,
+        1.3635652990142964,
+        -0.9849125957176037
+      ],
+      "root_position": [
+        0.8103067242811324,
+        0.030979486624457993,
+        0.5082926666053027
+      ],
+      "root_rpy_rad": [
+        0.05425812538086425,
+        -0.21902531902151257,
+        -0.41771450671510646
+      ],
+      "actual_arm_q": [
+        -0.9920201140793228,
+        0.9454040569825773,
+        -1.6275721962169765,
+        1.2104545538586295,
+        1.1853191907364495,
+        2.0288180473976682
+      ],
+      "actual_arm_v": [
+        -0.17954184336127904,
+        -2.6373209500531902,
+        0.5643478392287117,
+        -1.883548070571735,
+        0.5503453843799402,
+        -1.6367714403778804
+      ],
+      "momentum": [
+        8.044547953237917,
+        -0.4091201912922064,
+        0.04303756355562106,
+        -0.7766756321203038,
+        -2.68070031426608,
+        -0.41215812922699907
+      ],
+      "reach_bound": {
+        "shoulder_body_m": [
+          0.05,
+          0.0,
+          0.193
+        ],
+        "target_distance_m": 1.2108334031656394,
+        "optimistic_reach_upper_bound_m": 1.1593980267105732,
+        "position_budget_m": 0.0005,
+        "outside_reach_bound": true,
+        "conditional_translation_lower_bound_m": 0.05093537645506613,
+        "bound_scope": "fixed base pose/time; current authored string strip; all joint angles",
+        "feasible_if_inside": false,
+        "dynamics_verified": false,
+        "unrealized_base_translation_only": true
+      },
+      "max_command_error_rad": 4.440892098500626e-16,
+      "support_basis_nodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "changed_command_nodes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28
+      ],
+      "arm_commands_exact": false
+    }
+  ],
+  "singular_values": [
+    23.97962632225895,
+    22.850674026761734,
+    10.400767815157897,
+    4.619238350800517,
+    2.595457313787172,
+    2.1772625622572392,
+    1.6058923768821418,
+    0.6328971981612973,
+    0.002182594575698018
+  ],
+  "scaled_parameter_singular_values": [
+    2.1371462036299267,
+    1.8429998394588598,
+    0.9646959989819545,
+    0.2996456576641768,
+    0.1607598415609366,
+    0.12539584763298675,
+    0.09285856432382522,
+    0.0302871550399685,
+    0.0001189127692814237
+  ],
+  "local_linear_position_axis_change_upper_m": [
+    0.15791796598190075,
+    0.1579777595074289,
+    0.09791904069283232
+  ],
+  "linearization_scope": "first-order fixed temporal basis, not a global robot reach bound",
+  "prediction_error_norm": 0.7148292750546426
+}

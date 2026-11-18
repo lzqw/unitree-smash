@@ -7,7 +7,7 @@ import argparse,copy,gzip,hashlib,json,time
 from pathlib import Path
 import numpy as np
 import pinocchio as pin
-from scipy.optimize import lsq_linear
+from scipy.optimize import lsq_linear, minimize, LinearConstraint, Bounds
 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1,PublicState
 from scripts.whole_body_support_qp_v1 import PositionPDInterface
 from scripts.authored_ground_clearance_v1 import AuthoredGroundClearance
@@ -19,12 +19,16 @@ from quadsmash.control.impact_outcome_evaluator_v1 import ImpactOutcomeEvaluator
 from quadsmash.physics.full_racket_v4 import load_racket
 
 
-def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None):
+def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=None,parameter_radii=None,linear_constraints=None):
     if not 0<epsilon_rad<radius_rad<=.03:raise ValueError('Bounded offline step required')
-    bounds=np.tile([-radius_rad,radius_rad],(12,1)) if amplitude_bounds is None else np.asarray(amplitude_bounds,float).copy()
-    if bounds.shape!=(12,2) or not np.isfinite(bounds).all() or np.any(bounds[:,0]>0) or np.any(bounds[:,1]<0):
+    radii=np.full(12,radius_rad) if parameter_radii is None else np.asarray(parameter_radii,float).copy()
+    if radii.ndim!=1 or not 1<=len(radii)<=24 or not np.isfinite(radii).all() or np.any(radii<=epsilon_rad) or np.any(radii>.1):
+        raise ValueError('Explicit bounded parameter radii required')
+    count=len(radii)
+    bounds=np.c_[-radii,radii] if amplitude_bounds is None else np.asarray(amplitude_bounds,float).copy()
+    if bounds.shape!=(count,2) or not np.isfinite(bounds).all() or np.any(bounds[:,0]>0) or np.any(bounds[:,1]<0):
         raise ValueError('Finite amplitude bounds must include unchanged reference')
-    bounds[:,0]=np.maximum(bounds[:,0],-radius_rad);bounds[:,1]=np.minimum(bounds[:,1],radius_rad)
+    bounds[:,0]=np.maximum(bounds[:,0],-radii);bounds[:,1]=np.minimum(bounds[:,1],radii)
     trials=[]
     def call(amplitude,label):
         started=time.perf_counter()
@@ -37,25 +41,37 @@ def refine_terminal(evaluate,*,radius_rad=.03,epsilon_rad=.001,amplitude_bounds=
                  valid=bool(valid),cost=float(residual@residual) if valid else None)
         trials.append(row)
         return row
-    base=call(np.zeros(12),'baseline')
+    base=call(np.zeros(count),'baseline')
     out=dict(improved=False,selected_index=0,trials=trials,radius_rad=radius_rad,
-        epsilon_rad=epsilon_rad,amplitude_bounds=bounds,native_execution=False,valid_teacher_reference=False)
+        epsilon_rad=epsilon_rad,parameter_radii_rad=radii,amplitude_bounds=bounds,native_execution=False,valid_teacher_reference=False)
     if not base['valid']:out['rejection']='BASELINE_PATH_UNVERIFIED';return out
-    y=np.array(base['result']['normalized_residual']);J=np.zeros((9,12));usable=[]
-    for j in range(12):
+    y=np.array(base['result']['normalized_residual']);J=np.zeros((9,count));usable=[]
+    for j in range(count):
         room=bounds[j,1] if bounds[j,1]>=-bounds[j,0] else bounds[j,0]
         step=np.sign(room)*min(epsilon_rad,abs(room))
         if abs(step)<1e-8:continue
-        a=np.zeros(12);a[j]=step;r=call(a,'derivative_'+str(j))
+        a=np.zeros(count);a[j]=step;r=call(a,'derivative_'+str(j))
         if r['valid']:
             J[:,j]=(np.asarray(r['result']['normalized_residual'])-y)/step;usable.append(j)
     out['usable_columns']=usable
     if not usable:out['rejection']='NO_VALID_LOCAL_RESPONSE';return out
     active=np.array(usable)
-    sol=lsq_linear(np.vstack((J[:,active]*radius_rad,.1*np.eye(len(active)))),np.r_[-y,np.zeros(len(active))],
-                   bounds=(bounds[active,0]/radius_rad,bounds[active,1]/radius_rad),tol=1e-10,max_iter=100)
+    A=np.vstack((J[:,active]*radii[active],.1*np.eye(len(active))))
+    b=np.r_[-y,np.zeros(len(active))]
+    low,high=bounds[active,0]/radii[active],bounds[active,1]/radii[active]
+    if linear_constraints is None:
+        sol=lsq_linear(A,b,bounds=(low,high),tol=1e-10,max_iter=100)
+    else:
+        C,clow,chigh=(np.asarray(x,float) for x in linear_constraints)
+        if C.ndim!=2 or C.shape[1]!=count or clow.shape!=(len(C),) or chigh.shape!=clow.shape or not all(np.isfinite(x).all() for x in (C,clow,chigh)) or np.any(clow>chigh):
+            raise ValueError('Finite original combined parameter constraints required')
+        sol=minimize(lambda z:.5*np.sum((A@z-b)**2),np.zeros(len(active)),
+            jac=lambda z:A.T@(A@z-b),bounds=Bounds(low,high),
+            constraints=[LinearConstraint(C[:,active]*radii[active],clow,chigh)],method='SLSQP',
+            options=dict(maxiter=100,ftol=1e-10))
+        out['linear_constraint_rows']=len(C)
     if not sol.success or not np.isfinite(sol.x).all():out['rejection']='LOCAL_SOLVE_FAILED';return out
-    a=np.zeros(12);a[active]=radius_rad*sol.x;out['predicted_residual']=y+J@a
+    a=np.zeros(count);a[active]=radii[active]*sol.x;out['predicted_residual']=y+J@a
     final=call(a,'proposal')
     if final['valid'] and final['cost']<base['cost']-1e-10:
         out.update(improved=True,selected_index=len(trials)-1,rejection=None)
@@ -84,10 +100,17 @@ class TerminalPushRollout:
         # unchanged reference at zero; never enlarge either correction side.
         return np.c_[np.minimum(low,0.),np.maximum(high,0.)]
 
-    def __call__(self,amplitude):
-        amplitude=np.asarray(amplitude,float)
+    def validate_amplitude(self,amplitude):
         if amplitude.shape!=(12,) or not np.isfinite(amplitude).all() or np.max(abs(amplitude))>.0300000001:
             raise ValueError('Bounded twelve-leg amplitude required')
+
+    def command_at_node(self,amplitude,reference,node,weight):
+        command=reference.copy();command[:12]+=weight*amplitude
+        return command,self.arm_reference[node+1].copy()
+
+    def __call__(self,amplitude):
+        amplitude=np.asarray(amplitude,float)
+        self.validate_amplitude(amplitude)
         model=self.model;i=self.interface;m=self.metadata;state=copy.deepcopy(self.initial)
         R=self.initial.root_rotation_world;origin=self.initial.q[:3]
         window=PushOffWindowV1(len(self.commands));trace=[];failure=None
@@ -96,7 +119,7 @@ class TerminalPushRollout:
             # Deterministic temporal basis spans the declared pre-contact
             # horizon, but correction ends as soon as predicted support ends.
             weight=np.sin(np.pi*(node+1)/len(self.commands)) if decision['enabled'] else 0.
-            command=reference.copy();command[:12]+=weight*amplitude
+            command,arm_reference=self.command_at_node(amplitude,reference,node,weight)
             if np.any(command<i.limits[:,0]-1e-6) or np.any(command>i.limits[:,1]+1e-6):
                 failure=dict(node=node,reason='ORIGINAL_COMMAND_LIMIT');break
             try:
@@ -104,7 +127,7 @@ class TerminalPushRollout:
                 d=step['diagnostics'];bad=ContactFirstFullBodyEvaluatorV1._violations(d)
                 if d['nonfoot_ground_violation_m']>1e-6:bad['nonfoot_ground_violation_m']=d['nonfoot_ground_violation_m']
                 if d['nonfoot_contact_substeps']>0:bad['nonfoot_contact_substeps']=d['nonfoot_contact_substeps']
-                tracking=float(np.max(abs(step['state'].joint_position[12:]-self.arm_reference[node+1])))
+                tracking=float(np.max(abs(step['state'].joint_position[12:]-arm_reference)))
                 if tracking>.25:bad['arm_tracking_error_rad']=tracking
                 roundtrip=i.limits[:,0]+.5*(i.normalized_action(command)+1)*np.diff(i.limits,axis=1)[:,0]
                 err=float(np.max(abs(roundtrip-command)))
