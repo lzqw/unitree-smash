@@ -83,3 +83,37 @@ The RMSE improvement is approximately 0.3% on this four-lane diagnostic. Directi
 - Added `supermimic-contact-event-v1` builder and episode-safe window tests.
 
 The full repository test command still has unrelated failures caused by missing external Piper URDF/checkpoint artifacts and pre-existing dirty files. The new event dataset, impulse, and action-ball regression tests pass with 27 passed.
+
+## Independent whole-lane calibration
+
+The training entry now accepts `--wm-holdout-lanes` with explicit lane ranges.
+The event builder also accepts a whole-lane split manifest and records its SHA256
+in the dataset manifest. This prevents a validation lane from entering WM
+calibration through a different event window.
+
+The first independent calibration used lanes 0--95 for WM fitting and lanes
+96--127 for validation. It completed 32 GPU WM updates in about 109 seconds,
+with zero Actor and Critic updates. On the fixed 96--127 lane windows, the
+initial anchor remained better than the candidate.
+
+| Horizon | Initial ball velocity RMSE | Independent candidate |
+|---|---:|---:|
+| 1 step | 0.000318 m/s | 0.000416 m/s |
+| 16 steps | 0.194889 m/s | 0.945072 m/s |
+| 64 steps | 1.230170 m/s | 3.249692 m/s |
+
+The candidate is rejected. These values are recorded as a strict lane-separated
+diagnostic and do not authorize Actor training.
+
+## Native probe collection
+
+An event-aligned native probe collection is running on the 12 selected branches
+from the first three specifications. The specs cover eight independent
+validation lanes across qualified-contact and frame-hit edges. Each branch uses
+the original 128-lane Isaac environment, the causal execution contract, and
+the same packed-archive seed. The collector runs at most two Isaac children in
+parallel and writes one immutable `native_probe.pt` per branch.
+
+The collection is diagnostic only. A contact-validation receipt will be created
+only after all branches complete and the measured nominal/minus/plus response,
+substep timing, direction, and amplitude checks pass.
