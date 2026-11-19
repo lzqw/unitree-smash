@@ -75,6 +75,8 @@ The validation command completed on GPU without Isaac simulation. The event-alig
 
 The hybrid stability report is diagnostic only. It does not issue a native receipt and does not unlock contact BPTT.
 
+A second fit with `softness_m=0.004`, precontact loss weight 4, and precontact residual weight 1 also rejected every candidate under the strict adjacent-tick rule. Its best intermediate contact-tick RMSE was `3.3017 m/s`, while the precontact RMSE reached `4.0942 m/s`. The final safe checkpoint was restored to the zero residual initialization and is reported as `NO_STABLE_CANDIDATE`.
+
 ## Tests
 
 ```text
