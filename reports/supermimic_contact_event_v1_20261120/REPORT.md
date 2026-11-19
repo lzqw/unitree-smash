@@ -52,6 +52,15 @@ The GPU calibration performed 32 actor-blocked WM optimizer updates. It used the
 
 The reported mean WM loss decreased from the first update's 86.512 to the final update's 145.392 on the last sampled batches, while the aggregate over the 32 updates was 202.889. Batch losses are highly heterogeneous, so this is diagnostic only. The candidate has not been promoted based on training loss.
 
+An additional 32-window GPU validation compared the initial model and the
+calibrated candidate on fixed validation-lane windows. The calibration run did
+not exclude those lanes, so this comparison is diagnostic and cannot be used
+as an independent holdout receipt. The candidate's state RMSE was 0.369 at one
+step and 0.387 at 64 steps, compared with 0.296 and 0.359 for the initial
+model. Its 64-step racket-position RMSE was 0.092 m compared with 0.018 m for
+the initial model. The candidate is rejected for promotion and the initial WM
+remains the anchor.
+
 ## Fixed native response recheck
 
 The same four-lane, three-control-tick native probe was evaluated with the calibrated physical and ball models and the existing V13 action model.
