@@ -68,6 +68,8 @@ def main() -> int:
                         help='Exact measured G07 execution root. No implicit worktree lookup.')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--physics-device', default='cuda:0')
+    parser.add_argument('--seed', type=int, default=None,
+                        help='Seed used by every Isaac child. Must match the packed archive seed.')
     parser.add_argument('--limit', type=int, default=None,
                         help='Optional deterministic prefix of spec files for a smoke probe run')
     parser.add_argument('--kit-args', default='--renderer/multiGpu/enabled=false')
@@ -113,6 +115,7 @@ def main() -> int:
         specs=[dict(path=str(path.resolve()), sha256=sha256(path), spec=spec) for path, spec in specs],
         g07_execution_root=str(args.g07_execution_root.resolve()),
         physics_device=args.physics_device,
+        seed=args.seed,
         cuda_device_count=torch.cuda.device_count(),
         started_at=time.time(),
     )
@@ -134,6 +137,7 @@ def main() -> int:
                 '--output', str(branch_output),
                 '--g07-execution-root', str(args.g07_execution_root.resolve()),
                 '--physics-device', args.physics_device,
+                *(['--seed', str(args.seed)] if args.seed is not None else []),
                 '--headless',
                 '--native-action-probe-spec', str(spec_path.resolve()),
                 '--native-action-probe-branch', branch,

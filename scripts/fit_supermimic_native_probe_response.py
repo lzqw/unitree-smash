@@ -178,12 +178,16 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--updates', type=int, default=256)
     parser.add_argument('--lr', type=float, default=2e-4)
+    parser.add_argument('--direction-weight', type=float, default=1.0,
+                        help='Weight of normalized native-response direction loss.')
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError(args.output)
     if args.updates != 256:
         raise ValueError('Native response calibration uses exactly 256 WM updates')
+    if not torch.isfinite(torch.tensor(args.direction_weight)) or args.direction_weight <= 0:
+        raise ValueError('--direction-weight must be finite and positive')
     if not torch.cuda.is_available() and str(args.device).startswith('cuda'):
         raise RuntimeError('GPU required for native response calibration')
     device = torch.device(args.device)
@@ -265,6 +269,22 @@ def main():
     best_validation = initial
     best_state = {key: value.detach().clone() for key, value in model.state_dict().items()}
     best_update = 0
+    selection_rule = (
+        'among holdout candidates with response_rmse <= zero_response_baseline_rmse '
+        'and relative_error_max <= 1, maximize response_cosine_min, then minimize response_rmse; '
+        'otherwise minimize response_rmse'
+    )
+
+    def selection_key(metrics_value):
+        eligible = (
+            metrics_value['response_rmse'] <= metrics_value['zero_response_baseline_rmse']
+            and metrics_value['relative_error_max'] <= 1.0
+        )
+        if eligible:
+            return (1, metrics_value['response_cosine_min'], -metrics_value['response_rmse'])
+        return (0, -metrics_value['response_rmse'], metrics_value['response_cosine_min'])
+
+    best_key = selection_key(best_validation)
     for update in range(1, args.updates + 1):
         optimizer.zero_grad(set_to_none=True)
         predicted = response(model, physical, ball, train)
@@ -279,7 +299,7 @@ def main():
         ).clamp_min(1e-8)
         point_loss = ((predicted_supported - native_supported) / 0.01).square().mean()
         direction_loss = (1.0 - cosine).mean()
-        loss = point_loss + direction_loss
+        loss = point_loss + args.direction_weight * direction_loss
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 10.0)
         optimizer.step()
@@ -287,10 +307,12 @@ def main():
             with torch.no_grad():
                 holdout = metrics(response(model, physical, ball, validation), validation)
             history.append(dict(update=update, loss=float(loss.detach()), validation=holdout))
-            if holdout['response_rmse'] < best_validation['response_rmse']:
+            holdout_key = selection_key(holdout)
+            if holdout_key > best_key:
                 best_validation = holdout
                 best_state = {key: value.detach().clone() for key, value in model.state_dict().items()}
                 best_update = update
+                best_key = holdout_key
     with torch.no_grad():
         # Use the best fixed-split calibration iterate rather than the final
         # Adam iterate.  This is still a candidate fit and never a native
@@ -314,6 +336,7 @@ def main():
             identity_reuse=identity_reuse,
             native_head_only=native_head_only,
             best_validation_update=best_update,
+            selection_rule=selection_rule,
         ),
     )
     torch.save(state, args.output)
