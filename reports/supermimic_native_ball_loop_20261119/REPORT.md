@@ -77,6 +77,10 @@ The hybrid stability report is diagnostic only. It does not issue a native recei
 
 A second fit with `softness_m=0.004`, precontact loss weight 4, and precontact residual weight 1 also rejected every candidate under the strict adjacent-tick rule. Its best intermediate contact-tick RMSE was `3.3017 m/s`, while the precontact RMSE reached `4.0942 m/s`. The final safe checkpoint was restored to the zero residual initialization and is reported as `NO_STABLE_CANDIDATE`.
 
+- Soft-support output: `action_ball_fit_contact_v3_b64_u32_pre4_res1_soft4`
+- Candidate SHA256: `94c3b0b0cc4ff1f14241e075131a38680019b26060430c1936088d4d20aca516`
+- Strict stability report: `NO_STABLE_CANDIDATE`, reason `contact_edge_not_improved` after safe rollback
+
 ## Tests
 
 ```text
