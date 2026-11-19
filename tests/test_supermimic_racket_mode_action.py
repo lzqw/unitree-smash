@@ -7,7 +7,8 @@ from quadsmash.rl.supermimic_action_ball_v1 import (
     CausalRacketModeActionBallV3, TemporalCausalRacketModeTargetActionBallV8,
     TemporalCausalRacketModeTargetActionBallV9, migrate_temporal_v8,
     TemporalCausalRacketModeTargetLinearActionBallV10, migrate_temporal_v9,
-    migrate_temporal_v10, action_ball_for_schema)
+    migrate_temporal_v10, TemporalCausalRacketModeNativeResponseBallV11,
+    migrate_temporal_v11, action_ball_for_schema)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from test_supermimic_action_ball_v1 import FakeWorld, FakePreview, FakeBall, inputs
 
@@ -130,3 +131,12 @@ def test_temporal_v10_migration_has_zero_initialized_linear_channel():
     assert type(restored) is TemporalCausalRacketModeTargetLinearActionBallV10
     assert torch.equal(restored.command_head.weight,
                        torch.zeros_like(restored.command_head.weight))
+
+
+def test_temporal_v11_migration_has_zero_initialized_native_response_head():
+    source = CausalRacketModeActionBallV3()
+    restored = migrate_temporal_v11({'schema': source.schema, 'model': source.state_dict()})
+    assert type(restored) is TemporalCausalRacketModeNativeResponseBallV11
+    assert torch.equal(restored.native_response_head.net[-1].weight,
+                       torch.zeros_like(restored.native_response_head.net[-1].weight))
+    assert restored.native_response_head.net[0].weight.shape[1] == 84

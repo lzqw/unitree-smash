@@ -422,6 +422,85 @@ class TemporalCausalRacketModeTargetLinearActionBallV10(TemporalCausalRacketMode
         return result
 
 
+class TemporalCausalRacketModeNativeResponseBallV11(TemporalCausalRacketModeTargetLinearActionBallV10):
+    """V10 with a causal state/command response head for native calibration.
+
+    The V10 command-only branch cannot represent lane-dependent impact impulse
+    directions and is still multiplied by a learned geometry/mode gate.  The
+    native head uses only current geometry, predicted current-step robot state,
+    previous executed action and current target.  It has no future event input.
+    It is initialized to zero and remains an uncertified candidate until a
+    held-out native direction receipt passes.
+    """
+    schema = 'native-temporal-causal-racket-mode-native-response-v11'
+
+    def __init__(self, *, preview=None, hidden=(128,128), softness_m=.008,
+                 closing_softness_m=.004, contact_margin_m=.003):
+        super().__init__(preview=preview, hidden=hidden, softness_m=softness_m,
+                         closing_softness_m=closing_softness_m,
+                         contact_margin_m=contact_margin_m)
+        self.native_response_head = MLP(84, hidden, 6)
+        nn.init.zeros_(self.native_response_head.net[-1].weight)
+        nn.init.zeros_(self.native_response_head.net[-1].bias)
+
+    def forward(self, state, predicted_robot, free_ball, geometry, present, *,
+                racket_probability, previous_action, current_target, details=False):
+        result, info = super().forward(
+            state, predicted_robot, free_ball, geometry, present,
+            racket_probability=racket_probability, previous_action=previous_action,
+            current_target=current_target, details=True)
+        current = ball_geometry_features(state, geometry)
+        future = ball_geometry_features(torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
+        first, last = current[:, 6:9], future[:, 6:9]
+        middle = (first + last) * .5
+        gaps = torch.stack((self.preview.racket_gap(first),
+                            self.preview.racket_gap(middle),
+                            self.preview.racket_gap(last)), -1)
+        features = torch.cat((current[:, :21], future[:, :21], gaps,
+                              last - first, previous_action, current_target), -1)
+        # The native head is causal and bounded only by the declared output
+        # units.  It is trained with native paired labels and supervised
+        # non-contact negatives before it can be used for Actor gradients.
+        native = self.native_response_head((features / self.input_scale).clamp(-30., 30.))
+        native = native * self.output_scale * present.reshape(-1, 1).to(state.dtype)
+        result = result + native
+        if not torch.isfinite(result).all():
+            raise FloatingPointError('Nonfinite native response head output')
+        if details:
+            return result, dict(info, native_response=native)
+        return result
+
+
+def migrate_temporal_v11(source):
+    """Migrate V3 through V10 and add a zero-initialized native head."""
+    schema = source.get('schema')
+    if schema == TemporalCausalRacketModeTargetLinearActionBallV10.schema:
+        # The calibration candidate is commonly already V10.  Reconstructing
+        # it through the older migration chain would reinterpret its widened
+        # feature tensors and silently lose the learned command channel.
+        base = action_ball_from_checkpoint(source)
+    elif schema in (TemporalCausalRacketModeTargetActionBallV9.schema,
+                    TemporalCausalRacketModeTargetActionBallV8.schema,
+                    TemporalCausalRacketModeActionBallV7.schema):
+        # These checkpoints already contain their widened temporal tensors.
+        # Load the exact class before adding only the new V11 head.
+        base = action_ball_from_checkpoint(source)
+    elif schema == 'causal-racket-mode-action-sweep-v3':
+        base = migrate_temporal_v10(source)
+    else:
+        raise ValueError(f'Cannot migrate temporal action-ball schema to V11: {schema}')
+    new = TemporalCausalRacketModeNativeResponseBallV11(
+        closing_softness_m=base.closing_softness_m,
+        contact_margin_m=base.contact_margin_m)
+    target, saved = new.state_dict(), base.state_dict()
+    for key, value in saved.items():
+        if key not in target or target[key].shape != value.shape:
+            raise ValueError('V11 migration tensor mismatch: ' + key)
+        target[key] = value
+    new.load_state_dict(target, strict=True)
+    return new
+
+
 def migrate_temporal_v10(source):
     """Migrate V3 to V10 with the explicit linear channel zero initialized."""
     base = migrate_temporal_v9(source)
@@ -691,7 +770,8 @@ def action_ball_from_checkpoint(checkpoint):
                                     TemporalCausalRacketModeActionBallV7.schema,
                                     TemporalCausalRacketModeTargetActionBallV8.schema,
                                     TemporalCausalRacketModeTargetActionBallV9.schema,
-                                    TemporalCausalRacketModeTargetLinearActionBallV10.schema):
+                                    TemporalCausalRacketModeTargetLinearActionBallV10.schema,
+                                    TemporalCausalRacketModeNativeResponseBallV11.schema):
         kwargs.update(closing_softness_m=float(checkpoint.get('closing_softness_m', .004)),
                       contact_margin_m=float(checkpoint.get('contact_margin_m', .003)))
     if checkpoint.get('schema') in (MaterialInertiaActionBallV4.schema,
@@ -709,6 +789,7 @@ def action_ball_for_schema(schema, **kwargs):
         FrameAwareMaterialInertiaActionBallV5, FrameAwareMaterialInertiaActionBallV6,
         TemporalCausalRacketModeActionBallV7, TemporalCausalRacketModeTargetActionBallV8,
         TemporalCausalRacketModeTargetActionBallV9, TemporalCausalRacketModeTargetLinearActionBallV10)}
+    classes[TemporalCausalRacketModeNativeResponseBallV11.schema] = TemporalCausalRacketModeNativeResponseBallV11
     if schema not in classes:
         raise ValueError('Unknown action-ball checkpoint schema: '+str(schema))
     return classes[schema](**kwargs)

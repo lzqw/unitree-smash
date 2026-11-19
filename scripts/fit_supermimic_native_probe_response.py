@@ -16,11 +16,12 @@ import torch
 
 from quadsmash.rl.supermimic_action_ball_v1 import (
     action_ball_from_checkpoint, migrate_temporal_v7, migrate_temporal_v8,
-    migrate_temporal_v9, migrate_temporal_v10,
+    migrate_temporal_v9, migrate_temporal_v10, migrate_temporal_v11,
 )
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
+from quadsmash.rl.supermimic_evidence_binding_v1 import NATIVE_REQUIRED_CODE
 
 
 def digest(path):
@@ -69,10 +70,54 @@ def concat_pairs(rows, device):
     for key in ('temporal_horizon','action_tick','event_tick'):
         values=[row['pairs'].get(key) for row in rows]
         if any(value is not None for value in values):
-            if any(value is None for value in values) or len(set(values))!=1:
-                raise ValueError('Temporal probe metadata differs: '+key)
-            result[key]=values[0]
+            if any(value is None for value in values):
+                raise ValueError('Temporal probe metadata missing: '+key)
+            if key == 'temporal_horizon':
+                if len(set(values)) != 1:
+                    raise ValueError('Temporal probe horizon differs')
+                result[key] = values[0]
+            else:
+                # Absolute event ticks are provenance for each source bundle.
+                # They need not match when every bundle stores the same causal
+                # rollout length and action/event ordering.
+                result[key] = values[0] if len(set(values)) == 1 else None
     return result
+
+
+def validate_probe_identity_reuse(rows):
+    """Allow native labels to be reused across prediction-code revisions.
+
+    This fitter calibrates a prediction model against immutable native labels.
+    It therefore requires the actor, task contract, policy execution contract,
+    policy version, and every native execution source to match.  Prediction
+    and bundle-analysis source revisions are recorded as provenance and are
+    allowed to differ.  This does not authorize a native receipt or Actor BPTT.
+    """
+    identities = [row.get('runtime_identity') for row in rows]
+    if any(not isinstance(identity, dict) for identity in identities):
+        raise ValueError('Native calibration bundle is missing runtime identity')
+    base = identities[0]
+    required = ('schema', 'actor_state_sha256', 'task_contract_sha256',
+                'policy_execution', 'policy_version')
+    for identity in identities[1:]:
+        mismatches = [key for key in required if identity.get(key) != base.get(key)]
+        if mismatches:
+            raise ValueError('Native calibration identity mismatch: ' + ','.join(mismatches))
+        recorded = base.get('execution_code_sha256', {})
+        current = identity.get('execution_code_sha256', {})
+        native_mismatches = [key for key in NATIVE_REQUIRED_CODE
+                             if recorded.get(key) != current.get(key)]
+        if native_mismatches:
+            raise ValueError('Native execution identity mismatch: ' + ','.join(sorted(native_mismatches)))
+    return dict(
+        shared_identity={key: base.get(key) for key in required},
+        native_execution_code_sha256={key: base.get('execution_code_sha256', {}).get(key)
+                                      for key in sorted(NATIVE_REQUIRED_CODE)},
+        bundle_identity_count=len(identities),
+        prediction_code_sha256=[identity.get('execution_code_sha256', {}) for identity in identities],
+        prediction_code_reuse=True,
+        receipt_status='not_issued_requires_independent_native_direction_validation',
+    )
 
 
 def response(model, physical, ball, pairs):
@@ -103,10 +148,18 @@ def metrics(predicted, pairs):
     supported = norms > 1e-7
     if not supported.any():
         raise ValueError('Probe split has no non-zero native ball response')
+    error = predicted[supported] - native[supported]
+    native_supported = native[supported]
+    predicted_supported = predicted[supported]
+    zero_error = native_supported
     return dict(
         count=int(len(native)),
         supported_count=int(supported.sum()),
         response_rmse=float((predicted[supported] - native[supported]).square().mean().sqrt()),
+        component_rmse=[float(value) for value in error.square().mean(0).sqrt()],
+        native_component_rms=[float(value) for value in native_supported.square().mean(0).sqrt()],
+        predicted_component_rms=[float(value) for value in predicted_supported.square().mean(0).sqrt()],
+        zero_response_baseline_rmse=float(zero_error.square().mean().sqrt()),
         response_cosine=cosine.tolist(),
         response_cosine_min=float(cosine[supported].min()),
         relative_error=relative.tolist(),
@@ -150,9 +203,7 @@ def main():
         raise ValueError('Duplicate native sample identity in calibration split')
     if set(train_ids) & set(validation_ids):
         raise ValueError('Native calibration train and validation identities overlap')
-    identities = [row.get('runtime_identity') for row in (*train_rows, *validation_rows)]
-    if any(identity != identities[0] for identity in identities[1:]):
-        raise ValueError('Native calibration bundles have incompatible runtime identities')
+    identity_reuse = validate_probe_identity_reuse((*train_rows, *validation_rows))
     train = concat_pairs(train_rows, device)
     validation = concat_pairs(validation_rows, device)
     physical_source = torch.load(args.physical_checkpoint, map_location='cpu', weights_only=True)
@@ -170,14 +221,33 @@ def main():
     physical.requires_grad_(False).eval()
     ball.requires_grad_(False).eval()
     temporal_fit = 'step_targets_minus' in train
-    if temporal_fit and candidate_source.get('schema') == 'causal-racket-mode-action-sweep-v3':
-        model = migrate_temporal_v10(candidate_source).to(device)
+    temporal_schemas = {
+        'causal-racket-mode-action-sweep-v3',
+        'temporal-causal-racket-mode-action-sweep-v7',
+        'native-temporal-causal-racket-mode-target-action-sweep-v8',
+        'native-temporal-causal-racket-mode-target-floor-action-sweep-v9',
+        'native-temporal-causal-racket-mode-target-linear-floor-action-sweep-v10',
+    }
+    if temporal_fit and candidate_source.get('schema') in temporal_schemas:
+        model = migrate_temporal_v11(candidate_source).to(device)
     else:
         model = action_ball_from_checkpoint(candidate_source).to(device)
         model.load_state_dict(candidate_source['model'], strict=True)
     model.train()
+    native_head_only = model.__class__.__name__ == 'TemporalCausalRacketModeNativeResponseBallV11'
+    if native_head_only:
+        # V11 is a residual calibrator over the already fitted V10 candidate.
+        # Moving the inherited geometry/command heads during this small native
+        # fit can lower the aggregate loss while destroying the old response
+        # on lanes absent from the calibration split.  Keep that base fixed
+        # and learn only the newly introduced causal native-response head.
+        for name, parameter in model.named_parameters():
+            parameter.requires_grad_(name.startswith('native_response_head.'))
     command_head = getattr(model, 'command_head', None)
-    if command_head is not None:
+    if native_head_only:
+        optimizer = torch.optim.Adam(
+            model.native_response_head.parameters(), lr=args.lr)
+    elif command_head is not None:
         # The executable-target channel sees small perturbations (often below
         # 1e-2 rad).  Give that bounded calibration branch its own declared
         # step size instead of letting the nonlinear residual head absorb all
@@ -192,6 +262,9 @@ def main():
     initial = metrics(response(model, physical, ball, validation), validation)
     train_native = train['native_plus'][:, 52:55] - train['native_minus'][:, 52:55]
     history = []
+    best_validation = initial
+    best_state = {key: value.detach().clone() for key, value in model.state_dict().items()}
+    best_update = 0
     for update in range(1, args.updates + 1):
         optimizer.zero_grad(set_to_none=True)
         predicted = response(model, physical, ball, train)
@@ -214,7 +287,15 @@ def main():
             with torch.no_grad():
                 holdout = metrics(response(model, physical, ball, validation), validation)
             history.append(dict(update=update, loss=float(loss.detach()), validation=holdout))
+            if holdout['response_rmse'] < best_validation['response_rmse']:
+                best_validation = holdout
+                best_state = {key: value.detach().clone() for key, value in model.state_dict().items()}
+                best_update = update
     with torch.no_grad():
+        # Use the best fixed-split calibration iterate rather than the final
+        # Adam iterate.  This is still a candidate fit and never a native
+        # receipt, but avoids reporting a known overfit tail as the result.
+        model.load_state_dict(best_state, strict=True)
         final = metrics(response(model, physical, ball, validation), validation)
     state = dict(candidate_source)
     state.update(
@@ -230,6 +311,9 @@ def main():
             split_is_declared_before_fit=True,
             source_checkpoint_sha256=digest(args.action_ball_checkpoint),
             no_promotion_receipt=True,
+            identity_reuse=identity_reuse,
+            native_head_only=native_head_only,
+            best_validation_update=best_update,
         ),
     )
     torch.save(state, args.output)
