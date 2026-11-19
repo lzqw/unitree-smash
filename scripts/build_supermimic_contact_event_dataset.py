@@ -14,10 +14,13 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--negative-ratio", type=int, default=2)
     parser.add_argument("--max-negative", type=int, default=None)
+    parser.add_argument("--lane-split-manifest", type=Path, default=None,
+                        help="Explicit disjoint train/validation/holdout whole-lane split")
     args = parser.parse_args()
     manifest = build_from_packed(args.packed_data, args.output,
                                   negative_ratio=args.negative_ratio,
-                                  max_negative=args.max_negative)
+                                  max_negative=args.max_negative,
+                                  lane_split_manifest=args.lane_split_manifest)
     print(json.dumps(manifest, indent=2))
 
 

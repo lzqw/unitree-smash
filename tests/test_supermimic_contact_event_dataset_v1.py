@@ -1,8 +1,11 @@
+import json
+
 import torch
 
 from quadsmash.rl.supermimic_contact_event_dataset_v1 import (
     _event_edges,
     _episode_safe_indices,
+    build_from_packed,
     recommended_window,
 )
 
@@ -27,3 +30,29 @@ def test_recommended_window_matches_control_and_imagination_horizons():
     assert window["post_control_ticks"] == 64
     assert window["pre_window_s"] == 0.04
     assert window["post_window_s"] == 0.64
+
+
+def test_explicit_lane_split_is_recorded_and_used(tmp_path):
+    packed = tmp_path / "packed.pt"
+    tensors = {
+        "episode": torch.zeros(12, 4, dtype=torch.long),
+        "event_state": torch.zeros(12, 4, 8),
+        "next_event_state": torch.zeros(12, 4, 8),
+        "state": torch.zeros(12, 4, 55),
+        "next_state": torch.zeros(12, 4, 55),
+    }
+    tensors["event_state"][6, 2, 1] = 1.0
+    torch.save({"tensors": tensors}, packed)
+    split = tmp_path / "split.json"
+    split.write_text(json.dumps({
+        "train_lanes": [0, 1],
+        "validation_lanes": [2],
+        "holdout_lanes": [3],
+    }))
+    manifest = build_from_packed(
+        packed, tmp_path / "events", max_negative=0,
+        lane_split_manifest=split,
+    )
+    assert manifest["lane_split"]["validation"] == [2]
+    payload = torch.load(tmp_path / "events" / "events.pt", weights_only=True)
+    assert {record["split"] for record in payload["events"]} == {"validation"}

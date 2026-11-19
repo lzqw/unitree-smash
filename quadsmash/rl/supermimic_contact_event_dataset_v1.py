@@ -111,14 +111,44 @@ def _split(event_id: str) -> str:
     return "train" if value < 70 else "validation" if value < 85 else "holdout"
 
 
+def _load_lane_split(path: str | Path | None, lane_count: int):
+    if path is None:
+        return None
+    path = Path(path).resolve()
+    split = json.loads(path.read_text())
+    train = sorted(set(int(x) for x in split.get("train_lanes", [])))
+    validation = sorted(set(int(x) for x in split.get("validation_lanes", [])))
+    holdout = sorted(set(int(x) for x in split.get("holdout_lanes", [])))
+    groups = {"train": train, "validation": validation, "holdout": holdout}
+    assigned = [lane for values in groups.values() for lane in values]
+    if len(assigned) != len(set(assigned)):
+        raise ValueError("Lane split groups overlap")
+    if any(lane < 0 or lane >= lane_count for lane in assigned):
+        raise ValueError("Lane split contains an out-of-range lane")
+    if not train or not validation or not holdout:
+        raise ValueError("Explicit lane split requires train, validation and holdout lanes")
+    if set(assigned) != set(range(lane_count)):
+        raise ValueError("Explicit lane split must cover every original lane exactly once")
+    return groups, path
+
+
 def build_from_packed(packed_path: str | Path, output_dir: str | Path, *, negative_ratio: int = 2,
-                      max_negative: int | None = None) -> dict:
+                      max_negative: int | None = None,
+                      lane_split_manifest: str | Path | None = None) -> dict:
     """Build a compact event dataset from a packed native replay."""
     packed_path = Path(packed_path).resolve()
     output_dir = Path(output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=False)
     package = torch.load(packed_path, map_location="cpu", weights_only=True)
     tensors = package["tensors"]
+    lane_split = _load_lane_split(lane_split_manifest, int(tensors["episode"].shape[1]))
+    lane_to_split = None
+    if lane_split:
+        lane_to_split = {
+            lane: name
+            for name, lanes in lane_split[0].items()
+            for lane in lanes
+        }
     control_dt_s = float(package.get("source_manifest", {}).get("control_dt_s", 0.01))
     window = recommended_window(control_dt_s=control_dt_s)
     pre, post = window["pre_control_ticks"], window["post_control_ticks"]
@@ -126,8 +156,9 @@ def build_from_packed(packed_path: str | Path, output_dir: str | Path, *, negati
     for kind, column in EVENT_COLUMNS.items():
         for tick, lane in _event_edges(tensors["event_state"], column):
             event_id = f"{kind}:ep{int(tensors['episode'][tick, lane])}:lane{lane}:tick{tick}"
+            split = lane_to_split[lane] if lane_to_split else _split(event_id)
             events.append(_build_record(tensors, tick=tick, lane=lane, kind=kind,
-                                        pre=pre, post=post, split=_split(event_id)))
+                                        pre=pre, post=post, split=split))
     # Use event-free windows as explicit negatives.  They are sampling labels,
     # not a claim that no PhysX substep contact happened within the tick.
     positive_keys = {(r["episode_id"], r["lane"], r["contact_tick"]) for r in events}
@@ -148,8 +179,9 @@ def build_from_packed(packed_path: str | Path, output_dir: str | Path, *, negati
     for index in order:
         tick, lane = negative_candidates[index]
         event_id = f"no_contact:ep{int(tensors['episode'][tick, lane])}:lane{lane}:tick{tick}"
+        split = lane_to_split[lane] if lane_to_split else _split(event_id)
         events.append(_build_record(tensors, tick=tick, lane=lane, kind="no_contact",
-                                    pre=pre, post=post, split=_split(event_id)))
+                                    pre=pre, post=post, split=split))
     payload = {
         "schema": SCHEMA,
         "source_packed": str(packed_path),
@@ -180,6 +212,11 @@ def build_from_packed(packed_path: str | Path, output_dir: str | Path, *, negati
             "semantics": "control-boundary negative, not PhysX substep-certified no-contact",
         },
     }
+    if lane_split:
+        groups, split_path = lane_split
+        manifest["lane_split"] = groups
+        manifest["lane_split_manifest"] = str(split_path)
+        manifest["lane_split_sha256"] = _sha256(split_path)
     (output_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     return manifest
 
