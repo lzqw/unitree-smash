@@ -5,7 +5,8 @@ from torch import nn
 from quadsmash.rl.supermimic_action_ball_v1 import (
     ActionConditionedBallV1, RacketModeActionBallV2,
     CausalRacketModeActionBallV3, TemporalCausalRacketModeTargetActionBallV8,
-    migrate_temporal_v8, action_ball_for_schema)
+    TemporalCausalRacketModeTargetActionBallV9, migrate_temporal_v8,
+    migrate_temporal_v9, action_ball_for_schema)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from test_supermimic_action_ball_v1 import FakeWorld, FakePreview, FakeBall, inputs
 
@@ -112,3 +113,11 @@ def test_temporal_v8_requires_current_target_and_preserves_command_gradient():
     grad = torch.autograd.grad(result[:, 52].sum(), target)[0]
     assert torch.isfinite(grad).all()
     assert grad[:, 12].abs().max() > 1e-7
+
+
+def test_temporal_v9_migration_keeps_explicit_floor_schema():
+    source = CausalRacketModeActionBallV3()
+    restored = migrate_temporal_v9({'schema': source.schema, 'model': source.state_dict()})
+    assert type(restored) is TemporalCausalRacketModeTargetActionBallV9
+    assert restored.schema != TemporalCausalRacketModeTargetActionBallV8.schema
+    assert restored.support_floor > 0 and restored.mode_floor > 0

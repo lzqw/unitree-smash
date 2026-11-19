@@ -16,6 +16,7 @@ import torch
 
 from quadsmash.rl.supermimic_action_ball_v1 import (
     action_ball_from_checkpoint, migrate_temporal_v7, migrate_temporal_v8,
+    migrate_temporal_v9,
 )
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
@@ -170,7 +171,7 @@ def main():
     ball.requires_grad_(False).eval()
     temporal_fit = 'step_targets_minus' in train
     if temporal_fit and candidate_source.get('schema') == 'causal-racket-mode-action-sweep-v3':
-        model = migrate_temporal_v8(candidate_source).to(device)
+        model = migrate_temporal_v9(candidate_source).to(device)
     else:
         model = action_ball_from_checkpoint(candidate_source).to(device)
         model.load_state_dict(candidate_source['model'], strict=True)
