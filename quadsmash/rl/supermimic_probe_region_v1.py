@@ -92,6 +92,20 @@ def paired_metrics(adapter,pairs,head,limits):
                     'step_final_actions_minus','step_final_actions_plus'):
             if not torch.isfinite(p[key]).all():
                 raise ValueError('Nonfinite native temporal probe tensor: '+key)
+    substep_summary = p.get('native_substep_summary')
+    native_contact_timing = None
+    if substep_summary is not None:
+        if set(substep_summary) != set(('nominal_a', 'nominal_b', 'minus', 'plus')):
+            raise ValueError('Incomplete native substep summary')
+        timing = {branch: substep_summary[branch]['first_contact_substep'].to(device)
+                  for branch in ('nominal_a', 'nominal_b', 'minus', 'plus')}
+        native_contact_timing = {
+            'first_contact_substep': {k: v.tolist() for k, v in timing.items()},
+            'nominal_repeat_max': int((timing['nominal_a'] - timing['nominal_b']).abs().max()),
+            'perturbation_span_max': int(torch.stack(tuple(timing.values())).amax(0).sub(
+                torch.stack(tuple(timing.values())).amin(0)).max()),
+            'physics_dt_s': float(substep_summary['nominal_a']['physics_dt_s']),
+        }
     def rollout(targets, actions):
         state=p['state']; previous=p['previous_action']; feet=p['feet']
         present=p['present']; elapsed=p['elapsed']
@@ -121,6 +135,8 @@ def paired_metrics(adapter,pairs,head,limits):
     target_delta=(p['step_targets_plus'][:,0]-p['step_targets_minus'][:,0]).norm(dim=-1) if temporal else (p['targets_plus']-p['targets_minus']).norm(dim=-1)
     norms=native.norm(dim=-1);supported=(norms>=limits['native_response_min'])&(target_delta>0)
     missing=int((~supported).sum());failures=[]
+    if native_contact_timing is not None and native_contact_timing['nominal_repeat_max'] > 0:
+        failures.append('native-substep-nominal-timing-not-repeatable')
     groups=contact_mode_groups(p.get('native_contact_modes'),len(native),head)
     if 'unknown' in groups:failures.append('unknown-native-contact-mode')
     if 'nominal-mode-mismatch' in groups:failures.append('native-contact-mode-repeatability')
@@ -166,7 +182,8 @@ def paired_metrics(adapter,pairs,head,limits):
         contact_mode_groups=groups,jacobian_cosine=[float(jac_cos[i].detach()) if groups[i]=='smooth-mode' else None for i in range(len(groups))],native_delta=native.tolist(),model_delta=predicted.tolist(),
         projected_jacobian=projected.detach().tolist(),temporal_horizon=int(p.get('temporal_horizon',1)),
         action_tick=int(p.get('action_tick',p.get('event_tick',0))),event_tick=int(p.get('event_tick',0)),
-        scope='measured final-command pair on repeated native prefix; temporal rollout used when action precedes event; contact-mode switches reported in raw evidence')
+        native_contact_timing=native_contact_timing,
+        scope='measured final-command pair on repeated native prefix; temporal rollout used when action precedes event; contact-mode switches and optional substep timing reported in raw evidence')
 
 def assess_region(spec,receipt_path,current,adapter,command_preview,head):
     """command_preview(raw_current_start) restores a separate G07 branch each call."""

@@ -63,6 +63,38 @@ def build(paths,identity,output,selected_lanes=None,include_frame_lanes=False):
         restore_mode=base['restore_mode'],prefix_sha256={k:v['prefix_sha256'] for k,v in runs.items()},
         executor_before_sha256={k:v['executor_before_sha256'] for k,v in runs.items()})
     for branch,run in runs.items():pairs['native_'+branch]=run['raw']['next_state'][sl]
+    # Preserve a compact event-time summary when a probe captured native
+    # PhysX substeps.  The full trace remains in the immutable branch file.
+    # This summary is diagnostic only and never supplies a future label to the
+    # world-model forward pass.
+    substep_summary = {}
+    for branch, run in runs.items():
+        trace = run['raw'].get('substep_trace')
+        if not isinstance(trace, dict) or not isinstance(trace.get('tensors'), dict):
+            continue
+        tensors = trace['tensors']
+        force = tensors.get('racket_force_w')
+        valid = tensors.get('racket_contact_position_valid')
+        if not isinstance(force, torch.Tensor) or not isinstance(valid, torch.Tensor):
+            continue
+        force = force[:, sl].norm(dim=-1)
+        valid = valid[:, sl].bool()
+        first = torch.full((len(lanes),), -1, dtype=torch.int64)
+        for col in range(len(lanes)):
+            indices = valid[:, col].nonzero().flatten()
+            if len(indices):
+                first[col] = indices[0]
+        substep_summary[branch] = dict(
+            physics_dt_s=float(trace.get('physics_dt_s', 0.0)),
+            first_contact_substep=first,
+            contact_substep_count=valid.sum(0).to(torch.int64),
+            max_force_norm=force.max(0).values,
+            max_force_delta_norm=(force - force[0:1]).abs().max(0).values,
+        )
+    if substep_summary:
+        if set(substep_summary) != set(BRANCHES):
+            raise ValueError('Substep trace must exist for all four native branches')
+        pairs['native_substep_summary'] = substep_summary
     for branch in ('minus','plus'):pairs['targets_'+branch]=runs[branch]['raw']['final_joint_targets'][sl]
     sequences={branch:runs[branch]['raw'].get('step_sequence') for branch in BRANCHES}
     if all(sequence is not None for sequence in sequences.values()):
