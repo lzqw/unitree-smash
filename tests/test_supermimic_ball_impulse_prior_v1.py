@@ -1,5 +1,7 @@
 import torch
-from quadsmash.rl.supermimic_ball_impulse_prior_v1 import box_normal,round_normal,rotate_for_time,BallImpulsePriorV1
+from quadsmash.rl.supermimic_ball_impulse_prior_v1 import (
+    box_normal,round_normal,rotate_for_time,BallImpulsePriorV1,
+    BallImpulseCalibrationV1)
 from quadsmash.rl.supermimic_shuttle_flight_v1 import ShuttleFreeFlightV1
 
 
@@ -34,6 +36,42 @@ def test_normal_and_rotation_gradients_are_finite():
     r=rotate_for_time(torch.eye(3)[None],w,torch.tensor([.01]))
     g=torch.autograd.grad(r[:,0,1].sum(),w)[0]
     assert g.isfinite().all() and g.abs().sum()>0
+
+
+def test_contact_state_reconstructs_ball_and_surface_at_one_common_time():
+    model=BallImpulsePriorV1()
+    position=torch.tensor([[0.1,0.2,1.0]])
+    velocity=torch.tensor([[1.0,-2.0,3.0]])
+    rotation=torch.eye(3)[None]
+    center=torch.zeros(1,3)
+    surface_velocity=torch.tensor([[.2,.1,-.3]])
+    angular_velocity=torch.tensor([[.1,-.2,.3]])
+    impact_time=torch.tensor([.004])
+    state=model.contact_state_at_time(position,velocity,rotation,center,
+                                      surface_velocity,angular_velocity,impact_time)
+    expected_position,expected_velocity=model.advance(position,velocity,impact_time)
+    torch.testing.assert_close(state['position'],expected_position)
+    torch.testing.assert_close(state['velocity'],expected_velocity)
+    torch.testing.assert_close(
+        state['rotation'].transpose(-1,-2)@state['rotation'],torch.eye(3)[None],atol=2e-5,rtol=2e-5)
+    assert torch.isfinite(state['surface_velocity']).all()
+
+
+def test_impulse_calibration_is_bounded_and_scales_only_normal_response():
+    calibration=BallImpulseCalibrationV1()
+    gap,scale=calibration.values()
+    assert abs(float(gap)) < calibration.max_gap_bias_m
+    assert calibration.scale_bounds[0] < float(scale) < calibration.scale_bounds[1]
+    import json
+    from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1, MODEL
+    geometry=FullBodyGeometryV1(json.loads(MODEL.read_text())['asset_sha256'])
+    state=torch.zeros(1,55);state[:,0]=10.;state[:,2]=2.;state[:,3]=1.
+    state[:,49:52]=torch.tensor([0.,0.,.05]);state[:,54]=-5.
+    base=BallImpulsePriorV1(normal_impulse_scale=1.)
+    doubled=BallImpulsePriorV1(normal_impulse_scale=2.)
+    _,info_base=base(state,geometry,torch.ones(1,dtype=torch.bool))
+    _,info_double=doubled(state,geometry,torch.ones(1,dtype=torch.bool))
+    torch.testing.assert_close(info_double['impulse_dv'],2*info_base['impulse_dv'])
 
 
 def test_full_forward_ground_impact_and_absent_ball():

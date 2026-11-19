@@ -15,6 +15,45 @@ from .supermimic_ball_geometry_preview_v1 import BallGeometryPreviewV1,box_gap,r
 from .supermimic_physical_dataset_v1 import decode_physical
 
 
+class BallImpulseCalibrationV1(nn.Module):
+    """Two-parameter calibration for the frozen analytic contact prior.
+
+    The parameters are deliberately low dimensional. ``gap_bias_m`` adjusts
+    the predicted contact boundary and ``normal_impulse_scale`` calibrates the
+    normal response magnitude. The bounded parameterization prevents a small
+    native probe set from producing an unphysical correction. This module is
+    used by the offline calibration utility and is not an Actor or WM head.
+    """
+    schema = 'ball-impulse-calibration-v1'
+
+    def __init__(self, *, max_gap_bias_m=0.01, scale_bounds=(0.5, 1.5)):
+        super().__init__()
+        if max_gap_bias_m <= 0 or not torch.isfinite(torch.tensor(max_gap_bias_m)):
+            raise ValueError('max_gap_bias_m must be finite and positive')
+        lo, hi = map(float, scale_bounds)
+        if not 0 < lo < hi:
+            raise ValueError('scale_bounds must be positive and ordered')
+        self.max_gap_bias_m = float(max_gap_bias_m)
+        self.scale_bounds = (lo, hi)
+        self.raw_gap_bias = nn.Parameter(torch.zeros(()))
+        midpoint = (lo + hi) / 2.0
+        fraction = (midpoint - lo) / (hi - lo)
+        self.raw_scale = nn.Parameter(torch.tensor(float(torch.logit(torch.tensor(fraction)))))
+
+    def values(self):
+        lo, hi = self.scale_bounds
+        gap_bias = self.max_gap_bias_m * torch.tanh(self.raw_gap_bias)
+        normal_scale = lo + (hi - lo) * torch.sigmoid(self.raw_scale)
+        return gap_bias, normal_scale
+
+    def manifest(self):
+        gap_bias, normal_scale = self.values()
+        return dict(schema=self.schema, gap_bias_m=float(gap_bias.detach()),
+                    normal_impulse_scale=float(normal_scale.detach()),
+                    max_gap_bias_m=self.max_gap_bias_m,
+                    scale_bounds=list(self.scale_bounds))
+
+
 def box_normal(points,centers,halves):
     d=points[...,None,:]-centers
     outside=d-d.clamp(-halves,halves)
@@ -51,7 +90,7 @@ def rotate_for_time(rotation,omega,time):
 
 class BallImpulsePriorV1(nn.Module):
     schema='single-impact-moving-surface-ball-prior-v1'
-    def __init__(self):
+    def __init__(self, *, gap_bias_m=0.0, normal_impulse_scale=1.0):
         super().__init__()
         # Geometry is a deterministic execution-contract object.  Keep it
         # available on the frozen prior while avoiding a second copy of its
@@ -61,6 +100,12 @@ class BallImpulsePriorV1(nn.Module):
         c=json.loads(path.read_text());self.restitution=float(c['restitution'])
         self.drag=float(c['quadratic_drag_k_per_m']);self.dt=float(c['policy_dt_s'])
         self.sub_dt=float(c['native_physics_dt_s']);self.steps=round(self.dt/self.sub_dt)
+        if not torch.isfinite(torch.tensor(gap_bias_m)):
+            raise ValueError('gap_bias_m must be finite')
+        if not torch.isfinite(torch.tensor(normal_impulse_scale)) or normal_impulse_scale <= 0:
+            raise ValueError('normal_impulse_scale must be finite and positive')
+        self.gap_bias_m=float(gap_bias_m)
+        self.normal_impulse_scale=float(normal_impulse_scale)
         self.register_buffer('gravity',torch.tensor([0.,0.,-9.81]))
         self.register_buffer('wind',torch.tensor(c['wind_m_s']))
 
@@ -71,6 +116,10 @@ class BallImpulsePriorV1(nn.Module):
         super()._apply(fn)
         self.preview._apply(fn)
         return self
+
+    def calibration_manifest(self):
+        return dict(gap_bias_m=self.gap_bias_m,
+                    normal_impulse_scale=self.normal_impulse_scale)
 
     # The analytic prior is a frozen execution component.  Its physical
     # configuration and source hash are recorded in the hybrid manifest, so
@@ -120,6 +169,51 @@ class BallImpulsePriorV1(nn.Module):
         normal=normals.gather(-2,index[...,None,None].expand(*index.shape,1,3)).squeeze(-2)
         return normal,index
 
+    def contact_state_at_time(self, ball_position, ball_velocity, initial_rotation,
+                              initial_center, initial_velocity, initial_angular_velocity,
+                              impact_time, *, endpoint_rotation=None,
+                              endpoint_center=None, endpoint_velocity=None,
+                              endpoint_angular_velocity=None):
+        """Reconstruct ball and racket state at one common continuous TOI.
+
+        Collision search still uses the sampled trajectory. All quantities used
+        by the impulse calculation are then recomputed at the interpolated
+        impact time, so position, normal, orientation and surface velocity are
+        evaluated on one time slice.
+        """
+        pre_p, pre_v=self.advance(ball_position,ball_velocity,impact_time)
+        alpha=(impact_time/self.dt).clamp(0.,1.)[:,None]
+        if endpoint_rotation is None:
+            racket_rotation=rotate_for_time(initial_rotation,initial_angular_velocity,impact_time)
+            racket_center=initial_center+initial_velocity*impact_time[:,None]
+            racket_velocity=initial_velocity
+            racket_angular_velocity=initial_angular_velocity
+        else:
+            if any(value is None for value in (endpoint_center,endpoint_velocity,endpoint_angular_velocity)):
+                raise ValueError('Complete endpoint racket state is required')
+            racket_rotation=self._interpolate_rotation(initial_rotation,endpoint_rotation,alpha)
+            racket_center=torch.lerp(initial_center,endpoint_center,alpha)
+            racket_velocity=torch.lerp(initial_velocity,endpoint_velocity,alpha)
+            racket_angular_velocity=torch.lerp(initial_angular_velocity,endpoint_angular_velocity,alpha)
+        delta=pre_p-racket_center
+        local=(racket_rotation.transpose(-1,-2)@delta[...,None]).squeeze(-1)
+        normal_local,part=self.racket_surface(local)
+        normal_world=(racket_rotation@normal_local[...,None]).squeeze(-1)
+        contact_arm=(racket_rotation@(local-self.preview.radius*normal_local)[...,None]).squeeze(-1)
+        surface_velocity=racket_velocity+torch.linalg.cross(racket_angular_velocity,contact_arm)
+        return dict(position=pre_p,velocity=pre_v,rotation=racket_rotation,
+                    center=racket_center,local=local,normal_local=normal_local,
+                    normal=normal_world,part=part,surface_velocity=surface_velocity)
+
+    @staticmethod
+    def _interpolate_rotation(start,end,alpha):
+        """Differentiable orthonormal interpolation of two racket frames."""
+        x=torch.nn.functional.normalize(torch.lerp(start[..., :, 0],end[..., :, 0],alpha),dim=-1)
+        y_raw=torch.lerp(start[..., :, 1],end[..., :, 1],alpha)
+        y=torch.nn.functional.normalize(y_raw-x*(x*y_raw).sum(-1,keepdim=True),dim=-1)
+        z=torch.linalg.cross(x,y)
+        return torch.stack((x,y,z),-1)
+
     def net_surface(self,world):
         g=self.preview
         bg=box_gap(world,g.net_centers,g.net_halves)
@@ -134,7 +228,13 @@ class BallImpulsePriorV1(nn.Module):
             robot_chunks = (None if predicted_robot is None else predicted_robot.split(256))
             chunks=[self(s,geometry,p, None if robot_chunks is None else robot_chunks[i])
                     for i,(s,p) in enumerate(zip(state.split(256),present.split(256)))]
-            return torch.cat([x[0] for x in chunks]),{k:torch.cat([x[1][k] for x in chunks]) for k in chunks[0][1]}
+            details={}
+            for key, value in chunks[0][1].items():
+                if torch.is_tensor(value):
+                    details[key]=torch.cat([item[1][key] for item in chunks])
+                else:
+                    details[key]=value
+            return torch.cat([x[0] for x in chunks]), details
         p=decode_physical(state)
         if predicted_robot is not None and predicted_robot.shape != state.shape:
             raise ValueError('Predicted robot state must align with current state')
@@ -187,6 +287,7 @@ class BallImpulsePriorV1(nn.Module):
             p['ball_position_w'],p['ball_velocity_w'])
         gap=torch.stack((self.preview.racket_gap(local_path),world_path[:,:,2]-self.preview.radius,
                          self.preview.net_gap(world_path)),-1)
+        gap=torch.cat((gap[..., :1]-self.gap_bias_m, gap[..., 1:]), -1)
         hit=gap<=0.
         indices=torch.where(hit,torch.arange(self.steps+1,device=state.device)[None,:,None],self.steps+1).amin(1)
         index,object_id=indices.min(-1);active=(index<=self.steps)&present.bool()
@@ -198,47 +299,47 @@ class BallImpulsePriorV1(nn.Module):
         fraction=(g0/(g0-g1).clamp_min(1e-12)).clamp(0.,1.)
         time=torch.where(safe>0,self.preview.times[before]+fraction*self.sub_dt,t)
         time=torch.where(active,time,torch.full_like(time,self.dt))
-        contact_local=local_path[row, safe]
-        normal_local,part=self.racket_surface(contact_local)
-        rt=rotate_for_time(r,omega,time)
-        racket_normal=(rt@normal_local[...,None]).squeeze(-1)
-        contact_arm=(rt@(contact_local-self.preview.radius*normal_local)[...,None]).squeeze(-1)
-        racket_surface_velocity=vc+torch.linalg.cross(omega,contact_arm)
-        if predicted_robot is not None:
-            # Evaluate the endpoint surface velocity at the same world contact
-            # point, then interpolate it to the predicted impact time.  Using
-            # the current vc/omega for every impact made the action Jacobian
-            # blind to the command-induced racket velocity change.
-            contact_world=center+(r@contact_local[...,None]).squeeze(-1)
-            endpoint_contact_local=(endpoint_rotation.transpose(-1,-2) @
-                                    (contact_world-endpoint_center)[...,None]).squeeze(-1)
-            endpoint_normal_local,_=self.racket_surface(endpoint_contact_local)
-            endpoint_arm=(endpoint_rotation @
-                          (endpoint_contact_local-self.preview.radius*endpoint_normal_local)[...,None]).squeeze(-1)
-            endpoint_surface_velocity=endpoint_bodies['velocity'][:, endpoint_id]+torch.linalg.cross(
-                endpoint_bodies['angular_velocity'][:, endpoint_id],endpoint_arm)
-            impact_alpha=(time/self.dt).clamp(0.,1.)[:,None]
-            racket_surface_velocity=torch.lerp(
-                racket_surface_velocity,endpoint_surface_velocity,impact_alpha)
-        pre_p,pre_v=self.advance(p['ball_position_w'],p['ball_velocity_w'],time)
+        if predicted_robot is None:
+            contact=self.contact_state_at_time(
+                p['ball_position_w'],p['ball_velocity_w'],r,center,vc,omega,time)
+        else:
+            contact=self.contact_state_at_time(
+                p['ball_position_w'],p['ball_velocity_w'],r,center,vc,omega,time,
+                endpoint_rotation=endpoint_rotation,endpoint_center=endpoint_center,
+                endpoint_velocity=endpoint_bodies['velocity'][:, endpoint_id],
+                endpoint_angular_velocity=endpoint_bodies['angular_velocity'][:, endpoint_id])
+        pre_p,pre_v=contact['position'],contact['velocity']
+        racket_normal=contact['normal']
+        racket_surface_velocity=contact['surface_velocity']
+        part=contact['part']
         net_normal,_=self.net_surface(pre_p)
         ground_normal=torch.zeros_like(pre_p);ground_normal[:,2]=1.
         normal=torch.where((object_id==0)[:,None],racket_normal,
                            torch.where((object_id==1)[:,None],ground_normal,net_normal))
         surface_velocity=torch.where((object_id==0)[:,None],racket_surface_velocity,torch.zeros_like(vc))
         normal_speed=((pre_v-surface_velocity)*normal).sum(-1)
-        impulse_dv=-(1.+self.restitution)*normal_speed.clamp_max(0.)[:,None]*normal
+        impulse_dv=self.normal_impulse_scale * (-(1.+self.restitution)*
+            normal_speed.clamp_max(0.)[:,None]*normal)
         impulse_dv=torch.where(active[:,None],impulse_dv,torch.zeros_like(impulse_dv))
         post_p,post_v=self.advance(pre_p,pre_v+impulse_dv,self.dt-time)
         result=torch.cat((post_p,post_v),-1)
         result=torch.where(present[:,None],result,state[:,49:])
         info=dict(active=active,object_id=torch.where(active,object_id,torch.full_like(object_id,3)),
             time=time,normal=normal,normal_speed=normal_speed,impulse_dv=impulse_dv,racket_part=part,
-            min_gap=gap.amin(1))
+            min_gap=gap.amin(1),gap_bias_m=self.gap_bias_m,
+            normal_impulse_scale=self.normal_impulse_scale,
+            # Keep the continuous TOI state available to the optional
+            # low-dimensional residual head.  These are diagnostics and
+            # causal model inputs, never native future labels.
+            pre_position=pre_p,
+            pre_velocity=pre_v,
+            remaining_time=(self.dt-time).clamp_min(0.),
+            post_position=post_p,
+            post_velocity=post_v)
         return result,info
 
 
-def hybrid_ball_manifest():
+def hybrid_ball_manifest(*, gap_bias_m=0.0, normal_impulse_scale=1.0):
     """Identity for the frozen analytic part of the Hybrid WM transition."""
     source = Path(__file__).resolve()
     config = source.parents[2] / 'configs/shuttle_physics_v2.json'
@@ -249,7 +350,7 @@ def hybrid_ball_manifest():
                 h.update(block)
         return h.hexdigest()
     return dict(
-        schema='supermimic-hybrid-ball-transition-v2',
+        schema='supermimic-hybrid-ball-transition-v3',
         impulse_prior_schema=BallImpulsePriorV1.schema,
         impulse_prior_code_sha256=sha(source),
         shuttle_physics_config_sha256=sha(config),
@@ -257,10 +358,12 @@ def hybrid_ball_manifest():
         control_dt_s=BallImpulsePriorV1().dt,
         native_substep_dt_s=BallImpulsePriorV1().sub_dt,
         legacy_residual_policy='other_residual_only',
+        calibration=dict(gap_bias_m=float(gap_bias_m),
+                         normal_impulse_scale=float(normal_impulse_scale)),
     )
 
 
-def attach_hybrid_impulse_prior(action_model, device=None):
+def attach_hybrid_impulse_prior(action_model, device=None, *, calibration=None):
     """Attach one registered, frozen prior to every Hybrid WM caller.
 
     The prior has no trainable or persistent checkpoint state.  Registering it
@@ -273,15 +376,19 @@ def attach_hybrid_impulse_prior(action_model, device=None):
     if existing is not None:
         if not isinstance(existing, BallImpulsePriorV1):
             raise TypeError('Existing impulse_prior has an incompatible type')
-        if getattr(action_model, 'hybrid_ball_manifest', None) != hybrid_ball_manifest():
+        expected=hybrid_ball_manifest(**(calibration or {}))
+        if getattr(action_model, 'hybrid_ball_manifest', None) != expected:
             raise ValueError('Existing Hybrid prior manifest differs from current code')
         existing.to(device=device) if device is not None else None
         existing.requires_grad_(False).eval()
         return action_model
-    prior = BallImpulsePriorV1()
+    calibration=calibration or {}
+    unknown=set(calibration)-{'gap_bias_m','normal_impulse_scale'}
+    if unknown:raise ValueError('Unknown Hybrid calibration fields: '+','.join(sorted(unknown)))
+    prior = BallImpulsePriorV1(**calibration)
     if device is not None:
         prior = prior.to(device)
     prior.requires_grad_(False).eval()
     action_model.add_module('impulse_prior', prior)
-    action_model.hybrid_ball_manifest = hybrid_ball_manifest()
+    action_model.hybrid_ball_manifest = hybrid_ball_manifest(**calibration)
     return action_model

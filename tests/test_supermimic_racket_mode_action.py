@@ -8,7 +8,9 @@ from quadsmash.rl.supermimic_action_ball_v1 import (
     TemporalCausalRacketModeTargetActionBallV9, migrate_temporal_v8,
     TemporalCausalRacketModeTargetLinearActionBallV10, migrate_temporal_v9,
     migrate_temporal_v10, TemporalCausalRacketModeNativeResponseBallV11,
-    migrate_temporal_v11, action_ball_for_schema)
+    migrate_temporal_v11, TemporalCausalRacketModeNativeResponseBallV12,
+    migrate_temporal_v12, TemporalCausalRacketModeImpulseResidualBallV13,
+    migrate_temporal_v13, action_ball_for_schema)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from test_supermimic_action_ball_v1 import FakeWorld, FakePreview, FakeBall, inputs
 
@@ -156,3 +158,70 @@ def test_temporal_v11_present_only_calibration_gate_does_not_depend_on_missed_im
         details_free['action_model_info']['native_response'],
         details_contact['action_model_info']['native_response'])
     assert details_free['action_model_info']['native_response_gate_mode']=='present_only'
+
+
+def test_temporal_v12_migration_adds_explicit_command_delta_channel():
+    source = CausalRacketModeActionBallV3()
+    restored = migrate_temporal_v12({'schema': source.schema, 'model': source.state_dict()})
+    assert type(restored) is TemporalCausalRacketModeNativeResponseBallV12
+    assert restored.native_response_head.net[0].weight.shape[1] == 102
+    assert restored.native_input_scale.shape == (102,)
+    assert torch.equal(restored.native_response_head.net[-1].weight,
+                       torch.zeros_like(restored.native_response_head.net[-1].weight))
+
+
+def test_temporal_v12_explicit_command_delta_is_causal_and_differentiable():
+    world, ball = FakeWorld(), ModeBall(torch.tensor(.8))
+    model = TemporalCausalRacketModeNativeResponseBallV12(
+        preview=FakePreview(), native_response_gate_mode='present_only')
+    with torch.no_grad():
+        model.native_response_head.net[-1].weight[3, -18] = 1.
+    state, target, prev, feet, present, elapsed, launch = inputs()
+    target = target.requires_grad_(True)
+    result = ball_transition(world, ball, state, target, prev, feet, present,
+                             elapsed, launch, action_model=model)[0]
+    grad = torch.autograd.grad(result[:, 52].sum(), target)[0]
+    assert torch.isfinite(grad).all()
+    assert grad[:, 12].abs().max() > 1e-7
+
+
+def test_temporal_v13_migration_adds_zero_initialized_toi_impulse_head():
+    source = CausalRacketModeActionBallV3()
+    restored = migrate_temporal_v13({'schema': source.schema, 'model': source.state_dict()})
+    assert type(restored) is TemporalCausalRacketModeImpulseResidualBallV13
+    assert restored.impulse_residual_head.net[0].weight.shape[1] == 84
+    assert torch.equal(restored.impulse_residual_head.net[-1].weight,
+                       torch.zeros_like(restored.impulse_residual_head.net[-1].weight))
+
+
+def test_temporal_v13_applies_residual_at_toi_and_propagates_target_gradient():
+    class Prior:
+        def __call__(self, state, geometry, present, predicted_robot=None):
+            zeros = state[:, 49:].clone()
+            return zeros, dict(
+                active=present.bool(),
+                normal=state.new_tensor([[0., 0., 1.]]).expand(len(state), -1),
+                pre_position=state[:, 49:52],
+                pre_velocity=state[:, 52:55],
+                impulse_dv=torch.zeros_like(state[:, 52:55]),
+                remaining_time=state.new_full((len(state),), .01),
+            )
+
+        @staticmethod
+        def advance(position, velocity, duration):
+            return position + duration[:, None] * velocity, velocity
+
+    world, ball = FakeWorld(), ModeBall(torch.tensor(.8))
+    model = TemporalCausalRacketModeImpulseResidualBallV13(preview=FakePreview())
+    model.__dict__['impulse_prior'] = Prior()
+    with torch.no_grad():
+        model.impulse_residual_head.net[-1].bias[0] = 1.
+    state, target, prev, feet, present, elapsed, launch = inputs()
+    target = target.requires_grad_(True)
+    predicted, _, _, details = ball_transition(
+        world, ball, state, target, prev, feet, present, elapsed, launch,
+        action_model=model, return_details=True)
+    assert details['impulse_action_residual'] is not None
+    assert details['impulse_action_residual'][:, 5].abs().max() > 0
+    grad = torch.autograd.grad(predicted[:, 52].sum(), target)[0]
+    assert torch.isfinite(grad).all()

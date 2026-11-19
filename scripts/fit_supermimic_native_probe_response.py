@@ -18,6 +18,7 @@ from torch.nn import functional as F
 from quadsmash.rl.supermimic_action_ball_v1 import (
     action_ball_from_checkpoint, migrate_temporal_v7, migrate_temporal_v8,
     migrate_temporal_v9, migrate_temporal_v10, migrate_temporal_v11,
+    migrate_temporal_v12, migrate_temporal_v13,
 )
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_ball_impulse_prior_v1 import attach_hybrid_impulse_prior, hybrid_ball_manifest
@@ -223,6 +224,7 @@ def response_diagnostics(model, physical, ball, pairs):
             analytic_delta_v=None if difference('analytic_ball',True) is None else difference('analytic_ball',True)[index],
             legacy_delta_v=None if difference('legacy_correction',True) is None else difference('legacy_correction',True)[index],
             action_residual_delta_v=None if difference('action_residual',True) is None else difference('action_residual',True)[index],
+            impulse_action_residual_delta_v=None if difference('impulse_action_residual',True) is None else difference('impulse_action_residual',True)[index],
             final_delta_v=None if difference('predicted_ball',True) is None else difference('predicted_ball',True)[index],
             minus_analytic_contact_active=item(impulse_minus,'active'),
             plus_analytic_contact_active=item(impulse_plus,'active'),
@@ -315,30 +317,55 @@ def main():
         'native-temporal-causal-racket-mode-target-action-sweep-v8',
         'native-temporal-causal-racket-mode-target-floor-action-sweep-v9',
         'native-temporal-causal-racket-mode-target-linear-floor-action-sweep-v10',
+        'native-temporal-causal-racket-mode-native-response-v11',
+        'native-temporal-causal-racket-mode-native-response-v12',
+        'native-temporal-causal-racket-mode-impulse-residual-v13',
     }
     if temporal_fit and candidate_source.get('schema') in temporal_schemas:
-        model = migrate_temporal_v11(candidate_source).to(device)
+        if candidate_source.get('schema') == 'native-temporal-causal-racket-mode-impulse-residual-v13':
+            model = migrate_temporal_v13(candidate_source).to(device)
+        else:
+            model = migrate_temporal_v12(candidate_source).to(device)
     else:
         model = action_ball_from_checkpoint(candidate_source).to(device)
         model.load_state_dict(candidate_source['model'], strict=True)
     model.train()
-    # Calibrate the same Hybrid transition used by runtime imagination.
-    attach_hybrid_impulse_prior(model, device)
-    if model.__class__.__name__ == 'TemporalCausalRacketModeNativeResponseBallV11':
+    # Calibrate the same Hybrid transition used by runtime imagination.  A
+    # candidate produced by the low-dimensional impulse calibration carries
+    # its frozen parameters in the manifest and must not silently fall back to
+    # the default prior during native response fitting.
+    recorded_hybrid = candidate_source.get('hybrid_ball_transition', {})
+    calibration = (recorded_hybrid.get('calibration', {})
+                   if isinstance(recorded_hybrid, dict) else {})
+    attach_hybrid_impulse_prior(model, device, calibration=calibration)
+    if model.__class__.__name__ in {
+        'TemporalCausalRacketModeNativeResponseBallV11',
+        'TemporalCausalRacketModeNativeResponseBallV12',
+    }:
         model.native_response_gate_mode=args.native_response_gate_mode
-    native_head_only = model.__class__.__name__ == 'TemporalCausalRacketModeNativeResponseBallV11'
+    native_head_only = model.__class__.__name__ in {
+        'TemporalCausalRacketModeNativeResponseBallV11',
+        'TemporalCausalRacketModeNativeResponseBallV12',
+        'TemporalCausalRacketModeImpulseResidualBallV13',
+    }
     if native_head_only:
         # V11 is a residual calibrator over the already fitted V10 candidate.
         # Moving the inherited geometry/command heads during this small native
         # fit can lower the aggregate loss while destroying the old response
         # on lanes absent from the calibration split.  Keep that base fixed
         # and learn only the newly introduced causal native-response head.
+        if model.__class__.__name__ == 'TemporalCausalRacketModeImpulseResidualBallV13':
+            train_prefix = 'impulse_residual_head.'
+        else:
+            train_prefix = 'native_response_head.'
         for name, parameter in model.named_parameters():
-            parameter.requires_grad_(name.startswith('native_response_head.'))
+            parameter.requires_grad_(name.startswith(train_prefix))
     command_head = getattr(model, 'command_head', None)
     if native_head_only:
         optimizer = torch.optim.Adam(
-            model.native_response_head.parameters(), lr=args.lr)
+            (model.impulse_residual_head.parameters()
+             if model.__class__.__name__ == 'TemporalCausalRacketModeImpulseResidualBallV13'
+             else model.native_response_head.parameters()), lr=args.lr)
     elif command_head is not None:
         # The executable-target channel sees small perturbations (often below
         # 1e-2 rad).  Give that bounded calibration branch its own declared
@@ -440,12 +467,14 @@ def main():
             identity_reuse=identity_reuse,
             native_head_only=native_head_only,
             native_response_gate_mode=getattr(model,'native_response_gate_mode',None),
+            impulse_residual_only=(model.__class__.__name__ ==
+                                   'TemporalCausalRacketModeImpulseResidualBallV13'),
             best_validation_update=best_update,
             selection_rule=selection_rule,
             loss_definition='component-scaled Huber absolute response plus direction loss on responses above direction_min_response',
             component_scale=component_scale.detach().cpu().tolist(),
             direction_min_response=direction_min_response,
-            hybrid_ball_transition=hybrid_ball_manifest(),
+            hybrid_ball_transition=hybrid_ball_manifest(**calibration),
         ),
     )
     torch.save(state, args.output)

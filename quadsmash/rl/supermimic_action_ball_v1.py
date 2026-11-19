@@ -561,6 +561,155 @@ class TemporalCausalRacketModeNativeResponseBallV11(TemporalCausalRacketModeTarg
         return result
 
 
+class TemporalCausalRacketModeNativeResponseBallV12(TemporalCausalRacketModeTargetLinearActionBallV10):
+    """V11 with an explicit local executed-command difference channel.
+
+    Native paired probes measure the response to a small change in the
+    executed command sequence. Supplying the absolute target and previous
+    action separately makes that local signal unnecessarily small after input
+    normalization. V12 keeps the causal state and geometry features from V11
+    and adds ``(current_target - previous_action) / 0.01`` as an explicit
+    local-motion feature. The added channel is zero initialized during
+    migration, so loading a V11 checkpoint preserves its predictions until
+    the new native head is calibrated.
+    """
+    schema = 'native-temporal-causal-racket-mode-native-response-v12'
+
+    def __init__(self, *, preview=None, hidden=(128, 128), softness_m=.008,
+                 closing_softness_m=.004, contact_margin_m=.003,
+                 native_response_gate_mode='impact_probability'):
+        super().__init__(preview=preview, hidden=hidden, softness_m=softness_m,
+                         closing_softness_m=closing_softness_m,
+                         contact_margin_m=contact_margin_m)
+        if native_response_gate_mode not in ('impact_probability', 'present_only'):
+            raise ValueError('Unknown native response gate mode')
+        self.native_response_gate_mode = native_response_gate_mode
+        self.native_response_head = MLP(102, hidden, 6)
+        nn.init.zeros_(self.native_response_head.net[-1].weight)
+        nn.init.zeros_(self.native_response_head.net[-1].bias)
+        self.register_buffer('native_input_scale', torch.cat((
+            self.input_scale.detach().clone(),
+            torch.ones(18, dtype=self.input_scale.dtype)
+        )))
+
+    def forward(self, state, predicted_robot, free_ball, geometry, present, *,
+                racket_probability, previous_action, current_target, details=False):
+        result, info = TemporalCausalRacketModeTargetLinearActionBallV10.forward(
+            self, state, predicted_robot, free_ball, geometry, present,
+            racket_probability=racket_probability,
+            previous_action=previous_action,
+            current_target=current_target,
+            details=True)
+        current = ball_geometry_features(state, geometry)
+        future = ball_geometry_features(
+            torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
+        first, last = current[:, 6:9], future[:, 6:9]
+        gaps, _, sampled_gaps = sweep_gap_summary(
+            self.preview, first, last, current[:, 9:12], future[:, 9:12],
+            self.softness_m)
+        command_delta = (current_target - previous_action) / 0.01
+        features = torch.cat((current[:, :21], future[:, :21], gaps,
+                              last - first, previous_action, current_target,
+                              command_delta), -1)
+        native = self.native_response_head(
+            (features / self.native_input_scale).clamp(-30., 30.))
+        if self.native_response_gate_mode == 'impact_probability':
+            native_gate = info['predicted_impact_probability']
+        else:
+            native_gate = torch.ones_like(info['predicted_impact_probability'])
+        native = native * self.output_scale * native_gate[:, None]
+        native = native * present.reshape(-1, 1).to(state.dtype)
+        result = result + native
+        if not torch.isfinite(result).all():
+            raise FloatingPointError('Nonfinite native response V12 output')
+        if details:
+            return result, dict(info, sampled_gaps=sampled_gaps,
+                                native_response=native,
+                                native_response_gate=native_gate,
+                                native_response_gate_mode=self.native_response_gate_mode,
+                                native_command_delta=command_delta)
+        return result
+
+
+class TemporalCausalRacketModeImpulseResidualBallV13(
+        TemporalCausalRacketModeTargetLinearActionBallV10):
+    """V10 plus a bounded TOI-local impulse residual.
+
+    The residual head predicts three coefficients in the contact frame
+    ``(normal, tangent_1, tangent_2)``.  It is applied by
+    ``ball_transition`` at the analytic prior's continuous time of impact,
+    followed by the same remaining-time flight integrator.  This keeps the
+    learned correction in velocity/impulse units instead of directly adding
+    an unconstrained six-dimensional end-state offset.
+    """
+    schema = 'native-temporal-causal-racket-mode-impulse-residual-v13'
+    requires_impulse_residual = True
+    requires_analytic_impact_prior = True
+
+    def __init__(self, *, preview=None, hidden=(128, 128), softness_m=.008,
+                 closing_softness_m=.004, contact_margin_m=.003):
+        super().__init__(preview=preview, hidden=hidden, softness_m=softness_m,
+                         closing_softness_m=closing_softness_m,
+                         contact_margin_m=contact_margin_m)
+        self.impulse_residual_head = MLP(84, hidden, 3)
+        nn.init.zeros_(self.impulse_residual_head.net[-1].weight)
+        nn.init.zeros_(self.impulse_residual_head.net[-1].bias)
+        self.register_buffer('impulse_residual_scale', torch.full((3,), .5))
+
+    @staticmethod
+    def _contact_basis(normal):
+        normal = torch.nn.functional.normalize(normal, dim=-1)
+        # Pick the Cartesian axis least aligned with the normal to avoid a
+        # near-zero cross product, then construct a right-handed tangent pair.
+        axes = normal.new_tensor([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]])
+        index = normal.abs().argmin(-1)
+        reference = axes[index]
+        tangent_1 = torch.nn.functional.normalize(
+            torch.linalg.cross(normal, reference), dim=-1)
+        tangent_2 = torch.linalg.cross(normal, tangent_1)
+        return normal, tangent_1, tangent_2
+
+    def forward(self, state, predicted_robot, free_ball, geometry, present, *,
+                racket_probability, previous_action, current_target,
+                impact_info=None, details=False):
+        if impact_info is None:
+            raise ValueError('V13 requires analytic impact information')
+        result, info = TemporalCausalRacketModeTargetLinearActionBallV10.forward(
+            self, state, predicted_robot, free_ball, geometry, present,
+            racket_probability=racket_probability,
+            previous_action=previous_action,
+            current_target=current_target,
+            details=True)
+        current = ball_geometry_features(state, geometry)
+        future = ball_geometry_features(
+            torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
+        first, last = current[:, 6:9], future[:, 6:9]
+        gaps, _, sampled_gaps = sweep_gap_summary(
+            self.preview, first, last, current[:, 9:12], future[:, 9:12],
+            self.softness_m)
+        features = torch.cat((current[:, :21], future[:, :21], gaps,
+                              last - first, previous_action, current_target), -1)
+        coefficients = torch.tanh(
+            self.impulse_residual_head((features / self.input_scale).clamp(-30., 30.)))
+        coefficients = coefficients * self.impulse_residual_scale
+        normal, tangent_1, tangent_2 = self._contact_basis(impact_info['normal'])
+        residual_dv = (coefficients[:, 0:1] * normal
+                       + coefficients[:, 1:2] * tangent_1
+                       + coefficients[:, 2:3] * tangent_2)
+        active = impact_info['active'].bool() & present.reshape(-1).bool()
+        residual_dv = residual_dv * active[:, None].to(residual_dv.dtype)
+        if not torch.isfinite(residual_dv).all():
+            raise FloatingPointError('Nonfinite V13 impulse residual')
+        metadata = dict(info, sampled_gaps=sampled_gaps,
+                        impulse_residual_coefficients=coefficients,
+                        impulse_residual_dv=residual_dv,
+                        impulse_residual_active=active,
+                        contact_basis=(normal, tangent_1, tangent_2))
+        if details:
+            return result, metadata
+        return result
+
+
 def migrate_temporal_v11(source):
     """Migrate V3 through V10 and add a zero-initialized native head."""
     schema = source.get('schema')
@@ -587,6 +736,71 @@ def migrate_temporal_v11(source):
     for key, value in saved.items():
         if key not in target or target[key].shape != value.shape:
             raise ValueError('V11 migration tensor mismatch: ' + key)
+        target[key] = value
+    new.load_state_dict(target, strict=True)
+    return new
+
+
+def migrate_temporal_v12(source):
+    """Migrate a V10/V11 candidate to the explicit-delta V12 head."""
+    if source.get('schema') == TemporalCausalRacketModeNativeResponseBallV12.schema:
+        model = action_ball_from_checkpoint(source)
+        model.load_state_dict(source['model'], strict=True)
+        return model
+    if source.get('schema') == TemporalCausalRacketModeNativeResponseBallV11.schema:
+        base = action_ball_from_checkpoint(source)
+        base.load_state_dict(source['model'], strict=True)
+    else:
+        base = migrate_temporal_v11(source)
+    new = TemporalCausalRacketModeNativeResponseBallV12(
+        closing_softness_m=base.closing_softness_m,
+        contact_margin_m=base.contact_margin_m,
+        native_response_gate_mode=getattr(
+            base, 'native_response_gate_mode',
+            source.get('native_response_gate_mode', 'impact_probability')))
+    target, saved = new.state_dict(), base.state_dict()
+    for key, value in saved.items():
+        if key == 'native_response_head.net.0.weight':
+            if value.shape[0] != target[key].shape[0] or value.shape[1] > target[key].shape[1]:
+                raise ValueError('V12 native head shape mismatch')
+            target[key][:, :value.shape[1]] = value
+        elif key == 'native_input_scale':
+            continue
+        elif key not in target or target[key].shape != value.shape:
+            raise ValueError('V12 migration tensor mismatch: ' + key)
+        else:
+            target[key] = value
+    new.load_state_dict(target, strict=True)
+    return new
+
+
+def migrate_temporal_v13(source):
+    """Migrate a V10/V11/V12 candidate to the TOI impulse-residual head."""
+    schema = source.get('schema')
+    if schema == TemporalCausalRacketModeImpulseResidualBallV13.schema:
+        model = action_ball_from_checkpoint(source)
+        model.load_state_dict(source['model'], strict=True)
+        return model
+    if schema in (TemporalCausalRacketModeNativeResponseBallV11.schema,
+                  TemporalCausalRacketModeNativeResponseBallV12.schema,
+                  TemporalCausalRacketModeTargetLinearActionBallV10.schema,
+                  TemporalCausalRacketModeTargetActionBallV9.schema,
+                  TemporalCausalRacketModeTargetActionBallV8.schema):
+        base = action_ball_from_checkpoint(source)
+        base.load_state_dict(source['model'], strict=True)
+    else:
+        base = migrate_temporal_v10(source)
+    new = TemporalCausalRacketModeImpulseResidualBallV13(
+        closing_softness_m=base.closing_softness_m,
+        contact_margin_m=base.contact_margin_m)
+    target, saved = new.state_dict(), base.state_dict()
+    for key, value in saved.items():
+        # V11/V12 native heads are intentionally discarded.  V13 has a
+        # separate three-coefficient impulse head and keeps the V10 base.
+        if key not in target:
+            continue
+        if target[key].shape != value.shape:
+            raise ValueError('V13 migration tensor mismatch: ' + key)
         target[key] = value
     new.load_state_dict(target, strict=True)
     return new
@@ -862,10 +1076,13 @@ def action_ball_from_checkpoint(checkpoint):
                                     TemporalCausalRacketModeTargetActionBallV8.schema,
                                     TemporalCausalRacketModeTargetActionBallV9.schema,
                                     TemporalCausalRacketModeTargetLinearActionBallV10.schema,
-                                    TemporalCausalRacketModeNativeResponseBallV11.schema):
+                                    TemporalCausalRacketModeNativeResponseBallV11.schema,
+                                    TemporalCausalRacketModeNativeResponseBallV12.schema,
+                                    TemporalCausalRacketModeImpulseResidualBallV13.schema):
         kwargs.update(closing_softness_m=float(checkpoint.get('closing_softness_m', .004)),
                       contact_margin_m=float(checkpoint.get('contact_margin_m', .003)))
-        if checkpoint.get('schema') == TemporalCausalRacketModeNativeResponseBallV11.schema:
+        if checkpoint.get('schema') in (TemporalCausalRacketModeNativeResponseBallV11.schema,
+                                        TemporalCausalRacketModeNativeResponseBallV12.schema):
             kwargs['native_response_gate_mode']=checkpoint.get('native_response_gate_mode','impact_probability')
     if checkpoint.get('schema') in (MaterialInertiaActionBallV4.schema,
                                     FrameAwareMaterialInertiaActionBallV5.schema,
@@ -881,8 +1098,10 @@ def action_ball_for_schema(schema, **kwargs):
         CausalRacketModeActionBallV3, RacketModeActionBallV2, ImpactTimeActionBallV3, MaterialInertiaActionBallV4,
         FrameAwareMaterialInertiaActionBallV5, FrameAwareMaterialInertiaActionBallV6,
         TemporalCausalRacketModeActionBallV7, TemporalCausalRacketModeTargetActionBallV8,
-        TemporalCausalRacketModeTargetActionBallV9, TemporalCausalRacketModeTargetLinearActionBallV10)}
+        TemporalCausalRacketModeTargetActionBallV9, TemporalCausalRacketModeTargetLinearActionBallV10,
+        TemporalCausalRacketModeImpulseResidualBallV13)}
     classes[TemporalCausalRacketModeNativeResponseBallV11.schema] = TemporalCausalRacketModeNativeResponseBallV11
+    classes[TemporalCausalRacketModeNativeResponseBallV12.schema] = TemporalCausalRacketModeNativeResponseBallV12
     if schema not in classes:
         raise ValueError('Unknown action-ball checkpoint schema: '+str(schema))
     return classes[schema](**kwargs)

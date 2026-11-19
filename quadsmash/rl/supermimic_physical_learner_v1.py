@@ -13,6 +13,7 @@ from .supermimic_v1 import MLP,load_ppo_initialized_actor
 from .supermimic_physical_loop_loading_v1 import APPROACH_NAMES,RECOVERY_NAMES,HEAD_NAMES,set_actor_trainable,tensor_digest
 from .supermimic_ball_sequence_v1 import ball_transition,ball_error
 from .supermimic_physical_dataset_v1 import valid_windows
+from .supermimic_racket_dynamics_v1 import racket_loss_components, racket_state
 
 
 class PhysicalHorizonTrainer:
@@ -20,7 +21,7 @@ class PhysicalHorizonTrainer:
                  target_delta_budget_rad=0.04,native_reference_command_budget=None,
                  native_reference_target_budget_rad=None,trainable_names=None,
                  block_name='approach',actor_lr=5e-5,reference_bank=None,
-                 tracking_weight=0.0,world_lr=2e-4):
+                 tracking_weight=0.0,world_lr=2e-4,racket_loss_weight=1.0):
         self.actor,self.adapter,self.timebase=actor,adapter,timebase
         width=adapter.critic_input(initial_state).shape[-1]
         self.critic=MLP(width,(512,256,128),1).to(initial_state.physical.device)
@@ -36,6 +37,9 @@ class PhysicalHorizonTrainer:
         self.tracking_weight=float(tracking_weight)
         self.ball_loss_weight=4.0
         self.contact_ball_loss_weight=8.0
+        self.racket_loss_weight=float(racket_loss_weight)
+        if self.racket_loss_weight < 0:
+            raise ValueError('racket_loss_weight must be nonnegative')
         if self.tracking_weight < 0:
             raise ValueError('tracking_weight must be nonnegative')
         self.actor_lr=float(actor_lr)
@@ -363,6 +367,9 @@ class PhysicalHorizonTrainer:
         physical_loss=state.new_zeros(());contact_loss=state.new_zeros(())
         ball_loss_value=state.new_zeros(());task_loss=state.new_zeros(())
         action_ball_loss=state.new_zeros(())
+        racket_loss_value=state.new_zeros(())
+        racket_components={name: state.new_zeros(()) for name in
+                           ('position','normal','velocity','angular')}
         for i in range(cfg.world_steps):
             prediction,newfeet,newpresent=ball_transition(world,ball,state,window['targets'][i],
                 window['previous_action'][i],feet,present,window['elapsed'][i],launch,
@@ -372,11 +379,18 @@ class PhysicalHorizonTrainer:
             physical_i=world.state_loss(prediction,window['next_state'][i])
             contact_i=torch.nn.functional.binary_cross_entropy(newfeet,window['next_feet'][i].float())
             ball_i=ball_error(prediction[:,49:],window['next_state'][i][:,49:])
+            racket_pred=racket_state(prediction,world.geometry)
+            racket_target=racket_state(window['next_state'][i],world.geometry)
+            racket_parts=racket_loss_components(racket_pred,racket_target)
+            racket_i=sum(racket_parts.values())/len(racket_parts)
             task_i=task.supervision_loss_values(out,window['next_values'][i],window['next_valid'][i],
                 window['event_state'][i],window['next_event_state'][i],window['torque'][i],
                 window['terminated'][i],window['complete_reward'][i])
             physical_loss=physical_loss+physical_i;contact_loss=contact_loss+contact_i
             ball_loss_value=ball_loss_value+ball_i;task_loss=task_loss+task_i
+            racket_loss_value=racket_loss_value+racket_i
+            for name, value in racket_parts.items():
+                racket_components[name]=racket_components[name]+value
             # Ball state is a sparse, high-amplitude target.  Keep it as an
             # explicit WM objective even for the legacy ball path.  Contact
             # weighting is driven only by current/next recorded event deltas,
@@ -387,8 +401,9 @@ class PhysicalHorizonTrainer:
             error=((prediction[:,49:]-window['next_state'][i][:,49:])/scale).square().mean(-1)
             weight=1.+(self.contact_ball_loss_weight-1.)*event.to(error.dtype)
             extra=(error*weight).mean()*self.ball_loss_weight
+            racket_extra=racket_i*self.racket_loss_weight
             action_ball_loss=action_ball_loss+extra
-            loss=loss+physical_i+contact_i+task_i+extra
+            loss=loss+physical_i+contact_i+task_i+extra+racket_extra
             state,feet,present=prediction,newfeet,newpresent
             values,validity=task.memory_schema.feedback_values(out['numeric'],out['valid_logits'].sigmoid())
         loss=loss/cfg.world_steps
@@ -397,6 +412,9 @@ class PhysicalHorizonTrainer:
         physical_loss=physical_loss/cfg.world_steps;contact_loss=contact_loss/cfg.world_steps
         ball_loss_value=ball_loss_value/cfg.world_steps;task_loss=task_loss/cfg.world_steps
         action_ball_loss=action_ball_loss/cfg.world_steps
+        racket_loss_value=racket_loss_value/cfg.world_steps
+        racket_components={name: value/cfg.world_steps
+                           for name,value in racket_components.items()}
         groups=(self.adapter.physical_model,self.adapter.ball_model,self.adapter.task_model)
         group_gradients=[]
         for group in groups:
@@ -413,6 +431,12 @@ class PhysicalHorizonTrainer:
                     world_contact_loss=float(contact_loss.detach()),
                     world_ball_loss=float(ball_loss_value.detach()),
                     world_task_loss=float(task_loss.detach()),
+                    world_racket_loss=float(racket_loss_value.detach()),
+                    world_racket_loss_weight=self.racket_loss_weight,
+                    world_racket_position_loss=float(racket_components['position'].detach()),
+                    world_racket_normal_loss=float(racket_components['normal'].detach()),
+                    world_racket_velocity_loss=float(racket_components['velocity'].detach()),
+                    world_racket_angular_loss=float(racket_components['angular'].detach()),
                     world_action_ball_loss=float(action_ball_loss.detach()),world_action_ball_gradient=action_ball_gradient,
                     world_physical_gradient=group_gradients[0],
                     world_ball_gradient=group_gradients[1],

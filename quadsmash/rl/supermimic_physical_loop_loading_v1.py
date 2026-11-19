@@ -105,7 +105,10 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
         if (candidate.get('geometry_hashes')!=action_ball.preview.geometry_hashes or
                 candidate.get('softness_m')!=action_ball.softness_m):
             raise ValueError('Action-ball candidate racket/net geometry or support width mismatch')
-        if candidate.get('hybrid_ball_transition') != hybrid_ball_manifest():
+        hybrid_recorded=candidate.get('hybrid_ball_transition')
+        calibration=(hybrid_recorded or {}).get('calibration', {})
+        expected_hybrid=hybrid_ball_manifest(**calibration)
+        if hybrid_recorded != expected_hybrid:
             raise ValueError('Action-ball candidate is not bound to the current Hybrid transition')
         if candidate.get('schema') == 'causal-action-conditioned-racket-sweep-v2':
             if (candidate.get('closing_softness_m') != action_ball.closing_softness_m or
@@ -115,7 +118,7 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
         # Every runtime path uses the same registered frozen Hybrid prior.
         # Its physical identity is stored in the adapter manifest and is
         # reconstructed rather than copied into the residual checkpoint.
-        attach_hybrid_impulse_prior(action_ball, device)
+        attach_hybrid_impulse_prior(action_ball, device, calibration=calibration)
     task_state=torch.load(paths['task'],map_location='cpu',weights_only=True)
     schema=TaskMemorySchemaV1([MemoryField(**dict(f,shape=tuple(f['shape']))) for f in task_state['task_schema']['fields']])
     output_key=max((key for key in task_state['model'] if key.startswith('net.net.') and key.endswith('.bias')),
@@ -132,7 +135,7 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
                       task_schema=schema.manifest(),actor_whitelist=APPROACH_NAMES,
                       actor_heads={'approach':APPROACH_NAMES,'recovery':RECOVERY_NAMES})).to(device)
     if action_ball is not None:
-        adapter.manifest['hybrid_ball_transition'] = hybrid_ball_manifest()
+        adapter.manifest['hybrid_ball_transition'] = hybrid_ball_manifest(**calibration)
     suite=Path(__file__).resolve().parents[2]/manifest['task_contract']['suite']['path']
     if hashlib.sha256(suite.read_bytes()).hexdigest()!=manifest['task_contract']['suite']['sha256']:raise ValueError('Suite hash mismatch')
     cases=json.loads(suite.read_text())['cases']

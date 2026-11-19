@@ -71,6 +71,7 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
     else:
         impulse_info=None
     action_residual=torch.zeros_like(ball_prediction)
+    impulse_action_residual=None
     action_model_info=None
     if action_model is not None:
         # V4 preserves its historical string-only contract. V5 explicitly
@@ -87,8 +88,14 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
                 kwargs['current_target']=targets
         else:
             kwargs={}
-        if return_details:
+        need_action_details = return_details or getattr(
+            action_model, 'requires_impulse_residual', False)
+        if need_action_details:
             kwargs['details']=True
+        if getattr(action_model, 'requires_impulse_residual', False):
+            if impulse_info is None:
+                raise ValueError('TOI impulse residual requires an attached analytic prior')
+            kwargs['impact_info'] = impulse_info
         # The sweep head predicts pre-impact support.  Keep its endpoint on
         # the free-flight side of the transition.  Feeding the already
         # impacted analytic state back into this gate would let the response
@@ -96,10 +103,31 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
         action_ball_endpoint = prior[:,49:]
         response=action_model(state,physical,action_ball_endpoint,
                               base.geometry,present,**kwargs)
-        if return_details:
+        if need_action_details:
             response,action_model_info=response
         action_residual=response
         ball_prediction=ball_prediction+action_residual
+        if action_model_info is not None and 'impulse_residual_dv' in action_model_info:
+            if impulse_prior is None or impulse_info is None:
+                raise ValueError('Impulse residual metadata requires analytic prior')
+            residual_dv=action_model_info['impulse_residual_dv']
+            # Re-integrate from the same continuous TOI state used by the
+            # analytic prior.  Adding a raw six-dimensional end-state offset
+            # would mix impulse units with position units and would apply the
+            # correction at the wrong time.
+            corrected_position, corrected_velocity = impulse_prior.advance(
+                impulse_info['pre_position'],
+                impulse_info['pre_velocity'] + impulse_info['impulse_dv'] + residual_dv,
+                impulse_info['remaining_time'])
+            corrected_ball=torch.cat((corrected_position, corrected_velocity),-1)
+            analytic_ball=action_model_info.get('analytic_ball', analytic_ball)
+            if analytic_ball is None:
+                raise ValueError('Analytic ball state is required for TOI residual')
+            impulse_action_residual=corrected_ball-analytic_ball
+            impulse_action_residual=impulse_action_residual * (
+                impulse_info['active'] & present.reshape(-1).bool())[:,None].to(
+                    impulse_action_residual.dtype)
+            ball_prediction=ball_prediction+impulse_action_residual
     state=torch.cat((physical[:,:49],ball_prediction),-1)
     next_feet=logits.sigmoid()
     if return_details:
@@ -108,6 +136,7 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
             analytic_ball=None if impulse_info is None else analytic_ball,
             legacy_correction=correction,
             action_residual=action_residual,
+            impulse_action_residual=impulse_action_residual,
             predicted_ball=ball_prediction,
             impulse_info=impulse_info,
             action_model_info=action_model_info,
