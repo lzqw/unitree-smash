@@ -30,7 +30,9 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
     features=ball_geometry_features(state,base.geometry)
     impulse_prior=getattr(action_model,'impulse_prior',None)
     mode_conditioned=getattr(action_model,'requires_racket_probability',False)
-    if mode_conditioned:
+    if impulse_prior is not None and not hasattr(ball,'components'):
+        raise ValueError('Hybrid transition requires object-separated legacy ball components')
+    if mode_conditioned or impulse_prior is not None:
         if not hasattr(ball,'components'):
             raise ValueError('Mode-conditioned sweep requires object-separated ball components')
         probability,response=ball.components(features)

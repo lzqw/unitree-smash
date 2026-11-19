@@ -39,6 +39,14 @@ class FakeBall(nn.Module):
         return features.new_zeros(len(features),6),features.new_zeros(len(features))
 
 
+class HybridFakeBall(FakeBall):
+    def components(self, features):
+        probability=features.new_zeros(len(features),5)
+        probability[:,0]=1.
+        response=features.new_zeros(len(features),4,6)
+        return probability,response
+
+
 def inputs():
     state=torch.zeros(4,55);state[:,3]=1.;state[:,49]=.01;state[:,52]=-5.
     target=torch.zeros(4,18);target[:,12]=torch.tensor([0.,.01,.03,.05])
@@ -157,7 +165,7 @@ def test_analytic_impulse_prior_is_part_of_main_transition_when_attached():
             assert predicted_robot is not None
             return state[:, 49:] + state.new_tensor([0., 0., 0., 1., 0., 0.]), {}
 
-    world, ball = FakeWorld(), FakeBall()
+    world, ball = FakeWorld(), HybridFakeBall()
     model = ActionConditionedBallV1(preview=FakePreview())
     prior = Prior()
     model.__dict__['impulse_prior'] = prior
@@ -175,7 +183,7 @@ def test_hybrid_details_separate_analytic_impulse_from_trainable_residual():
                 'active': present.bool(),
             }
 
-    world, ball = FakeWorld(), FakeBall()
+    world, ball = FakeWorld(), HybridFakeBall()
     model = ActionConditionedBallV1(preview=FakePreview())
     model.__dict__['impulse_prior'] = Prior()
     args = inputs()
@@ -204,7 +212,7 @@ def test_launch_transition_keeps_prior_launch_state_over_parked_ball():
             ball = torch.where(launch_now[:, None], launch, state[:, 49:])
             return torch.cat((state[:, :49], ball), -1), launch_now
 
-    world, ball = LaunchWorld(), FakeBall()
+    world, ball = LaunchWorld(), HybridFakeBall()
     state, target, prev, feet, present, elapsed, launch = inputs()
     present.zero_()
     launch[:, 0] = 3.
