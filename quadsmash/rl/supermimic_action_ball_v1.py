@@ -376,6 +376,74 @@ class TemporalCausalRacketModeTargetActionBallV9(TemporalCausalRacketModeTargetA
         return result
 
 
+class TemporalCausalRacketModeTargetLinearActionBallV10(TemporalCausalRacketModeTargetActionBallV9):
+    """V9 plus an explicit executable-command response channel.
+
+    The nonlinear geometry head can be locally insensitive when the learned
+    robot model misses the impact by a few millimetres.  This linear channel
+    gives the calibration a bounded first-order map from the current target
+    change to ball correction, while retaining V9's causal gates.
+    """
+    schema = 'native-temporal-causal-racket-mode-target-linear-floor-action-sweep-v10'
+
+    def __init__(self, *, preview=None, hidden=(128,128), softness_m=.008,
+                 closing_softness_m=.004, contact_margin_m=.003):
+        super().__init__(preview=preview, hidden=hidden, softness_m=softness_m,
+                         closing_softness_m=closing_softness_m,
+                         contact_margin_m=contact_margin_m)
+        self.command_head = nn.Linear(18, 6)
+        nn.init.zeros_(self.command_head.weight)
+        nn.init.zeros_(self.command_head.bias)
+
+    def forward(self, state, predicted_robot, free_ball, geometry, present, *,
+                racket_probability, previous_action, current_target, details=False):
+        result, info = super().forward(
+            state, predicted_robot, free_ball, geometry, present,
+            racket_probability=racket_probability, previous_action=previous_action,
+            current_target=current_target, details=True)
+        command_delta = (current_target - previous_action) / current_target.new_tensor(3.0)
+        current = ball_geometry_features(state, geometry)
+        future = ball_geometry_features(torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
+        first, last = current[:, 6:9], future[:, 6:9]
+        middle = (first + last) * .5
+        gaps = torch.stack((self.preview.racket_gap(first), self.preview.racket_gap(middle),
+                            self.preview.racket_gap(last)), -1)
+        smallest = -self.softness_m * torch.logsumexp(-gaps / self.softness_m, -1)
+        support = torch.sigmoid(-smallest / self.softness_m)
+        current_gap, future_gap = gaps[:, 0], gaps[:, 2]
+        closing = torch.sigmoid((current_gap - future_gap) / self.closing_softness_m)
+        inside = torch.sigmoid((self.contact_margin_m - current_gap) / self.closing_softness_m)
+        causal = inside + (1. - inside) * closing
+        gate = (self.support_floor + (1. - self.support_floor) * support)
+        gate = gate * (self.mode_floor + (1. - self.mode_floor) * racket_probability) * causal
+        result = result + self.command_head(command_delta) * self.output_scale * gate[:, None] * present.reshape(-1, 1).to(state.dtype)
+        if details:
+            return result, dict(info, command_delta=command_delta, effective_support=gate)
+        return result
+
+
+def migrate_temporal_v10(source):
+    """Migrate V3 to V10 with the explicit linear channel zero initialized."""
+    base = migrate_temporal_v9(source)
+    new = TemporalCausalRacketModeTargetLinearActionBallV10(
+        closing_softness_m=base.closing_softness_m,
+        contact_margin_m=base.contact_margin_m)
+    target, saved = new.state_dict(), base.state_dict()
+    for key, value in saved.items():
+        if key not in target:
+            raise ValueError('V10 migration field missing: ' + key)
+        if key == 'head.net.0.weight':
+            target[key][:, :value.shape[1]] = value
+        elif key == 'input_scale':
+            target[key][:value.shape[0]] = value
+        elif target[key].shape == value.shape:
+            target[key] = value
+        else:
+            raise ValueError('V10 migration tensor shape mismatch: ' + key)
+    new.load_state_dict(target, strict=True)
+    return new
+
+
 def migrate_temporal_v9(source):
     """Migrate V3 weights into V9 with explicit zero-initialized new columns."""
     base = migrate_temporal_v8(source)
@@ -622,7 +690,8 @@ def action_ball_from_checkpoint(checkpoint):
                                     CausalRacketModeActionBallV3.schema,
                                     TemporalCausalRacketModeActionBallV7.schema,
                                     TemporalCausalRacketModeTargetActionBallV8.schema,
-                                    TemporalCausalRacketModeTargetActionBallV9.schema):
+                                    TemporalCausalRacketModeTargetActionBallV9.schema,
+                                    TemporalCausalRacketModeTargetLinearActionBallV10.schema):
         kwargs.update(closing_softness_m=float(checkpoint.get('closing_softness_m', .004)),
                       contact_margin_m=float(checkpoint.get('contact_margin_m', .003)))
     if checkpoint.get('schema') in (MaterialInertiaActionBallV4.schema,
@@ -639,7 +708,7 @@ def action_ball_for_schema(schema, **kwargs):
         CausalRacketModeActionBallV3, RacketModeActionBallV2, ImpactTimeActionBallV3, MaterialInertiaActionBallV4,
         FrameAwareMaterialInertiaActionBallV5, FrameAwareMaterialInertiaActionBallV6,
         TemporalCausalRacketModeActionBallV7, TemporalCausalRacketModeTargetActionBallV8,
-        TemporalCausalRacketModeTargetActionBallV9)}
+        TemporalCausalRacketModeTargetActionBallV9, TemporalCausalRacketModeTargetLinearActionBallV10)}
     if schema not in classes:
         raise ValueError('Unknown action-ball checkpoint schema: '+str(schema))
     return classes[schema](**kwargs)

@@ -6,7 +6,8 @@ from quadsmash.rl.supermimic_action_ball_v1 import (
     ActionConditionedBallV1, RacketModeActionBallV2,
     CausalRacketModeActionBallV3, TemporalCausalRacketModeTargetActionBallV8,
     TemporalCausalRacketModeTargetActionBallV9, migrate_temporal_v8,
-    migrate_temporal_v9, action_ball_for_schema)
+    TemporalCausalRacketModeTargetLinearActionBallV10, migrate_temporal_v9,
+    migrate_temporal_v10, action_ball_for_schema)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from test_supermimic_action_ball_v1 import FakeWorld, FakePreview, FakeBall, inputs
 
@@ -121,3 +122,11 @@ def test_temporal_v9_migration_keeps_explicit_floor_schema():
     assert type(restored) is TemporalCausalRacketModeTargetActionBallV9
     assert restored.schema != TemporalCausalRacketModeTargetActionBallV8.schema
     assert restored.support_floor > 0 and restored.mode_floor > 0
+
+
+def test_temporal_v10_migration_has_zero_initialized_linear_channel():
+    source = CausalRacketModeActionBallV3()
+    restored = migrate_temporal_v10({'schema': source.schema, 'model': source.state_dict()})
+    assert type(restored) is TemporalCausalRacketModeTargetLinearActionBallV10
+    assert torch.equal(restored.command_head.weight,
+                       torch.zeros_like(restored.command_head.weight))
