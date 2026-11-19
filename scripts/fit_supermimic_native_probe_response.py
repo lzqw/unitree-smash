@@ -176,7 +176,19 @@ def main():
         model = action_ball_from_checkpoint(candidate_source).to(device)
         model.load_state_dict(candidate_source['model'], strict=True)
     model.train()
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    command_head = getattr(model, 'command_head', None)
+    if command_head is not None:
+        # The executable-target channel sees small perturbations (often below
+        # 1e-2 rad).  Give that bounded calibration branch its own declared
+        # step size instead of letting the nonlinear residual head absorb all
+        # of the native-response gradient.
+        optimizer = torch.optim.Adam([
+            {'params': [p for n, p in model.named_parameters() if not n.startswith('command_head.')],
+             'lr': args.lr},
+            {'params': command_head.parameters(), 'lr': max(args.lr, 5e-3)},
+        ])
+    else:
+        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     initial = metrics(response(model, physical, ball, validation), validation)
     train_native = train['native_plus'][:, 52:55] - train['native_minus'][:, 52:55]
     history = []
