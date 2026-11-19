@@ -87,11 +87,15 @@ class BallImpulsePriorV1(nn.Module):
         index=torch.cat((bg,rg),-1).argmin(-1)
         return normals.gather(-2,index[...,None,None].expand(*index.shape,1,3)).squeeze(-2),index
 
-    def forward(self,state,geometry,present):
+    def forward(self,state,geometry,present,predicted_robot=None):
         if len(state)>256:
-            chunks=[self(s,geometry,p) for s,p in zip(state.split(256),present.split(256))]
+            robot_chunks = (None if predicted_robot is None else predicted_robot.split(256))
+            chunks=[self(s,geometry,p, None if robot_chunks is None else robot_chunks[i])
+                    for i,(s,p) in enumerate(zip(state.split(256),present.split(256)))]
             return torch.cat([x[0] for x in chunks]),{k:torch.cat([x[1][k] for x in chunks]) for k in chunks[0][1]}
         p=decode_physical(state)
+        if predicted_robot is not None and predicted_robot.shape != state.shape:
+            raise ValueError('Predicted robot state must align with current state')
         bodies=geometry(p['joint_position'],p['joint_velocity'],p['root_position_w'],p['root_quaternion_w'],
             p['root_link_velocity_w'],p['root_angular_velocity_w'])
         i=geometry.ids['Racket'];r=bodies['rotation'][:,i];center=bodies['position'][:,i]
@@ -100,7 +104,28 @@ class BallImpulsePriorV1(nn.Module):
         local=(r.transpose(-1,-2)@delta[...,None]).squeeze(-1)
         relative=(r.transpose(-1,-2)@(p['ball_velocity_w']-vc-torch.linalg.cross(omega,delta))[...,None]).squeeze(-1)
         times=self.preview.times[None,:,None]
-        local_path=local[:,None]+relative[:,None]*times
+        if predicted_robot is None:
+            local_path=local[:,None]+relative[:,None]*times
+        else:
+            # The endpoint uses the predicted current-command robot pose.  A
+            # cubic sweep is unnecessary for the analytic prior itself, but
+            # using both endpoint poses prevents the prior from becoming a
+            # state-only collision term in the main transition.
+            endpoint_fields=decode_physical(torch.cat((predicted_robot[:, :49],
+                state[:, 49:]), -1))
+            endpoint_bodies=geometry(endpoint_fields['joint_position'],
+                endpoint_fields['joint_velocity'],endpoint_fields['root_position_w'],
+                endpoint_fields['root_quaternion_w'],endpoint_fields['root_link_velocity_w'],
+                endpoint_fields['root_angular_velocity_w'])
+            endpoint_id=geometry.ids['Racket']
+            endpoint_rotation=endpoint_bodies['rotation'][:, endpoint_id]
+            endpoint_center=endpoint_bodies['position'][:, endpoint_id]
+            endpoint_ball,_=self.advance(p['ball_position_w'],p['ball_velocity_w'],
+                                         torch.full_like(p['ball_position_w'][:, 0],self.dt))
+            endpoint_local=(endpoint_rotation.transpose(-1,-2) @
+                            (endpoint_ball-endpoint_center)[...,None]).squeeze(-1)
+            a=(times/self.dt).clamp(0.,1.)
+            local_path=(1.-a)*local[:,None]+a*endpoint_local[:,None]
         world_path=p['ball_position_w'][:,None]+p['ball_velocity_w'][:,None]*times+.5*self.gravity*times.square()
         gap=torch.stack((self.preview.racket_gap(local_path),world_path[:,:,2]-self.preview.radius,
                          self.preview.net_gap(world_path)),-1)

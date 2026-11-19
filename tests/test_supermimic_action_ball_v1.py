@@ -2,7 +2,7 @@
 import torch
 from torch import nn
 from quadsmash.rl.supermimic_action_ball_v1 import (ActionConditionedBallV1,
-    CausalActionConditionedBallV2,preimpact_hard_negatives)
+    CausalActionConditionedBallV2,preimpact_hard_negatives,normalized_softmin)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_action_ball_v1 import postimpact_hard_negatives,contact_neighborhood_pools
 
@@ -100,6 +100,33 @@ def test_causal_sweep_keeps_entry_geometry_active():
     predicted,_,_=world(state,target,prev,feet,present,elapsed,launch)
     _,details=model(state,predicted,state[:,49:],world.geometry,present,details=True)
     assert (details['causal_gate'] > .45).all()
+
+
+def test_normalized_softmin_has_no_sampling_count_bias():
+    values = torch.full((2, 5), .004)
+    result = normalized_softmin(values, .008)
+    torch.testing.assert_close(result, values[:, 0], atol=1e-7, rtol=0)
+
+
+def test_analytic_impulse_prior_is_part_of_main_transition_when_attached():
+    class Prior:
+        def __init__(self):
+            self.called = False
+
+        def __call__(self, state, geometry, present, predicted_robot=None):
+            self.called = True
+            assert predicted_robot is not None
+            return state[:, 49:] + state.new_tensor([0., 0., 0., 1., 0., 0.]), {}
+
+    world, ball = FakeWorld(), FakeBall()
+    model = ActionConditionedBallV1(preview=FakePreview())
+    prior = Prior()
+    model.__dict__['impulse_prior'] = prior
+    state, target, prev, feet, present, elapsed, launch = inputs()
+    result = ball_transition(world, ball, state, target, prev, feet, present,
+                             elapsed, launch, action_model=model)[0]
+    assert prior.called
+    assert torch.allclose(result[:, 52], state[:, 52] + 1.)
 
 
 def test_precontact_hard_negative_is_one_tick_before_native_edge_and_reset_safe():

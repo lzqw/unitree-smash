@@ -6,6 +6,7 @@ from .supermimic_v1 import load_ppo_initialized_actor
 from .supermimic_physical_world_v2 import PhysicalWorldV2
 from .supermimic_ball_residual_v2 import BallResidualV2
 from .supermimic_action_ball_v1 import action_ball_from_checkpoint
+from .supermimic_ball_impulse_prior_v1 import BallImpulsePriorV1
 from .supermimic_task_memory_schema_v1 import TaskMemorySchemaV1,MemoryField
 from .supermimic_task_transition_model_v1 import task_model_for_schema
 from .supermimic_physical_imagination_adapter_v1 import PhysicalImaginationAdapter
@@ -108,6 +109,10 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
                     candidate.get('contact_margin_m') != action_ball.contact_margin_m):
                 raise ValueError('Causal action-ball gate contract mismatch')
         action_ball.load_state_dict(candidate['model'],strict=True)
+        # Keep the analytic impulse prior outside the candidate checkpoint so
+        # old residual weights remain loadable. The main transition attaches
+        # it only for an explicitly loaded action-ball candidate.
+        action_ball.__dict__['impulse_prior'] = BallImpulsePriorV1().to(device)
     task_state=torch.load(paths['task'],map_location='cpu',weights_only=True)
     schema=TaskMemorySchemaV1([MemoryField(**dict(f,shape=tuple(f['shape']))) for f in task_state['task_schema']['fields']])
     output_key=max((key for key in task_state['model'] if key.startswith('net.net.') and key.endswith('.bias')),
@@ -123,6 +128,9 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
                       g07_execution_root=str(execution_root),
                       task_schema=schema.manifest(),actor_whitelist=APPROACH_NAMES,
                       actor_heads={'approach':APPROACH_NAMES,'recovery':RECOVERY_NAMES})).to(device)
+    if action_ball is not None:
+        adapter.manifest['analytic_impulse_prior_schema'] = BallImpulsePriorV1.schema
+        adapter.manifest['hybrid_ball_transition'] = True
     suite=Path(__file__).resolve().parents[2]/manifest['task_contract']['suite']['path']
     if hashlib.sha256(suite.read_bytes()).hexdigest()!=manifest['task_contract']['suite']['sha256']:raise ValueError('Suite hash mismatch')
     cases=json.loads(suite.read_text())['cases']

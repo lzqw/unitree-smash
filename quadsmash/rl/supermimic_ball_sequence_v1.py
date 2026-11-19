@@ -39,6 +39,18 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
         correction,_=ball(features,present)
     physical,logits,active=base(state,targets,previous_action,feet,present,elapsed,launch)
     ball_prediction=prior[:,49:]+correction
+    impulse_prior=getattr(action_model,'impulse_prior',None)
+    if impulse_prior is not None:
+        # The analytic prior is now part of the same state transition as the
+        # learned residual. It receives the predicted current-command robot
+        # state and therefore remains action-conditioned. Legacy models keep
+        # the byte-compatible free-flight path unless they explicitly attach
+        # this opt-in prior.
+        analytic_ball, impulse_info = impulse_prior(
+            state, base.geometry, present, predicted_robot=physical)
+        ball_prediction=analytic_ball+correction
+    else:
+        impulse_info=None
     if action_model is not None:
         # V4 preserves its historical string-only contract. V5 explicitly
         # includes the learned frame-contact mode as a second causal impact
@@ -54,6 +66,7 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
                 kwargs['current_target']=targets
         else:
             kwargs={}
-        ball_prediction=ball_prediction+action_model(state,physical,prior[:,49:],base.geometry,present,**kwargs)
+        response=action_model(state,physical,prior[:,49:],base.geometry,present,**kwargs)
+        ball_prediction=ball_prediction+response
     state=torch.cat((physical[:,:49],ball_prediction),-1)
     return state,logits.sigmoid(),active

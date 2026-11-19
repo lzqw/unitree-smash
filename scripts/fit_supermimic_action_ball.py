@@ -20,6 +20,7 @@ from quadsmash.rl.supermimic_action_ball_v1 import (ActionConditionedBallV1,
     CausalActionConditionedBallV2,CausalRacketModeActionBallV3,
     preimpact_hard_negatives,contact_neighborhood_pools)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
+from quadsmash.rl.supermimic_ball_impulse_prior_v1 import BallImpulsePriorV1
 from quadsmash.rl.supermimic_wm_validation_v1 import event_aligned_windows
 from quadsmash.rl.supermimic_physical_dataset_v1 import valid_windows
 
@@ -224,7 +225,9 @@ def main():
     p.add_argument('--rollout-horizons', default='4,16,64',
         help='Fixed comma-separated multi-step rollout curriculum')
     p.add_argument('--validation-interval', type=int, default=25,
-        help='Event-aligned validation interval in optimizer updates')
+        help='Full autoregressive validation interval after quick checks')
+    p.add_argument('--quick-validation-interval', type=int, default=1,
+        help='Cheap event-edge validation interval in optimizer updates')
     p.add_argument('--autoregressive-validation-interval', type=int, default=50,
         help='Multi-step validation interval; zero disables intermediate checks')
     p.add_argument('--adjacent-degradation-tolerance', type=float, default=1e-6,
@@ -248,6 +251,8 @@ def main():
         raise ValueError('Rollout loss settings must be nonnegative/positive')
     if a.validation_interval < 1:
         raise ValueError('Validation interval must be positive')
+    if a.quick_validation_interval < 1:
+        raise ValueError('Quick validation interval must be positive')
     if a.autoregressive_validation_interval < 0:
         raise ValueError('Autoregressive validation interval must be nonnegative')
     if a.adjacent_degradation_tolerance < 0:
@@ -277,6 +282,10 @@ def main():
                  CausalActionConditionedBallV2.schema: CausalActionConditionedBallV2,
                  CausalRacketModeActionBallV3.schema: CausalRacketModeActionBallV3}[a.model_schema]
     sweep=model_cls(softness_m=a.softness_m).to(device)
+    # Fit the residual against the same hybrid transition used at inference.
+    # Bypass Module registration so the fixed analytic prior is not serialized
+    # as candidate weights or confused with trainable residual parameters.
+    sweep.__dict__['impulse_prior'] = BallImpulsePriorV1().to(device)
     package=torch.load(a.packed_data,map_location='cpu',weights_only=True)
     manifest=package.get('source_manifest',package.get('manifest',{}))
     if manifest.get('task_contract')!=source:
@@ -324,8 +333,11 @@ def main():
     if not len(event_aligned_windows(metadata,val,horizon=64,offsets=(0,),maximum=1)['0']['starts']):
         raise ValueError('No heldout contact edge for candidate validation')
     print('ACTION_BALL_STAGE=INITIAL_VALIDATION',flush=True)
-    initial=metrics(base,ball,None,data,metadata,val,launch)
-    initial_ar=autoregressive_metrics(base,ball,None,data,metadata,val,launch)
+    # The baseline for candidate selection must use the same hybrid transition
+    # with zero residual weights. Comparing a hybrid candidate to the legacy
+    # free-flight path would mix model-structure change with fitted weights.
+    initial=metrics(base,ball,sweep,data,metadata,val,launch)
+    initial_ar=autoregressive_metrics(base,ball,sweep,data,metadata,val,launch)
     generator=torch.Generator(device=device).manual_seed(20261117)
     trainable_parameters=[parameter for parameter in sweep.parameters() if parameter.requires_grad]
     if not trainable_parameters:
@@ -384,10 +396,10 @@ def main():
                 base, ball, sweep, data, rollout_pairs, launch, horizon, rollout_scale))
         rollout=torch.stack(rollout_terms).mean()
         loss=loss+a.rollout_loss_weight*rollout
+        response_scale=correction.new_tensor([.05,.05,.05,10.,10.,10.])
         if a.sampling_schema=='contact-neighborhood-v2' and a.post_residual_weight:
             post_start=a.batch//2+a.batch//4
             post_end=post_start+a.batch//8
-            response_scale=correction.new_tensor([.05,.05,.05,10.,10.,10.])
             post_response=(correction[post_start:post_end]/response_scale).square().mean()
             loss=loss+a.post_residual_weight*post_response
         if a.precontact_residual_weight:
@@ -397,16 +409,19 @@ def main():
         optimizer.zero_grad(set_to_none=True);loss.backward()
         gradient=torch.nn.utils.clip_grad_norm_(trainable_parameters,10.,error_if_nonfinite=True)
         optimizer.step()
-        if update==1 or update%a.validation_interval==0 or update==a.updates:
+        if (update == 1 or update % a.quick_validation_interval == 0
+                or update == a.updates):
             validation_candidate=metrics(base,ball,sweep,data,metadata,val,launch)
             selection=event_validation_selection_score(
                 initial,validation_candidate,
                 adjacent_tolerance=a.adjacent_degradation_tolerance)
             ar_candidate=None
             ar_selection=None
-            if (update==a.updates or
-                    (a.autoregressive_validation_interval and
-                     update%a.autoregressive_validation_interval==0)):
+            # Full multi-step screening is conditional on the cheap event-edge
+            # check. This examines every update that is safe enough to merit
+            # an expensive 4/16/32/64-step holdout, without weakening any
+            # adjacent-event threshold.
+            if selection['eligible']:
                 ar_candidate=autoregressive_metrics(base,ball,sweep,data,metadata,val,launch)
                 ar_selection=autoregressive_validation_selection_score(
                     initial_ar,ar_candidate,
@@ -451,6 +466,8 @@ def main():
         model_schema=a.model_schema,post_residual_weight=a.post_residual_weight,
         precontact_loss_weight=a.precontact_loss_weight,
         softness_m=a.softness_m,
+        quick_validation_interval=a.quick_validation_interval,
+        full_validation_interval=a.validation_interval,
         rollout_loss_weight=a.rollout_loss_weight,rollout_horizons=list(rollout_horizons),
         trainable_parameter_names=[name for name,parameter in sweep.named_parameters() if parameter.requires_grad],
         event_validation_selection=selection_status,
@@ -465,6 +482,8 @@ def main():
         sampling_schema=a.sampling_schema,post_residual_weight=a.post_residual_weight,
         precontact_residual_weight=a.precontact_residual_weight,
         softness_m=a.softness_m,
+        quick_validation_interval=a.quick_validation_interval,
+        full_validation_interval=a.validation_interval,
         pool_sizes={k:len(v) for k,v in neighborhoods.items()},
         allocated_draws=allocated_draws if a.sampling_schema!='legacy-v1' else None,
         independence_scope="candidate fit heldout lanes; historical base-model holdout independence requires separate provenance",

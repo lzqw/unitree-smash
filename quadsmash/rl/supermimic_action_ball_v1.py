@@ -5,11 +5,57 @@ native racket geometry to estimate a soft collision support. Legacy ball
 predictions remain byte-for-byte unchanged unless a verified candidate is
 explicitly loaded. This is a differentiable surrogate, not a PhysX solver.
 """
+import math
 import torch
 from torch import nn
 from .supermimic_ball_residual_v1 import ball_geometry_features
 from .supermimic_ball_geometry_preview_v1 import BallGeometryPreviewV1
 from .supermimic_v1 import MLP
+
+
+def normalized_softmin(values, softness):
+    """Smooth minimum without a sampling-count-dependent bias."""
+    if values.shape[-1] < 1:
+        raise ValueError('Soft minimum requires at least one sample')
+    return -softness * (
+        torch.logsumexp(-values / softness, dim=-1)
+        - math.log(values.shape[-1])
+    )
+
+
+def hermite_sweep_samples(first, last, first_velocity, last_velocity, count=5):
+    """Sample a causal local racket path with endpoint velocity tangents.
+
+    The endpoint states come from the current state and the predicted
+    post-command robot state.  This is a differentiable motion approximation,
+    not a native contact solve.
+    """
+    if count < 3 or count % 2 == 0:
+        raise ValueError('Sweep sample count must be an odd integer >= 3')
+    alpha = torch.linspace(0., 1., count, device=first.device, dtype=first.dtype)
+    a = alpha.view(1, -1, 1)
+    a2 = a * a
+    a3 = a2 * a
+    p0 = first[:, None]
+    p1 = last[:, None]
+    v0 = first_velocity[:, None]
+    v1 = last_velocity[:, None]
+    return ((2 * a3 - 3 * a2 + 1) * p0
+            + (a3 - 2 * a2 + a) * v0
+            + (-2 * a3 + 3 * a2) * p1
+            + (a3 - a2) * v1)
+
+
+def sweep_gap_summary(preview, first, last, first_velocity, last_velocity,
+                      softness):
+    samples = hermite_sweep_samples(first, last, first_velocity, last_velocity)
+    sampled_gaps = preview.racket_gap(samples.reshape(-1, 3)).reshape(samples.shape[:2])
+    smallest = normalized_softmin(sampled_gaps, softness)
+    # Preserve the established 3-feature checkpoint shape while using all
+    # trajectory samples for support and the middle summary feature.
+    gaps = torch.stack((sampled_gaps[..., 0], smallest,
+                        sampled_gaps[..., -1]), -1)
+    return gaps, smallest, sampled_gaps
 
 
 def preimpact_hard_negatives(contact_edge, episode, terminated, timeout):
@@ -86,13 +132,11 @@ class ActionConditionedBallV1(nn.Module):
         future = ball_geometry_features(torch.cat((predicted_robot[:, :49], free_ball),-1), geometry)
         first = current[:, 6:9]
         last = future[:, 6:9]
-        middle = (first + last) * .5
-        gaps = torch.stack((self.preview.racket_gap(first),
-                            self.preview.racket_gap(middle),
-                            self.preview.racket_gap(last)),-1)
+        gaps, smallest, sampled_gaps = sweep_gap_summary(
+            self.preview, first, last, current[:, 9:12], future[:, 9:12],
+            self.softness_m)
         # Soft minimum keeps the impulse pathway differentiable near grazing
         # trajectories; the original collision geometry is not enlarged.
-        smallest = -self.softness_m * torch.logsumexp(-gaps/self.softness_m,-1)
         support = torch.sigmoid(-smallest/self.softness_m)
         features = torch.cat((current[:, :21],future[:, :21],gaps,last-first),-1)
         normalized = (features/self.input_scale).clamp(-30.,30.)
@@ -101,6 +145,8 @@ class ActionConditionedBallV1(nn.Module):
             raise FloatingPointError('Nonfinite action-conditioned ball response')
         if details:
             return residual, dict(support=support, gaps=gaps,
+                                  sampled_gaps=sampled_gaps,
+                                  predicted_impact_probability=support,
                                   local_displacement=last-first)
         return residual
 
@@ -141,20 +187,18 @@ class CausalActionConditionedBallV2(ActionConditionedBallV1):
         future = ball_geometry_features(torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
         first = current[:, 6:9]
         last = future[:, 6:9]
-        middle = (first + last) * .5
-        gaps = torch.stack((self.preview.racket_gap(first),
-                            self.preview.racket_gap(middle),
-                            self.preview.racket_gap(last)), -1)
-        smallest = -self.softness_m * torch.logsumexp(-gaps / self.softness_m, -1)
+        gaps, smallest, sampled_gaps = sweep_gap_summary(
+            self.preview, first, last, current[:, 9:12], future[:, 9:12],
+            self.softness_m)
         support = torch.sigmoid(-smallest / self.softness_m)
-        current_gap = gaps[:, 0]
-        future_gap = gaps[:, 2]
+        current_gap = self.preview.racket_gap(first)
+        future_gap = self.preview.racket_gap(last)
         closing_gate = torch.sigmoid((current_gap - future_gap) / self.closing_softness_m)
         inside_gate = torch.sigmoid((self.contact_margin_m - current_gap) /
                                     self.closing_softness_m)
         # Smooth union.  Inside-contact states remain active even when the
         # endpoint is separating, while post-impact separated states decay.
-        causal_gate = inside_gate + (1. - inside_gate) * closing_gate
+        causal_gate = closing_gate * (closing_gate + inside_gate * (1. - closing_gate))
         features = torch.cat((current[:, :21], future[:, :21], gaps, last - first), -1)
         normalized = (features / self.input_scale).clamp(-30., 30.)
         residual = ((self.head(normalized) * self.output_scale) * support[:, None] *
@@ -163,23 +207,27 @@ class CausalActionConditionedBallV2(ActionConditionedBallV1):
             raise FloatingPointError('Nonfinite causal action-conditioned ball response')
         if details:
             return residual, dict(support=support, gaps=gaps,
+                                  sampled_gaps=sampled_gaps,
                                   local_displacement=last - first,
                                   closing_gate=closing_gate,
                                   inside_gate=inside_gate,
-                                  causal_gate=causal_gate)
+                                  causal_gate=causal_gate,
+                                  predicted_impact_probability=support * causal_gate)
         return residual
 
 
 class CausalRacketModeActionBallV3(CausalActionConditionedBallV2):
-    """Causal sweep response gated by the current learned racket mode.
+    """Causal sweep response with separate current-mode and impact gates.
 
     The mode probability is predicted from the current physical state by the
     object-separated ball model. It is not a future contact label. Combining
-    it with the entry/separation gate prevents a sweep residual from persisting
-    through ordinary free-flight transitions after a hit.
+    The current mode remains a diagnostic input. The response itself is gated
+    by the predicted impact geometry so a near-but-separating state cannot
+    activate a contact residual one control tick early.
     """
     schema = 'causal-racket-mode-action-sweep-v3'
     requires_racket_probability = True
+    uses_predicted_impact_probability = True
 
     def forward(self, state, predicted_robot, free_ball, geometry, present, *,
                 racket_probability, details=False):
@@ -190,10 +238,10 @@ class CausalRacketModeActionBallV3(CausalActionConditionedBallV2):
             raise ValueError('Invalid predicted racket mode probability')
         residual, info = super().forward(state, predicted_robot, free_ball,
                                          geometry, present, details=True)
-        residual = residual * racket_probability[:, None]
         if details:
             return residual, dict(info, racket_probability=racket_probability,
-                                  effective_support=info['support'] * info['causal_gate'] * racket_probability)
+                                  current_racket_probability=racket_probability,
+                                  effective_support=info['predicted_impact_probability'])
         return residual
 
 
@@ -227,19 +275,22 @@ class TemporalCausalRacketModeActionBallV7(CausalRacketModeActionBallV3):
             raise ValueError('Previous executed action must be [batch,18]')
         current=ball_geometry_features(state,geometry)
         future=ball_geometry_features(torch.cat((predicted_robot[:,:49],free_ball),-1),geometry)
-        first=current[:,6:9];last=future[:,6:9];middle=(first+last)*.5
-        gaps=torch.stack((self.preview.racket_gap(first),self.preview.racket_gap(middle),self.preview.racket_gap(last)),-1)
-        smallest=-self.softness_m*torch.logsumexp(-gaps/self.softness_m,-1)
+        first=current[:,6:9];last=future[:,6:9]
+        gaps,smallest,sampled_gaps=sweep_gap_summary(self.preview, first, last,
+            current[:,9:12], future[:,9:12], self.softness_m)
         support=torch.sigmoid(-smallest/self.softness_m)
-        current_gap=gaps[:,0];future_gap=gaps[:,2]
+        current_gap=self.preview.racket_gap(first);future_gap=self.preview.racket_gap(last)
         closing_gate=torch.sigmoid((current_gap-future_gap)/self.closing_softness_m)
         inside_gate=torch.sigmoid((self.contact_margin_m-current_gap)/self.closing_softness_m)
-        causal_gate=inside_gate+(1.-inside_gate)*closing_gate
+        causal_gate=closing_gate*(closing_gate+inside_gate*(1.-closing_gate))
         features=torch.cat((current[:,:21],future[:,:21],gaps,last-first,previous_action),-1)
         normalized=(features/self.input_scale).clamp(-30.,30.)
-        residual=(self.head(normalized)*self.output_scale)*support[:,None]*causal_gate[:,None]*racket_probability[:,None]*present.reshape(-1,1).to(state.dtype)
+        residual=(self.head(normalized)*self.output_scale)*support[:,None]*causal_gate[:,None]*present.reshape(-1,1).to(state.dtype)
         if not torch.isfinite(residual).all():raise FloatingPointError('Nonfinite temporal action-conditioned ball response')
-        if details:return residual,dict(support=support,closing_gate=closing_gate,inside_gate=inside_gate,causal_gate=causal_gate,racket_probability=racket_probability)
+        if details:return residual,dict(support=support,sampled_gaps=sampled_gaps,
+            predicted_impact_probability=support*causal_gate,
+            closing_gate=closing_gate,inside_gate=inside_gate,causal_gate=causal_gate,
+            racket_probability=racket_probability,current_racket_probability=racket_probability)
         return residual
 
 
@@ -302,29 +353,31 @@ class TemporalCausalRacketModeTargetActionBallV8(TemporalCausalRacketModeActionB
         future = ball_geometry_features(torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
         first = current[:, 6:9]
         last = future[:, 6:9]
-        middle = (first + last) * .5
-        gaps = torch.stack((self.preview.racket_gap(first),
-                            self.preview.racket_gap(middle),
-                            self.preview.racket_gap(last)), -1)
-        smallest = -self.softness_m * torch.logsumexp(-gaps / self.softness_m, -1)
+        gaps, smallest, sampled_gaps = sweep_gap_summary(
+            self.preview, first, last, current[:, 9:12], future[:, 9:12],
+            self.softness_m)
         support = torch.sigmoid(-smallest / self.softness_m)
-        current_gap, future_gap = gaps[:, 0], gaps[:, 2]
+        current_gap = self.preview.racket_gap(first)
+        future_gap = self.preview.racket_gap(last)
         closing_gate = torch.sigmoid((current_gap - future_gap) / self.closing_softness_m)
         inside_gate = torch.sigmoid((self.contact_margin_m - current_gap) /
                                     self.closing_softness_m)
-        causal_gate = inside_gate + (1. - inside_gate) * closing_gate
+        causal_gate = closing_gate * (closing_gate + inside_gate * (1. - closing_gate))
         features = torch.cat((current[:, :21], future[:, :21], gaps,
                               last - first, previous_action, current_target), -1)
         normalized = (features / self.input_scale).clamp(-30., 30.)
         residual = ((self.head(normalized) * self.output_scale) * support[:, None] *
-                    causal_gate[:, None] * racket_probability[:, None] *
+                    causal_gate[:, None] *
                     present.reshape(-1, 1).to(state.dtype))
         if not torch.isfinite(residual).all():
             raise FloatingPointError('Nonfinite temporal target-conditioned ball response')
         if details:
-            return residual, dict(support=support, closing_gate=closing_gate,
+            return residual, dict(support=support, sampled_gaps=sampled_gaps,
+                                  predicted_impact_probability=support * causal_gate,
+                                  closing_gate=closing_gate,
                                   inside_gate=inside_gate, causal_gate=causal_gate,
-                                  racket_probability=racket_probability)
+                                  racket_probability=racket_probability,
+                                  current_racket_probability=racket_probability)
         return residual
 
 
@@ -353,25 +406,29 @@ class TemporalCausalRacketModeTargetActionBallV9(TemporalCausalRacketModeTargetA
         current = ball_geometry_features(state, geometry)
         future = ball_geometry_features(torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
         first, last = current[:, 6:9], future[:, 6:9]
-        middle = (first + last) * .5
-        gaps = torch.stack((self.preview.racket_gap(first), self.preview.racket_gap(middle),
-                            self.preview.racket_gap(last)), -1)
-        smallest = -self.softness_m * torch.logsumexp(-gaps / self.softness_m, -1)
+        gaps, smallest, sampled_gaps = sweep_gap_summary(
+            self.preview, first, last, current[:, 9:12], future[:, 9:12],
+            self.softness_m)
         support = torch.sigmoid(-smallest / self.softness_m)
-        current_gap, future_gap = gaps[:, 0], gaps[:, 2]
+        current_gap = self.preview.racket_gap(first)
+        future_gap = self.preview.racket_gap(last)
         closing = torch.sigmoid((current_gap - future_gap) / self.closing_softness_m)
         inside = torch.sigmoid((self.contact_margin_m - current_gap) / self.closing_softness_m)
-        causal = inside + (1. - inside) * closing
+        causal = closing * (closing + inside * (1. - closing))
         features = torch.cat((current[:, :21], future[:, :21], gaps, last - first,
                               previous_action, current_target), -1)
         raw = self.head((features / self.input_scale).clamp(-30., 30.)) * self.output_scale
         gate = (self.support_floor + (1. - self.support_floor) * support)
-        gate = gate * (self.mode_floor + (1. - self.mode_floor) * racket_probability)
+        # The current learned mode remains an observed diagnostic.  The
+        # response gate is determined by the predicted impact geometry.
         result = raw * gate[:, None] * causal[:, None] * present.reshape(-1, 1).to(state.dtype)
         if not torch.isfinite(result).all():
             raise FloatingPointError('Nonfinite temporal floor-conditioned ball response')
         if details:
-            return result, dict(info, support=support, causal_gate=causal,
+            return result, dict(info, support=support, sampled_gaps=sampled_gaps,
+                                causal_gate=causal,
+                                predicted_impact_probability=gate * causal,
+                                current_racket_probability=racket_probability,
                                 effective_support=gate * causal)
         return result
 
@@ -405,20 +462,24 @@ class TemporalCausalRacketModeTargetLinearActionBallV10(TemporalCausalRacketMode
         current = ball_geometry_features(state, geometry)
         future = ball_geometry_features(torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
         first, last = current[:, 6:9], future[:, 6:9]
-        middle = (first + last) * .5
-        gaps = torch.stack((self.preview.racket_gap(first), self.preview.racket_gap(middle),
-                            self.preview.racket_gap(last)), -1)
-        smallest = -self.softness_m * torch.logsumexp(-gaps / self.softness_m, -1)
+        gaps, smallest, sampled_gaps = sweep_gap_summary(
+            self.preview, first, last, current[:, 9:12], future[:, 9:12],
+            self.softness_m)
         support = torch.sigmoid(-smallest / self.softness_m)
-        current_gap, future_gap = gaps[:, 0], gaps[:, 2]
+        current_gap = self.preview.racket_gap(first)
+        future_gap = self.preview.racket_gap(last)
         closing = torch.sigmoid((current_gap - future_gap) / self.closing_softness_m)
         inside = torch.sigmoid((self.contact_margin_m - current_gap) / self.closing_softness_m)
-        causal = inside + (1. - inside) * closing
+        causal = closing * (closing + inside * (1. - closing))
         gate = (self.support_floor + (1. - self.support_floor) * support)
-        gate = gate * (self.mode_floor + (1. - self.mode_floor) * racket_probability) * causal
+        gate = gate * causal
         result = result + self.command_head(command_delta) * self.output_scale * gate[:, None] * present.reshape(-1, 1).to(state.dtype)
         if details:
-            return result, dict(info, command_delta=command_delta, effective_support=gate)
+            return result, dict(info, command_delta=command_delta,
+                                sampled_gaps=sampled_gaps,
+                                predicted_impact_probability=gate,
+                                current_racket_probability=racket_probability,
+                                effective_support=gate)
         return result
 
 
@@ -452,22 +513,23 @@ class TemporalCausalRacketModeNativeResponseBallV11(TemporalCausalRacketModeTarg
         current = ball_geometry_features(state, geometry)
         future = ball_geometry_features(torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
         first, last = current[:, 6:9], future[:, 6:9]
-        middle = (first + last) * .5
-        gaps = torch.stack((self.preview.racket_gap(first),
-                            self.preview.racket_gap(middle),
-                            self.preview.racket_gap(last)), -1)
+        gaps, _, sampled_gaps = sweep_gap_summary(
+            self.preview, first, last, current[:, 9:12], future[:, 9:12],
+            self.softness_m)
         features = torch.cat((current[:, :21], future[:, :21], gaps,
                               last - first, previous_action, current_target), -1)
         # The native head is causal and bounded only by the declared output
         # units.  It is trained with native paired labels and supervised
         # non-contact negatives before it can be used for Actor gradients.
         native = self.native_response_head((features / self.input_scale).clamp(-30., 30.))
-        native = native * self.output_scale * present.reshape(-1, 1).to(state.dtype)
+        native = native * self.output_scale * info['predicted_impact_probability'][:, None]
+        native = native * present.reshape(-1, 1).to(state.dtype)
         result = result + native
         if not torch.isfinite(result).all():
             raise FloatingPointError('Nonfinite native response head output')
         if details:
-            return result, dict(info, native_response=native)
+            return result, dict(info, sampled_gaps=sampled_gaps,
+                                native_response=native)
         return result
 
 
