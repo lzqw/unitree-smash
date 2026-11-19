@@ -210,6 +210,8 @@ def main():
     p.add_argument('--model-schema', choices=(ActionConditionedBallV1.schema,
         CausalActionConditionedBallV2.schema,CausalRacketModeActionBallV3.schema),
         default=ActionConditionedBallV1.schema)
+    p.add_argument('--softness-m', type=float, default=0.008,
+        help='Differentiable racket-sweep support width in metres')
     p.add_argument('--post-residual-weight', type=float, default=0.25)
     p.add_argument('--precontact-loss-weight', type=float, default=4.0,
         help='Extra weight for the hard-negative transition immediately before contact')
@@ -238,6 +240,8 @@ def main():
         raise ValueError('Precontact loss weight must be nonnegative')
     if a.precontact_residual_weight < 0:
         raise ValueError('Precontact residual weight must be nonnegative')
+    if not 0 < a.softness_m <= 0.05:
+        raise ValueError('Softness width must be in (0, 0.05] metres')
     rollout_horizons = parse_rollout_horizons(
         a.rollout_horizon if a.rollout_horizon is not None else a.rollout_horizons)
     if a.rollout_loss_weight < 0:
@@ -272,7 +276,7 @@ def main():
     model_cls = {ActionConditionedBallV1.schema: ActionConditionedBallV1,
                  CausalActionConditionedBallV2.schema: CausalActionConditionedBallV2,
                  CausalRacketModeActionBallV3.schema: CausalRacketModeActionBallV3}[a.model_schema]
-    sweep=model_cls().to(device)
+    sweep=model_cls(softness_m=a.softness_m).to(device)
     package=torch.load(a.packed_data,map_location='cpu',weights_only=True)
     manifest=package.get('source_manifest',package.get('manifest',{}))
     if manifest.get('task_contract')!=source:
@@ -442,10 +446,11 @@ def main():
     candidate_metadata=dict(schema=sweep.schema,model=sweep.state_dict(),asset_sha256=asset_sha,
         physical_sha256=sha256(a.physical_checkpoint),legacy_ball_sha256=sha256(a.ball_checkpoint),
         packed_sha256=sha256(a.packed_data),split_sha256=sha256(a.split_manifest),
-        geometry_hashes=sweep.preview.geometry_hashes,softness_m=sweep.softness_m,
+        geometry_hashes=sweep.preview.geometry_hashes,
         updates=a.updates,evidence_scope='recorded-command model-only, no native paired perturbations',
         model_schema=a.model_schema,post_residual_weight=a.post_residual_weight,
         precontact_loss_weight=a.precontact_loss_weight,
+        softness_m=a.softness_m,
         rollout_loss_weight=a.rollout_loss_weight,rollout_horizons=list(rollout_horizons),
         trainable_parameter_names=[name for name,parameter in sweep.named_parameters() if parameter.requires_grad],
         event_validation_selection=selection_status,
@@ -459,6 +464,7 @@ def main():
         action_ball_optimizer_updates=a.updates,base_world_updates=0,
         sampling_schema=a.sampling_schema,post_residual_weight=a.post_residual_weight,
         precontact_residual_weight=a.precontact_residual_weight,
+        softness_m=a.softness_m,
         pool_sizes={k:len(v) for k,v in neighborhoods.items()},
         allocated_draws=allocated_draws if a.sampling_schema!='legacy-v1' else None,
         independence_scope="candidate fit heldout lanes; historical base-model holdout independence requires separate provenance",
