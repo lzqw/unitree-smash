@@ -5,6 +5,7 @@ from quadsmash.rl.supermimic_action_ball_v1 import (ActionConditionedBallV1,
     CausalActionConditionedBallV2,preimpact_hard_negatives,normalized_softmin,
     hermite_sweep_samples)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
+from quadsmash.rl.supermimic_ball_impulse_prior_v1 import attach_hybrid_impulse_prior
 from quadsmash.rl.supermimic_action_ball_v1 import postimpact_hard_negatives,contact_neighborhood_pools
 
 
@@ -183,6 +184,16 @@ def test_hybrid_details_separate_analytic_impulse_from_trainable_residual():
     assert details['hybrid'] is True
     assert torch.allclose(details['action_residual'], torch.zeros_like(details['action_residual']))
     assert torch.allclose(details['analytic_ball'][:, 3], args[0][:, 52] + 2.)
+
+
+def test_registered_hybrid_prior_is_frozen_and_excluded_from_residual_checkpoint():
+    model = ActionConditionedBallV1(preview=FakePreview())
+    attach_hybrid_impulse_prior(model, 'cpu')
+    assert not any(name.startswith('impulse_prior.') for name in model.state_dict())
+    assert not any(parameter.requires_grad for parameter in model.impulse_prior.parameters())
+    restored = ActionConditionedBallV1(preview=FakePreview())
+    attach_hybrid_impulse_prior(restored, 'cpu')
+    restored.load_state_dict(model.state_dict(), strict=True)
 
 
 def test_launch_transition_keeps_prior_launch_state_over_parked_ball():
