@@ -118,6 +118,28 @@ def rollout_ball_loss(base, ball, sweep, data, pairs, launch, horizon, scale):
     return total / horizon
 
 
+def parse_rollout_horizons(value):
+    """Parse a fixed, increasing autoregressive loss curriculum."""
+    if isinstance(value, (tuple, list)):
+        raw = value
+    else:
+        raw = str(value).split(',')
+    horizons = tuple(sorted(set(int(item) for item in raw)))
+    if not horizons or any(horizon < 1 or horizon > 64 for horizon in horizons):
+        raise ValueError('rollout horizons must be unique integers in [1,64]')
+    return horizons
+
+
+def rollout_batch_sizes(batch, horizons):
+    """Use smaller batches for long rollouts while retaining real support."""
+    if batch < 8:
+        raise ValueError('rollout batch requires at least eight samples')
+    return {
+        horizon: max(8, batch // (1 if horizon <= 4 else 2 if horizon <= 16 else 4))
+        for horizon in horizons
+    }
+
+
 def event_validation_selection_score(initial, candidate, *, adjacent_tolerance=1e-6):
     """Score event-edge accuracy without trading adjacent-step accuracy away.
 
@@ -191,10 +213,14 @@ def main():
     p.add_argument('--post-residual-weight', type=float, default=0.25)
     p.add_argument('--precontact-loss-weight', type=float, default=4.0,
         help='Extra weight for the hard-negative transition immediately before contact')
+    p.add_argument('--precontact-residual-weight', type=float, default=0.25,
+        help='Penalty for a swept-ball residual on the hard negative immediately before contact')
     p.add_argument('--rollout-loss-weight', type=float, default=0.5,
         help='Weight for causal multi-step ball supervision in addition to one-step loss')
-    p.add_argument('--rollout-horizon', type=int, default=4,
-        help='Recorded-command rollout horizon for candidate fitting')
+    p.add_argument('--rollout-horizon', type=int, default=None,
+        help='Legacy single rollout horizon override')
+    p.add_argument('--rollout-horizons', default='4,16,64',
+        help='Fixed comma-separated multi-step rollout curriculum')
     p.add_argument('--validation-interval', type=int, default=25,
         help='Event-aligned validation interval in optimizer updates')
     p.add_argument('--autoregressive-validation-interval', type=int, default=50,
@@ -210,7 +236,11 @@ def main():
         raise ValueError('Post-impact residual weight must be nonnegative')
     if a.precontact_loss_weight < 0:
         raise ValueError('Precontact loss weight must be nonnegative')
-    if a.rollout_loss_weight < 0 or a.rollout_horizon < 1:
+    if a.precontact_residual_weight < 0:
+        raise ValueError('Precontact residual weight must be nonnegative')
+    rollout_horizons = parse_rollout_horizons(
+        a.rollout_horizon if a.rollout_horizon is not None else a.rollout_horizons)
+    if a.rollout_loss_weight < 0:
         raise ValueError('Rollout loss settings must be nonnegative/positive')
     if a.validation_interval < 1:
         raise ValueError('Validation interval must be positive')
@@ -273,10 +303,14 @@ def main():
     preceding=preimpact_hard_negatives(events,data['episode'],data['terminated'],data['timeout'])
     hard_negative=(eligible&preceding&~events).nonzero()
     negative=(eligible&~events&~preceding).nonzero()
-    rollout_valid=valid_windows(data['episode'],data['terminated'],data['timeout'],a.rollout_horizon)
-    rollout_pool=(rollout_valid&eligible[:len(rollout_valid)]).nonzero()
-    if len(rollout_pool)<a.batch:
-        raise ValueError('Need enough reset-safe multi-step rollout starts')
+    rollout_pools={}
+    rollout_sizes=rollout_batch_sizes(a.batch, rollout_horizons)
+    for horizon in rollout_horizons:
+        rollout_valid=valid_windows(data['episode'],data['terminated'],data['timeout'],horizon)
+        rollout_pool=(rollout_valid&eligible[:len(rollout_valid)]).nonzero()
+        if len(rollout_pool)<rollout_sizes[horizon]:
+            raise ValueError(f'Need enough reset-safe {horizon}-step rollout starts')
+        rollout_pools[horizon]=rollout_pool
     neighborhoods=contact_neighborhood_pools(events,data['episode'],data['terminated'],data['timeout'],eligible)
     if a.sampling_schema=='contact-neighborhood-v2' and any(len(v)<8 for v in neighborhoods.values()):
         raise ValueError('Need at least eight real transitions in each contact neighborhood pool')
@@ -336,9 +370,15 @@ def main():
         background_loss=error[post_end:].mean()
         loss=(4.*contact_loss + a.precontact_loss_weight*precontact_loss +
               post_loss + .5*background_loss + .02*correction[contact_end:].square().mean())
-        rollout_pairs=rollout_pool[torch.randint(len(rollout_pool),(a.batch,),device=device,generator=generator)]
         rollout_scale=predicted.new_tensor([.1,.1,.1,2.,2.,2.])
-        rollout=rollout_ball_loss(base,ball,sweep,data,rollout_pairs,launch,a.rollout_horizon,rollout_scale)
+        rollout_terms=[]
+        for horizon in rollout_horizons:
+            pool=rollout_pools[horizon]
+            count=rollout_sizes[horizon]
+            rollout_pairs=pool[torch.randint(len(pool),(count,),device=device,generator=generator)]
+            rollout_terms.append(rollout_ball_loss(
+                base, ball, sweep, data, rollout_pairs, launch, horizon, rollout_scale))
+        rollout=torch.stack(rollout_terms).mean()
         loss=loss+a.rollout_loss_weight*rollout
         if a.sampling_schema=='contact-neighborhood-v2' and a.post_residual_weight:
             post_start=a.batch//2+a.batch//4
@@ -346,6 +386,9 @@ def main():
             response_scale=correction.new_tensor([.05,.05,.05,10.,10.,10.])
             post_response=(correction[post_start:post_end]/response_scale).square().mean()
             loss=loss+a.post_residual_weight*post_response
+        if a.precontact_residual_weight:
+            pre_response=(correction[contact_end:pre_end]/response_scale).square().mean()
+            loss=loss+a.precontact_residual_weight*pre_response
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite action-ball fitting loss')
         optimizer.zero_grad(set_to_none=True);loss.backward()
         gradient=torch.nn.utils.clip_grad_norm_(trainable_parameters,10.,error_if_nonfinite=True)
@@ -378,6 +421,7 @@ def main():
             record=dict(update=update,loss=float(loss.detach()),contact_loss=float(contact_loss.detach()),
                         precontact_loss=float(precontact_loss.detach()),post_loss=float(post_loss.detach()),
                         background_loss=float(background_loss.detach()),rollout_loss=float(rollout.detach()),
+                        rollout_horizon_losses={str(horizon): float(term.detach()) for horizon,term in zip(rollout_horizons, rollout_terms)},
                         gradient=float(gradient.detach()),elapsed_s=time.perf_counter()-started,
                         event_validation=validation_record)
             history.append(record)
@@ -402,7 +446,7 @@ def main():
         updates=a.updates,evidence_scope='recorded-command model-only, no native paired perturbations',
         model_schema=a.model_schema,post_residual_weight=a.post_residual_weight,
         precontact_loss_weight=a.precontact_loss_weight,
-        rollout_loss_weight=a.rollout_loss_weight,rollout_horizon=a.rollout_horizon,
+        rollout_loss_weight=a.rollout_loss_weight,rollout_horizons=list(rollout_horizons),
         trainable_parameter_names=[name for name,parameter in sweep.named_parameters() if parameter.requires_grad],
         event_validation_selection=selection_status,
         accepted_update=None if best_selection is None else best_selection['update'],
@@ -414,12 +458,13 @@ def main():
     comparison=dict(elapsed_s=time.perf_counter()-started,gpu_peak_memory_bytes=torch.cuda.max_memory_allocated(device) if device.type=='cuda' else 0,initial=initial,candidate=final,initial_autoregressive=initial_ar,candidate_autoregressive=candidate_ar,action_gradient=gradient,history=history,validation_history=validation_history,event_validation_selection=selection_status,
         action_ball_optimizer_updates=a.updates,base_world_updates=0,
         sampling_schema=a.sampling_schema,post_residual_weight=a.post_residual_weight,
+        precontact_residual_weight=a.precontact_residual_weight,
         pool_sizes={k:len(v) for k,v in neighborhoods.items()},
         allocated_draws=allocated_draws if a.sampling_schema!='legacy-v1' else None,
         independence_scope="candidate fit heldout lanes; historical base-model holdout independence requires separate provenance",
         train_contact_transitions=int(len(positive)),train_noncontact_transitions=int(len(negative)),
         hard_precontact_transitions=int(len(hard_negative)),
-        reset_safe_rollout_starts=int(len(rollout_pool)),
+        reset_safe_rollout_starts={str(horizon): int(len(pool)) for horizon, pool in rollout_pools.items()},
         training_lanes=sorted(train),validation_lanes=sorted(val),native_paired_action_probe=False,
         actor_updates=0,world_updates=0,critic_updates=0,auto_promoted=False,
         candidate_sha256=sha256(a.output/'action_ball_candidate.pt'))

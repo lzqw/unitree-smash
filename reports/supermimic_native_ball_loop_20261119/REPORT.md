@@ -35,6 +35,19 @@ The direction-first candidate was fitted from 12 training response samples and e
 
 The candidate is still marked as an offline fit. The native contact receipt remains unissued until event alignment and native Jacobian acceptance are independently checked against declared bounds.
 
+## Strict hybrid stability check
+
+The fitter now includes a precontact residual penalty and the stability report uses zero adjacent-tick degradation tolerance. The new fit used 32 GPU updates, batch 64, precontact loss weight 4, and precontact residual weight 1.
+
+- Output: `action_ball_fit_contact_v3_b64_u32_pre4_res1`
+- Candidate SHA256: `9b0f75db9a5f3226b6721c51e3aeebf3af3368f0c9679c39e25d6cbe6448cbfc`
+- GPU peak memory: `872764928` bytes
+- Elapsed time: `292.24` seconds
+- Strict stability status: `NO_STABLE_CANDIDATE`
+- Reason: `contact_edge_not_improved` after all unsafe intermediate updates were rejected
+
+The earlier contact-improving candidate remains rejected because its precontact one-step RMSE increased from `4.0122` to `4.1682`. The strict report is saved as `action_ball_fit_contact_v3_b64_u32_pre4_res1/hybrid_wm_stability.json`.
+
 ## Hybrid action-conditioned ball fit
 
 - Candidate: `action_ball_fit_contact_v3_b64_u32/action_ball_candidate.pt`
@@ -60,10 +73,12 @@ The contact-tick prediction improved, but the precontact error did not. The cand
 
 The validation command completed on GPU without Isaac simulation. The event-aligned held-out windows still show substantial multi-step error and the validation tool reports `native_simulation=false`. The command-sensitivity report for the legacy path has zero direct ball derivative. The offline candidate's nonzero differentiable response is not evidence of correct PhysX direction.
 
+The hybrid stability report is diagnostic only. It does not issue a native receipt and does not unlock contact BPTT.
+
 ## Tests
 
 ```text
-22 passed in 0.90s
+25 passed in 1.25s
 ```
 
 The changed scripts also pass `py_compile` with the Isaac Python environment.
