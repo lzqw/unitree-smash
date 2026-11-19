@@ -68,7 +68,7 @@ CPU batch-2 benchmark:
 
 RTX 5080 batch-128 benchmark:
 
-`/home/autodrive/LZQW/experiments/supermimic_hybrid_ball_benchmark_20261119_gpu_e7d307b/benchmark.json`
+`/home/autodrive/LZQW/experiments/supermimic_hybrid_ball_benchmark_20261119_gpu_e7d307b_v2/benchmark.json`
 
 The GPU results were:
 
