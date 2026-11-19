@@ -197,6 +197,168 @@ class CausalRacketModeActionBallV3(CausalActionConditionedBallV2):
         return residual
 
 
+class TemporalCausalRacketModeActionBallV7(CausalRacketModeActionBallV3):
+    """V3 with the previous executed command in the causal sweep features.
+
+    A lead-time native probe can apply a request before the measured impact
+    tick.  V3 only sees the current predicted endpoint, so it cannot represent
+    actuator memory that survives into the impact transition.  V7 adds the
+    previous *executed* command as an explicit causal input.  It is initialized
+    by a strict shape-checked migration from V3 and remains an opt-in model.
+    """
+    schema = 'native-temporal-causal-racket-mode-action-sweep-v7'
+    requires_previous_action = True
+
+    def __init__(self, *, preview=None, hidden=(128,128), softness_m=.008,
+                 closing_softness_m=.004, contact_margin_m=.003):
+        super().__init__(preview=preview, hidden=hidden, softness_m=softness_m,
+                         closing_softness_m=closing_softness_m,
+                         contact_margin_m=contact_margin_m)
+        old_scale=self.input_scale.detach().clone()
+        del self._buffers['input_scale']
+        self.register_buffer('input_scale',torch.cat((old_scale,old_scale.new_ones(18))))
+        self.head=MLP(66,hidden,6)
+        nn.init.zeros_(self.head.net[-1].weight)
+        nn.init.zeros_(self.head.net[-1].bias)
+
+    def forward(self,state,predicted_robot,free_ball,geometry,present,*,
+                racket_probability,previous_action,details=False):
+        if previous_action.shape != (len(state),18):
+            raise ValueError('Previous executed action must be [batch,18]')
+        current=ball_geometry_features(state,geometry)
+        future=ball_geometry_features(torch.cat((predicted_robot[:,:49],free_ball),-1),geometry)
+        first=current[:,6:9];last=future[:,6:9];middle=(first+last)*.5
+        gaps=torch.stack((self.preview.racket_gap(first),self.preview.racket_gap(middle),self.preview.racket_gap(last)),-1)
+        smallest=-self.softness_m*torch.logsumexp(-gaps/self.softness_m,-1)
+        support=torch.sigmoid(-smallest/self.softness_m)
+        current_gap=gaps[:,0];future_gap=gaps[:,2]
+        closing_gate=torch.sigmoid((current_gap-future_gap)/self.closing_softness_m)
+        inside_gate=torch.sigmoid((self.contact_margin_m-current_gap)/self.closing_softness_m)
+        causal_gate=inside_gate+(1.-inside_gate)*closing_gate
+        features=torch.cat((current[:,:21],future[:,:21],gaps,last-first,previous_action),-1)
+        normalized=(features/self.input_scale).clamp(-30.,30.)
+        residual=(self.head(normalized)*self.output_scale)*support[:,None]*causal_gate[:,None]*racket_probability[:,None]*present.reshape(-1,1).to(state.dtype)
+        if not torch.isfinite(residual).all():raise FloatingPointError('Nonfinite temporal action-conditioned ball response')
+        if details:return residual,dict(support=support,closing_gate=closing_gate,inside_gate=inside_gate,causal_gate=causal_gate,racket_probability=racket_probability)
+        return residual
+
+
+def migrate_temporal_v7(source):
+    """Explicitly migrate a V3 checkpoint into V7 without strict=False."""
+    if source.get('schema') != CausalRacketModeActionBallV3.schema:
+        raise ValueError('Temporal V7 migration requires a V3 checkpoint')
+    old=action_ball_for_schema(source['schema'],closing_softness_m=float(source.get('closing_softness_m',.004)),contact_margin_m=float(source.get('contact_margin_m',.003)))
+    old.load_state_dict(source['model'],strict=True)
+    new=TemporalCausalRacketModeActionBallV7(closing_softness_m=old.closing_softness_m,contact_margin_m=old.contact_margin_m)
+    target=new.state_dict();saved=old.state_dict()
+    for key,value in saved.items():
+        if key not in target:raise ValueError('V3 migration field missing: '+key)
+        if key == 'head.net.0.weight':
+            if target[key].shape[0]!=value.shape[0] or target[key].shape[1]<value.shape[1]:raise ValueError('V3 migration head shape mismatch')
+            target[key][:,:value.shape[1]]=value
+        elif key == 'input_scale':
+            if target[key].shape[0] < value.shape[0]:raise ValueError('V3 migration input-scale shape mismatch')
+            target[key][:value.shape[0]]=value
+        elif target[key].shape==value.shape:
+            target[key]=value
+        else:raise ValueError('V3 migration tensor shape mismatch: '+key)
+    new.load_state_dict(target,strict=True)
+    return new
+
+
+class TemporalCausalRacketModeTargetActionBallV8(TemporalCausalRacketModeActionBallV7):
+    """V7 with the current executed joint target as a causal input.
+
+    A lead-time probe can leave almost identical predicted robot geometry while
+    changing the executable target that produces the impact.  V8 exposes that
+    target directly, together with V7's previous executed command.  Both are
+    current-time quantities and are safe for rollout and BPTT.  The migration
+    starts from a V3 checkpoint with the new columns initialized to zero.
+    """
+    schema = 'native-temporal-causal-racket-mode-target-action-sweep-v8'
+    requires_current_target = True
+
+    def __init__(self, *, preview=None, hidden=(128,128), softness_m=.008,
+                 closing_softness_m=.004, contact_margin_m=.003):
+        super().__init__(preview=preview, hidden=hidden, softness_m=softness_m,
+                         closing_softness_m=closing_softness_m,
+                         contact_margin_m=contact_margin_m)
+        old_scale = self.input_scale.detach().clone()
+        del self._buffers['input_scale']
+        # V7 already contains 48 geometry + 18 previous-action features.
+        self.register_buffer('input_scale', torch.cat((old_scale, old_scale.new_full((18,), 3.0))))
+        old_head = self.head
+        self.head = MLP(84, hidden, 6)
+        nn.init.zeros_(self.head.net[-1].weight)
+        nn.init.zeros_(self.head.net[-1].bias)
+
+    def forward(self, state, predicted_robot, free_ball, geometry, present, *,
+                racket_probability, previous_action, current_target, details=False):
+        if previous_action.shape != (len(state), 18):
+            raise ValueError('Previous executed action must be [batch,18]')
+        if current_target.shape != (len(state), 18):
+            raise ValueError('Current executed target must be [batch,18]')
+        current = ball_geometry_features(state, geometry)
+        future = ball_geometry_features(torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
+        first = current[:, 6:9]
+        last = future[:, 6:9]
+        middle = (first + last) * .5
+        gaps = torch.stack((self.preview.racket_gap(first),
+                            self.preview.racket_gap(middle),
+                            self.preview.racket_gap(last)), -1)
+        smallest = -self.softness_m * torch.logsumexp(-gaps / self.softness_m, -1)
+        support = torch.sigmoid(-smallest / self.softness_m)
+        current_gap, future_gap = gaps[:, 0], gaps[:, 2]
+        closing_gate = torch.sigmoid((current_gap - future_gap) / self.closing_softness_m)
+        inside_gate = torch.sigmoid((self.contact_margin_m - current_gap) /
+                                    self.closing_softness_m)
+        causal_gate = inside_gate + (1. - inside_gate) * closing_gate
+        features = torch.cat((current[:, :21], future[:, :21], gaps,
+                              last - first, previous_action, current_target), -1)
+        normalized = (features / self.input_scale).clamp(-30., 30.)
+        residual = ((self.head(normalized) * self.output_scale) * support[:, None] *
+                    causal_gate[:, None] * racket_probability[:, None] *
+                    present.reshape(-1, 1).to(state.dtype))
+        if not torch.isfinite(residual).all():
+            raise FloatingPointError('Nonfinite temporal target-conditioned ball response')
+        if details:
+            return residual, dict(support=support, closing_gate=closing_gate,
+                                  inside_gate=inside_gate, causal_gate=causal_gate,
+                                  racket_probability=racket_probability)
+        return residual
+
+
+def migrate_temporal_v8(source):
+    """Migrate V3 weights to V8 with strict shape checks and zero new columns."""
+    if source.get('schema') != CausalRacketModeActionBallV3.schema:
+        raise ValueError('Temporal V8 migration requires a V3 checkpoint')
+    old = action_ball_for_schema(source['schema'],
+                                  closing_softness_m=float(source.get('closing_softness_m', .004)),
+                                  contact_margin_m=float(source.get('contact_margin_m', .003)))
+    old.load_state_dict(source['model'], strict=True)
+    new = TemporalCausalRacketModeTargetActionBallV8(
+        closing_softness_m=old.closing_softness_m,
+        contact_margin_m=old.contact_margin_m)
+    target, saved = new.state_dict(), old.state_dict()
+    for key, value in saved.items():
+        if key not in target:
+            raise ValueError('V3 migration field missing: ' + key)
+        if key == 'head.net.0.weight':
+            if target[key].shape[0] != value.shape[0] or target[key].shape[1] < value.shape[1]:
+                raise ValueError('V3 migration head shape mismatch')
+            target[key][:, :value.shape[1]] = value
+        elif key == 'input_scale':
+            if target[key].shape[0] < value.shape[0]:
+                raise ValueError('V3 migration input-scale shape mismatch')
+            target[key][:value.shape[0]] = value
+        elif target[key].shape == value.shape:
+            target[key] = value
+        else:
+            raise ValueError('V3 migration tensor shape mismatch: ' + key)
+    new.load_state_dict(target, strict=True)
+    return new
+
+
 class RacketModeActionBallV2(ActionConditionedBallV1):
     """Action correction belongs to the predicted racket mixture component.
 
@@ -387,7 +549,9 @@ def migrate_material_inertia_v4(source,material_contract):
 def action_ball_from_checkpoint(checkpoint):
     kwargs={}
     if checkpoint.get('schema') in (CausalActionConditionedBallV2.schema,
-                                    CausalRacketModeActionBallV3.schema):
+                                    CausalRacketModeActionBallV3.schema,
+                                    TemporalCausalRacketModeActionBallV7.schema,
+                                    TemporalCausalRacketModeTargetActionBallV8.schema):
         kwargs.update(closing_softness_m=float(checkpoint.get('closing_softness_m', .004)),
                       contact_margin_m=float(checkpoint.get('contact_margin_m', .003)))
     if checkpoint.get('schema') in (MaterialInertiaActionBallV4.schema,
@@ -402,7 +566,8 @@ def action_ball_for_schema(schema, **kwargs):
     """Explicit dispatch: old checkpoints retain their original computation."""
     classes = {cls.schema: cls for cls in (ActionConditionedBallV1, CausalActionConditionedBallV2,
         CausalRacketModeActionBallV3, RacketModeActionBallV2, ImpactTimeActionBallV3, MaterialInertiaActionBallV4,
-        FrameAwareMaterialInertiaActionBallV5, FrameAwareMaterialInertiaActionBallV6)}
+        FrameAwareMaterialInertiaActionBallV5, FrameAwareMaterialInertiaActionBallV6,
+        TemporalCausalRacketModeActionBallV7, TemporalCausalRacketModeTargetActionBallV8)}
     if schema not in classes:
         raise ValueError('Unknown action-ball checkpoint schema: '+str(schema))
     return classes[schema](**kwargs)

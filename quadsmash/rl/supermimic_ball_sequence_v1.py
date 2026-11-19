@@ -48,6 +48,10 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
             if getattr(action_model,'requires_frame_probability',False):
                 impact_probability=impact_probability+probability[:,4]
             kwargs={'racket_probability':impact_probability}
+            if getattr(action_model,'requires_previous_action',False):
+                kwargs['previous_action']=previous_action
+            if getattr(action_model,'requires_current_target',False):
+                kwargs['current_target']=targets
         else:
             kwargs={}
         ball_prediction=ball_prediction+action_model(state,physical,prior[:,49:],base.geometry,present,**kwargs)

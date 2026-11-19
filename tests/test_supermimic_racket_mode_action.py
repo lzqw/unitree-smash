@@ -3,7 +3,9 @@ import pytest
 import torch
 from torch import nn
 from quadsmash.rl.supermimic_action_ball_v1 import (
-    ActionConditionedBallV1, RacketModeActionBallV2, action_ball_for_schema)
+    ActionConditionedBallV1, RacketModeActionBallV2,
+    CausalRacketModeActionBallV3, TemporalCausalRacketModeTargetActionBallV8,
+    migrate_temporal_v8, action_ball_for_schema)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from test_supermimic_action_ball_v1 import FakeWorld, FakePreview, FakeBall, inputs
 
@@ -83,3 +85,30 @@ def test_checkpoint_schema_dispatch_preserves_old_computation_and_strict_shapes(
 def test_no_silent_fallback_when_ball_model_has_no_mode_outputs():
     with pytest.raises(ValueError,match='object-separated'):
         ball_transition(FakeWorld(),FakeBall(),*inputs(),action_model=correction_model())
+
+
+def test_temporal_v8_migration_is_strict_and_adds_current_target_features():
+    source = CausalRacketModeActionBallV3()
+    checkpoint = {'schema': source.schema, 'model': source.state_dict()}
+    restored = migrate_temporal_v8(checkpoint)
+    assert type(restored) is TemporalCausalRacketModeTargetActionBallV8
+    assert restored.input_scale.shape == (84,)
+    assert restored.head.net[0].weight.shape[1] == 84
+    assert torch.equal(restored.head.net[0].weight[:, :48],
+                       source.head.net[0].weight)
+    assert torch.equal(restored.head.net[6].weight, source.head.net[6].weight)
+
+
+def test_temporal_v8_requires_current_target_and_preserves_command_gradient():
+    world, ball = FakeWorld(), ModeBall(torch.tensor(.8))
+    model = TemporalCausalRacketModeTargetActionBallV8(preview=FakePreview())
+    with torch.no_grad():
+        model.head.net[-1].bias[3] = 1.
+    state, target, prev, feet, present, elapsed, launch = inputs()
+    target = target.requires_grad_(True)
+    predicted, _, _ = world(state, target, prev, feet, present, elapsed, launch)
+    result = ball_transition(world, ball, state, target, prev, feet, present,
+                             elapsed, launch, action_model=model)[0]
+    grad = torch.autograd.grad(result[:, 52].sum(), target)[0]
+    assert torch.isfinite(grad).all()
+    assert grad[:, 12].abs().max() > 1e-7

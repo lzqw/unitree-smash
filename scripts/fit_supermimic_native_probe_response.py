@@ -14,7 +14,9 @@ from pathlib import Path
 
 import torch
 
-from quadsmash.rl.supermimic_action_ball_v1 import action_ball_from_checkpoint
+from quadsmash.rl.supermimic_action_ball_v1 import (
+    action_ball_from_checkpoint, migrate_temporal_v7, migrate_temporal_v8,
+)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
@@ -166,8 +168,12 @@ def main():
     ball.load_state_dict(ball_source['model'], strict=True)
     physical.requires_grad_(False).eval()
     ball.requires_grad_(False).eval()
-    model = action_ball_from_checkpoint(candidate_source).to(device)
-    model.load_state_dict(candidate_source['model'], strict=True)
+    temporal_fit = 'step_targets_minus' in train
+    if temporal_fit and candidate_source.get('schema') == 'causal-racket-mode-action-sweep-v3':
+        model = migrate_temporal_v8(candidate_source).to(device)
+    else:
+        model = action_ball_from_checkpoint(candidate_source).to(device)
+        model.load_state_dict(candidate_source['model'], strict=True)
     model.train()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     initial = metrics(response(model, physical, ball, validation), validation)
@@ -200,6 +206,8 @@ def main():
     state = dict(candidate_source)
     state.update(
         model={key: value.detach().cpu() for key, value in model.state_dict().items()},
+        schema=model.schema,
+        temporal_response_fit=bool(temporal_fit),
         updates=args.updates,
         native_response_calibration=dict(
             train_bundles=[str(path.resolve()) for path in args.train_bundle],
