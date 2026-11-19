@@ -47,6 +47,16 @@ class HybridFakeBall(FakeBall):
         return probability,response
 
 
+class OtherResidualBall(HybridFakeBall):
+    def components(self, features):
+        probability = features.new_zeros(len(features), 5)
+        probability[:, 0] = .75
+        probability[:, 4] = .25
+        response = features.new_zeros(len(features), 4, 6)
+        response[:, 3, 3] = 4.
+        return probability, response
+
+
 def inputs():
     state=torch.zeros(4,55);state[:,3]=1.;state[:,49]=.01;state[:,52]=-5.
     target=torch.zeros(4,18);target[:,12]=torch.tensor([0.,.01,.03,.05])
@@ -194,6 +204,21 @@ def test_hybrid_details_separate_analytic_impulse_from_trainable_residual():
     assert torch.allclose(details['analytic_ball'][:, 3], args[0][:, 52] + 2.)
 
 
+def test_hybrid_other_residual_is_probability_gated():
+    class Prior:
+        def __call__(self, state, geometry, present, predicted_robot=None):
+            return state[:, 49:], {'active': torch.zeros_like(present)}
+
+    world = FakeWorld()
+    model = ActionConditionedBallV1(preview=FakePreview())
+    model.__dict__['impulse_prior'] = Prior()
+    args = inputs()
+    result = ball_transition(world, OtherResidualBall(), *args,
+                             action_model=model)[0]
+    # The other-residual head is 4 m/s before the 0.25 mode probability.
+    torch.testing.assert_close(result[:, 52], args[0][:, 52] + 1., atol=1e-6, rtol=0)
+
+
 def test_registered_hybrid_prior_is_frozen_and_excluded_from_residual_checkpoint():
     model = ActionConditionedBallV1(preview=FakePreview())
     attach_hybrid_impulse_prior(model, 'cpu')
@@ -202,6 +227,7 @@ def test_registered_hybrid_prior_is_frozen_and_excluded_from_residual_checkpoint
     restored = ActionConditionedBallV1(preview=FakePreview())
     attach_hybrid_impulse_prior(restored, 'cpu')
     restored.load_state_dict(model.state_dict(), strict=True)
+    attach_hybrid_impulse_prior(restored, 'cpu')
 
 
 def test_launch_transition_keeps_prior_launch_state_over_parked_ball():

@@ -269,6 +269,15 @@ def attach_hybrid_impulse_prior(action_model, device=None):
     """
     if action_model is None:
         raise ValueError('Cannot attach a Hybrid prior to None')
+    existing = getattr(action_model, 'impulse_prior', None)
+    if existing is not None:
+        if not isinstance(existing, BallImpulsePriorV1):
+            raise TypeError('Existing impulse_prior has an incompatible type')
+        if getattr(action_model, 'hybrid_ball_manifest', None) != hybrid_ball_manifest():
+            raise ValueError('Existing Hybrid prior manifest differs from current code')
+        existing.to(device=device) if device is not None else None
+        existing.requires_grad_(False).eval()
+        return action_model
     prior = BallImpulsePriorV1()
     if device is not None:
         prior = prior.to(device)
