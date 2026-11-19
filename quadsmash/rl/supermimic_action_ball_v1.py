@@ -508,10 +508,14 @@ class TemporalCausalRacketModeNativeResponseBallV11(TemporalCausalRacketModeTarg
     schema = 'native-temporal-causal-racket-mode-native-response-v11'
 
     def __init__(self, *, preview=None, hidden=(128,128), softness_m=.008,
-                 closing_softness_m=.004, contact_margin_m=.003):
+                 closing_softness_m=.004, contact_margin_m=.003,
+                 native_response_gate_mode='impact_probability'):
         super().__init__(preview=preview, hidden=hidden, softness_m=softness_m,
                          closing_softness_m=closing_softness_m,
                          contact_margin_m=contact_margin_m)
+        if native_response_gate_mode not in ('impact_probability','present_only'):
+            raise ValueError('Unknown native response gate mode')
+        self.native_response_gate_mode=native_response_gate_mode
         self.native_response_head = MLP(84, hidden, 6)
         nn.init.zeros_(self.native_response_head.net[-1].weight)
         nn.init.zeros_(self.native_response_head.net[-1].bias)
@@ -534,14 +538,26 @@ class TemporalCausalRacketModeNativeResponseBallV11(TemporalCausalRacketModeTarg
         # units.  It is trained with native paired labels and supervised
         # non-contact negatives before it can be used for Actor gradients.
         native = self.native_response_head((features / self.input_scale).clamp(-30., 30.))
-        native = native * self.output_scale * info['predicted_impact_probability'][:, None]
+        if self.native_response_gate_mode == 'impact_probability':
+            native_gate=info['predicted_impact_probability']
+        else:
+            # Calibration mode.  The head remains causal because its inputs
+            # are current state, current predicted robot state, previous
+            # executed action and current target.  Removing the analytic
+            # contact gate is necessary when the frozen body preview misses a
+            # real PhysX impact.  Non-contact negatives must be present in the
+            # supervised split before this mode can be admitted to BPTT.
+            native_gate=torch.ones_like(info['predicted_impact_probability'])
+        native = native * self.output_scale * native_gate[:, None]
         native = native * present.reshape(-1, 1).to(state.dtype)
         result = result + native
         if not torch.isfinite(result).all():
             raise FloatingPointError('Nonfinite native response head output')
         if details:
             return result, dict(info, sampled_gaps=sampled_gaps,
-                                native_response=native)
+                                native_response=native,
+                                native_response_gate=native_gate,
+                                native_response_gate_mode=self.native_response_gate_mode)
         return result
 
 
@@ -565,7 +581,8 @@ def migrate_temporal_v11(source):
         raise ValueError(f'Cannot migrate temporal action-ball schema to V11: {schema}')
     new = TemporalCausalRacketModeNativeResponseBallV11(
         closing_softness_m=base.closing_softness_m,
-        contact_margin_m=base.contact_margin_m)
+        contact_margin_m=base.contact_margin_m,
+        native_response_gate_mode=source.get('native_response_gate_mode','impact_probability'))
     target, saved = new.state_dict(), base.state_dict()
     for key, value in saved.items():
         if key not in target or target[key].shape != value.shape:
@@ -848,6 +865,8 @@ def action_ball_from_checkpoint(checkpoint):
                                     TemporalCausalRacketModeNativeResponseBallV11.schema):
         kwargs.update(closing_softness_m=float(checkpoint.get('closing_softness_m', .004)),
                       contact_margin_m=float(checkpoint.get('contact_margin_m', .003)))
+        if checkpoint.get('schema') == TemporalCausalRacketModeNativeResponseBallV11.schema:
+            kwargs['native_response_gate_mode']=checkpoint.get('native_response_gate_mode','impact_probability')
     if checkpoint.get('schema') in (MaterialInertiaActionBallV4.schema,
                                     FrameAwareMaterialInertiaActionBallV5.schema,
                                     FrameAwareMaterialInertiaActionBallV6.schema):

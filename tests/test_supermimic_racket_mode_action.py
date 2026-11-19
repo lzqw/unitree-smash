@@ -140,3 +140,19 @@ def test_temporal_v11_migration_has_zero_initialized_native_response_head():
     assert torch.equal(restored.native_response_head.net[-1].weight,
                        torch.zeros_like(restored.native_response_head.net[-1].weight))
     assert restored.native_response_head.net[0].weight.shape[1] == 84
+
+
+def test_temporal_v11_present_only_calibration_gate_does_not_depend_on_missed_impact_probability():
+    world=FakeWorld();args=inputs()
+    model=TemporalCausalRacketModeNativeResponseBallV11(
+        preview=FakePreview(), native_response_gate_mode='present_only')
+    with torch.no_grad():
+        model.native_response_head.net[-1].bias[3]=1.
+    _,_,_,details_free=ball_transition(
+        world,ModeBall(torch.tensor(0.)),*args,action_model=model,return_details=True)
+    _,_,_,details_contact=ball_transition(
+        world,ModeBall(torch.tensor(1.)),*args,action_model=model,return_details=True)
+    torch.testing.assert_close(
+        details_free['action_model_info']['native_response'],
+        details_contact['action_model_info']['native_response'])
+    assert details_free['action_model_info']['native_response_gate_mode']=='present_only'

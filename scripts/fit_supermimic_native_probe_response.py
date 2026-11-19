@@ -13,6 +13,7 @@ import time
 from pathlib import Path
 
 import torch
+from torch.nn import functional as F
 
 from quadsmash.rl.supermimic_action_ball_v1 import (
     action_ball_from_checkpoint, migrate_temporal_v7, migrate_temporal_v8,
@@ -121,22 +122,37 @@ def validate_probe_identity_reuse(rows):
     )
 
 
-def response(model, physical, ball, pairs):
+def response(model, physical, ball, pairs, *, return_details=False):
     temporal='step_targets_minus' in pairs
     def rollout(name):
         if not temporal:
             common=(pairs['state'],pairs['previous_action'],pairs['feet'],
                     pairs['present'],pairs['elapsed'],pairs['launch'])
+            if return_details:
+                state,_,_,details=ball_transition(
+                    physical,ball,common[0],pairs['targets_'+name],
+                    *common[1:],action_model=model,return_details=True)
+                return state,details
             return ball_transition(physical,ball,common[0],pairs['targets_'+name],
                                    *common[1:],action_model=model)[0]
         state=pairs['state'];previous=pairs['previous_action'];feet=pairs['feet']
         present=pairs['present'];elapsed=pairs['elapsed']
         targets=pairs['step_targets_'+name];actions=pairs['step_final_actions_'+name]
+        final_details=None
         for i in range(targets.shape[1]):
-            state,contact,_=ball_transition(physical,ball,state,targets[:,i],previous,feet,present,elapsed,pairs['launch'],action_model=model)
+            if return_details:
+                state,contact,present,final_details=ball_transition(
+                    physical,ball,state,targets[:,i],previous,feet,present,elapsed,
+                    pairs['launch'],action_model=model,return_details=True)
+            else:
+                state,contact,present=ball_transition(
+                    physical,ball,state,targets[:,i],previous,feet,present,elapsed,
+                    pairs['launch'],action_model=model)
             previous=actions[:,i];feet=contact[:,:feet.shape[1]];elapsed=elapsed+elapsed.new_tensor(.01)
-        return state
+        return (state,final_details) if return_details else state
     minus=rollout('minus');plus=rollout('plus')
+    if return_details:
+        return plus[0][:,52:55] - minus[0][:,52:55], dict(minus=minus[1],plus=plus[1])
     return plus[:, 52:55] - minus[:, 52:55]
 
 
@@ -169,6 +185,59 @@ def metrics(predicted, pairs):
     )
 
 
+def response_diagnostics(model, physical, ball, pairs):
+    """Return per-sample transition decomposition for native calibration.
+
+    These fields are diagnostic only.  They never become future labels in the
+    model forward pass.  Keeping the decomposition beside the response
+    metrics makes a near-zero prediction distinguishable from a missed
+    analytic contact, a gated residual, or a wrong residual direction.
+    """
+    _, details=response(model, physical, ball, pairs, return_details=True)
+    minus=details['minus']; plus=details['plus']
+    if minus is None or plus is None:
+        return {'samples': []}
+
+    def difference(name, velocity=False):
+        left=minus.get(name); right=plus.get(name)
+        if left is None or right is None:
+            return None
+        value=right-left
+        if velocity and value.shape[-1] == 6:
+            value=value[:,3:6]
+        return value.detach().cpu().tolist()
+
+    impulse_minus=minus.get('impulse_info') or {}
+    impulse_plus=plus.get('impulse_info') or {}
+    action_minus=minus.get('action_model_info') or {}
+    action_plus=plus.get('action_model_info') or {}
+    count=len(pairs['state'])
+    rows=[]
+    for index in range(count):
+        def item(source,key):
+            value=source.get(key)
+            if value is None:return None
+            if torch.is_tensor(value):return value[index].detach().cpu().tolist()
+            return value
+        rows.append(dict(
+            analytic_delta_v=None if difference('analytic_ball',True) is None else difference('analytic_ball',True)[index],
+            legacy_delta_v=None if difference('legacy_correction',True) is None else difference('legacy_correction',True)[index],
+            action_residual_delta_v=None if difference('action_residual',True) is None else difference('action_residual',True)[index],
+            final_delta_v=None if difference('predicted_ball',True) is None else difference('predicted_ball',True)[index],
+            minus_analytic_contact_active=item(impulse_minus,'active'),
+            plus_analytic_contact_active=item(impulse_plus,'active'),
+            minus_impact_time_s=item(impulse_minus,'time'),
+            plus_impact_time_s=item(impulse_plus,'time'),
+            minus_normal_speed=item(impulse_minus,'normal_speed'),
+            plus_normal_speed=item(impulse_plus,'normal_speed'),
+            minus_impulse_dv=item(impulse_minus,'impulse_dv'),
+            plus_impulse_dv=item(impulse_plus,'impulse_dv'),
+            minus_predicted_impact_probability=item(action_minus,'predicted_impact_probability'),
+            plus_predicted_impact_probability=item(action_plus,'predicted_impact_probability'),
+        ))
+    return {'samples': rows}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--physical-checkpoint', type=Path, required=True)
@@ -176,11 +245,18 @@ def main():
     parser.add_argument('--action-ball-checkpoint', type=Path, required=True)
     parser.add_argument('--train-bundle', type=Path, nargs='+', required=True)
     parser.add_argument('--validation-bundle', type=Path, nargs='+', required=True)
+    parser.add_argument('--final-holdout-bundle', type=Path, nargs='*', default=None,
+                        help='Optional final native split. It is evaluated once after selection and never used for checkpoint selection.')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--updates', type=int, default=256)
     parser.add_argument('--lr', type=float, default=2e-4)
     parser.add_argument('--direction-weight', type=float, default=1.0,
                         help='Weight of normalized native-response direction loss.')
+    parser.add_argument('--direction-min-response', type=float, default=0.01,
+                        help='Minimum native response norm used for direction loss. Smaller responses remain in absolute Huber loss.')
+    parser.add_argument('--native-response-gate-mode', choices=('impact_probability','present_only'),
+                        default='present_only',
+                        help='Gate for the calibration-only native response head. present_only prevents a missed analytic impact from suppressing supervision.')
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
     if args.output.exists():
@@ -189,6 +265,8 @@ def main():
         raise ValueError('Native response calibration uses exactly 256 WM updates')
     if not torch.isfinite(torch.tensor(args.direction_weight)) or args.direction_weight <= 0:
         raise ValueError('--direction-weight must be finite and positive')
+    if not torch.isfinite(torch.tensor(args.direction_min_response)) or args.direction_min_response < 0:
+        raise ValueError('--direction-min-response must be finite and non-negative')
     if not torch.cuda.is_available() and str(args.device).startswith('cuda'):
         raise RuntimeError('GPU required for native response calibration')
     device = torch.device(args.device)
@@ -200,17 +278,22 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     train_rows = load_rows(args.train_bundle, device)
     validation_rows = load_rows(args.validation_bundle, device)
+    final_rows = load_rows(args.final_holdout_bundle, device) if args.final_holdout_bundle else []
     train_ids = [sid for row in train_rows for sid in row['sample_ids']]
     validation_ids = [sid for row in validation_rows for sid in row['sample_ids']]
+    final_ids = [sid for row in final_rows for sid in row['sample_ids']]
     if not train_ids or not validation_ids:
         raise ValueError('Declared native calibration split cannot be empty')
     if len(set(train_ids)) != len(train_ids) or len(set(validation_ids)) != len(validation_ids):
         raise ValueError('Duplicate native sample identity in calibration split')
     if set(train_ids) & set(validation_ids):
         raise ValueError('Native calibration train and validation identities overlap')
-    identity_reuse = validate_probe_identity_reuse((*train_rows, *validation_rows))
+    if set(train_ids) & set(final_ids) or set(validation_ids) & set(final_ids):
+        raise ValueError('Native calibration final holdout overlaps train or validation identities')
+    identity_reuse = validate_probe_identity_reuse((*train_rows, *validation_rows, *final_rows))
     train = concat_pairs(train_rows, device)
     validation = concat_pairs(validation_rows, device)
+    final_holdout = concat_pairs(final_rows, device) if final_rows else None
     physical_source = torch.load(args.physical_checkpoint, map_location='cpu', weights_only=True)
     ball_source = torch.load(args.ball_checkpoint, map_location='cpu', weights_only=True)
     candidate_source = torch.load(args.action_ball_checkpoint, map_location='cpu', weights_only=True)
@@ -241,6 +324,8 @@ def main():
     model.train()
     # Calibrate the same Hybrid transition used by runtime imagination.
     attach_hybrid_impulse_prior(model, device)
+    if model.__class__.__name__ == 'TemporalCausalRacketModeNativeResponseBallV11':
+        model.native_response_gate_mode=args.native_response_gate_mode
     native_head_only = model.__class__.__name__ == 'TemporalCausalRacketModeNativeResponseBallV11'
     if native_head_only:
         # V11 is a residual calibrator over the already fitted V10 candidate.
@@ -267,7 +352,18 @@ def main():
     else:
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     initial = metrics(response(model, physical, ball, validation), validation)
+    final_initial = None if final_holdout is None else metrics(
+        response(model, physical, ball, final_holdout), final_holdout)
     train_native = train['native_plus'][:, 52:55] - train['native_minus'][:, 52:55]
+    train_norm = train_native.norm(dim=-1)
+    supported = train_norm > 1e-7
+    if not supported.any():
+        raise ValueError('Training split has no non-zero native response')
+    direction_min_response = max(float(args.direction_min_response), 1e-7)
+    direction_supported = train_norm >= direction_min_response
+    if not direction_supported.any():
+        raise ValueError('Training split has no native response above direction threshold')
+    component_scale = train_native[supported].abs().median(dim=0).values.clamp_min(1e-3)
     history = []
     best_validation = initial
     best_state = {key: value.detach().clone() for key, value in model.state_dict().items()}
@@ -291,16 +387,15 @@ def main():
     for update in range(1, args.updates + 1):
         optimizer.zero_grad(set_to_none=True)
         predicted = response(model, physical, ball, train)
-        native_norm = train_native.norm(dim=-1)
-        supported = native_norm > 1e-7
-        if not supported.any():
-            raise ValueError('Training split has no non-zero native response')
         predicted_supported = predicted[supported]
         native_supported = train_native[supported]
-        cosine = (predicted_supported * native_supported).sum(-1) / (
-            predicted_supported.norm(dim=-1) * native_supported.norm(dim=-1)
+        normalized_error = (predicted_supported - native_supported) / component_scale
+        point_loss = F.huber_loss(normalized_error, torch.zeros_like(normalized_error), delta=1.0)
+        direction_predicted = predicted[direction_supported]
+        direction_native = train_native[direction_supported]
+        cosine = (direction_predicted * direction_native).sum(-1) / (
+            direction_predicted.norm(dim=-1) * direction_native.norm(dim=-1)
         ).clamp_min(1e-8)
-        point_loss = ((predicted_supported - native_supported) / 0.01).square().mean()
         direction_loss = (1.0 - cosine).mean()
         loss = point_loss + args.direction_weight * direction_loss
         loss.backward()
@@ -322,6 +417,11 @@ def main():
         # receipt, but avoids reporting a known overfit tail as the result.
         model.load_state_dict(best_state, strict=True)
         final = metrics(response(model, physical, ball, validation), validation)
+        final_holdout_metrics = None if final_holdout is None else metrics(
+            response(model, physical, ball, final_holdout), final_holdout)
+        diagnostics = response_diagnostics(model, physical, ball, validation)
+        final_diagnostics = None if final_holdout is None else response_diagnostics(
+            model, physical, ball, final_holdout)
     state = dict(candidate_source)
     state.update(
         model={key: value.detach().cpu() for key, value in model.state_dict().items()},
@@ -331,6 +431,7 @@ def main():
         native_response_calibration=dict(
             train_bundles=[str(path.resolve()) for path in args.train_bundle],
             validation_bundles=[str(path.resolve()) for path in args.validation_bundle],
+            final_holdout_bundles=[str(path.resolve()) for path in (args.final_holdout_bundle or [])],
             train_sample_ids=train_ids,
             validation_sample_ids=validation_ids,
             split_is_declared_before_fit=True,
@@ -338,8 +439,12 @@ def main():
             no_promotion_receipt=True,
             identity_reuse=identity_reuse,
             native_head_only=native_head_only,
+            native_response_gate_mode=getattr(model,'native_response_gate_mode',None),
             best_validation_update=best_update,
             selection_rule=selection_rule,
+            loss_definition='component-scaled Huber absolute response plus direction loss on responses above direction_min_response',
+            component_scale=component_scale.detach().cpu().tolist(),
+            direction_min_response=direction_min_response,
             hybrid_ball_transition=hybrid_ball_manifest(),
         ),
     )
@@ -354,6 +459,14 @@ def main():
         validation_sample_count=len(validation['state']),
         validation_initial=initial,
         validation_final=final,
+        final_holdout_initial=final_initial,
+        final_holdout_final=final_holdout_metrics,
+        validation_diagnostics=diagnostics,
+        final_holdout_diagnostics=final_diagnostics,
+        direction_sample_count=int(direction_supported.sum()),
+        direction_min_response=direction_min_response,
+        component_scale=component_scale.detach().cpu().tolist(),
+        native_response_gate_mode=getattr(model,'native_response_gate_mode',None),
         history=history,
         elapsed_s=time.perf_counter() - started,
         passed=None,

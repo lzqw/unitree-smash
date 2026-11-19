@@ -13,7 +13,7 @@ STATIC=('execution_code_sha256','schema','task_contract_sha256','policy_executio
 METRICS=('native_repeat_max','native_response_min','response_rmse_max','response_cosine_min',
          'response_relative_error_max','final_normalized_command_delta_max','final_joint_target_delta_rad_max','accepted_update_age_max')
 
-def contact_mode_groups(modes,count,head):
+def contact_mode_groups(modes,count,head,timing=None):
     """Mode switches are finite differences, not a smooth Jacobian oracle."""
     required=('had_contact','released','frame_hit','string_hit') if head=='approach' else ('foot_contact','body_ground_seen')
     groups=[]
@@ -27,8 +27,24 @@ def contact_mode_groups(modes,count,head):
             rows.append({k:row[k] for k in required})
         if len(rows)!=4:groups.append('unknown')
         elif rows[0]!=rows[1]:groups.append('nominal-mode-mismatch')
-        elif all(row==rows[0] for row in rows):groups.append('smooth-mode')
-        else:groups.append('mode-switch')
+        elif not all(row==rows[0] for row in rows):groups.append('mode-switch')
+        elif timing is not None:
+            timing_rows=[]
+            for branch in ('nominal_a','nominal_b','minus','plus'):
+                value=timing.get(branch) if isinstance(timing,dict) else None
+                if isinstance(value,torch.Tensor):value=value[i].item()
+                elif isinstance(value,list):value=value[i]
+                if value is None:break
+                timing_rows.append(int(value))
+            if len(timing_rows)!=4:
+                groups.append('unknown')
+            elif timing_rows[0]!=timing_rows[1]:
+                groups.append('nominal-timing-mismatch')
+            elif len(set(timing_rows))!=1:
+                groups.append('contact-time-switch')
+            else:
+                groups.append('smooth-mode')
+        else:groups.append('smooth-mode')
     return groups
 
 def load_region(spec,receipt_path):
@@ -110,7 +126,7 @@ def paired_metrics(adapter,pairs,head,limits):
         state=p['state']; previous=p['previous_action']; feet=p['feet']
         present=p['present']; elapsed=p['elapsed']
         for i in range(targets.shape[1]):
-            state,contact_prob,_=ball_transition(
+            state,contact_prob,present=ball_transition(
                 adapter.physical_model,adapter.ball_model,state,targets[:,i],
                 previous,feet,present,elapsed,p['launch'],
                 action_model=getattr(adapter,'action_ball_model',None))
@@ -137,10 +153,16 @@ def paired_metrics(adapter,pairs,head,limits):
     missing=int((~supported).sum());failures=[]
     if native_contact_timing is not None and native_contact_timing['nominal_repeat_max'] > 0:
         failures.append('native-substep-nominal-timing-not-repeatable')
-    groups=contact_mode_groups(p.get('native_contact_modes'),len(native),head)
+    timing_for_groups=None
+    if substep_summary is not None:
+        timing_for_groups={branch: substep_summary[branch]['first_contact_substep']
+                           for branch in ('nominal_a','nominal_b','minus','plus')}
+    groups=contact_mode_groups(p.get('native_contact_modes'),len(native),head,timing_for_groups)
     if 'unknown' in groups:failures.append('unknown-native-contact-mode')
     if 'nominal-mode-mismatch' in groups:failures.append('native-contact-mode-repeatability')
     if 'mode-switch' in groups:failures.append('non-smooth-contact-boundary-needs-separate-validation')
+    if 'contact-time-switch' in groups:failures.append('contact-timing-switch-needs-separate-validation')
+    if 'nominal-timing-mismatch' in groups:failures.append('native-substep-nominal-timing-not-repeatable')
     if repeat>limits['native_repeat_max']:failures.append('native-repeatability')
     if missing:failures.append('saturated-or-native-response-below-support')
     # No silent filtering of hard or saturated probes to inflate pass rate.
@@ -153,26 +175,37 @@ def paired_metrics(adapter,pairs,head,limits):
     # True local model Jacobian projected onto measured executable perturbation.
     with torch.enable_grad():
         if temporal:
-            target=((p['step_targets_plus'][:,0]+p['step_targets_minus'][:,0])/2).detach().requires_grad_(True)
-            nominal_targets=p['step_targets_nominal_a']; nominal_actions=p['step_final_actions_nominal_a']
+            # Differentiate the same complete executed-command interpolation
+            # represented by the measured plus/minus rollout.  Using a
+            # midpoint for only tick zero while replaying nominal commands
+            # afterwards is a different perturbation when actuator memory
+            # carries the action into later ticks.
+            alpha=p['state'].new_zeros(len(p['state']),requires_grad=True)
+            minus_targets=p['step_targets_minus']; plus_targets=p['step_targets_plus']
+            minus_actions=p['step_final_actions_minus']; plus_actions=p['step_final_actions_plus']
             state=p['state']; previous=p['previous_action']; feet=p['feet']
             present=p['present']; elapsed=p['elapsed']
-            for i in range(nominal_targets.shape[1]):
-                current_target=target if i==0 else nominal_targets[:,i]
-                state,contact_prob,_=ball_transition(adapter.physical_model,adapter.ball_model,state,current_target,previous,feet,present,elapsed,p['launch'],action_model=getattr(adapter,'action_ball_model',None))
-                previous=nominal_actions[:,i]
+            for i in range(minus_targets.shape[1]):
+                mix=alpha[:,None]
+                current_target=minus_targets[:,i]+mix*(plus_targets[:,i]-minus_targets[:,i])
+                current_action=minus_actions[:,i]+mix*(plus_actions[:,i]-minus_actions[:,i])
+                state,contact_prob,present=ball_transition(
+                    adapter.physical_model,adapter.ball_model,state,current_target,
+                    previous,feet,present,elapsed,p['launch'],
+                    action_model=getattr(adapter,'action_ball_model',None))
+                previous=current_action
                 feet=contact_prob[:,:feet.shape[1]]
                 elapsed=elapsed+elapsed.new_tensor(0.01)
-            grads=[torch.autograd.grad(state[:,selection][:,j].sum(),target,retain_graph=True,allow_unused=True)[0] for j in range(3)]
-            jac=torch.stack([torch.zeros_like(target) if g is None else g for g in grads],1)
-            command_delta=p['step_targets_plus'][:,0]-p['step_targets_minus'][:,0]
+            grads=[torch.autograd.grad(state[:,selection][:,j].sum(),alpha,retain_graph=True,allow_unused=True)[0] for j in range(3)]
+            jac=torch.stack([torch.zeros_like(alpha) if g is None else g for g in grads],1)
+            command_delta=(p['step_targets_plus']-p['step_targets_minus']).reshape(len(state),-1).norm(dim=-1)
         else:
             target=((p['targets_plus']+p['targets_minus'])/2).detach().requires_grad_(True)
             y,_,_=ball_transition(adapter.physical_model,adapter.ball_model,p['state'],target,p['previous_action'],p['feet'],p['present'],p['elapsed'],p['launch'],action_model=getattr(adapter,'action_ball_model',None))
             grads=[torch.autograd.grad(y[:,selection][:,j].sum(),target,retain_graph=True,allow_unused=True)[0] for j in range(3)]
             jac=torch.stack([torch.zeros_like(target) if g is None else g for g in grads],1)
             command_delta=p['targets_plus']-p['targets_minus']
-        projected=(jac*command_delta[:,None]).sum(-1)
+        projected=jac if temporal else (jac*command_delta[:,None]).sum(-1)
     if not torch.isfinite(projected).all():failures.append('nonfinite-jacobian')
     jac_cos=(projected*native).sum(-1)/(projected.norm(dim=-1)*norms).clamp_min(1e-12)
     smooth=torch.tensor([g=='smooth-mode' for g in groups],device=device)

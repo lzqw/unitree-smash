@@ -82,6 +82,47 @@ def test_temporal_probe_uses_action_lead_rollout(monkeypatch):
     assert result['passed']
     assert result['temporal_horizon']==2
 
+
+def test_temporal_jacobian_interpolates_the_complete_command_sequence(monkeypatch):
+    adapter,p,limits=pair_fixture(monkeypatch)
+    import quadsmash.rl.supermimic_probe_region_v1 as module
+    def additive_transition(base,ball,state,target,*args,**kwargs):
+        out=state.clone();out[:,52:55]=out[:,52:55]+target[:,:3]*base.scale
+        return out,torch.zeros(len(state),4),torch.ones(len(state))
+    monkeypatch.setattr(module,'ball_transition',additive_transition)
+    zero=torch.zeros(2,2,18)
+    p['step_targets_nominal_a']=zero.clone()
+    p['step_targets_nominal_b']=zero.clone()
+    p['step_targets_minus']=zero.clone()
+    p['step_targets_plus']=zero.clone()
+    p['step_targets_plus'][:,0,0]=.02
+    p['step_targets_plus'][:,1,0]=.03
+    p['native_plus'][:,52]=.05
+    p['step_final_actions_nominal_a']=zero.clone()
+    p['step_final_actions_nominal_b']=zero.clone()
+    p['step_final_actions_minus']=zero.clone()
+    p['step_final_actions_plus']=zero.clone()
+    p.update(temporal_horizon=2,action_tick=10,event_tick=11)
+    result=paired_metrics(adapter,p,'approach',limits)
+    assert result['passed']
+    assert result['projected_jacobian'][0][0] == pytest.approx(.05,abs=1e-6)
+
+
+def test_contact_substep_change_is_not_classified_as_smooth(monkeypatch):
+    adapter,p,limits=pair_fixture(monkeypatch)
+    p['native_substep_summary']={
+        branch: dict(first_contact_substep=torch.tensor([4, 4]),
+                     contact_substep_count=torch.tensor([1, 1]),
+                     max_force_norm=torch.ones(2),
+                     max_force_delta_norm=torch.ones(2),
+                     physics_dt_s=6.25e-5)
+        for branch in ('nominal_a','nominal_b','minus','plus')}
+    p['native_substep_summary']['plus']['first_contact_substep'][0]=5
+    result=paired_metrics(adapter,p,'approach',limits)
+    assert not result['passed']
+    assert result['contact_mode_groups'][0]=='contact-time-switch'
+    assert result['jacobian_cosine'][0] is None
+
 def test_bounded_evidence_does_not_remove_static_contract_checks():
     origin=dict(execution_code_sha256={'x':'a'},schema='id',actor_state_sha256='a',world_state_sha256='w',task_contract_sha256='t',policy_execution='e',policy_version=0)
     current=dict(origin,world_state_sha256='updated')
