@@ -10,6 +10,7 @@ immutable ``native_probe.pt``.
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
 import json
 import os
@@ -72,6 +73,8 @@ def main() -> int:
                         help='Seed used by every Isaac child. Must match the packed archive seed.')
     parser.add_argument('--limit', type=int, default=None,
                         help='Optional deterministic prefix of spec files for a smoke probe run')
+    parser.add_argument('--workers', type=int, default=1,
+                        help='Concurrent Isaac probe processes. Two is the recommended RTX 5080 setting.')
     parser.add_argument('--kit-args', default='--renderer/multiGpu/enabled=false')
     args = parser.parse_args()
 
@@ -94,6 +97,8 @@ def main() -> int:
         spec_paths = spec_paths[:args.limit]
     if not spec_paths:
         parser.error('No spec_*.json files found')
+    if args.workers < 1:
+        parser.error('--workers must be positive')
     specs = []
     for path in spec_paths:
         spec = json.loads(path.read_text())
@@ -124,13 +129,11 @@ def main() -> int:
     completed = []
     evaluate = ROOT / 'scripts' / 'evaluate_supermimic_v1.py'
     child_env = child_environment()
+    jobs = []
     for spec_path, spec in specs:
         spec_name = spec_path.stem
         for branch in BRANCHES:
             branch_output = args.output / spec_name / branch
-            # The child owns creation of its unique output directory.  The
-            # evaluator intentionally uses exist_ok=False so creating this
-            # directory here would make every probe fail before Isaac starts.
             branch_output.parent.mkdir(parents=True, exist_ok=True)
             command = [
                 sys.executable, str(evaluate), *source_args,
@@ -146,27 +149,41 @@ def main() -> int:
                 # ``--`` or argparse treats it as another option.
                 kit_args_option(args.kit_args),
             ]
-            # Keep the child output path absent until the evaluator creates it
-            # with exist_ok=False.  Store the launcher log beside it.
-            log_path = branch_output.parent / f'{branch}.launcher.log'
-            started = time.time()
-            with log_path.open('w') as log:
-                result = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT,
-                                        env=child_env)
-            probe_path = branch_output / 'native_probe.pt'
-            item = dict(spec=spec_name, branch=branch, command=command,
-                        exit_code=result.returncode, elapsed_s=time.time() - started,
-                        output=str(branch_output), probe_path=str(probe_path),
-                        probe_sha256=sha256(probe_path) if probe_path.is_file() else None)
+            jobs.append((spec_name, branch, branch_output, command))
+
+    def run_job(job):
+        spec_name, branch, branch_output, command = job
+        log_path = branch_output.parent / f'{branch}.launcher.log'
+        started = time.time()
+        with log_path.open('w') as log:
+            result = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT,
+                                    env=child_env)
+        probe_path = branch_output / 'native_probe.pt'
+        return dict(spec=spec_name, branch=branch, command=command,
+                    exit_code=result.returncode, elapsed_s=time.time() - started,
+                    output=str(branch_output), probe_path=str(probe_path),
+                    probe_sha256=sha256(probe_path) if probe_path.is_file() else None)
+
+    # Each Isaac child uses roughly 3 GB on the RTX 5080.  Keep the default
+    # serial mode for compatibility, while allowing a bounded two-child run
+    # to use the available GPU without competing with the learner process.
+    with ThreadPoolExecutor(max_workers=args.workers) as executor:
+        futures = [executor.submit(run_job, job) for job in jobs]
+        for future in as_completed(futures):
+            item = future.result()
             completed.append(item)
+            completed.sort(key=lambda row: (row['spec'], BRANCHES.index(row['branch'])))
             (args.output / 'status.json').write_text(json.dumps(dict(
                 schema='event-aligned-native-probe-collection-v1', status='RUNNING',
-                completed=completed), indent=2) + '\n')
-            if result.returncode != 0 or not probe_path.is_file():
+                workers=args.workers, total=len(jobs), completed=completed), indent=2) + '\n')
+            if item['exit_code'] != 0 or not Path(item['probe_path']).is_file():
                 (args.output / 'failure.json').write_text(json.dumps(item, indent=2) + '\n')
+                for other in futures:
+                    other.cancel()
                 return 1
 
     status = dict(schema='event-aligned-native-probe-collection-v1', status='COLLECTION_FINISHED',
+                  workers=args.workers, total=len(jobs),
                   actor_updates=0, world_updates=0, critic_updates=0,
                   completed=completed, finished_at=time.time())
     (args.output / 'status.json').write_text(json.dumps(status, indent=2) + '\n')
