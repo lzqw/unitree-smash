@@ -49,3 +49,7 @@ bash scripts/python.sh -m pytest tests/test_supermimic_*.py -q -ra --maxfail=1
 GPU PhysX 探针链路已经运行，候选安全筛选会拒绝退化模型。模型仍不能在独立原生样本上同时复现球响应方向和幅值，因此不允许生成 native direction receipt，也不允许开启 contact-aware Actor BPTT、Recovery/Approach 更新或大规模训练。
 
 下一次调整需要补充跨 episode 的可支持接触响应样本，并按接触前、接触当步、接触后分别核对实际执行命令、接触子步时序和球速度突变。不能通过放宽阈值或重复同一 lane 达标。
+
+## Follow-up code adjustment
+
+提交 `929f091` 将可用的 PhysX substep trace 摘要写入 probe bundle，并在 paired metrics 中报告 nominal 重放的首次接触子步、扰动分支的接触时序跨度和物理子步时长。它只用于事件对齐诊断，不作为世界模型未来输入，也不放宽方向/幅值门槛。由于本轮 14-lane 采集未开启 substep trace，该字段需要下一次固定版本探针采集后才能用于判定。
