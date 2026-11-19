@@ -35,11 +35,15 @@ def build(paths,identity,output,selected_lanes=None,include_frame_lanes=False):
     base=runs['nominal_a']
     for branch,run in runs.items():
         if run.get('schema')!='native-paired-prefix-run-v1' or run.get('branch')!=branch:raise ValueError('Not an actual branch record')
-        for key in ('spec','seed','task_contract','policy_execution','physics','prefix_sha256','executor_before_sha256','execution_code_sha256'):
+        for key in ('spec','seed','task_contract','policy_execution','physics','prefix_sha256','executor_before_sha256'):
             if run.get(key)!=base.get(key):raise ValueError('Native paired-prefix mismatch: '+key)
+        from quadsmash.rl.supermimic_evidence_binding_v1 import native_code_compatibility
+        code_scope=native_code_compatibility(
+            base.get('execution_code_sha256'), run.get('execution_code_sha256'))
+        if not code_scope['compatible']:
+            raise ValueError('Native paired-prefix execution code mismatch: '+str(code_scope))
         if any(run.get(k)!=0 for k in ('actor_updates','world_updates','critic_updates')):raise ValueError('Probe weights were updated')
         if tree_digest(run['actor_state'])!=tree_digest(base['actor_state']):raise ValueError('Different native actors')
-    from quadsmash.rl.supermimic_evidence_binding_v1 import native_code_compatibility
     code_scope=native_code_compatibility(base['execution_code_sha256'],identity['execution_code_sha256'])
     if not code_scope['compatible']:raise ValueError('Runtime/probe native execution code differs: '+str(code_scope))
     if tensor_digest(base['actor_state'].items())!=identity['actor_state_sha256']:raise ValueError('Runtime identity actor mismatch')

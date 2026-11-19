@@ -14,6 +14,10 @@ def json_sha(value):
 MODEL_ONLY_CODE = frozenset((
     'supermimic_ball_sequence_v1.py', 'supermimic_action_ball_v1.py',
     'supermimic_ball_impulse_prior_v1.py',
+    # Probe-region assembly and metric code analyzes immutable native records.
+    # It is not part of the PhysX/controller execution path, so revisions to
+    # its validation logic must not invalidate the recorded native prefix.
+    'supermimic_probe_region_v1.py',
     'supermimic_articulated_inertia_v1.py', 'supermimic_racket_material_contract_v1.py',
     'supermimic_impact_timing_v1.py',
 ))
