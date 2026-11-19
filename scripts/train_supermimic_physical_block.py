@@ -452,7 +452,20 @@ def run(args, *, alternating=None):
             trainer.native_accepted_snapshot={k:v.detach().clone() for k,v in actor.state_dict().items()}
             write(args.output/'native_reference_promotion.json',promotion)
         source_path=Path(manifest['source_checkpoint']);source=torch.load(source_path,map_location='cpu',weights_only=False)
-        execution_root=Path(manifest['g07_execution_root'])
+        # Older native archives do not carry the execution-root field.  The
+        # explicit CLI path is the authoritative runtime contract and keeps
+        # those archives usable without weakening the task-identity checks.
+        execution_root = args.g07_execution_root
+        if execution_root is None:
+            recorded_root = manifest.get('g07_execution_root')
+            if recorded_root is None:
+                recorded_root = manifest.get('init_policy_checkpoint', {}).get('g07_execution_root')
+            if recorded_root is None:
+                raise ValueError(
+                    'Missing g07_execution_root. Pass --g07-execution-root for legacy archives.'
+                )
+            execution_root = Path(recorded_root)
+        execution_root = Path(execution_root).resolve()
         contract,protocol,cases,receipt=resolve_task_contract(
             source, source_path, execution_root=execution_root, root=execution_root)
         if contract!=manifest['task_contract']:raise ValueError('Native task contract changed')
@@ -666,28 +679,46 @@ def run(args, *, alternating=None):
             if not critic_ready(trainer.critic_updates,trainer.last_critic_loss):
                 raise RuntimeError('Contextual critic quality gate did not pass within finite32-block budget')
         stage_ticks=list(CRITIC_TICKS)
-        stage_states=[as_state(start_cache[t]) for t in stage_ticks]
-        stage_meta=[dict(policy_id='initial_reference',episode_id=start_cache[t]['before']['episode_index'].tolist(),time_s=float(t*timebase.control_dt_s),complete_lane_mask=rtg_complete[t]) for t in stage_ticks]
-        native_calibration=trainer.audit_native_rtg_stages(stage_states,[rtg[t] for t in stage_ticks],stage_meta)
-        native_calibration.update(source='packed_loop/data.pt',discount_mode='physical_time',
-                                  horizon_steps=int(rtg.shape[0]),native_return_scope='frozen archive label-policy episodes; execution identity checked separately')
-        write(args.output/'native_critic_stage_audit.json',native_calibration)
+        # WM calibration is deliberately actor/critic blocked.  Constructing
+        # dozens of full G07 imagination states and native value labels here
+        # adds several minutes and does not affect the supervised WM update.
+        # Keep the audit explicit so the candidate cannot be mistaken for a
+        # policy-training checkpoint.
         from quadsmash.rl.supermimic_dual_head_quality_v1 import split_native_value_rows,critic_holdout,reference_coverage
-        if args.resume_training and resumed.get('native_value_bank') is not None:
-            native_value_bank=resumed['native_value_bank']
+        if args.training_stage == 'wm_calibrate':
+            native_value_bank=dict(
+                inputs=torch.empty((0, 0)), rtg=torch.empty((0,)), identity=[],
+                head_masks={'recovery':torch.empty((0,),dtype=torch.bool),
+                            'approach':torch.empty((0,),dtype=torch.bool)},
+                policy_id=manifest.get('policy_id','initial_archive_unknown_policy'),
+                actor_sha256=manifest.get('actor_state_sha256'), source_sha256=packed_sha,
+                policy_execution=manifest.get('policy_execution'), accepted_updates=0,
+                label_actor_state=None)
+            write(args.output/'native_critic_stage_audit.json',dict(
+                skipped=True, reason='wm_calibrate_actor_critic_blocked',
+                source='packed_loop/data.pt', horizon_steps=int(rtg.shape[0])))
         else:
-            value_x=[];value_y=[];value_ids=[];value_masks={h:[] for h in ('recovery','approach')}
-            for ti in sorted(start_cache):
-                encoded=encode_native_value_start(start_cache[ti]);valid=rtg_complete[ti].cpu()
-                if not valid.any():continue
-                value_x.append(encoded['critic_input'].cpu()[valid]);value_y.append(rtg[ti].float().cpu()[valid])
-                value_ids.extend([(lane,int(package['tensors']['episode'][ti,lane]),int(start_cache[ti]['before']['elapsed_tick'][lane])) for lane in torch.where(valid)[0].tolist()])
-                for h in value_masks:value_masks[h].append(encoded['head_masks'][h].cpu()[valid])
-            native_value_bank=dict(inputs=torch.cat(value_x),rtg=torch.cat(value_y),identity=value_ids,
-                head_masks={h:torch.cat(v) for h,v in value_masks.items()},policy_id=manifest.get('policy_id','initial_archive_unknown_policy'),
-                actor_sha256=manifest.get('actor_state_sha256'),source_sha256=packed_sha,policy_execution=manifest.get('policy_execution'),accepted_updates=0,
-                label_actor_state={k:v.detach().cpu().clone() for k,v in trainer.reference.state_dict().items()} if manifest.get('actor_state_sha256')==tensor_digest(trainer.reference.state_dict().items()) else None)
-        if not args.resume_training:
+            stage_states=[as_state(start_cache[t]) for t in stage_ticks]
+            stage_meta=[dict(policy_id='initial_reference',episode_id=start_cache[t]['before']['episode_index'].tolist(),time_s=float(t*timebase.control_dt_s),complete_lane_mask=rtg_complete[t]) for t in stage_ticks]
+            native_calibration=trainer.audit_native_rtg_stages(stage_states,[rtg[t] for t in stage_ticks],stage_meta)
+            native_calibration.update(source='packed_loop/data.pt',discount_mode='physical_time',
+                                      horizon_steps=int(rtg.shape[0]),native_return_scope='frozen archive label-policy episodes; execution identity checked separately')
+            write(args.output/'native_critic_stage_audit.json',native_calibration)
+            if args.resume_training and resumed.get('native_value_bank') is not None:
+                native_value_bank=resumed['native_value_bank']
+            else:
+                value_x=[];value_y=[];value_ids=[];value_masks={h:[] for h in ('recovery','approach')}
+                for ti in sorted(start_cache):
+                    encoded=encode_native_value_start(start_cache[ti]);valid=rtg_complete[ti].cpu()
+                    if not valid.any():continue
+                    value_x.append(encoded['critic_input'].cpu()[valid]);value_y.append(rtg[ti].float().cpu()[valid])
+                    value_ids.extend([(lane,int(package['tensors']['episode'][ti,lane]),int(start_cache[ti]['before']['elapsed_tick'][lane])) for lane in torch.where(valid)[0].tolist()])
+                    for h in value_masks:value_masks[h].append(encoded['head_masks'][h].cpu()[valid])
+                native_value_bank=dict(inputs=torch.cat(value_x),rtg=torch.cat(value_y),identity=value_ids,
+                    head_masks={h:torch.cat(v) for h,v in value_masks.items()},policy_id=manifest.get('policy_id','initial_archive_unknown_policy'),
+                    actor_sha256=manifest.get('actor_state_sha256'),source_sha256=packed_sha,policy_execution=manifest.get('policy_execution'),accepted_updates=0,
+                    label_actor_state={k:v.detach().cpu().clone() for k,v in trainer.reference.state_dict().items()} if manifest.get('actor_state_sha256')==tensor_digest(trainer.reference.state_dict().items()) else None)
+        if args.training_stage != 'wm_calibrate' and not args.resume_training:
             from quadsmash.rl.supermimic_dual_head_quality_v1 import native_calibration_rows
             initial_ids,calibration_contract=native_calibration_rows(native_value_bank,policy_execution,wm_holdout_lanes,CRITIC_TICKS,expected_actor_sha256=tensor_digest(actor.state_dict().items()))
             if len(initial_ids):
@@ -768,13 +799,21 @@ def run(args, *, alternating=None):
             head=head or trainer.block_name
             quotas=(args.wm_approach_stage_quota if head=='approach' else
                     args.wm_contact_stage_quota if head=='contact' else args.wm_stage_quota)
+            # The calibration stage is a supervised diagnostic over the fixed
+            # native archive.  The episode-capped integer allocator is required
+            # for online mixed-policy training, but solving it 256 times over a
+            # 102400-transition archive dominates the calibration wall time and
+            # leaves the GPU idle.  Use the existing event-pool sampler here.
+            calibration_fast_path = args.training_stage == 'wm_calibrate'
+            sampling_source_quota = None if calibration_fast_path else args.wm_source_quota
+            sampling_stage_quota = None if calibration_fast_path else quotas
             total=int(args.world_updates_per_actor_update if count is None else count)
             reports=[]; started=time.perf_counter()
             for offset in range(total):
                 sampling_started=time.perf_counter()
                 window,lanes,sampling=replay.window(
                     timebase.world_steps,args.wm_batch_size,iteration*total+offset,
-                    source_quota=args.wm_source_quota,stage_quota=quotas,head=head,
+                    source_quota=sampling_source_quota,stage_quota=sampling_stage_quota,head=head,
                     recent_policy_window=args.wm_recent_policy_window,
                     recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes)
                 sampling_seconds=time.perf_counter()-sampling_started
@@ -782,6 +821,13 @@ def run(args, *, alternating=None):
                 stats=trainer.fit_world_window(window,launch[lanes]); del window
                 stats.update(sampling_seconds=sampling_seconds,fit_wall_seconds=time.perf_counter()-fit_started)
                 stats['sampling']=sampling; reports.append(stats)
+                if calibration_fast_path and ((offset + 1) == total or (offset + 1) % 16 == 0):
+                    print('WM_CALIBRATION_PROGRESS='+json.dumps(dict(
+                        update=offset + 1, total=total,
+                        world_loss=stats.get('world_loss'),
+                        world_ball_loss=stats.get('world_ball_loss'),
+                        world_action_ball_loss=stats.get('world_action_ball_loss'),
+                        wall_seconds=time.perf_counter() - started)), flush=True)
                 if writer is not None:
                     step=int(tick*128)
                     for key in ('world_loss','world_physical_loss','world_contact_loss','world_ball_loss','world_action_ball_loss','world_task_loss',
@@ -1289,7 +1335,11 @@ if __name__=='__main__':
     os.environ['QUADSMASH_SKIP_KIT_CLOSE'] = '1'
     try:
         main()
-    except BaseException:
+    except BaseException as exc:
+        # Keep pre-Kit failures visible.  The previous hard exit suppressed
+        # argparse/launcher diagnostics and made a failed calibration look
+        # like a silent process disappearance.
+        traceback.print_exception(type(exc), exc, exc.__traceback__, file=sys.stderr)
         os._exit(1)
     else:
         os._exit(0)
