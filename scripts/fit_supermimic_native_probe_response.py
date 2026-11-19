@@ -228,6 +228,10 @@ def response_diagnostics(model, physical, ball, pairs):
             final_delta_v=None if difference('predicted_ball',True) is None else difference('predicted_ball',True)[index],
             minus_analytic_contact_active=item(impulse_minus,'active'),
             plus_analytic_contact_active=item(impulse_plus,'active'),
+            minus_analytic_object_id=item(impulse_minus,'object_id'),
+            plus_analytic_object_id=item(impulse_plus,'object_id'),
+            minus_toi_gap=item(impulse_minus,'toi_gap'),
+            plus_toi_gap=item(impulse_plus,'toi_gap'),
             minus_impact_time_s=item(impulse_minus,'time'),
             plus_impact_time_s=item(impulse_plus,'time'),
             minus_normal_speed=item(impulse_minus,'normal_speed'),
@@ -237,7 +241,25 @@ def response_diagnostics(model, physical, ball, pairs):
             minus_predicted_impact_probability=item(action_minus,'predicted_impact_probability'),
             plus_predicted_impact_probability=item(action_plus,'predicted_impact_probability'),
         ))
-    return {'samples': rows}
+    active = []
+    racket = []
+    for row in rows:
+        plus_active = row.get('plus_analytic_contact_active')
+        plus_object = row.get('plus_analytic_object_id')
+        active.append(bool(plus_active) if plus_active is not None else False)
+        racket.append(bool(plus_active) and plus_object == 0
+                      if plus_object is not None else False)
+    native_modes = pairs.get('native_contact_modes')
+    return {
+        'samples': rows,
+        'analytic_contact_active_count': int(sum(active)),
+        'analytic_racket_contact_count': int(sum(racket)),
+        'native_contact_modes_present': native_modes is not None,
+        'missed_native_contact_count': None,
+        'missed_native_contact_reason': (
+            'native contact labels are not available in this bundle'
+            if native_modes is None else 'requires per-sample mode decoding'),
+    }
 
 
 def main():
@@ -259,6 +281,8 @@ def main():
     parser.add_argument('--native-response-gate-mode', choices=('impact_probability','present_only'),
                         default='present_only',
                         help='Gate for the calibration-only native response head. present_only prevents a missed analytic impact from suppressing supervision.')
+    parser.add_argument('--target-schema', choices=('source', 'v13'), default='source',
+                        help='Keep the source temporal schema or explicitly migrate to the TOI-local V13 impulse residual.')
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
     if args.output.exists():
@@ -321,8 +345,10 @@ def main():
         'native-temporal-causal-racket-mode-native-response-v12',
         'native-temporal-causal-racket-mode-impulse-residual-v13',
     }
-    if temporal_fit and candidate_source.get('schema') in temporal_schemas:
-        if candidate_source.get('schema') == 'native-temporal-causal-racket-mode-impulse-residual-v13':
+    if temporal_fit and (candidate_source.get('schema') in temporal_schemas or
+                         args.target_schema == 'v13'):
+        if (args.target_schema == 'v13' or
+                candidate_source.get('schema') == 'native-temporal-causal-racket-mode-impulse-residual-v13'):
             model = migrate_temporal_v13(candidate_source).to(device)
         else:
             model = migrate_temporal_v12(candidate_source).to(device)
@@ -453,6 +479,9 @@ def main():
     state.update(
         model={key: value.detach().cpu() for key, value in model.state_dict().items()},
         schema=model.schema,
+        legacy_v10_residual=bool(getattr(model, 'legacy_v10_residual', False)),
+        v13_semantics_version=(int(model.v13_semantics_version.item())
+                               if hasattr(model, 'v13_semantics_version') else None),
         temporal_response_fit=bool(temporal_fit),
         updates=args.updates,
         native_response_calibration=dict(

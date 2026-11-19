@@ -125,7 +125,10 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
                 raise ValueError('Analytic ball state is required for TOI residual')
             impulse_action_residual=corrected_ball-analytic_ball
             impulse_action_residual=impulse_action_residual * (
-                impulse_info['active'] & present.reshape(-1).bool())[:,None].to(
+                impulse_info['active']
+                & (impulse_info.get('object_id', torch.zeros_like(
+                    impulse_info['active'], dtype=torch.long)) == 0)
+                & present.reshape(-1).bool())[:,None].to(
                     impulse_action_residual.dtype)
             ball_prediction=ball_prediction+impulse_action_residual
     state=torch.cat((physical[:,:49],ball_prediction),-1)

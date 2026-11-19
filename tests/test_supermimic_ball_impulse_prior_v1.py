@@ -57,7 +57,7 @@ def test_contact_state_reconstructs_ball_and_surface_at_one_common_time():
     assert torch.isfinite(state['surface_velocity']).all()
 
 
-def test_impulse_calibration_is_bounded_and_scales_only_normal_response():
+def test_impulse_calibration_is_bounded_and_scales_only_racket_response():
     calibration=BallImpulseCalibrationV1()
     gap,scale=calibration.values()
     assert abs(float(gap)) < calibration.max_gap_bias_m
@@ -71,7 +71,10 @@ def test_impulse_calibration_is_bounded_and_scales_only_normal_response():
     doubled=BallImpulsePriorV1(normal_impulse_scale=2.)
     _,info_base=base(state,geometry,torch.ones(1,dtype=torch.bool))
     _,info_double=doubled(state,geometry,torch.ones(1,dtype=torch.bool))
-    torch.testing.assert_close(info_double['impulse_dv'],2*info_base['impulse_dv'])
+    # This setup is a ground impact. Racket-fitted calibration must not
+    # change ground response.
+    torch.testing.assert_close(info_double['impulse_dv'], info_base['impulse_dv'])
+    assert info_base['object_id'].item() == 1
 
 
 def test_full_forward_ground_impact_and_absent_ball():

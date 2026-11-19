@@ -44,6 +44,8 @@ def main():
     parser.add_argument('--scale-min', type=float, default=0.75)
     parser.add_argument('--scale-max', type=float, default=1.25)
     parser.add_argument('--scale-count', type=int, default=11)
+    parser.add_argument('--train-top-k', type=int, default=5,
+                        help='Number of calibration-grid candidates retained from train before development selection')
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError(args.output)
@@ -51,6 +53,8 @@ def main():
         raise ValueError('Invalid calibration grid')
     if args.scale_min <= 0 or args.scale_min > args.scale_max:
         raise ValueError('Invalid impulse-scale grid')
+    if args.train_top_k < 1:
+        raise ValueError('--train-top-k must be positive')
     if not torch.cuda.is_available() and str(args.device).startswith('cuda'):
         raise RuntimeError('GPU required for impulse calibration')
     device = torch.device(args.device)
@@ -99,18 +103,30 @@ def main():
             value = metrics(predicted, pairs)
         return value
 
-    best = None
-    history = []
+    train_history = []
     for gap in torch.linspace(args.gap_min_m, args.gap_max_m, args.gap_count).tolist():
         for scale in torch.linspace(args.scale_min, args.scale_max, args.scale_count).tolist():
-            value = evaluate(gap, scale, validation)
-            row = dict(gap_bias_m=float(gap), normal_impulse_scale=float(scale),
-                       validation=value)
-            history.append(row)
-            key = (value['response_rmse'], value['relative_error_max'],
-                   -value['response_cosine_min'])
-            if best is None or key < best[0]:
-                best = (key, row)
+            value = evaluate(gap, scale, train)
+            train_history.append(dict(gap_bias_m=float(gap),
+                                     normal_impulse_scale=float(scale),
+                                     train=value))
+    def key_for(value):
+        return (value['response_rmse'], value['relative_error_max'],
+                -value['response_cosine_min'])
+    train_history.sort(key=lambda row: key_for(row['train']))
+    train_candidates = train_history[:min(args.train_top_k, len(train_history))]
+    best = None
+    history = []
+    for candidate in train_candidates:
+        gap = candidate['gap_bias_m']
+        scale = candidate['normal_impulse_scale']
+        value = evaluate(gap, scale, validation)
+        row = dict(gap_bias_m=float(gap), normal_impulse_scale=float(scale),
+                   train=candidate['train'], validation=value)
+        history.append(row)
+        key = key_for(value)
+        if best is None or key < best[0]:
+            best = (key, row)
     if best is None:
         raise RuntimeError('Calibration grid produced no candidate')
     gap = best[1]['gap_bias_m']; scale = best[1]['normal_impulse_scale']
@@ -134,7 +150,8 @@ def main():
         train_sample_ids=train_ids,
         validation_sample_ids=validation_ids,
         final_holdout_sample_ids=final_ids,
-        selection_rule='development response_rmse, then relative_error_max, then cosine floor',
+        selection_rule='train grid top-k by response_rmse/relative_error_max/cosine, then development selection, final holdout once',
+        train_top_k=int(args.train_top_k),
         native_identity=identity,
         final_holdout_not_used_for_selection=True,
     )
@@ -143,7 +160,8 @@ def main():
     result = dict(schema='ball-impulse-calibration-result-v1', output=str(args.output),
                   output_sha256=sha(args.output), selected=output['impulse_calibration'],
                   validation=validation_final, final_holdout=final_metrics,
-                  grid_count=len(history), history=history)
+                  grid_count=args.gap_count * args.scale_count,
+                  train_grid=train_history, development_history=history)
     args.output.with_name('calibration_result.json').write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result, indent=2))
 

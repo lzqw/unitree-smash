@@ -173,7 +173,9 @@ class BallImpulsePriorV1(nn.Module):
                               initial_center, initial_velocity, initial_angular_velocity,
                               impact_time, *, endpoint_rotation=None,
                               endpoint_center=None, endpoint_velocity=None,
-                              endpoint_angular_velocity=None):
+                              endpoint_angular_velocity=None,
+                              local_start=None, local_end=None,
+                              relative_start=None, relative_end=None):
         """Reconstruct ball and racket state at one common continuous TOI.
 
         Collision search still uses the sampled trajectory. All quantities used
@@ -182,7 +184,7 @@ class BallImpulsePriorV1(nn.Module):
         evaluated on one time slice.
         """
         pre_p, pre_v=self.advance(ball_position,ball_velocity,impact_time)
-        alpha=(impact_time/self.dt).clamp(0.,1.)[:,None]
+        alpha=(impact_time/self.dt).clamp(0.,1.)
         if endpoint_rotation is None:
             racket_rotation=rotate_for_time(initial_rotation,initial_angular_velocity,impact_time)
             racket_center=initial_center+initial_velocity*impact_time[:,None]
@@ -191,12 +193,29 @@ class BallImpulsePriorV1(nn.Module):
         else:
             if any(value is None for value in (endpoint_center,endpoint_velocity,endpoint_angular_velocity)):
                 raise ValueError('Complete endpoint racket state is required')
-            racket_rotation=self._interpolate_rotation(initial_rotation,endpoint_rotation,alpha)
-            racket_center=torch.lerp(initial_center,endpoint_center,alpha)
-            racket_velocity=torch.lerp(initial_velocity,endpoint_velocity,alpha)
-            racket_angular_velocity=torch.lerp(initial_angular_velocity,endpoint_angular_velocity,alpha)
-        delta=pre_p-racket_center
-        local=(racket_rotation.transpose(-1,-2)@delta[...,None]).squeeze(-1)
+            racket_rotation=self._interpolate_rotation(initial_rotation,endpoint_rotation,alpha[:,None])
+            racket_center=torch.lerp(initial_center,endpoint_center,alpha[:,None])
+            racket_velocity=torch.lerp(initial_velocity,endpoint_velocity,alpha[:,None])
+            racket_angular_velocity=torch.lerp(initial_angular_velocity,endpoint_angular_velocity,alpha[:,None])
+        if local_start is None:
+            local_start=(initial_rotation.transpose(-1,-2) @
+                         (ball_position-initial_center)[...,None]).squeeze(-1)
+        if relative_start is None:
+            relative_start=(initial_rotation.transpose(-1,-2) @
+                            (ball_velocity-initial_velocity-
+                             torch.linalg.cross(initial_angular_velocity,
+                                                ball_position-initial_center))[...,None]).squeeze(-1)
+        if local_end is None:
+            local_end=local_start+self.dt*relative_start
+        if relative_end is None:
+            relative_end=relative_start
+        # The collision detector and the impulse reconstruction share this
+        # same Hermite path.  This avoids detecting contact on one trajectory
+        # and computing the impulse on a different linear path.
+        from .supermimic_action_ball_v1 import hermite_sweep_position
+        local=hermite_sweep_position(
+            local_start, local_end, relative_start, relative_end,
+            alpha[:, None], dt=self.dt).squeeze(1)
         normal_local,part=self.racket_surface(local)
         normal_world=(racket_rotation@normal_local[...,None]).squeeze(-1)
         contact_arm=(racket_rotation@(local-self.preview.radius*normal_local)[...,None]).squeeze(-1)
@@ -252,8 +271,10 @@ class BallImpulsePriorV1(nn.Module):
             # the control duration, so the analytic and learned paths share
             # both geometry and time units.
             from .supermimic_action_ball_v1 import hermite_sweep_samples
+            endpoint_local=local + self.dt * relative
+            endpoint_relative=relative
             local_path=hermite_sweep_samples(
-                local, local + self.dt * relative, relative, relative,
+                local, endpoint_local, relative, endpoint_relative,
                 dt=self.dt, count=self.steps + 1)
         else:
             # The endpoint uses the predicted current-command robot pose.  A
@@ -301,13 +322,17 @@ class BallImpulsePriorV1(nn.Module):
         time=torch.where(active,time,torch.full_like(time,self.dt))
         if predicted_robot is None:
             contact=self.contact_state_at_time(
-                p['ball_position_w'],p['ball_velocity_w'],r,center,vc,omega,time)
+                p['ball_position_w'],p['ball_velocity_w'],r,center,vc,omega,time,
+                local_start=local, local_end=endpoint_local,
+                relative_start=relative, relative_end=endpoint_relative)
         else:
             contact=self.contact_state_at_time(
                 p['ball_position_w'],p['ball_velocity_w'],r,center,vc,omega,time,
                 endpoint_rotation=endpoint_rotation,endpoint_center=endpoint_center,
                 endpoint_velocity=endpoint_bodies['velocity'][:, endpoint_id],
-                endpoint_angular_velocity=endpoint_bodies['angular_velocity'][:, endpoint_id])
+                endpoint_angular_velocity=endpoint_bodies['angular_velocity'][:, endpoint_id],
+                local_start=local, local_end=endpoint_local,
+                relative_start=relative, relative_end=endpoint_relative)
         pre_p,pre_v=contact['position'],contact['velocity']
         racket_normal=contact['normal']
         racket_surface_velocity=contact['surface_velocity']
@@ -318,7 +343,14 @@ class BallImpulsePriorV1(nn.Module):
                            torch.where((object_id==1)[:,None],ground_normal,net_normal))
         surface_velocity=torch.where((object_id==0)[:,None],racket_surface_velocity,torch.zeros_like(vc))
         normal_speed=((pre_v-surface_velocity)*normal).sum(-1)
-        impulse_dv=self.normal_impulse_scale * (-(1.+self.restitution)*
+        # The calibration was fit to racket probes.  Ground and net remain
+        # governed by the unscaled analytic prior until they receive their
+        # own independent calibration evidence.
+        scale=torch.where(object_id == 0,
+                           normal_speed.new_full(normal_speed.shape,
+                                                 self.normal_impulse_scale),
+                           normal_speed.new_ones(normal_speed.shape))
+        impulse_dv=scale[:,None] * (-(1.+self.restitution)*
             normal_speed.clamp_max(0.)[:,None]*normal)
         impulse_dv=torch.where(active[:,None],impulse_dv,torch.zeros_like(impulse_dv))
         post_p,post_v=self.advance(pre_p,pre_v+impulse_dv,self.dt-time)
@@ -326,13 +358,18 @@ class BallImpulsePriorV1(nn.Module):
         result=torch.where(present[:,None],result,state[:,49:])
         info=dict(active=active,object_id=torch.where(active,object_id,torch.full_like(object_id,3)),
             time=time,normal=normal,normal_speed=normal_speed,impulse_dv=impulse_dv,racket_part=part,
-            min_gap=gap.amin(1),gap_bias_m=self.gap_bias_m,
+            min_gap=gap.amin(1),
+            toi_gap=g1,
+            gap_bias_m=self.gap_bias_m,
             normal_impulse_scale=self.normal_impulse_scale,
             # Keep the continuous TOI state available to the optional
             # low-dimensional residual head.  These are diagnostics and
             # causal model inputs, never native future labels.
             pre_position=pre_p,
             pre_velocity=pre_v,
+            local=contact['local'],
+            surface_velocity=surface_velocity,
+            relative_velocity=pre_v-surface_velocity,
             remaining_time=(self.dt-time).clamp_min(0.),
             post_position=post_p,
             post_velocity=post_v)

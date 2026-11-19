@@ -189,7 +189,7 @@ def test_temporal_v13_migration_adds_zero_initialized_toi_impulse_head():
     source = CausalRacketModeActionBallV3()
     restored = migrate_temporal_v13({'schema': source.schema, 'model': source.state_dict()})
     assert type(restored) is TemporalCausalRacketModeImpulseResidualBallV13
-    assert restored.impulse_residual_head.net[0].weight.shape[1] == 84
+    assert restored.impulse_residual_head.net[0].weight.shape[1] == 12
     assert torch.equal(restored.impulse_residual_head.net[-1].weight,
                        torch.zeros_like(restored.impulse_residual_head.net[-1].weight))
 
@@ -225,3 +225,39 @@ def test_temporal_v13_applies_residual_at_toi_and_propagates_target_gradient():
     assert details['impulse_action_residual'][:, 5].abs().max() > 0
     grad = torch.autograd.grad(predicted[:, 52].sum(), target)[0]
     assert torch.isfinite(grad).all()
+
+
+def test_v13_pure_semantics_ignore_inherited_v10_six_dimensional_residual():
+    class Prior:
+        def __call__(self, state, geometry, present, predicted_robot=None):
+            n = len(state)
+            return state[:, 49:].clone(), dict(
+                active=present.bool(),
+                object_id=torch.zeros(n, dtype=torch.long),
+                normal=state.new_tensor([[0., 0., 1.]]).expand(n, -1),
+                time=state.new_zeros(n),
+                normal_speed=state.new_zeros(n),
+                pre_position=state[:, 49:52],
+                pre_velocity=state[:, 52:55],
+                impulse_dv=torch.zeros_like(state[:, 52:55]),
+                remaining_time=state.new_full((n,), .01),
+                surface_velocity=torch.zeros_like(state[:, 52:55]),
+                relative_velocity=torch.zeros_like(state[:, 52:55]),
+                local=torch.zeros_like(state[:, 52:55]),
+            )
+
+        @staticmethod
+        def advance(position, velocity, duration):
+            return position + duration[:, None] * velocity, velocity
+
+    args = inputs()
+    model = TemporalCausalRacketModeImpulseResidualBallV13(preview=FakePreview())
+    model.impulse_prior = Prior()
+    with torch.no_grad():
+        model.command_head.bias.fill_(100.)
+        model.impulse_residual_head.net[-1].bias.zero_()
+    details = ball_transition(
+        FakeWorld(), ModeBall(torch.tensor(.8)), *args, action_model=model,
+        return_details=True)[3]
+    assert not details['action_model_info']['legacy_v10_residual_enabled']
+    assert torch.equal(details['action_residual'], torch.zeros_like(details['action_residual']))

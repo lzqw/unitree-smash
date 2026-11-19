@@ -118,6 +118,8 @@ def main():
                         help='GPU world-model updates for wm_calibrate stage')
     parser.add_argument('--wm-ball-loss-weight',type=float,default=4.0)
     parser.add_argument('--wm-contact-ball-loss-weight',type=float,default=8.0)
+    parser.add_argument('--racket-loss-weight',type=float,default=1.0,
+                        help='Weight of the FK racket position/normal/velocity auxiliary WM loss')
     parser.add_argument('--cpu-threads',type=int,default=4)
     parser.add_argument('--wm-batch-size',type=int,default=128,help='Supervised WM minibatch, multiple of128; native environments remain128')
     parser.add_argument('--wm-source-quota',default='recent_online=64,older_online=32,initial_archive=32')
@@ -143,7 +145,7 @@ def main():
     args.contact_bptt_mode=args.contact_bptt_mode or training_stage.contact_bptt_mode
     if args.training_stage=='full_contact' and args.contact_bptt_mode!='enabled':
         parser.error('full_contact requires contact-bptt-mode=enabled')
-    if args.wm_calibration_updates<1 or args.wm_ball_loss_weight<=0 or args.wm_contact_ball_loss_weight<1:
+    if args.wm_calibration_updates<1 or args.wm_ball_loss_weight<=0 or args.wm_contact_ball_loss_weight<1 or args.racket_loss_weight<0:
         parser.error('WM calibration/loss settings invalid')
     if args.world_learning_rate<=0: parser.error('world-learning-rate must be positive')
     if args.cpu_threads<1: parser.error('cpu-threads must be positive')
@@ -211,7 +213,8 @@ def main():
         commit=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
         dirty_diff=subprocess.check_output(['git','diff'],text=True),script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         training_stage=training_stage.manifest(),wm_ball_loss_weight=args.wm_ball_loss_weight,
-        wm_contact_ball_loss_weight=args.wm_contact_ball_loss_weight,cpu_threads=args.cpu_threads))
+        wm_contact_ball_loss_weight=args.wm_contact_ball_loss_weight,
+        racket_loss_weight=args.racket_loss_weight,cpu_threads=args.cpu_threads))
     from quadsmash.rl.supermimic_run_lifecycle import execute_scoped_native,stage
     stage(args.output,'BEFORE_APP');app=AppLauncher(args,fast_shutdown=False).app
     stage(args.output,'AFTER_APP')
@@ -318,6 +321,7 @@ def run(args, *, alternating=None):
             world_lr=args.world_learning_rate)
         trainer.ball_loss_weight=float(args.wm_ball_loss_weight)
         trainer.contact_ball_loss_weight=float(args.wm_contact_ball_loss_weight)
+        trainer.racket_loss_weight=float(args.racket_loss_weight)
         lifecycle_stage(args.output, 'TRAINER_READY')
         trainer.set_budget_state_library([as_state(row) for row in starts+critic_starts[:4]])
         def approach_active(row):
@@ -449,7 +453,8 @@ def run(args, *, alternating=None):
             write(args.output/'native_reference_promotion.json',promotion)
         source_path=Path(manifest['source_checkpoint']);source=torch.load(source_path,map_location='cpu',weights_only=False)
         execution_root=Path(manifest['g07_execution_root'])
-        contract,protocol,cases,receipt=resolve_task_contract(source,source_path,execution_root=execution_root)
+        contract,protocol,cases,receipt=resolve_task_contract(
+            source, source_path, execution_root=execution_root, root=execution_root)
         if contract!=manifest['task_contract']:raise ValueError('Native task contract changed')
         cfg=make_task_cfg(128,contract,protocol,receipt);cfg.seed=882072;cfg.sim.device='cuda:0'
         class TrainingEnv(SuperMimicEnvV1,FrozenPanelEnv):pass

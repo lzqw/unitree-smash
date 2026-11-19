@@ -36,7 +36,22 @@ def hermite_sweep_samples(first, last, first_velocity, last_velocity,
     if not isinstance(dt, (int, float)) or not math.isfinite(float(dt)) or dt <= 0:
         raise ValueError('Sweep interpolation duration must be finite and positive')
     alpha = torch.linspace(0., 1., count, device=first.device, dtype=first.dtype)
-    a = alpha.view(1, -1, 1)
+    return hermite_sweep_position(
+        first, last, first_velocity, last_velocity, alpha, dt=dt)
+
+
+def hermite_sweep_position(first, last, first_velocity, last_velocity,
+                           alpha, *, dt=0.01):
+    """Evaluate the shared physical-time Hermite racket path at ``alpha``."""
+    if not isinstance(dt, (int, float)) or not math.isfinite(float(dt)) or dt <= 0:
+        raise ValueError('Sweep interpolation duration must be finite and positive')
+    alpha = alpha.to(device=first.device, dtype=first.dtype)
+    if alpha.ndim == 1:
+        a = alpha.view(1, -1, 1)
+    elif alpha.ndim == 2:
+        a = alpha[..., None]
+    else:
+        raise ValueError('Hermite alpha must be one or two dimensional')
     a2 = a * a
     a3 = a2 * a
     p0 = first[:, None]
@@ -647,14 +662,23 @@ class TemporalCausalRacketModeImpulseResidualBallV13(
     requires_analytic_impact_prior = True
 
     def __init__(self, *, preview=None, hidden=(128, 128), softness_m=.008,
-                 closing_softness_m=.004, contact_margin_m=.003):
+                 closing_softness_m=.004, contact_margin_m=.003,
+                 legacy_v10_residual=False):
         super().__init__(preview=preview, hidden=hidden, softness_m=softness_m,
                          closing_softness_m=closing_softness_m,
                          contact_margin_m=contact_margin_m)
-        self.impulse_residual_head = MLP(84, hidden, 3)
+        # V13 is deliberately a small TOI-local calibrator.  The inherited
+        # V10 modules remain present for checkpoint compatibility, but their
+        # six-dimensional contact correction is disabled by default.
+        self.impulse_residual_head = MLP(12, (32, 32), 3)
         nn.init.zeros_(self.impulse_residual_head.net[-1].weight)
         nn.init.zeros_(self.impulse_residual_head.net[-1].bias)
         self.register_buffer('impulse_residual_scale', torch.full((3,), .5))
+        self.impulse_residual_dt = .01
+        self.impulse_residual_speed = 10.
+        self.impulse_residual_length = .05
+        self.legacy_v10_residual = bool(legacy_v10_residual)
+        self.register_buffer('v13_semantics_version', torch.tensor(2, dtype=torch.int64))
 
     @staticmethod
     def _contact_basis(normal):
@@ -674,33 +698,47 @@ class TemporalCausalRacketModeImpulseResidualBallV13(
                 impact_info=None, details=False):
         if impact_info is None:
             raise ValueError('V13 requires analytic impact information')
-        result, info = TemporalCausalRacketModeTargetLinearActionBallV10.forward(
+        legacy_result, info = TemporalCausalRacketModeTargetLinearActionBallV10.forward(
             self, state, predicted_robot, free_ball, geometry, present,
             racket_probability=racket_probability,
             previous_action=previous_action,
             current_target=current_target,
             details=True)
-        current = ball_geometry_features(state, geometry)
-        future = ball_geometry_features(
-            torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
-        first, last = current[:, 6:9], future[:, 6:9]
-        gaps, _, sampled_gaps = sweep_gap_summary(
-            self.preview, first, last, current[:, 9:12], future[:, 9:12],
-            self.softness_m)
-        features = torch.cat((current[:, :21], future[:, :21], gaps,
-                              last - first, previous_action, current_target), -1)
-        coefficients = torch.tanh(
-            self.impulse_residual_head((features / self.input_scale).clamp(-30., 30.)))
+        impact_time = impact_info.get('time', state.new_zeros(len(state)))
+        relative_velocity = impact_info.get('relative_velocity')
+        if relative_velocity is None:
+            relative_velocity = impact_info['pre_velocity'] - impact_info.get(
+                'surface_velocity', torch.zeros_like(impact_info['pre_velocity']))
+        local = impact_info.get('local', torch.zeros_like(relative_velocity))
+        surface_velocity = impact_info.get('surface_velocity', torch.zeros_like(relative_velocity))
+        local_features = torch.cat((
+            impact_time.reshape(-1, 1) / self.impulse_residual_dt,
+            impact_info['normal'],
+            impact_info.get('normal_speed', state.new_zeros(len(state))).reshape(-1, 1) / self.impulse_residual_speed,
+            relative_velocity / self.impulse_residual_speed,
+            local / self.impulse_residual_length,
+            surface_velocity.norm(dim=-1, keepdim=True) / self.impulse_residual_speed,
+        ), -1)
+        if local_features.shape[-1] != 12:
+            raise RuntimeError('V13 TOI feature contract must have 12 channels')
+        coefficients = torch.tanh(self.impulse_residual_head(local_features))
         coefficients = coefficients * self.impulse_residual_scale
         normal, tangent_1, tangent_2 = self._contact_basis(impact_info['normal'])
         residual_dv = (coefficients[:, 0:1] * normal
                        + coefficients[:, 1:2] * tangent_1
                        + coefficients[:, 2:3] * tangent_2)
-        active = impact_info['active'].bool() & present.reshape(-1).bool()
+        object_id = impact_info.get('object_id', torch.zeros(
+            len(state), device=state.device, dtype=torch.long))
+        active = (impact_info['active'].bool()
+                  & (object_id == 0)
+                  & present.reshape(-1).bool())
         residual_dv = residual_dv * active[:, None].to(residual_dv.dtype)
         if not torch.isfinite(residual_dv).all():
             raise FloatingPointError('Nonfinite V13 impulse residual')
-        metadata = dict(info, sampled_gaps=sampled_gaps,
+        result = legacy_result if self.legacy_v10_residual else torch.zeros_like(legacy_result)
+        metadata = dict(info,
+                        v13_semantics_version=int(self.v13_semantics_version),
+                        legacy_v10_residual_enabled=self.legacy_v10_residual,
                         impulse_residual_coefficients=coefficients,
                         impulse_residual_dv=residual_dv,
                         impulse_residual_active=active,
@@ -778,8 +816,15 @@ def migrate_temporal_v13(source):
     """Migrate a V10/V11/V12 candidate to the TOI impulse-residual head."""
     schema = source.get('schema')
     if schema == TemporalCausalRacketModeImpulseResidualBallV13.schema:
-        model = action_ball_from_checkpoint(source)
-        model.load_state_dict(source['model'], strict=True)
+        model = TemporalCausalRacketModeImpulseResidualBallV13(
+            closing_softness_m=float(source.get('closing_softness_m', .004)),
+            contact_margin_m=float(source.get('contact_margin_m', .003)),
+            legacy_v10_residual=bool(source.get('legacy_v10_residual', False)))
+        target, saved = model.state_dict(), source['model']
+        for key, value in saved.items():
+            if key in target and target[key].shape == value.shape:
+                target[key] = value
+        model.load_state_dict(target, strict=True)
         return model
     if schema in (TemporalCausalRacketModeNativeResponseBallV11.schema,
                   TemporalCausalRacketModeNativeResponseBallV12.schema,
@@ -1084,6 +1129,8 @@ def action_ball_from_checkpoint(checkpoint):
         if checkpoint.get('schema') in (TemporalCausalRacketModeNativeResponseBallV11.schema,
                                         TemporalCausalRacketModeNativeResponseBallV12.schema):
             kwargs['native_response_gate_mode']=checkpoint.get('native_response_gate_mode','impact_probability')
+        if checkpoint.get('schema') == TemporalCausalRacketModeImpulseResidualBallV13.schema:
+            kwargs['legacy_v10_residual'] = bool(checkpoint.get('legacy_v10_residual', False))
     if checkpoint.get('schema') in (MaterialInertiaActionBallV4.schema,
                                     FrameAwareMaterialInertiaActionBallV5.schema,
                                     FrameAwareMaterialInertiaActionBallV6.schema):
