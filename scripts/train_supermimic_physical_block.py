@@ -45,6 +45,28 @@ def scale_wm_quotas(quotas, batch_size):
     return {k:v*(batch_size//128) for k,v in quotas.items()}
 
 
+def parse_lane_list(text):
+    """Parse explicit whole-lane exclusions such as ``96-127,3,7``."""
+    if text is None or not str(text).strip():
+        return []
+    lanes = set()
+    for item in str(text).split(','):
+        item = item.strip()
+        if not item:
+            continue
+        if '-' in item:
+            left, right = (part.strip() for part in item.split('-', 1))
+            start, end = int(left), int(right)
+            if start > end:
+                raise ValueError(f'Invalid lane range: {item}')
+            lanes.update(range(start, end + 1))
+        else:
+            lanes.add(int(item))
+    if any(lane < 0 for lane in lanes):
+        raise ValueError('Lane ids must be nonnegative')
+    return sorted(lanes)
+
+
 def select_launch_for_start(row, launch):
     """Select the causal launch batch for a full or compact lane start."""
     lane_id=row.get('_lane_id') if isinstance(row,dict) else None
@@ -129,6 +151,9 @@ def main():
     parser.add_argument('--wm-stage-quota',default='uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8')
     parser.add_argument('--wm-recent-policy-window',type=int,default=32)
     parser.add_argument('--wm-recent-tick-window',type=int,default=1024)
+    parser.add_argument('--wm-holdout-lanes',default='',
+                        help='Explicit whole-lane WM exclusion, for example 96-127. '
+                             'Use this for independent calibration/validation splits.')
     parser.add_argument('--task-reference-bank',type=Path,default=None,
                         help='Optional success-only task-space reference bank')
     parser.add_argument('--tracking-weight',type=float,default=0.0)
@@ -269,7 +294,7 @@ def run(args, *, alternating=None):
         adapter.manifest['training_stage']=manifest['training_stage']
         adapter.manifest['action_ball_trainable_in_wm']=action_ball_trainable
         lifecycle_stage(args.output, 'AFTER_LOAD_PHYSICAL_LOOP')
-        contact_validation=None;wm_holdout_lanes=[];runtime_wm_bounds={};runtime_validation_data=None;dual_quality=None;native_value_bank=None
+        contact_validation=None;wm_holdout_lanes=parse_lane_list(args.wm_holdout_lanes);runtime_wm_bounds={};runtime_validation_data=None;dual_quality=None;native_value_bank=None
         if args.contact_validation_receipt is not None:
             from quadsmash.rl.supermimic_long_run_contract_v1 import verify_contact_receipt
             contact_validation=verify_contact_receipt(args.contact_validation_receipt,dict(physical=args.physical_checkpoint,ball=args.ball_checkpoint,task=args.task_checkpoint,**({'action_ball':args.action_ball_checkpoint} if args.action_ball_checkpoint else {})),manifest['task_contract'])
@@ -277,12 +302,19 @@ def run(args, *, alternating=None):
             if args.training_profile=='large' or 'dual_head_quality' in json.loads(args.contact_validation_receipt.read_text()):
                 from quadsmash.rl.supermimic_dual_head_quality_v1 import quality_spec
                 dual_quality=quality_spec(json.loads(args.contact_validation_receipt.read_text()))
-                wm_holdout_lanes=dual_quality['heldout_lane_ids'];runtime_wm_bounds=dual_quality['wm_upper_bounds']
+                receipt_lanes=sorted(dual_quality['heldout_lane_ids'])
+                if wm_holdout_lanes and wm_holdout_lanes != receipt_lanes:
+                    raise ValueError('Explicit --wm-holdout-lanes disagrees with contact receipt lanes')
+                wm_holdout_lanes=receipt_lanes
+                runtime_wm_bounds=dual_quality['wm_upper_bounds']
         write(args.output/'model_manifest.json',adapter.manifest)
         packed_sha=hashlib.sha256(args.packed_data.read_bytes()).hexdigest()
         expected=json.loads((args.packed_data.parent/'completed.json').read_text())
         if packed_sha!=expected['sha256'] or expected['first_completed']!=128:raise ValueError('Invalid initialization data')
         package=torch.load(args.packed_data,map_location='cpu',weights_only=True)
+        lane_count=int(package['tensors']['episode'].shape[1])
+        if any(lane >= lane_count for lane in wm_holdout_lanes):
+            raise ValueError(f'WM holdout lane outside packed archive: {wm_holdout_lanes}')
         lifecycle_stage(args.output, 'LOADED_PACKED_DATA')
         runtime_validation_data=package['tensors'];runtime_validation_path=str(args.packed_data)
         replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema,capacity_ticks=args.replay_capacity_ticks)

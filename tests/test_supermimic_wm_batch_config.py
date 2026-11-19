@@ -16,3 +16,10 @@ def test_invalid_batch_rejected(batch):
 
 def test_missing_fraction_rejected_not_silently_normalized():
     with pytest.raises(ValueError):m.scale_wm_quotas({'uniform':127},512)
+
+def test_parse_lane_list_supports_ranges_and_deduplicates():
+    assert m.parse_lane_list('96-99,3,98,3') == [3, 96, 97, 98, 99]
+
+def test_parse_lane_list_rejects_reverse_ranges():
+    with pytest.raises(ValueError):
+        m.parse_lane_list('9-4')
