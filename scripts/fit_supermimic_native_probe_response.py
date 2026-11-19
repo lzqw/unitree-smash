@@ -269,6 +269,10 @@ def response_diagnostics(model, physical, ball, pairs):
                 object_id=tick_item('object_id'),
                 impact_time_s=tick_item('time'),
                 impulse_dv=tick_item('impulse_dv'),
+                sampled_contact_gap=tick_item('sampled_contact_gap'),
+                toi_gap=tick_item('toi_gap'),
+                kinematic_reconstruction_error=tick_item(
+                    'kinematic_reconstruction_error'),
                 residual_dv=(detail.get('action_model_info') or {}).get(
                     'impulse_residual_dv')[index].detach().cpu().tolist()
                     if torch.is_tensor((detail.get('action_model_info') or {}).get('impulse_residual_dv')) else None,
