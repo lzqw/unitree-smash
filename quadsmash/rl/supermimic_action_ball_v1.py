@@ -23,7 +23,8 @@ def normalized_softmin(values, softness):
     )
 
 
-def hermite_sweep_samples(first, last, first_velocity, last_velocity, count=5):
+def hermite_sweep_samples(first, last, first_velocity, last_velocity,
+                          dt=0.01, count=5):
     """Sample a causal local racket path with endpoint velocity tangents.
 
     The endpoint states come from the current state and the predicted
@@ -32,14 +33,20 @@ def hermite_sweep_samples(first, last, first_velocity, last_velocity, count=5):
     """
     if count < 3 or count % 2 == 0:
         raise ValueError('Sweep sample count must be an odd integer >= 3')
+    if not isinstance(dt, (int, float)) or not math.isfinite(float(dt)) or dt <= 0:
+        raise ValueError('Sweep interpolation duration must be finite and positive')
     alpha = torch.linspace(0., 1., count, device=first.device, dtype=first.dtype)
     a = alpha.view(1, -1, 1)
     a2 = a * a
     a3 = a2 * a
     p0 = first[:, None]
     p1 = last[:, None]
-    v0 = first_velocity[:, None]
-    v1 = last_velocity[:, None]
+    # alpha is normalized time.  Convert the physical endpoint velocities
+    # from metres/second to the metre displacement over this control step.
+    # Omitting dt makes the Hermite tangent term dimensionally incorrect and
+    # enlarges the inferred within-tick sweep by roughly 1/dt.
+    v0 = (float(dt) * first_velocity)[:, None]
+    v1 = (float(dt) * last_velocity)[:, None]
     return ((2 * a3 - 3 * a2 + 1) * p0
             + (a3 - 2 * a2 + a) * v0
             + (-2 * a3 + 3 * a2) * p1
@@ -47,8 +54,9 @@ def hermite_sweep_samples(first, last, first_velocity, last_velocity, count=5):
 
 
 def sweep_gap_summary(preview, first, last, first_velocity, last_velocity,
-                      softness):
-    samples = hermite_sweep_samples(first, last, first_velocity, last_velocity)
+                      softness, dt=0.01):
+    samples = hermite_sweep_samples(
+        first, last, first_velocity, last_velocity, dt=dt)
     sampled_gaps = preview.racket_gap(samples.reshape(-1, 3)).reshape(samples.shape[:2])
     smallest = normalized_softmin(sampled_gaps, softness)
     # Preserve the established 3-feature checkpoint shape while using all
@@ -103,12 +111,16 @@ class ActionConditionedBallV1(nn.Module):
     schema = 'action-conditioned-racket-sweep-v1'
     feature_dim = 48
 
-    def __init__(self, *, preview=None, hidden=(128, 128), softness_m=0.008):
+    def __init__(self, *, preview=None, hidden=(128, 128), softness_m=0.008,
+                 sweep_dt_s=0.01):
         super().__init__()
         if not 0 < softness_m <= 0.05:
             raise ValueError('Racket sweep support width must be in (0, 0.05] m')
         self.preview = preview if preview is not None else BallGeometryPreviewV1()
         self.softness_m = float(softness_m)
+        if not math.isfinite(float(sweep_dt_s)) or sweep_dt_s <= 0:
+            raise ValueError('Sweep control duration must be finite and positive')
+        self.sweep_dt_s = float(sweep_dt_s)
         self.head = MLP(self.feature_dim, hidden, 6)
         nn.init.zeros_(self.head.net[-1].weight)
         nn.init.zeros_(self.head.net[-1].bias)
@@ -134,7 +146,7 @@ class ActionConditionedBallV1(nn.Module):
         last = future[:, 6:9]
         gaps, smallest, sampled_gaps = sweep_gap_summary(
             self.preview, first, last, current[:, 9:12], future[:, 9:12],
-            self.softness_m)
+            self.softness_m, dt=self.sweep_dt_s)
         # Soft minimum keeps the impulse pathway differentiable near grazing
         # trajectories; the original collision geometry is not enlarged.
         support = torch.sigmoid(-smallest/self.softness_m)

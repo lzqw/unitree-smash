@@ -2,7 +2,8 @@
 import torch
 from torch import nn
 from quadsmash.rl.supermimic_action_ball_v1 import (ActionConditionedBallV1,
-    CausalActionConditionedBallV2,preimpact_hard_negatives,normalized_softmin)
+    CausalActionConditionedBallV2,preimpact_hard_negatives,normalized_softmin,
+    hermite_sweep_samples)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_action_ball_v1 import postimpact_hard_negatives,contact_neighborhood_pools
 
@@ -108,6 +109,43 @@ def test_normalized_softmin_has_no_sampling_count_bias():
     torch.testing.assert_close(result, values[:, 0], atol=1e-7, rtol=0)
 
 
+def test_hermite_sweep_uses_physical_velocity_units():
+    first = torch.zeros(1, 3)
+    velocity = torch.tensor([[2., -1., .5]])
+    dt = .01
+    last = first + dt * velocity
+    path = hermite_sweep_samples(first, last, velocity, velocity, dt=dt, count=5)
+    expected = first[:, None] + torch.linspace(0., dt, 5)[None, :, None] * velocity[:, None]
+    torch.testing.assert_close(path, expected, atol=1e-7, rtol=0)
+
+
+def test_hermite_zero_velocity_same_endpoint_is_constant():
+    point = torch.tensor([[.2, -.1, .4]])
+    path = hermite_sweep_samples(point, point, torch.zeros_like(point),
+                                 torch.zeros_like(point), dt=.01, count=5)
+    torch.testing.assert_close(path, point[:, None].expand_as(path))
+
+
+def test_hermite_endpoint_time_derivative_matches_physical_velocity():
+    point = torch.zeros(1, 3)
+    velocity = torch.tensor([[1., 2., 3.]], requires_grad=True)
+    dt = .01
+    path = hermite_sweep_samples(point, point + dt * velocity.detach(),
+                                 velocity, velocity, dt=dt, count=3)
+    derivative = torch.autograd.grad(path[:, 1].sum(), velocity)[0]
+    # The midpoint is not an endpoint derivative.  Check the exact endpoint
+    # relation through the analytic Hermite formula instead.
+    alpha = torch.tensor(1e-4, requires_grad=True)
+    h00 = 2*alpha**3 - 3*alpha**2 + 1
+    h10 = alpha**3 - 2*alpha**2 + alpha
+    h01 = -2*alpha**3 + 3*alpha**2
+    h11 = alpha**3 - alpha**2
+    curve = h00*point + h10*(dt*velocity) + h01*(dt*velocity.detach()) + h11*(dt*velocity)
+    d_alpha = torch.autograd.grad(curve.sum(), alpha)[0]
+    assert torch.allclose(d_alpha / dt, velocity.detach().sum(), atol=2e-3, rtol=0)
+    assert torch.isfinite(derivative).all()
+
+
 def test_analytic_impulse_prior_is_part_of_main_transition_when_attached():
     class Prior:
         def __init__(self):
@@ -127,6 +165,44 @@ def test_analytic_impulse_prior_is_part_of_main_transition_when_attached():
                              elapsed, launch, action_model=model)[0]
     assert prior.called
     assert torch.allclose(result[:, 52], state[:, 52] + 1.)
+
+
+def test_hybrid_details_separate_analytic_impulse_from_trainable_residual():
+    class Prior:
+        def __call__(self, state, geometry, present, predicted_robot=None):
+            return state[:, 49:] + state.new_tensor([0., 0., 0., 2., 0., 0.]), {
+                'active': present.bool(),
+            }
+
+    world, ball = FakeWorld(), FakeBall()
+    model = ActionConditionedBallV1(preview=FakePreview())
+    model.__dict__['impulse_prior'] = Prior()
+    args = inputs()
+    _, _, _, details = ball_transition(world, ball, *args, action_model=model,
+                                       return_details=True)
+    assert details['hybrid'] is True
+    assert torch.allclose(details['action_residual'], torch.zeros_like(details['action_residual']))
+    assert torch.allclose(details['analytic_ball'][:, 3], args[0][:, 52] + 2.)
+
+
+def test_launch_transition_keeps_prior_launch_state_over_parked_ball():
+    class LaunchWorld(FakeWorld):
+        launch_s = 2.
+        def prior(self, state, present, elapsed, launch):
+            launch_now = (~present.bool()) & (elapsed >= self.launch_s - 1e-6)
+            ball = torch.where(launch_now[:, None], launch, state[:, 49:])
+            return torch.cat((state[:, :49], ball), -1), launch_now
+
+    world, ball = LaunchWorld(), FakeBall()
+    state, target, prev, feet, present, elapsed, launch = inputs()
+    present.zero_()
+    launch[:, 0] = 3.
+    model = ActionConditionedBallV1(preview=FakePreview())
+    model.__dict__['impulse_prior'] = lambda state, geometry, present, predicted_robot=None: (
+        state[:, 49:], {'active': torch.zeros_like(present)})
+    predicted = ball_transition(world, ball, state, target, prev, feet, present,
+                                elapsed, launch, action_model=model)[0]
+    assert torch.allclose(predicted[:, 49], launch[:, 0])
 
 
 def test_precontact_hard_negative_is_one_tick_before_native_edge_and_reset_safe():

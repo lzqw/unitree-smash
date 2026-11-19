@@ -75,9 +75,10 @@ class PhysicalImaginationAdapter(nn.Module):
         c=state.clock_goal_context
         preview,executor,base=self.executor.forward(state.observation,actor_action,
             c['joint_default'][0],c['limits'],state.executor_memory)
-        predicted,feet,present=ball_transition(self.physical_model,self.ball_model,
+        predicted,feet,present,ball_details=ball_transition(self.physical_model,self.ball_model,
             state.physical,preview.final_joint_targets,c['final_action'],c['foot_contact'],
-            c['ball_present'],c['elapsed'],c['launch'],action_model=self.action_ball_model)
+            c['ball_present'],c['elapsed'],c['launch'],action_model=self.action_ball_model,
+            return_details=True)
         # Keep robot dynamics differentiable while controlling when the
         # unverified ball/contact Jacobian can reach the actor.  This only
         # affects imagination gradients.  World-model supervision continues to
@@ -90,6 +91,17 @@ class PhysicalImaginationAdapter(nn.Module):
                 had_contact = rally.get('had_contact')
                 if had_contact is not None:
                     detach_ball = had_contact.reshape(-1) > .5
+                action_info=ball_details.get('action_model_info') or {}
+                impact_probability=action_info.get('predicted_impact_probability')
+                if impact_probability is not None:
+                    # The current control step can create the first contact
+                    # even while the task latch is still false.  Precontact
+                    # mode must stop the unvalidated impulse gradient at that
+                    # causal boundary as well.
+                    detach_ball = detach_ball | (impact_probability.reshape(-1) >= .5)
+                impulse_info=ball_details.get('impulse_info') or {}
+                if impulse_info.get('active') is not None:
+                    detach_ball = detach_ball | impulse_info['active'].reshape(-1)
             predicted = torch.cat((predicted[:, :49],
                                    torch.where(detach_ball[:, None],
                                                predicted[:, 49:].detach(),

@@ -5,6 +5,7 @@ Friction, ball spin, articulated effective mass, multiple impacts, and contact
 persistence are NOT solved. Discrete contact selection is not a smooth actor
 objective. This module is a diagnostic prior for later supervised residuals.
 """
+import hashlib
 import json
 from pathlib import Path
 import torch
@@ -51,13 +52,36 @@ def rotate_for_time(rotation,omega,time):
 class BallImpulsePriorV1(nn.Module):
     schema='single-impact-moving-surface-ball-prior-v1'
     def __init__(self):
-        super().__init__();self.preview=BallGeometryPreviewV1()
+        super().__init__()
+        # Geometry is a deterministic execution-contract object.  Keep it
+        # available on the frozen prior while avoiding a second copy of its
+        # constant buffers in every action-ball residual checkpoint.
+        object.__setattr__(self, 'preview', BallGeometryPreviewV1())
         path=Path(__file__).resolve().parents[2]/'configs/shuttle_physics_v2.json'
         c=json.loads(path.read_text());self.restitution=float(c['restitution'])
         self.drag=float(c['quadratic_drag_k_per_m']);self.dt=float(c['policy_dt_s'])
         self.sub_dt=float(c['native_physics_dt_s']);self.steps=round(self.dt/self.sub_dt)
         self.register_buffer('gravity',torch.tensor([0.,0.,-9.81]))
         self.register_buffer('wind',torch.tensor(c['wind_m_s']))
+
+    def _apply(self, fn):
+        # ``preview`` is intentionally unregistered, so move/cast it along
+        # with the registered prior buffers when the Hybrid module changes
+        # device or dtype.
+        super()._apply(fn)
+        self.preview._apply(fn)
+        return self
+
+    # The analytic prior is a frozen execution component.  Its physical
+    # configuration and source hash are recorded in the hybrid manifest, so
+    # it is intentionally reconstructed from the contract instead of being
+    # duplicated inside action-ball residual checkpoints.
+    def _save_to_state_dict(self, destination, prefix, keep_vars):
+        return
+
+    def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict,
+                              missing_keys, unexpected_keys, error_msgs):
+        return
 
     def advance(self,p,v,duration):
         remaining=duration[:,None]
@@ -105,7 +129,14 @@ class BallImpulsePriorV1(nn.Module):
         relative=(r.transpose(-1,-2)@(p['ball_velocity_w']-vc-torch.linalg.cross(omega,delta))[...,None]).squeeze(-1)
         times=self.preview.times[None,:,None]
         if predicted_robot is None:
-            local_path=local[:,None]+relative[:,None]*times
+            # Use the same normalized-time Hermite preview as the learned
+            # sweep gate.  The helper converts m/s endpoint tangents using
+            # the control duration, so the analytic and learned paths share
+            # both geometry and time units.
+            from .supermimic_action_ball_v1 import hermite_sweep_samples
+            local_path=hermite_sweep_samples(
+                local, local + self.dt * relative, relative, relative,
+                dt=self.dt, count=self.steps + 1)
         else:
             # The endpoint uses the predicted current-command robot pose.  A
             # cubic sweep is unnecessary for the analytic prior itself, but
@@ -124,8 +155,15 @@ class BallImpulsePriorV1(nn.Module):
                                          torch.full_like(p['ball_position_w'][:, 0],self.dt))
             endpoint_local=(endpoint_rotation.transpose(-1,-2) @
                             (endpoint_ball-endpoint_center)[...,None]).squeeze(-1)
-            a=(times/self.dt).clamp(0.,1.)
-            local_path=(1.-a)*local[:,None]+a*endpoint_local[:,None]
+            endpoint_delta=endpoint_ball-endpoint_center
+            endpoint_surface=endpoint_bodies['velocity'][:, endpoint_id] + torch.linalg.cross(
+                endpoint_bodies['angular_velocity'][:, endpoint_id], endpoint_delta)
+            endpoint_relative=(endpoint_rotation.transpose(-1,-2) @
+                               (endpoint_ball - endpoint_surface)[...,None]).squeeze(-1)
+            from .supermimic_action_ball_v1 import hermite_sweep_samples
+            local_path=hermite_sweep_samples(
+                local, endpoint_local, relative, endpoint_relative,
+                dt=self.dt, count=self.steps + 1)
         world_path=p['ball_position_w'][:,None]+p['ball_velocity_w'][:,None]*times+.5*self.gravity*times.square()
         gap=torch.stack((self.preview.racket_gap(local_path),world_path[:,:,2]-self.preview.radius,
                          self.preview.net_gap(world_path)),-1)
@@ -140,7 +178,7 @@ class BallImpulsePriorV1(nn.Module):
         fraction=(g0/(g0-g1).clamp_min(1e-12)).clamp(0.,1.)
         time=torch.where(safe>0,self.preview.times[before]+fraction*self.sub_dt,t)
         time=torch.where(active,time,torch.full_like(time,self.dt))
-        contact_local=local+relative*time[:,None]
+        contact_local=local_path[row, safe]
         normal_local,part=self.racket_surface(contact_local)
         rt=rotate_for_time(r,omega,time)
         racket_normal=(rt@normal_local[...,None]).squeeze(-1)
@@ -162,3 +200,43 @@ class BallImpulsePriorV1(nn.Module):
             time=time,normal=normal,normal_speed=normal_speed,impulse_dv=impulse_dv,racket_part=part,
             min_gap=gap.amin(1))
         return result,info
+
+
+def hybrid_ball_manifest():
+    """Identity for the frozen analytic part of the Hybrid WM transition."""
+    source = Path(__file__).resolve()
+    config = source.parents[2] / 'configs/shuttle_physics_v2.json'
+    def sha(path):
+        h = hashlib.sha256()
+        with path.open('rb') as stream:
+            for block in iter(lambda: stream.read(1 << 20), b''):
+                h.update(block)
+        return h.hexdigest()
+    return dict(
+        schema='supermimic-hybrid-ball-transition-v2',
+        impulse_prior_schema=BallImpulsePriorV1.schema,
+        impulse_prior_code_sha256=sha(source),
+        shuttle_physics_config_sha256=sha(config),
+        contact_objects=('racket', 'ground', 'net'),
+        control_dt_s=BallImpulsePriorV1().dt,
+        native_substep_dt_s=BallImpulsePriorV1().sub_dt,
+        legacy_residual_policy='other_residual_only',
+    )
+
+
+def attach_hybrid_impulse_prior(action_model, device=None):
+    """Attach one registered, frozen prior to every Hybrid WM caller.
+
+    The prior has no trainable or persistent checkpoint state.  Registering it
+    as a submodule still makes ``to()``, ``eval()`` and parameter-freezing
+    semantics uniform across loaders, fitting scripts and imagination.
+    """
+    if action_model is None:
+        raise ValueError('Cannot attach a Hybrid prior to None')
+    prior = BallImpulsePriorV1()
+    if device is not None:
+        prior = prior.to(device)
+    prior.requires_grad_(False).eval()
+    action_model.add_module('impulse_prior', prior)
+    action_model.hybrid_ball_manifest = hybrid_ball_manifest()
+    return action_model

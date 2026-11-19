@@ -15,6 +15,7 @@ from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
 from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
 from quadsmash.rl.supermimic_action_ball_v1 import ActionConditionedBallV1,RacketModeActionBallV2,ImpactTimeActionBallV3,MaterialInertiaActionBallV4,FrameAwareMaterialInertiaActionBallV5,FrameAwareMaterialInertiaActionBallV6,action_ball_from_checkpoint,migrate_material_inertia_v4,contact_neighborhood_pools
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition,ball_error
+from quadsmash.rl.supermimic_ball_impulse_prior_v1 import attach_hybrid_impulse_prior, hybrid_ball_manifest
 from quadsmash.rl.supermimic_physical_dataset_v1 import valid_windows
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest,SOURCE_SHA
 from scripts.fit_supermimic_action_ball import (metrics,autoregressive_metrics,sha256,
@@ -228,6 +229,9 @@ def main(a):
         material_contract=contract_from_native_receipt(a.native_material_receipt)
         if material_contract['asset_sha256']!=contract['asset']['sha256']:raise ValueError('Native material source asset changed')
         sweep=migrate_material_inertia_v4(sweep,material_contract)
+    # Keep native-response fitting on the exact Hybrid transition used by the
+    # loader and imagination adapter.
+    attach_hybrid_impulse_prior(sweep, device)
     if sweep_source['geometry_hashes']!=sweep.preview.geometry_hashes:raise ValueError('Racket geometry changed')
     base.requires_grad_(False);ball.eval().requires_grad_(False)
     if not a.freeze_physical_response:
@@ -454,7 +458,8 @@ def main(a):
                         optimizer_contract='gate optimizer state belongs to the combined response_optimizer in world.pt'),effective_legacy)
     new_ball=dict({k:v for k,v in sweep_source.items() if 'optimizer' not in k},schema=sweep.schema,model=sweep.state_dict(),
                   physical_sha256=sha256(base_path),legacy_ball_sha256=sha256(effective_legacy),
-                  updates=int(sweep_source['updates'])+256,response_fit_config=config)
+                  updates=int(sweep_source['updates'])+256,response_fit_config=config,
+                  hybrid_ball_transition=hybrid_ball_manifest())
     if material_contract is not None:new_ball['material_contract']=material_contract
     torch.save(new_ball,ball_path)
     final=dict(candidate=metrics(base,ball,sweep,validation_data,cpu,val.tolist(),launch),response=response_summary(base,ball,sweep,pairs,val),

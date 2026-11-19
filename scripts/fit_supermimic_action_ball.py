@@ -15,12 +15,12 @@ from pathlib import Path
 import torch
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
 from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
-from quadsmash.rl.supermimic_ball_residual_v1 import ball_geometry_features
 from quadsmash.rl.supermimic_action_ball_v1 import (ActionConditionedBallV1,
     CausalActionConditionedBallV2,CausalRacketModeActionBallV3,
     preimpact_hard_negatives,contact_neighborhood_pools)
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
-from quadsmash.rl.supermimic_ball_impulse_prior_v1 import BallImpulsePriorV1
+from quadsmash.rl.supermimic_ball_impulse_prior_v1 import (
+    attach_hybrid_impulse_prior, hybrid_ball_manifest)
 from quadsmash.rl.supermimic_wm_validation_v1 import event_aligned_windows
 from quadsmash.rl.supermimic_physical_dataset_v1 import valid_windows
 
@@ -282,10 +282,9 @@ def main():
                  CausalActionConditionedBallV2.schema: CausalActionConditionedBallV2,
                  CausalRacketModeActionBallV3.schema: CausalRacketModeActionBallV3}[a.model_schema]
     sweep=model_cls(softness_m=a.softness_m).to(device)
-    # Fit the residual against the same hybrid transition used at inference.
-    # Bypass Module registration so the fixed analytic prior is not serialized
-    # as candidate weights or confused with trainable residual parameters.
-    sweep.__dict__['impulse_prior'] = BallImpulsePriorV1().to(device)
+    # Fit the residual against the exact registered Hybrid transition used at
+    # inference.  The frozen prior has no persistent state_dict entries.
+    attach_hybrid_impulse_prior(sweep, device)
     package=torch.load(a.packed_data,map_location='cpu',weights_only=True)
     manifest=package.get('source_manifest',package.get('manifest',{}))
     if manifest.get('task_contract')!=source:
@@ -360,19 +359,17 @@ def main():
             for k,n in quota.items():allocated_draws[k]+=n
         t,l=pairs.unbind(1)
         state=data['state'][t,l];targets=data['targets'][t,l]
-        with torch.no_grad():
-            physical,_,_=base(state,targets,data['previous_action'][t,l],
-                data['feet'][t,l].float(),data['present'][t,l],data['elapsed'][t,l],launch[l])
-            prior,_=base.prior(state,data['present'][t,l],data['elapsed'][t,l],launch[l])
-            legacy,_=ball(ball_geometry_features(state,base.geometry),data['present'][t,l])
-            baseline=prior[:,49:]+legacy
         # Use the same transition function as validation and imagination.  In
         # particular, mode-conditioned candidates receive only the current
         # ball-mode probability from the legacy object-separated model.
-        predicted,_,_=ball_transition(base,ball,state,targets,
+        predicted,_,_,transition_details=ball_transition(base,ball,state,targets,
             data['previous_action'][t,l],data['feet'][t,l].float(),
-            data['present'][t,l],data['elapsed'][t,l],launch[l],action_model=sweep)
-        correction=predicted[:,49:]-baseline
+            data['present'][t,l],data['elapsed'][t,l],launch[l],
+            action_model=sweep,return_details=True)
+        # The residual penalty must not punish the fixed analytic impact.  It
+        # constrains only the trainable sweep head output.
+        action_residual=transition_details['action_residual']
+        correction=action_residual
         ball_prediction=predicted[:,49:]
         true=data['next_state'][t,l,49:]
         scale=predicted.new_tensor([.1,.1,.1,2.,2.,2.])
@@ -472,7 +469,8 @@ def main():
         trainable_parameter_names=[name for name,parameter in sweep.named_parameters() if parameter.requires_grad],
         event_validation_selection=selection_status,
         accepted_update=None if best_selection is None else best_selection['update'],
-        accepted_parameter_update=bool(best_sweep_state is not None))
+        accepted_parameter_update=bool(best_sweep_state is not None),
+        hybrid_ball_transition=hybrid_ball_manifest())
     if isinstance(sweep,CausalActionConditionedBallV2):
         candidate_metadata.update(closing_softness_m=sweep.closing_softness_m,
             contact_margin_m=sweep.contact_margin_m)

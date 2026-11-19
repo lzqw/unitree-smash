@@ -6,7 +6,8 @@ from .supermimic_v1 import load_ppo_initialized_actor
 from .supermimic_physical_world_v2 import PhysicalWorldV2
 from .supermimic_ball_residual_v2 import BallResidualV2
 from .supermimic_action_ball_v1 import action_ball_from_checkpoint
-from .supermimic_ball_impulse_prior_v1 import BallImpulsePriorV1
+from .supermimic_ball_impulse_prior_v1 import (
+    BallImpulsePriorV1, attach_hybrid_impulse_prior, hybrid_ball_manifest)
 from .supermimic_task_memory_schema_v1 import TaskMemorySchemaV1,MemoryField
 from .supermimic_task_transition_model_v1 import task_model_for_schema
 from .supermimic_physical_imagination_adapter_v1 import PhysicalImaginationAdapter
@@ -104,15 +105,17 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
         if (candidate.get('geometry_hashes')!=action_ball.preview.geometry_hashes or
                 candidate.get('softness_m')!=action_ball.softness_m):
             raise ValueError('Action-ball candidate racket/net geometry or support width mismatch')
+        if candidate.get('hybrid_ball_transition') != hybrid_ball_manifest():
+            raise ValueError('Action-ball candidate is not bound to the current Hybrid transition')
         if candidate.get('schema') == 'causal-action-conditioned-racket-sweep-v2':
             if (candidate.get('closing_softness_m') != action_ball.closing_softness_m or
                     candidate.get('contact_margin_m') != action_ball.contact_margin_m):
                 raise ValueError('Causal action-ball gate contract mismatch')
         action_ball.load_state_dict(candidate['model'],strict=True)
-        # Keep the analytic impulse prior outside the candidate checkpoint so
-        # old residual weights remain loadable. The main transition attaches
-        # it only for an explicitly loaded action-ball candidate.
-        action_ball.__dict__['impulse_prior'] = BallImpulsePriorV1().to(device)
+        # Every runtime path uses the same registered frozen Hybrid prior.
+        # Its physical identity is stored in the adapter manifest and is
+        # reconstructed rather than copied into the residual checkpoint.
+        attach_hybrid_impulse_prior(action_ball, device)
     task_state=torch.load(paths['task'],map_location='cpu',weights_only=True)
     schema=TaskMemorySchemaV1([MemoryField(**dict(f,shape=tuple(f['shape']))) for f in task_state['task_schema']['fields']])
     output_key=max((key for key in task_state['model'] if key.startswith('net.net.') and key.endswith('.bias')),
@@ -129,8 +132,7 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
                       task_schema=schema.manifest(),actor_whitelist=APPROACH_NAMES,
                       actor_heads={'approach':APPROACH_NAMES,'recovery':RECOVERY_NAMES})).to(device)
     if action_ball is not None:
-        adapter.manifest['analytic_impulse_prior_schema'] = BallImpulsePriorV1.schema
-        adapter.manifest['hybrid_ball_transition'] = True
+        adapter.manifest['hybrid_ball_transition'] = hybrid_ball_manifest()
     suite=Path(__file__).resolve().parents[2]/manifest['task_contract']['suite']['path']
     if hashlib.sha256(suite.read_bytes()).hexdigest()!=manifest['task_contract']['suite']['sha256']:raise ValueError('Suite hash mismatch')
     cases=json.loads(suite.read_text())['cases']

@@ -19,6 +19,7 @@ from quadsmash.rl.supermimic_action_ball_v1 import (
     migrate_temporal_v9, migrate_temporal_v10, migrate_temporal_v11,
 )
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
+from quadsmash.rl.supermimic_ball_impulse_prior_v1 import attach_hybrid_impulse_prior, hybrid_ball_manifest
 from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
 from quadsmash.rl.supermimic_evidence_binding_v1 import NATIVE_REQUIRED_CODE
@@ -238,6 +239,8 @@ def main():
         model = action_ball_from_checkpoint(candidate_source).to(device)
         model.load_state_dict(candidate_source['model'], strict=True)
     model.train()
+    # Calibrate the same Hybrid transition used by runtime imagination.
+    attach_hybrid_impulse_prior(model, device)
     native_head_only = model.__class__.__name__ == 'TemporalCausalRacketModeNativeResponseBallV11'
     if native_head_only:
         # V11 is a residual calibrator over the already fitted V10 candidate.
@@ -337,6 +340,7 @@ def main():
             native_head_only=native_head_only,
             best_validation_update=best_update,
             selection_rule=selection_rule,
+            hybrid_ball_transition=hybrid_ball_manifest(),
         ),
     )
     torch.save(state, args.output)
