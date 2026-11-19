@@ -92,6 +92,24 @@ class BallImpulsePriorV1(nn.Module):
             p=p+dt*v;remaining=remaining-dt
         return p,v
 
+    def advance_trajectory(self, p, v):
+        """Integrate one control tick and retain every native substep.
+
+        Collision search and post-impact integration must use the same
+        drag/gravity trajectory.  This avoids using a ballistic, no-drag path
+        for event timing and a drag path for the resulting state.
+        """
+        positions=[p]
+        velocities=[v]
+        for _ in range(self.steps):
+            relative=v-self.wind
+            v=v+self.sub_dt*(self.gravity-
+                self.drag*relative.norm(dim=-1,keepdim=True)*relative)
+            p=p+self.sub_dt*v
+            positions.append(p)
+            velocities.append(v)
+        return torch.stack(positions,1),torch.stack(velocities,1)
+
     def racket_surface(self,local):
         g=self.preview
         bg=box_gap(local,g.racket_box_centers,g.racket_box_halves)
@@ -151,20 +169,22 @@ class BallImpulsePriorV1(nn.Module):
             endpoint_id=geometry.ids['Racket']
             endpoint_rotation=endpoint_bodies['rotation'][:, endpoint_id]
             endpoint_center=endpoint_bodies['position'][:, endpoint_id]
-            endpoint_ball,_=self.advance(p['ball_position_w'],p['ball_velocity_w'],
-                                         torch.full_like(p['ball_position_w'][:, 0],self.dt))
+            endpoint_ball,endpoint_ball_velocity=self.advance(
+                p['ball_position_w'],p['ball_velocity_w'],
+                torch.full_like(p['ball_position_w'][:, 0],self.dt))
             endpoint_local=(endpoint_rotation.transpose(-1,-2) @
                             (endpoint_ball-endpoint_center)[...,None]).squeeze(-1)
             endpoint_delta=endpoint_ball-endpoint_center
             endpoint_surface=endpoint_bodies['velocity'][:, endpoint_id] + torch.linalg.cross(
                 endpoint_bodies['angular_velocity'][:, endpoint_id], endpoint_delta)
             endpoint_relative=(endpoint_rotation.transpose(-1,-2) @
-                               (endpoint_ball - endpoint_surface)[...,None]).squeeze(-1)
+                               (endpoint_ball_velocity - endpoint_surface)[...,None]).squeeze(-1)
             from .supermimic_action_ball_v1 import hermite_sweep_samples
             local_path=hermite_sweep_samples(
                 local, endpoint_local, relative, endpoint_relative,
                 dt=self.dt, count=self.steps + 1)
-        world_path=p['ball_position_w'][:,None]+p['ball_velocity_w'][:,None]*times+.5*self.gravity*times.square()
+        world_path,world_velocity_path=self.advance_trajectory(
+            p['ball_position_w'],p['ball_velocity_w'])
         gap=torch.stack((self.preview.racket_gap(local_path),world_path[:,:,2]-self.preview.radius,
                          self.preview.net_gap(world_path)),-1)
         hit=gap<=0.
@@ -184,6 +204,22 @@ class BallImpulsePriorV1(nn.Module):
         racket_normal=(rt@normal_local[...,None]).squeeze(-1)
         contact_arm=(rt@(contact_local-self.preview.radius*normal_local)[...,None]).squeeze(-1)
         racket_surface_velocity=vc+torch.linalg.cross(omega,contact_arm)
+        if predicted_robot is not None:
+            # Evaluate the endpoint surface velocity at the same world contact
+            # point, then interpolate it to the predicted impact time.  Using
+            # the current vc/omega for every impact made the action Jacobian
+            # blind to the command-induced racket velocity change.
+            contact_world=center+(r@contact_local[...,None]).squeeze(-1)
+            endpoint_contact_local=(endpoint_rotation.transpose(-1,-2) @
+                                    (contact_world-endpoint_center)[...,None]).squeeze(-1)
+            endpoint_normal_local,_=self.racket_surface(endpoint_contact_local)
+            endpoint_arm=(endpoint_rotation @
+                          (endpoint_contact_local-self.preview.radius*endpoint_normal_local)[...,None]).squeeze(-1)
+            endpoint_surface_velocity=endpoint_bodies['velocity'][:, endpoint_id]+torch.linalg.cross(
+                endpoint_bodies['angular_velocity'][:, endpoint_id],endpoint_arm)
+            impact_alpha=(time/self.dt).clamp(0.,1.)[:,None]
+            racket_surface_velocity=torch.lerp(
+                racket_surface_velocity,endpoint_surface_velocity,impact_alpha)
         pre_p,pre_v=self.advance(p['ball_position_w'],p['ball_velocity_w'],time)
         net_normal,_=self.net_surface(pre_p)
         ground_normal=torch.zeros_like(pre_p);ground_normal[:,2]=1.

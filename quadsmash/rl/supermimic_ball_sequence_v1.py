@@ -42,7 +42,9 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
             # contact heads cannot apply a second impulse at the same event.
             # ``response`` has four entries because the free mode is the gate
             # class, not a response head: racket, ground, net, other.
-            correction=present[:,None].to(response.dtype)*response[:,3]
+            correction=(present[:, None].to(response.dtype)
+                        * probability[:, 4:5]
+                        * response[:, 3])
         else:
             correction=present[:,None].to(response.dtype)*(probability[:,1:,None]*response).sum(1)
     else:
@@ -85,11 +87,11 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
             kwargs={}
         if return_details:
             kwargs['details']=True
-        # The analytic prior and the learned sweep head must see the same
-        # endpoint ball state.  Otherwise the two contact paths use different
-        # racket-relative trajectories and can disagree by one control tick.
-        action_ball_endpoint = (analytic_ball if impulse_prior is not None
-                                else prior[:,49:])
+        # The sweep head predicts pre-impact support.  Keep its endpoint on
+        # the free-flight side of the transition.  Feeding the already
+        # impacted analytic state back into this gate would let the response
+        # change the event it is meant to model.
+        action_ball_endpoint = prior[:,49:]
         response=action_model(state,physical,action_ball_endpoint,
                               base.geometry,present,**kwargs)
         if return_details:
