@@ -658,6 +658,7 @@ class TemporalCausalRacketModeImpulseResidualBallV13(
     an unconstrained six-dimensional end-state offset.
     """
     schema = 'native-temporal-causal-racket-mode-impulse-residual-v13'
+    V13_SEMANTICS_VERSION = 2
     requires_impulse_residual = True
     requires_analytic_impact_prior = True
 
@@ -678,18 +679,27 @@ class TemporalCausalRacketModeImpulseResidualBallV13(
         self.impulse_residual_speed = 10.
         self.impulse_residual_length = .05
         self.legacy_v10_residual = bool(legacy_v10_residual)
-        self.register_buffer('v13_semantics_version', torch.tensor(2, dtype=torch.int64))
+        self.register_buffer('v13_semantics_version', torch.tensor(
+            self.V13_SEMANTICS_VERSION, dtype=torch.int64))
 
     @staticmethod
-    def _contact_basis(normal):
+    def _contact_basis(normal, reference=None):
         normal = torch.nn.functional.normalize(normal, dim=-1)
-        # Pick the Cartesian axis least aligned with the normal to avoid a
-        # near-zero cross product, then construct a right-handed tangent pair.
-        axes = normal.new_tensor([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]])
-        index = normal.abs().argmin(-1)
-        reference = axes[index]
-        tangent_1 = torch.nn.functional.normalize(
-            torch.linalg.cross(normal, reference), dim=-1)
+        # Prefer a stable racket-local axis projected onto the contact plane.
+        # Only use the Cartesian fallback when that axis is nearly parallel to
+        # the normal.  This avoids an avoidable argmin-based basis switch in
+        # the regular contact region.
+        if reference is None:
+            axes = normal.new_tensor([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]])
+            index = normal.abs().argmin(-1)
+            reference = axes[index]
+        reference = reference - normal * (reference * normal).sum(-1, keepdim=True)
+        fallback_axes = normal.new_tensor([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]])
+        fallback_index = normal.abs().argmin(-1)
+        fallback = fallback_axes[fallback_index]
+        use_fallback = reference.norm(dim=-1, keepdim=True) < 1e-5
+        reference = torch.where(use_fallback, fallback, reference)
+        tangent_1 = torch.nn.functional.normalize(torch.linalg.cross(normal, reference), dim=-1)
         tangent_2 = torch.linalg.cross(normal, tangent_1)
         return normal, tangent_1, tangent_2
 
@@ -698,12 +708,31 @@ class TemporalCausalRacketModeImpulseResidualBallV13(
                 impact_info=None, details=False):
         if impact_info is None:
             raise ValueError('V13 requires analytic impact information')
-        legacy_result, info = TemporalCausalRacketModeTargetLinearActionBallV10.forward(
-            self, state, predicted_robot, free_ball, geometry, present,
-            racket_probability=racket_probability,
-            previous_action=previous_action,
-            current_target=current_target,
-            details=True)
+        if self.legacy_v10_residual:
+            legacy_result, info = TemporalCausalRacketModeTargetLinearActionBallV10.forward(
+                self, state, predicted_robot, free_ball, geometry, present,
+                racket_probability=racket_probability,
+                previous_action=previous_action,
+                current_target=current_target,
+                details=True)
+        else:
+            # Pure V13 mode does not execute the inherited V10 six-dimensional
+            # response head.  Keep only its causal geometry diagnostic so the
+            # safety metadata remains available to pre-contact guards.
+            current = ball_geometry_features(state, geometry)
+            future = ball_geometry_features(
+                torch.cat((predicted_robot[:, :49], free_ball), -1), geometry)
+            first, last = current[:, 6:9], future[:, 6:9]
+            gaps, smallest, sampled_gaps = sweep_gap_summary(
+                self.preview, first, last, current[:, 9:12], future[:, 9:12],
+                self.softness_m)
+            info = dict(
+                sampled_gaps=sampled_gaps,
+                predicted_impact_probability=torch.sigmoid(-smallest / self.softness_m),
+                effective_support=torch.sigmoid(-smallest / self.softness_m),
+                current_racket_probability=racket_probability,
+            )
+            legacy_result = torch.zeros_like(free_ball)
         impact_time = impact_info.get('time', state.new_zeros(len(state)))
         relative_velocity = impact_info.get('relative_velocity')
         if relative_velocity is None:
@@ -723,7 +752,8 @@ class TemporalCausalRacketModeImpulseResidualBallV13(
             raise RuntimeError('V13 TOI feature contract must have 12 channels')
         coefficients = torch.tanh(self.impulse_residual_head(local_features))
         coefficients = coefficients * self.impulse_residual_scale
-        normal, tangent_1, tangent_2 = self._contact_basis(impact_info['normal'])
+        normal, tangent_1, tangent_2 = self._contact_basis(
+            impact_info['normal'], impact_info.get('racket_axis'))
         residual_dv = (coefficients[:, 0:1] * normal
                        + coefficients[:, 1:2] * tangent_1
                        + coefficients[:, 2:3] * tangent_2)
@@ -737,7 +767,7 @@ class TemporalCausalRacketModeImpulseResidualBallV13(
             raise FloatingPointError('Nonfinite V13 impulse residual')
         result = legacy_result if self.legacy_v10_residual else torch.zeros_like(legacy_result)
         metadata = dict(info,
-                        v13_semantics_version=int(self.v13_semantics_version),
+                        v13_semantics_version=self.V13_SEMANTICS_VERSION,
                         legacy_v10_residual_enabled=self.legacy_v10_residual,
                         impulse_residual_coefficients=coefficients,
                         impulse_residual_dv=residual_dv,
@@ -816,15 +846,38 @@ def migrate_temporal_v13(source):
     """Migrate a V10/V11/V12 candidate to the TOI impulse-residual head."""
     schema = source.get('schema')
     if schema == TemporalCausalRacketModeImpulseResidualBallV13.schema:
+        saved = source.get('model')
+        if not isinstance(saved, dict):
+            raise ValueError('V13 checkpoint is missing model state')
+        source_version = int(source.get('v13_semantics_version', 1))
+        if source_version not in (1, TemporalCausalRacketModeImpulseResidualBallV13.V13_SEMANTICS_VERSION):
+            raise ValueError(f'Unsupported V13 semantics version: {source_version}')
         model = TemporalCausalRacketModeImpulseResidualBallV13(
             closing_softness_m=float(source.get('closing_softness_m', .004)),
             contact_margin_m=float(source.get('contact_margin_m', .003)),
             legacy_v10_residual=bool(source.get('legacy_v10_residual', False)))
-        target, saved = model.state_dict(), source['model']
-        for key, value in saved.items():
-            if key in target and target[key].shape == value.shape:
-                target[key] = value
-        model.load_state_dict(target, strict=True)
+        target = model.state_dict()
+        if source_version == TemporalCausalRacketModeImpulseResidualBallV13.V13_SEMANTICS_VERSION:
+            missing = [key for key in target if key not in saved]
+            mismatch = [key for key in target if key in saved and target[key].shape != saved[key].shape]
+            if missing or mismatch:
+                raise ValueError(
+                    'V13 version-2 checkpoint shape contract mismatch: '
+                    f'missing={missing}, mismatch={mismatch}')
+            model.load_state_dict(saved, strict=True)
+            model.v13_weight_migration_source = 'v13-v2-exact'
+            model.v13_head_reinitialized = False
+        else:
+            # V1 used the old 84-input head.  Its incompatible head is
+            # intentionally discarded only through this explicit migration.
+            for key, value in saved.items():
+                if key.startswith('impulse_residual_head.') or key == 'v13_semantics_version':
+                    continue
+                if key in target and target[key].shape == value.shape:
+                    target[key] = value
+            model.load_state_dict(target, strict=True)
+            model.v13_weight_migration_source = 'v13-v1-explicit-lowdim-reset'
+            model.v13_head_reinitialized = True
         return model
     if schema in (TemporalCausalRacketModeNativeResponseBallV11.schema,
                   TemporalCausalRacketModeNativeResponseBallV12.schema,
@@ -848,6 +901,8 @@ def migrate_temporal_v13(source):
             raise ValueError('V13 migration tensor mismatch: ' + key)
         target[key] = value
     new.load_state_dict(target, strict=True)
+    new.v13_weight_migration_source = str(schema)
+    new.v13_head_reinitialized = True
     return new
 
 

@@ -61,6 +61,33 @@ def concat_pairs(rows, device):
             'feet', 'present', 'elapsed', 'launch', 'native_minus', 'native_plus')
     result={key: torch.cat([row['pairs'][key].to(device) for row in rows], dim=0)
             for key in keys}
+    verified_negative=[]
+    has_negative_metadata=True
+    for row in rows:
+        modes=row['pairs'].get('native_contact_modes')
+        n=len(row['pairs']['state'])
+        if not isinstance(modes, dict):
+            has_negative_metadata=False
+            break
+        minus=modes.get('minus')
+        plus=modes.get('plus')
+        if not isinstance(minus, list) or not isinstance(plus, list):
+            has_negative_metadata=False
+            break
+        if len(minus) != n or len(plus) != n:
+            raise ValueError('Native contact metadata length does not match probe rows')
+        verified_negative.append(torch.tensor([
+            not bool(a.get('had_contact', False)) and
+            not bool(b.get('had_contact', False))
+            for a, b in zip(minus, plus)
+        ], dtype=torch.bool, device=device))
+    if has_negative_metadata and verified_negative:
+        result['verified_no_contact'] = torch.cat(verified_negative, dim=0)
+    else:
+        # Missing native contact metadata never authorizes a negative
+        # response penalty.  Zero response alone is a diagnostic outcome.
+        result['verified_no_contact'] = torch.zeros(
+            len(result['state']), dtype=torch.bool, device=device)
     temporal_keys=tuple(key for key,value in rows[0]['pairs'].items()
                         if key.startswith('step_') and torch.is_tensor(value))
     if temporal_keys and any(
@@ -140,17 +167,24 @@ def response(model, physical, ball, pairs, *, return_details=False):
         present=pairs['present'];elapsed=pairs['elapsed']
         targets=pairs['step_targets_'+name];actions=pairs['step_final_actions_'+name]
         final_details=None
+        tick_details=[]
         for i in range(targets.shape[1]):
             if return_details:
-                state,contact,present,final_details=ball_transition(
+                state,contact,present,step_details=ball_transition(
                     physical,ball,state,targets[:,i],previous,feet,present,elapsed,
                     pairs['launch'],action_model=model,return_details=True)
+                tick_details.append(step_details)
             else:
                 state,contact,present=ball_transition(
                     physical,ball,state,targets[:,i],previous,feet,present,elapsed,
                     pairs['launch'],action_model=model)
             previous=actions[:,i];feet=contact[:,:feet.shape[1]];elapsed=elapsed+elapsed.new_tensor(.01)
-        return (state,final_details) if return_details else state
+        if return_details:
+            final_details = dict(final_details or {},
+                                 impact_by_tick=tick_details,
+                                 rollout_horizon=len(tick_details))
+            return state,final_details
+        return state
     minus=rollout('minus');plus=rollout('plus')
     if return_details:
         return plus[0][:,52:55] - minus[0][:,52:55], dict(minus=minus[1],plus=plus[1])
@@ -170,6 +204,12 @@ def metrics(predicted, pairs):
     native_supported = native[supported]
     predicted_supported = predicted[supported]
     zero_error = native_supported
+    verified_no_contact = pairs.get('verified_no_contact')
+    if verified_no_contact is None:
+        verified_no_contact = torch.zeros_like(supported)
+    unsupported = verified_no_contact & ~supported
+    false_positive_rms = (float(predicted[unsupported].square().mean().sqrt())
+                          if unsupported.any() else 0.0)
     return dict(
         count=int(len(native)),
         supported_count=int(supported.sum()),
@@ -178,6 +218,8 @@ def metrics(predicted, pairs):
         native_component_rms=[float(value) for value in native_supported.square().mean(0).sqrt()],
         predicted_component_rms=[float(value) for value in predicted_supported.square().mean(0).sqrt()],
         zero_response_baseline_rmse=float(zero_error.square().mean().sqrt()),
+        unsupported_count=int(unsupported.sum()),
+        false_positive_rms=false_positive_rms,
         response_cosine=cosine.tolist(),
         response_cosine_min=float(cosine[supported].min()),
         relative_error=relative.tolist(),
@@ -212,6 +254,26 @@ def response_diagnostics(model, physical, ball, pairs):
     impulse_plus=plus.get('impulse_info') or {}
     action_minus=minus.get('action_model_info') or {}
     action_plus=plus.get('action_model_info') or {}
+    def tick_summary(rollout, index):
+        result=[]
+        for tick, detail in enumerate(rollout.get('impact_by_tick', [])):
+            impulse=detail.get('impulse_info') or {}
+            def tick_item(key):
+                value=impulse.get(key)
+                if value is None:return None
+                if torch.is_tensor(value):return value[index].detach().cpu().tolist()
+                return value
+            result.append(dict(
+                tick=tick,
+                active=tick_item('active'),
+                object_id=tick_item('object_id'),
+                impact_time_s=tick_item('time'),
+                impulse_dv=tick_item('impulse_dv'),
+                residual_dv=(detail.get('action_model_info') or {}).get(
+                    'impulse_residual_dv')[index].detach().cpu().tolist()
+                    if torch.is_tensor((detail.get('action_model_info') or {}).get('impulse_residual_dv')) else None,
+            ))
+        return result
     count=len(pairs['state'])
     rows=[]
     for index in range(count):
@@ -240,6 +302,8 @@ def response_diagnostics(model, physical, ball, pairs):
             plus_impulse_dv=item(impulse_plus,'impulse_dv'),
             minus_predicted_impact_probability=item(action_minus,'predicted_impact_probability'),
             plus_predicted_impact_probability=item(action_plus,'predicted_impact_probability'),
+            minus_impact_by_tick=tick_summary(minus, index),
+            plus_impact_by_tick=tick_summary(plus, index),
         ))
     active = []
     racket = []
@@ -278,6 +342,8 @@ def main():
                         help='Weight of normalized native-response direction loss.')
     parser.add_argument('--direction-min-response', type=float, default=0.01,
                         help='Minimum native response norm used for direction loss. Smaller responses remain in absolute Huber loss.')
+    parser.add_argument('--negative-response-weight', type=float, default=0.25,
+                        help='Weight for verified zero-response native probes')
     parser.add_argument('--native-response-gate-mode', choices=('impact_probability','present_only'),
                         default='present_only',
                         help='Gate for the calibration-only native response head. present_only prevents a missed analytic impact from suppressing supervision.')
@@ -293,6 +359,8 @@ def main():
         raise ValueError('--direction-weight must be finite and positive')
     if not torch.isfinite(torch.tensor(args.direction_min_response)) or args.direction_min_response < 0:
         raise ValueError('--direction-min-response must be finite and non-negative')
+    if not torch.isfinite(torch.tensor(args.negative_response_weight)) or args.negative_response_weight < 0:
+        raise ValueError('--negative-response-weight must be finite and non-negative')
     if not torch.cuda.is_available() and str(args.device).startswith('cuda'):
         raise RuntimeError('GPU required for native response calibration')
     device = torch.device(args.device)
@@ -410,6 +478,7 @@ def main():
     train_native = train['native_plus'][:, 52:55] - train['native_minus'][:, 52:55]
     train_norm = train_native.norm(dim=-1)
     supported = train_norm > 1e-7
+    negative = train.get('verified_no_contact', torch.zeros_like(supported)) & ~supported
     if not supported.any():
         raise ValueError('Training split has no non-zero native response')
     direction_min_response = max(float(args.direction_min_response), 1e-7)
@@ -433,8 +502,12 @@ def main():
             and metrics_value['relative_error_max'] <= 1.0
         )
         if eligible:
-            return (1, metrics_value['response_cosine_min'], -metrics_value['response_rmse'])
-        return (0, -metrics_value['response_rmse'], metrics_value['response_cosine_min'])
+            return (1, metrics_value['response_cosine_min'],
+                    -metrics_value['false_positive_rms'],
+                    -metrics_value['response_rmse'])
+        return (0, -metrics_value['response_rmse'],
+                -metrics_value['false_positive_rms'],
+                metrics_value['response_cosine_min'])
 
     best_key = selection_key(best_validation)
     for update in range(1, args.updates + 1):
@@ -450,7 +523,12 @@ def main():
             direction_predicted.norm(dim=-1) * direction_native.norm(dim=-1)
         ).clamp_min(1e-8)
         direction_loss = (1.0 - cosine).mean()
-        loss = point_loss + args.direction_weight * direction_loss
+        if negative.any():
+            negative_loss = ((predicted[negative] / component_scale).square().mean())
+        else:
+            negative_loss = predicted.new_zeros(())
+        loss = (point_loss + args.direction_weight * direction_loss
+                + args.negative_response_weight * negative_loss)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 10.0)
         optimizer.step()
@@ -480,8 +558,12 @@ def main():
         model={key: value.detach().cpu() for key, value in model.state_dict().items()},
         schema=model.schema,
         legacy_v10_residual=bool(getattr(model, 'legacy_v10_residual', False)),
-        v13_semantics_version=(int(model.v13_semantics_version.item())
-                               if hasattr(model, 'v13_semantics_version') else None),
+        v13_semantics_version=(int(getattr(model, 'V13_SEMANTICS_VERSION'))
+                               if hasattr(model, 'V13_SEMANTICS_VERSION') else None),
+        v13_weight_migration_source=getattr(model, 'v13_weight_migration_source', None),
+        v13_head_reinitialized=bool(getattr(model, 'v13_head_reinitialized', False)),
+        source_hybrid_ball_transition=candidate_source.get('hybrid_ball_transition'),
+        hybrid_ball_transition=hybrid_ball_manifest(**calibration),
         temporal_response_fit=bool(temporal_fit),
         updates=args.updates,
         native_response_calibration=dict(
@@ -500,9 +582,11 @@ def main():
                                    'TemporalCausalRacketModeImpulseResidualBallV13'),
             best_validation_update=best_update,
             selection_rule=selection_rule,
-            loss_definition='component-scaled Huber absolute response plus direction loss on responses above direction_min_response',
+            loss_definition='component-scaled Huber response plus direction loss on supported responses and explicit zero-response penalty on verified native negatives',
             component_scale=component_scale.detach().cpu().tolist(),
             direction_min_response=direction_min_response,
+            negative_response_weight=float(args.negative_response_weight),
+            negative_sample_count=int(negative.sum()),
             hybrid_ball_transition=hybrid_ball_manifest(**calibration),
         ),
     )
@@ -523,6 +607,8 @@ def main():
         final_holdout_diagnostics=final_diagnostics,
         direction_sample_count=int(direction_supported.sum()),
         direction_min_response=direction_min_response,
+        negative_response_weight=args.negative_response_weight,
+        train_negative_sample_count=int(negative.sum()),
         component_scale=component_scale.detach().cpu().tolist(),
         native_response_gate_mode=getattr(model,'native_response_gate_mode',None),
         history=history,

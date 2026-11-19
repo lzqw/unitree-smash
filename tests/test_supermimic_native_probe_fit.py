@@ -1,4 +1,4 @@
-from scripts.fit_supermimic_native_probe_response import validate_probe_identity_reuse
+from scripts.fit_supermimic_native_probe_response import validate_probe_identity_reuse, concat_pairs
 from scripts.fit_supermimic_native_probe_response import metrics
 import torch
 
@@ -38,3 +38,26 @@ def test_response_metrics_report_ball_components_and_zero_baseline():
     result = metrics(torch.zeros(1, 3), pairs)
     assert result['component_rmse'] == [1., 2., 3.]
     assert result['zero_response_baseline_rmse'] > 0
+
+
+def test_native_contact_metadata_marks_only_verified_zero_response_as_negative():
+    state = torch.zeros(2, 55)
+    zeros = torch.zeros(2, 55)
+    pairs = {
+        'state': state,
+        'previous_action': torch.zeros(2, 18),
+        'feet': torch.zeros(2, 4),
+        'present': torch.ones(2, dtype=torch.bool),
+        'elapsed': torch.zeros(2),
+        'launch': torch.zeros(2, 6),
+        'targets_minus': torch.zeros(2, 18),
+        'targets_plus': torch.zeros(2, 18),
+        'native_minus': zeros.clone(),
+        'native_plus': zeros.clone(),
+        'native_contact_modes': {
+            'minus': [{'had_contact': False}, {'had_contact': True}],
+            'plus': [{'had_contact': False}, {'had_contact': True}],
+        },
+    }
+    result = concat_pairs([{'pairs': pairs}], torch.device('cpu'))
+    assert result['verified_no_contact'].tolist() == [True, False]

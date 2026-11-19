@@ -194,6 +194,30 @@ def test_temporal_v13_migration_adds_zero_initialized_toi_impulse_head():
                        torch.zeros_like(restored.impulse_residual_head.net[-1].weight))
 
 
+def test_temporal_v13_version_two_migration_rejects_shape_loss():
+    source = TemporalCausalRacketModeImpulseResidualBallV13()
+    saved = source.state_dict()
+    saved['impulse_residual_head.net.0.weight'] = torch.zeros(128, 84)
+    with pytest.raises(ValueError, match='shape contract mismatch'):
+        migrate_temporal_v13({
+            'schema': source.schema,
+            'v13_semantics_version': source.V13_SEMANTICS_VERSION,
+            'model': saved,
+        })
+
+
+def test_temporal_v13_v1_migration_explicitly_records_head_reset():
+    source = TemporalCausalRacketModeImpulseResidualBallV13()
+    restored = migrate_temporal_v13({
+        'schema': source.schema,
+        'v13_semantics_version': 1,
+        'model': source.state_dict(),
+    })
+    assert restored.v13_head_reinitialized is True
+    assert restored.v13_weight_migration_source == 'v13-v1-explicit-lowdim-reset'
+    assert int(restored.v13_semantics_version) == restored.V13_SEMANTICS_VERSION
+
+
 def test_temporal_v13_applies_residual_at_toi_and_propagates_target_gradient():
     class Prior:
         def __call__(self, state, geometry, present, predicted_robot=None):

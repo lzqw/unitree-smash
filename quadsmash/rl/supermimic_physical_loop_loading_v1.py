@@ -6,6 +6,7 @@ from .supermimic_v1 import load_ppo_initialized_actor
 from .supermimic_physical_world_v2 import PhysicalWorldV2
 from .supermimic_ball_residual_v2 import BallResidualV2
 from .supermimic_action_ball_v1 import action_ball_from_checkpoint
+from .supermimic_action_ball_v1 import TemporalCausalRacketModeImpulseResidualBallV13
 from .supermimic_ball_impulse_prior_v1 import (
     BallImpulsePriorV1, attach_hybrid_impulse_prior, hybrid_ball_manifest)
 from .supermimic_task_memory_schema_v1 import TaskMemorySchemaV1,MemoryField
@@ -97,6 +98,11 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
     if action_ball_checkpoint is not None:
         candidate=torch.load(paths['action_ball'],map_location='cpu',weights_only=True)
         action_ball=action_ball_from_checkpoint(candidate).to(device)
+        if candidate.get('schema') == TemporalCausalRacketModeImpulseResidualBallV13.schema:
+            expected_version = TemporalCausalRacketModeImpulseResidualBallV13.V13_SEMANTICS_VERSION
+            if int(candidate.get('v13_semantics_version', -1)) != expected_version:
+                raise ValueError(
+                    'V13 candidate semantics version is not the current runtime contract')
         if (candidate.get('physical_sha256')!=hashes['physical'] or
                 candidate.get('legacy_ball_sha256')!=hashes['ball'] or
                 candidate.get('asset_sha256')!=manifest['task_contract']['asset']['sha256'] or

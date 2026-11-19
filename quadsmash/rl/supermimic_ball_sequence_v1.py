@@ -61,8 +61,14 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
         # state and therefore remains action-conditioned. Legacy models keep
         # the byte-compatible free-flight path unless they explicitly attach
         # this opt-in prior.
+        defer_post_impact = bool(getattr(
+            action_model, 'requires_impulse_residual', False)
+            and getattr(impulse_prior, 'supports_deferred_post_impact', False))
+        prior_kwargs = dict(predicted_robot=physical)
+        if defer_post_impact:
+            prior_kwargs['defer_post_impact'] = True
         analytic_ball, impulse_info = impulse_prior(
-            state, base.geometry, present, predicted_robot=physical)
+            state, base.geometry, present, **prior_kwargs)
         # Launch is an external schedule transition.  It has priority over
         # the collision prior, which intentionally leaves parked-ball states
         # unchanged until the ball is present.
@@ -123,14 +129,26 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
             analytic_ball=action_model_info.get('analytic_ball', analytic_ball)
             if analytic_ball is None:
                 raise ValueError('Analytic ball state is required for TOI residual')
-            impulse_action_residual=corrected_ball-analytic_ball
-            impulse_action_residual=impulse_action_residual * (
+            impulse_mask=(
                 impulse_info['active']
                 & (impulse_info.get('object_id', torch.zeros_like(
                     impulse_info['active'], dtype=torch.long)) == 0)
-                & present.reshape(-1).bool())[:,None].to(
-                    impulse_action_residual.dtype)
-            ball_prediction=ball_prediction+impulse_action_residual
+                & present.reshape(-1).bool())
+            impulse_action_residual=corrected_ball-analytic_ball
+            impulse_action_residual=impulse_action_residual * impulse_mask[:,None].to(
+                impulse_action_residual.dtype)
+            deferred_mask=impulse_info.get('deferred_post_impact')
+            if deferred_mask is not None:
+                # In deferred mode analytic_ball contains the common TOI
+                # pre-state plus the analytic impulse velocity.  Apply the
+                # learned impulse and integrate once from that state.  Rows
+                # without a deferred racket impact retain the normal analytic
+                # transition and legacy residual path.
+                corrected_prediction=corrected_ball+correction+action_residual
+                ball_prediction=torch.where(
+                    deferred_mask[:,None], corrected_prediction, ball_prediction)
+            else:
+                ball_prediction=ball_prediction+impulse_action_residual
     state=torch.cat((physical[:,:49],ball_prediction),-1)
     next_feet=logits.sigmoid()
     if return_details:

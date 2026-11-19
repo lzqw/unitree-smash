@@ -90,6 +90,7 @@ def rotate_for_time(rotation,omega,time):
 
 class BallImpulsePriorV1(nn.Module):
     schema='single-impact-moving-surface-ball-prior-v1'
+    supports_deferred_post_impact = True
     def __init__(self, *, gap_bias_m=0.0, normal_impulse_scale=1.0):
         super().__init__()
         # Geometry is a deterministic execution-contract object.  Keep it
@@ -222,7 +223,8 @@ class BallImpulsePriorV1(nn.Module):
         surface_velocity=racket_velocity+torch.linalg.cross(racket_angular_velocity,contact_arm)
         return dict(position=pre_p,velocity=pre_v,rotation=racket_rotation,
                     center=racket_center,local=local,normal_local=normal_local,
-                    normal=normal_world,part=part,surface_velocity=surface_velocity)
+                    normal=normal_world,part=part,surface_velocity=surface_velocity,
+                    racket_axis=racket_rotation[..., :, 0])
 
     @staticmethod
     def _interpolate_rotation(start,end,alpha):
@@ -242,10 +244,14 @@ class BallImpulsePriorV1(nn.Module):
         index=torch.cat((bg,rg),-1).argmin(-1)
         return normals.gather(-2,index[...,None,None].expand(*index.shape,1,3)).squeeze(-2),index
 
-    def forward(self,state,geometry,present,predicted_robot=None):
+    def forward(self,state,geometry,present,predicted_robot=None,
+                *, defer_post_impact=False):
         if len(state)>256:
             robot_chunks = (None if predicted_robot is None else predicted_robot.split(256))
-            chunks=[self(s,geometry,p, None if robot_chunks is None else robot_chunks[i])
+            chunks=[self(
+                s, geometry, p,
+                None if robot_chunks is None else robot_chunks[i],
+                defer_post_impact=defer_post_impact)
                     for i,(s,p) in enumerate(zip(state.split(256),present.split(256)))]
             details={}
             for key, value in chunks[0][1].items():
@@ -343,6 +349,16 @@ class BallImpulsePriorV1(nn.Module):
                            torch.where((object_id==1)[:,None],ground_normal,net_normal))
         surface_velocity=torch.where((object_id==0)[:,None],racket_surface_velocity,torch.zeros_like(vc))
         normal_speed=((pre_v-surface_velocity)*normal).sum(-1)
+        racket_gap_at_toi=self.preview.racket_gap(contact['local'])
+        ground_gap_at_toi=pre_p[:, 2]-self.preview.radius
+        net_gap_at_toi=self.preview.net_gap(pre_p)
+        toi_gap=torch.where((object_id == 0), racket_gap_at_toi,
+                            torch.where((object_id == 1), ground_gap_at_toi,
+                                        net_gap_at_toi))
+        reconstructed_ball_position=contact['center'] + (
+            contact['rotation'] @ contact['local'][..., None]).squeeze(-1)
+        kinematic_reconstruction_error=(
+            pre_p-reconstructed_ball_position).norm(dim=-1)
         # The calibration was fit to racket probes.  Ground and net remain
         # governed by the unscaled analytic prior until they receive their
         # own independent calibration evidence.
@@ -354,12 +370,22 @@ class BallImpulsePriorV1(nn.Module):
             normal_speed.clamp_max(0.)[:,None]*normal)
         impulse_dv=torch.where(active[:,None],impulse_dv,torch.zeros_like(impulse_dv))
         post_p,post_v=self.advance(pre_p,pre_v+impulse_dv,self.dt-time)
+        racket_deferred = (defer_post_impact & active & (object_id == 0))
+        # The V13 residual path can add its learned impulse before the single
+        # remaining-time integration.  Keep the analytic post-impact state for
+        # all other callers and expose a pre-integration state only for those
+        # racket rows.  This avoids integrating the analytic branch once and
+        # then integrating the corrected branch again in ball_transition().
+        deferred_state=torch.cat((pre_p,pre_v+impulse_dv),-1)
         result=torch.cat((post_p,post_v),-1)
+        result=torch.where(racket_deferred[:,None], deferred_state, result)
         result=torch.where(present[:,None],result,state[:,49:])
         info=dict(active=active,object_id=torch.where(active,object_id,torch.full_like(object_id,3)),
             time=time,normal=normal,normal_speed=normal_speed,impulse_dv=impulse_dv,racket_part=part,
             min_gap=gap.amin(1),
-            toi_gap=g1,
+            sampled_contact_gap=g1,
+            toi_gap=toi_gap,
+            kinematic_reconstruction_error=kinematic_reconstruction_error,
             gap_bias_m=self.gap_bias_m,
             normal_impulse_scale=self.normal_impulse_scale,
             # Keep the continuous TOI state available to the optional
@@ -368,11 +394,13 @@ class BallImpulsePriorV1(nn.Module):
             pre_position=pre_p,
             pre_velocity=pre_v,
             local=contact['local'],
+            racket_axis=contact['racket_axis'],
             surface_velocity=surface_velocity,
             relative_velocity=pre_v-surface_velocity,
             remaining_time=(self.dt-time).clamp_min(0.),
             post_position=post_p,
-            post_velocity=post_v)
+            post_velocity=post_v,
+            deferred_post_impact=racket_deferred)
         return result,info
 
 
