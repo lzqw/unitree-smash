@@ -41,3 +41,5 @@ git diff --check HEAD~5..HEAD
 `/tmp/supermimic_contact_pilot_specs_cross_20261120` 的 15 个 spec 已逐个通过 `validate_spec`。所有 spec 都启用 `capture_substeps`，event tick 合法，lane 无重复，并覆盖 54 个 cross-event lane。manifest SHA256 为 `a3c4deef03f1160b59c47ef8dc7730d8fadd87f100408a32dcd09cd3063b2f72`。
 
 该批次使用已审查的可恢复 launcher，启动前仍需确认当前 B1 fill 已结束且 GPU 只保留 A2 canary。采集完成后重新运行本文件中的测试和 pilot manifest 审计。
+
+后续复核修正了 legacy `spec_unknown` 的审计边界。unknown 行继续按 capture 原子切分，并从已知 spec 的跨 split overlap 集合排除。修正后的测试和 unknown-spec 合成审计均通过，代码提交为 `71b9833`。
