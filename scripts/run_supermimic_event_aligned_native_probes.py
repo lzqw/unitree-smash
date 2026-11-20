@@ -70,6 +70,8 @@ def main() -> int:
     parser.add_argument('--g07-execution-root', type=Path, required=True,
                         help='Exact measured G07 execution root. No implicit worktree lookup.')
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--resume', action='store_true',
+                        help='Resume an existing collection and archive incomplete branch attempts')
     parser.add_argument('--physics-device', default='cuda:0')
     parser.add_argument('--seed', type=int, default=None,
                         help='Seed used by every Isaac child. Must match the packed archive seed.')
@@ -89,7 +91,7 @@ def main() -> int:
         parser.error(f'G07 execution root does not exist: {args.g07_execution_root}')
     if not args.spec_dir.is_dir():
         parser.error(f'Probe spec directory does not exist: {args.spec_dir}')
-    if args.output.exists():
+    if args.output.exists() and not args.resume:
         parser.error(f'Refusing to reuse probe output: {args.output}')
 
     spec_paths = sorted(args.spec_dir.glob('spec_*.json'))
@@ -108,7 +110,8 @@ def main() -> int:
         specs.append((path, spec))
 
     args.output = args.output.resolve()
-    args.output.mkdir(parents=True)
+    if not args.output.exists():
+        args.output.mkdir(parents=True)
     source_args = _parse_source(args)
     startup = dict(
         schema='event-aligned-native-probe-collection-v1',
@@ -126,7 +129,13 @@ def main() -> int:
         cuda_device_count=torch.cuda.device_count(),
         started_at=time.time(),
     )
-    (args.output / 'startup.json').write_text(json.dumps(startup, indent=2) + '\n')
+    startup_path = args.output / 'startup.json'
+    if args.resume and startup_path.is_file():
+        previous = json.loads(startup_path.read_text())
+        if previous.get('spec_manifest_sha256') != startup.get('spec_manifest_sha256'):
+            parser.error('Resume collection spec manifest does not match existing output')
+    else:
+        startup_path.write_text(json.dumps(startup, indent=2) + '\n')
 
     completed = []
     evaluate = ROOT / 'scripts' / 'evaluate_supermimic_v1.py'
@@ -136,6 +145,20 @@ def main() -> int:
         spec_name = spec_path.stem
         for branch in BRANCHES:
             branch_output = args.output / spec_name / branch
+            probe_path = branch_output / 'native_probe.pt'
+            if args.resume and probe_path.is_file():
+                completed.append(dict(spec=spec_name, branch=branch, command=[], exit_code=0,
+                                      elapsed_s=0.0, output=str(branch_output),
+                                      probe_path=str(probe_path), probe_sha256=sha256(probe_path),
+                                      resumed=True))
+                continue
+            if args.resume and branch_output.exists():
+                suffix = 1
+                archived = branch_output.with_name(f'{branch_output.name}.incomplete_{suffix}')
+                while archived.exists():
+                    suffix += 1
+                    archived = branch_output.with_name(f'{branch_output.name}.incomplete_{suffix}')
+                branch_output.rename(archived)
             branch_output.parent.mkdir(parents=True, exist_ok=True)
             command = [
                 sys.executable, str(evaluate), *source_args,
@@ -177,7 +200,7 @@ def main() -> int:
             completed.sort(key=lambda row: (row['spec'], BRANCHES.index(row['branch'])))
             (args.output / 'status.json').write_text(json.dumps(dict(
                 schema='event-aligned-native-probe-collection-v1', status='RUNNING',
-                workers=args.workers, total=len(jobs), completed=completed), indent=2) + '\n')
+                workers=args.workers, total=len(jobs) + len(completed), completed=completed), indent=2) + '\n')
             if item['exit_code'] != 0 or not Path(item['probe_path']).is_file():
                 (args.output / 'failure.json').write_text(json.dumps(item, indent=2) + '\n')
                 for other in futures:
@@ -185,7 +208,7 @@ def main() -> int:
                 return 1
 
     status = dict(schema='event-aligned-native-probe-collection-v1', status='COLLECTION_FINISHED',
-                  workers=args.workers, total=len(jobs),
+                  workers=args.workers, total=len(jobs) + len(completed),
                   actor_updates=0, world_updates=0, critic_updates=0,
                   completed=completed, finished_at=time.time())
     (args.output / 'status.json').write_text(json.dumps(status, indent=2) + '\n')
