@@ -22,8 +22,12 @@ class ActorStartBank:
         # updated when terminal labels arrive.  Materialize ordinary CPU
         # tensors for the mutable mask state kept by this bank.
         def mutable_mask(value):
-            out=torch.empty(value.shape,dtype=torch.bool)
-            out.copy_(value.to(dtype=torch.bool))
+            # ``empty`` created while an outer inference_mode is active is
+            # itself an inference tensor.  Explicitly leave that mode for
+            # this small metadata allocation so delayed labels can mutate it.
+            with torch.inference_mode(False):
+                out=torch.empty(value.shape,dtype=torch.bool)
+                out.copy_(value.to(dtype=torch.bool))
             return out
         onset=mutable_mask(onset)
         active=mutable_mask(active)
@@ -32,8 +36,8 @@ class ActorStartBank:
         self.last_tick[stream]=native_tick;self.seen+=1
         entry=dict(start=start,stream=int(stream),policy_version=int(policy_version),native_tick=int(native_tick),
                    masks=dict(gate_onset=onset,pre_contact=active,
-                              failure_pre=torch.zeros(active.shape,dtype=torch.bool),
-                              success_near=torch.zeros(active.shape,dtype=torch.bool)))
+                              failure_pre=mutable_mask(torch.zeros_like(active)),
+                              success_near=mutable_mask(torch.zeros_like(active))))
         # Reservoir avoids "last 8 lanes" and retains pre-event snapshots until
         # terminal labels arrive. No snapshot is synthesized by mixing G07 trees.
         if len(self.entries)<self.capacity:self.entries.append(entry)
@@ -58,8 +62,9 @@ class ActorStartBank:
             # terminal-label write, otherwise PyTorch rejects the in-place
             # update even though the mask is logically mutable metadata.
             if target.is_inference():
-                mutable=torch.empty(target.shape,dtype=torch.bool)
-                mutable.copy_(target)
+                with torch.inference_mode(False):
+                    mutable=torch.empty(target.shape,dtype=torch.bool)
+                    mutable.copy_(target)
                 entry['masks'][name]=target=mutable
             target[lane]=bool(eligible)
     def sample(self,attempt):
