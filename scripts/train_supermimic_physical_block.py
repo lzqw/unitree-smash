@@ -161,6 +161,10 @@ def main():
     parser.add_argument('--task-reference-bank',type=Path,default=None,
                         help='Optional success-only task-space reference bank')
     parser.add_argument('--tracking-weight',type=float,default=0.0)
+    parser.add_argument('--approach-objective',choices=('task','toi_racket_only'),default='task',
+                        help='Approach auxiliary objective. toi_racket_only uses event-aligned TOI racket references while ball contact gradients stay detached.')
+    parser.add_argument('--paired-evaluation-baseline',type=Path,default=None,
+                        help='JSON list or episodes_summary.json for the fixed 128-case pre-update paired evaluation')
     AppLauncher.add_app_launcher_args(parser);args=parser.parse_args()
     # Every training stage uses the GPU-resident actor, WM and 128-lane
     # physical loop.  Fail before AppLauncher/Isaac startup when the driver is
@@ -192,6 +196,8 @@ def main():
     try:FrozenReturnMonitor(args.native_return_drop_tolerance,args.native_return_flat_tolerance,args.native_return_patience)
     except ValueError as exc:parser.error(str(exc))
     if args.tracking_weight < 0 or (args.tracking_weight > 0 and args.task_reference_bank is None): parser.error('Positive tracking needs a validated reference bank')
+    if args.approach_objective=='toi_racket_only' and args.task_reference_bank is None:
+        parser.error('toi_racket_only requires a validated event-aligned task reference bank')
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
     if args.actor_update_budget is not None:
         args.recovery_update_budget=0;args.approach_update_budget=args.actor_update_budget
@@ -339,9 +345,26 @@ def run(args, *, alternating=None):
             if not reference_bank.manifest['protocol_verified']:raise ValueError('Tracking requires independently scored complete native references')
             if reference_bank.geometry_sha256 and reference_bank.geometry_sha256 != adapter.physical_model.geometry.model_sha256:
                 raise ValueError('Task reference bank geometry hash mismatch')
+            execution_contract_sha256=hashlib.sha256(json.dumps(policy_execution,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+            if args.tracking_weight>0 and reference_bank.execution_contract_sha256 != execution_contract_sha256:
+                raise ValueError('Task reference bank execution contract hash does not match current policy execution')
             reference_bank=reference_bank.to(torch.device('cuda:0'))
         lifecycle_stage(args.output, 'REFERENCE_BANK_READY', enabled=reference_bank is not None)
         writer=SummaryWriter(str(args.tensorboard_dir or (args.output/'tensorboard')),flush_secs=30)
+        from quadsmash.rl.supermimic_paired_evaluation_v1 import paired_evaluation
+        paired_eval_dir=args.output/'paired_evaluation'; paired_eval_dir.mkdir(exist_ok=True)
+        paired_eval_snapshots={}; paired_eval_actor_snapshots={}
+        if args.paired_evaluation_baseline is not None:
+            baseline_payload=json.loads(args.paired_evaluation_baseline.read_text())
+            if isinstance(baseline_payload,dict):
+                baseline_payload=baseline_payload.get('records',baseline_payload.get('episodes',baseline_payload))
+            if not isinstance(baseline_payload,list):
+                raise ValueError('Paired evaluation baseline must be a JSON record list or episodes_summary payload')
+            paired_eval_snapshots['pre-update']=baseline_payload
+            paired_eval_actor_snapshots['pre-update']={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()}
+            write(paired_eval_dir/'pre-update.json',dict(schema='supermimic-paired-fixed-case-evaluation-v1',stage='pre-update',
+                case_count=len(baseline_payload),case_ids=sorted(str(row.get('case_id')) for row in baseline_payload),
+                actor_parameter_delta={'available':False},scope='fixed 128-case reference supplied by user'))
         from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache,APPROACH_TICKS,RECOVERY_TICKS,CRITIC_TICKS
         start_cache=load_start_cache(args.archive,manifest)
         lifecycle_stage(args.output, 'START_CACHE_LOADED')
@@ -361,7 +384,7 @@ def run(args, *, alternating=None):
             native_reference_target_budget_rad=args.native_reference_target_budget_rad,
             trainable_names=RECOVERY_NAMES + APPROACH_NAMES,block_name='joint',
             reference_bank=reference_bank,tracking_weight=args.tracking_weight,
-            world_lr=args.world_learning_rate)
+            world_lr=args.world_learning_rate,approach_objective=args.approach_objective)
         trainer.ball_loss_weight=float(args.wm_ball_loss_weight)
         trainer.contact_ball_loss_weight=float(args.wm_contact_ball_loss_weight)
         trainer.racket_loss_weight=float(args.racket_loss_weight)
@@ -657,7 +680,8 @@ def run(args, *, alternating=None):
             wm_recent_policy_window=args.wm_recent_policy_window,wm_recent_tick_window=args.wm_recent_tick_window,
             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
             action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()) if args.action_ball_checkpoint else None,
-            tracking_weight=args.tracking_weight,
+            tracking_weight=args.tracking_weight,approach_objective=args.approach_objective,
+            paired_evaluation_baseline=str(args.paired_evaluation_baseline.resolve()) if args.paired_evaluation_baseline else None,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         write(args.output/'config.json',config)
         metadata=dict(policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
@@ -1121,10 +1145,29 @@ def run(args, *, alternating=None):
             for record in native_records:
                 record.update(policy_id=policy_id,actor_sha256=actor_hash,policy_execution=policy_execution,scope='frozen training refresh, not candidate promotion')
                 replay.actor_start_bank.label_terminal(record,replay.current_stream)
+            if paired_eval_snapshots:
+                previous_stage=next(reversed(paired_eval_snapshots))
+                stage_name=('post-Recovery' if head=='recovery' else
+                            'post-Approach' if head=='approach' else 'post-refresh')
+                paired=paired_evaluation(
+                    paired_eval_snapshots[previous_stage],native_records,stage=stage_name,
+                    actor_before=paired_eval_actor_snapshots[previous_stage],
+                    actor_after={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()},
+                    wm_holdout=runtime_validation_path)
+                paired['comparison_from']=previous_stage
+                paired['policy_id']=policy_id
+                paired['actor_sha256']=actor_hash
+                write(paired_eval_dir/f'{stage_name}_{refresh_serial:02d}.json',paired)
+                receipt_paired=paired
+            else:
+                receipt_paired=None
+            paired_eval_snapshots[stage_name]=native_records
+            paired_eval_actor_snapshots[stage_name]={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()}
             write(refresh_dir/'episodes_summary.json',native_records)
             cursor=len(env.rally_records) # these records belong to the frozen stream, not mixed monitoring
             receipt.update(start_tick=start_tick,end_tick=tick,actor_sha256=actor_hash,policy_execution=policy_execution,head=head,consumer_heads=list(consumer_heads),schedule_event_id=event_id,formal_evaluation=False,
                            native_metrics=summarize_native_episodes(native_records))
+            if receipt_paired is not None: receipt['paired_evaluation']=receipt_paired
             from quadsmash.rl.supermimic_evidence_binding_v1 import attach_terminal_ball_side
             packed=attach_terminal_ball_side(collector.packed_complete(),native_records)
             runtime_validation_data=packed
@@ -1191,7 +1234,8 @@ def run(args, *, alternating=None):
                     additions=TaskSpaceReferenceBankV1.from_packed({k:v.to(device) for k,v in packed.items()},
                         adapter.physical_model.geometry,source_sha256=source_hash,policy_id=policy_id,
                         match_distance_threshold=trainer.reference_bank.match_distance_threshold,terminal_records=native_records,
-                        excluded_lanes=wm_holdout_lanes)
+                        excluded_lanes=wm_holdout_lanes,
+                        execution_contract_sha256=trainer.reference_bank.execution_contract_sha256)
                 trainer.reference_bank.extend(additions)
                 atomic_torch_save(trainer.reference_bank.payload(),refresh_dir/'reference_bank.pt')
                 receipt['reference_bank']=trainer.reference_bank.manifest
@@ -1268,7 +1312,8 @@ def run(args, *, alternating=None):
                 row=schedule.block(event['block_key'],head,event['target'],event['proposal_limit'])
                 return {k:row[k] for k in ('attempts','accepted','rejected','backtracked')}
             def refresh_pair(event):
-                return refresh_frozen_policy('combined',event_id=event['id'],managed_refresh=True)
+                refresh_head=event.get('after_head','combined') if args.refresh_mode=='per-head' else 'combined'
+                return refresh_frozen_policy(refresh_head,event_id=event['id'],managed_refresh=True)
             def finalize_cycle(event):
                 totals=alternating.head_totals(event['cycle'])
                 total=sum(x['accepted'] for x in totals.values())

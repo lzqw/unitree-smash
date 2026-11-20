@@ -36,6 +36,7 @@ class TaskSpaceReferenceBankV1:
     max_per_head: int = 128
     schema: str = 'success-guided-task-space-reference-v2'
     excluded_lanes: tuple = ()
+    execution_contract_sha256: str | None = None
 
     def __post_init__(self):
         if not math.isfinite(self.match_distance_threshold) or self.match_distance_threshold<=0:
@@ -56,7 +57,8 @@ class TaskSpaceReferenceBankV1:
     def to(self,device):
         return type(self)([{k:v.to(device) if torch.is_tensor(v) else v for k,v in e.items()} for e in self.entries],
                           self.geometry_sha256,self.source_sha256,self.match_distance_threshold,self.max_per_head,
-                          excluded_lanes=self.excluded_lanes)
+                          excluded_lanes=self.excluded_lanes,
+                          execution_contract_sha256=self.execution_contract_sha256)
 
     @property
     def manifest(self):
@@ -65,6 +67,7 @@ class TaskSpaceReferenceBankV1:
                     recovery_count=sum(e['mode']=='recovery' for e in self.entries),
                     match_distance_threshold=self.match_distance_threshold,max_per_head=self.max_per_head,
                     excluded_lanes=list(self.excluded_lanes),
+                    execution_contract_sha256=self.execution_contract_sha256,
                     protocol_verified=bool(self.entries) and all(e.get('score_schema')=='historical-independent-complete5-v1' for e in self.entries),
                     native_contact_certification=False,alignment='current causal event estimate / current-state phase match')
 
@@ -77,7 +80,7 @@ class TaskSpaceReferenceBankV1:
         return cls(**payload)
 
     @classmethod
-    def from_packed(cls,tensors,geometry,*,source_sha256='',policy_id='unknown',match_distance_threshold=1.,horizon=None,terminal_records=None,excluded_lanes=()):
+    def from_packed(cls,tensors,geometry,*,source_sha256='',policy_id='unknown',match_distance_threshold=1.,horizon=None,terminal_records=None,excluded_lanes=(),execution_contract_sha256=None):
         if horizon is not None: raise ValueError('Do not truncate reference episodes')
         for name in ('state','next_state','event_state','next_event_state','episode','elapsed','terminated','timeout','feet','next_feet'):
             if name not in tensors: raise ValueError('Reference evidence missing: '+name)
@@ -127,10 +130,13 @@ class TaskSpaceReferenceBankV1:
                                         digest=digest,source_sha256=source_sha256,terminal_verified=True,
                                         score_schema=label['scoring_schema'] if label else 'event-flags-only'))
                 start=end+1
-        return cls(entries,geometry.model_sha256,source_sha256,match_distance_threshold,excluded_lanes=tuple(excluded))
+        return cls(entries,geometry.model_sha256,source_sha256,match_distance_threshold,excluded_lanes=tuple(excluded),
+                   execution_contract_sha256=execution_contract_sha256)
 
     def extend(self,other):
         if other.geometry_sha256!=self.geometry_sha256: raise ValueError('Reference geometry differs')
+        if self.execution_contract_sha256 != other.execution_contract_sha256:
+            raise ValueError('Reference execution contract differs')
         excluded=set(self.excluded_lanes)|set(other.excluded_lanes)
         self.assert_excludes(excluded);other.assert_excludes(excluded)
         seen=set(); kept=[]
@@ -164,12 +170,43 @@ class TaskSpaceReferenceBankV1:
         time_table=current.new_full((len(candidates),length),float('inf'))
         feature_table=current.new_zeros(len(candidates),length,current.shape[-1])
         sizes=torch.tensor([len(e['times']) for e in candidates],device=current.device)
+        anchor_table=current.new_full((len(candidates),),float('nan'))
         for i,e in enumerate(candidates):
             size=len(e['times']);time_table[i,:size]=e['times'].to(current)
             feature_table[i,:size]=e['features'].to(current)
+            anchor_table[i]=float(e['anchor_time'])
+        anchor_time=anchor_table[chosen]
+        anchor_index=(time_table[chosen]-anchor_time[:,None]).abs().argmin(-1)
+        anchor_features=feature_table[chosen,anchor_index]
         return dict(indices=chosen,matched=torch.isfinite(best)&(best<=self.match_distance_threshold),
                     times=time_table[chosen],features=feature_table[chosen],lengths=sizes[chosen],
-                    distance=best,offset=aligned-elapsed.detach().reshape(-1))
+                    distance=best,offset=aligned-elapsed.detach().reshape(-1),
+                    anchor_time=anchor_time,anchor_features=anchor_features)
+
+    def toi_loss(self, predicted_physical, reference, mode, geometry, *, valid_mask=None, weights=None,
+                 return_components=False):
+        """Loss against the event-aligned racket state at the verified TOI.
+
+        Reference retrieval remains detached. FK of the predicted physical
+        state stays differentiable, so this objective can guide Approach while
+        the ball/contact branch is detached.
+        """
+        actual=task_space_features(predicted_physical,geometry,mode)
+        target=reference.get('anchor_features')
+        if target is None:
+            zero=actual.sum()*0.
+            return (zero,zero.detach(),actual.new_zeros(len(actual))) if return_components else zero
+        target=target.to(actual)
+        mask=reference['matched'].to(actual.device)
+        if valid_mask is not None: mask=mask&valid_mask.to(mask.device)
+        w=mask.to(actual.dtype)
+        if weights is not None:w=w*weights.detach().reshape(-1)
+        # The approach feature layout is relative position, relative velocity,
+        # racket normal, orientation, root velocity and root angular velocity.
+        scales=actual.new_tensor([.05]*3+[1.]*3+[.2]*3+[.2]*3+[2.]*3+[5.]*3)
+        value=(((actual-target.detach())/scales).square().mean(-1)*w).sum()
+        if return_components:return value,w.sum(),w
+        return value/w.sum().clamp_min(1e-8)
 
     def loss(self,predicted_physical,elapsed,reference,mode,geometry=None,valid_mask=None,weights=None,return_components=False):
         actual=task_space_features(predicted_physical,geometry,mode)

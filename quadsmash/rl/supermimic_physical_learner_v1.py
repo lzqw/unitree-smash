@@ -21,7 +21,8 @@ class PhysicalHorizonTrainer:
                  target_delta_budget_rad=0.04,native_reference_command_budget=None,
                  native_reference_target_budget_rad=None,trainable_names=None,
                  block_name='approach',actor_lr=5e-5,reference_bank=None,
-                 tracking_weight=0.0,world_lr=2e-4,racket_loss_weight=1.0):
+                 tracking_weight=0.0,world_lr=2e-4,racket_loss_weight=1.0,
+                 approach_objective='task'):
         self.actor,self.adapter,self.timebase=actor,adapter,timebase
         width=adapter.critic_input(initial_state).shape[-1]
         self.critic=MLP(width,(512,256,128),1).to(initial_state.physical.device)
@@ -35,6 +36,9 @@ class PhysicalHorizonTrainer:
         self.block_name=block_name
         self.reference_bank=reference_bank
         self.tracking_weight=float(tracking_weight)
+        if approach_objective not in ('task','toi_racket_only'):
+            raise ValueError('Unknown Approach objective')
+        self.approach_objective=approach_objective
         self.ball_loss_weight=4.0
         self.contact_ball_loss_weight=8.0
         self.racket_loss_weight=float(racket_loss_weight)
@@ -208,10 +212,23 @@ class PhysicalHorizonTrainer:
             if self.block_name=='approach':
                 if 'had_contact' not in rally:track_mask=torch.zeros_like(track_mask)
                 else:track_mask=track_mask&(rally['had_contact'].reshape(-1)<.5)
+            if self.block_name=='approach' and getattr(self,'approach_objective','task')=='toi_racket_only':
+                # Restrict the auxiliary reference gradient to the verified
+                # event-aligned TOI neighbourhood.  The ball/contact branch
+                # remains detached by the selected precontact stage.
+                if reference is not None:
+                    elapsed=state.clock_goal_context['elapsed'].reshape(-1)
+                    toi_phase=(elapsed+reference['offset']-reference['anchor_time']).abs()<=.03
+                    track_mask=track_mask&toi_phase
             state,reward,done,_=self.adapter(state,action)
             if reference is not None:
-                numerator,denominator,weights=self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
-                    geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival,return_components=True)
+                if self.block_name=='approach' and getattr(self,'approach_objective','task')=='toi_racket_only':
+                    numerator,denominator,weights=self.reference_bank.toi_loss(
+                        state.physical,reference,self.block_name,self.adapter.physical_model.geometry,
+                        valid_mask=track_mask,weights=survival,return_components=True)
+                else:
+                    numerator,denominator,weights=self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
+                        geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival,return_components=True)
                 tracks.append(numerator);track_weights.append(weights);track_states.append(state.physical)
             states.append(current.detach());rewards.append(reward*active[:,None]);dones.append(done);valid.append(active&selected)
             survival=survival*(1-done.reshape(-1))
@@ -243,7 +260,8 @@ class PhysicalHorizonTrainer:
         return dict(reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
                     gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
                     critic_data=(torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid)),
-                    tracking_steps=len(tracks),tracking_active_lane_steps=int((torch.stack(track_weights)>0).sum()) if tracks else 0,
+                    tracking_steps=len(tracks),tracking_objective=getattr(self,'approach_objective','task') if self.block_name=='approach' else 'recovery_reference',
+                    tracking_active_lane_steps=int((torch.stack(track_weights)>0).sum()) if tracks else 0,
                     tracking_effective_weight_sum=float(track_weight_sum.detach()),tracking_nonzero_gradient_lanes=nonzero_lanes,matched_references=int(reference['matched'].sum()) if reference else 0)
 
     def imagine_update(self,initial_state,*,update_actor=True):
