@@ -35,3 +35,9 @@ git diff --check HEAD~5..HEAD
 ## 审查结论
 
 支线 B 的 CPU 抽取和 split 逻辑可以继续运行。原生 GPU 采集仍然必须在每一批完成后重新构建 manifest，并以 coverage gate 决定是否准入。`policy_training_admitted=false`、`contact_bptt=detached`、`v13_residual_gradient=detached` 继续保持。
+
+## cross-event 采集前审查
+
+`/tmp/supermimic_contact_pilot_specs_cross_20261120` 的 15 个 spec 已逐个通过 `validate_spec`。所有 spec 都启用 `capture_substeps`，event tick 合法，lane 无重复，并覆盖 54 个 cross-event lane。manifest SHA256 为 `a3c4deef03f1160b59c47ef8dc7730d8fadd87f100408a32dcd09cd3063b2f72`。
+
+该批次使用已审查的可恢复 launcher，启动前仍需确认当前 B1 fill 已结束且 GPU 只保留 A2 canary。采集完成后重新运行本文件中的测试和 pilot manifest 审计。
