@@ -53,6 +53,7 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
         if racket_material.shape != (n_shapes, 3):
             raise ValueError('Expected static friction, dynamic friction and restitution for each shape')
     if compound_racket and event_trace is not None:
+        event_trace['near_shape_count'] = torch.zeros(dims,dtype=torch.int32,device=p.device)
         event_trace['shape_regime'] = torch.zeros((*dims,n_shapes),dtype=torch.uint8,device=p.device)
     if measured_path is not None:
         center,q,linear,omega=measured_path
@@ -94,10 +95,12 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
                 linear[i, lane], omega[i, lane], racket_material, offset, fitted['normal_impulse_scale'],
                 separation_gain=fitted.get('separation_velocity_gain', 0.),
                 impact_geometry_fraction=fitted.get('impact_geometry_fraction', 0.), return_impact_time=True, load_trace=load_trace,
-                local_mobility=local_mobility[lane] if local_mobility is not None else None,shuttle_mass=shuttle_mass)
+                local_mobility=local_mobility[lane] if local_mobility is not None else None,shuttle_mass=shuttle_mass,
+                temporal_solver=fitted.get('temporal_solver'),patch_inertia=fitted.get('patch_inertia'))
             if event_trace is not None:
                 regime = load_trace['regime']
                 event_trace['shape_regime'][i,lane] = regime
+                event_trace['near_shape_count'][i,lane] = load_trace['near_shape_count'].int()
                 event_trace['racket'][i,lane] = (regime>0).sum(-1)-1
             if fitted.get('impact_geometry_fraction', 0.):
                 impact_displacement = torch.zeros_like(p).index_copy(0,lane,impact_time[:, None]*(normal+tangent))

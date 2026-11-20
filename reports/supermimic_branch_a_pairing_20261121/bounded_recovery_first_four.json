@@ -1,0 +1,73 @@
+{
+  "stage": "bounded Recovery R32",
+  "snapshot_time": "2026-11-21T06:52:37.029431+08:00",
+  "completed_rows": 4,
+  "sha256_of_jsonl_prefix": "27f4b8241bce79788dfcfd68ff13c0d59d8b6278578d6775c65e6148db31727c",
+  "readiness": {
+    "a0": true,
+    "a0_chain": true,
+    "panel": true,
+    "ball": true,
+    "weights": true,
+    "policy_start": true,
+    "tracking": true,
+    "same_transition": true,
+    "native_forward": true,
+    "recovery_events": true
+  },
+  "rows": [
+    {
+      "actor_updates": 1,
+      "block_name": "recovery",
+      "update_accepted": true,
+      "native_transitions": 2048,
+      "global_rejected": 0,
+      "global_backtracked": 0,
+      "world_updates": 4,
+      "actor_gradient": 11.596941947937012,
+      "tracking_nonzero_gradient_lanes": 41,
+      "model_unchanged_during_actor": true,
+      "final_command_max_change": 0.0005130767822265625
+    },
+    {
+      "actor_updates": 2,
+      "block_name": "recovery",
+      "update_accepted": true,
+      "native_transitions": 4096,
+      "global_rejected": 0,
+      "global_backtracked": 0,
+      "world_updates": 8,
+      "actor_gradient": 21.938655853271484,
+      "tracking_nonzero_gradient_lanes": 40,
+      "model_unchanged_during_actor": true,
+      "final_command_max_change": 0.00043720006942749023
+    },
+    {
+      "actor_updates": 3,
+      "block_name": "recovery",
+      "update_accepted": true,
+      "native_transitions": 6144,
+      "global_rejected": 0,
+      "global_backtracked": 0,
+      "world_updates": 12,
+      "actor_gradient": 7.278533458709717,
+      "tracking_nonzero_gradient_lanes": 40,
+      "model_unchanged_during_actor": true,
+      "final_command_max_change": 0.00039267539978027344
+    },
+    {
+      "actor_updates": 4,
+      "block_name": "recovery",
+      "update_accepted": true,
+      "native_transitions": 8192,
+      "global_rejected": 0,
+      "global_backtracked": 0,
+      "world_updates": 16,
+      "actor_gradient": 6.711825370788574,
+      "tracking_nonzero_gradient_lanes": 39,
+      "model_unchanged_during_actor": true,
+      "final_command_max_change": 0.00039184093475341797
+    }
+  ],
+  "formal_evaluation_completed_for_this_snapshot": false
+}

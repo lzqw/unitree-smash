@@ -14,7 +14,7 @@ from quadsmash.rl.supermimic_compound_racket import solve_patch
 from quadsmash.rl.supermimic_contact_pilot_v1 import _quat_rotate,_quat_rotate_inverse
 
 
-def replay_geometry(trace,prior,material,cfg):
+def replay_geometry(trace,prior,material,cfg,*,separate_impulses=False):
     t=trace['tensors'];shuttle=t['shuttle_state_w']
     names=('analytic_at_loaded_times','native_normal','native_normal_and_point','native_normal_point_separation')
     steps,lanes=shuttle.shape[:2]
@@ -26,6 +26,10 @@ def replay_geometry(trace,prior,material,cfg):
             lane=frame['lane'][use].long()
             inputs.append(tick*lanes+lane)
             normals.append(frame['normal_w'][use]);points.append(frame['point_w'][use]);gaps.append(frame['separation_m'][use])
+    if separate_impulses:
+        for name in names:
+            for channel in ('normal','tangent'):
+                outputs[name+'_'+channel]=shuttle.new_zeros(lanes,3)
     if not inputs:return outputs,{}
     flat=torch.cat(inputs)
     order=torch.argsort(flat,stable=True);flat=flat[order]
@@ -59,6 +63,9 @@ def replay_geometry(trace,prior,material,cfg):
         normal,tangent=solve_patch(n,material[sid,1],material[sid,2],v,w,surface,g.radius,active,
                     settings['normal_impulse_scale'],4,separation_velocity=settings.get('separation_velocity_gain',0.)*distance/prior.sub_dt)
         outputs[key].index_add_(0,L,normal+tangent)
+        if separate_impulses:
+            outputs[key+'_normal'].index_add_(0,L,normal)
+            outputs[key+'_tangent'].index_add_(0,L,tangent)
     return outputs,dict(normal_cosine=(axis*observed).sum(-1)[active],gap_error=(gap-reported)[active],
                         radial_point_error=((p[:,None]-g.radius*observed)-point).norm(dim=-1)[active])
 

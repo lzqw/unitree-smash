@@ -27,7 +27,9 @@ def stable_prediction(events,speeds,eps):
     nominal=events[0]
     stable=((nominal['racket']>=0).sum(0)==1)&~nominal['ground'].any(0)&~nominal['net'].any(0)
     for event in events[1:]:
-        for name in nominal:
+        for name in ('racket','ground','net','shape_regime'):
+            if name not in nominal:
+                continue
             same = (nominal[name] == event[name]).reshape(*nominal[name].shape[:2],-1)
             stable &= same.all(-1).all(0)
     local=stable.clone()
@@ -78,7 +80,7 @@ def main():
     readout_sha=sha(a.material_readout) if a.material_readout else None
     if material_sha!=labels.get('material_sha256') or readout_sha!=labels.get('coefficient_fit_sha256'):
         raise ValueError('Different contact transition in derivative labels')
-    events=[];sufficient=[];pred=[]
+    events=[];sufficient=[];unique_shape=[];pred=[]
     for seed in sorted({r['seed'] for r in rows}):
         # Only a single branch is opened: all seven trajectories start from this same native state.
         path=a.wide/'nominal_a'/f'spec_{seed}'/'trace.pt'
@@ -109,13 +111,23 @@ def main():
                        initial_spin=s[:,10:13] if material is not None else None,compound_racket=material is not None)
             speeds.append(out[:,3:]);signatures.append(sig)
         stable,qualified,d=stable_prediction(signatures,speeds,eps)
+        if material is not None:
+            isolated=qualified.clone()
+            for event in signatures:
+                impact=event['racket']>=0
+                isolated &= (~impact | (event['near_shape_count']==1)).all(0)
+            unique_shape.append(isolated)
         events.append(stable);sufficient.append(qualified);pred.append(d)
     native=torch.tensor([r['delta']['native'] for r in rows])/(2*eps[0])
     model=torch.cat(pred);all_rows=torch.ones(len(rows),dtype=torch.bool)
     true=torch.tensor(labels['incident_labels']['native_convergent_stable'])
     types=[r['kind'] for r in rows]
     groups={}
-    for name,mask in [('all',all_rows),('predicted_event_stable',torch.cat(events)),('predicted_convergent',torch.cat(sufficient)),('native_convergent_diagnostic',true)]:
+    masks=dict(all=all_rows,predicted_event_stable=torch.cat(events),predicted_convergent=torch.cat(sufficient),
+               native_convergent_diagnostic=true)
+    if unique_shape:
+        masks['predicted_convergent_single_near_shape']=torch.cat(unique_shape)
+    for name,mask in masks.items():
         g=dict(rows=int(mask.sum()),native_convergent=int((true&mask).sum()),
                false_positive_no_native_racket=sum(t=='no_contact' and bool(x) for t,x in zip(types,mask)))
         if mask.any():g['signed']=vector_summary(native[mask],model[mask])

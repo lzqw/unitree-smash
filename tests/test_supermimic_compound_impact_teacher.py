@@ -276,3 +276,73 @@ def test_frozen_readout_windows_exclude_padding_future_events_and_protected_lane
     assert not any(mask.any() for k,mask in groups.items() if k!='ordinary')
     assert groups['ordinary'][:,0].tolist() == [True,True,True,False,False]
     assert not groups['ordinary'][:,1].any()
+
+
+def test_temporal_patch_restitution_and_no_impulse_outside_contact():
+    from quadsmash.rl.supermimic_temporal_contact_patch import solve_temporal_patch
+    n = torch.tensor([[[1.,0.,0.]],[[1.,0.,0.]]])
+    gaps = torch.zeros(2,1)
+    v = torch.tensor([[-2.,0.,0.],[-2.,0.,0.]])
+    mask = torch.tensor([[True],[False]])
+    normal,tangent,spin = solve_temporal_patch(n,gaps,0*gaps,.72+gaps,v,v*0,n*0,.025,mask,
+                                              1.,.0000625,8,2,.05)
+    ideal = torch.tensor([[3.44,0.,0.],[0.,0.,0.]])
+    refined,_,_ = solve_temporal_patch(n,gaps,0*gaps,.72+gaps,v,v*0,n*0,.025,mask,
+                                       1.,.0000625,16,2,.05)
+    # A finite displacement solve converges to the isolated Newton rebound.
+    assert (refined-ideal).abs().max() < (normal-ideal).abs().max()
+    torch.testing.assert_close(refined,ideal)
+    torch.testing.assert_close(normal[1],v[1]*0)
+    torch.testing.assert_close(tangent+spin,v*0)
+
+
+def test_native_shape_identity_rejects_ambiguous_point_and_equal_count_shape_switch():
+    from scripts.audit_supermimic_native_shape_identity import infer_shape,shape_class
+    distances = torch.tensor([[.0001,.00011,.01],[.004,-.0001,.02]])
+    assert infer_shape(distances,torch.tensor([.0001,.0003])).tolist()==[-1,1]
+    first=[(18,(3,4))]
+    assert shape_class([first,first,[(18,(3,5))]])=='changed'
+    assert shape_class([first,[(18,(-1,4))]])=='unresolved'
+    assert shape_class([first,first])=='consistent'
+
+
+def test_signed_g07_reset_precedes_earliest_load_in_all_branches():
+    from scripts.audit_supermimic_g07_incoming_shuttle import reset_frames
+    start=lambda *times:(False,False,bool(times),times,())
+    cases=[{'signatures':{'minus':start(319),'plus':start(320)}},
+           {'signatures':{'minus':start(),'plus':start()}}]
+    assert reset_frames(cases,160).tolist()==[[-1,-1],[160,-1],[319,-1]]
+
+
+def test_authored_shuttle_inertia_recovers_reference_with_multiple_and_inactive_contacts():
+    from quadsmash.rl.supermimic_compound_racket import solve_patch
+    normals = torch.eye(3, dtype=torch.float64)[:2].expand(3, 2, 3)
+    velocity = torch.tensor([[-2., -1., .45]], dtype=torch.float64).expand(3, 3)
+    active = torch.tensor([[True, False], [True, True], [False, False]])
+    surface = torch.zeros_like(normals)
+    mu = torch.full_like(normals[:, :, 0], .29)
+    args = (normals, mu, torch.full_like(mu, .72), velocity, velocity*0,
+            surface, .025, active, 1., 8)
+    reference = solve_patch(*args, return_spin=True)
+    explicit = solve_patch(*args, return_spin=True, inertia_ratio=velocity.new_full((3,), .4))
+    for expected, actual in zip(reference, explicit, strict=True):
+        torch.testing.assert_close(expected, actual)
+        torch.testing.assert_close(actual[-1], torch.zeros_like(actual[-1]))
+
+
+def test_friction_trace_integrates_native_forces_and_retains_missing_normal_evidence():
+    from types import SimpleNamespace
+    from scripts.audit_supermimic_friction_load_response import friction_trace
+    geometry = SimpleNamespace(**{k: None for k in ('racket_round_centers', 'racket_round_axes',
+                               'racket_round_halves', 'racket_round_radii', 'racket_round_capsule')})
+    empty = {'lane':torch.empty(0,dtype=torch.long), 'filter_index':torch.empty(0,dtype=torch.long),
+             'normal_force_n':torch.empty(0)}
+    def sample(force):
+        return {'lane':torch.tensor([1]),'force_w_n':torch.tensor([force])}
+    trace = {'tensors':{'shuttle_state_w':torch.zeros(3,2,13)},'physics_dt_s':.001,
+             'manifold_frames':[empty]*3,
+             'racket_friction_frames':[None,sample([0.,2.,0.]),sample([0.,-1.,0.])]}
+    response, records = friction_trace(trace, geometry, None, .01)
+    torch.testing.assert_close(response['actual'],torch.tensor([[0.,0.,0.],[0.,.1,0.]],dtype=torch.float64))
+    assert [r['step'] for r in records] == [0,1]
+    assert all(r['lane']==1 and r['normal_points']==0 for r in records)

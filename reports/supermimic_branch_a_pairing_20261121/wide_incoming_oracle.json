@@ -1,0 +1,4548 @@
+{
+  "groups": {
+    "all": {
+      "initial_shuttle": {
+        "rows": 32,
+        "supported": 20,
+        "absolute_rmse": 0.1714518964290619,
+        "gain_median": 0.9481812119483948,
+        "gain_p10": 0.36796170473098755,
+        "cosine_median": 0.8972064256668091,
+        "cosine_p10": -0.12041614204645157
+      },
+      "native_at_control_start": {
+        "rows": 32,
+        "supported": 20,
+        "absolute_rmse": 0.1714518666267395,
+        "gain_median": 0.9481812119483948,
+        "gain_p10": 0.36796170473098755,
+        "cosine_median": 0.8972064256668091,
+        "cosine_p10": -0.12041614204645157
+      },
+      "native_at_substep_start": {
+        "rows": 32,
+        "supported": 20,
+        "absolute_rmse": 0.1714518666267395,
+        "gain_median": 0.9481812119483948,
+        "gain_p10": 0.36796170473098755,
+        "cosine_median": 0.8972064256668091,
+        "cosine_p10": -0.12041614204645157
+      }
+    },
+    "manifold_switch": {
+      "initial_shuttle": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.24830538034439087,
+        "gain_median": 4.689816474914551,
+        "gain_p10": 1.231345772743225,
+        "cosine_median": -0.028919657692313194,
+        "cosine_p10": -0.14664702117443085
+      },
+      "native_at_control_start": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.24830541014671326,
+        "gain_median": 4.689817428588867,
+        "gain_p10": 1.2313458919525146,
+        "cosine_median": -0.028919657692313194,
+        "cosine_p10": -0.14664702117443085
+      },
+      "native_at_substep_start": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.24830541014671326,
+        "gain_median": 4.689817428588867,
+        "gain_p10": 1.2313458919525146,
+        "cosine_median": -0.028919657692313194,
+        "cosine_p10": -0.14664702117443085
+      }
+    },
+    "no_contact": {
+      "initial_shuttle": {
+        "rows": 12,
+        "supported": 0,
+        "absolute_rmse": 0.0
+      },
+      "native_at_control_start": {
+        "rows": 12,
+        "supported": 0,
+        "absolute_rmse": 0.0
+      },
+      "native_at_substep_start": {
+        "rows": 12,
+        "supported": 0,
+        "absolute_rmse": 0.0
+      }
+    },
+    "racket_stable": {
+      "initial_shuttle": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.17119307816028595,
+        "gain_median": 0.6464471817016602,
+        "gain_p10": 0.32477879524230957,
+        "cosine_median": 0.7208462953567505,
+        "cosine_p10": 0.13629192113876343
+      },
+      "native_at_control_start": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.17119307816028595,
+        "gain_median": 0.6464471817016602,
+        "gain_p10": 0.32477879524230957,
+        "cosine_median": 0.7208462953567505,
+        "cosine_p10": 0.13629192113876343
+      },
+      "native_at_substep_start": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.17119307816028595,
+        "gain_median": 0.6464471817016602,
+        "gain_p10": 0.32477879524230957,
+        "cosine_median": 0.7208462953567505,
+        "cosine_p10": 0.13629192113876343
+      }
+    },
+    "toi_switch": {
+      "initial_shuttle": {
+        "rows": 13,
+        "supported": 13,
+        "absolute_rmse": 0.2216145545244217,
+        "gain_median": 0.9895786643028259,
+        "gain_p10": 0.44217923283576965,
+        "cosine_median": 0.9750325679779053,
+        "cosine_p10": -0.02626352570950985
+      },
+      "native_at_control_start": {
+        "rows": 13,
+        "supported": 13,
+        "absolute_rmse": 0.22161448001861572,
+        "gain_median": 0.9895786643028259,
+        "gain_p10": 0.44217923283576965,
+        "cosine_median": 0.9750330448150635,
+        "cosine_p10": -0.02626352570950985
+      },
+      "native_at_substep_start": {
+        "rows": 13,
+        "supported": 13,
+        "absolute_rmse": 0.22161448001861572,
+        "gain_median": 0.9895786643028259,
+        "gain_p10": 0.44217923283576965,
+        "cosine_median": 0.9750330448150635,
+        "cosine_p10": -0.02626352570950985
+      }
+    }
+  },
+  "cases": [
+    {
+      "lane": 96,
+      "group": "manifold_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.020000001415610313,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            652
+          ],
+          [
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            652
+          ],
+          [
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            652
+          ],
+          [
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            652
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          -0.4439668655395508,
+          -0.018177926540374756,
+          -0.08205103874206543
+        ],
+        "native_at_control_start": [
+          -0.4439668655395508,
+          -0.018177926540374756,
+          -0.08205103874206543
+        ],
+        "native_at_substep_start": [
+          -0.4439668655395508,
+          -0.018177926540374756,
+          -0.08205103874206543
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        640,
+        652
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            652,
+            652,
+            652
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            652,
+            652,
+            652
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 97,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.00128956139087677,
+        -0.0039559523575007915,
+        0.014505207538604736,
+        -0.010714609175920486,
+        -0.005452979356050491,
+        -0.005267687141895294
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            1816
+          ],
+          [
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            1816
+          ],
+          [
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            1817
+          ],
+          [
+            [
+              1,
+              3
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            1816
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.07085132598876953,
+          -0.1389216184616089,
+          -0.02311849594116211
+        ],
+        "native_at_control_start": [
+          0.07085132598876953,
+          -0.1389216184616089,
+          -0.02311849594116211
+        ],
+        "native_at_substep_start": [
+          0.07085132598876953,
+          -0.1389216184616089,
+          -0.02311849594116211
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        1760,
+        1816
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            1816,
+            1816,
+            1816
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            1817,
+            1817,
+            1817
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 98,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.012666642665863037,
+        -0.010398093611001968,
+        0.0007477905601263046,
+        0.01113511435687542,
+        0.002465680241584778,
+        -0.0008978776168078184
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            626
+          ],
+          [
+            [
+              1,
+              4
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            626
+          ],
+          [
+            [
+              1,
+              4
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            625
+          ],
+          [
+            [
+              1,
+              3
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            627
+          ],
+          [
+            [
+              1,
+              4
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.053055763244628906,
+          0.048833608627319336,
+          -0.02722907066345215
+        ],
+        "native_at_control_start": [
+          0.053055763244628906,
+          0.048833608627319336,
+          -0.02722907066345215
+        ],
+        "native_at_substep_start": [
+          0.053055763244628906,
+          0.048833608627319336,
+          -0.02722907066345215
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        480,
+        625
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            627,
+            627,
+            627
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            625,
+            625,
+            625
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 99,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.019999999552965164,
+        0.0,
+        0.0
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            690
+          ],
+          [
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            690
+          ],
+          [
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            689
+          ],
+          [
+            [
+              2,
+              4
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            691
+          ],
+          [
+            [
+              2,
+              3
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          -0.28148794174194336,
+          -0.04929542541503906,
+          -0.1244652271270752
+        ],
+        "native_at_control_start": [
+          -0.28148794174194336,
+          -0.04929542541503906,
+          -0.1244652271270752
+        ],
+        "native_at_substep_start": [
+          -0.28148794174194336,
+          -0.04929542541503906,
+          -0.1244652271270752
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        640,
+        689
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            691,
+            691,
+            691
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            689,
+            689,
+            689
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 100,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.016711080446839333,
+        -0.005466587841510773,
+        0.004426043946295977,
+        0.003800421953201294,
+        -0.00592249259352684,
+        0.004663395695388317
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 101,
+      "group": "racket_stable",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0035768321249634027,
+        -0.015482664108276367,
+        -0.00424997229129076,
+        0.004847083240747452,
+        0.0022881142795085907,
+        0.010035008192062378
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            91
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            91
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            91
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            91
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.04672741889953613,
+          -0.04056596755981445,
+          0.07716715335845947
+        ],
+        "native_at_control_start": [
+          0.04672741889953613,
+          -0.04056596755981445,
+          0.07716715335845947
+        ],
+        "native_at_substep_start": [
+          0.04672741889953613,
+          -0.04056596755981445,
+          0.07716715335845947
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        0,
+        91
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            91,
+            91,
+            91
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            91,
+            91,
+            91
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 102,
+      "group": "racket_stable",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.020000001415610313,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            676
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            676
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            676
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            676
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.16854247450828552,
+          -0.03434491157531738,
+          0.06981921195983887
+        ],
+        "native_at_control_start": [
+          0.16854247450828552,
+          -0.03434491157531738,
+          0.06981921195983887
+        ],
+        "native_at_substep_start": [
+          0.16854247450828552,
+          -0.03434491157531738,
+          0.06981921195983887
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        640,
+        676
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            676,
+            676,
+            676
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            676,
+            676,
+            676
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 103,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.01324994582682848,
+        -0.003405485302209854,
+        -0.0052714720368385315,
+        1.607462763786316e-05,
+        -0.012330670841038227,
+        0.005745209753513336
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            2488
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            2488
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            2487
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            2487
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.04971504211425781,
+          0.08837747573852539,
+          -0.09118437767028809
+        ],
+        "native_at_control_start": [
+          0.04971504211425781,
+          0.08837747573852539,
+          -0.09118437767028809
+        ],
+        "native_at_substep_start": [
+          0.04971504211425781,
+          0.08837747573852539,
+          -0.09118437767028809
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        2400,
+        2487
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            2487,
+            2487,
+            2487
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            2487,
+            2487,
+            2487
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 104,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.012712683528661728,
+        0.012863099575042725,
+        -0.00478760153055191,
+        0.0019827215000987053,
+        -0.003067716956138611,
+        0.006055169738829136
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 105,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.010323019698262215,
+        0.005757679231464863,
+        -0.0039058867841959,
+        -0.0067982785403728485,
+        -0.01374731119722128,
+        0.0031342096626758575
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 106,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.00011121295392513275,
+        0.002115502953529358,
+        0.009772621095180511,
+        -0.010276301763951778,
+        -0.006005741190165281,
+        0.01258319616317749
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            2256
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            2256
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            2256
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            2264
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          -0.4173436164855957,
+          -0.003921031951904297,
+          -0.31279468536376953
+        ],
+        "native_at_control_start": [
+          -0.4173436164855957,
+          -0.003921031951904297,
+          -0.31279468536376953
+        ],
+        "native_at_substep_start": [
+          -0.4173436164855957,
+          -0.003921031951904297,
+          -0.31279468536376953
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        2240,
+        2256
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            2264,
+            2264,
+            2264
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            2256,
+            2256,
+            2256
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 107,
+      "group": "racket_stable",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0069863214157521725,
+        -0.001383267343044281,
+        -0.009367287158966064,
+        -0.0055115073919296265,
+        0.008174985647201538,
+        0.012818923220038414
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            2164
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            2164
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            2164
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            2164
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          -0.07565999031066895,
+          -0.1217801570892334,
+          -0.017651081085205078
+        ],
+        "native_at_control_start": [
+          -0.07565999031066895,
+          -0.1217801570892334,
+          -0.017651081085205078
+        ],
+        "native_at_substep_start": [
+          -0.07565999031066895,
+          -0.1217801570892334,
+          -0.017651081085205078
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        2080,
+        2164
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            2164,
+            2164,
+            2164
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            2164,
+            2164,
+            2164
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 108,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.007803147658705711,
+        -0.010506998747587204,
+        -0.013311892747879028,
+        0.004821423441171646,
+        0.0011510131880640984,
+        -0.00519002228975296
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 109,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.012042876332998276,
+        -0.003915406763553619,
+        -0.011754205450415611,
+        -0.004834438674151897,
+        0.005870342254638672,
+        -0.006606411188840866
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            1932
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            1932
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            1934
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            1931
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.13073158264160156,
+          -0.6606695055961609,
+          0.8348052501678467
+        ],
+        "native_at_control_start": [
+          0.13073158264160156,
+          -0.6606695055961609,
+          0.8348052501678467
+        ],
+        "native_at_substep_start": [
+          0.13073158264160156,
+          -0.6606695055961609,
+          0.8348052501678467
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        1920,
+        1931
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            1931,
+            1931,
+            1931
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            1934,
+            1934,
+            1934
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 110,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.00845356285572052,
+        -0.008206089958548546,
+        0.0025866152718663216,
+        0.01342545635998249,
+        -0.008563533425331116,
+        0.0009642380755394697
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 111,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.005742870271205902,
+        0.007332161068916321,
+        -0.011128351092338562,
+        0.007516001351177692,
+        -0.001776367425918579,
+        0.011391788721084595
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            487
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            487
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            488
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            487
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.38609015941619873,
+          0.10101079940795898,
+          -0.049494028091430664
+        ],
+        "native_at_control_start": [
+          0.38609015941619873,
+          0.10101079940795898,
+          -0.049494028091430664
+        ],
+        "native_at_substep_start": [
+          0.38609015941619873,
+          0.10101079940795898,
+          -0.049494028091430664
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        480,
+        487
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            487,
+            487,
+            487
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            488,
+            488,
+            488
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 112,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0030032843351364136,
+        -0.004322524182498455,
+        -0.016922052949666977,
+        0.00767146423459053,
+        0.004272446036338806,
+        0.0029723811894655228
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            1302
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            1302
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            1301
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            1302
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.2968621253967285,
+          -0.19450926780700684,
+          0.03478121757507324
+        ],
+        "native_at_control_start": [
+          0.2968621253967285,
+          -0.19450926780700684,
+          0.03478121757507324
+        ],
+        "native_at_substep_start": [
+          0.2968621253967285,
+          -0.19450926780700684,
+          0.03478121757507324
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        1280,
+        1301
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            1302,
+            1302,
+            1302
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            1301,
+            1301,
+            1301
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 113,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0052136871963739395,
+        0.00825103372335434,
+        0.0024340003728866577,
+        -3.06740403175354e-05,
+        -0.005080963484942913,
+        0.0165226012468338
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 114,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0007579624652862549,
+        -0.007125306874513626,
+        -0.015522615984082222,
+        -0.00024376437067985535,
+        -0.009363118559122086,
+        0.004469502717256546
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            1277
+          ],
+          [
+            [
+              2,
+              4
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            1277
+          ],
+          [
+            [
+              2,
+              4
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            1278
+          ],
+          [
+            [
+              2,
+              4
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            1275
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          -3.589911937713623,
+          1.8325514793395996,
+          -1.8649072647094727
+        ],
+        "native_at_control_start": [
+          -3.589911937713623,
+          1.8325514793395996,
+          -1.8649072647094727
+        ],
+        "native_at_substep_start": [
+          -3.589911937713623,
+          1.8325514793395996,
+          -1.8649072647094727
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        1120,
+        1275
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            1275,
+            1275,
+            1275
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            1278,
+            1278,
+            1278
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 115,
+      "group": "manifold_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.019999999552965164,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            658
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            658
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            658
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            658
+          ],
+          [
+            [
+              1,
+              4
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.5296425819396973,
+          0.042893052101135254,
+          0.2748301029205322
+        ],
+        "native_at_control_start": [
+          0.5296425819396973,
+          0.042893052101135254,
+          0.27483034133911133
+        ],
+        "native_at_substep_start": [
+          0.5296425819396973,
+          0.042893052101135254,
+          0.27483034133911133
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        640,
+        658
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            658,
+            658,
+            658
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.384185791015625e-07
+            ],
+            [
+              0.0,
+              2.384185791015625e-07
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            658,
+            658,
+            658
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              2.384185791015625e-07
+            ],
+            [
+              0.0,
+              2.384185791015625e-07
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 116,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.010790683329105377,
+        0.005215756595134735,
+        -0.00867905467748642,
+        -0.003186788409948349,
+        -0.006071120500564575,
+        0.011576561257243156
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 117,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.007573902606964111,
+        -0.0032271835952997208,
+        0.0017615854740142822,
+        -0.011719919741153717,
+        -0.013665437698364258,
+        -0.0022399406880140305
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 118,
+      "group": "racket_stable",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.002303970977663994,
+        0.0069335512816905975,
+        -0.005039475858211517,
+        -0.0028013885021209717,
+        0.0007955431938171387,
+        -0.01768447458744049
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            2350
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            2350
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            2350
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            2350
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.026821613311767578,
+          0.1188306212425232,
+          -0.029468774795532227
+        ],
+        "native_at_control_start": [
+          0.026821613311767578,
+          0.1188306212425232,
+          -0.029468774795532227
+        ],
+        "native_at_substep_start": [
+          0.026821613311767578,
+          0.1188306212425232,
+          -0.029468774795532227
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        2240,
+        2350
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            2350,
+            2350,
+            2350
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            2350,
+            2350,
+            2350
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 119,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.008883623406291008,
+        0.003264583647251129,
+        0.009783133864402771,
+        0.0031678341329097748,
+        0.002971535548567772,
+        0.013994600623846054
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            340
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            340
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            341
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            340
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.6571172475814819,
+          -0.08778047561645508,
+          0.009820938110351562
+        ],
+        "native_at_control_start": [
+          0.6571172475814819,
+          -0.08778047561645508,
+          0.009820938110351562
+        ],
+        "native_at_substep_start": [
+          0.6571172475814819,
+          -0.08778047561645508,
+          0.009820938110351562
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        320,
+        340
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            340,
+            340,
+            340
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            341,
+            341,
+            341
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 120,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.006569677963852882,
+        0.005598440766334534,
+        -0.002402534242719412,
+        0.013493947684764862,
+        -0.011720128357410431,
+        0.0005258973687887192
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 121,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0044455453753471375,
+        0.012167217209935188,
+        0.013120047748088837,
+        -0.002887669950723648,
+        0.005783647298812866,
+        0.004274466540664434
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            1520
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            1520
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            1520
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            1510
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          -0.04409170150756836,
+          -0.1062244176864624,
+          -0.03102397918701172
+        ],
+        "native_at_control_start": [
+          -0.04409170150756836,
+          -0.1062244176864624,
+          -0.03102397918701172
+        ],
+        "native_at_substep_start": [
+          -0.04409170150756836,
+          -0.1062244176864624,
+          -0.03102397918701172
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        1440,
+        1510
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            1510,
+            1510,
+            1510
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            1520,
+            1520,
+            1520
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 122,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.012326575815677643,
+        -0.001766785979270935,
+        0.00484512560069561,
+        -0.004704050719738007,
+        -0.003297172486782074,
+        0.013728050515055656
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 123,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0033030761405825615,
+        -0.006183154881000519,
+        -0.012998078018426895,
+        0.010994408279657364,
+        -0.0037827221676707268,
+        0.0068353647366166115
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 124,
+      "group": "no_contact",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.001966713694855571,
+        0.006268709897994995,
+        0.004912162199616432,
+        -0.0012983717024326324,
+        -0.0067243874073028564,
+        0.016905702650547028
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "nominal_b": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "minus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ],
+        "plus": [
+          false,
+          false,
+          false,
+          [],
+          []
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_control_start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "native_at_substep_start": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        -1,
+        -1
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            -1,
+            -1,
+            -1
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 125,
+      "group": "manifold_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0024318918585777283,
+        0.014465183019638062,
+        0.008453456684947014,
+        -0.00019624829292297363,
+        -0.004356034100055695,
+        -0.009714419022202492
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            1257
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            1257
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            1257
+          ],
+          [
+            [
+              1,
+              2
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            1257
+          ],
+          [
+            [
+              2,
+              2
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          0.06388664245605469,
+          -0.01646411418914795,
+          0.0002529621124267578
+        ],
+        "native_at_control_start": [
+          0.06388664245605469,
+          -0.01646411418914795,
+          0.0002529621124267578
+        ],
+        "native_at_substep_start": [
+          0.06388664245605469,
+          -0.01646411418914795,
+          0.0002529621124267578
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        1120,
+        1257
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            1257,
+            1257,
+            1257
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            1257,
+            1257,
+            1257
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 126,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.009900078177452087,
+        0.01369277760386467,
+        -0.0005961358547210693,
+        0.0075535848736763,
+        0.006663456559181213,
+        -0.00356125645339489
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            1337
+          ],
+          [
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            1337
+          ],
+          [
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            1306
+          ],
+          [
+            [
+              2,
+              3
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            1249
+          ],
+          [
+            [
+              1,
+              4
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          -0.27368927001953125,
+          -0.28559964895248413,
+          -0.3590214252471924
+        ],
+        "native_at_control_start": [
+          -0.27369165420532227,
+          -0.2855995297431946,
+          -0.359020471572876
+        ],
+        "native_at_substep_start": [
+          -0.27369165420532227,
+          -0.2855995297431946,
+          -0.359020471572876
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        1120,
+        1249
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            1249,
+            1249,
+            1249
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.1920928955078125e-07,
+              4.76837158203125e-07
+            ],
+            [
+              1.1920928955078125e-07,
+              4.76837158203125e-07
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            1306,
+            1306,
+            1306
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              1.1920928955078125e-07,
+              4.76837158203125e-07
+            ],
+            [
+              1.1920928955078125e-07,
+              4.76837158203125e-07
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "lane": 127,
+      "group": "toi_switch",
+      "request_difference": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.013167902827262878,
+        -0.012118484824895859,
+        -0.00817414652556181,
+        -0.0011400654911994934,
+        -0.00011212006211280823,
+        -0.00340876542031765
+      ],
+      "signatures": {
+        "nominal_a": [
+          false,
+          false,
+          true,
+          [
+            1585
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "nominal_b": [
+          false,
+          false,
+          true,
+          [
+            1585
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "minus": [
+          false,
+          false,
+          true,
+          [
+            1584
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ],
+        "plus": [
+          false,
+          false,
+          true,
+          [
+            1586
+          ],
+          [
+            [
+              1,
+              1
+            ]
+          ]
+        ]
+      },
+      "responses": {
+        "initial_shuttle": [
+          -0.3963354527950287,
+          -0.1373457908630371,
+          0.01312306523323059
+        ],
+        "native_at_control_start": [
+          -0.3963354527950287,
+          -0.1373457908630371,
+          0.01312306523323059
+        ],
+        "native_at_substep_start": [
+          -0.3963354527950287,
+          -0.1373457908630371,
+          0.01312306523323059
+        ]
+      },
+      "reset_physics_frames": [
+        -1,
+        1440,
+        1584
+      ],
+      "branches": {
+        "plus": {
+          "first_model_load": [
+            1586,
+            1586,
+            1586
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "minus": {
+          "first_model_load": [
+            1584,
+            1584,
+            1584
+          ],
+          "pre_reset_error_position_m_velocity_mps": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "source_sha256": "0d77a53104f34f0c544a8410fea4612d9e0e3d6992c7ac3bfe0bc4f9f005528b",
+  "modes": [
+    "initial_shuttle",
+    "native_at_control_start",
+    "native_at_substep_start"
+  ],
+  "scope": "Measured racket on every substep; observed shuttle injected once for attribution",
+  "optimizer_updates": 0,
+  "contact_admitted": false
+}
