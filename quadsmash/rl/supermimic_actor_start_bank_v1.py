@@ -52,7 +52,16 @@ class ActorStartBank:
             if int(before['episode_index'][lane])!=episode:continue
             eligible=entry['masks']['pre_contact'][lane]
             name='success_near' if record['ball_side_complete_except_recovery'] else 'failure_pre'
-            entry['masks'][name][lane]=eligible
+            target=entry['masks'][name]
+            # Some snapshots are created inside the native collector's
+            # inference_mode.  Normalize the destination before the delayed
+            # terminal-label write, otherwise PyTorch rejects the in-place
+            # update even though the mask is logically mutable metadata.
+            if target.is_inference():
+                mutable=torch.empty(target.shape,dtype=torch.bool)
+                mutable.copy_(target)
+                entry['masks'][name]=target=mutable
+            target[lane]=bool(eligible)
     def sample(self,attempt):
         requested=SCHEDULE[(attempt-1)%len(SCHEDULE)]
         pools={name:[e for e in self.entries if e['masks'][name].any()] for name in CATEGORIES}
