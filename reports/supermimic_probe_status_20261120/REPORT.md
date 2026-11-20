@@ -48,6 +48,21 @@ minus and plus branches. The body-model predicted robot endpoint does change,
 with plus-minus robot-state norms from about 0.0034 to 0.0341, but this change
 is not being converted into the measured ball-response difference.
 
+An additional reverse split was fitted with the 7 high-response samples as the
+calibration set and the 24 earlier samples as development validation. Its
+validation RMSE was `0.041491`, versus a zero-response baseline of `0.041494`.
+This rules out the simple explanation that the 256-step optimizer budget was
+too short. The learned head still predicts a response close to zero on unseen
+contact states.
+
+On the high-response region, the plus-minus final joint-target difference is
+about `0.004` in the perturbed joint and the Body WM endpoint state difference
+is nonzero. However, the V13 local TOI feature difference is only about
+`1e-4` on average and the V13 residual difference is about `4e-5`, while the
+native ball response reaches `0.118 m/s`. This makes insufficient action
+identifiability in the Body WM and probe timing the leading hypothesis. It is
+not evidence that the analytic contact gate is missing all impacts.
+
 ## Diagnostic correction
 
 `fit_supermimic_native_probe_response.py` now summarizes impact metadata across
