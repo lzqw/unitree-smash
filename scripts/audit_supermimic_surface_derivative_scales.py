@@ -7,7 +7,7 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 
-from audit_supermimic_paired_racket_fixture import signatures, verify_initial_intervention
+from audit_supermimic_paired_racket_fixture import signatures, verify_initial_intervention, common_native_twist, verify_common_twist
 from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, sha, tick
 
 
@@ -53,6 +53,8 @@ def read_trial(directory, seed, branch, expected, settings, prior):
     common = {k: v[k] for k in ('nominal_shuttle', 'joint_targets', 'direction_world', 'nominal_root_com_velocity')}
     common.update(ball_state=ball, racket_position=t[names[0]][0], racket_rotation=t[names[1]][0],
                   parent_lane=trial['parent_lane'])
+    if 'sdk_cached_initial_twist' in v:
+        common['native_write'] = common_native_twist(v)
     if trial['parent_family'] != seed % 16:
         raise ValueError('Launch family mismatch')
     return common, signatures(tr), t['shuttle_state_w'][-1, :, 7:10], out[:, 3:], sha(path)
@@ -102,7 +104,9 @@ def main():
             signed = {}
             for branch in ('minus','plus'):
                 ref, events, native, model, digest = read_trial(dir_,seed,branch,eps,cfg,prior)
-                if any(not torch.equal(v,ref[k]) for k,v in common.items()):
+                if design.get('initial_racket_twist'):
+                    verify_common_twist(common['native_write'],ref['native_write'])
+                if any(not torch.equal(v,ref[k]) for k,v in common.items() if k!='native_write'):
                     raise ValueError(f'Initial state or command mismatch in {dir_}/{branch}/{seed}')
                 signature = torch.tensor([a == b for a,b in zip(events,nominal)])
                 stable &= signature

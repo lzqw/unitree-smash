@@ -1,0 +1,262 @@
+{
+  "sources": {
+    "dataset": "a68ef01eefed94619c537e2bbe672971eb40c07d619e764f406f5135896c1e0f",
+    "body": "3dc2737e7579f83279da16ce9fc3cec11dae7ad68027576b1875af752fa8392c",
+    "calibration": "7312af620cb8662e6dd7b8d0c8ee1a7cbc44fcbd8ef56a66313d9c10b8415a92"
+  },
+  "scope": "paired measured final target and action history sequences, control-step pose interpolation; native substep timing available at final intervention tick only",
+  "validation": {
+    "all": {
+      "body_endpoint_difference": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.1961873322725296,
+        "gain_median": 0.0821860060095787,
+        "gain_p10": 0.042918432503938675,
+        "cosine_median": -0.19805634021759033,
+        "cosine_p10": -0.6178098320960999
+      },
+      "local_sequence_jacobian": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.1731671839952469,
+        "gain_median": 0.15682828426361084,
+        "gain_p10": 0.04303785413503647,
+        "cosine_median": -0.32442376017570496,
+        "cosine_p10": -0.7631596922874451
+      },
+      "native_robot_endpoint_difference": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.6484628915786743,
+        "gain_median": 0.6295559406280518,
+        "gain_p10": 0.10579497367143631,
+        "cosine_median": 0.03177356719970703,
+        "cosine_p10": -0.23710718750953674
+      },
+      "measured_substeps_with_predicted_ball": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.7317807674407959,
+        "gain_median": 0.4322519302368164,
+        "gain_p10": 0.057695988565683365,
+        "cosine_median": 0.03649432584643364,
+        "cosine_p10": -0.4968329668045044
+      },
+      "measured_substeps_with_native_event_start": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.7317807674407959,
+        "gain_median": 0.4322519302368164,
+        "gain_p10": 0.05769605189561844,
+        "cosine_median": 0.03649432584643364,
+        "cosine_p10": -0.49681758880615234
+      },
+      "native_incoming_plus_flight_and_reported_normal": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.14559052884578705,
+        "gain_median": 0.515469491481781,
+        "gain_p10": 0.22185876965522766,
+        "cosine_median": 0.07716798782348633,
+        "cosine_p10": -0.6208104491233826
+      },
+      "native_normal_and_measured_spin_oracle": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.022030174732208252,
+        "gain_median": 0.9999837875366211,
+        "gain_p10": 0.9781466722488403,
+        "cosine_median": 0.997962236404419,
+        "cosine_p10": 0.9202278256416321
+      },
+      "native_normal_and_incoming_slip_model": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.14052113890647888,
+        "gain_median": 0.4747655391693115,
+        "gain_p10": 0.2180928736925125,
+        "cosine_median": 0.026390817016363144,
+        "cosine_p10": -0.5914925336837769
+      },
+      "native_normal_and_measured_arm_model": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.18844430148601532,
+        "gain_median": 0.9428766369819641,
+        "gain_p10": 0.18590369820594788,
+        "cosine_median": 0.9344666004180908,
+        "cosine_p10": -0.9324439167976379
+      }
+    },
+    "stable": {
+      "body_endpoint_difference": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.19568726420402527,
+        "gain_median": 0.07834450900554657,
+        "gain_p10": 0.035927701741456985,
+        "cosine_median": -0.38138559460639954,
+        "cosine_p10": -0.7047325968742371
+      },
+      "local_sequence_jacobian": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.1881079226732254,
+        "gain_median": 0.07850062847137451,
+        "gain_p10": 0.0358891598880291,
+        "cosine_median": -0.38088274002075195,
+        "cosine_p10": -0.6839473247528076
+      },
+      "native_robot_endpoint_difference": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.7916649580001831,
+        "gain_median": 0.6295559406280518,
+        "gain_p10": 0.08493644744157791,
+        "cosine_median": 0.03177356719970703,
+        "cosine_p10": -0.19659140706062317
+      },
+      "measured_substeps_with_predicted_ball": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.8939710855484009,
+        "gain_median": 0.41765087842941284,
+        "gain_p10": 0.05002709478139877,
+        "cosine_median": 0.03649432584643364,
+        "cosine_p10": -0.4729749262332916
+      },
+      "measured_substeps_with_native_event_start": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.8939710855484009,
+        "gain_median": 0.41765087842941284,
+        "gain_p10": 0.05002709478139877,
+        "cosine_median": 0.03649432584643364,
+        "cosine_p10": -0.47296980023384094
+      },
+      "native_incoming_plus_flight_and_reported_normal": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.16485171020030975,
+        "gain_median": 0.47580868005752563,
+        "gain_p10": 0.17399676144123077,
+        "cosine_median": 0.07716798782348633,
+        "cosine_p10": -0.6504578590393066
+      },
+      "native_normal_and_measured_spin_oracle": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.021047579124569893,
+        "gain_median": 0.9901648163795471,
+        "gain_p10": 0.9713020920753479,
+        "cosine_median": 0.997962236404419,
+        "cosine_p10": 0.9136302471160889
+      },
+      "native_normal_and_incoming_slip_model": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.15911303460597992,
+        "gain_median": 0.4556068480014801,
+        "gain_p10": 0.1684778332710266,
+        "cosine_median": 0.026390817016363144,
+        "cosine_p10": -0.7072444558143616
+      },
+      "native_normal_and_measured_arm_model": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.2080458402633667,
+        "gain_median": 0.508993923664093,
+        "gain_p10": 0.1396951824426651,
+        "cosine_median": 0.20632456243038177,
+        "cosine_p10": -0.9484727382659912
+      }
+    },
+    "toi_switch": {
+      "body_endpoint_difference": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.19718365371227264,
+        "gain_median": 0.25177469849586487,
+        "gain_p10": 0.10555065423250198,
+        "cosine_median": -0.032922014594078064,
+        "cosine_p10": -0.14851604402065277
+      },
+      "local_sequence_jacobian": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.13853320479393005,
+        "gain_median": 0.31318721175193787,
+        "gain_p10": 0.12407100200653076,
+        "cosine_median": -0.1979021430015564,
+        "cosine_p10": -0.6805647015571594
+      },
+      "native_robot_endpoint_difference": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.08969779312610626,
+        "gain_median": 0.4217774569988251,
+        "gain_p10": 0.26764604449272156,
+        "cosine_median": -0.03702428191900253,
+        "cosine_p10": -0.6423233151435852
+      },
+      "measured_substeps_with_predicted_ball": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.09022562950849533,
+        "gain_median": 0.4322519302368164,
+        "gain_p10": 0.2584155797958374,
+        "cosine_median": -0.03559993579983711,
+        "cosine_p10": -0.7081341743469238
+      },
+      "measured_substeps_with_native_event_start": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.09022562950849533,
+        "gain_median": 0.4322519302368164,
+        "gain_p10": 0.2584155797958374,
+        "cosine_median": -0.03559993579983711,
+        "cosine_p10": -0.7081341743469238
+      },
+      "native_incoming_plus_flight_and_reported_normal": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.0961126834154129,
+        "gain_median": 0.5601924061775208,
+        "gain_p10": 0.42199090123176575,
+        "cosine_median": 0.008457280695438385,
+        "cosine_p10": -0.4403035044670105
+      },
+      "native_normal_and_measured_spin_oracle": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.023874353617429733,
+        "gain_median": 0.9999901056289673,
+        "gain_p10": 0.9999856948852539,
+        "cosine_median": 0.9656849503517151,
+        "cosine_p10": 0.9562199115753174
+      },
+      "native_normal_and_incoming_slip_model": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.09276127070188522,
+        "gain_median": 0.4747655391693115,
+        "gain_p10": 0.37581756711006165,
+        "cosine_median": -0.030690962448716164,
+        "cosine_p10": -0.41288265585899353
+      },
+      "native_normal_and_measured_arm_model": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.14130689203739166,
+        "gain_median": 1.0045167207717896,
+        "gain_p10": 0.9570634365081787,
+        "cosine_median": 0.9456650614738464,
+        "cosine_p10": 0.7361553311347961
+      }
+    }
+  },
+  "native_friction_recorded": false,
+  "source_report_sha256": "3a4b39b94dc126b372259afbe3381df13a89409601888837eac1c54622e6b549",
+  "contact_bptt_admitted": false
+}

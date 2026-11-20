@@ -80,12 +80,25 @@ def verify_initial_intervention(trace, intervention):
     before, after = raw['before'], raw['after']
     change = intervention['delta_world']
     torch.testing.assert_close(after['root_com'][:, :3]-before['root_com'][:, :3], change, atol=2.e-5, rtol=0)
-    torch.testing.assert_close(after['racket_link']-before['racket_link'], change, atol=2.e-5, rtol=0)
-    for field in ('dof','racket_angular'):
-        torch.testing.assert_close(after[field], before[field], atol=2.e-5, rtol=0)
     torch.testing.assert_close(after['root_com'][:, 3:], before['root_com'][:, 3:], atol=2.e-5, rtol=0)
     for key, field in [('racket_linear_velocity_w','racket_link'),('racket_angular_velocity_w','racket_angular')]:
         torch.testing.assert_close(trace['tensors'][key][0], after[field], atol=0, rtol=0)
+
+
+def common_native_twist(intervention):
+    # Compare branches at matching native forward boundaries. Even a zero
+    # root write can refresh the derived link velocity at fixed pose.
+    raw = intervention['native_velocity_readback']
+    result = {'before_'+k: v for k,v in raw['before'].items()}
+    result.update({'after_'+k: raw['after'][k] for k in ('racket_angular','dof')})
+    result['after_racket_reference'] = raw['after']['racket_link']-intervention['delta_world']
+    return result
+
+
+def verify_common_twist(reference, other):
+    for key, value in reference.items():
+        tolerance = 2.e-5 if key == 'after_racket_reference' else 0.
+        torch.testing.assert_close(value, other[key], atol=tolerance, rtol=0)
 
 
 @torch.no_grad()
@@ -134,6 +147,8 @@ def main():
                            initial_shuttle=t['shuttle_state_w'][0],initial_racket_position=t['racket_position_w'][0],
                            initial_racket_rotation=t['racket_quaternion_w'][0],parent=trial['parent_lane'],
                            epsilon=torch.tensor(v['epsilon_mps']))
+            if design and design.get('initial_racket_twist'):
+                inputs[b]['native_write'] = common_native_twist(v)
             p=t['shuttle_state_w'][0];ball=torch.cat((p[:,:3],p[:,7:10]),-1)
             names=('racket_position_w','racket_quaternion_w','racket_linear_velocity_w','racket_angular_velocity_w')
             stream=[t[k][:-1] for k in names]
@@ -154,6 +169,9 @@ def main():
         base=inputs['nominal_a']
         for b in BRANCHES[1:]:
             for k,v in base.items():
+                if k=='native_write':
+                    verify_common_twist(v, inputs[b][k])
+                    continue
                 if not torch.equal(v,inputs[b][k]):
                     raise ValueError(f'Fixture {seed}, {b}: common physical input differs: {k}')
         for lane in range(source['lanes']):

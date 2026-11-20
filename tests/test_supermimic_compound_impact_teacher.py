@@ -35,3 +35,20 @@ def test_velocity_intervention_uses_native_initial_twist_and_preserves_later_sam
     assert trace['tensors']['racket_linear_velocity_w'][0].eq(1).all()
     assert trace['tensors']['racket_linear_velocity_w'][1:].eq(4).all()
     assert intervention['sdk_cached_initial_twist']['racket_link'].eq(0).all()
+
+
+def test_velocity_pair_compares_link_readback_at_same_forward_boundary():
+    import pytest
+    from scripts.audit_supermimic_paired_racket_fixture import common_native_twist, verify_common_twist
+    def observed(delta):
+        before=dict(root_com=torch.zeros(1,6),racket_link=torch.zeros(1,3),
+                    racket_angular=torch.zeros(1,3),dof=torch.zeros(1,18))
+        after=dict(before)
+        after['racket_link']=delta+0.0001
+        return dict(delta_world=delta,native_velocity_readback=dict(before=before,after=after))
+    ref=common_native_twist(observed(torch.zeros(1,3)))
+    plus=common_native_twist(observed(torch.tensor([[0.05,0.,0.]])))
+    verify_common_twist(ref,plus)
+    plus['after_racket_reference'][0,0]+=.0002
+    with pytest.raises(AssertionError):
+        verify_common_twist(ref,plus)
