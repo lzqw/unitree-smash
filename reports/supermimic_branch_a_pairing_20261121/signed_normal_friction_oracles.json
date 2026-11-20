@@ -1,0 +1,1514 @@
+{
+  "scope": "paired measured final target and action history sequences, control-step pose interpolation; native substep timing available at final intervention tick only",
+  "sources": {
+    "dataset": "37429ee125801aca599b3839accded627e547dc3e807cc6f953faac7add3073a",
+    "body": "ec6f1e9ea611618eabf11281ceb285b5652c3baa253ce5aa17c28fe56d230e86",
+    "calibration": "7312af620cb8662e6dd7b8d0c8ee1a7cbc44fcbd8ef56a66313d9c10b8415a92"
+  },
+  "validation": {
+    "all": {
+      "body_endpoint_difference": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.1448422372341156,
+        "gain_median": 0.06517267972230911,
+        "gain_p10": 0.05075311288237572,
+        "cosine_median": -0.2544015049934387,
+        "cosine_p10": -0.3185803294181824
+      },
+      "local_sequence_jacobian": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.11140964180231094,
+        "gain_median": 0.06511970609426498,
+        "gain_p10": 0.05058671906590462,
+        "cosine_median": -0.2559918165206909,
+        "cosine_p10": -0.3188670873641968
+      },
+      "native_robot_endpoint_difference": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.10179923474788666,
+        "gain_median": 0.20158973336219788,
+        "gain_p10": 0.17868612706661224,
+        "cosine_median": -0.24385982751846313,
+        "cosine_p10": -0.7043740153312683
+      },
+      "measured_substeps_with_predicted_ball": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.10882779210805893,
+        "gain_median": 0.18391430377960205,
+        "gain_p10": 0.11842463165521622,
+        "cosine_median": -0.5008093118667603,
+        "cosine_p10": -0.8476970195770264
+      },
+      "measured_substeps_with_native_event_start": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.10882777720689774,
+        "gain_median": 0.18391430377960205,
+        "gain_p10": 0.11842509359121323,
+        "cosine_median": -0.5007922053337097,
+        "cosine_p10": -0.8476918935775757
+      },
+      "native_incoming_plus_flight_and_reported_normal": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.13467849791049957,
+        "gain_median": 0.47580868005752563,
+        "gain_p10": 0.3966757655143738,
+        "cosine_median": -0.6326295733451843,
+        "cosine_p10": -0.8672744631767273
+      },
+      "native_normal_and_measured_spin_oracle": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.029952483251690865,
+        "gain_median": 1.0554629564285278,
+        "gain_p10": 1.016669511795044,
+        "cosine_median": 0.9166795015335083,
+        "cosine_p10": 0.9095646739006042
+      },
+      "native_normal_and_incoming_slip_model": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.1288895159959793,
+        "gain_median": 0.42021965980529785,
+        "gain_p10": 0.35945379734039307,
+        "cosine_median": -0.5766791105270386,
+        "cosine_p10": -0.8544479608535767
+      },
+      "native_normal_and_measured_arm_model": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.16110046207904816,
+        "gain_median": 0.5089938640594482,
+        "gain_p10": 0.44682765007019043,
+        "cosine_median": 0.20632438361644745,
+        "cosine_p10": -0.5508984923362732
+      },
+      "native_normal_torque_and_incoming_slip_model": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.12899340689182281,
+        "gain_median": 0.4201963245868683,
+        "gain_p10": 0.360480934381485,
+        "cosine_median": -0.5819875597953796,
+        "cosine_p10": -0.8560255169868469
+      },
+      "native_normal_torque_and_post_solve_racket_oracle": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.13255247473716736,
+        "gain_median": 0.3976539075374603,
+        "gain_p10": 0.3704373836517334,
+        "cosine_median": -0.6427672505378723,
+        "cosine_p10": -0.8757466673851013
+      },
+      "native_incoming_plus_flight_and_reported_racket_forces": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 1.279023399547441e-05,
+        "gain_median": 0.9999969601631165,
+        "gain_p10": 0.9999733567237854,
+        "cosine_median": 0.9999999403953552,
+        "cosine_p10": 0.9999998807907104
+      },
+      "native_clock_and_friction_measured_load_geometry_axis": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.062070466578006744,
+        "gain_median": 0.9999623894691467,
+        "gain_p10": 0.9681312441825867,
+        "cosine_median": 0.9998907446861267,
+        "cosine_p10": 0.9926391243934631
+      },
+      "native_clock_and_friction_model_load_measured_axis": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.02707635797560215,
+        "gain_median": 1.0396729707717896,
+        "gain_p10": 1.0057522058486938,
+        "cosine_median": 0.9166391491889954,
+        "cosine_p10": 0.8684874176979065
+      },
+      "native_clock_and_friction_model_load_geometry_axis": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.06737671047449112,
+        "gain_median": 1.0319219827651978,
+        "gain_p10": 1.0033950805664062,
+        "cosine_median": 0.968646764755249,
+        "cosine_p10": 0.9228607416152954
+      }
+    },
+    "stable": {
+      "body_endpoint_difference": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.14550533890724182,
+        "gain_median": 0.444275438785553,
+        "gain_p10": 0.14099323749542236,
+        "cosine_median": -0.009614665061235428,
+        "cosine_p10": -0.2787913680076599
+      },
+      "local_sequence_jacobian": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.09873619675636292,
+        "gain_median": 0.4224114716053009,
+        "gain_p10": 0.1365780532360077,
+        "cosine_median": -0.009571176022291183,
+        "cosine_p10": -0.2785651385784149
+      },
+      "native_robot_endpoint_difference": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.06706693768501282,
+        "gain_median": 0.6295559406280518,
+        "gain_p10": 0.2610074281692505,
+        "cosine_median": 0.03177356719970703,
+        "cosine_p10": -0.18873314559459686
+      },
+      "measured_substeps_with_predicted_ball": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.08060787618160248,
+        "gain_median": 0.41765087842941284,
+        "gain_p10": 0.15581628680229187,
+        "cosine_median": 0.03649432584643364,
+        "cosine_p10": -0.3933485746383667
+      },
+      "measured_substeps_with_native_event_start": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.08060784637928009,
+        "gain_median": 0.41765087842941284,
+        "gain_p10": 0.15581680834293365,
+        "cosine_median": 0.03649432584643364,
+        "cosine_p10": -0.39333489537239075
+      },
+      "native_incoming_plus_flight_and_reported_normal": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.1167386919260025,
+        "gain_median": 0.515469491481781,
+        "gain_p10": 0.48374083638191223,
+        "cosine_median": 0.07716777920722961,
+        "cosine_p10": -0.7588356733322144
+      },
+      "native_normal_and_measured_spin_oracle": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.02248554676771164,
+        "gain_median": 1.062333345413208,
+        "gain_p10": 1.0125017166137695,
+        "cosine_median": 0.9166795015335083,
+        "cosine_p10": 0.9085482954978943
+      },
+      "native_normal_and_incoming_slip_model": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.11055871099233627,
+        "gain_median": 0.4783417582511902,
+        "gain_p10": 0.4318440854549408,
+        "cosine_median": 0.02639060467481613,
+        "cosine_p10": -0.7735152840614319
+      },
+      "native_normal_and_measured_arm_model": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.09170398116111755,
+        "gain_median": 0.5089938640594482,
+        "gain_p10": 0.43794676661491394,
+        "cosine_median": 0.20632438361644745,
+        "cosine_p10": -0.6590732336044312
+      },
+      "native_normal_torque_and_incoming_slip_model": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.11053275316953659,
+        "gain_median": 0.47824543714523315,
+        "gain_p10": 0.43180614709854126,
+        "cosine_median": 0.027506347745656967,
+        "cosine_p10": -0.7732750177383423
+      },
+      "native_normal_torque_and_post_solve_racket_oracle": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.11346682906150818,
+        "gain_median": 0.4819052219390869,
+        "gain_p10": 0.41450417041778564,
+        "cosine_median": 0.009864304214715958,
+        "cosine_p10": -0.7785031199455261
+      },
+      "native_incoming_plus_flight_and_reported_racket_forces": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 1.4201506928657182e-05,
+        "gain_median": 1.0000048875808716,
+        "gain_p10": 0.9999985694885254,
+        "cosine_median": 0.9999999403953552,
+        "cosine_p10": 0.9999998807907104
+      },
+      "native_clock_and_friction_measured_load_geometry_axis": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.07167071104049683,
+        "gain_median": 0.9999623894691467,
+        "gain_p10": 0.9635838866233826,
+        "cosine_median": 0.9998907446861267,
+        "cosine_p10": 0.9916031956672668
+      },
+      "native_clock_and_friction_model_load_measured_axis": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.022927531972527504,
+        "gain_median": 1.0668584108352661,
+        "gain_p10": 1.0063434839248657,
+        "cosine_median": 0.9166391491889954,
+        "cosine_p10": 0.8616085648536682
+      },
+      "native_clock_and_friction_model_load_geometry_axis": {
+        "rows": 3,
+        "supported": 3,
+        "absolute_rmse": 0.07486971467733383,
+        "gain_median": 1.0319219827651978,
+        "gain_p10": 0.999319851398468,
+        "cosine_median": 0.9820171594619751,
+        "cosine_p10": 0.9189939498901367
+      }
+    },
+    "toi_switch": {
+      "body_endpoint_difference": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.14283442497253418,
+        "gain_median": 0.04457329586148262,
+        "gain_p10": 0.04457329586148262,
+        "cosine_median": -0.2544015049934387,
+        "cosine_p10": -0.2544015049934387
+      },
+      "local_sequence_jacobian": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.14283530414104462,
+        "gain_median": 0.04435829445719719,
+        "gain_p10": 0.04435829445719719,
+        "cosine_median": -0.2559918165206909,
+        "cosine_p10": -0.2559918165206909
+      },
+      "native_robot_endpoint_difference": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.16720770299434662,
+        "gain_median": 0.20158973336219788,
+        "gain_p10": 0.20158973336219788,
+        "cosine_median": -0.9017372131347656,
+        "cosine_p10": -0.9017372131347656
+      },
+      "measured_substeps_with_predicted_ball": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.16697624325752258,
+        "gain_median": 0.18391430377960205,
+        "gain_p10": 0.18391430377960205,
+        "cosine_median": -0.9963631629943848,
+        "cosine_p10": -0.9963631629943848
+      },
+      "measured_substeps_with_native_event_start": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.16697624325752258,
+        "gain_median": 0.18391430377960205,
+        "gain_p10": 0.18391430377960205,
+        "cosine_median": -0.9963631629943848,
+        "cosine_p10": -0.9963631629943848
+      },
+      "native_incoming_plus_flight_and_reported_normal": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.17795901000499725,
+        "gain_median": 0.3627616763114929,
+        "gain_p10": 0.3627616763114929,
+        "cosine_median": -0.6326295733451843,
+        "cosine_p10": -0.6326295733451843
+      },
+      "native_normal_and_measured_spin_oracle": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.04551709070801735,
+        "gain_median": 1.0554629564285278,
+        "gain_p10": 1.0554629564285278,
+        "cosine_median": 0.9521634578704834,
+        "cosine_p10": 0.9521634578704834
+      },
+      "native_normal_and_incoming_slip_model": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.17256981134414673,
+        "gain_median": 0.3334112763404846,
+        "gain_p10": 0.3334112763404846,
+        "cosine_median": -0.5766791105270386,
+        "cosine_p10": -0.5766791105270386
+      },
+      "native_normal_and_measured_arm_model": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.2803294360637665,
+        "gain_median": 2.480668544769287,
+        "gain_p10": 2.480668544769287,
+        "cosine_median": 0.6463654637336731,
+        "cosine_p10": 0.6463654637336731
+      },
+      "native_normal_torque_and_incoming_slip_model": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.1729298084974289,
+        "gain_median": 0.33488863706588745,
+        "gain_p10": 0.33488863706588745,
+        "cosine_median": -0.5819875597953796,
+        "cosine_p10": -0.5819875597953796
+      },
+      "native_normal_torque_and_post_solve_racket_oracle": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.17792265117168427,
+        "gain_median": 0.3587731719017029,
+        "gain_p10": 0.3587731719017029,
+        "cosine_median": -0.6427672505378723,
+        "cosine_p10": -0.6427672505378723
+      },
+      "native_incoming_plus_flight_and_reported_racket_forces": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 7.022249064903008e-06,
+        "gain_median": 0.9999632239341736,
+        "gain_p10": 0.9999632239341736,
+        "cosine_median": 1.0,
+        "cosine_p10": 1.0
+      },
+      "native_clock_and_friction_measured_load_geometry_axis": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.0009489139774814248,
+        "gain_median": 1.0047680139541626,
+        "gain_p10": 1.0047680139541626,
+        "cosine_median": 0.9999887943267822,
+        "cosine_p10": 0.9999887943267822
+      },
+      "native_clock_and_friction_model_load_measured_axis": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.03681713342666626,
+        "gain_median": 1.0396729707717896,
+        "gain_p10": 1.0396729707717896,
+        "cosine_median": 0.9680161476135254,
+        "cosine_p10": 0.9680161476135254
+      },
+      "native_clock_and_friction_model_load_geometry_axis": {
+        "rows": 1,
+        "supported": 1,
+        "absolute_rmse": 0.0366341732442379,
+        "gain_median": 1.0440198183059692,
+        "gain_p10": 1.0440198183059692,
+        "cosine_median": 0.968646764755249,
+        "cosine_p10": 0.968646764755249
+      }
+    }
+  },
+  "samples": [
+    {
+      "loaded_points_by_substep": {
+        "minus": [
+          [
+            13,
+            2
+          ]
+        ],
+        "plus": [
+          [
+            13,
+            1
+          ]
+        ]
+      },
+      "signed_loaded_point_counts_match": false,
+      "case": "spec_00_tick267:lane96",
+      "native_delta": [
+        -0.0005211830139160156,
+        -0.004666328430175781,
+        0.06098222732543945
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "normal_delta_on_native_clock_mps": {
+        "measured_load_geometry_axis": [
+          -0.05549430847167969,
+          0.04132258892059326,
+          0.003123655915260315
+        ],
+        "model_load_measured_axis": [
+          -0.09309959411621094,
+          0.013547420501708984,
+          -0.20798860490322113
+        ],
+        "model_load_geometry_axis": [
+          -0.023967742919921875,
+          0.04375135898590088,
+          0.0028543323278427124
+        ]
+      },
+      "signed_impulse_breakdown_mps": {
+        "racket_normal": {
+          "amplitude_on_shared_substeps": [
+            -0.05091483537009745,
+            -0.005089777374137959,
+            -4.548585654027368e-05
+          ],
+          "direction_on_shared_substeps": [
+            -0.0021035878570688105,
+            0.02292367048984174,
+            -0.21045113119473105
+          ],
+          "unmatched_substeps": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "racket_friction": {
+          "amplitude_on_shared_substeps": [
+            0.00043989537109863727,
+            -0.06837482714218403,
+            0.2595778567779567
+          ],
+          "direction_on_shared_substeps": [
+            0.05205863207322732,
+            0.04586582078865898,
+            0.011993192545492123
+          ],
+          "unmatched_substeps": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          2.9316172003746033e-05,
+          1.0536052286624908e-05,
+          -9.150058031082153e-05
+        ],
+        "racket_normal": [
+          -0.05301856994628906,
+          0.017833828926086426,
+          -0.21049661934375763
+        ],
+        "unexplained": [
+          0.05246734619140625,
+          -0.022510766983032227,
+          0.2715703248977661
+        ],
+        "spin_oracle_tangent": [
+          0.017362242564558983,
+          -0.030003413558006287,
+          0.2859231233596802
+        ],
+        "slip_at_measured_contact": [
+          0.014027734287083149,
+          -0.005597978830337524,
+          0.038561344146728516
+        ],
+        "measured_arm_tangent": [
+          0.01142515242099762,
+          0.011785656213760376,
+          0.12501204013824463
+        ],
+        "racket_friction": [
+          0.052498526871204376,
+          -0.022509008646011353,
+          0.2715710401535034
+        ],
+        "unexplained_after_friction": [
+          -3.118067979812622e-05,
+          -1.7583370208740234e-06,
+          -7.152557373046875e-07
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "stable",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          13
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          13
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          13
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          13
+        ]
+      },
+      "body_endpoint_difference": [
+        -0.00988006591796875,
+        0.025263488292694092,
+        0.0015866756439208984
+      ],
+      "local_sequence_jacobian": [
+        -0.0099038016051054,
+        0.02526727505028248,
+        0.0015878306003287435
+      ],
+      "native_robot_endpoint_difference": [
+        -0.020293712615966797,
+        0.032531142234802246,
+        0.0035429000854492188
+      ],
+      "measured_substeps_with_predicted_ball": [
+        -0.022196292877197266,
+        0.03262609243392944,
+        0.0037577152252197266
+      ],
+      "measured_substeps_with_native_event_start": [
+        -0.022196292877197266,
+        0.03262609243392944,
+        0.0037577152252197266
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        -0.05298925191164017,
+        0.017844364047050476,
+        -0.21058812737464905
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        -0.035627007484436035,
+        -0.01215904951095581,
+        0.07533499598503113
+      ],
+      "native_normal_and_incoming_slip_model": [
+        -0.03896151855587959,
+        0.012246385216712952,
+        -0.17202678322792053
+      ],
+      "native_normal_and_measured_arm_model": [
+        -0.04156409949064255,
+        0.029630020260810852,
+        -0.08557608723640442
+      ],
+      "native_normal_torque_and_incoming_slip_model": [
+        -0.038961656391620636,
+        0.012245804071426392,
+        -0.17195174098014832
+      ],
+      "native_normal_torque_and_post_solve_racket_oracle": [
+        -0.03825770691037178,
+        0.01454058289527893,
+        -0.17647573351860046
+      ],
+      "native_incoming_plus_flight_and_reported_racket_forces": [
+        -0.000490725040435791,
+        -0.0046646445989608765,
+        0.06098291277885437
+      ],
+      "native_clock_and_friction_measured_load_geometry_axis": [
+        -0.002966463565826416,
+        0.01882411539554596,
+        0.2746031880378723
+      ],
+      "native_clock_and_friction_model_load_measured_axis": [
+        -0.040571749210357666,
+        -0.008951052092015743,
+        0.06349092721939087
+      ],
+      "native_clock_and_friction_model_load_geometry_axis": [
+        0.028560100123286247,
+        0.021252885460853577,
+        0.2743338644504547
+      ]
+    },
+    {
+      "loaded_points_by_substep": {
+        "minus": [
+          [
+            50,
+            2
+          ]
+        ],
+        "plus": [
+          [
+            52,
+            2
+          ]
+        ]
+      },
+      "signed_loaded_point_counts_match": false,
+      "case": "spec_00_tick267:lane99",
+      "native_delta": [
+        0.07294988632202148,
+        -0.19435620307922363,
+        -0.12897932529449463
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "normal_delta_on_native_clock_mps": {
+        "measured_load_geometry_axis": [
+          -0.08196830749511719,
+          0.02301311492919922,
+          0.02263939380645752
+        ],
+        "model_load_measured_axis": [
+          -0.021238327026367188,
+          0.04188728332519531,
+          0.02777642011642456
+        ],
+        "model_load_geometry_axis": [
+          -0.0213623046875,
+          0.041443586349487305,
+          0.026121318340301514
+        ]
+      },
+      "signed_impulse_breakdown_mps": {
+        "racket_normal": {
+          "amplitude_on_shared_substeps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "direction_on_shared_substeps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "unmatched_substeps": [
+            -0.08215830876277153,
+            0.023353283221904775,
+            0.02423877899463356
+          ]
+        },
+        "racket_friction": {
+          "amplitude_on_shared_substeps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "direction_on_shared_substeps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "unmatched_substeps": [
+            0.15484265409983122,
+            -0.2179331045884354,
+            -0.15339759679941034
+          ]
+        }
+      },
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          0.00025691825430840254,
+          0.00023140711709856987,
+          0.00017955154180526733
+        ],
+        "racket_normal": [
+          -0.08215904235839844,
+          0.02335333824157715,
+          0.024238765239715576
+        ],
+        "unexplained": [
+          0.15485286712646484,
+          -0.2179408073425293,
+          -0.1533975601196289
+        ],
+        "spin_oracle_tangent": [
+          0.08211424946784973,
+          -0.24826526641845703,
+          -0.15114575624465942
+        ],
+        "slip_at_measured_contact": [
+          0.004679262638092041,
+          -0.006487846374511719,
+          -0.004815161228179932
+        ],
+        "measured_arm_tangent": [
+          0.0708039402961731,
+          -0.12379312515258789,
+          -0.6222535371780396
+        ],
+        "racket_friction": [
+          0.15484265983104706,
+          -0.21793317794799805,
+          -0.15339761972427368
+        ],
+        "unexplained_after_friction": [
+          1.0207295417785645e-05,
+          -7.62939453125e-06,
+          5.960464477539063e-08
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "toi_switch",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          51
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          51
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          50
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          52
+        ]
+      },
+      "body_endpoint_difference": [
+        -0.010663986206054688,
+        -0.0015666484832763672,
+        0.0015807151794433594
+      ],
+      "local_sequence_jacobian": [
+        -0.010610941797494888,
+        -0.0015499255387112498,
+        0.0015928561333566904
+      ],
+      "native_robot_endpoint_difference": [
+        -0.03358268737792969,
+        0.030306577682495117,
+        0.01952219009399414
+      ],
+      "measured_substeps_with_predicted_ball": [
+        -0.016513824462890625,
+        0.0358734130859375,
+        0.02146589756011963
+      ],
+      "measured_substeps_with_native_event_start": [
+        -0.016513824462890625,
+        0.0358734130859375,
+        0.02146589756011963
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        -0.08190212398767471,
+        0.023584745824337006,
+        0.024418316781520844
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        0.0002121254801750183,
+        -0.22468051314353943,
+        -0.12672743201255798
+      ],
+      "native_normal_and_incoming_slip_model": [
+        -0.07722286134958267,
+        0.017096899449825287,
+        0.019603155553340912
+      ],
+      "native_normal_and_measured_arm_model": [
+        -0.011098183691501617,
+        -0.10020837932825089,
+        -0.5978352427482605
+      ],
+      "native_normal_torque_and_incoming_slip_model": [
+        -0.0774586871266365,
+        0.0179305300116539,
+        0.01943143457174301
+      ],
+      "native_normal_torque_and_post_solve_racket_oracle": [
+        -0.08093006163835526,
+        0.028431080281734467,
+        0.018181107938289642
+      ],
+      "native_incoming_plus_flight_and_reported_racket_forces": [
+        0.07294053584337234,
+        -0.19434842467308044,
+        -0.12897929549217224
+      ],
+      "native_clock_and_friction_measured_load_geometry_axis": [
+        0.0731312707066536,
+        -0.19468864798545837,
+        -0.1305786669254303
+      ],
+      "native_clock_and_friction_model_load_measured_axis": [
+        0.133861243724823,
+        -0.17581447958946228,
+        -0.12544164061546326
+      ],
+      "native_clock_and_friction_model_load_geometry_axis": [
+        0.13373726606369019,
+        -0.1762581765651703,
+        -0.1270967423915863
+      ]
+    },
+    {
+      "loaded_points_by_substep": {
+        "minus": [
+          [
+            37,
+            1
+          ]
+        ],
+        "plus": [
+          [
+            37,
+            1
+          ]
+        ]
+      },
+      "signed_loaded_point_counts_match": true,
+      "case": "spec_00_tick267:lane102",
+      "native_delta": [
+        0.27383676171302795,
+        0.08544158935546875,
+        -0.060491085052490234
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "normal_delta_on_native_clock_mps": {
+        "measured_load_geometry_axis": [
+          0.15110206604003906,
+          0.006732940673828125,
+          0.008489608764648438
+        ],
+        "model_load_measured_axis": [
+          0.14998579025268555,
+          0.004080295562744141,
+          0.012248992919921875
+        ],
+        "model_load_geometry_axis": [
+          0.1499791145324707,
+          0.004023551940917969,
+          0.012202262878417969
+        ]
+      },
+      "signed_impulse_breakdown_mps": {
+        "racket_normal": {
+          "amplitude_on_shared_substeps": [
+            0.048903691511835094,
+            -0.038950907538512373,
+            0.06113488951201993
+          ],
+          "direction_on_shared_substeps": [
+            0.10219866796645466,
+            0.045747671031976744,
+            -0.052604639549579654
+          ],
+          "unmatched_substeps": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "racket_friction": {
+          "amplitude_on_shared_substeps": [
+            0.12729917432713225,
+            0.08461701030697308,
+            -0.047919601030964556
+          ],
+          "direction_on_shared_substeps": [
+            -0.004184221652853539,
+            -0.005771527700818825,
+            -0.021306884001337074
+          ],
+          "unmatched_substeps": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          -0.0003807535395026207,
+          -0.00020478665828704834,
+          0.00020101666450500488
+        ],
+        "racket_normal": [
+          0.15110206604003906,
+          0.006796836853027344,
+          0.008530616760253906
+        ],
+        "unexplained": [
+          0.12311553955078125,
+          0.07884931564331055,
+          -0.06922340393066406
+        ],
+        "spin_oracle_tangent": [
+          0.12312865257263184,
+          0.07883763313293457,
+          -0.06924182176589966
+        ],
+        "slip_at_measured_contact": [
+          -0.027866721153259277,
+          -0.0005044341087341309,
+          -0.0019176602363586426
+        ],
+        "measured_arm_tangent": [
+          -0.0278778076171875,
+          -0.0005003809928894043,
+          -0.0019050240516662598
+        ],
+        "racket_friction": [
+          0.1231149435043335,
+          0.07884550094604492,
+          -0.06922650337219238
+        ],
+        "unexplained_after_friction": [
+          5.960464477539062e-07,
+          3.814697265625e-06,
+          3.0994415283203125e-06
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "stable",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          37
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          37
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          37
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          37
+        ]
+      },
+      "body_endpoint_difference": [
+        0.32755231857299805,
+        -0.1545250415802002,
+        0.2679002285003662
+      ],
+      "local_sequence_jacobian": [
+        0.09390991181135178,
+        -0.043440695852041245,
+        0.06803900003433228
+      ],
+      "native_robot_endpoint_difference": [
+        0.3138063848018646,
+        0.0031404495239257812,
+        0.03046417236328125
+      ],
+      "measured_substeps_with_predicted_ball": [
+        0.12195765972137451,
+        0.0035262107849121094,
+        0.010278701782226562
+      ],
+      "measured_substeps_with_native_event_start": [
+        0.12195765972137451,
+        0.0035262107849121094,
+        0.010278701782226562
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        0.15072131156921387,
+        0.006592050194740295,
+        0.008731633424758911
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        0.2738499641418457,
+        0.08542968332767487,
+        -0.06051018834114075
+      ],
+      "native_normal_and_incoming_slip_model": [
+        0.12285459041595459,
+        0.0060876160860061646,
+        0.0068139731884002686
+      ],
+      "native_normal_and_measured_arm_model": [
+        0.12284350395202637,
+        0.006091669201850891,
+        0.006826609373092651
+      ],
+      "native_normal_torque_and_incoming_slip_model": [
+        0.12284684181213379,
+        0.006093576550483704,
+        0.006824523210525513
+      ],
+      "native_normal_torque_and_post_solve_racket_oracle": [
+        0.11605203151702881,
+        0.0015422254800796509,
+        0.010957807302474976
+      ],
+      "native_incoming_plus_flight_and_reported_racket_forces": [
+        0.27383625507354736,
+        0.08543755114078522,
+        -0.06049486994743347
+      ],
+      "native_clock_and_friction_measured_load_geometry_axis": [
+        0.27383625507354736,
+        0.085373654961586,
+        -0.06053587794303894
+      ],
+      "native_clock_and_friction_model_load_measured_axis": [
+        0.27271997928619385,
+        0.08272100985050201,
+        -0.0567764937877655
+      ],
+      "native_clock_and_friction_model_load_geometry_axis": [
+        0.272713303565979,
+        0.08266426622867584,
+        -0.05682322382926941
+      ]
+    },
+    {
+      "loaded_points_by_substep": {
+        "minus": [
+          [
+            19,
+            1
+          ]
+        ],
+        "plus": [
+          [
+            19,
+            1
+          ]
+        ]
+      },
+      "signed_loaded_point_counts_match": true,
+      "case": "spec_00_tick267:lane115",
+      "native_delta": [
+        0.005791664123535156,
+        0.05878925323486328,
+        0.11576437950134277
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "normal_delta_on_native_clock_mps": {
+        "measured_load_geometry_axis": [
+          0.06169605255126953,
+          -0.0009158849716186523,
+          -0.0037187933921813965
+        ],
+        "model_load_measured_axis": [
+          0.0063571929931640625,
+          -0.003139197826385498,
+          0.0036134719848632812
+        ],
+        "model_load_geometry_axis": [
+          0.0038824081420898438,
+          -0.004323363304138184,
+          -0.002351731061935425
+        ]
+      },
+      "signed_impulse_breakdown_mps": {
+        "racket_normal": {
+          "amplitude_on_shared_substeps": [
+            0.061490341231436554,
+            0.0036094923083563346,
+            -0.0013105659174764712
+          ],
+          "direction_on_shared_substeps": [
+            0.000282078624709858,
+            -0.00346020559805727,
+            0.003704907422967344
+          ],
+          "unmatched_substeps": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "racket_friction": {
+          "amplitude_on_shared_substeps": [
+            0.0016900185676857736,
+            -0.03050376002822426,
+            0.07686749426126308
+          ],
+          "direction_on_shared_substeps": [
+            -0.0576680645814445,
+            0.08921516042706555,
+            0.03667165128176198
+          ],
+          "unmatched_substeps": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          2.6434659957885742e-05,
+          -6.866804324090481e-05,
+          -0.00016967952251434326
+        ],
+        "racket_normal": [
+          0.06177234649658203,
+          0.00014930963516235352,
+          0.0023943185806274414
+        ],
+        "unexplained": [
+          -0.056006431579589844,
+          0.05870860815048218,
+          0.11353981494903564
+        ],
+        "spin_oracle_tangent": [
+          -0.002133771777153015,
+          0.06583535671234131,
+          0.10340523719787598
+        ],
+        "slip_at_measured_contact": [
+          -3.787502646446228e-05,
+          -0.006839931011199951,
+          -3.999471664428711e-05
+        ],
+        "measured_arm_tangent": [
+          0.00061788409948349,
+          -0.01211664080619812,
+          0.01608806848526001
+        ],
+        "racket_friction": [
+          -0.055978044867515564,
+          0.05871137976646423,
+          0.11353909969329834
+        ],
+        "unexplained_after_friction": [
+          -2.8385547921061516e-05,
+          -2.771615982055664e-06,
+          7.152557373046875e-07
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "stable",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          19
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          19
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          19
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          19
+        ]
+      },
+      "body_endpoint_difference": [
+        -0.0026702880859375,
+        -0.0079878568649292,
+        0.0008990764617919922
+      ],
+      "local_sequence_jacobian": [
+        -0.0026625962927937508,
+        -0.007982861250638962,
+        0.0009014136157929897
+      ],
+      "native_robot_endpoint_difference": [
+        0.019783973693847656,
+        -0.009214282035827637,
+        -0.0023190975189208984
+      ],
+      "measured_substeps_with_predicted_ball": [
+        0.0042858123779296875,
+        -0.010855317115783691,
+        -0.0013043880462646484
+      ],
+      "measured_substeps_with_native_event_start": [
+        0.0042858123779296875,
+        -0.010855436325073242,
+        -0.0013041496276855469
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        0.06179878115653992,
+        8.064159192144871e-05,
+        0.002224639058113098
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        0.0596650093793869,
+        0.06591600179672241,
+        0.10562987625598907
+      ],
+      "native_normal_and_incoming_slip_model": [
+        0.061760906130075455,
+        -0.006759289652109146,
+        0.002184644341468811
+      ],
+      "native_normal_and_measured_arm_model": [
+        0.06241666525602341,
+        -0.012035999447107315,
+        0.018312707543373108
+      ],
+      "native_normal_torque_and_incoming_slip_model": [
+        0.06175640970468521,
+        -0.006673518568277359,
+        0.00221879780292511
+      ],
+      "native_normal_torque_and_post_solve_racket_oracle": [
+        0.061899732798337936,
+        -0.009262684732675552,
+        0.0023006945848464966
+      ],
+      "native_incoming_plus_flight_and_reported_racket_forces": [
+        0.005820736289024353,
+        0.05879202112555504,
+        0.11576373875141144
+      ],
+      "native_clock_and_friction_measured_load_geometry_axis": [
+        0.005744442343711853,
+        0.05772682651877403,
+        0.1096506267786026
+      ],
+      "native_clock_and_friction_model_load_measured_axis": [
+        -0.049594417214393616,
+        0.05550351366400719,
+        0.11698289215564728
+      ],
+      "native_clock_and_friction_model_load_geometry_axis": [
+        -0.052069202065467834,
+        0.0543193481862545,
+        0.11101768910884857
+      ]
+    }
+  ],
+  "all_signed_traces_include_friction": true,
+  "contact_bptt_admitted": false,
+  "actor_updates": 0
+}

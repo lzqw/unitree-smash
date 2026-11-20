@@ -77,3 +77,13 @@ class BallResidualV2(nn.Module):
         probability, response = self.components(features)
         delta = (probability[:,1:,None]*response).sum(1)
         return present[:,None].to(delta.dtype)*delta, 1.-probability[:,0]
+
+
+def verify_event_calibration(ball_checkpoint, original_ball_sha, body_sha, body_checkpoint):
+    calibration = ball_checkpoint['event_calibration']
+    parent = body_checkpoint['calibration']
+    if (calibration['source_ball_sha256'] != original_ball_sha or
+            calibration['fitted_body_sha256'] != body_sha or
+            any(calibration[key] != parent[key] for key in ('packed_sha256','train_lanes','excluded_lanes')) or
+            set(calibration['train_lanes']) & set(calibration['excluded_lanes'])):
+        raise ValueError('Calibrated ball and body training provenance differ')

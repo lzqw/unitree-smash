@@ -1,0 +1,90 @@
+{
+  "runtime_components": {
+    "source": "/home/autodrive/LZQW/unitree_smash/reports/G07_full_racket_v5/frozen_v2_smooth_approach16_env5120_01/policy.pt",
+    "physical": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/gyro_readout/world.pt",
+    "ball": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/gyro_readout/ball_event/ball.pt",
+    "task": "/home/autodrive/LZQW/experiments/supermimic_admission256_20261118_s5lbit6k/task_absolute_boolean_unneashm/fit/task.pt"
+  },
+  "reference_origin_checkpoint": "/home/autodrive/LZQW/experiments/supermimic_a2_canary_20261120_final/pre_refresh_cycle000_pair000_refresh_after_approach.pt",
+  "critic_calibration": {
+    "native_critic_calibration_updates": 2,
+    "native_critic_calibration_loss": 231.48594665527344,
+    "native_critic_mae": 11.266131401062012,
+    "native_critic_rmse": 14.973037719726562,
+    "native_label_count": 744,
+    "held_before_mae": 11.417817538439174,
+    "held_after_mae": 11.024771062377702,
+    "held_labels": 1374,
+    "critic_ticks": [
+      768,
+      720,
+      672,
+      624,
+      576,
+      528,
+      480,
+      432,
+      384,
+      336,
+      288,
+      240,
+      192,
+      144,
+      96,
+      48,
+      0
+    ]
+  },
+  "device": "cuda:0",
+  "reference_sha256": "8d16a9b3b80a2f9bd196c1fe4d96200186be5133b2d79aead2fbd2aeab86d5e0",
+  "initial": {
+    "actor": "73a3194ea2e44122df13663bcad9e9b0b543b7c6429bf3b06b133bfb1244646a",
+    "world": "cdee33a6fc8166578a36c509db5113764413b31eefb97ed5a939755a12c639a1",
+    "critic": "03ff7fca931bb8da5227923d58a40aef8353f39ce8561abe7e5944055035259a"
+  },
+  "native_start_policy": "73a3194ea2e44122df13663bcad9e9b0b543b7c6429bf3b06b133bfb1244646a",
+  "reference_policy": "2c84da909c60fd0d6816a665bf3929fb5d33bab80b078e46c8609bfea5f5a794",
+  "num_envs": 128,
+  "included_lanes": 45,
+  "reference_count": 16,
+  "tracking_weight": 1.0,
+  "contact_bptt": "detached",
+  "horizon": 64,
+  "starts": [
+    {
+      "gate_lanes": 41,
+      "tracking_active_lane_steps": 2624,
+      "tracking_effective_weight_sum": 2588.41943359375,
+      "tracking_nonzero_gradient_lanes": 41,
+      "matched_references": 45,
+      "task_gradient_norm": 9.104510307312012,
+      "tracking_gradient_norm": 0.050471074879169464,
+      "anchor_gradient_norm": 0.0,
+      "task_tracking_cosine": 0.241267591714859,
+      "tick": 384,
+      "task_value": 2.534788131713867,
+      "tracking_value": 0.07156017422676086
+    },
+    {
+      "gate_lanes": 39,
+      "tracking_active_lane_steps": 2496,
+      "tracking_effective_weight_sum": 2457.054443359375,
+      "tracking_nonzero_gradient_lanes": 39,
+      "matched_references": 45,
+      "task_gradient_norm": 10.712427139282227,
+      "tracking_gradient_norm": 0.057243723422288895,
+      "anchor_gradient_norm": 0.0,
+      "task_tracking_cosine": 0.5231521725654602,
+      "tick": 448,
+      "task_value": 5.483253002166748,
+      "tracking_value": 0.07269831746816635
+    }
+  ],
+  "unchanged": true,
+  "optimizer_updates": {
+    "actor": 0,
+    "world": 0,
+    "critic": 2
+  },
+  "passed": true
+}

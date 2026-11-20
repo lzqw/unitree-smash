@@ -163,6 +163,7 @@ def main():
     (args.output / 'provenance.json').write_text(json.dumps(dict(
         teacher_sha256=hashlib.sha256(args.teacher.read_bytes()).hexdigest(),
         collector_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        trace_recorder_sha256=hashlib.sha256((ROOT/'quadsmash/rl/supermimic_native_substep_trace_v1.py').read_bytes()).hexdigest(),
         seed=args.seed, batches=args.batches, lanes=args.lanes, scope='controlled native contact trials',
         args=sys.argv), indent=2))
     app = AppLauncher(args).app

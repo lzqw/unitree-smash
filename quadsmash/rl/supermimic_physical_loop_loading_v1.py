@@ -4,7 +4,7 @@ from pathlib import Path
 import torch
 from .supermimic_v1 import load_ppo_initialized_actor
 from .supermimic_physical_world_v2 import PhysicalWorldV2
-from .supermimic_ball_residual_v2 import BallResidualV2
+from .supermimic_ball_residual_v2 import BallResidualV2, verify_event_calibration
 from .supermimic_action_ball_v1 import action_ball_from_checkpoint
 from .supermimic_action_ball_v1 import TemporalCausalRacketModeImpulseResidualBallV13
 from .supermimic_ball_impulse_prior_v1 import (
@@ -93,6 +93,8 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
     if physical_state['schema']!=physical.schema:raise ValueError('Wrong physical model schema')
     physical.load_state_dict(physical_state['model'],strict=True)
     ball_state=torch.load(paths['ball'],map_location='cpu',weights_only=True)
+    if 'event_calibration' in ball_state:
+        verify_event_calibration(ball_state,physical_state['calibration']['ball_sha256'],hashes['physical'],physical_state)
     ball=BallResidualV2().to(device);ball.load_state_dict(ball_state['model'],strict=True)
     action_ball=None
     if action_ball_checkpoint is not None:

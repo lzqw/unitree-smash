@@ -91,7 +91,13 @@ def main():
     if ck['source_manifest']['task_contract']!=actor['metadata']['task_contract']:
         raise ValueError('Different task for physical model and captured policy')
     evidence=actor['metadata']['physical_imagination']['checkpoint_sha256']
-    if digest(args.ball)!=evidence['ball'] or (digest(args.physical)!=evidence['physical'] and
+    ball_checkpoint=torch.load(args.ball,map_location='cpu',weights_only=True)
+    if digest(args.ball)!=evidence['ball']:
+        from quadsmash.rl.supermimic_ball_residual_v2 import verify_event_calibration
+        if prospective and prospective.get('ball_candidates',{}).get(str(args.ball.resolve()))!=digest(args.ball):
+            raise ValueError('Unregistered ball checkpoint on prospective Recovery evaluation')
+        verify_event_calibration(ball_checkpoint,evidence['ball'],digest(args.physical),ck)
+    if (digest(args.physical)!=evidence['physical'] and
             ck.get('calibration',{}).get('source_sha256')!=evidence['physical']):
         raise ValueError('Frozen physical model ancestry or ball head mismatch')
     data=torch.load(data_path,map_location='cpu',weights_only=True,mmap=True)
@@ -103,7 +109,7 @@ def main():
     body=PhysicalWorldV2(ck['source_manifest']['task_contract']['asset']['sha256']).eval()
     body.load_state_dict(ck['model'])
     ball=BallResidualV2().eval()
-    ball.load_state_dict(torch.load(args.ball,map_location='cpu',weights_only=True)['model'])
+    ball.load_state_dict(ball_checkpoint['model'],strict=True)
     groups_report={}
     for group,ids in groups.items():
         row=dict(cases=[dict(tick=t,case=cases[lane]['case_id']) for t,lane in ids],count=len(ids))

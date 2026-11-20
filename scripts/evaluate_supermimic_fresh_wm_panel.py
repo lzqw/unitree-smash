@@ -42,6 +42,9 @@ def check_panel(panel, protocol_path, root, checkpoints):
         for path, expected in prospective['bodies'].items():
             if digest(path) != expected:
                 raise ValueError('Prospective Body WM checkpoint changed')
+        for path, expected in prospective.get('ball_candidates',{}).items():
+            if digest(path) != expected:
+                raise ValueError('Prospective ball checkpoint changed')
         if digest(prospective['calibration_path']) != prospective['calibration_sha256']:
             raise ValueError('Prospective contact calibration changed')
         for path, expected in prospective['previous_panels'].items():

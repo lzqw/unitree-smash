@@ -37,6 +37,7 @@ class NativeSubstepTraceV1:
         self.count = 0
         self.buffers = {}
         self.manifold_frames = []
+        self.racket_friction_frames = []
         self.active = True
         self.closed = False
         self.start_frame = int(env._sim_step_counter if start_frame is None else start_frame)
@@ -117,10 +118,13 @@ class NativeSubstepTraceV1:
             if net_force_matrix is not None:
                 values["net_force_matrix_w"] = net_force_matrix[:, :, -1:]
         if view is not None:
-            friction, _, counts, starts = view.get_friction_data(dt=env.physics_dt)
+            friction, points, counts, starts = view.get_friction_data(dt=env.physics_dt)
             lane, _, indices = packed_point_indices(counts[:, :1], starts[:, :1])
             friction_on_racket_pair = torch.zeros_like(values["racket_force_w"])
-            friction_on_racket_pair.index_add_(0, lane, friction[indices])
+            pair_forces = friction[indices]
+            self.racket_friction_frames.append(dict(lane=lane, force_w_n=pair_forces,
+                                                    point_w_m=points[indices]))
+            friction_on_racket_pair.index_add_(0, lane, pair_forces)
             values["racket_friction_force_w"] = friction_on_racket_pair
         for key, value in values.items():
             if key not in self.buffers:
@@ -175,4 +179,5 @@ class NativeSubstepTraceV1:
         return dict(schema=self.schema, count=self.count, physics_dt_s=float(self.env.physics_dt),
                     start_frame=self.start_frame, end_frame=int(frames[-1]), tensors=tensors,
                     contact_metadata=contact_metadata, manifold_frames=self.manifold_frames,
+                    racket_friction_frames=self.racket_friction_frames,
                     scope='observed consumed native frames; no object-tree snapshots or extra event updates')

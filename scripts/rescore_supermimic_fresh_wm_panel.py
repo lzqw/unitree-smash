@@ -33,6 +33,7 @@ def main():
     for name in ('panel','capture','candidate','anchor','archive','safety-mapping','output'):
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--body-candidate',type=Path)
+    p.add_argument('--ball-candidate',type=Path,help='Training-lane gate calibration for the declared body')
     p.add_argument('--contact-calibration',type=Path,help='Frozen native racket contact fit for diagnostic transfer')
     p.add_argument('--initial-physical-components',action='store_true',
                    help='Use the ball and contact components loaded for a new policy-training process')
@@ -51,6 +52,11 @@ def main():
             str(a.body_candidate.resolve()) not in prospective['bodies'] or
             (a.contact_calibration is not None and digest(a.contact_calibration) != prospective['calibration_sha256'])):
         raise ValueError('Requested comparison was not declared before native collection')
+    if a.ball_candidate:
+        if not a.initial_physical_components or a.contact_calibration or not a.body_candidate:
+            p.error('Ball gate calibration requires a specified body and the executable initial component transition')
+        if prospective and prospective.get('ball_candidates',{}).get(str(a.ball_candidate.resolve())) != digest(a.ball_candidate):
+            raise ValueError('Ball candidate was not declared before capture')
     path=a.capture/'native.pt'
     if (measured['panel_sha256']!=digest(a.panel) or measured['data_sha256']!=digest(path)
             or measured['weights']!=panel['weights'] or measured['ticks']!=800):
@@ -76,6 +82,11 @@ def main():
                  candidate.get('calibration',{}).get('source_sha256')!=meta['checkpoint_sha256']['physical'])):
             raise ValueError('Body candidate has different robot ancestry or physics contract')
         adapter.physical_model.load_state_dict(candidate['model'],strict=True)
+    if a.ball_candidate:
+        new_ball=torch.load(a.ball_candidate,map_location='cpu',weights_only=True)
+        from quadsmash.rl.supermimic_ball_residual_v2 import verify_event_calibration
+        verify_event_calibration(new_ball,meta['checkpoint_sha256']['ball'],digest(a.body_candidate),candidate)
+        adapter.ball_model.load_state_dict(new_ball['model'],strict=True)
     data=torch.load(path,map_location='cpu',weights_only=True,mmap=True)
     if a.teacher_racket and not a.contact_calibration:
         p.error('--teacher-racket requires the contact solver')
@@ -111,6 +122,7 @@ def main():
                   gate_metrics(result['metrics']['candidate'])),panel_sha256=measured['panel_sha256'],
                   data_sha256=measured['data_sha256'],weights=panel['weights'],
                   body_candidate_sha256=digest(a.body_candidate) if a.body_candidate else None,
+                  ball_candidate_sha256=digest(a.ball_candidate) if a.ball_candidate else None,
                   contact_calibration_sha256=digest(a.contact_calibration) if a.contact_calibration else None,
                   transition=variant, initial_physical_components=a.initial_physical_components,
                   runtime_world_sha256=tensor_digest(adapter.state_dict().items()),

@@ -94,12 +94,17 @@ def test_policy_probe_records_filtered_racket_friction_at_every_frame():
     forces=torch.tensor([[1.,2.,3.],[90.,90.,90.],[4.,5.,6.]])
     env.shuttle_contact.contact_physx_view=SimpleNamespace(
         get_contact_data=lambda dt:(forces[:,:1],forces,forces,forces[:,:1],counts,starts),
-        get_friction_data=lambda dt:(forces,forces,counts,starts))
+        get_friction_data=lambda dt:(forces,forces+10.,counts,starts))
     trace=NativeSubstepTraceV1(env)
     for frame in (11,12,13):
         env._consume_physics_frame(frame)
     result=trace.finish()
     actual=result['tensors']['racket_friction_force_w']
     torch.testing.assert_close(actual,forces[[2,0]].expand(4,-1,-1))
+    assert len(result['racket_friction_frames']) == 4
+    for frame in result['racket_friction_frames']:
+        assert frame['lane'].tolist() == [0,1]
+        torch.testing.assert_close(frame['force_w_n'], forces[[2,0]])
+        torch.testing.assert_close(frame['point_w_m'], forces[[2,0]]+10.)
     assert result['contact_metadata']['friction_source']=='physx_filtered_racket_pair'
     assert env.calls==[11,12,13]

@@ -14,6 +14,7 @@ def main():
         parser.add_argument('--'+flag, type=Path, required=True)
     for flag in ('body', 'previous-panel'):
         parser.add_argument('--'+flag, action='append', type=Path, required=True)
+    parser.add_argument('--ball-candidate',action='append',type=Path,default=[])
     parser.add_argument('--seed', type=int, required=True)
     parser.add_argument('--cases-per-panel', type=int, default=16)
     args = parser.parse_args()
@@ -28,7 +29,7 @@ def main():
     panel = dict(schema='fresh-wm-holdout-v1', policy_training=False, seed=args.seed,
                  horizons=[1,2,4,8,16,32,64], cases=cases, protocol_sha256=digest(protocol),
                  weights=weights([args.anchor,args.actor]), prospective_body_comparison=dict(
-                     bodies=weights(args.body), calibration_path=str(args.contact_calibration.resolve()),
+                     bodies=weights(args.body), ball_candidates=weights(args.ball_candidate), calibration_path=str(args.contact_calibration.resolve()),
                      calibration_sha256=digest(args.contact_calibration), previous_panels=weights(args.previous_panel),
                      transitions=['calibrated_analytic','initial_components'],
                      uniform_no_regression=['body_rmse','root_angular_mae'],

@@ -108,3 +108,57 @@ def test_signed_impulse_breakdown_preserves_clock_and_branch_order():
     reverse = signed_impulse_components(plus, minus)
     for key in parts:
         torch.testing.assert_close(parts[key], -reverse[key])
+
+
+def test_native_clock_separates_normal_load_and_surface_direction():
+    from types import SimpleNamespace
+    from scripts.audit_supermimic_solver_action_response import normal_on_native_clock
+    pos = torch.zeros(3,2,3)
+    quat = torch.zeros(3,2,4)
+    quat[...,0] = 1
+    shuttle = torch.zeros(3,2,13)
+    shuttle[0,0,7:10] = torch.tensor([-3.,-2.,0.])
+    forces = torch.zeros_like(pos)
+    forces[1,0,1] = 4.
+    def surface(local):
+        return local.new_tensor([1.,0.,0.]).expand_as(local), None
+    prior = SimpleNamespace(sub_dt=.01,restitution=0.,racket_surface=surface,
+                            preview=SimpleNamespace(radius=.02))
+    trace = dict(racket_force_w=forces,racket_position_w=pos,racket_quaternion_w=quat,
+                 racket_linear_velocity_w=pos,racket_angular_velocity_w=pos,shuttle_state_w=shuttle)
+    terms = normal_on_native_clock(trace,prior,{'normal_impulse_scale':1.},.01)
+    expected = {'measured_load_geometry_axis':[4.,0.,0.],'model_load_measured_axis':[0.,2.,0.],
+                'model_load_geometry_axis':[3.,0.,0.]}
+    for name, v in expected.items():
+        torch.testing.assert_close(terms[name],torch.tensor([v,[0.,0.,0.]]))
+
+
+def test_manifold_torque_uses_individual_loaded_points_after_incoming_frame():
+    from scripts.audit_supermimic_solver_action_response import manifold_normal_spin
+    positions = torch.zeros(2,2,13)
+    positions[0,0,0] = 2
+    positions[1,0,0] = 5
+    measured = torch.zeros(2,2,3)
+    measured[1,0,1] = 3
+    frame = dict(lane=torch.tensor([0,0,0,1]),filter_index=torch.tensor([0,0,1,0]),
+                 normal_force_n=torch.tensor([1.,2.,50.,60.]),
+                 normal_w=torch.tensor([[0.,1.,0.]]).expand(4,3),
+                 point_w=torch.tensor([[3.,0.,0.],[1.,0.,0.],[0.,0.,0.],[0.,0.,0.]]))
+    tr=dict(count=2,physics_dt_s=.1,tensors=dict(shuttle_state_w=positions,racket_force_w=measured),
+            manifold_frames=[{},frame])
+    spin,count=manifold_normal_spin(tr,0,1.,1.)
+    torch.testing.assert_close(spin[1],torch.tensor([0.,0.,-.25]))
+    assert count.tolist()==[0,2]
+    assert manifold_normal_spin(dict(tr,manifold_frames=[]),0,1.,1.) is None
+
+
+def test_multiple_friction_constraints_share_one_sphere_momentum():
+    from scripts.audit_supermimic_pilot_friction_anchors import sticking_delta
+    n=torch.tensor([0.,0.,1.],dtype=torch.float64)
+    arm=-.025*n
+    slip=torch.tensor([2.,0.,0.],dtype=n.dtype)
+    for count in (1,2):
+        actual=sticking_delta(arm.expand(count,3),slip.expand(count,3),n,.4*.025**2,10.)
+        torch.testing.assert_close(actual,-2/7*slip)
+    capped=sticking_delta(arm[None],slip[None],n,.4*.025**2,.1)
+    torch.testing.assert_close(capped,-.05*slip)

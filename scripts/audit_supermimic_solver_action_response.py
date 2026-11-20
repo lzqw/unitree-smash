@@ -10,6 +10,7 @@ from audit_supermimic_paired_body_transfer import response_metrics
 from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, PhysicalWorldV2, racket, sha, tick
 from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branch, _same_contract
 from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES
+from quadsmash.rl.supermimic_contact_pilot_v1 import _quat_rotate, _quat_rotate_inverse
 
 
 def sphere_tangent_from_spin(spin, normal_force, radius):
@@ -61,6 +62,74 @@ def tangent_at_measured_contact(trace, radius, normal_dv, friction, *, measured_
     return -(magnitude[...,None]*torch.nn.functional.normalize(slip,dim=-1)).sum(0)
 
 
+def manifold_normal_spin(trace, lane, radius, mass):
+    """Angular increment from every loaded native normal force about the incoming ball centre."""
+    frames = trace.get('manifold_frames') or []
+    if not frames:
+        return None
+    t = trace['tensors']
+    if len(frames) != trace['count']:
+        raise ValueError('Incomplete native contact manifold')
+    measured = t['racket_force_w'][:,lane]
+    net = torch.zeros_like(measured)
+    spin = torch.zeros_like(measured)
+    count = torch.zeros(len(frames),dtype=torch.long)
+    for step, frame in enumerate(frames[1:],1):
+        use = (frame['lane']==lane) & (frame['filter_index']==0) & (frame['normal_force_n']!=0.)
+        force = frame['normal_force_n'][use,None]*frame['normal_w'][use]
+        arm = frame['point_w'][use]-t['shuttle_state_w'][step-1,lane,:3]
+        net[step] = force.sum(0)
+        spin[step] = torch.cross(arm,force,dim=-1).sum(0)*(trace['physics_dt_s']/(mass*.4*radius**2))
+        count[step] = (frame['normal_force_n'][use].abs()>.001).sum()
+    torch.testing.assert_close(net[1:],measured[1:],atol=.002,rtol=1e-5)
+    return spin, count
+
+
+def tangent_after_normal_spin(trace, normal_dv, radius, friction, *, post_solver_surface=False):
+    """Teacher using measured normal torque and a radial tangential contact arm."""
+    n = torch.nn.functional.normalize(normal_dv,dim=-1)
+    arm = -radius*n
+    incoming = trace['shuttle_state_w'][:-1]
+    point = incoming[...,:3]+arm
+    surface_clock = slice(1,None) if post_solver_surface else slice(None,-1)
+    surface = trace['racket_linear_velocity_w'][surface_clock]+torch.cross(trace['racket_angular_velocity_w'][surface_clock],
+        point-trace['racket_position_w'][surface_clock],dim=-1)
+    after_normal = incoming[...,7:10]+normal_dv+torch.cross(
+        incoming[...,10:13]+trace['manifold_normal_spin'][1:],arm,dim=-1)
+    slip = after_normal-surface
+    slip = slip-(slip*n).sum(-1,keepdim=True)*n
+    size = torch.minimum((2/7)*slip.norm(dim=-1),friction*normal_dv.norm(dim=-1))
+    return -(size[...,None]*torch.nn.functional.normalize(slip,dim=-1)).sum(0)
+
+
+def normal_on_native_clock(trace, prior, calibration, mass):
+    """Separate the geometric normal from the normal load on measured contact frames."""
+    force = trace['racket_force_w'][1:]
+    step, lane = torch.where(force.norm(dim=-1) > 0)
+    terms = {k: force.new_zeros(force.shape[1:]) for k in
+             ('measured_load_geometry_axis', 'model_load_measured_axis', 'model_load_geometry_axis')}
+    if not len(step):
+        return terms
+    ball = trace['shuttle_state_w'][step, lane]
+    center = trace['racket_position_w'][step, lane]
+    rotation = trace['racket_quaternion_w'][step, lane]
+    local = _quat_rotate_inverse(rotation, ball[:, :3]-center)
+    local_axis, _ = prior.racket_surface(local)
+    geometry_axis = _quat_rotate(rotation, local_axis)
+    native_force = force[step, lane]
+    native_load = native_force.norm(dim=-1, keepdim=True) * (prior.sub_dt / mass)
+    native_axis = torch.nn.functional.normalize(native_force, dim=-1)
+    for axis, name in ((geometry_axis, 'geometry_axis'), (native_axis, 'measured_axis')):
+        arm = ball[:, :3]-center-prior.preview.radius*axis
+        surface = trace['racket_linear_velocity_w'][step, lane] + torch.cross(
+            trace['racket_angular_velocity_w'][step, lane], arm, dim=-1)
+        vn = ((ball[:, 7:10]-surface)*axis).sum(-1, keepdim=True)
+        load = -(1+prior.restitution)*calibration['normal_impulse_scale']*vn.clamp(max=0)
+        terms['model_load_'+name].index_add_(0, lane, load*axis)
+    terms['measured_load_geometry_axis'].index_add_(0, lane, native_load*geometry_axis)
+    return terms
+
+
 def signed_impulse_components(minus, plus):
     """Attribute plus-minus velocity impulse on the common native substep clock.
 
@@ -108,6 +177,7 @@ def main():
     prior=BallImpulsePriorV1().eval().requires_grad_(False)
     rows=ds['rows'];lanes=[r['lane_index'] for r in rows]
     if set(lanes)&set(ck['calibration']['train_lanes']):raise ValueError('Overlapping action-ID and fit lanes')
+    shuttle=json.loads((Path(__file__).resolve().parents[1]/'configs/shuttle_physics_v2.json').read_text())
     modes={}
     traces={b:[] for b in ('minus','plus')}
     for name in sorted(set(r['spec_name'] for r in rows)):
@@ -127,7 +197,11 @@ def main():
                           'racket_linear_velocity_w','racket_angular_velocity_w','racket_force_w','racket_contact_position_w']
                 if 'racket_friction_force_w' in t:
                     fields.append('racket_friction_force_w')
-                traces[b].append((row['sample_id'], {key:t[key][:,lane].clone() for key in fields}))
+                values = {key:t[key][:,lane].clone() for key in fields}
+                torque = manifold_normal_spin(trace,lane,shuttle['collision_radius_m'],shuttle['mass_kg'])
+                if torque is not None:
+                    values['manifold_normal_spin'], values['loaded_point_count'] = torque
+                traces[b].append((row['sample_id'],values))
             branches=[mode(runs[b],lane) for b in BRANCHES]
             if branches[0]!=branches[1]:group='nominal_mismatch'
             elif any(b[:2]!=branches[0][:2] for b in branches):group='contact_switch'
@@ -140,18 +214,18 @@ def main():
     if sha(sp)!=task['suite']['sha256']:raise ValueError('Different launch suite')
     launch=torch.tensor([row['launch']['position_m']+row['launch']['velocity_mps'] for row in
                         json.loads(sp.read_text())['cases']])[lanes]
-    config_path=Path(__file__).resolve().parents[1]/'configs/shuttle_physics_v2.json'
-    shuttle=json.loads(config_path.read_text())
     mass=shuttle['mass_kg']
     native_terms={}
     paths={}
     friction_available=all('racket_friction_force_w' in entry for records in traces.values()
                            for _,entry in records)
+    manifold_available=all('manifold_normal_spin' in x for records in traces.values() for _,x in records)
     for b,records in traces.items():
         lookup=dict(records)
         ordered=[lookup[row['sample_id']] for row in rows]
         paths[b]={key:torch.stack([entry[key] for entry in ordered],1) for key in ordered[0]
-                  if key!='racket_friction_force_w' or friction_available}
+                  if (key!='racket_friction_force_w' or friction_available) and
+                     (key not in ('manifold_normal_spin','loaded_point_count') or manifold_available)}
         t=paths[b]
         vel=t['shuttle_state_w'][...,7:10]
         rel=vel[:-1]-prior.wind
@@ -167,9 +241,15 @@ def main():
         native_terms[b]['measured_arm_tangent'] = tangent_at_measured_contact(
             t,shuttle['collision_radius_m'],t['racket_force_w'][1:]*(prior.sub_dt/mass),
             cfg['fitted']['friction'],measured_arm=True)
+        if manifold_available:
+            native_terms[b]['tangent_after_measured_normal_torque'] = tangent_after_normal_spin(
+                t,t['racket_force_w'][1:]*(prior.sub_dt/mass),shuttle['collision_radius_m'],cfg['fitted']['friction'])
+            native_terms[b]['post_solve_racket_surface_oracle'] = tangent_after_normal_spin(
+                t,t['racket_force_w'][1:]*(prior.sub_dt/mass),shuttle['collision_radius_m'],cfg['fitted']['friction'],post_solver_surface=True)
         if friction_available:
             friction=t['racket_friction_force_w'][1:].sum(0)*(prior.sub_dt/mass)
             native_terms[b].update(racket_friction=friction,unexplained_after_friction=extra-friction)
+        native_terms[b].update(normal_on_native_clock(t, prior, cfg['fitted'], mass))
         native_ball=f('step_next_states_'+b)[:,-1,49:]
         end=paths[b]['shuttle_state_w'][-1]
         torch.testing.assert_close(native_ball, torch.cat((end[:,:3],end[:,7:10]),-1),atol=1e-5,rtol=1e-5)
@@ -228,12 +308,21 @@ def main():
     parts['measured_arm_tangent'] = native_terms['plus']['measured_arm_tangent']-native_terms['minus']['measured_arm_tangent']
     predictions['native_normal_and_measured_arm_model'] = (
         predictions['native_incoming_plus_flight_and_reported_normal'] + parts['measured_arm_tangent'])
+    if manifold_available:
+        delta_tangent = native_terms['plus']['tangent_after_measured_normal_torque']-native_terms['minus']['tangent_after_measured_normal_torque']
+        predictions['native_normal_torque_and_incoming_slip_model'] = predictions['native_incoming_plus_flight_and_reported_normal']+delta_tangent
+        post_surface = native_terms['plus']['post_solve_racket_surface_oracle']-native_terms['minus']['post_solve_racket_surface_oracle']
+        predictions['native_normal_torque_and_post_solve_racket_oracle'] = predictions['native_incoming_plus_flight_and_reported_normal']+post_surface
+    clock_normals = {key: native_terms['plus'][key]-native_terms['minus'][key] for key in
+                     ('measured_load_geometry_axis','model_load_measured_axis','model_load_geometry_axis')}
     if friction_available:
         for key in ('racket_friction','unexplained_after_friction'):
             parts[key] = native_terms['plus'][key]-native_terms['minus'][key]
         with_friction = predictions['native_incoming_plus_flight_and_reported_normal']+parts['racket_friction']
         torch.testing.assert_close(with_friction+parts['unexplained_after_friction'],delta,atol=1e-5,rtol=1e-5)
         predictions['native_incoming_plus_flight_and_reported_racket_forces']=with_friction
+        for key, normal_delta in clock_normals.items():
+            predictions['native_clock_and_friction_'+key] = parts['incoming']+parts['flight']+normal_delta+parts['racket_friction']
     attribution = {}
     for force, key in [('racket_force_w', 'racket_normal'), ('racket_friction_force_w', 'racket_friction')]:
         if force not in paths['minus']:
@@ -249,8 +338,11 @@ def main():
         groups[name]={k:response_metrics(delta[mask],v[mask],repeat[mask]) for k,v in predictions.items()}
     details=[]
     for i,row in enumerate(rows):
-        details.append(dict(case=row['sample_id'],native_delta=delta[i].tolist(),repeat_delta=repeat[i].tolist(),
+        point_counts = {b:paths[b]['loaded_point_count'][1:,i] for b in traces} if manifold_available else {}
+        details.append(dict(loaded_points_by_substep={b:[(int(j+1),int(v[j])) for j in v.nonzero().flatten()] for b,v in point_counts.items()},
+                            signed_loaded_point_counts_match=bool(torch.equal(*point_counts.values())) if point_counts else None,case=row['sample_id'],native_delta=delta[i].tolist(),repeat_delta=repeat[i].tolist(),
                             model_minus_contact_ticks=hm[i].tolist(),model_plus_contact_ticks=hp[i].tolist(),
+                            normal_delta_on_native_clock_mps={key:v[i].tolist() for key,v in clock_normals.items()},
                             signed_impulse_breakdown_mps={key:{term:v[i].tolist() for term,v in components.items()}
                                 for key,components in attribution.items()},
                             native_event_contributions={k:v[i].tolist() for k,v in parts.items()},
