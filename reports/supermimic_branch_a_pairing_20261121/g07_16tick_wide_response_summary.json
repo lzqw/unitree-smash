@@ -1,0 +1,2895 @@
+{
+  "source_sha256": "0d77a53104f34f0c544a8410fea4612d9e0e3d6992c7ac3bfe0bc4f9f005528b",
+  "epsilon_request": 0.01,
+  "ticks": [
+    263,
+    264,
+    265,
+    266,
+    267,
+    268,
+    269,
+    270,
+    271,
+    272,
+    273,
+    274,
+    275,
+    276,
+    277,
+    278
+  ],
+  "scope": "Development full-window signed differences with shuttle and spin initialized once",
+  "status_sha256": "b8eff681b1b99d9f808c47ce70be5fd79936d59fbe7c3f1e4beece6331459907",
+  "body_sha256": "3dc2737e7579f83279da16ce9fc3cec11dae7ad68027576b1875af752fa8392c",
+  "calibration_sha256": "f6bdf30799906e1f51ca00d9084dd752c7f214c14ae1113f6cbd205f31561bcd",
+  "material_sha256": "ea8cc7043592957e7f19992ad79226640d29674e44c7b4a4dd5cd1bfb7b0c6b9",
+  "metrics": {
+    "263": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 1,
+          "absolute_rmse": 0.057964276522397995,
+          "gain_median": 0.1847991794347763,
+          "gain_p10": 0.1847991794347763,
+          "cosine_median": -0.09689244627952576,
+          "cosine_p10": -0.09689244627952576
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 1,
+          "absolute_rmse": 0.1639477163553238,
+          "gain_median": 0.1847991794347763,
+          "gain_p10": 0.1847991794347763,
+          "cosine_median": -0.09689244627952576,
+          "cosine_p10": -0.09689244627952576
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 1,
+          "absolute_rmse": 0.05649573728442192,
+          "gain_median": 0.024068839848041534,
+          "gain_p10": 0.024068839848041534,
+          "cosine_median": -0.3293496072292328,
+          "cosine_p10": -0.3293496072292328
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 1,
+          "absolute_rmse": 0.15979409217834473,
+          "gain_median": 0.024068839848041534,
+          "gain_p10": 0.024068839848041534,
+          "cosine_median": -0.3293496072292328,
+          "cosine_p10": -0.3293496072292328
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.015519640408456326,
+          "gain_median": 0.38313278555870056,
+          "gain_p10": 0.17908872663974762,
+          "cosine_median": 0.8915098309516907,
+          "cosine_p10": -0.3284282088279724
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.00755567429587245,
+          "gain_median": 0.634747326374054,
+          "gain_p10": 0.5276632905006409,
+          "cosine_median": 0.17656496167182922,
+          "cosine_p10": 0.14744453132152557
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.017312241718173027,
+          "gain_median": 0.30262458324432373,
+          "gain_p10": 0.15506121516227722,
+          "cosine_median": 0.8815629482269287,
+          "cosine_p10": -0.32875916361808777
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.015430184081196785,
+          "gain_median": 0.20649422705173492,
+          "gain_p10": 0.18517884612083435,
+          "cosine_median": 0.8736373782157898,
+          "cosine_p10": 0.8066042065620422
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.015158909372985363,
+          "gain_median": 0.5305998921394348,
+          "gain_p10": 0.22836917638778687,
+          "cosine_median": 0.8997339010238647,
+          "cosine_p10": -0.13532379269599915
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.045752402395009995,
+          "gain_median": 0.5260089039802551,
+          "gain_p10": 0.15071044862270355,
+          "cosine_median": 0.8474809527397156,
+          "cosine_p10": 0.23611608147621155
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.020225664600729942,
+          "gain_median": 0.988696277141571,
+          "gain_p10": 0.4780659079551697,
+          "cosine_median": 0.6763036251068115,
+          "cosine_p10": 0.3095131814479828
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0526646189391613,
+          "gain_median": 0.354682594537735,
+          "gain_p10": 0.12237900495529175,
+          "cosine_median": 0.8474809527397156,
+          "cosine_p10": 0.10635970532894135
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.04427996650338173,
+          "gain_median": 0.16497156023979187,
+          "gain_p10": 0.1540948450565338,
+          "cosine_median": 0.9149775505065918,
+          "cosine_p10": 0.8777062892913818
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.04352911561727524,
+          "gain_median": 0.6476039290428162,
+          "gain_p10": 0.24829167127609253,
+          "cosine_median": 0.8437243700027466,
+          "cosine_p10": 0.41255098581314087
+        }
+      }
+    },
+    "264": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 1,
+          "absolute_rmse": 0.0578308068215847,
+          "gain_median": 0.18492208421230316,
+          "gain_p10": 0.18492208421230316,
+          "cosine_median": -0.09826286137104034,
+          "cosine_p10": -0.09826286137104034
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 1,
+          "absolute_rmse": 0.16357021033763885,
+          "gain_median": 0.18492208421230316,
+          "gain_p10": 0.18492208421230316,
+          "cosine_median": -0.09826286137104034,
+          "cosine_p10": -0.09826286137104034
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 1,
+          "absolute_rmse": 0.05635193735361099,
+          "gain_median": 0.02408635802567005,
+          "gain_p10": 0.02408635802567005,
+          "cosine_median": -0.3301796317100525,
+          "cosine_p10": -0.3301796317100525
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 1,
+          "absolute_rmse": 0.15938735008239746,
+          "gain_median": 0.02408635802567005,
+          "gain_p10": 0.02408635802567005,
+          "cosine_median": -0.3301796317100525,
+          "cosine_p10": -0.3301796317100525
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.02024431899189949,
+          "gain_median": 0.62933748960495,
+          "gain_p10": 0.3376133143901825,
+          "cosine_median": 0.9157134890556335,
+          "cosine_p10": -0.2457113265991211
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.00562257319688797,
+          "gain_median": 0.9057756662368774,
+          "gain_p10": 0.8813039064407349,
+          "cosine_median": 0.9637162089347839,
+          "cosine_p10": 0.6668829321861267
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0137399323284626,
+          "gain_median": 0.46120449900627136,
+          "gain_p10": 0.3376133143901825,
+          "cosine_median": 0.8835878968238831,
+          "cosine_p10": -0.2085033804178238
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.012301950715482235,
+          "gain_median": 0.7320968508720398,
+          "gain_p10": 0.39539068937301636,
+          "cosine_median": 0.8922573328018188,
+          "cosine_p10": 0.1912689507007599
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.027940893545746803,
+          "gain_median": 0.62933748960495,
+          "gain_p10": 0.3990325331687927,
+          "cosine_median": 0.9546942114830017,
+          "cosine_p10": -0.07097101956605911
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.058829955756664276,
+          "gain_median": 0.6075426340103149,
+          "gain_p10": 0.26031553745269775,
+          "cosine_median": 0.9012336730957031,
+          "cosine_p10": 0.29228276014328003
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.016414491459727287,
+          "gain_median": 0.8180475831031799,
+          "gain_p10": 0.7802512645721436,
+          "cosine_median": 0.7101420760154724,
+          "cosine_p10": 0.4219229221343994
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.04413258284330368,
+          "gain_median": 0.4204259514808655,
+          "gain_p10": 0.27806246280670166,
+          "cosine_median": 0.9281084537506104,
+          "cosine_p10": 0.26086246967315674
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.036027565598487854,
+          "gain_median": 0.258463054895401,
+          "gain_p10": 0.1956397444009781,
+          "cosine_median": 0.6829288005828857,
+          "cosine_p10": 0.6742681264877319
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.07911936193704605,
+          "gain_median": 0.617173969745636,
+          "gain_p10": 0.3264358341693878,
+          "cosine_median": 0.8942131996154785,
+          "cosine_p10": 0.3698883652687073
+        }
+      }
+    },
+    "265": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 2,
+          "absolute_rmse": 0.06039658561348915,
+          "gain_median": 0.18505077064037323,
+          "gain_p10": 0.2678360641002655,
+          "cosine_median": -0.09960493445396423,
+          "cosine_p10": 0.006986506283283234
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 1,
+          "absolute_rmse": 0.1631961613893509,
+          "gain_median": 0.18505077064037323,
+          "gain_p10": 0.18505077064037323,
+          "cosine_median": -0.09960493445396423,
+          "cosine_p10": -0.09960493445396423
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 1,
+          "absolute_rmse": 0.028005484491586685,
+          "gain_median": 1.0129038095474243,
+          "gain_p10": 1.0129038095474243,
+          "cosine_median": 0.9663094282150269,
+          "cosine_p10": 0.9663094282150269
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 2,
+          "absolute_rmse": 0.06826639920473099,
+          "gain_median": 0.024112612009048462,
+          "gain_p10": 0.09643582999706268,
+          "cosine_median": -0.33142757415771484,
+          "cosine_p10": -0.21557310223579407
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 1,
+          "absolute_rmse": 0.15898671746253967,
+          "gain_median": 0.024112612009048462,
+          "gain_p10": 0.024112612009048462,
+          "cosine_median": -0.33142757415771484,
+          "cosine_p10": -0.33142757415771484
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 1,
+          "absolute_rmse": 0.060778629034757614,
+          "gain_median": 0.7473447918891907,
+          "gain_p10": 0.7473447918891907,
+          "cosine_median": 0.8271170854568481,
+          "cosine_p10": 0.8271170854568481
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.023558001965284348,
+          "gain_median": 0.7090685367584229,
+          "gain_p10": 0.28995752334594727,
+          "cosine_median": 0.9431411027908325,
+          "cosine_p10": 0.6160574555397034
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.005056057125329971,
+          "gain_median": 0.9539521336555481,
+          "gain_p10": 0.768373429775238,
+          "cosine_median": 0.8887585997581482,
+          "cosine_p10": 0.8435202240943909
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.013594493269920349,
+          "gain_median": 0.6635114550590515,
+          "gain_p10": 0.297903835773468,
+          "cosine_median": 0.9382485151290894,
+          "cosine_p10": -0.002486877143383026
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.008775649592280388,
+          "gain_median": 1.278628945350647,
+          "gain_p10": 0.5644072890281677,
+          "cosine_median": 0.9625452160835266,
+          "cosine_p10": 0.7195982933044434
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.03414548188447952,
+          "gain_median": 0.6537460684776306,
+          "gain_p10": 0.40849536657333374,
+          "cosine_median": 0.9820240139961243,
+          "cosine_p10": 0.7089970111846924
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.05796336382627487,
+          "gain_median": 0.6463071703910828,
+          "gain_p10": 0.3389328420162201,
+          "cosine_median": 0.9349192976951599,
+          "cosine_p10": 0.6273008584976196
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.01724235713481903,
+          "gain_median": 0.74466872215271,
+          "gain_p10": 0.7347203493118286,
+          "cosine_median": 0.8278165459632874,
+          "cosine_p10": 0.5968940854072571
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.04043659567832947,
+          "gain_median": 0.46895354986190796,
+          "gain_p10": 0.3389328420162201,
+          "cosine_median": 0.8451961874961853,
+          "cosine_p10": 0.3622080385684967
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.023813525214791298,
+          "gain_median": 0.6463071703910828,
+          "gain_p10": 0.4265943169593811,
+          "cosine_median": 0.8890995979309082,
+          "cosine_p10": 0.8324124813079834
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.08073241263628006,
+          "gain_median": 0.5808178782463074,
+          "gain_p10": 0.4046403467655182,
+          "cosine_median": 0.9519001841545105,
+          "cosine_p10": 0.9105702638626099
+        }
+      }
+    },
+    "266": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 4,
+          "absolute_rmse": 0.06420029699802399,
+          "gain_median": 0.436200886964798,
+          "gain_p10": 0.2604873776435852,
+          "cosine_median": -0.10090461373329163,
+          "cosine_p10": -0.18771576881408691
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 1,
+          "absolute_rmse": 0.16282454133033752,
+          "gain_median": 0.18518157303333282,
+          "gain_p10": 0.18518157303333282,
+          "cosine_median": -0.10090461373329163,
+          "cosine_p10": -0.10090461373329163
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 3,
+          "absolute_rmse": 0.04458902031183243,
+          "gain_median": 0.9991099834442139,
+          "gain_p10": 0.5487827062606812,
+          "cosine_median": 0.9664156436920166,
+          "cosine_p10": 0.013346693478524685
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 4,
+          "absolute_rmse": 0.08359476178884506,
+          "gain_median": 0.05528012663125992,
+          "gain_p10": 0.03347451239824295,
+          "cosine_median": -0.33219870924949646,
+          "cosine_p10": -0.7694270610809326
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 1,
+          "absolute_rmse": 0.15858738124370575,
+          "gain_median": 0.024129249155521393,
+          "gain_p10": 0.024129249155521393,
+          "cosine_median": -0.33219870924949646,
+          "cosine_p10": -0.33219870924949646
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 3,
+          "absolute_rmse": 0.09727790206670761,
+          "gain_median": 0.268597275018692,
+          "gain_p10": 0.09794355928897858,
+          "cosine_median": -0.12689559161663055,
+          "cosine_p10": -0.7908276319503784
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.022188004106283188,
+          "gain_median": 0.7777842283248901,
+          "gain_p10": 0.40594106912612915,
+          "cosine_median": 0.930374801158905,
+          "cosine_p10": 0.29032501578330994
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.00512413727119565,
+          "gain_median": 0.8918793797492981,
+          "gain_p10": 0.8006032705307007,
+          "cosine_median": 0.8269336223602295,
+          "cosine_p10": 0.8054383397102356
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.011719749309122562,
+          "gain_median": 0.6929509043693542,
+          "gain_p10": 0.47112858295440674,
+          "cosine_median": 0.7096887826919556,
+          "cosine_p10": -0.5374233722686768
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.007450365927070379,
+          "gain_median": 1.264163851737976,
+          "gain_p10": 0.5405570864677429,
+          "cosine_median": 0.88904869556427,
+          "cosine_p10": 0.7811310291290283
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.03258693590760231,
+          "gain_median": 0.7054051756858826,
+          "gain_p10": 0.26393985748291016,
+          "cosine_median": 0.9637473225593567,
+          "cosine_p10": 0.7679859399795532
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.05471189692616463,
+          "gain_median": 0.5951691269874573,
+          "gain_p10": 0.3575786054134369,
+          "cosine_median": 0.9145504832267761,
+          "cosine_p10": 0.6818097829818726
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.014580298215150833,
+          "gain_median": 0.7766929864883423,
+          "gain_p10": 0.6863484978675842,
+          "cosine_median": 0.9504891633987427,
+          "cosine_p10": 0.8666722774505615
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.027877310290932655,
+          "gain_median": 0.5006763935089111,
+          "gain_p10": 0.3614244759082794,
+          "cosine_median": 0.8782705068588257,
+          "cosine_p10": 0.5857500433921814
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.023491906002163887,
+          "gain_median": 0.4678347110748291,
+          "gain_p10": 0.39051616191864014,
+          "cosine_median": 0.7545041441917419,
+          "cosine_p10": 0.7513332366943359
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.08020049333572388,
+          "gain_median": 0.6303911209106445,
+          "gain_p10": 0.32474225759506226,
+          "cosine_median": 0.9261707067489624,
+          "cosine_p10": 0.8201730847358704
+        }
+      }
+    },
+    "267": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 8,
+          "absolute_rmse": 0.10852275788784027,
+          "gain_median": 0.9991844296455383,
+          "gain_p10": 0.3605803847312927,
+          "cosine_median": -0.04689539223909378,
+          "cosine_p10": -0.18048810958862305
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 2,
+          "absolute_rmse": 0.24595612287521362,
+          "gain_median": 4.7129411697387695,
+          "gain_p10": 5.000068187713623,
+          "cosine_median": -0.16179022192955017,
+          "cosine_p10": -0.09805167466402054
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.17306582629680634,
+          "gain_median": 0.18531525135040283,
+          "gain_p10": 0.23135527968406677,
+          "cosine_median": -0.10217063128948212,
+          "cosine_p10": -0.020718522369861603
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 4,
+          "absolute_rmse": 0.07624845206737518,
+          "gain_median": 0.9991844296455383,
+          "gain_p10": 0.6047411561012268,
+          "cosine_median": -0.04689539223909378,
+          "cosine_p10": -0.17095015943050385
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 8,
+          "absolute_rmse": 0.09960206598043442,
+          "gain_median": 0.2682666778564453,
+          "gain_p10": 0.04594786465167999,
+          "cosine_median": -0.1258673071861267,
+          "cosine_p10": -0.5204131603240967
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 2,
+          "absolute_rmse": 0.11099277436733246,
+          "gain_median": 0.4791768193244934,
+          "gain_p10": 0.6945112943649292,
+          "cosine_median": -0.29158422350883484,
+          "cosine_p10": -0.2301316261291504
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.18951275944709778,
+          "gain_median": 0.02415497601032257,
+          "gain_p10": 0.16422004997730255,
+          "cosine_median": -0.33336928486824036,
+          "cosine_p10": -0.24705493450164795
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 4,
+          "absolute_rmse": 0.1025969535112381,
+          "gain_median": 0.18359598517417908,
+          "gain_p10": 0.09378016740083694,
+          "cosine_median": -0.1258673071861267,
+          "cosine_p10": -0.7075543403625488
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.022355083376169205,
+          "gain_median": 0.8718687295913696,
+          "gain_p10": 0.4019830822944641,
+          "cosine_median": 0.7340953946113586,
+          "cosine_p10": -0.8712871670722961
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.006161654368042946,
+          "gain_median": 0.9517051577568054,
+          "gain_p10": 0.8759520649909973,
+          "cosine_median": 0.9138162732124329,
+          "cosine_p10": -0.3138708770275116
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.013243766501545906,
+          "gain_median": 0.7177445292472839,
+          "gain_p10": 0.4360928237438202,
+          "cosine_median": 0.47086194157600403,
+          "cosine_p10": -0.7304652333259583
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.01351260207593441,
+          "gain_median": 0.41010618209838867,
+          "gain_p10": 0.22166526317596436,
+          "cosine_median": 0.9299920201301575,
+          "cosine_p10": 0.8507170677185059
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.031674984842538834,
+          "gain_median": 0.8731553554534912,
+          "gain_p10": 0.335153192281723,
+          "cosine_median": 0.683245837688446,
+          "cosine_p10": -0.9182918667793274
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.06252363324165344,
+          "gain_median": 0.7423532605171204,
+          "gain_p10": 0.3184034824371338,
+          "cosine_median": 0.8102272152900696,
+          "cosine_p10": -0.22308552265167236
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.014763453043997288,
+          "gain_median": 1.082872748374939,
+          "gain_p10": 0.7108151912689209,
+          "cosine_median": 0.9077545404434204,
+          "cosine_p10": 0.8818314671516418
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.046113576740026474,
+          "gain_median": 0.6930181384086609,
+          "gain_p10": 0.3483361601829529,
+          "cosine_median": 0.6216186881065369,
+          "cosine_p10": -0.1850743442773819
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.037453748285770416,
+          "gain_median": 0.4150380492210388,
+          "gain_p10": 0.20565162599086761,
+          "cosine_median": 0.8102272152900696,
+          "cosine_p10": 0.7117695212364197
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.08472216129302979,
+          "gain_median": 0.851219892501831,
+          "gain_p10": 0.35721006989479065,
+          "cosine_median": 0.8532286882400513,
+          "cosine_p10": -0.5873599648475647
+        }
+      }
+    },
+    "268": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 8,
+          "absolute_rmse": 0.10827399045228958,
+          "gain_median": 0.9992713332176208,
+          "gain_p10": 0.3602706789970398,
+          "cosine_median": -0.047945693135261536,
+          "cosine_p10": -0.18112076818943024
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 2,
+          "absolute_rmse": 0.24537496268749237,
+          "gain_median": 4.710193634033203,
+          "gain_p10": 4.99699592590332,
+          "cosine_median": -0.16304714977741241,
+          "cosine_p10": -0.09909092634916306
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.17265872657299042,
+          "gain_median": 0.185455322265625,
+          "gain_p10": 0.2314869910478592,
+          "cosine_median": -0.10340268909931183,
+          "cosine_p10": -0.021746404469013214
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 4,
+          "absolute_rmse": 0.07609377056360245,
+          "gain_median": 0.9992713332176208,
+          "gain_p10": 0.6044154763221741,
+          "cosine_median": -0.047945693135261536,
+          "cosine_p10": -0.1706884801387787
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 8,
+          "absolute_rmse": 0.0994005799293518,
+          "gain_median": 0.2679489850997925,
+          "gain_p10": 0.045959100127220154,
+          "cosine_median": -0.12478408962488174,
+          "cosine_p10": -0.5211500525474548
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 2,
+          "absolute_rmse": 0.11070533096790314,
+          "gain_median": 0.47920405864715576,
+          "gain_p10": 0.6943626403808594,
+          "cosine_median": -0.291390061378479,
+          "cosine_p10": -0.22985775768756866
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.18907178938388824,
+          "gain_median": 0.0241770651191473,
+          "gain_p10": 0.1642352193593979,
+          "cosine_median": -0.33442816138267517,
+          "cosine_p10": -0.24801160395145416
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 4,
+          "absolute_rmse": 0.102437824010849,
+          "gain_median": 0.18347325921058655,
+          "gain_p10": 0.09374795854091644,
+          "cosine_median": -0.12478408962488174,
+          "cosine_p10": -0.7072193026542664
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.027074554935097694,
+          "gain_median": 0.8818711638450623,
+          "gain_p10": 0.2546009123325348,
+          "cosine_median": 0.6754503846168518,
+          "cosine_p10": -0.7995560169219971
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.005844436585903168,
+          "gain_median": 1.0911498069763184,
+          "gain_p10": 1.005212664604187,
+          "cosine_median": 0.9222128987312317,
+          "cosine_p10": 0.7248029112815857
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.019307848066091537,
+          "gain_median": 0.5748583078384399,
+          "gain_p10": 0.2372840791940689,
+          "cosine_median": 0.5719624161720276,
+          "cosine_p10": -0.6928018927574158
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.01258331909775734,
+          "gain_median": 0.6034284234046936,
+          "gain_p10": 0.3148026168346405,
+          "cosine_median": 0.9021021127700806,
+          "cosine_p10": 0.6431340575218201
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.03746553510427475,
+          "gain_median": 0.9786002039909363,
+          "gain_p10": 0.4895205795764923,
+          "cosine_median": 0.8545815348625183,
+          "cosine_p10": -0.8535808324813843
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.06337061524391174,
+          "gain_median": 0.6075707674026489,
+          "gain_p10": 0.22376781702041626,
+          "cosine_median": 0.7631275057792664,
+          "cosine_p10": -0.8390789031982422
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.018432533368468285,
+          "gain_median": 0.697604775428772,
+          "gain_p10": 0.4008699655532837,
+          "cosine_median": 0.9253548979759216,
+          "cosine_p10": 0.7189922332763672
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.052666984498500824,
+          "gain_median": 0.42882752418518066,
+          "gain_p10": 0.22376780211925507,
+          "cosine_median": 0.41907647252082825,
+          "cosine_p10": -0.8235098123550415
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.03444620966911316,
+          "gain_median": 0.5424917936325073,
+          "gain_p10": 0.2318815439939499,
+          "cosine_median": 0.7233164310455322,
+          "cosine_p10": 0.6624844074249268
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.08295296877622604,
+          "gain_median": 0.8820679783821106,
+          "gain_p10": 0.384263813495636,
+          "cosine_median": 0.874542772769928,
+          "cosine_p10": -0.7547719478607178
+        }
+      }
+    },
+    "269": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 8,
+          "absolute_rmse": 0.10802771896123886,
+          "gain_median": 0.9993559718132019,
+          "gain_p10": 0.3599570095539093,
+          "cosine_median": -0.049025751650333405,
+          "cosine_p10": -0.18186652660369873
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 2,
+          "absolute_rmse": 0.244805246591568,
+          "gain_median": 4.707489490509033,
+          "gain_p10": 4.994019031524658,
+          "cosine_median": -0.16450545191764832,
+          "cosine_p10": -0.10033444315195084
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.17225472629070282,
+          "gain_median": 0.1855907142162323,
+          "gain_p10": 0.23161496222019196,
+          "cosine_median": -0.10463398694992065,
+          "cosine_p10": -0.02276902087032795
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 4,
+          "absolute_rmse": 0.07593723386526108,
+          "gain_median": 0.9993559718132019,
+          "gain_p10": 0.6040865778923035,
+          "cosine_median": -0.049025751650333405,
+          "cosine_p10": -0.1703706979751587
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 8,
+          "absolute_rmse": 0.09919944405555725,
+          "gain_median": 0.2676318883895874,
+          "gain_p10": 0.04597277194261551,
+          "cosine_median": -0.12359941750764847,
+          "cosine_p10": -0.5215208530426025
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 2,
+          "absolute_rmse": 0.11041688174009323,
+          "gain_median": 0.4793081283569336,
+          "gain_p10": 0.6942659616470337,
+          "cosine_median": -0.2912244200706482,
+          "cosine_p10": -0.22963298857212067
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.1886325627565384,
+          "gain_median": 0.02420053444802761,
+          "gain_p10": 0.1642514169216156,
+          "cosine_median": -0.33496013283729553,
+          "cosine_p10": -0.24849218130111694
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 4,
+          "absolute_rmse": 0.10227877646684647,
+          "gain_median": 0.18336105346679688,
+          "gain_p10": 0.0937209278345108,
+          "cosine_median": -0.12359941750764847,
+          "cosine_p10": -0.7068602442741394
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.018855785951018333,
+          "gain_median": 0.8970726728439331,
+          "gain_p10": 0.3508821427822113,
+          "cosine_median": 0.8697879314422607,
+          "cosine_p10": -0.6586545705795288
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.005664154887199402,
+          "gain_median": 1.3121358156204224,
+          "gain_p10": 1.0281213521957397,
+          "cosine_median": 0.9493167996406555,
+          "cosine_p10": 0.6300992369651794
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.012030490674078465,
+          "gain_median": 0.6275367736816406,
+          "gain_p10": 0.41761353611946106,
+          "cosine_median": 0.7045508623123169,
+          "cosine_p10": -0.50626540184021
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.011025863699615002,
+          "gain_median": 0.8994141221046448,
+          "gain_p10": 0.3812202513217926,
+          "cosine_median": 0.7218506336212158,
+          "cosine_p10": 0.3390325605869293
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.026396362110972404,
+          "gain_median": 1.0202269554138184,
+          "gain_p10": 0.40495893359184265,
+          "cosine_median": 0.8963044881820679,
+          "cosine_p10": -0.8655390739440918
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.046702489256858826,
+          "gain_median": 0.7403707504272461,
+          "gain_p10": 0.21880339086055756,
+          "cosine_median": 0.7493733763694763,
+          "cosine_p10": 0.17978280782699585
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.020441997796297073,
+          "gain_median": 0.884875476360321,
+          "gain_p10": 0.3276737332344055,
+          "cosine_median": 0.6214512586593628,
+          "cosine_p10": 0.31520000100135803
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.03665339574217796,
+          "gain_median": 0.4147144854068756,
+          "gain_p10": 0.22717250883579254,
+          "cosine_median": 0.735632598400116,
+          "cosine_p10": 0.4946304261684418
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.028029080480337143,
+          "gain_median": 0.6147668361663818,
+          "gain_p10": 0.2769540548324585,
+          "cosine_median": 0.7705776691436768,
+          "cosine_p10": 0.7557346820831299
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.06156805157661438,
+          "gain_median": 0.887117326259613,
+          "gain_p10": 0.33186760544776917,
+          "cosine_median": 0.6742007732391357,
+          "cosine_p10": -0.22374208271503448
+        }
+      }
+    },
+    "270": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 11,
+          "absolute_rmse": 0.16281229257583618,
+          "gain_median": 1.0124183893203735,
+          "gain_p10": 0.3686758279800415,
+          "cosine_median": 0.4780098795890808,
+          "cosine_p10": -0.1652045100927353
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.25276198983192444,
+          "gain_median": 4.704926490783691,
+          "gain_p10": 1.2359260320663452,
+          "cosine_median": -0.021720051765441895,
+          "cosine_p10": -0.13650761544704437
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.17185592651367188,
+          "gain_median": 0.1857271045446396,
+          "gain_p10": 0.2317434400320053,
+          "cosine_median": -0.10584913194179535,
+          "cosine_p10": -0.02378271333873272
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 6,
+          "absolute_rmse": 0.2035166323184967,
+          "gain_median": 1.0124183893203735,
+          "gain_p10": 0.7168075442314148,
+          "cosine_median": 0.966949999332428,
+          "cosine_p10": -0.1356315314769745
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 11,
+          "absolute_rmse": 0.40497153997421265,
+          "gain_median": 0.47932401299476624,
+          "gain_p10": 0.055309269577264786,
+          "cosine_median": -0.12211412191390991,
+          "cosine_p10": -0.539169430732727
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.22096936404705048,
+          "gain_median": 2.627357006072998,
+          "gain_p10": 0.9089305996894836,
+          "cosine_median": -0.29100075364112854,
+          "cosine_p10": -0.34643301367759705
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.18820007145404816,
+          "gain_median": 0.02423090487718582,
+          "gain_p10": 0.1642674207687378,
+          "cosine_median": -0.3357835114002228,
+          "cosine_p10": -0.24923908710479736
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 6,
+          "absolute_rmse": 0.6176819801330566,
+          "gain_median": 0.18326346576213837,
+          "gain_p10": 0.07110220193862915,
+          "cosine_median": -0.12211412191390991,
+          "cosine_p10": -0.7480148077011108
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.06560539454221725,
+          "gain_median": 0.7721835970878601,
+          "gain_p10": 0.17957089841365814,
+          "cosine_median": 0.79802006483078,
+          "cosine_p10": -0.2211868166923523
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.005738957319408655,
+          "gain_median": 1.2384066581726074,
+          "gain_p10": 1.0581154823303223,
+          "cosine_median": 0.9835546612739563,
+          "cosine_p10": 0.7210580706596375
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.01134302094578743,
+          "gain_median": 0.4766557216644287,
+          "gain_p10": 0.29740092158317566,
+          "cosine_median": 0.79802006483078,
+          "cosine_p10": -0.2211868315935135
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.009391490370035172,
+          "gain_median": 0.7721835970878601,
+          "gain_p10": 0.35692137479782104,
+          "cosine_median": 0.5125870108604431,
+          "cosine_p10": 0.3785908818244934
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.1021818146109581,
+          "gain_median": 0.7793211340904236,
+          "gain_p10": 0.1722095012664795,
+          "cosine_median": 0.6843332648277283,
+          "cosine_p10": -0.6641239523887634
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.1532958298921585,
+          "gain_median": 0.6914717555046082,
+          "gain_p10": 0.1928895115852356,
+          "cosine_median": 0.6887995004653931,
+          "cosine_p10": -0.37461042404174805
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.018959881737828255,
+          "gain_median": 0.6914717555046082,
+          "gain_p10": 0.4808926284313202,
+          "cosine_median": 0.957870602607727,
+          "cosine_p10": 0.672767162322998
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.03324028477072716,
+          "gain_median": 0.6467682123184204,
+          "gain_p10": 0.2014864832162857,
+          "cosine_median": 0.6475515961647034,
+          "cosine_p10": -0.11288347095251083
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.019980713725090027,
+          "gain_median": 0.8600013852119446,
+          "gain_p10": 0.38371720910072327,
+          "cosine_median": 0.7211377620697021,
+          "cosine_p10": 0.6854232549667358
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.2379484474658966,
+          "gain_median": 0.8752787113189697,
+          "gain_p10": 0.20317964255809784,
+          "cosine_median": 0.5690277218818665,
+          "cosine_p10": -0.4628393054008484
+        }
+      }
+    },
+    "271": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 12,
+          "absolute_rmse": 0.16481977701187134,
+          "gain_median": 0.9477458596229553,
+          "gain_p10": 0.3749575912952423,
+          "cosine_median": 0.4788166582584381,
+          "cosine_p10": -0.16111624240875244
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.2522040903568268,
+          "gain_median": 4.702672004699707,
+          "gain_p10": 1.2352793216705322,
+          "cosine_median": -0.022453047335147858,
+          "cosine_p10": -0.13819096982479095
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.17146021127700806,
+          "gain_median": 0.18586714565753937,
+          "gain_p10": 0.23187661170959473,
+          "cosine_median": -0.10703346133232117,
+          "cosine_p10": -0.02477056346833706
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 7,
+          "absolute_rmse": 0.207713320851326,
+          "gain_median": 0.9995012879371643,
+          "gain_p10": 0.4675975441932678,
+          "cosine_median": 0.975100040435791,
+          "cosine_p10": -0.11858657747507095
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 12,
+          "absolute_rmse": 0.40910282731056213,
+          "gain_median": 0.4794417917728424,
+          "gain_p10": 0.05847300961613655,
+          "cosine_median": -0.12095905095338821,
+          "cosine_p10": -0.521847128868103
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.2205326110124588,
+          "gain_median": 2.6255125999450684,
+          "gain_p10": 0.9086559414863586,
+          "cosine_median": -0.29076746106147766,
+          "cosine_p10": -0.3472021222114563
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.18777090311050415,
+          "gain_median": 0.02425420843064785,
+          "gain_p10": 0.1642753928899765,
+          "cosine_median": -0.3369244933128357,
+          "cosine_p10": -0.25027117133140564
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 7,
+          "absolute_rmse": 0.6244227290153503,
+          "gain_median": 0.26695460081100464,
+          "gain_p10": 0.07424699515104294,
+          "cosine_median": 0.02292216569185257,
+          "cosine_p10": -0.7065526843070984
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.024339523166418076,
+          "gain_median": 0.8898401856422424,
+          "gain_p10": 0.3742944598197937,
+          "cosine_median": 0.8734922409057617,
+          "cosine_p10": -0.0987294614315033
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.01169222965836525,
+          "gain_median": 0.8898056745529175,
+          "gain_p10": 0.6855916380882263,
+          "cosine_median": 0.978880763053894,
+          "cosine_p10": 0.5362957119941711
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.01038812194019556,
+          "gain_median": 0.6697894930839539,
+          "gain_p10": 0.4775800406932831,
+          "cosine_median": 0.8053085207939148,
+          "cosine_p10": -0.09872946888208389
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.00677092932164669,
+          "gain_median": 0.8201255202293396,
+          "gain_p10": 0.4048908054828644,
+          "cosine_median": 0.6951786279678345,
+          "cosine_p10": 0.6408032178878784
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.036235056817531586,
+          "gain_median": 0.9734396934509277,
+          "gain_p10": 0.428253710269928,
+          "cosine_median": 0.898298442363739,
+          "cosine_p10": -0.5830549597740173
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.07164476811885834,
+          "gain_median": 0.7730203866958618,
+          "gain_p10": 0.26718243956565857,
+          "cosine_median": 0.7420158386230469,
+          "cosine_p10": -0.3199724555015564
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.02791721560060978,
+          "gain_median": 0.609990656375885,
+          "gain_p10": 0.4123457670211792,
+          "cosine_median": 0.9180864691734314,
+          "cosine_p10": 0.7772299647331238
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.025380510836839676,
+          "gain_median": 0.7295000553131104,
+          "gain_p10": 0.26718243956565857,
+          "cosine_median": 0.6400314569473267,
+          "cosine_p10": -0.2901340126991272
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.018199505284428596,
+          "gain_median": 0.7039379477500916,
+          "gain_p10": 0.37862280011177063,
+          "cosine_median": 0.6170387268066406,
+          "cosine_p10": 0.3240578770637512
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.10843717306852341,
+          "gain_median": 0.8477912545204163,
+          "gain_p10": 0.36401182413101196,
+          "cosine_median": 0.9269649982452393,
+          "cosine_p10": -0.42811349034309387
+        }
+      }
+    },
+    "272": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 14,
+          "absolute_rmse": 0.1670570820569992,
+          "gain_median": 0.9478217363357544,
+          "gain_p10": 0.3682425022125244,
+          "cosine_median": 0.5207968950271606,
+          "cosine_p10": -0.14998288452625275
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.2516297996044159,
+          "gain_median": 4.700285911560059,
+          "gain_p10": 1.2345631122589111,
+          "cosine_median": -0.023229826241731644,
+          "cosine_p10": -0.13896076381206512
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.17106829583644867,
+          "gain_median": 0.18600505590438843,
+          "gain_p10": 0.23200705647468567,
+          "cosine_median": -0.10819146037101746,
+          "cosine_p10": -0.025732582435011864
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 9,
+          "absolute_rmse": 0.21232198178768158,
+          "gain_median": 0.968011736869812,
+          "gain_p10": 0.42026588320732117,
+          "cosine_median": 0.9750933647155762,
+          "cosine_p10": -0.08513709157705307
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 14,
+          "absolute_rmse": 0.41395705938339233,
+          "gain_median": 0.7455112934112549,
+          "gain_p10": 0.0647786408662796,
+          "cosine_median": 0.022238045930862427,
+          "cosine_p10": -0.48668840527534485
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.22011393308639526,
+          "gain_median": 2.6241607666015625,
+          "gain_p10": 0.9084431529045105,
+          "cosine_median": -0.2905718684196472,
+          "cosine_p10": -0.34796178340911865
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.18734554946422577,
+          "gain_median": 0.02426898665726185,
+          "gain_p10": 0.16427230834960938,
+          "cosine_median": -0.3377417325973511,
+          "cosine_p10": -0.25101327896118164
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 9,
+          "absolute_rmse": 0.6323211193084717,
+          "gain_median": 0.7455112934112549,
+          "gain_p10": 0.08053463697433472,
+          "cosine_median": 0.3153028190135956,
+          "cosine_p10": -0.6233659386634827
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.02511114440858364,
+          "gain_median": 1.0055651664733887,
+          "gain_p10": 0.36879998445510864,
+          "cosine_median": 0.8481298685073853,
+          "cosine_p10": -0.41774317622184753
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.008430280722677708,
+          "gain_median": 2.3649473190307617,
+          "gain_p10": 1.3498953580856323,
+          "cosine_median": 0.9173679947853088,
+          "cosine_p10": 0.16579069197177887
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.02191866748034954,
+          "gain_median": 0.5591192245483398,
+          "gain_p10": 0.3673981726169586,
+          "cosine_median": 0.8542595505714417,
+          "cosine_p10": -0.7076891660690308
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.005821095313876867,
+          "gain_median": 0.7645427584648132,
+          "gain_p10": 0.4812755286693573,
+          "cosine_median": 0.7378005385398865,
+          "cosine_p10": 0.4924863874912262
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.03289182856678963,
+          "gain_median": 1.1643648147583008,
+          "gain_p10": 0.7592261433601379,
+          "cosine_median": 0.9061429500579834,
+          "cosine_p10": -0.3435960114002228
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.08487187325954437,
+          "gain_median": 0.7669605016708374,
+          "gain_p10": 0.30925479531288147,
+          "cosine_median": 0.7607160806655884,
+          "cosine_p10": -0.10046719014644623
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.02318517304956913,
+          "gain_median": 0.8091933727264404,
+          "gain_p10": 0.6224527955055237,
+          "cosine_median": 0.21173247694969177,
+          "cosine_p10": -0.4948628842830658
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.07236002385616302,
+          "gain_median": 0.7082347273826599,
+          "gain_p10": 0.26867300271987915,
+          "cosine_median": 0.778944730758667,
+          "cosine_p10": 0.4731754660606384
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.016680069267749786,
+          "gain_median": 0.576220691204071,
+          "gain_p10": 0.513157308101654,
+          "cosine_median": 0.29438650608062744,
+          "cosine_p10": 0.10848080366849899
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.11264180392026901,
+          "gain_median": 0.9254226088523865,
+          "gain_p10": 0.35057663917541504,
+          "cosine_median": 0.9247475266456604,
+          "cosine_p10": -0.3759801685810089
+        }
+      }
+    },
+    "273": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 14,
+          "absolute_rmse": 0.16672882437705994,
+          "gain_median": 0.9479002356529236,
+          "gain_p10": 0.3680254817008972,
+          "cosine_median": 0.5207153558731079,
+          "cosine_p10": -0.15148915350437164
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.25107628107070923,
+          "gain_median": 4.698319435119629,
+          "gain_p10": 1.2339417934417725,
+          "cosine_median": -0.024188406765460968,
+          "cosine_p10": -0.14051112532615662
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.17067858576774597,
+          "gain_median": 0.18615621328353882,
+          "gain_p10": 0.23214881122112274,
+          "cosine_median": -0.10924963653087616,
+          "cosine_p10": -0.026607168838381767
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 9,
+          "absolute_rmse": 0.2119341939687729,
+          "gain_median": 0.9679647088050842,
+          "gain_p10": 0.4199632406234741,
+          "cosine_median": 0.9750872850418091,
+          "cosine_p10": -0.0856994241476059
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 14,
+          "absolute_rmse": 0.4134465754032135,
+          "gain_median": 0.7451891899108887,
+          "gain_p10": 0.06477627158164978,
+          "cosine_median": 0.021059446036815643,
+          "cosine_p10": -0.4873954951763153
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.2196836918592453,
+          "gain_median": 2.62246036529541,
+          "gain_p10": 0.9081795811653137,
+          "cosine_median": -0.2903805375099182,
+          "cosine_p10": -0.34886547923088074
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.18692505359649658,
+          "gain_median": 0.024287527427077293,
+          "gain_p10": 0.16426803171634674,
+          "cosine_median": -0.3385905921459198,
+          "cosine_p10": -0.25178658962249756
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 9,
+          "absolute_rmse": 0.6315714120864868,
+          "gain_median": 0.7451891899108887,
+          "gain_p10": 0.0805126503109932,
+          "cosine_median": 0.3153642416000366,
+          "cosine_p10": -0.623768150806427
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.029672926291823387,
+          "gain_median": 0.9553289413452148,
+          "gain_p10": 0.439387708902359,
+          "cosine_median": 0.8916684985160828,
+          "cosine_p10": 0.09616538137197495
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.006969069596379995,
+          "gain_median": 2.25534725189209,
+          "gain_p10": 1.1444995403289795,
+          "cosine_median": 0.9603469371795654,
+          "cosine_p10": -0.13327263295650482
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.027629876509308815,
+          "gain_median": 0.554336667060852,
+          "gain_p10": 0.33914026618003845,
+          "cosine_median": 0.8894321918487549,
+          "cosine_p10": 0.19732612371444702
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.005703606642782688,
+          "gain_median": 0.7916153073310852,
+          "gain_p10": 0.6776405572891235,
+          "cosine_median": 0.5241562128067017,
+          "cosine_p10": 0.2197774052619934
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.037966277450323105,
+          "gain_median": 0.9844962358474731,
+          "gain_p10": 0.5531437397003174,
+          "cosine_median": 0.955743670463562,
+          "cosine_p10": 0.6061002612113953
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.11120561510324478,
+          "gain_median": 0.8349189758300781,
+          "gain_p10": 0.37210163474082947,
+          "cosine_median": 0.8156936764717102,
+          "cosine_p10": 0.13320155441761017
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.013133185915648937,
+          "gain_median": 1.1184810400009155,
+          "gain_p10": 0.8223634362220764,
+          "cosine_median": 0.8537877798080444,
+          "cosine_p10": 0.6907959580421448
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.16983702778816223,
+          "gain_median": 0.6309289932250977,
+          "gain_p10": 0.2966890037059784,
+          "cosine_median": 0.7946587800979614,
+          "cosine_p10": 0.167391836643219
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.012606251984834671,
+          "gain_median": 0.7115570902824402,
+          "gain_p10": 0.6129458546638489,
+          "cosine_median": 0.10398107767105103,
+          "cosine_p10": -0.07661127299070358
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.061045728623867035,
+          "gain_median": 0.9503030180931091,
+          "gain_p10": 0.623603880405426,
+          "cosine_median": 0.9374169707298279,
+          "cosine_p10": 0.4038204848766327
+        }
+      }
+    },
+    "274": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 15,
+          "absolute_rmse": 0.17015346884727478,
+          "gain_median": 0.9479469656944275,
+          "gain_p10": 0.3679305613040924,
+          "cosine_median": 0.5205808877944946,
+          "cosine_p10": -0.14647221565246582
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.25051167607307434,
+          "gain_median": 4.696227073669434,
+          "gain_p10": 1.2333605289459229,
+          "cosine_median": -0.025148466229438782,
+          "cosine_p10": -0.14151440560817719
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.17029154300689697,
+          "gain_median": 0.18631155788898468,
+          "gain_p10": 0.23229637742042542,
+          "cosine_median": -0.11027167737483978,
+          "cosine_p10": -0.02745155803859234
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 10,
+          "absolute_rmse": 0.2187737375497818,
+          "gain_median": 0.9479469656944275,
+          "gain_p10": 0.4259604215621948,
+          "cosine_median": 0.9674046635627747,
+          "cosine_p10": -0.06988978385925293
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 15,
+          "absolute_rmse": 0.41631123423576355,
+          "gain_median": 1.348166584968567,
+          "gain_p10": 0.06791388988494873,
+          "cosine_median": 0.31540411710739136,
+          "cosine_p10": -0.47038963437080383
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.21926653385162354,
+          "gain_median": 2.621243476867676,
+          "gain_p10": 0.9080377817153931,
+          "cosine_median": -0.29013288021087646,
+          "cosine_p10": -0.3497920334339142
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.1865050494670868,
+          "gain_median": 0.024320857599377632,
+          "gain_p10": 0.16427434980869293,
+          "cosine_median": -0.33901193737983704,
+          "cosine_p10": -0.2521730661392212
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 10,
+          "absolute_rmse": 0.6362577676773071,
+          "gain_median": 0.7448578476905823,
+          "gain_p10": 0.08363347500562668,
+          "cosine_median": 0.31540411710739136,
+          "cosine_p10": -0.5824490785598755
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.054896242916584015,
+          "gain_median": 0.9072697162628174,
+          "gain_p10": 0.42932698130607605,
+          "cosine_median": 0.8559160828590393,
+          "cosine_p10": 0.05985803157091141
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.007851672358810902,
+          "gain_median": 1.3719449043273926,
+          "gain_p10": 1.029532790184021,
+          "cosine_median": 0.6561691761016846,
+          "cosine_p10": 0.37551480531692505
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.071879081428051,
+          "gain_median": 0.5229233503341675,
+          "gain_p10": 0.35947081446647644,
+          "cosine_median": 0.8326219916343689,
+          "cosine_p10": -0.018995247781276703
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.005477115511894226,
+          "gain_median": 0.8693721294403076,
+          "gain_p10": 0.640935480594635,
+          "cosine_median": 0.5132696628570557,
+          "cosine_p10": 0.1767875850200653
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.051239218562841415,
+          "gain_median": 0.9072697162628174,
+          "gain_p10": 0.4933234453201294,
+          "cosine_median": 0.9523335099220276,
+          "cosine_p10": 0.7523245811462402
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.13011571764945984,
+          "gain_median": 0.753821849822998,
+          "gain_p10": 0.3795841336250305,
+          "cosine_median": 0.7745074033737183,
+          "cosine_p10": 0.29575133323669434
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.017504489049315453,
+          "gain_median": 0.7405394315719604,
+          "gain_p10": 0.45451265573501587,
+          "cosine_median": 0.677300751209259,
+          "cosine_p10": 0.3686746656894684
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.19635729491710663,
+          "gain_median": 0.6425973176956177,
+          "gain_p10": 0.3821242153644562,
+          "cosine_median": 0.7935029864311218,
+          "cosine_p10": 0.3412732779979706
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.013230818323791027,
+          "gain_median": 0.7089968919754028,
+          "gain_p10": 0.42936718463897705,
+          "cosine_median": 0.49410146474838257,
+          "cosine_p10": -0.37442779541015625
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.07719583809375763,
+          "gain_median": 0.9449282884597778,
+          "gain_p10": 0.5365236401557922,
+          "cosine_median": 0.7745074033737183,
+          "cosine_p10": 0.3440661132335663
+        }
+      }
+    },
+    "275": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 16,
+          "absolute_rmse": 0.1710021048784256,
+          "gain_median": 0.948016881942749,
+          "gain_p10": 0.36785560846328735,
+          "cosine_median": 0.5206462740898132,
+          "cosine_p10": -0.14180514216423035
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.24996285140514374,
+          "gain_median": 4.694498538970947,
+          "gain_p10": 1.2328182458877563,
+          "cosine_median": -0.02597784250974655,
+          "cosine_p10": -0.14301356673240662
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.16990938782691956,
+          "gain_median": 0.18645676970481873,
+          "gain_p10": 0.23243433237075806,
+          "cosine_median": -0.11133776605129242,
+          "cosine_p10": -0.028337659314274788
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 11,
+          "absolute_rmse": 0.22063091397285461,
+          "gain_median": 0.9679465889930725,
+          "gain_p10": 0.43185487389564514,
+          "cosine_median": 0.9750627279281616,
+          "cosine_p10": -0.05427075922489166
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 16,
+          "absolute_rmse": 0.43182826042175293,
+          "gain_median": 0.7446008920669556,
+          "gain_p10": 0.07104763388633728,
+          "cosine_median": 0.018628664314746857,
+          "cosine_p10": -0.4905872344970703
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.21884234249591827,
+          "gain_median": 2.6197638511657715,
+          "gain_p10": 0.90781170129776,
+          "cosine_median": -0.2898786664009094,
+          "cosine_p10": -0.3505485951900482
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 2,
+          "absolute_rmse": 0.18609122931957245,
+          "gain_median": 0.024342063814401627,
+          "gain_p10": 0.16426634788513184,
+          "cosine_median": -0.34001314640045166,
+          "cosine_p10": -0.2530844509601593
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 11,
+          "absolute_rmse": 0.6612938642501831,
+          "gain_median": 0.7446008920669556,
+          "gain_p10": 0.08674647659063339,
+          "cosine_median": 0.31545448303222656,
+          "cosine_p10": -0.5413349866867065
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.0658537968993187,
+          "gain_median": 0.8338772058486938,
+          "gain_p10": 0.43596479296684265,
+          "cosine_median": 0.8938501477241516,
+          "cosine_p10": 0.1306268721818924
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.009840453043580055,
+          "gain_median": 2.907888889312744,
+          "gain_p10": 1.841111660003662,
+          "cosine_median": 0.8938501477241516,
+          "cosine_p10": -0.49815505743026733
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.08361604809761047,
+          "gain_median": 0.6091122627258301,
+          "gain_p10": 0.21811653673648834,
+          "cosine_median": 0.7409085035324097,
+          "cosine_p10": 0.2720644772052765
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.005833701230585575,
+          "gain_median": 0.7801375985145569,
+          "gain_p10": 0.6089997291564941,
+          "cosine_median": 0.19239553809165955,
+          "cosine_p10": 0.1443532407283783
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.064717598259449,
+          "gain_median": 0.855635404586792,
+          "gain_p10": 0.5930168628692627,
+          "cosine_median": 0.9405384659767151,
+          "cosine_p10": 0.5934224128723145
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.16592904925346375,
+          "gain_median": 0.7761588096618652,
+          "gain_p10": 0.3500328063964844,
+          "cosine_median": 0.8656210899353027,
+          "cosine_p10": 0.4142363667488098
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.015730813145637512,
+          "gain_median": 1.0190051794052124,
+          "gain_p10": 0.740907609462738,
+          "cosine_median": 0.5551185607910156,
+          "cosine_p10": 0.4412887692451477
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.21156948804855347,
+          "gain_median": 0.5150235891342163,
+          "gain_p10": 0.3403424024581909,
+          "cosine_median": 0.783674418926239,
+          "cosine_p10": 0.42202267050743103
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.0069946302101016045,
+          "gain_median": 0.7914126515388489,
+          "gain_p10": 0.5559002161026001,
+          "cosine_median": 0.8975740075111389,
+          "cosine_p10": 0.5517001152038574
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.16242407262325287,
+          "gain_median": 0.7761588096618652,
+          "gain_p10": 0.5454707145690918,
+          "cosine_median": 0.8687793016433716,
+          "cosine_p10": 0.5453476905822754
+        }
+      }
+    },
+    "276": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 17,
+          "absolute_rmse": 0.17086030542850494,
+          "gain_median": 0.9480772018432617,
+          "gain_p10": 0.3677919805049896,
+          "cosine_median": 0.7194070219993591,
+          "cosine_p10": -0.13674473762512207
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.24940142035484314,
+          "gain_median": 4.6927313804626465,
+          "gain_p10": 1.2322510480880737,
+          "cosine_median": -0.026801275089383125,
+          "cosine_p10": -0.14401359856128693
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 3,
+          "absolute_rmse": 0.17110690474510193,
+          "gain_median": 0.6462970972061157,
+          "gain_p10": 0.278543084859848,
+          "cosine_median": 0.7194070219993591,
+          "cosine_p10": 0.05399063974618912
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 11,
+          "absolute_rmse": 0.22022196650505066,
+          "gain_median": 0.9678953289985657,
+          "gain_p10": 0.4313695430755615,
+          "cosine_median": 0.9750474691390991,
+          "cosine_p10": -0.05510254204273224
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 17,
+          "absolute_rmse": 0.4316759705543518,
+          "gain_median": 0.7443518042564392,
+          "gain_p10": 0.07417180389165878,
+          "cosine_median": 0.0176585353910923,
+          "cosine_p10": -0.48048660159111023
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.21842974424362183,
+          "gain_median": 2.6185765266418457,
+          "gain_p10": 0.9076741337776184,
+          "cosine_median": -0.289711594581604,
+          "cosine_p10": -0.35131484270095825
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 3,
+          "absolute_rmse": 0.19300726056098938,
+          "gain_median": 0.0926458016037941,
+          "gain_p10": 0.03801830857992172,
+          "cosine_median": -0.010662596672773361,
+          "cosine_p10": -0.2749532163143158
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 11,
+          "absolute_rmse": 0.6604701280593872,
+          "gain_median": 0.7443518042564392,
+          "gain_p10": 0.08671548962593079,
+          "cosine_median": 0.315570592880249,
+          "cosine_p10": -0.5416953563690186
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.06376305222511292,
+          "gain_median": 0.7983750700950623,
+          "gain_p10": 0.36083677411079407,
+          "cosine_median": 0.8624085783958435,
+          "cosine_p10": -0.18311958014965057
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.010194886475801468,
+          "gain_median": 2.7720980644226074,
+          "gain_p10": 1.9079338312149048,
+          "cosine_median": 0.8624085783958435,
+          "cosine_p10": -0.5415742993354797
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.07691045105457306,
+          "gain_median": 0.6885311007499695,
+          "gain_p10": 0.20696225762367249,
+          "cosine_median": 0.7185792326927185,
+          "cosine_p10": 0.09263994544744492
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.0037681013345718384,
+          "gain_median": 0.79337477684021,
+          "gain_p10": 0.7337049245834351,
+          "cosine_median": 0.8023456931114197,
+          "cosine_p10": 0.08907236903905869
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.06722639501094818,
+          "gain_median": 0.8221079707145691,
+          "gain_p10": 0.40954187512397766,
+          "cosine_median": 0.8987489938735962,
+          "cosine_p10": -0.036480892449617386
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.21800576150417328,
+          "gain_median": 0.6726333498954773,
+          "gain_p10": 0.31129786372184753,
+          "cosine_median": 0.7973359823226929,
+          "cosine_p10": 0.4509611427783966
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.01581265963613987,
+          "gain_median": 0.9610884785652161,
+          "gain_p10": 0.7497536540031433,
+          "cosine_median": 0.5847626328468323,
+          "cosine_p10": 0.517682671546936
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.25777512788772583,
+          "gain_median": 0.5972608923912048,
+          "gain_p10": 0.27673810720443726,
+          "cosine_median": 0.6858062148094177,
+          "cosine_p10": 0.4519210457801819
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.006787531543523073,
+          "gain_median": 0.559653103351593,
+          "gain_p10": 0.4919818341732025,
+          "cosine_median": 0.7291203141212463,
+          "cosine_p10": 0.7276157140731812
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.23575375974178314,
+          "gain_median": 0.7153100967407227,
+          "gain_p10": 0.563673198223114,
+          "cosine_median": 0.8391574621200562,
+          "cosine_p10": 0.3655935227870941
+        }
+      }
+    },
+    "277": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 19,
+          "absolute_rmse": 0.17179438471794128,
+          "gain_median": 0.9481287598609924,
+          "gain_p10": 0.36791032552719116,
+          "cosine_median": 0.8969593048095703,
+          "cosine_p10": -0.12564685940742493
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.2488621473312378,
+          "gain_median": 4.691299915313721,
+          "gain_p10": 1.2318146228790283,
+          "cosine_median": -0.027992650866508484,
+          "cosine_p10": -0.1456955373287201
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.17157098650932312,
+          "gain_median": 0.6463654637336731,
+          "gain_p10": 0.32464948296546936,
+          "cosine_median": 0.7201294898986816,
+          "cosine_p10": 0.13674406707286835
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 12,
+          "absolute_rmse": 0.22203296422958374,
+          "gain_median": 0.9678440690040588,
+          "gain_p10": 0.4366111755371094,
+          "cosine_median": 0.9677397012710571,
+          "cosine_p10": -0.0408390574157238
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 19,
+          "absolute_rmse": 0.4412482976913452,
+          "gain_median": 0.7441123127937317,
+          "gain_p10": 0.08041994273662567,
+          "cosine_median": -0.01038328930735588,
+          "cosine_p10": -0.6167499423027039
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.21801859140396118,
+          "gain_median": 2.617384910583496,
+          "gain_p10": 0.9075530171394348,
+          "cosine_median": -0.28940024971961975,
+          "cosine_p10": -0.3523711860179901
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.021715179085731506
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.1970287710428238,
+          "gain_median": 0.0926499292254448,
+          "gain_p10": 0.04486613720655441,
+          "cosine_median": -0.1997879147529602,
+          "cosine_p10": -0.299117773771286
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 12,
+          "absolute_rmse": 0.6752131581306458,
+          "gain_median": 0.7441123127937317,
+          "gain_p10": 0.08845102041959763,
+          "cosine_median": 0.016671404242515564,
+          "cosine_p10": -0.8777403235435486
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.039714515209198,
+          "gain_median": 0.9338206648826599,
+          "gain_p10": 0.5500189661979675,
+          "cosine_median": 0.868994414806366,
+          "cosine_p10": -0.3760391175746918
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.011094744317233562,
+          "gain_median": 2.7022366523742676,
+          "gain_p10": 1.4517109394073486,
+          "cosine_median": 0.9401377439498901,
+          "cosine_p10": -0.4157429039478302
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.031193211674690247,
+          "gain_median": 0.7300721406936646,
+          "gain_p10": 0.33167600631713867,
+          "cosine_median": 0.8331917524337769,
+          "cosine_p10": 0.39288124442100525
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.004055576398968697,
+          "gain_median": 1.5338937044143677,
+          "gain_p10": 0.8889595866203308,
+          "cosine_median": 0.6664415597915649,
+          "cosine_p10": -0.12019962817430496
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.05432133749127388,
+          "gain_median": 0.9338206648826599,
+          "gain_p10": 0.6473358273506165,
+          "cosine_median": 0.8724353313446045,
+          "cosine_p10": 0.17199544608592987
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.09888575226068497,
+          "gain_median": 0.8249738812446594,
+          "gain_p10": 0.531652569770813,
+          "cosine_median": 0.7822105884552002,
+          "cosine_p10": 0.3178752362728119
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.013932815752923489,
+          "gain_median": 1.3617736101150513,
+          "gain_p10": 0.9957293272018433,
+          "cosine_median": 0.7822105884552002,
+          "cosine_p10": 0.6673739552497864
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.10233104974031448,
+          "gain_median": 0.6719614267349243,
+          "gain_p10": 0.3488931357860565,
+          "cosine_median": 0.8952027559280396,
+          "cosine_p10": 0.3208019733428955
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.005510257091373205,
+          "gain_median": 0.7451851963996887,
+          "gain_p10": 0.5977194309234619,
+          "cosine_median": 0.44128769636154175,
+          "cosine_p10": 0.3166883885860443
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.11978988349437714,
+          "gain_median": 0.8249738812446594,
+          "gain_p10": 0.6323143243789673,
+          "cosine_median": 0.7658682465553284,
+          "cosine_p10": 0.48725494742393494
+        }
+      }
+    },
+    "278": {
+      "measured_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 20,
+          "absolute_rmse": 0.1714518964290619,
+          "gain_median": 0.9481812119483948,
+          "gain_p10": 0.36796170473098755,
+          "cosine_median": 0.8972064256668091,
+          "cosine_p10": -0.12041614204645157
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.24830538034439087,
+          "gain_median": 4.689816474914551,
+          "gain_p10": 1.231345772743225,
+          "cosine_median": -0.028919657692313194,
+          "cosine_p10": -0.14664702117443085
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.17119307816028595,
+          "gain_median": 0.6464471817016602,
+          "gain_p10": 0.32477879524230957,
+          "cosine_median": 0.7208462953567505,
+          "cosine_p10": 0.13629192113876343
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.2216145545244217,
+          "gain_median": 0.9895786643028259,
+          "gain_p10": 0.44217923283576965,
+          "cosine_median": 0.9750325679779053,
+          "cosine_p10": -0.02626352570950985
+        }
+      },
+      "body_racket": {
+        "all": {
+          "rows": 32,
+          "supported": 20,
+          "absolute_rmse": 0.44101986289024353,
+          "gain_median": 0.7437732815742493,
+          "gain_p10": 0.08352449536323547,
+          "cosine_median": -0.010133050382137299,
+          "cosine_p10": -0.5797945857048035
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.2175992876291275,
+          "gain_median": 2.616150140762329,
+          "gain_p10": 0.9074273109436035,
+          "cosine_median": -0.289140909910202,
+          "cosine_p10": -0.35317671298980713
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.021691523492336273
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.19661682844161987,
+          "gain_median": 0.09265606850385666,
+          "gain_p10": 0.04488530382514,
+          "cosine_median": -0.19970229268074036,
+          "cosine_p10": -0.29951488971710205
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.674914538860321,
+          "gain_median": 0.7989909052848816,
+          "gain_p10": 0.09019062668085098,
+          "cosine_median": 0.015529300086200237,
+          "cosine_p10": -0.8404665589332581
+        }
+      },
+      "body_racket_linear": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.04573497548699379,
+          "gain_median": 0.930483877658844,
+          "gain_p10": 0.32273346185684204,
+          "cosine_median": 0.8624045848846436,
+          "cosine_p10": 0.09376069158315659
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.010105782188475132,
+          "gain_median": 2.5601601600646973,
+          "gain_p10": 1.4439656734466553,
+          "cosine_median": 0.869209885597229,
+          "cosine_p10": -0.41116863489151
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.03414415195584297,
+          "gain_median": 0.7445619702339172,
+          "gain_p10": 0.2509966194629669,
+          "cosine_median": 0.7657209634780884,
+          "cosine_p10": 0.42315399646759033
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.004414122086018324,
+          "gain_median": 0.6034359931945801,
+          "gain_p10": 0.5030850768089294,
+          "cosine_median": 0.9014438390731812,
+          "cosine_p10": 0.6794077754020691
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.06358508765697479,
+          "gain_median": 0.930483877658844,
+          "gain_p10": 0.3509587347507477,
+          "cosine_median": 0.8780410289764404,
+          "cosine_p10": -0.09469783306121826
+        }
+      },
+      "body_racket_angular": {
+        "all": {
+          "rows": 32,
+          "supported": 32,
+          "absolute_rmse": 0.13518276810646057,
+          "gain_median": 0.8383585810661316,
+          "gain_p10": 0.37807750701904297,
+          "cosine_median": 0.8106800317764282,
+          "cosine_p10": 0.041235677897930145
+        },
+        "manifold_switch": {
+          "rows": 3,
+          "supported": 3,
+          "absolute_rmse": 0.012075907550752163,
+          "gain_median": 1.3787696361541748,
+          "gain_p10": 0.824755072593689,
+          "cosine_median": 0.7497587203979492,
+          "cosine_p10": 0.3163968026638031
+        },
+        "no_contact": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.10308779031038284,
+          "gain_median": 0.7388718128204346,
+          "gain_p10": 0.3366278111934662,
+          "cosine_median": 0.8029353618621826,
+          "cosine_p10": 0.30152320861816406
+        },
+        "racket_stable": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.00541984336450696,
+          "gain_median": 0.9038411378860474,
+          "gain_p10": 0.644353449344635,
+          "cosine_median": 0.8106800317764282,
+          "cosine_p10": 0.1890973448753357
+        },
+        "toi_switch": {
+          "rows": 13,
+          "supported": 13,
+          "absolute_rmse": 0.18743205070495605,
+          "gain_median": 0.8383585810661316,
+          "gain_p10": 0.4079105257987976,
+          "cosine_median": 0.8381925821304321,
+          "cosine_p10": 0.08774413913488388
+        }
+      }
+    }
+  },
+  "policy_updates": 0,
+  "contact_gradients_admitted": false
+}
