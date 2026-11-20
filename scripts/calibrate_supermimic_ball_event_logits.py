@@ -12,11 +12,51 @@ from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
 
 
+@torch.enable_grad()
+def fit_racket_readout(sets, hidden, slope, bias):
+    """Calibrate one existing mode against the measured outgoing velocity in m/s."""
+    adjustment = torch.zeros_like(hidden['pre'][0]).requires_grad_()
+    opt = torch.optim.LBFGS([adjustment], max_iter=45, line_search_fn='strong_wolfe')
+    cached = {}
+    for name, (logits, responses, target) in sets.items():
+        # Aggregate the unaffected four modes into their conditional expected response.
+        scaled = slope*logits
+        others = scaled[:, [0,2,3,4]]
+        other_velocity = (others.softmax(-1)[:, 1:, None]*responses[:, 1:]).sum(1)
+        cached[name] = (scaled[:,1]+bias-others.logsumexp(-1), other_velocity,
+                        responses[:,0]-other_velocity, target)
+    def errors():
+        values = {}
+        for name,(odds, base, change, target) in cached.items():
+            p = (odds + hidden[name] @ adjustment).sigmoid()
+            values[name] = (base+p[:,None]*change-target).square().mean(-1)
+        return values
+    def close():
+        opt.zero_grad()
+        err = errors()
+        # Protect ordinary motion and true strikes alongside the pre-impact tail.
+        pre = err['pre']
+        loss = (pre.mean() + pre.topk(max(1,len(pre)//5)).values.mean()
+                + err['edge'].mean() + err['ordinary'].mean() + err['post'].mean()
+                + adjustment.square().sum())
+        loss.backward()
+        return loss
+    opt.step(close)
+    values = errors()
+    if not all(torch.isfinite(e).all() for e in values.values()):
+        raise ValueError('Nonfinite measured ball readout error')
+    return adjustment.detach(), dict(trainable='existing racket gate output row',
+        after_rmse_mps={k:float(e.detach().mean().sqrt()) for k,e in values.items()},
+        row_change_l2=float(adjustment.detach().norm()))
+
+
 @torch.no_grad()
 def main():
     cli = argparse.ArgumentParser(description=__doc__)
     for key in ('body','ball','packed','output'):
         cli.add_argument('--'+key,required=True,type=Path)
+    cli.add_argument('--fit-racket-readout',action='store_true',
+                     help='Fit the existing racket logit row on measured deviations, including difficult pre-contact frames')
     a=cli.parse_args()
     torch.set_num_threads(3)
     body=torch.load(a.body,map_location='cpu',weights_only=True)
@@ -49,6 +89,7 @@ def main():
     post=torch.zeros_like(hit);post[1:]=same & hit[:-1] & ~hit[1:]
     groups={'pre':pre,'edge':hit,'post':post,'ordinary':~(pre|hit|post)}
     sets={}
+    hidden={}
     generator=torch.Generator().manual_seed(20261121)
     for name,mask in groups.items():
         indices=(valid & mask).nonzero()
@@ -56,16 +97,20 @@ def main():
             indices=indices[torch.randperm(len(indices),generator=generator)[:4096]]
         if not len(indices):raise ValueError('Missing measured training events in '+name)
         joined=[]
+        encoded=[]
         for batch in indices.split(256):
             t,l=batch.T
             state=data['state'][t,l].to(device)
             features=ball.normalized(ball_geometry_features(state,world.geometry))
-            logits=ball.gate(features)
+            representation=ball.gate.net[:-1](features)
+            logits=ball.gate.net[-1](representation)
+            encoded.append(representation)
             response=(ball.response(features).reshape(-1,4,6)*ball.residual_scale)[:,:,3:]
             _,free_v=world.flight(state[:,49:52],state[:,52:55])
             target=data['next_state'][t,l,52:55].to(device)-free_v
             joined.append((logits,response,target))
         sets[name]=tuple(torch.cat(x) for x in zip(*joined))
+        hidden[name]=torch.cat(encoded)
     def scores(slope,bias):
         result={}
         for name,(logits,response,target) in sets.items():
@@ -89,7 +134,13 @@ def main():
     _,slope,bias,errors=best
     last=ball.gate.net[-1]
     last.weight.mul_(slope);last.bias.mul_(slope);last.bias[1]+=bias
-    info=dict(source_ball_sha256=digest(a.ball),fitted_body_sha256=digest(a.body),
+    tail_fit = None
+    if a.fit_racket_readout:
+        adjustment, stats = fit_racket_readout(sets, hidden, slope, bias)
+        last.weight[1].add_(adjustment)
+        errors = stats['after_rmse_mps']
+        tail_fit = stats
+    info=dict(racket_readout_fit=tail_fit,source_ball_sha256=digest(a.ball),fitted_body_sha256=digest(a.body),
               packed_sha256=meta['packed_sha256'],train_lanes=lanes,excluded_lanes=meta['excluded_lanes'],
               samples={k:len(v[0]) for k,v in sets.items()},before_rmse_mps=original,after_rmse_mps=errors,
               temperature_inverse=slope,racket_logit_offset=bias,contact_bptt_admitted=False,actor_updates=0)
