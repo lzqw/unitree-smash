@@ -60,6 +60,8 @@ def main():
     cli=argparse.ArgumentParser(description=__doc__)
     for k in ('packed','calibration-config','drive-contract','validation-split','output'):
         cli.add_argument('--'+k,required=True,type=Path)
+    cli.add_argument('--weights-output', type=Path,
+                     help='Save train-only PD coefficients for subsequent paired-command validation')
     a=cli.parse_args();torch.set_num_threads(3)
     config=json.loads(a.calibration_config.read_text()); drive=json.loads(a.drive_contract.read_text())
     if (drive['schema']!='native-joint-drive-v1' or drive['joint_names']!=list(JOINT_NAMES)
@@ -100,6 +102,8 @@ def main():
     result={}
     for mode in ('state_only','executed_target','pd_history'):
         weights=fit_model(arrays,stage,profile,mode,dt)
+        if mode == 'pd_history':
+            pd_weights=weights
         state=states[tick,lane].clone();prev=torque[tick-1,lane]
         metrics={}
         for i in range(64):
@@ -119,6 +123,12 @@ def main():
         measured_actuator_types=drive['actuator_types'],train_lanes=tr,held_lanes=va,train_transitions=train.shape[1],
         validation_windows=len(windows),drive_sha256=digest(a.drive_contract),packed_sha256=config['packed_sha256'],
         results=result,actor_updates=0,contact_bptt_admitted=False)
+    if a.weights_output:
+        with a.weights_output.open('xb') as stream:
+            torch.save(dict(schema='native-joint-pd-history-v1', mode='pd_history', control_dt_s=dt,
+                            train_lanes=tr, drive_sha256=payload['drive_sha256'],
+                            packed_sha256=config['packed_sha256'], coefficients=pd_weights,
+                            task_contract=package['source_manifest']['task_contract']), stream)
     with a.output.open('x') as f:json.dump(payload,f,indent=2,allow_nan=False)
 
 
