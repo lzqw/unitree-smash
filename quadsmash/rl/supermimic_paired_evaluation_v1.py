@@ -84,8 +84,25 @@ def paired_evaluation(pre, post, *, stage, actor_before=None, actor_after=None,
         action_metrics_available=action_before is not None and action_after is not None,
         paired_case_identity_verified=True)
     if action_before is not None and action_after is not None:
-        a=torch.as_tensor(action_before).float();b=torch.as_tensor(action_after).float()
+        if isinstance(action_before,dict):
+            a=torch.as_tensor(action_before['action']).float()
+        else:a=torch.as_tensor(action_before).float()
+        if isinstance(action_after,dict):
+            b=torch.as_tensor(action_after['action']).float()
+        else:b=torch.as_tensor(action_after).float()
         if a.shape!=b.shape:raise ValueError('Paired action tensors must have equal shapes')
         delta=b-a
         result['action_rms']=float(delta.square().mean().sqrt())
+        if (isinstance(action_before,dict) and isinstance(action_after,dict)
+                and action_before.get('log_std') is not None and action_after.get('log_std') is not None):
+            mu0,mu1=a,b
+            log0=torch.as_tensor(action_before['log_std']).float().reshape(1,-1)
+            log1=torch.as_tensor(action_after['log_std']).float().reshape(1,-1)
+            var0, var1=(2.*log0).exp(),(2.*log1).exp()
+            result['actor_kl']=float(.5*(log1-log0+(var0+(mu0-mu1).square())/var1-1.).mean())
+            result['actor_kl_available']=True
+        else:
+            result['actor_kl_available']=False
+    else:
+        result['actor_kl_available']=False
     return result

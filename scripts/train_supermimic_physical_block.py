@@ -365,7 +365,9 @@ def run(args, *, alternating=None):
                 with torch.no_grad():
                     for probe_state in trainer.budget_states[:4]:
                         values.append(trainer._actor_action(probe_state.branch(),sample=False)[0].detach().cpu())
-                return torch.cat(values,dim=0)
+                log_std=getattr(actor,'log_std',None)
+                return dict(action=torch.cat(values,dim=0),
+                            log_std=None if log_std is None else log_std.detach().cpu().clone())
             except (RuntimeError, AttributeError, KeyError):
                 return None
             finally:

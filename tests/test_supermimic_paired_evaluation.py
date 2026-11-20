@@ -26,6 +26,11 @@ def test_paired_evaluation_requires_same_case_identity_and_reports_deltas():
     assert report['actor_parameter_delta']['changed_elements']==2
     assert report['failure_taxonomy_before']['complete5_failure'] == 104
 
+    report=paired_evaluation(before,after,stage='post-Approach',
+        action_before={'action':torch.zeros(4,2),'log_std':torch.zeros(2)},
+        action_after={'action':torch.ones(4,2),'log_std':torch.zeros(2)})
+    assert report['action_rms'] == 1.0 and report['actor_kl'] > 0
+
 
 def test_parameter_delta_is_explicit_when_unavailable():
     assert parameter_delta(None, {'x': torch.ones(1)}) == {'available': False}
