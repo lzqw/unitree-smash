@@ -57,6 +57,12 @@ def validate_spec(spec):
         raise ValueError('Mixed WM fitting requires a declared 16-step training intervention')
     if 'capture_substeps' in spec and type(spec['capture_substeps']) is not bool:
         raise ValueError('capture_substeps must be an explicit boolean')
+    if 'capture_substep_ticks' in spec:
+        ticks = spec['capture_substep_ticks']
+        if (not spec.get('capture_substeps') or not isinstance(ticks, list) or not ticks
+                or any(type(t) is not int or not action_tick <= t <= spec['tick'] for t in ticks)
+                or ticks != sorted(set(ticks)) or ticks[-1] != spec['tick']):
+            raise ValueError('Substep trace ticks must be ordered, unique and inside the action-to-event window including its endpoint')
     epsilon=spec['epsilon_request']
     if not isinstance(epsilon,(int,float)) or not 0<epsilon<=2:raise ValueError('Declare a positive request perturbation, no actuator changes')
     if spec.get('head') not in ('recovery','approach'):raise ValueError('Unknown head')
@@ -120,16 +126,42 @@ class TrainingWindowRecorder:
         return dict(schema=self.schema.manifest(), lanes=self.lanes, tensors=data)
 
 
+def select_substep_lanes(trace, lane_ids):
+    """Retain the selected original cases and remap sparse native contact indices to their saved rows."""
+    tensors=trace['tensors']
+    num_lanes=tensors['shuttle_state_w'].shape[1]
+    device=tensors['shuttle_state_w'].device
+    selected=torch.as_tensor(lane_ids,dtype=torch.long,device=device)
+    mapping=torch.full((num_lanes,),-1,dtype=torch.long,device=device)
+    mapping[selected]=torch.arange(len(selected),device=device)
+    out=dict(trace,original_lanes=list(lane_ids),tensors={
+        key:x if key=='physics_frame' else x.index_select(1,selected)
+        for key,x in tensors.items()})
+    for name in ('manifold_frames','racket_friction_frames'):
+        frames=[]
+        for frame in trace[name]:
+            local=mapping[frame['lane']]
+            keep=local>=0
+            frames.append({k:(local[keep] if k=='lane' else v[keep]) for k,v in frame.items()})
+        out[name]=frames
+    return tensor_tree_copy(out,cpu=True)
+
+
 class NativePairCapture:
     def __init__(self,spec,branch):
         self.spec=validate_spec(spec);self.branch=branch
         if branch not in BRANCHES:raise ValueError('Unknown probe branch')
         self.prefix=hashlib.sha256();self.start=None;self.raw=None;self.substep_trace=None;self.wm_recorder=None
         self.step_records=[]
+        self.trace_ticks=set(spec.get('capture_substep_ticks',[spec['tick']])) if spec.get('capture_substeps') else set()
+        self.earlier_traces={}
     def before(self,tick,env,observation,request):
         action_tick = self.spec.get('action_tick', self.spec['tick'])
         event_tick = self.spec['tick']
         action_hold_ticks = self.spec.get('action_hold_ticks', 1)
+        if tick in self.trace_ticks:
+            from .supermimic_native_substep_trace_v1 import NativeSubstepTraceV1
+            self.substep_trace=NativeSubstepTraceV1(env)
         if tick==action_tick:
             if self.spec.get('capture_wm_window'):
                 if env.physical_transition_archive is not None:
@@ -142,24 +174,26 @@ class NativePairCapture:
             self.prefix.update(tree_digest(self.start).encode())
             action=perturb_request(request,self.spec,self.branch)
             self.request_before=request.detach().cpu().clone();self.request_after=action.detach().cpu().clone()
-            if action_tick == event_tick and self.spec.get('capture_substeps',False):
-                from .supermimic_native_substep_trace_v1 import NativeSubstepTraceV1
-                self.substep_trace=NativeSubstepTraceV1(env)
             return action
         if action_tick < tick < action_tick + action_hold_ticks:
             # Hold the same signed intervention over a short control window.
             # The policy still produces the nominal request each tick, while
             # the probe applies a causal, bounded offset before execution.
             return perturb_request(request, self.spec, self.branch)
-        if tick == event_tick and self.spec.get('capture_substeps',False):
-            from .supermimic_native_substep_trace_v1 import NativeSubstepTraceV1
-            self.substep_trace=NativeSubstepTraceV1(env)
         if tick < action_tick:
             self.prefix.update(tree_digest(dict(observation=observation,request=request,physical=capture_state(env)['physical'])).encode())
         return request
     def after(self,tick,env,done):
         action_tick = self.spec.get('action_tick', self.spec['tick'])
         event_tick = self.spec['tick']
+        trace=None
+        if tick in self.trace_ticks:
+            if self.substep_trace is None:
+                raise RuntimeError('Missing native substep trace at selected control tick')
+            trace=self.substep_trace.finish()
+            self.substep_trace=None
+            if tick != event_tick:
+                self.earlier_traces[tick]=select_substep_lanes(trace,probe_lanes(self.spec))
         if action_tick <= tick <= event_tick and self.start is not None:
             current=capture_state(env)
             self.step_records.append(tensor_tree_copy(dict(
@@ -174,7 +208,6 @@ class NativePairCapture:
         if tick < action_tick:
             self.prefix.update(tree_digest(dict(targets=env._sm_joint_targets,final=env._sm_final_action,done=done)).encode())
         elif tick==event_tick:
-            trace=None if self.substep_trace is None else self.substep_trace.finish()
             valid=probe_valid_lanes(done,probe_lanes(self.spec))
             captured=capture_state(env)
             self.raw=tensor_tree_copy(dict(start=self.start,next_state=encode_physical(captured['physical']),
@@ -186,6 +219,7 @@ class NativePairCapture:
                 self.raw['wm_window'] = self.wm_recorder.payload()
                 env.physical_transition_archive = None
             if trace is not None:self.raw['substep_trace']=tensor_tree_copy(trace,cpu=True)
+            if self.earlier_traces:self.raw['earlier_substep_traces']=self.earlier_traces
     def save(self,output,actor,task_contract,policy_execution,physics,seed):
         if self.raw is None:raise ValueError('Native probe did not finish')
         from .supermimic_evidence_binding_v1 import runtime_identity

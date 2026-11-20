@@ -143,3 +143,20 @@ def test_signed_arm_drive_fit_preserves_leg_readout_and_fits_measured_arm_differ
     assert error(fitted) < error(parent)
     unchanged = solve_update(natural, natural_target, torch.zeros_like(delta), torch.zeros_like(signed_target), parent)
     torch.testing.assert_close(unchanged, parent)
+
+
+def test_compound_spin_and_closing_speed_gradient_remain_consistent_with_signed_response():
+    n = torch.tensor([[[0., 0., 1.], [0., 0., 1.]]], dtype=torch.double)
+    mu = torch.full((1, 2), .8, dtype=n.dtype)
+    v = torch.tensor([[.2, .4, -2.]], dtype=n.dtype)
+    surface = torch.tensor([[[.1, .0, .0], [.1, .0, .0]]], dtype=n.dtype)
+    mask = torch.ones(1, 2, dtype=torch.bool)
+    radius = .025
+    def step(x):
+        normal, friction, angular = solve_patch(n, mu, mu, v, torch.zeros_like(v), surface + x, radius, mask,
+                                                1., 4, return_spin=True)
+        torch.testing.assert_close(angular, torch.linalg.cross(-radius*n[:, 0], friction)/(.4*radius**2))
+        return normal + friction
+    alpha = torch.tensor(0., dtype=n.dtype, requires_grad=True)
+    jac = torch.autograd.functional.jacobian(step, alpha)
+    torch.testing.assert_close(jac, (step(alpha + 1.e-6) - step(alpha - 1.e-6))/2.e-6)

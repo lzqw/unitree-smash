@@ -1,0 +1,61 @@
+{
+  "policy_hash": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+  "old_nominal_sha256": "36a1c927b18e902d3c47f89098dd1831907a431abd1cfed78cc107d61fc2221c",
+  "spec_sha256": {
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/g07_horizon16_native/wide_spec/spec_00_tick278.json": "ca8f577df02290dc45300d3ba8038bdee533824451e6d00341874010ba58cf6b",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/g07_horizon16_native/half_spec/spec_00_tick278.json": "ab42527adc218b8463ae05f7e1eca7838969004c4bf1a4c63630c3913c3292a4",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/g07_horizon16_native/quarter_spec/spec_00_tick278.json": "acba4f28dc0b4f0b2c29b6446c4ec424b3ac897b3c7a5bec2a7c853d8fbbd949"
+  },
+  "seed": 882073,
+  "original_case_ids": [
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127
+  ],
+  "independent_direction_seed": 491531,
+  "existing_axes_preserved": [
+    96,
+    99,
+    102,
+    115
+  ],
+  "simulator": "128 original cases",
+  "scope": "Development system identification only; includes both misses and hits, no retrospective rejection by performance",
+  "requires": [
+    "four actually executed sign branches at each epsilon",
+    "same original case and nominal prefix at all three scales",
+    "native normal and friction manifolds for every tick of the action-response interval",
+    "native direction and magnitude convergence across scales",
+    "report all lost support and all cases"
+  ],
+  "actor_updates": 0
+}

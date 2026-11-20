@@ -84,9 +84,9 @@ def main():
         adapter.physical_model.load_state_dict(candidate['model'],strict=True)
     if a.ball_candidate:
         new_ball=torch.load(a.ball_candidate,map_location='cpu',weights_only=True)
-        from quadsmash.rl.supermimic_ball_residual_v2 import verify_event_calibration
+        from quadsmash.rl.supermimic_ball_residual_v2 import load_ball_residual, verify_event_calibration
         verify_event_calibration(new_ball,meta['checkpoint_sha256']['ball'],digest(a.body_candidate),candidate)
-        adapter.ball_model.load_state_dict(new_ball['model'],strict=True)
+        adapter.ball_model=load_ball_residual(new_ball).to(a.device).eval()
     data=torch.load(path,map_location='cpu',weights_only=True,mmap=True)
     if a.teacher_racket and not a.contact_calibration:
         p.error('--teacher-racket requires the contact solver')

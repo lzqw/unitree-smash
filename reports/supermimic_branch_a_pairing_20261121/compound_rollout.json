@@ -1,0 +1,167 @@
+{
+  "scope": "Measured native racket, shuttle initialized once per case; spin propagated after impact",
+  "results": {
+    "train": {
+      "anchor": {
+        "all_signed": {
+          "rows": 896,
+          "supported": 734,
+          "absolute_rmse": 0.5225991606712341,
+          "gain_median": 0.548801600933075,
+          "gain_p10": 0.07471809536218643,
+          "cosine_median": 0.7268596291542053,
+          "cosine_p10": -0.325521856546402
+        },
+        "stable_signed": {
+          "rows": 176,
+          "supported": 176,
+          "absolute_rmse": 0.19930264353752136,
+          "gain_median": 0.8985769748687744,
+          "gain_p10": 0.12701091170310974,
+          "cosine_median": 0.8875235915184021,
+          "cosine_p10": -0.1570356786251068
+        },
+        "absolute_rmse": 0.6379790902137756,
+        "balanced_loss": 0.10764755308628082
+      },
+      "single": {
+        "all_signed": {
+          "rows": 896,
+          "supported": 734,
+          "absolute_rmse": 0.5128383040428162,
+          "gain_median": 0.5433903932571411,
+          "gain_p10": 0.07176432758569717,
+          "cosine_median": 0.7233819365501404,
+          "cosine_p10": -0.3139759600162506
+        },
+        "stable_signed": {
+          "rows": 176,
+          "supported": 176,
+          "absolute_rmse": 0.19600096344947815,
+          "gain_median": 0.856643795967102,
+          "gain_p10": 0.11276375502347946,
+          "cosine_median": 0.8889260292053223,
+          "cosine_p10": -0.14722731709480286
+        },
+        "absolute_rmse": 0.6308015584945679,
+        "balanced_loss": 0.09102340042591095
+      },
+      "compound": {
+        "all_signed": {
+          "rows": 896,
+          "supported": 734,
+          "absolute_rmse": 0.47104689478874207,
+          "gain_median": 0.8941377997398376,
+          "gain_p10": 0.15458956360816956,
+          "cosine_median": 0.7737338542938232,
+          "cosine_p10": -0.19183465838432312
+        },
+        "stable_signed": {
+          "rows": 176,
+          "supported": 176,
+          "absolute_rmse": 0.23054158687591553,
+          "gain_median": 0.8985769748687744,
+          "gain_p10": 0.196711465716362,
+          "cosine_median": 0.9084981083869934,
+          "cosine_p10": -0.05503658950328827
+        },
+        "absolute_rmse": 0.543764054775238,
+        "balanced_loss": 0.13501226902008057
+      }
+    },
+    "development": {
+      "anchor": {
+        "all_signed": {
+          "rows": 256,
+          "supported": 209,
+          "absolute_rmse": 0.25640571117401123,
+          "gain_median": 0.6345307230949402,
+          "gain_p10": 0.09433893114328384,
+          "cosine_median": 0.8514854311943054,
+          "cosine_p10": -0.05077904090285301
+        },
+        "stable_signed": {
+          "rows": 46,
+          "supported": 46,
+          "absolute_rmse": 0.20189857482910156,
+          "gain_median": 0.9517567753791809,
+          "gain_p10": 0.2056826651096344,
+          "cosine_median": 0.9586990475654602,
+          "cosine_p10": -0.08466760814189911
+        },
+        "absolute_rmse": 0.49056100845336914,
+        "balanced_loss": 0.13827070593833923
+      },
+      "single": {
+        "all_signed": {
+          "rows": 256,
+          "supported": 209,
+          "absolute_rmse": 0.2504816949367523,
+          "gain_median": 0.6397368907928467,
+          "gain_p10": 0.0932212769985199,
+          "cosine_median": 0.8628512024879456,
+          "cosine_p10": -0.01243580412119627
+        },
+        "stable_signed": {
+          "rows": 46,
+          "supported": 46,
+          "absolute_rmse": 0.20511378347873688,
+          "gain_median": 0.9777687788009644,
+          "gain_p10": 0.2054586410522461,
+          "cosine_median": 0.9425987005233765,
+          "cosine_p10": -0.08466760814189911
+        },
+        "absolute_rmse": 0.4266393482685089,
+        "balanced_loss": 0.14096000790596008
+      },
+      "compound": {
+        "all_signed": {
+          "rows": 256,
+          "supported": 209,
+          "absolute_rmse": 0.31144633889198303,
+          "gain_median": 0.9507620334625244,
+          "gain_p10": 0.17775489389896393,
+          "cosine_median": 0.9270868897438049,
+          "cosine_p10": 0.045195285230875015
+        },
+        "stable_signed": {
+          "rows": 46,
+          "supported": 46,
+          "absolute_rmse": 0.18633385002613068,
+          "gain_median": 0.977761447429657,
+          "gain_p10": 0.240968257188797,
+          "cosine_median": 0.9943435788154602,
+          "cosine_p10": 0.09995932877063751
+        },
+        "absolute_rmse": 0.37676599621772766,
+        "balanced_loss": 0.11511923372745514
+      }
+    }
+  },
+  "checks": {
+    "train": {
+      "absolute": true,
+      "all_signed": true,
+      "stable_improvement": false,
+      "direction": false,
+      "amplitude": true
+    },
+    "development": {
+      "absolute": true,
+      "all_signed": false,
+      "stable_improvement": true,
+      "direction": false,
+      "amplitude": true
+    }
+  },
+  "calibration_sha256": "7312af620cb8662e6dd7b8d0c8ee1a7cbc44fcbd8ef56a66313d9c10b8415a92",
+  "material_sha256": "ea8cc7043592957e7f19992ad79226640d29674e44c7b4a4dd5cd1bfb7b0c6b9",
+  "split_sha256": {
+    "train": "ebb122737239aaa013c57b7bb65830c3025b632e1eea9a5258d687863dce95db",
+    "development": "3c588202dfdd297b95d4a41f3e54a0b807befbfa4d580d678c4d7fdae0d95256"
+  },
+  "candidate_eligible_for_reserved_test": false,
+  "final_holdout_opened": false,
+  "policy_updates": 0,
+  "contact_gradients_admitted": false
+}

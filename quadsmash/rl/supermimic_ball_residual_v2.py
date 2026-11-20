@@ -79,6 +79,56 @@ class BallResidualV2(nn.Module):
         return present[:,None].to(delta.dtype)*delta, 1.-probability[:,0]
 
 
+class RacketSweepSupportedBallV2(BallResidualV2):
+    """Restrict the racket-mode probability to a measured one-tick sweep."""
+    schema = 'object-separated-causal-ball-response-v2-racket-sweep-v1'
+
+    def __init__(self):
+        super().__init__()
+        from .supermimic_ball_geometry_preview_v1 import BallGeometryPreviewV1
+        self.preview = BallGeometryPreviewV1()
+        self.register_buffer('gap_bias_m', torch.tensor(0.))
+        self.register_buffer('width_m', torch.tensor(.001))
+
+    def min_racket_gap(self, features):
+        # The 17 samples span exactly one control tick on the existing physics clock.
+        times = self.preview.times[::10, None]
+        position, velocity = features[:, None, 6:9], features[:, None, 9:12]
+        return self.preview.racket_gap(position + times * velocity).amin(-1)
+
+    @staticmethod
+    def probability_with_support(probability, gap, bias, width):
+        t = ((bias - gap) / width + .5).clamp(0, 1)
+        support = t.square() * (3 - 2*t)
+        racket = probability[:, 1:2] * support[:, None]
+        free = probability[:, :1] + (probability[:, 1:2] - racket)
+        return torch.cat((free, racket, probability[:, 2:]), -1)
+
+    def components(self, features):
+        probability, responses = super().components(features)
+        return self.probability_with_support(probability, self.min_racket_gap(features),
+                                             self.gap_bias_m, self.width_m), responses
+
+
+def load_ball_residual(checkpoint):
+    schema = checkpoint['schema']
+    if schema == RacketSweepSupportedBallV2.schema:
+        ball = RacketSweepSupportedBallV2()
+        spec = checkpoint['event_calibration']['swept_racket_support']
+        if spec['geometry_hashes'] != ball.preview.geometry_hashes:
+            raise ValueError('Racket sweep geometry differs from the calibration')
+    elif schema == BallResidualV2.schema:
+        ball = BallResidualV2()
+    else:
+        raise ValueError(f'Unsupported ball residual schema {schema}')
+    ball.load_state_dict(checkpoint['model'], strict=True)
+    if schema == RacketSweepSupportedBallV2.schema:
+        if not (float(ball.width_m) == spec['width_m'] > 0 and
+                float(ball.gap_bias_m) == spec['gap_bias_m']):
+            raise ValueError('Racket sweep calibration parameters differ')
+    return ball
+
+
 def verify_event_calibration(ball_checkpoint, original_ball_sha, body_sha, body_checkpoint):
     calibration = ball_checkpoint['event_calibration']
     parent = body_checkpoint['calibration']

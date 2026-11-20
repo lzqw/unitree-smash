@@ -8,7 +8,7 @@ import torch
 
 from fit_supermimic_mixed_body_rollout import digest
 from quadsmash.rl.supermimic_ball_residual_v1 import ball_geometry_features
-from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
+from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2, RacketSweepSupportedBallV2
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
 
 
@@ -57,6 +57,8 @@ def main():
         cli.add_argument('--'+key,required=True,type=Path)
     cli.add_argument('--fit-racket-readout',action='store_true',
                      help='Fit the existing racket logit row on measured deviations, including difficult pre-contact frames')
+    cli.add_argument('--fit-swept-support', action='store_true',
+                     help='Calibrate a causal racket-only geometric support on the same training lanes')
     a=cli.parse_args()
     torch.set_num_threads(3)
     body=torch.load(a.body,map_location='cpu',weights_only=True)
@@ -74,6 +76,8 @@ def main():
     checkpoint=torch.load(a.ball,weights_only=True,map_location='cpu')
     ball=BallResidualV2().to(device).eval()
     ball.load_state_dict(checkpoint['model'])
+    sweep = RacketSweepSupportedBallV2().to(device).eval() if a.fit_swept_support else None
+    gaps = {}
     lanes=meta['train_lanes']
     if not lanes or set(lanes)&set(meta['excluded_lanes']):
         raise ValueError('Invalid training lanes')
@@ -96,12 +100,16 @@ def main():
         if name=='ordinary':
             indices=indices[torch.randperm(len(indices),generator=generator)[:4096]]
         if not len(indices):raise ValueError('Missing measured training events in '+name)
+        gap_batches=[]
         joined=[]
         encoded=[]
         for batch in indices.split(256):
             t,l=batch.T
             state=data['state'][t,l].to(device)
-            features=ball.normalized(ball_geometry_features(state,world.geometry))
+            geometry=ball_geometry_features(state,world.geometry)
+            if sweep is not None:
+                gap_batches.append(sweep.min_racket_gap(geometry))
+            features=ball.normalized(geometry)
             representation=ball.gate.net[:-1](features)
             logits=ball.gate.net[-1](representation)
             encoded.append(representation)
@@ -111,6 +119,8 @@ def main():
             joined.append((logits,response,target))
         sets[name]=tuple(torch.cat(x) for x in zip(*joined))
         hidden[name]=torch.cat(encoded)
+        if gap_batches:
+            gaps[name] = torch.cat(gap_batches)
     def scores(slope,bias):
         result={}
         for name,(logits,response,target) in sets.items():
@@ -140,12 +150,38 @@ def main():
         last.weight[1].add_(adjustment)
         errors = stats['after_rmse_mps']
         tail_fit = stats
-    info=dict(racket_readout_fit=tail_fit,source_ball_sha256=digest(a.ball),fitted_body_sha256=digest(a.body),
+    support_fit = None
+    if sweep is not None:
+        # Score clearance and transition width only on the archived training episodes.
+        probability = {name: last(h).softmax(-1) for name, h in hidden.items()}
+        candidates = []
+        for bias_mm in (-6., -4., -2., 0., 2., 4., 6.):
+            for width_mm in (1., 2., 4., 8.):
+                squared = {}
+                for name, (_, responses, target) in sets.items():
+                    p = sweep.probability_with_support(probability[name], gaps[name],
+                                                       .001*bias_mm, .001*width_mm)
+                    pred = (p[:,1:,None]*responses).sum(1)
+                    squared[name] = (pred-target).square().mean(-1)
+                rmse = {k:float(v.mean().sqrt()) for k,v in squared.items()}
+                tail = squared['pre'].topk(max(1,len(squared['pre'])//5)).values.mean()
+                candidates.append((cost(rmse) + .1*float(tail)/max(original['pre']**2,1e-10),
+                                   bias_mm, width_mm, rmse))
+        _, bias_mm, width_mm, errors = min(candidates, key=lambda row:row[0])
+        state = sweep.state_dict()
+        state.update(ball.state_dict())
+        sweep.load_state_dict(state, strict=True)
+        sweep.gap_bias_m.fill_(.001*bias_mm)
+        sweep.width_m.fill_(.001*width_mm)
+        support_fit = dict(gap_bias_m=float(sweep.gap_bias_m), width_m=float(sweep.width_m),
+                           geometry_hashes=sweep.preview.geometry_hashes, train_candidates=len(candidates))
+        ball = sweep
+    info=dict(swept_racket_support=support_fit,racket_readout_fit=tail_fit,source_ball_sha256=digest(a.ball),fitted_body_sha256=digest(a.body),
               packed_sha256=meta['packed_sha256'],train_lanes=lanes,excluded_lanes=meta['excluded_lanes'],
               samples={k:len(v[0]) for k,v in sets.items()},before_rmse_mps=original,after_rmse_mps=errors,
               temperature_inverse=slope,racket_logit_offset=bias,contact_bptt_admitted=False,actor_updates=0)
     a.output.mkdir(parents=True,exist_ok=False)
-    torch.save(dict(checkpoint,model=ball.cpu().state_dict(),event_calibration=info),a.output/'ball.pending')
+    torch.save(dict(checkpoint,schema=ball.schema,model=ball.cpu().state_dict(),event_calibration=info),a.output/'ball.pending')
     (a.output/'ball.pending').replace(a.output/'ball.pt')
     (a.output/'fit.json').write_text(json.dumps(dict(info,sha256=digest(a.output/'ball.pt')),indent=2)+'\n')
 

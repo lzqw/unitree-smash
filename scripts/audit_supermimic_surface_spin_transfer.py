@@ -14,7 +14,7 @@ from quadsmash.rl.supermimic_racket_material_contract_v1 import validate_contrac
 
 
 @torch.no_grad()
-def evaluate(directory, audit, split, model, cfg, material, spin, slip):
+def evaluate(directory, audit, split, model, cfg, material, spin, slip, *, compound=False):
     rows, data = read_split(audit, directory, split)
     seeds = sorted({r['seed'] for r in rows})
     pred, absolute = {}, []
@@ -26,7 +26,7 @@ def evaluate(directory, audit, split, model, cfg, material, spin, slip):
             endpoint,_ = tick(model,ball,[item[0] for item in stream],[item[-1] for item in stream],
                               cfg['fitted'],cfg['solver']['pair_contact_offset_m'],
                               torch.zeros(len(ball),dtype=torch.bool) if slip else None,
-                              measured_path=[item[:-1] for item in stream],racket_material=material,initial_spin=incoming_spin)
+                              measured_path=[item[:-1] for item in stream],racket_material=material,initial_spin=incoming_spin,compound_racket=compound)
             outputs.append(endpoint[:,3:])
             absolute.append(endpoint[:,3:]-truth)
         pred[branch]=torch.cat(outputs)

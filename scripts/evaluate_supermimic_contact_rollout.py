@@ -9,6 +9,7 @@ import torch
 import torch.nn.functional as F
 
 from calibrate_supermimic_pilot_oracle import ROOT, BallImpulsePriorV1, _quat_rotate, _quat_rotate_inverse, sliding_speed_change
+from quadsmash.rl.supermimic_compound_racket import compound_step
 from quadsmash.rl.supermimic_physical_dataset_v1 import decode_physical, valid_windows
 from quadsmash.rl.supermimic_physical_imagination_adapter_v1 import matrix_quaternion
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
@@ -29,8 +30,10 @@ def racket(state, geometry):
 
 
 def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measured_path=None,
-         racket_material=None, initial_spin=None, event_trace=None):
+         racket_material=None, initial_spin=None, event_trace=None, compound_racket=False, return_spin=False):
     p, v = ball[:, :3], ball[:, 3:]
+    if compound_racket and (racket_material is None or previous_patch is not None or event_trace is not None):
+        raise ValueError('Compound rollout needs measured shape materials and supports multiple contacts per substep')
     if event_trace is not None:
         if event_trace:
             raise ValueError('An empty event trace is required for a new control interval')
@@ -38,7 +41,7 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
         event_trace.update(racket=torch.full(dims,-1,device=ball.device,dtype=torch.int64),
                            ground=torch.zeros(dims,device=ball.device,dtype=torch.bool),
                            net=torch.zeros(dims,device=ball.device,dtype=torch.bool))
-    spin = initial_spin
+    spin = torch.zeros_like(v) if compound_racket and initial_spin is None else initial_spin
     if spin is not None and spin.shape != v.shape:
         raise ValueError('Spin must specify the incoming three-vector for each shuttle')
     if racket_material is not None:
@@ -71,7 +74,16 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
         close = (p-center[i]).norm(dim=-1) <= racket_radius
         delta = torch.zeros_like(v)
         inside = torch.zeros_like(hit)
-        if close.any():
+        if compound_racket and close.any():
+            lane = close.nonzero().flatten()
+            normal, tangent, next_spin, active = compound_step(
+                prior, p[lane], v[lane], spin[lane], center[i, lane], q[i, lane],
+                linear[i, lane], omega[i, lane], racket_material, offset, fitted['normal_impulse_scale'],
+                separation_gain=fitted.get('separation_velocity_gain', 0.))
+            delta = delta.index_copy(0, lane, normal + tangent)
+            spin = spin.index_copy(0, lane, next_spin)
+            hit[lane] |= active > 0
+        elif close.any():
             lane = close.nonzero().flatten()
             local = _quat_rotate_inverse(q[i, lane], p[lane]-center[i, lane])
             gap = g.racket_gap(local)
@@ -132,7 +144,8 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
         relative = v-prior.wind
         v = v + prior.sub_dt*(prior.gravity-prior.drag*relative.norm(dim=-1, keepdim=True)*relative) + delta
         p = p + prior.sub_dt*v
-    return torch.cat((p, v), -1), hit
+    result = torch.cat((p, v), -1), hit
+    return (*result, spin) if return_spin else result
 
 
 @torch.inference_mode()

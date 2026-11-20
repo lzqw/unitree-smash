@@ -1,0 +1,66 @@
+"""Impulse on a spinning shuttle from multiple analytic racket collision shapes."""
+import torch
+
+from .supermimic_ball_geometry_preview_v1 import box_gap, round_gap
+from .supermimic_ball_impulse_prior_v1 import box_normal, round_normal
+from .supermimic_contact_pilot_v1 import _quat_rotate, _quat_rotate_inverse
+
+
+def solve_patch(normals, mu, restitution, velocity, spin, surface, radius, active,
+                normal_scale, iterations, *, return_spin=False, separation_velocity=None):
+    """Projected normal and friction impulses in velocity units, with per-shape Coulomb bounds."""
+    arm = -radius * normals
+    supports = normals.shape[1]
+    loads = list(torch.zeros_like(mu).unbind(1))
+    friction = list(torch.zeros_like(normals).unbind(1))
+    linear, angular = velocity, spin
+    closing = ((velocity[:, None] + torch.linalg.cross(spin[:, None].expand_as(arm), arm)
+                - surface) * normals).sum(-1)
+    outgoing = closing + (1 + restitution) * normal_scale * (-closing).clamp_min(0)
+    if separation_velocity is not None:
+        # Positive separation spends part of the interval closing the gap.
+        outgoing = torch.maximum(closing, outgoing - separation_velocity)
+    for _ in range(iterations):
+        for j in range(supports):
+            normal, lever = normals[:, j], arm[:, j]
+            relative = linear + torch.linalg.cross(angular, lever) - surface[:, j]
+            vn = (relative * normal).sum(-1)
+            load = torch.where(active[:, j], (loads[j] + outgoing[:, j] - vn).clamp_min(0), 0.)
+            linear = linear + (load - loads[j])[:, None] * normal
+            loads[j] = load
+            proposed = friction[j] - (2 / 7) * (relative - vn[:, None] * normal)
+            bound = load * mu[:, j]
+            tangent = proposed * (bound / proposed.norm(dim=-1).clamp_min(1e-12)).clamp(max=1)[:, None]
+            change = tangent - friction[j]
+            linear = linear + change
+            angular = angular + torch.linalg.cross(lever, change) / (.4 * radius**2)
+            friction[j] = tangent
+    total = ((torch.stack(loads, 1)[..., None] * normals).sum(1), torch.stack(friction, 1).sum(1))
+    return (*total, angular) if return_spin else total
+
+
+def compound_step(prior, position, velocity, spin, center, rotation, linear, angular,
+                  material, offset, normal_scale, *, compound=True, separation_gain=0.):
+    """Predict one native-length substep from the incoming shuttle and current racket state."""
+    geometry = prior.preview
+    local = _quat_rotate_inverse(rotation, position - center)
+    rounded = (geometry.racket_round_centers, geometry.racket_round_axes, geometry.racket_round_halves,
+               geometry.racket_round_radii, geometry.racket_round_capsule)
+    gaps = torch.cat((box_gap(local, geometry.racket_box_centers, geometry.racket_box_halves),
+                      round_gap(local, *rounded)), -1) - geometry.radius
+    near_count = (gaps <= offset).sum(-1)
+    count = int(near_count.max()) if compound else 1
+    if count == 0:
+        return torch.zeros_like(velocity), torch.zeros_like(velocity), spin, near_count
+    gap, ids = gaps.topk(count, largest=False)
+    normals = torch.cat((box_normal(local, geometry.racket_box_centers, geometry.racket_box_halves),
+                         round_normal(local, *rounded)), 1)
+    n = _quat_rotate(rotation[:, None], normals.gather(1, ids[..., None].expand(-1, -1, 3)))
+    lever = position[:, None] - center[:, None] - geometry.radius * n
+    surface = linear[:, None] + torch.linalg.cross(angular[:, None].expand_as(lever), lever)
+    vn = ((velocity[:, None] - surface) * n).sum(-1)
+    active = (gap <= offset) & (gap + prior.sub_dt * vn <= 0) & (vn < 0)
+    normal, tangent, spin = solve_patch(n, material[ids, 1], material[ids, 2], velocity, spin, surface,
+                                       geometry.radius, active, normal_scale, 4 if compound else 1,
+                                       return_spin=True, separation_velocity=separation_gain * gap / prior.sub_dt if separation_gain else None)
+    return normal, tangent, spin, active.sum(-1)

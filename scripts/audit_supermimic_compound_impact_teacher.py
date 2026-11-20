@@ -9,41 +9,8 @@ import torch.nn.functional as F
 
 from audit_supermimic_solver_action_response import BallImpulsePriorV1, BRANCHES, mode, sha
 from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branch, _same_contract
-from quadsmash.rl.supermimic_ball_geometry_preview_v1 import box_gap, round_gap
-from quadsmash.rl.supermimic_ball_impulse_prior_v1 import box_normal, round_normal
-from quadsmash.rl.supermimic_contact_pilot_v1 import _quat_rotate, _quat_rotate_inverse
+from quadsmash.rl.supermimic_compound_racket import compound_step, solve_patch
 from quadsmash.rl.supermimic_racket_material_contract_v1 import validate_contract
-
-
-def solve_patch(normals, mu, restitution, velocity, spin, surface, radius, active, normal_scale, iterations):
-    """Projected sequential normal/tangent impulses on a sphere. Impulses are in m/s."""
-    arm=-radius*normals
-    support=normals.shape[1]
-    normal_load=torch.zeros_like(mu)
-    tangent_load=torch.zeros_like(normals)
-    linear=velocity.clone()
-    angular=spin.clone()
-    vn=((velocity[:,None]+torch.cross(spin[:,None].expand_as(arm),arm,dim=-1)-surface)*normals).sum(-1)
-    # Preserve the calibrated single-surface outgoing relative normal speed.
-    target=vn+(1+restitution)*normal_scale*(-vn).clamp_min(0)
-    for _ in range(iterations):
-        for j in range(support):
-            n,r=normals[:,j],arm[:,j]
-            rel=linear+torch.cross(angular,r,dim=-1)-surface[:,j]
-            old=normal_load[:,j]
-            load=torch.where(active[:,j],(old+target[:,j]-(rel*n).sum(-1)).clamp_min(0),0.)
-            linear=linear+(load-old)[:,None]*n
-            normal_load[:,j]=load
-            tangential=rel-(rel*n).sum(-1,keepdim=True)*n
-            proposed=tangent_load[:,j]-(2/7)*tangential
-            length=proposed.norm(dim=-1)
-            bound=load*mu[:,j]
-            value=proposed*(bound/length.clamp_min(1e-12)).clamp(max=1.)[:,None]
-            diff=value-tangent_load[:,j]
-            linear=linear+diff
-            angular=angular+torch.cross(r,diff,dim=-1)/(.4*radius**2)
-            tangent_load[:,j]=value
-    return (normal_load[...,None]*normals).sum(1),tangent_load.sum(1)
 
 
 @torch.no_grad()
@@ -60,26 +27,12 @@ def predict(trace,lanes,prior,material,settings,*,compound):
     for index in ((p-center).norm(dim=-1)<=bound).nonzero().split(512):
         if not len(index):continue
         i,l=index.T
-        pos=p[i,l];rot=q[i,l];origin=center[i,l]
-        local=_quat_rotate_inverse(rot,pos-origin)
-        args=(g.racket_round_centers,g.racket_round_axes,g.racket_round_halves,g.racket_round_radii,g.racket_round_capsule)
-        gaps=torch.cat([box_gap(local,g.racket_box_centers,g.racket_box_halves),round_gap(local,*args)],-1)-g.radius
-        near_count=(gaps<=offset).sum(-1)
-        nshape=int(near_count.max()) if compound else 1
-        if not nshape:continue
-        gap,ids=torch.topk(gaps,nshape,largest=False)
-        axes=torch.cat([box_normal(local,g.racket_box_centers,g.racket_box_halves),round_normal(local,*args)],1)
-        normal=_quat_rotate(rot[:,None],axes.gather(1,ids[...,None].expand(-1,-1,3)))
-        arm=pos[:,None]-origin[:,None]-g.radius*normal
-        omega=t['racket_angular_velocity_w'][i,torch.as_tensor(lanes)[l]]
-        vc=t['racket_linear_velocity_w'][i,torch.as_tensor(lanes)[l]]
-        surface=vc[:,None]+torch.cross(omega[:,None].expand_as(arm),arm,dim=-1)
         state=source[i,l]
-        vn=((state[:,None,7:10]-surface)*normal).sum(-1)
-        active=(gap<=offset)&(gap+prior.sub_dt*vn<=0)&(vn<0)
-        nterm,tterm=solve_patch(normal,material[ids,1],material[ids,2],state[:,7:10],state[:,10:13],
-             surface,g.radius,active,settings['fitted']['normal_impulse_scale'],4 if compound else 1)
-        result[i,l]=nterm;tangent[i,l]=tterm;count[i,l]=active.sum(-1)
+        source_lane=torch.as_tensor(lanes,device=l.device)[l]
+        result[i,l],tangent[i,l],_,count[i,l]=compound_step(
+            prior,p[i,l],state[:,7:10],state[:,10:13],center[i,l],q[i,l],
+            t['racket_linear_velocity_w'][i,source_lane],t['racket_angular_velocity_w'][i,source_lane],
+            material,offset,settings['fitted']['normal_impulse_scale'],compound=compound)
     return dict(normal=result,tangent=tangent,active_shapes=count)
 
 

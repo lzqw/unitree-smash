@@ -10,6 +10,7 @@ from audit_supermimic_paired_body_transfer import response_metrics
 from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, PhysicalWorldV2, racket, sha, tick
 from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branch, _same_contract
 from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES
+from quadsmash.rl.supermimic_native_manifold_groups import signatures, classify
 from quadsmash.rl.supermimic_contact_pilot_v1 import _quat_rotate, _quat_rotate_inverse
 
 
@@ -164,6 +165,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('dataset','body','calibration','output'):
         p.add_argument('--'+k,required=True,type=Path)
+    p.add_argument('--compound-material',type=Path,
+                   help='Use the autoregressive multi-shape solve and carry shuttle spin across the executed sequence')
     p.add_argument('--actuator',type=Path,help='Audit the independently calibrated six arm drives through the same ball solver')
     p.add_argument('--drive',type=Path,help='Measured contract for the actuator calibration')
     a=p.parse_args();torch.set_num_threads(3)
@@ -182,6 +185,10 @@ def main():
     rows=ds['rows'];lanes=[r['lane_index'] for r in rows]
     if set(lanes)&set(ck['calibration']['train_lanes']):raise ValueError('Overlapping action-ID and fit lanes')
     shuttle=json.loads((Path(__file__).resolve().parents[1]/'configs/shuttle_physics_v2.json').read_text())
+    material = None
+    if a.compound_material:
+        from quadsmash.rl.supermimic_racket_material_contract_v1 import validate_contract
+        material = torch.tensor(validate_contract(json.loads(a.compound_material.read_text()),task['asset']['sha256'])['effective'])
     pd_start={}
     if a.actuator:
         from audit_supermimic_pd_racket_transfer import advance_arm
@@ -201,6 +208,12 @@ def main():
         for b,run in runs.items():
             if task!=run['task_contract'] or sha(folder/name/b/'native_probe.pt')!=hashes[name,b]:
                 raise ValueError('Probe source or robot identity changed')
+        topology={}
+        for branch,run in runs.items():
+            trace=run['raw']['substep_trace']
+            if (trace.get('manifold_frames') and trace.get('racket_friction_frames')
+                    and {'racket_friction_force_w','net_force_matrix_w'} <= trace['tensors'].keys()):
+                topology[branch]=signatures(trace)
         for row in (r for r in rows if r['spec_name']==name):
             lane=row['lane_index']
             if a.actuator:
@@ -227,7 +240,8 @@ def main():
             elif len({b[2] for b in branches})>1:group='toi_switch'
             elif branches[0][2]<0:group='no_contact'
             else:group='stable'
-            modes[name,lane]=dict(group=group,branch_events=dict(zip(BRANCHES,branches)))
+            manifold=(classify([topology[b][lane] for b in BRANCHES]) if len(topology)==len(BRANCHES) else 'unmeasured')
+            modes[name,lane]=dict(group=group,manifold_group=manifold,branch_events=dict(zip(BRANCHES,branches)))
     def f(key):return torch.stack([r[key] for r in rows])
     sp=Path(task['suite']['path'])
     if sha(sp)!=task['suite']['sha256']:raise ValueError('Different launch suite')
@@ -281,6 +295,7 @@ def main():
         s=f('state');prev=f('previous_action');feet=f('foot_contact').float()
         time=f('elapsed');active=f('present');patch=torch.zeros_like(active).bool()
         events=[]
+        spin = None
         if arm_variant:
             last,torque=[torch.stack(x).double() for x in zip(*(pd_start[r['sample_id']] for r in rows))]
             age=torch.zeros_like(last)
@@ -299,8 +314,11 @@ def main():
                 if native_event_start:
                     initial=event_path['shuttle_state_w'][0]
                     start_ball=torch.cat((initial[:,:3],initial[:,7:10]),-1)
-            ball,hit=tick(prior,start_ball,racket(s,body.geometry),racket(robot,body.geometry),
-                          cfg['fitted'],cfg['solver']['pair_contact_offset_m'],patch,measured_path=measured)
+                    if material is not None:
+                        spin=initial[:,10:13]
+            ball,hit,spin=tick(prior,start_ball,racket(s,body.geometry),racket(robot,body.geometry),
+                          cfg['fitted'],cfg['solver']['pair_contact_offset_m'],patch if material is None else None,measured_path=measured,
+                          racket_material=material,compound_racket=material is not None,initial_spin=spin,return_spin=True)
             events.append(hit);s=torch.cat((robot[:,:49],ball),-1)
             prev=actions[:,i];feet=logits.sigmoid();time=time+prior.dt
         return s[:,52:],torch.stack(events,1)
@@ -372,6 +390,11 @@ def main():
     for name in ['all']+sorted(set(tags)):
         mask=torch.tensor([name=='all' or name==t for t in tags])
         groups[name]={k:response_metrics(delta[mask],v[mask],repeat[mask]) for k,v in predictions.items()}
+    strict_tags=[modes[r['spec_name'],r['lane_index']]['manifold_group'] for r in rows]
+    manifold_groups={}
+    for label in sorted(set(strict_tags)):
+        mask=torch.tensor([label==t for t in strict_tags])
+        manifold_groups[label]={k:response_metrics(delta[mask],v[mask],repeat[mask]) for k,v in predictions.items()}
     details=[]
     for i,row in enumerate(rows):
         point_counts = {b:paths[b]['loaded_point_count'][1:,i] for b in traces} if manifold_available else {}
@@ -386,8 +409,8 @@ def main():
                                 if k == 'spin_at_start'} for b in ('minus','plus')},
                             **modes[row['spec_name'],row['lane_index']],**{k:v[i].tolist() for k,v in predictions.items()}))
     result=dict(scope='paired measured final target and action history sequences, control-step pose interpolation; native substep timing available at final intervention tick only',
-                sources={k:sha(getattr(a,k)) for k in ('dataset','body','calibration','actuator','drive') if getattr(a,k)},
-                validation=groups,samples=details,all_signed_traces_include_friction=friction_available,contact_bptt_admitted=False,actor_updates=0)
+                sources={k:sha(getattr(a,k)) for k in ('dataset','body','calibration','actuator','drive','compound_material') if getattr(a,k)},
+                validation=groups,native_manifold_groups=manifold_groups,samples=details,all_signed_traces_include_friction=friction_available,contact_bptt_admitted=False,actor_updates=0)
     with a.output.open('x') as output:json.dump(result,output,indent=2,allow_nan=False)
 
 

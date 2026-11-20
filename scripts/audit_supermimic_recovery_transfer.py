@@ -7,7 +7,7 @@ from pathlib import Path
 import torch
 
 from scripts.evaluate_supermimic_fresh_wm_panel import check_panel, digest
-from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2
+from quadsmash.rl.supermimic_ball_residual_v2 import load_ball_residual
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_physical_dataset_v1 import valid_windows
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
@@ -108,8 +108,7 @@ def main():
     anchor.load_state_dict(torch.load(args.anchor,map_location='cpu',weights_only=True)['model'])
     body=PhysicalWorldV2(ck['source_manifest']['task_contract']['asset']['sha256']).eval()
     body.load_state_dict(ck['model'])
-    ball=BallResidualV2().eval()
-    ball.load_state_dict(ball_checkpoint['model'],strict=True)
+    ball=load_ball_residual(ball_checkpoint).eval()
     groups_report={}
     for group,ids in groups.items():
         row=dict(cases=[dict(tick=t,case=cases[lane]['case_id']) for t,lane in ids],count=len(ids))

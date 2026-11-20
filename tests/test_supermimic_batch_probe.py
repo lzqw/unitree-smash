@@ -100,3 +100,33 @@ def test_batch_bundle_preserves_lane_alignment_and_explicit_holdout_subset(tmp_p
     changed=torch.load(paths['plus'],weights_only=True);changed['raw']['start']['before']['physical']['elapsed_s'][30]+=.01
     torch.save(changed,paths['plus'])
     with pytest.raises(ValueError,match='Different full native start'):build(paths,identity,tmp_path/'bad.pt')
+
+
+def test_substep_recording_starts_on_last_tick_of_held_request(monkeypatch):
+    from quadsmash.rl.supermimic_native_pair_capture_v1 import NativePairCapture
+    from quadsmash.rl import supermimic_native_substep_trace_v1 as tracer
+    s = dict(spec(), action_tick=268, action_hold_ticks=4, capture_substeps=True, capture_substep_ticks=[270,271], tick=271)
+    capture = NativePairCapture(s, 'plus')
+    calls = []
+    monkeypatch.setattr(tracer, 'NativeSubstepTraceV1', lambda env:calls.append(env) or object())
+    request = torch.zeros(128,18)
+    env = object()
+    assert not torch.equal(capture.before(271, env, None, request), request)
+    assert calls == [env] and capture.substep_trace is not None
+    with pytest.raises(ValueError):
+        validate_spec(dict(s, capture_substep_ticks=[270]))
+
+
+def test_window_substeps_keep_original_lane_identity_and_remap_sparse_contact_points():
+    from quadsmash.rl.supermimic_native_pair_capture_v1 import select_substep_lanes
+    dense = torch.arange(12).reshape(2,3,2)
+    sparse = dict(lane=torch.tensor([0,1,2,2]), point=torch.arange(4))
+    t = dict(tensors=dict(physics_frame=torch.tensor([800,801]),shuttle_state_w=dense),
+             manifold_frames=[sparse],racket_friction_frames=[sparse])
+    q = select_substep_lanes(t,[2,0])
+    assert q['original_lanes'] == [2,0]
+    torch.testing.assert_close(q['tensors']['shuttle_state_w'],dense[:,[2,0]])
+    assert q['tensors']['physics_frame'].tolist() == [800,801]
+    for key in ('manifold_frames','racket_friction_frames'):
+        assert q[key][0]['lane'].tolist() == [1,0,0]
+        assert q[key][0]['point'].tolist() == [0,2,3]
