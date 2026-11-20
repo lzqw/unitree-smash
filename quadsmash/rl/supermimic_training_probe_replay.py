@@ -80,11 +80,29 @@ def training_windows(directory, task_contract, policy_execution, excluded_lanes=
                 signed_streams=2*len(staged), world_window_steps=16)
 
 
-def import_training_collection(replay, directory, task_contract, policy_execution, excluded_lanes=()):
-    pairs, receipt = training_windows(directory, task_contract, policy_execution, excluded_lanes,
+def import_training_collection(replay, directory, task_contract, policy_execution, excluded_lanes=(), *,
+                               original_lanes=None):
+    """Map authenticated suite lane IDs to the actual replay layout at import time."""
+    if original_lanes is None:
+        lane_map = None
+        reserved = set(excluded_lanes)
+    else:
+        if (len(original_lanes) != replay.lanes or len(set(original_lanes)) != replay.lanes
+                or any(type(lane) is not int or not 0 <= lane < 128 for lane in original_lanes)):
+            raise ValueError('Invalid original case IDs for the training panel')
+        if set(original_lanes).intersection(excluded_lanes):
+            raise ValueError('Training panel includes reserved cases')
+        lane_map = {lane: index for index, lane in enumerate(original_lanes)}
+        reserved = set(range(128)) - set(original_lanes)
+    pairs, receipt = training_windows(directory, task_contract, policy_execution, reserved,
                                       expected_schema=replay.schema.manifest())
-    streams = [replay.training_probe_stream(lanes, signed[b])
-               for lanes, signed in pairs for b in ('minus', 'plus')]
+    streams = []
+    for lanes, signed in pairs:
+        local = lanes if lane_map is None else [lane_map[lane] for lane in lanes]
+        for branch in ('minus', 'plus'):
+            streams.append(replay.training_probe_stream(local, signed[branch]))
     replay.training_probes.extend(streams)
     replay._ordered_cache = None
+    if lane_map is not None:
+        receipt['original_lane_by_replay_lane'] = list(original_lanes)
     return receipt

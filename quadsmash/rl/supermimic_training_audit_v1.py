@@ -100,3 +100,17 @@ def rollback_audit(*, phase, update_index, proposal_checkpoint,
         "replay_stream": int(replay_stream),
         "replay_reused_after_rollback": True,
     }
+
+
+def grouped_world_loss(loss_sum_by_window, steps, groups):
+    """Mean optimized loss over valid transitions; observed event windows can overlap."""
+    if steps <= 0 or loss_sum_by_window.ndim != 1:
+        raise ValueError('Expected one sum along the rollout per window')
+    def summarize(indices):
+        n = steps*len(indices)
+        return dict(valid_transition_count=n, windows=len(indices),
+                    loss_per_valid_transition=float(loss_sum_by_window[indices].sum())/n if n else None)
+    return dict(head=groups['head'], overall=summarize(list(range(len(loss_sum_by_window)))),
+                by_source={name:summarize(ids) for name,ids in groups['source'].items()},
+                by_event_window={name:summarize(ids) for name,ids in groups['event'].items()},
+                event_window_overlap=True, normalization='same valid-field and hazard denominators as the optimized batch')

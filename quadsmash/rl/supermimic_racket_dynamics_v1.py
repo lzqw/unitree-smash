@@ -12,7 +12,7 @@ def racket_state(state, geometry):
                       b['velocity'][:,i],b['angular_velocity'][:,i]),-1)
 
 
-def racket_loss_components(predicted, target):
+def racket_loss_components(predicted, target, *, per_row=False):
     """Return task-space position, velocity, normal and angular losses.
 
     The first racket rotation column is the authored racket-face normal used
@@ -21,15 +21,16 @@ def racket_loss_components(predicted, target):
     """
     if predicted.shape != target.shape or predicted.shape[-1] != 18:
         raise ValueError('Racket state must be [batch,18] with matching target')
-    position=((predicted[:,:3]-target[:,:3])/.03).square().mean()
+    position=((predicted[:,:3]-target[:,:3])/.03).square().mean(-1)
     rotation_pred=predicted[:,3:12].reshape(-1,3,3)
     rotation_target=target[:,3:12].reshape(-1,3,3)
     normal_pred=torch.nn.functional.normalize(rotation_pred[:,:,0],dim=-1)
     normal_target=torch.nn.functional.normalize(rotation_target[:,:,0],dim=-1)
-    normal=(1.-(normal_pred*normal_target).sum(-1)).mean()
-    velocity=((predicted[:,12:15]-target[:,12:15])/1.).square().mean()
-    angular=((predicted[:,15:18]-target[:,15:18])/3.).square().mean()
-    return dict(position=position, normal=normal, velocity=velocity, angular=angular)
+    normal=1.-(normal_pred*normal_target).sum(-1)
+    velocity=((predicted[:,12:15]-target[:,12:15])/1.).square().mean(-1)
+    angular=((predicted[:,15:18]-target[:,15:18])/3.).square().mean(-1)
+    parts=dict(position=position, normal=normal, velocity=velocity, angular=angular)
+    return parts if per_row else {name: value.mean() for name, value in parts.items()}
 
 
 def racket_loss(predicted, target):

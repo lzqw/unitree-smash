@@ -1,0 +1,71 @@
+{
+  "scope": "Measured repeatability and force balance; signed action response evaluated separately",
+  "lanes": [
+    96,
+    99,
+    102,
+    115
+  ],
+  "hashes": {
+    "nominal_a": "05371e43c8691f1d704cda42a580986e441dd97764c940b6eff9b434fd0763b2",
+    "nominal_b": "a5edca9621cb5d0b5e78de867ac7a04670c6cd71b559f8de6f5f22bd78ee3725"
+  },
+  "frames": 161,
+  "physics_dt_s": 6.25e-05,
+  "mass_kg": 0.0052,
+  "sensors": {
+    "racket_body_id": 27,
+    "racket_body_name": "Racket",
+    "filter_prim_paths": [
+      "/World/envs/env_.*/Robot/Racket",
+      "/World/Ground/geometry/mesh"
+    ],
+    "racket_filter_index": 0,
+    "ground_filter_index": 1,
+    "normal_source": "physx_contact_data",
+    "friction_source": "physx_filtered_racket_pair"
+  },
+  "max_repeat_abs_error": {
+    "shuttle_state_w": 0.0,
+    "racket_position_w": 0.0,
+    "racket_quaternion_w": 0.0,
+    "racket_friction_force_w": 0.0,
+    "racket_force_w": 0.0,
+    "racket_contact_position_w": 0.0,
+    "joint_position": 0.0
+  },
+  "other_normal_max_N": {
+    "ground_force_w": 0.0,
+    "net_force_matrix_w": 0.0
+  },
+  "samples": [
+    {
+      "lane": 96,
+      "normal_dv_mps": 13.133665041597649,
+      "measured_friction_dv_mps": 0.7511126138590244,
+      "residual_without_friction_mps": 0.7511117444321096,
+      "residual_after_measured_friction_mps": 2.0400770767485777e-05
+    },
+    {
+      "lane": 99,
+      "normal_dv_mps": 13.17081401572685,
+      "measured_friction_dv_mps": 1.5503919199783291,
+      "residual_without_friction_mps": 1.5504037985026087,
+      "residual_after_measured_friction_mps": 3.899781237887756e-05
+    },
+    {
+      "lane": 102,
+      "normal_dv_mps": 13.46415361652433,
+      "measured_friction_dv_mps": 1.6855511270311037,
+      "residual_without_friction_mps": 1.6855472405540335,
+      "residual_after_measured_friction_mps": 7.774407437658297e-06
+    },
+    {
+      "lane": 115,
+      "normal_dv_mps": 12.313590802468454,
+      "measured_friction_dv_mps": 1.2223471921385054,
+      "residual_without_friction_mps": 1.2223459552503304,
+      "residual_after_measured_friction_mps": 1.083763987993137e-05
+    }
+  ]
+}

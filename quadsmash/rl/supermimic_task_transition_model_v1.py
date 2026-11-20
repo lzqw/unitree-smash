@@ -71,16 +71,18 @@ class NativeTaskTransitionSurrogateV1(nn.Module):
         target,valid=self.memory_schema.encode(after)
         return self.supervision_loss_values(output,target,valid,before['paid_events'],after['paid_events'],torque,terminated,complete)
 
-    def supervision_loss_values(self,output,target,valid,paid_before,paid_after,torque,terminated,complete):
-        loss=self.memory_supervision_loss(output,target,valid)
-        loss=loss+.1*nn.functional.binary_cross_entropy_with_logits(output['valid_logits'],valid)
-        loss=loss+event_hazard_loss(output['hazards'],paid_before,paid_after)
-        loss=loss+.1*((output['torque']-torque)/20.).square().mean()
-        loss=loss+nn.functional.binary_cross_entropy_with_logits(output['terminal_logit'],terminated.float().reshape(-1,1))
-        loss=loss+nn.functional.binary_cross_entropy_with_logits(output['complete_logit'],complete.float().reshape(-1,1))
-        return loss
+    def supervision_loss_values(self,output,target,valid,paid_before,paid_after,torque,terminated,complete,*,per_row=False):
+        def bce(logits, labels):
+            return nn.functional.binary_cross_entropy_with_logits(logits,labels,reduction='none').mean(-1)
+        loss=self.memory_supervision_loss(output,target,valid,per_row=True)
+        loss=loss+.1*bce(output['valid_logits'],valid)
+        loss=loss+event_hazard_loss(output['hazards'],paid_before,paid_after,per_row=True)
+        loss=loss+.1*((output['torque']-torque)/20.).square().mean(-1)
+        loss=loss+bce(output['terminal_logit'],terminated.float().reshape(-1,1))
+        loss=loss+bce(output['complete_logit'],complete.float().reshape(-1,1))
+        return loss if per_row else loss.mean()
 
-    def memory_supervision_loss(self,output,target,valid):
+    def memory_supervision_loss(self,output,target,valid,*,per_row=False):
         """Native booleans use logit BCE, not near-saturated probability MSE.
 
         Forward and checkpoint parameter layout are unchanged. This explicit
@@ -92,8 +94,10 @@ class NativeTaskTransitionSurrogateV1(nn.Module):
         numeric=((output['numeric']-target)/self.memory_scale).square()
         binary=nn.functional.binary_cross_entropy_with_logits(
             output['boolean_logits'],target.clamp(0.,1.),reduction='none')
-        return ((numeric*continuous).sum()/continuous.sum().clamp_min(1.)
-                +(binary*categorical).sum()/categorical.sum().clamp_min(1.))
+        # Preserve the whole batch's known-value denominator when attributing loss to rows.
+        rows = ((numeric*continuous).sum(-1) * (len(target)/continuous.sum().clamp_min(1.))
+                +(binary*categorical).sum(-1) * (len(target)/categorical.sum().clamp_min(1.)))
+        return rows if per_row else rows.mean()
 
 
 class AbsoluteBooleanTaskSurrogateV2(NativeTaskTransitionSurrogateV1):

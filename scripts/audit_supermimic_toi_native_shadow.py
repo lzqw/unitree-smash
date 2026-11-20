@@ -47,8 +47,14 @@ def run(args):
     if (not bank.manifest['protocol_verified'] or bank.geometry_sha256!=adapter.physical_model.geometry.model_sha256
             or bank.execution_contract_sha256!=json_sha(meta['policy_execution'])):
         raise ValueError('Reference physics or scoring contract mismatch')
-    lanes=list(range(8))
-    bank.assert_excludes(lanes)
+    if args.canary_updates:
+        eligible = [lane for lane in range(128) if lane not in bank.excluded_lanes]
+        lanes = eligible[:32]
+        if len(lanes) != 32:
+            raise ValueError('Fewer than 32 eligible cases outside the reserved panel')
+    else:
+        lanes=list(range(8))
+        bank.assert_excludes(lanes)
     bank=bank.to(args.device)
     source_path=Path(paths['source'])
     source=torch.load(source_path,map_location='cpu',weights_only=False)
@@ -59,15 +65,19 @@ def run(args):
     cfg=make_task_cfg(len(lanes),task,protocol,receipt);cfg.seed=args.seed;cfg.sim.device=args.device
     env=None;failed=True
     try:
-        env=ShadowEnv(cfg,cases=[cases[i] for i in lanes],reset_noise=zero_panel_reset_noise(8,args.seed),
+        env=ShadowEnv(cfg,cases=[cases[i] for i in lanes],reset_noise=zero_panel_reset_noise(len(lanes),args.seed),
             residual_policy_checkpoint=source,g07_execution_root=Path(identity['g07_execution_root']),
             native_return_gamma=timebase.gamma,contact_flight_recovery=task['contact_flight_recovery'])
         freeze_execution_modules(env._sm_residual_controller)
         wrapper=RslRlVecEnvWrapper(env,clip_actions=None)
         obs,_=wrapper.reset()
         stage(args.output,'NATIVE_RESET',num_envs=env.num_envs,case_ids=[cases[i]['case_id'] for i in lanes])
+        budget_rows = []
         with torch.no_grad():
             for tick in range(args.tick):
+                if args.canary_updates and tick in (224, 240, 248):
+                    budget_rows.append(dict(before=capture_state(env), executor_before=capture_controller(env._sm_residual_controller),
+                                            observation=obs['policy'].detach().clone()))
                 request=policy_forward(actor,obs['policy'],env.rally,sample=False)[0]
                 obs,_,done,_=wrapper.step(request)
                 if done.any():raise RuntimeError('Shadow prefix crossed an episode boundary')
@@ -75,7 +85,8 @@ def run(args):
             row=dict(before=capture_state(env),executor_before=capture_controller(env._sm_residual_controller),
                      observation=obs['policy'].detach().clone())
             request=policy_forward(actor,obs['policy'],env.rally,sample=False)[0]
-            wrapper.step(request)
+            obs,_,done,_=wrapper.step(request)
+            if done.any():raise RuntimeError('Command parity step crossed an episode boundary')
             executed=env._sm_joint_targets.detach().clone()
             torch.save(dict(row=row,executed=executed,launch=launch[lanes],case_ids=[cases[i]['case_id'] for i in lanes],
                             tick=args.tick,seed=args.seed,actor_sha256=actor_sha,world_sha256=world_sha),args.output/'native_start.pt')
@@ -83,6 +94,10 @@ def run(args):
                                                        launch=launch[lanes],device=args.device)
         stage(args.output,'NATIVE_PREFIX_CAPTURED',tick=args.tick)
         trainer=PhysicalHorizonTrainer(actor,adapter,state,timebase,trainable_names=APPROACH_NAMES,block_name='approach',
+                                      command_delta_budget=ck['config'].get('command_delta_budget',.005),
+                                      target_delta_budget_rad=ck['config'].get('target_delta_budget_rad',.04),
+                                      native_reference_command_budget=ck['config'].get('native_reference_command_budget'),
+                                      native_reference_target_budget_rad=ck['config'].get('native_reference_target_budget_rad'),
                                       reference_bank=bank,approach_objective='toi_racket_only',toi_racket_weight=1.)
         trainer.critic.load_state_dict(ck['critic'],strict=True)
         critic_sha=tensor_digest(trainer.critic.state_dict().items())
@@ -109,20 +124,34 @@ def run(args):
                     scope='native prefix plus frozen-model BPTT; no paired native Jacobian or performance receipt')
         (args.output/'shadow.json').write_text(json.dumps(result,indent=2,allow_nan=False)+'\n')
         if not passed:raise RuntimeError('TOI shadow failed; see shadow.json')
+        if args.canary_updates:
+            from run_supermimic_toi_native_canary import learn
+            del rollout, gradients
+            budget_states = [PhysicalImaginationStateV1.from_record(item, executor_template=env._sm_residual_controller,
+                             launch=launch[lanes], device=args.device) for item in budget_rows]
+            learn(args, budget_states=budget_states, env=env, wrapper=wrapper, observation=obs, trainer=trainer, state=state,
+                  launch=launch[lanes], lanes=lanes, bank=bank, ck=ck, task=task, protocol=protocol)
         failed=False
     finally:
         close_resource(args.output,'ENV',env,primary_failed=failed)
 
 
-def main():
+def main(*, canary=False):
     from isaaclab.app import AppLauncher
     from quadsmash.rl.supermimic_run_lifecycle import execute_scoped_native
     p=argparse.ArgumentParser(description=__doc__)
+    AppLauncher.add_app_launcher_args(p)
     for arg in ('checkpoint','archive','reference-bank','safety-mapping','output'):
         p.add_argument('--'+arg,type=Path,required=True)
+    if canary:
+        p.description='32 native training cases, supervised WM refresh, bounded TOI Approach updates and frozen RTG.'
+        p.set_defaults(canary_updates=8)
+        p.add_argument('--packed-data', type=Path, required=True)
+        p.add_argument('--wm-action-collection', type=Path, required=True)
+    else:
+        p.set_defaults(canary_updates=0)
     p.add_argument('--tick',type=int,default=256)
     p.add_argument('--seed',type=int,default=882072)
-    AppLauncher.add_app_launcher_args(p)
     a=p.parse_args()
     if not 0<a.tick<800:p.error('Select a control tick within the episode')
     a.output.mkdir(parents=True,exist_ok=False)

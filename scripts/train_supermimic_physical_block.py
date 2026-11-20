@@ -528,6 +528,10 @@ def run(args, *, alternating=None):
             current_contract = {key: current_physical.get(key) for key in immutable_manifest_keys}
             if resumed['adapter_schema']!=adapter.schema or saved_contract!=current_contract:
                 raise ValueError('Resume physical model/execution source mismatch')
+            if not (args.resume_reset_schedule or args.resume_next_cycle):
+                saved_objective=resumed['config'].get('approach_objective','task')
+                if args.approach_objective!=saved_objective:
+                    raise ValueError('An Approach objective change requires a fresh schedule; inherited updates cannot count toward the new objective')
             actor.load_state_dict(resumed['actor'],strict=True);adapter.load_state_dict(resumed['world'],strict=True)
             if reference_bank is None and resumed.get('reference_bank') is not None:
                 from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
@@ -752,16 +756,16 @@ def run(args, *, alternating=None):
                 if refresh_collector is not None: refresh_collector.append(row)
                 if len(self.rows)>=archive_flush_rows:self.flush()
             def flush(self):
+                if os.environ.get('QUADSMASH_ZSTD_ARCHIVE','0')=='1':
+                    return self.flush_compressed()
                 if self.rows:
-                    compress=os.environ.get('QUADSMASH_ZSTD_ARCHIVE','0')=='1'
-                    name=f'chunk_{len(self.chunks):05d}.pt'+('.zst' if compress else '')
+                    name=f'chunk_{len(self.chunks):05d}.pt'
                     path=self.directory/name
                     require_archive_space(self.directory)
                     payload=io.BytesIO()
                     torch.save(dict(schema=self.schema,rows=tensor_tree_copy(self.rows,cpu=True)),payload)
-                    saved=write_archive_chunk(path,payload.getbuffer(),compress=compress)
-                    self.chunks.append(dict(file=name,ticks=len(self.rows),
-                                            **saved,**({'compression':'zstd'} if compress else {})))
+                    saved=write_archive_chunk(path,payload.getbuffer())
+                    self.chunks.append(dict(file=name,ticks=len(self.rows),**saved))
                     self.rows.clear()
                 self._manifest()
         archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,policy_execution=policy_execution,control_ticks=0,transitions=0,chunks=[],
@@ -797,7 +801,7 @@ def run(args, *, alternating=None):
             wm_recent_policy_window=args.wm_recent_policy_window,wm_recent_tick_window=args.wm_recent_tick_window,
             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
             action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()) if args.action_ball_checkpoint else None,
-            tracking_weight=args.tracking_weight,approach_objective=args.approach_objective,
+            tracking_weight=args.tracking_weight,approach_objective=args.approach_objective,toi_racket_weight=args.toi_racket_weight,
             paired_evaluation_baseline=str(args.paired_evaluation_baseline.resolve()) if args.paired_evaluation_baseline else None,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         write(args.output/'config.json',config)
@@ -809,6 +813,18 @@ def run(args, *, alternating=None):
             global_rejected=int(resumed_global.get('rejected',0));global_backtracked=int(resumed_global.get('backtracked',0))
         from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability
         loaded_identity=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,global_accepted_id)
+        invocation_start=dict(actor_sha256=loaded_identity['actor_state_sha256'],accepted=global_accepted_id,
+                              attempts=global_attempt_id,world=trainer.world_updates,critic=trainer.critic_updates)
+        invocation_heads={head:dict(accepted=0,attempts=0) for head in ('recovery','approach')}
+        def invocation_receipt():
+            accepted=global_accepted_id-invocation_start['accepted']
+            attempts=global_attempt_id-invocation_start['attempts']
+            if sum(h['accepted'] for h in invocation_heads.values())!=accepted or sum(h['attempts'] for h in invocation_heads.values())!=attempts:
+                raise RuntimeError('Process-local head counters differ from optimizer proposal counters')
+            return dict(start=invocation_start,actor_end_sha256=tensor_digest(actor.state_dict().items()),
+                        actor_updates=accepted,actor_attempts=attempts,world_updates=trainer.world_updates-invocation_start['world'],
+                        critic_updates=trainer.critic_updates-invocation_start['critic'],heads=invocation_heads,
+                        approach_objective=args.approach_objective,scope='updates executed in this process only')
         write(args.output/'loaded_runtime_identity.json',dict(identity=loaded_identity,resumed=bool(args.resume_training),
             probe_applicability={} if dual_quality is None else {h:probe_applicability(dual_quality['native_action_probes'][h],loaded_identity) for h in ('recovery','approach')}))
         from quadsmash.rl.supermimic_evidence_binding_v1 import verify_fit_provenance,loaded_fit_provenance
@@ -1000,7 +1016,7 @@ def run(args, *, alternating=None):
                     timebase.world_steps,args.wm_batch_size,iteration*total+offset,
                     source_quota=sampling_source_quota,stage_quota=sampling_stage_quota,head=head,
                     recent_policy_window=args.wm_recent_policy_window,
-                    recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes)
+                    recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes,report_loss_groups=True)
                 sampling['sampling_mode']=args.wm_sampling_mode
                 sampling['promotion_gate']=sampling_promotion_gate(sampling,args.wm_sampling_mode)
                 sampling['source_profile'] = {
@@ -1023,7 +1039,7 @@ def run(args, *, alternating=None):
                     raise RuntimeError('WM promotion sampling contract failed: '+json.dumps(sampling['promotion_gate'],sort_keys=True))
                 sampling_seconds=time.perf_counter()-sampling_started
                 fit_started=time.perf_counter()
-                stats=trainer.fit_world_window(window,launch[lanes]); del window
+                stats=trainer.fit_world_window(window,launch[lanes],loss_groups=sampling.pop('loss_groups')); del window
                 stats.update(sampling_seconds=sampling_seconds,fit_wall_seconds=time.perf_counter()-fit_started)
                 stats['sampling']=sampling; reports.append(stats)
                 if calibration_fast_path and ((offset + 1) == total or (offset + 1) % 16 == 0):
@@ -1067,7 +1083,7 @@ def run(args, *, alternating=None):
                     _,_,sample = replay.window(timebase.world_steps,args.wm_batch_size,0,
                         source_quota=args.wm_source_quota,stage_quota=quota,head=name,
                         recent_policy_window=args.wm_recent_policy_window,
-                        recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes)
+                        recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes,report_loss_groups=True)
                     reports[name] = dict(source_counts=sample['source_counts'],stage_counts=sample['stage_counts'],
                                          gate=sampling_promotion_gate(sample,'promotion'))
                 with (args.output/'wm_bootstrap.jsonl').open('a') as log:
@@ -1152,6 +1168,7 @@ def run(args, *, alternating=None):
                 save(proposal_checkpoint.name)
                 pre_native_metrics=summarize_native_episodes(completed_records)
                 attempts+=1;global_attempt_id+=1;trainer.block_attempts=attempts
+                invocation_heads[block_name]['attempts']+=1
                 progress['attempts']=attempts;progress['proposal_in_flight']=True
                 trainer.actor_updates=accepted
                 trainer.actor_attempts=attempts
@@ -1207,6 +1224,7 @@ def run(args, *, alternating=None):
                 stats['quality_protection']=quality
                 post_native_metrics=summarize_native_episodes(completed_records)
                 if stats['update_accepted']:
+                    invocation_heads[block_name]['accepted']+=1
                     if not any(v>0.0 for v in stats['parameter_max_changes'].values()):
                         raise RuntimeError(f'{block_name} accepted update had zero trainable parameter change; no effective gradient')
                     accepted+=1
@@ -1523,7 +1541,7 @@ def run(args, *, alternating=None):
             run_schedule(alternating,train=train_short,refresh=refresh_pair,finalize=finalize_cycle,checkpoint=save)
             cycle_results=[r['result'] for r in alternating.results if r['event']['kind']=='finalize']
             totals=alternating.head_totals();total=sum(x['accepted'] for x in totals.values())
-            write(args.output/'training_completed.json',dict(update_mode='sequential',sequential_layout='short-alternating',
+            write(args.output/'training_completed.json',dict(update_mode='sequential',invocation=invocation_receipt(),sequential_layout='short-alternating',
                 refresh_mode=args.refresh_mode,head_block_size=args.head_block_size,cycles=args.cycles,actor_updates=total,
                 recovery_accepted=totals['recovery']['accepted'],approach_accepted=totals['approach']['accepted'],head_counters=totals,
                 proposal_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,
@@ -1560,7 +1578,7 @@ def run(args, *, alternating=None):
                 write(args.output/('cycle_%02d.json' % (cycle+1)),cycle_results[-1])
             total_accepted=sum(x['recovery_accepted']+x['approach_accepted'] for x in cycle_results)
             write(args.output/'training_completed.json', dict(
-                update_mode='sequential', cycles=args.cycles, actor_updates=total_accepted,
+                update_mode='sequential', invocation=invocation_receipt(), cycles=args.cycles, actor_updates=total_accepted,
                 recovery_accepted=sum(x['recovery_accepted'] for x in cycle_results),
                 approach_accepted=sum(x['approach_accepted'] for x in cycle_results),
                 proposal_attempts=global_attempt_id, global_accepted=global_accepted_id,

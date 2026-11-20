@@ -168,3 +168,18 @@ def test_compact_causal_plan_roundtrip_and_mutable_native_buffers():
     controller.logs.clear()
     capture_controller(controller, plan_observation_cache=cache)
     assert not cache
+
+
+def test_compressed_canary_transition_roundtrip(tmp_path):
+    from quadsmash.rl.supermimic_archive_storage_v1 import read_archive_rows
+    archive = PhysicalTransitionArchive(tmp_path/'canary', metadata={'original_lanes': [33, 7]})
+    archive.begin_record(state(0), torch.zeros(2, 18), torch.zeros(2, 794), {})
+    targets = torch.arange(36).reshape(2, 18)
+    archive.finish_record(state(1), torch.zeros(2, 18), targets, torch.ones(2),
+                          torch.zeros(2, dtype=torch.bool), torch.zeros(2, dtype=torch.bool), {})
+    archive.flush_compressed()
+    receipt = json.loads((archive.directory/'manifest.json').read_text())
+    assert receipt['transitions'] == 2 and receipt['original_lanes'] == [33, 7]
+    assert receipt['chunks'][0]['compression'] == 'zstd' and not archive.rows
+    with read_archive_rows(archive.directory, receipt['chunks'][0], scratch=tmp_path) as rows:
+        torch.testing.assert_close(rows[0]['final_joint_targets'], targets)

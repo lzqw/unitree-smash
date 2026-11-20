@@ -257,6 +257,20 @@ class PhysicalTransitionArchive:
         if len(self.rows) >= self.chunk_ticks:
             self.flush()
 
+    def flush_compressed(self):
+        """Write lossless native rows and publish their checksum after the chunk is durable."""
+        import io
+        from .supermimic_archive_storage_v1 import require_archive_space, write_archive_chunk
+        if self.rows:
+            require_archive_space(self.directory)
+            name = f'chunk_{len(self.chunks):05d}.pt.zst'
+            payload = io.BytesIO()
+            torch.save(dict(schema=self.schema, rows=tensor_tree_copy(self.rows, cpu=True)), payload)
+            saved = write_archive_chunk(self.directory/name, payload.getbuffer(), compress=True)
+            self.chunks.append(dict(file=name, ticks=len(self.rows), compression='zstd', **saved))
+            self.rows.clear()
+        self._manifest()
+
     def flush(self):
         if self.rows:
             name = f'chunk_{len(self.chunks):05d}.pt'

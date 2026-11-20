@@ -178,3 +178,41 @@ def test_same_episode_online_window_cannot_bridge_missing_native_ticks():
         _, _, stats = replay.window(steps, 1, device='cpu', source_quota={'recent_online': 1},
                                     stage_quota={'uniform': 1})
         assert stats['source_counts']['recent_online'] == expected_online
+
+
+def test_training_panel_import_preserves_original_case_ids(monkeypatch):
+    from quadsmash.rl import supermimic_training_probe_replay as probes
+    original = [99, 17, 52]
+    replay = SimpleNamespace(lanes=3, schema=SimpleNamespace(manifest=lambda: {}),
+                             training_probes=[], training_probe_stream=lambda lanes, rows: (lanes, rows))
+    def signed(_directory, _task, _execution, reserved, *, expected_schema):
+        assert set(range(128)) - set(reserved) == set(original)
+        return [([52, 99], {'plus': [520, 990], 'minus': [-520, -990]})], {}
+    monkeypatch.setattr(probes, 'training_windows', signed)
+    receipt = probes.import_training_collection(replay, None, {}, {}, [0, 1], original_lanes=original)
+    assert receipt['original_lane_by_replay_lane'] == original
+    assert replay.training_probes == [([2, 0], [-520, -990]), ([2, 0], [520, 990])]
+    with pytest.raises(ValueError, match='reserved'):
+        probes.import_training_collection(replay, None, {}, {}, [17], original_lanes=original)
+
+
+def test_grouped_wm_loss_keeps_empty_and_overlapping_event_windows():
+    from quadsmash.rl.supermimic_training_audit_v1 import grouped_world_loss
+    out = grouped_world_loss(torch.tensor([4.,12.]), 2,
+        dict(head='approach', source={'online':[0], 'initial':[1]},
+             event={'uniform':[0,1], 'contact':[1], 'miss':[]}))
+    assert out['overall'] == dict(valid_transition_count=4, windows=2, loss_per_valid_transition=4.)
+    assert out['by_source']['online']['loss_per_valid_transition'] == 2.
+    assert out['by_event_window']['contact']['loss_per_valid_transition'] == 6.
+    assert out['by_event_window']['miss']['loss_per_valid_transition'] is None
+
+
+def test_per_row_hazard_attribution_preserves_masked_gradient():
+    from quadsmash.rl.supermimic_event_hazard_v1 import event_hazard_loss
+    logits=torch.tensor([[.2,-.4],[.9,-.1]],requires_grad=True)
+    paid=torch.tensor([[1.,0.],[0.,0.]])
+    after=torch.tensor([[1.,1.],[0.,1.]])
+    old=event_hazard_loss(logits,paid,after)
+    rows=event_hazard_loss(logits,paid,after,per_row=True)
+    torch.testing.assert_close(old,rows.mean())
+    torch.testing.assert_close(torch.autograd.grad(old,logits)[0],torch.autograd.grad(rows.mean(),logits)[0])

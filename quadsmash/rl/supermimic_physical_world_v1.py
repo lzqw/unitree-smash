@@ -77,8 +77,9 @@ class PhysicalWorldV1(nn.Module):
         p['ball_velocity_w']=torch.where(active[:,None],p['ball_velocity_w'],old['ball_velocity_w'])
         return encode_physical(p),out[:,55:],active
 
-    def state_loss(self,predicted,target):
+    def state_loss(self,predicted,target,*,per_row=False):
         # Quaternion double cover must not create a spurious 2-unit penalty.
         same=(predicted[:,3:7]*target[:,3:7]).sum(-1,keepdim=True)>=0
         aligned=torch.cat((target[:,:3],torch.where(same,target[:,3:7],-target[:,3:7]),target[:,7:]),-1)
-        return ((predicted-aligned)/self.delta_scale).square().mean()
+        error=((predicted-aligned)/self.delta_scale).square()
+        return error.mean(-1) if per_row else error.mean()

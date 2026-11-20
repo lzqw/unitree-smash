@@ -396,7 +396,7 @@ class PhysicalHorizonTrainer:
             no_effective_gradient=reason in ('zero_total_gradient','no_task_or_tracking_gradient'),
             frozen_base_recovery_unchanged=True,model_unchanged_during_actor=True)
 
-    def fit_world_window(self,window,launch):
+    def fit_world_window(self,window,launch,*,loss_groups=None):
         """One actual WM optimizer step on 16 native transitions per sample.
 
         Physical state, contact probability and task numeric memory propagate
@@ -411,6 +411,7 @@ class PhysicalHorizonTrainer:
         loss=state.new_zeros(());started=time.perf_counter()
         physical_loss=state.new_zeros(());contact_loss=state.new_zeros(())
         ball_loss_value=state.new_zeros(());task_loss=state.new_zeros(())
+        row_loss_sum=state.new_zeros(len(state))
         action_ball_loss=state.new_zeros(())
         racket_loss_value=state.new_zeros(())
         racket_components={name: state.new_zeros(()) for name in
@@ -421,16 +422,20 @@ class PhysicalHorizonTrainer:
                 action_model=self.adapter.action_ball_model)
             out=task.forward_values(state,prediction,window['targets'][i],window['previous_action'][i],feet,
                 window['elapsed'][i],values,validity)
-            physical_i=world.state_loss(prediction,window['next_state'][i])
-            contact_i=torch.nn.functional.binary_cross_entropy(newfeet,window['next_feet'][i].float())
+            physical_rows=world.state_loss(prediction,window['next_state'][i],per_row=True)
+            contact_rows=torch.nn.functional.binary_cross_entropy(newfeet,window['next_feet'][i].float(),reduction='none').mean(-1)
+            physical_i,contact_i=physical_rows.mean(),contact_rows.mean()
             ball_i=ball_error(prediction[:,49:],window['next_state'][i][:,49:])
             racket_pred=racket_state(prediction,world.geometry)
             racket_target=racket_state(window['next_state'][i],world.geometry)
-            racket_parts=racket_loss_components(racket_pred,racket_target)
-            racket_i=sum(racket_parts.values())/len(racket_parts)
-            task_i=task.supervision_loss_values(out,window['next_values'][i],window['next_valid'][i],
+            racket_rows=racket_loss_components(racket_pred,racket_target,per_row=True)
+            racket_parts={k:v.mean() for k,v in racket_rows.items()}
+            racket_each=sum(racket_rows.values())/len(racket_rows)
+            racket_i=racket_each.mean()
+            task_rows=task.supervision_loss_values(out,window['next_values'][i],window['next_valid'][i],
                 window['event_state'][i],window['next_event_state'][i],window['torque'][i],
-                window['terminated'][i],window['complete_reward'][i])
+                window['terminated'][i],window['complete_reward'][i],per_row=True)
+            task_i=task_rows.mean()
             physical_loss=physical_loss+physical_i;contact_loss=contact_loss+contact_i
             ball_loss_value=ball_loss_value+ball_i;task_loss=task_loss+task_i
             racket_loss_value=racket_loss_value+racket_i
@@ -446,6 +451,10 @@ class PhysicalHorizonTrainer:
             error=((prediction[:,49:]-window['next_state'][i][:,49:])/scale).square().mean(-1)
             weight=1.+(self.contact_ball_loss_weight-1.)*event.to(error.dtype)
             extra=(error*weight).mean()*self.ball_loss_weight
+            if loss_groups is not None:
+                row_loss_sum += (physical_rows.detach()+contact_rows.detach()+task_rows.detach()
+                                 +error.detach()*weight*self.ball_loss_weight
+                                 +racket_each.detach()*self.racket_loss_weight)
             racket_extra=racket_i*self.racket_loss_weight
             action_ball_loss=action_ball_loss+extra
             loss=loss+physical_i+contact_i+task_i+extra+racket_extra
@@ -471,7 +480,11 @@ class PhysicalHorizonTrainer:
                 for p in self.adapter.action_ball_model.parameters() if p.grad is not None),loss.new_zeros(()))))
         norm=optimizer_step(self.world_opt,self.adapter.parameters());self.world_updates+=1
         task.fit_updates.add_(1)
-        return dict(world_loss=float(loss.detach()),world_gradient=float(norm),world_updates=self.world_updates,
+        diagnostics = {}
+        if loss_groups is not None:
+            from .supermimic_training_audit_v1 import grouped_world_loss
+            diagnostics['loss_by_group'] = grouped_world_loss(row_loss_sum.detach().cpu(),cfg.world_steps,loss_groups)
+        return dict(**diagnostics,world_loss=float(loss.detach()),world_gradient=float(norm),world_updates=self.world_updates,
                     world_physical_loss=float(physical_loss.detach()),
                     world_contact_loss=float(contact_loss.detach()),
                     world_ball_loss=float(ball_loss_value.detach()),

@@ -43,3 +43,28 @@ def test_extra_logits_do_not_change_existing_forward_or_parameter_schema():
     assert torch.allclose(out['numeric'][:,0],torch.tensor([.0001,.9999]))
     assert torch.equal(out['numeric'][:,0],out['boolean_logits'][:,0].sigmoid())
     restored=model();restored.load_state_dict(m.state_dict(),strict=True)
+
+
+def test_task_loss_attribution_matches_original_masked_objective_and_gradient():
+    from torch.nn import functional as F
+    from quadsmash.rl.supermimic_event_hazard_v1 import event_hazard_loss
+    m=model();torch.manual_seed(24)
+    batch=4
+    target=torch.tensor([[0.,1.],[1.,3.],[1.,.5],[0.,-1.]])
+    valid=torch.tensor([[1.,0.],[1.,1.],[0.,1.],[0.,0.]])
+    paid=torch.zeros(batch,8);paid[0]=1;after=paid.clone();after[1,0]=1
+    outputs={k:torch.randn(batch,width,requires_grad=True) for k,width in
+             dict(numeric=2,boolean_logits=2,valid_logits=2,hazards=8,torque=18,
+                  terminal_logit=1,complete_logit=1).items()}
+    torque=torch.randn(batch,18);term=torch.tensor([[1.],[0.],[0.],[1.]])
+    parts=m.supervision_loss_values(outputs,target,valid,paid,after,torque,term,1-term,per_row=True)
+    cont=valid*(~m.bool_columns);bits=valid*m.bool_columns
+    full=(((outputs['numeric']-target)/m.memory_scale).square()*cont).sum()/cont.sum()
+    full+=(F.binary_cross_entropy_with_logits(outputs['boolean_logits'],target.clamp(0,1),reduction='none')*bits).sum()/bits.sum()
+    full+=.1*F.binary_cross_entropy_with_logits(outputs['valid_logits'],valid)+event_hazard_loss(outputs['hazards'],paid,after)
+    full+=.1*((outputs['torque']-torque)/20).square().mean()
+    full+=F.binary_cross_entropy_with_logits(outputs['terminal_logit'],term)+F.binary_cross_entropy_with_logits(outputs['complete_logit'],1-term)
+    torch.testing.assert_close(parts.mean(),full)
+    expected=torch.autograd.grad(full,tuple(outputs.values()))
+    actual=torch.autograd.grad(parts.mean(),tuple(outputs.values()))
+    for x,y in zip(expected,actual):torch.testing.assert_close(x,y)

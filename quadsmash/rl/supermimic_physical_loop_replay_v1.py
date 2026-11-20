@@ -307,7 +307,7 @@ class PhysicalLoopReplay:
 
     def window(self, steps=16, batch=128, iteration=0, device='cuda:0',
                *, source_quota=None, stage_quota=None,
-               recent_policy_window=32, recent_tick_window=1024, head='recovery',excluded_lanes=()):
+               recent_policy_window=32, recent_tick_window=1024, head='recovery',excluded_lanes=(),report_loss_groups=False):
         d, streams, stage_ids, source_ids_all, policy_versions, native_ticks = self._ordered()
         if self.count < steps:
             raise RuntimeError(f'Replay has {self.count} ticks; needs {steps}')
@@ -438,6 +438,14 @@ class PhysicalLoopReplay:
         start_episode = d['episode'][t, lanes]
         start_stream = streams[t]
         start_source = source_codes[t, lanes]
+        if report_loss_groups:
+            source_groups = {'initial_archive': 0, 'recent_online': 1, 'older_online': 2,
+                             'action_identification': SOURCE_CODES['action_identification'],
+                             'contact_event': SOURCE_CODES['contact_event']}
+            event_masks = stage_pools if (source_quota or stage_quota) else {'uniform':valid}
+            counts['loss_groups'] = dict(head=head,
+                source={k:torch.where(start_source==code)[0].tolist() for k,code in source_groups.items()},
+                event={k:torch.where(mask[t,lanes])[0].tolist() for k,mask in event_masks.items()})
         _,episode_counts=torch.unique(torch.stack((start_stream,lanes,start_episode),1),dim=0,return_counts=True)
         actual_source_counts={
             'initial_archive': int((start_source == 0).sum()),

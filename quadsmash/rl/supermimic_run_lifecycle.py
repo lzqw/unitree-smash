@@ -62,6 +62,14 @@ def native_process_main(main):
     os.environ['QUADSMASH_SKIP_KIT_CLOSE'] = '1'
     try:
         main()
+    except SystemExit as exit_request:
+        # argparse handles --help and invalid input before an app exists.
+        sys.stdout.flush()
+        sys.stderr.flush()
+        if exit_request.code is None or isinstance(exit_request.code,int):
+            os._exit(exit_request.code or 0)
+        print(str(exit_request.code), file=sys.stderr, flush=True)
+        os._exit(1)
     except BaseException:
         traceback.print_exc()
         sys.stderr.flush()

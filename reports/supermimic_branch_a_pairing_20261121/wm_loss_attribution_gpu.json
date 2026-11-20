@@ -1,0 +1,409 @@
+{
+  "scope": "Disposable supervised GPU update using 32 original cases at H16/B128; no native policy optimizer, no accepted WM candidate",
+  "source": {
+    "initial_sha256": "03463185ebcb5a211e0ee458edee10a1e577fbdd5f17c59934f7fae6a89a4295",
+    "probes": {
+      "path": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/train_excitation_62",
+      "status_sha256": "c881c3e80053e24a44c0c8c196e90c7ebbdd63abf16b0fb60d7fb896abb42784",
+      "source_checkpoint_sha256": "53cc753af3cda0684bbc993ae5878d398b7e8e9f3844c14c8a8a03b2ff22663b",
+      "spec_branches": {
+        "spec_00_tick285": {
+          "nominal_a": "f6eecac0320a97e6cf27c107cb0b1ba58d9e8722bee34d9601b34ce7ca75e704",
+          "nominal_b": "4593ae673bbe25873f0568014d7ab182ae73759649e9025c9927a52160a3fb34",
+          "minus": "a576f299eb4436010e2fb30dd304464c0d93d8c742a448ffed0c45a8952d43a2",
+          "plus": "7c5f7091e80dc369ab2d5689716f4a7af2f4ddb104bb2f2b51e6e1924f0b6e13"
+        }
+      },
+      "included_lanes": {
+        "spec_00_tick285": [
+          9,
+          10,
+          12,
+          19,
+          20,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          31,
+          33,
+          35,
+          36,
+          42,
+          43,
+          45,
+          47,
+          52,
+          54,
+          55,
+          56,
+          58,
+          63,
+          64,
+          66,
+          67,
+          68,
+          69
+        ]
+      },
+      "excluded_lanes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        21,
+        30,
+        32,
+        34,
+        37,
+        38,
+        39,
+        40,
+        41,
+        44,
+        46,
+        48,
+        49,
+        50,
+        51,
+        53,
+        57,
+        59,
+        60,
+        61,
+        62,
+        65,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127
+      ],
+      "measured_windows": 64,
+      "signed_streams": 2,
+      "world_window_steps": 16,
+      "original_lane_by_replay_lane": [
+        9,
+        10,
+        12,
+        19,
+        20,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        31,
+        33,
+        35,
+        36,
+        42,
+        43,
+        45,
+        47,
+        52,
+        54,
+        55,
+        56,
+        58,
+        63,
+        64,
+        66,
+        67,
+        68,
+        69
+      ]
+    }
+  },
+  "sampling": {
+    "source_counts": {
+      "initial_archive": 96,
+      "recent_online": 0,
+      "older_online": 0,
+      "action_identification": 32,
+      "contact_event": 0
+    },
+    "stage_counts": {
+      "uniform": 80,
+      "hit_prepare": 32,
+      "contact_release": 16
+    },
+    "stage_actual_counts": {
+      "uniform": 128,
+      "hit_prepare": 63,
+      "contact_release": 27
+    },
+    "source_requested": {
+      "action_identification": 32,
+      "initial_archive": 96
+    },
+    "stage_requested": {
+      "uniform": 80,
+      "hit_prepare": 32,
+      "contact_release": 16
+    },
+    "source_shortfall": {
+      "action_identification": 0,
+      "initial_archive": 0
+    },
+    "stage_shortfall": {
+      "uniform": 0,
+      "hit_prepare": 0,
+      "contact_release": 0
+    },
+    "actual_event_coverage": {
+      "approach_active": 71,
+      "hit_prepare": 63,
+      "contact_release": 27,
+      "approach_failure": 22,
+      "post_hit": 64,
+      "near_miss": 10,
+      "illegal_contact": 6,
+      "invalid_outgoing": 6,
+      "failed_net_crossing": 0,
+      "failed_target_landing": 0,
+      "uniform": 128
+    },
+    "fallback_count": 0,
+    "joint_flow_count": 128,
+    "joint_quota_feasible": true,
+    "allocator": "grouped_integer",
+    "effective_weight": {
+      "source": {
+        "initial_archive": 0.75,
+        "recent_online": 0.0,
+        "older_online": 0.0,
+        "action_identification": 0.25,
+        "contact_event": 0.0
+      },
+      "stage": {
+        "uniform": 1.0,
+        "hit_prepare": 0.4921875,
+        "contact_release": 0.2109375
+      }
+    },
+    "max_per_episode": 8,
+    "actual_max_per_episode": 8,
+    "unique_window_count": 128,
+    "approach_missing_fields": {
+      "approach_gate": 0,
+      "racket_distance": 0,
+      "had_contact": 0,
+      "released": 0,
+      "qualified": 0,
+      "frame_hit": 0,
+      "attack": 0,
+      "crossed_net": 0,
+      "landed_target": 0,
+      "next_had_contact": 0,
+      "next_released": 0,
+      "next_qualified": 0,
+      "next_frame_hit": 0,
+      "next_attack": 0,
+      "next_crossed_net": 0,
+      "next_landed_target": 0
+    },
+    "window_count": 128,
+    "unique_episode_count": 55,
+    "unique_stream_count": 3,
+    "unique_source_count": 2,
+    "repeated_episode_max": 8,
+    "policy_version_min": -1,
+    "policy_version_max": 0,
+    "native_tick_min": -1,
+    "native_tick_max": 744,
+    "source_metadata": "recorded source + policy-version age + native-tick age"
+  },
+  "stats": {
+    "loss_by_group": {
+      "head": "approach",
+      "overall": {
+        "valid_transition_count": 2048,
+        "windows": 128,
+        "loss_per_valid_transition": 93.67835235595703
+      },
+      "by_source": {
+        "initial_archive": {
+          "valid_transition_count": 1536,
+          "windows": 96,
+          "loss_per_valid_transition": 59.96026102701823
+        },
+        "recent_online": {
+          "valid_transition_count": 0,
+          "windows": 0,
+          "loss_per_valid_transition": null
+        },
+        "older_online": {
+          "valid_transition_count": 0,
+          "windows": 0,
+          "loss_per_valid_transition": null
+        },
+        "action_identification": {
+          "valid_transition_count": 512,
+          "windows": 32,
+          "loss_per_valid_transition": 194.83262634277344
+        },
+        "contact_event": {
+          "valid_transition_count": 0,
+          "windows": 0,
+          "loss_per_valid_transition": null
+        }
+      },
+      "by_event_window": {
+        "approach_active": {
+          "valid_transition_count": 1136,
+          "windows": 71,
+          "loss_per_valid_transition": 160.29559584066902
+        },
+        "hit_prepare": {
+          "valid_transition_count": 1008,
+          "windows": 63,
+          "loss_per_valid_transition": 179.74099392361111
+        },
+        "contact_release": {
+          "valid_transition_count": 432,
+          "windows": 27,
+          "loss_per_valid_transition": 115.2191749855324
+        },
+        "approach_failure": {
+          "valid_transition_count": 352,
+          "windows": 22,
+          "loss_per_valid_transition": 278.70669833096593
+        },
+        "post_hit": {
+          "valid_transition_count": 1024,
+          "windows": 64,
+          "loss_per_valid_transition": 56.88962173461914
+        },
+        "near_miss": {
+          "valid_transition_count": 160,
+          "windows": 10,
+          "loss_per_valid_transition": 485.698486328125
+        },
+        "illegal_contact": {
+          "valid_transition_count": 96,
+          "windows": 6,
+          "loss_per_valid_transition": 146.48103841145834
+        },
+        "invalid_outgoing": {
+          "valid_transition_count": 96,
+          "windows": 6,
+          "loss_per_valid_transition": 65.94608561197917
+        },
+        "failed_net_crossing": {
+          "valid_transition_count": 0,
+          "windows": 0,
+          "loss_per_valid_transition": null
+        },
+        "failed_target_landing": {
+          "valid_transition_count": 0,
+          "windows": 0,
+          "loss_per_valid_transition": null
+        },
+        "uniform": {
+          "valid_transition_count": 2048,
+          "windows": 128,
+          "loss_per_valid_transition": 93.67835235595703
+        }
+      },
+      "event_window_overlap": true,
+      "normalization": "same valid-field and hazard denominators as the optimized batch"
+    },
+    "world_loss": 93.67835235595703,
+    "world_gradient": 3417.056884765625,
+    "world_updates": 1,
+    "world_physical_loss": 89.11811828613281,
+    "world_contact_loss": 0.05784568563103676,
+    "world_ball_loss": 0.45845118165016174,
+    "world_task_loss": 2.3677685260772705,
+    "world_racket_loss": 0.039859239012002945,
+    "world_racket_loss_weight": 1.0,
+    "world_racket_position_loss": 0.10589071363210678,
+    "world_racket_normal_loss": 0.00022988033015280962,
+    "world_racket_velocity_loss": 0.0354868546128273,
+    "world_racket_angular_loss": 0.017829498276114464,
+    "world_action_ball_loss": 2.0947515964508057,
+    "world_action_ball_gradient": 0.0,
+    "world_physical_gradient": 709.3795776367188,
+    "world_ball_gradient": 3342.046630859375,
+    "world_task_gradient": 61.523529052734375,
+    "task_feedback_contract": "schema-decode-encode-equivalent-feedback-v1",
+    "world_seconds": 1.3245171190064866
+  },
+  "device": "NVIDIA GeForce RTX 5080",
+  "peak_allocated_bytes": 244758528,
+  "actor_updates": 0,
+  "critic_updates": 0
+}
