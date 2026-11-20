@@ -1,0 +1,73 @@
+{
+  "pilot_sha256": "7e41695ee31e2e2814e08bb1a32de02c7bf086632f6db58d0a85a50331e92d0a",
+  "archives": 20,
+  "fit_split": "train",
+  "scope": "Isolated native contact substeps in the contributing archives. Measured normal load and contact point are used. Friction-only substeps remain in the absolute error.",
+  "fitted": {
+    "mu": 0.25,
+    "gain": 0.2857142857142857
+  },
+  "splits": {
+    "train": {
+      "baseline": {
+        "substeps": 1726,
+        "loaded_with_direction": 1631,
+        "friction_without_normal": 95,
+        "vector_rmse_mps": 0.5883669853210449,
+        "zero_rmse_mps": 1.6105623245239258,
+        "slip_direction_cosine_median": 0.9996570944786072,
+        "observed_friction_to_normal_median": 0.0932627022266388
+      },
+      "fitted": {
+        "substeps": 1726,
+        "loaded_with_direction": 1631,
+        "friction_without_normal": 95,
+        "vector_rmse_mps": 0.5686140060424805,
+        "zero_rmse_mps": 1.6105623245239258,
+        "slip_direction_cosine_median": 0.9996570944786072,
+        "observed_friction_to_normal_median": 0.0932627022266388
+      }
+    },
+    "validation": {
+      "baseline": {
+        "substeps": 339,
+        "loaded_with_direction": 330,
+        "friction_without_normal": 9,
+        "vector_rmse_mps": 0.5513750314712524,
+        "zero_rmse_mps": 1.7014296054840088,
+        "slip_direction_cosine_median": 0.999610185623169,
+        "observed_friction_to_normal_median": 0.09474527090787888
+      },
+      "fitted": {
+        "substeps": 339,
+        "loaded_with_direction": 330,
+        "friction_without_normal": 9,
+        "vector_rmse_mps": 0.5555070638656616,
+        "zero_rmse_mps": 1.7014296054840088,
+        "slip_direction_cosine_median": 0.999610185623169,
+        "observed_friction_to_normal_median": 0.09474527090787888
+      }
+    },
+    "test": {
+      "baseline": {
+        "substeps": 388,
+        "loaded_with_direction": 370,
+        "friction_without_normal": 18,
+        "vector_rmse_mps": 0.6842249631881714,
+        "zero_rmse_mps": 1.655862808227539,
+        "slip_direction_cosine_median": 0.9999414086341858,
+        "observed_friction_to_normal_median": 0.0931987389922142
+      },
+      "fitted": {
+        "substeps": 388,
+        "loaded_with_direction": 370,
+        "friction_without_normal": 18,
+        "vector_rmse_mps": 0.5458487272262573,
+        "zero_rmse_mps": 1.655862808227539,
+        "slip_direction_cosine_median": 0.9999414682388306,
+        "observed_friction_to_normal_median": 0.0931987389922142
+      }
+    }
+  },
+  "contact_gradient_admitted": false
+}
