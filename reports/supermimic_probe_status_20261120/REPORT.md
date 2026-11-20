@@ -114,3 +114,18 @@ delay and actuator response instead of only a single late perturbation.
 The current next engineering target is to separate the Action to Racket
 response from the Racket to Ball response. Increasing V13 updates without
 that separation is not expected to improve the native response metrics.
+
+## Action-identification collection profile
+
+For the next native collection, the event core uses four control ticks before
+the recorded event and eight ticks after it. The larger world-model context
+remains four ticks before and 64 ticks after the event. The paired action
+perturbation is introduced four ticks before the event and held for four
+control ticks. This separates actuator delay and racket motion from the
+single-tick contact response. The resulting probes are packed by
+`build_supermimic_action_identification_dataset.py` into a dataset explicitly
+marked as unavailable for policy-distribution Replay.
+
+The collection is still an identification experiment. It cannot issue a
+contact receipt or unlock Actor/Critic training until native response direction
+and amplitude pass on an independent holdout.
