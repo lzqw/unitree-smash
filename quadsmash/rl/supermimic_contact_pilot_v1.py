@@ -590,7 +590,9 @@ def _assign_splits(rows: list[dict], seed: int) -> dict:
              for name in split_names}
     group_overlap = {}
     for field in ("spec_id", "episode_id", "capture_id", "split_group"):
-        values = {name: {row.get(field) for row in rows if row["split"] == name}
+        values = {name: {row.get(field) for row in rows
+                         if row["split"] == name
+                         and not (field == "spec_id" and row.get(field) == "spec_unknown")}
                   for name in split_names}
         group_overlap[field] = {
             f"{left}:{right}": sorted(values[left] & values[right])
