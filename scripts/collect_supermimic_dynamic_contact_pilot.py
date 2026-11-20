@@ -11,6 +11,18 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 
+def local_velocity_direction(lanes, seed, mode):
+    import torch
+    if mode == 'racket_face_normal':
+        direction = torch.zeros(lanes,3)
+        direction[:,0] = 1.
+        return direction
+    if mode != 'random':
+        raise ValueError('Unknown surface intervention direction')
+    generator = torch.Generator().manual_seed(seed+1_000_000)
+    return torch.nn.functional.normalize(torch.randn(lanes,3,generator=generator),dim=-1)
+
+
 def record_intervened_initial_twist(trace, intervention):
     """A root velocity write changes the native link before IsaacLab refreshes its pose-time cache."""
     frames = trace['tensors']
@@ -166,9 +178,7 @@ def collect(args):
             if args.velocity_pair_branch is not None:
                 # Freeze the nominal shuttle launch before varying the moving surface.
                 # Changing the target command here would measure a different derivative.
-                direction_rng = torch.Generator().manual_seed(seed+1_000_000)
-                direction_local = torch.nn.functional.normalize(torch.randn(
-                    (args.lanes,3),generator=direction_rng),dim=-1).to(device)
+                direction_local = local_velocity_direction(args.lanes,seed,args.surface_direction).to(device)
                 direction = quat_rotate(q,direction_local)
                 sign = {'nominal_a':0,'nominal_b':0,'minus':-1,'plus':1}[args.velocity_pair_branch]
                 change = sign*args.surface_epsilon_mps*direction
@@ -185,7 +195,7 @@ def collect(args):
                 new_velocity[:,:3] += change
                 env.robot.write_root_velocity_to_sim(new_velocity)
                 intervention = dict(branch=args.velocity_pair_branch,epsilon_mps=args.surface_epsilon_mps,
-                        direction_world=direction.cpu(),delta_world=change.cpu(),nominal_root_com_velocity=old_velocity.cpu(),
+                        surface_direction=args.surface_direction,direction_world=direction.cpu(),delta_world=change.cpu(),nominal_root_com_velocity=old_velocity.cpu(),
                         nominal_shuttle=ball.cpu(),joint_targets=joint_targets.cpu(),
                         scope='controlled moving surface response; no Actor command perturbation',
                         unloaded_racket_oracle=args.unloaded_racket_oracle)
@@ -245,6 +255,8 @@ def main():
     parser.add_argument('--velocity-pair-branch',choices=('nominal_a','nominal_b','minus','plus'))
     parser.add_argument('--unloaded-racket-oracle',action='store_true',
                         help='Record a native robot trajectory with the shuttle parked; use only alongside a matched loaded fixture')
+    parser.add_argument('--surface-direction',choices=('random','racket_face_normal'),default='random',
+                        help='Axis of the controlled surface velocity perturbation in racket coordinates')
     parser.add_argument('--surface-epsilon-mps',type=float,default=.05,
                         help='Per-sign linear velocity change of the robot root after defining the common shuttle launch')
     AppLauncher.add_app_launcher_args(parser)

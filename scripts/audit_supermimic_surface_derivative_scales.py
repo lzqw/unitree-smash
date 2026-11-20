@@ -8,7 +8,7 @@ import torch
 from quadsmash.rl.supermimic_fixture_coordinates import fixture_court_origin
 import torch.nn.functional as F
 
-from audit_supermimic_paired_racket_fixture import signatures, verify_initial_intervention, common_native_twist, verify_common_twist
+from audit_supermimic_paired_racket_fixture import signatures, verify_initial_intervention, common_native_twist, verify_common_twist, verify_direction
 from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, sha, tick
 
 
@@ -35,6 +35,7 @@ def vector_summary(reference, estimate):
 def read_trial(directory, seed, branch, expected, settings, prior, design=None, *, material=None):
     path = directory / branch / f'spec_{seed}' / 'trace.pt'
     trial = torch.load(path, mmap=True, weights_only=True, map_location='cpu')
+    verify_direction(trial,design)
     tr = trial['raw']['substep_trace']
     t = tr['tensors']
     v = trial['velocity_intervention']

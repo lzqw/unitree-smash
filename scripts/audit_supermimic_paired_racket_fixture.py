@@ -15,6 +15,21 @@ from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES
 from quadsmash.rl.supermimic_racket_material_contract_v1 import validate_contract
 
 
+def verify_direction(trial, design):
+    from collect_supermimic_dynamic_contact_pilot import local_velocity_direction
+    from quadsmash.rl.supermimic_contact_pilot_v1 import _quat_rotate
+    intervention = trial['velocity_intervention']
+    if design is None and 'surface_direction' not in intervention:
+        # Older unregistered inputs bind their actual vector across the native branches.
+        return
+    expected = (design or {}).get('surface_direction','random')
+    if intervention.get('surface_direction','random') != expected:
+        raise ValueError('Intervention and design specify different racket directions')
+    quat = trial['raw']['substep_trace']['tensors']['racket_quaternion_w'][0]
+    axis = local_velocity_direction(len(quat),trial['seed'],expected).to(quat)
+    torch.testing.assert_close(intervention['direction_world'],_quat_rotate(quat,axis),rtol=0,atol=2.e-6)
+
+
 def inferred_support(trace, geometry):
     """Closest analytic shape to each native loaded point, with explicit ambiguity.
 
@@ -111,6 +126,7 @@ def main():
             trial=torch.load(path,mmap=True,map_location='cpu',weights_only=True)
             if trial.get('schema')!='native-controlled-contact-trial-v1':
                 raise ValueError('A loaded native fixture is required for impact labels')
+            verify_direction(trial,design)
             tr=trial['raw']['substep_trace'];t=tr['tensors'];v=trial['velocity_intervention']
             if v['branch']!=b or trial['seed']!=seed or tr['count']!=prior.steps+1 or tr['physics_dt_s']!=prior.sub_dt:
                 raise ValueError('Invalid physical branch or clock')

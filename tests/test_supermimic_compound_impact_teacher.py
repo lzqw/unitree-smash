@@ -1,4 +1,5 @@
 import torch
+import pytest
 
 from scripts.audit_supermimic_compound_impact_teacher import solve_patch
 from scripts.audit_supermimic_paired_racket_fixture import classify
@@ -419,3 +420,30 @@ def test_native_endpoint_diagnostic_uses_authored_string_plane_normal():
     quat=torch.tensor([[.5,.5,.5,.5]],dtype=torch.float64)
     got=racket_fields((vector,quat,vector,vector))
     torch.testing.assert_close(got['normal'],torch.tensor([[0.,1.,0.]],dtype=torch.float64))
+
+
+def test_separate_native_anchor_planes_recover_single_sphere_stick_and_slide():
+    from scripts.audit_supermimic_friction_load_response import patch_friction
+    normal = torch.tensor([[0., 0., 1.]], dtype=torch.double)
+    arm = -.02 * normal
+    velocity = torch.tensor([1.,0.,-1.],dtype=torch.double)
+    spin = torch.zeros_like(velocity)
+    surface = torch.zeros_like(arm)
+    for budget, expected in [(1., 2./7), (.1,.1)]:
+        actual = patch_friction(arm, surface, velocity, spin, normal, torch.tensor([budget]), .4*.02**2)
+        torch.testing.assert_close(actual,torch.tensor([-expected,0.,0.],dtype=torch.double))
+
+
+def test_native_surface_direction_follows_the_local_bed_without_changing_random_panel():
+    from collect_supermimic_dynamic_contact_pilot import local_velocity_direction
+    from audit_supermimic_paired_racket_fixture import verify_direction
+    q = torch.tensor([[2**-.5,0.,0.,2**-.5]])
+    fixed = local_velocity_direction(1,17,'racket_face_normal')
+    torch.testing.assert_close(fixed,torch.tensor([[1.,0.,0.]]))
+    original = torch.nn.functional.normalize(torch.randn(1,3,generator=torch.Generator().manual_seed(1_000_017)),dim=-1)
+    torch.testing.assert_close(local_velocity_direction(1,17,'random'),original,rtol=0,atol=0)
+    trial = dict(seed=17, velocity_intervention=dict(surface_direction='racket_face_normal',
+                 direction_world=torch.tensor([[0.,1.,0.]])),raw=dict(substep_trace=dict(tensors=dict(racket_quaternion_w=q[None]))))
+    verify_direction(trial,{'surface_direction':'racket_face_normal'})
+    with pytest.raises(ValueError):
+        verify_direction(trial,{'surface_direction':'random'})

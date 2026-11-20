@@ -16,11 +16,34 @@ from quadsmash.rl.supermimic_contact_pilot_v1 import _quat_rotate_inverse
 from quadsmash.rl.supermimic_racket_material_contract_v1 import validate_contract
 
 
+def patch_friction(arms, surfaces, velocity, spin, normals, budget, inertia, *, reverse=False):
+    """Project each observed anchor onto its own tangent plane and friction disk."""
+    result = torch.zeros_like(arms)
+    indices = range(len(arms)-1,-1,-1) if reverse else range(len(arms))
+    for _ in range(4):
+        for j in indices:
+            n, arm = normals[j], arms[j]
+            slip = velocity + torch.linalg.cross(spin,arm) - surfaces[j]
+            tangent_slip = slip - n * torch.dot(slip,n)
+            # In the tangent plane the sphere's effective mass is diagonal along
+            # the projected arm and its perpendicular, including off-centre anchors.
+            projected_arm = arm - n*torch.dot(n,arm)
+            response = 1 + arm.square().sum()/inertia
+            along = torch.dot(tangent_slip,projected_arm)*projected_arm/(inertia + torch.dot(n,arm).square())
+            trial = result[j] - (tangent_slip + along)/response
+            next_value = trial * (budget[j]/trial.norm().clamp_min(1.e-12)).clamp(max=1.)
+            change = next_value-result[j]
+            result[j] = next_value
+            velocity = velocity+change
+            spin = spin+torch.linalg.cross(arm,change)/inertia
+    return result.sum(0)
+
+
 def friction_trace(trace,geometry,mat,mass):
     t=trace['tensors']
     scale=trace['physics_dt_s']/mass
     nlanes=t['shuttle_state_w'].shape[1]
-    modes=('pre','pre_radial','post_racket','actual')
+    modes=('pre','pre_radial','post_racket','patch','patch_reversed','actual')
     result={m:torch.zeros(nlanes,3,dtype=torch.float64) for m in modes}
     rounded=(geometry.racket_round_centers,geometry.racket_round_axes,geometry.racket_round_halves,
              geometry.racket_round_radii,geometry.racket_round_capsule)
@@ -55,7 +78,7 @@ def friction_trace(trace,geometry,mat,mass):
             shape=ds.abs().argmin(-1)
             friction_budget=(loads.norm(dim=-1)*mat[shape,1]).sum()
             by_mode={}
-            for mode in modes[:-1]:
+            for mode in ('pre','pre_radial','post_racket'):
                 lever=-geometry.radius*normal[None] if mode=='pre_radial' else arms
                 when=i+(mode=='post_racket')
                 surface=t['racket_linear_velocity_w'][when,lane].double() + torch.linalg.cross(
@@ -64,8 +87,26 @@ def friction_trace(trace,geometry,mat,mass):
                 dv=sticking_delta(lever,slip,normal,inertia,friction_budget)
                 result[mode][lane]+=dv
                 by_mode[mode]=dv.tolist()
+            # Native force records identify the racket link, but not a collision shape.
+            # Bind measured anchors to nearest measured normal points in world space.
+            distances = torch.cdist(anchors, points)
+            nearest = distances.argmin(dim=1)
+            patch_ids = shape[nearest]
+            budget = torch.zeros_like(arms[:,0])
+            for shape_id in patch_ids.unique():
+                group = patch_ids==shape_id
+                budget[group] = loads[shape==shape_id].norm(dim=-1).sum()*mat[shape_id,1]/group.sum()
+            patch_normals = normalize(loads[nearest],dim=-1)
+            surface = t['racket_linear_velocity_w'][i,lane].double() + torch.linalg.cross(
+                t['racket_angular_velocity_w'][i,lane].double().expand_as(arms),anchors-rc)
+            for mode in ('patch','patch_reversed'):
+                dv = patch_friction(arms,surface,v+load,omega+spin_n,patch_normals,budget,inertia,
+                                    reverse=mode=='patch_reversed')
+                result[mode][lane]+=dv
+                by_mode[mode]=dv.tolist()
             records.append(dict(lane=lane,step=i,shapes=shape.tolist(),normal_points=len(points),
-                                friction_points=len(force),measured=true.tolist(),bound_mps=float(friction_budget),
+                                friction_points=len(force),anchor_to_normal_distance_m=distances.amin(dim=1).tolist(),
+                                inferred_anchor_shapes=patch_ids.tolist(),measured=true.tolist(),bound_mps=float(friction_budget),
                                 normalized_friction=float(true.norm()/load.norm().clamp_min(1.e-12)),predicted=by_mode))
     return result,records
 
