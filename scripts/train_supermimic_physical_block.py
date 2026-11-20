@@ -85,6 +85,10 @@ def main():
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--resume-training',type=Path)
     parser.add_argument('--resume-next-cycle',action='store_true',help='Start a new cycle only after checkpoint-matched native acceptance')
+    parser.add_argument('--resume-reset-schedule',action='store_true',
+                        help='Resume model/optimizer state while starting a fresh bounded short-alternating schedule')
+    parser.add_argument('--resume-without-replay',action='store_true',
+                        help='Bounded diagnostic resume using model/optimizer state without loading historical online chunks')
     parser.add_argument('--native-acceptance-receipt',type=Path)
     parser.add_argument('--training-profile',choices=('bounded','large'),default='bounded')
     parser.add_argument('--training-stage',choices=('wm_calibrate','shadow_policy','precontact_only','contact_detached','full_contact'),default='full_contact')
@@ -213,11 +217,13 @@ def main():
         parser.error('Large training requires wm-sampling-mode=promotion')
     if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
     if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
+    if args.resume_without_replay and (args.resume_training is None or args.training_profile=='large' or args.training_stage=='full_contact'):
+        parser.error('resume-without-replay is restricted to bounded non-promotable diagnostics')
     from quadsmash.rl.supermimic_alternating_schedule_v1 import make_plan,AlternatingSchedule,refresh_world_budgets,run_schedule
     from quadsmash.rl.supermimic_training_audit_v1 import sampling_promotion_gate, rollback_audit
     alternating=None
     if args.update_mode=='sequential' and args.sequential_layout=='short-alternating' and args.training_stage!='wm_calibrate':
-        if args.resume_start_block!='recovery' or args.actor_update_budget is not None:
+        if (not args.resume_reset_schedule and args.resume_start_block!='recovery') or args.actor_update_budget is not None:
             parser.error('Short alternating resumes its saved event cursor, not resume-start-block/legacy actor budget')
         if args.refresh_ticks!=800:parser.error('Short alternating requires full frozen refresh; cannot disable it')
         if args.refresh_world_updates<2 or args.refresh_critic_updates<1:
@@ -338,6 +344,13 @@ def run(args, *, alternating=None):
         runtime_validation_data=package['tensors'];runtime_validation_path=str(args.packed_data)
         replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema,capacity_ticks=args.replay_capacity_ticks)
         lifecycle_stage(args.output, 'REPLAY_READY')
+        # Resolve the exact execution contract before validating any reference
+        # bank.  The reference-bank check runs during startup, before the
+        # training environment is constructed, so leaving this assignment
+        # until the later environment setup caused a startup-only
+        # UnboundLocalError on valid TOI-racket canary runs.
+        from quadsmash.rl.supermimic_policy_execution_v1 import contract as execution_contract
+        policy_execution = execution_contract()
         reference_bank=None
         if args.task_reference_bank is not None:
             from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
@@ -467,7 +480,24 @@ def run(args, *, alternating=None):
         refresh_world_updates=0;refresh_critic_updates=0
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
-            if resumed['adapter_schema']!=adapter.schema or resumed['metadata']['physical_imagination']!=adapter.manifest:
+            # Training stage, contact-gradient mode and WM trainability are
+            # deliberately mutable across a resume (for example, a detached
+            # shadow canary can be resumed as TOI-racket-only).  Compare the
+            # immutable physical/execution contract instead of the entire
+            # runtime manifest, otherwise a valid stage transition is rejected
+            # as a source mismatch before the first update.
+            immutable_manifest_keys = (
+                'checkpoint_paths', 'checkpoint_sha256', 'g07_execution_root',
+                'task_schema', 'actor_whitelist', 'actor_heads',
+                'adapter_schema', 'physical_class', 'physical_schema',
+                'ball_class', 'task_class', 'event_semantics',
+                'discrete_approximations',
+            )
+            saved_physical = resumed['metadata']['physical_imagination']
+            current_physical = adapter.manifest
+            saved_contract = {key: saved_physical.get(key) for key in immutable_manifest_keys}
+            current_contract = {key: current_physical.get(key) for key in immutable_manifest_keys}
+            if resumed['adapter_schema']!=adapter.schema or saved_contract!=current_contract:
                 raise ValueError('Resume physical model/execution source mismatch')
             actor.load_state_dict(resumed['actor'],strict=True);adapter.load_state_dict(resumed['world'],strict=True)
             if resumed.get('reference_bank') is not None:
@@ -490,12 +520,12 @@ def run(args, *, alternating=None):
             resumed_global=dict(resumed.get('global_counters',{}))
             critic_coverage_blocks=int(resumed.get('critic_coverage_blocks',0))
             if trainer.frozen_hash()!=trainer.frozen_actor_hash:raise ValueError('Resume changed frozen actor parameters')
-            replay_archives=resumed['replay_archives']
+            replay_archives=[] if args.resume_without_replay else resumed['replay_archives']
             # A direct Approach resume must retain the Recovery-generated
             # online transitions; skipping them breaks the native-data→WM
             # closed loop.  Rebuild every committed archive before restoring
             # sampler metadata.
-            replay_receipts=resumed.get('replay_archive_receipts')
+            replay_receipts=None if args.resume_without_replay else resumed.get('replay_archive_receipts')
             if replay_receipts is not None and len(replay_receipts)!=len(replay_archives):raise ValueError('Replay receipt/archive count mismatch')
             for archive_index,directory in enumerate(replay_archives):
                 replay.new_stream(source='online',policy_version=int(resumed_global.get('accepted',0)))
@@ -520,14 +550,15 @@ def run(args, *, alternating=None):
             if 'dynamic_stage_starts' in resumed:replay.stage_starts=tensor_tree_copy(resumed['dynamic_stage_starts'],cpu=True)
             replay.generator.set_state(resumed['replay_rng'].cpu())
             replay_state=resumed.get('replay_state',{})
-            replay.current_source=str(replay_state.get('current_source','online'))
-            replay.current_stream=int(replay_state.get('current_stream',replay.current_stream))
-            replay.current_policy_version=int(replay_state.get('current_policy_version',resumed_global.get('accepted',0)))
-            replay._native_tick_counter=int(replay_state.get('native_tick_counter',replay._native_tick_counter))
             saved_meta=resumed.get('replay_metadata')
-            if saved_meta is not None and (replay.count!=int(replay_state.get('count',-1)) or replay.write_pos!=int(replay_state.get('write_pos',-1))):
-                raise ValueError('Replay tensor reconstruction differs from checkpoint metadata; refusing mismatched resume')
-            if saved_meta is not None:
+            if not args.resume_without_replay:
+                replay.current_source=str(replay_state.get('current_source','online'))
+                replay.current_stream=int(replay_state.get('current_stream',replay.current_stream))
+                replay.current_policy_version=int(replay_state.get('current_policy_version',resumed_global.get('accepted',0)))
+                replay._native_tick_counter=int(replay_state.get('native_tick_counter',replay._native_tick_counter))
+                if saved_meta is not None and (replay.count!=int(replay_state.get('count',-1)) or replay.write_pos!=int(replay_state.get('write_pos',-1))):
+                    raise ValueError('Replay tensor reconstruction differs from checkpoint metadata; refusing mismatched resume')
+            if saved_meta is not None and not args.resume_without_replay:
                 for key,value in saved_meta.get('approach_metadata',{}).items():
                     if value.shape!=replay.approach_metadata[key].shape:raise ValueError('Replay Approach metadata shape mismatch')
                     replay.approach_metadata[key].copy_(value.cpu())
@@ -550,11 +581,11 @@ def run(args, *, alternating=None):
             if alternating is None and schedule.complete():raise ValueError('Completed schedule requires explicit resume-next-cycle and native acceptance')
         if args.resume_training and not args.resume_next_cycle:
             saved_alternating=resumed.get('alternating_schedule')
-            if alternating is not None:
+            if alternating is not None and not args.resume_reset_schedule:
                 if saved_alternating is None:raise ValueError('Legacy checkpoint has no alternating cursor; no silent schedule migration')
                 alternating.load_state_dict(saved_alternating)
                 if alternating.complete:raise ValueError('Completed alternating cycle requires explicit native acceptance and resume-next-cycle')
-            elif saved_alternating is not None:
+            elif saved_alternating is not None and alternating is None and not args.resume_reset_schedule:
                 raise ValueError('Cannot silently resume alternating checkpoint in legacy layout')
         if args.resume_next_cycle:
             from quadsmash.rl.supermimic_long_run_contract_v1 import verify_native_promotion
@@ -591,8 +622,7 @@ def run(args, *, alternating=None):
             # Environment seeding must not overwrite the resumed learner RNG.
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
         stage(args.output,'AFTER_RESET')
-        from quadsmash.rl.supermimic_policy_execution_v1 import policy_forward,contract as execution_contract,resolve_contract
-        policy_execution=execution_contract()
+        from quadsmash.rl.supermimic_policy_execution_v1 import policy_forward,resolve_contract
         if args.resume_training and resolve_contract(resumed)[0]!=policy_execution:
             raise ValueError('Resume would change trained recovery gate')
         def applicable_probe(head,current):
@@ -707,7 +737,7 @@ def run(args, *, alternating=None):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
+        config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=args.world_learning_rate,critic_lr=2e-4,
             wm_sampling_mode=args.wm_sampling_mode,
             native_return_monitor=frozen_return_monitor.config,
