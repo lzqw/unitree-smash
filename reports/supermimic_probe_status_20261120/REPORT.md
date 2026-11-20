@@ -164,3 +164,50 @@ The 64-step ball-position p95 error decreased from 8.0644 m to 2.1084 m. This
 is a useful natural-distribution WM calibration result, but it does not prove
 contact-gradient correctness or policy improvement. The action-identification
 collection remains a separate source and has not been mixed into this fit.
+
+## Extended held action-identification collection
+
+The five-specification collection completed all 20 Isaac branches with zero
+branch errors. It contains five independent event ticks (`266`, `267`, `270`,
+`271`, `272`) and 12 selected paired rows. Each row has a four-control-tick
+causal action hold, nominal/minus/plus branches, substep traces, and a five-step
+sequence of executed targets, actions, native next states, foot contacts, ball
+presence and elapsed time. The packed dataset is
+`/home/autodrive/LZQW/experiments/supermimic_action_identification_dataset_20261120_lead4_hold4_v4.pt`.
+It remains marked `admitted_to_policy_training=false`.
+
+The post-collection temporal Oracle confirms that the delayed response is real.
+Across the eight contact-validation lanes, the median Body-WM/native gain at
+control steps 2--4 was approximately `0.80/0.81/0.78` for racket position,
+`0.80/0.74/0.75` for linear velocity, and `0.64/0.61/0.85` for angular
+velocity. Direction cosines were generally high after the first two steps, but
+low-response lanes and late-step velocity outliers remain. Endpoint-only
+metrics still understate the response and must not be used as the only
+acceptance statistic. Per-spec diagnostics are stored as
+`/home/autodrive/LZQW/experiments/supermimic_action_to_racket_oracle_20261120_lead4_hold4_v3_spec_*.json`.
+
+## Action-identification WM fit
+
+The new packed five-step native trajectories were used in a separate 256-update
+GPU body fit. The contact branch, flight branch, Actor and Critic were frozen.
+The fit uses a 10-row training-spec split and a two-row held-out fifth spec,
+with a small body-parameter anchor to the source WM. The checkpoint is
+`/home/autodrive/LZQW/experiments/supermimic_action_identification_world_fit_20261120_v3/world_with_manifest.pt`.
+
+On the held-out spec, racket position MAE improved from roughly `4.3 mm` to
+`1.0 mm` and linear-velocity MAE from roughly `0.23 m/s` to `0.15 m/s`, while
+full robot-state MAE increased from roughly `0.11` to `0.17` and angular-velocity
+MAE increased. The result is therefore a mixed diagnostic improvement, not a
+globally validated WM promotion. Re-running the temporal Oracle with this fit
+improved early linear-velocity gain but degraded some late-step direction and
+velocity samples. The fit remains offline evidence only and does not issue a
+WM or contact receipt.
+
+## Current gate
+
+The collection environment and data path are operational, and natural plus
+action-identification WM fits have completed without Actor/Critic updates.
+The action-to-racket response is now measurable over the delayed window, but
+the independent contact response and amplitude receipt is still not passed.
+Recovery/Approach policy learning remains intentionally closed pending explicit
+user confirmation and a stable holdout result.

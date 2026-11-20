@@ -109,6 +109,22 @@ def pack_collection(collection: str | Path, output: str | Path) -> dict[str, Any
         step_targets_plus = step_tensor("plus", "final_joint_targets")
         step_actions_minus = step_tensor("minus", "final_action")
         step_actions_plus = step_tensor("plus", "final_action")
+        step_states = {
+            branch: step_tensor(branch, "next_state")
+            for branch in BRANCHES
+        }
+        step_feet = {
+            branch: step_tensor(branch, "foot_contact")
+            for branch in BRANCHES
+        }
+        step_present = {
+            branch: step_tensor(branch, "ball_present")
+            for branch in BRANCHES
+        }
+        step_elapsed = {
+            branch: step_tensor(branch, "elapsed_s")
+            for branch in BRANCHES
+        }
         for row_index, lane in enumerate(selected_lanes):
             row: dict[str, Any] = {
                 "sample_id": f"{spec_dir.name}:lane{lane}",
@@ -135,6 +151,22 @@ def pack_collection(collection: str | Path, output: str | Path) -> dict[str, Any
                 "step_targets_plus": step_targets_plus[:, lane].clone(),
                 "step_final_actions_minus": step_actions_minus[:, lane].clone(),
                 "step_final_actions_plus": step_actions_plus[:, lane].clone(),
+                "step_next_states_nominal_a": step_states["nominal_a"][:, lane].clone(),
+                "step_next_states_nominal_b": step_states["nominal_b"][:, lane].clone(),
+                "step_next_states_minus": step_states["minus"][:, lane].clone(),
+                "step_next_states_plus": step_states["plus"][:, lane].clone(),
+                "step_foot_contact_nominal_a": step_feet["nominal_a"][:, lane].clone(),
+                "step_foot_contact_nominal_b": step_feet["nominal_b"][:, lane].clone(),
+                "step_foot_contact_minus": step_feet["minus"][:, lane].clone(),
+                "step_foot_contact_plus": step_feet["plus"][:, lane].clone(),
+                "step_ball_present_nominal_a": step_present["nominal_a"][:, lane].clone(),
+                "step_ball_present_nominal_b": step_present["nominal_b"][:, lane].clone(),
+                "step_ball_present_minus": step_present["minus"][:, lane].clone(),
+                "step_ball_present_plus": step_present["plus"][:, lane].clone(),
+                "step_elapsed_nominal_a": step_elapsed["nominal_a"][:, lane].clone(),
+                "step_elapsed_nominal_b": step_elapsed["nominal_b"][:, lane].clone(),
+                "step_elapsed_minus": step_elapsed["minus"][:, lane].clone(),
+                "step_elapsed_plus": step_elapsed["plus"][:, lane].clone(),
             }
             rows.append(row)
         source_specs.append({"name": spec_dir.name, "path": str(spec_path.resolve()), "sha256": _sha256(spec_path)})
