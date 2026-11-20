@@ -66,7 +66,7 @@ def measure(run, body, prior, material, cfg, launch, *, split_racket_path=False)
     torch.testing.assert_close(state[:,49:],torch.cat((first[:,:3],first[:,7:10]),-1))
     teacher_ball = state[:,49:]
     teacher_spin = body_spin = first[:,10:13]
-    hybrids = ({mode:(teacher_ball,teacher_spin) for mode in ('native_pose','native_twist')}
+    hybrids = ({mode:(teacher_ball,teacher_spin) for mode in ('native_pose','native_twist','native_endpoints')}
                if split_racket_path else {})
     timeline = []
     for trace,control in zip(ts,raw['step_sequence']):
@@ -84,9 +84,13 @@ def measure(run, body, prior, material, cfg, launch, *, split_racket_path=False)
                                                     measured_path=native_path,**settings)
         body_ball,body_hit,body_spin = tick(prior,state[:,49:],*args,initial_spin=body_spin,**settings)
         if hybrids:
-            estimate = predicted_racket_path(prior,start,end)
+            interpolation=dict(rotation_hermite=cfg['fitted'].get('racket_rotation_hermite',False))
+            estimate = predicted_racket_path(prior,start,end,**interpolation)
+            keys=('racket_position_w','racket_quaternion_w','racket_linear_velocity_w','racket_angular_velocity_w')
+            native_endpoints=predicted_racket_path(prior,[t[k][0] for k in keys],[t[k][-1] for k in keys],**interpolation)
             for mode,path in [('native_pose',(*native_path[:2],*estimate[2:])),
-                              ('native_twist',(*estimate[:2],*native_path[2:]))]:
+                              ('native_twist',(*estimate[:2],*native_path[2:])),
+                              ('native_endpoints',native_endpoints)]:
                 incoming,spin=hybrids[mode]
                 new_ball,_,new_spin=tick(prior,incoming,*args,initial_spin=spin,measured_path=path,**settings)
                 hybrids[mode]=new_ball,new_spin

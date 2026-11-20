@@ -30,16 +30,41 @@ def racket(state, geometry):
             bodies['velocity'][:, i], bodies['angular_velocity'][:, i])
 
 
-def predicted_racket_path(prior, start, end):
+def hermite_racket_rotation(q0, q1, omega0, omega1, u, dt):
+    """Interpolate unit quaternions and differentiate the same curve for world angular velocity."""
+    q0=F.normalize(q0,dim=-1)
+    q1=F.normalize(q1,dim=-1)
+    q1=torch.where((q0*q1).sum(-1,keepdim=True)<0,-q1,q1)
+
+    def tangent(q,omega):
+        w,xyz=q.split((1,3),dim=-1)
+        return .5*torch.cat((-(xyz*omega).sum(-1,keepdim=True),w*omega+torch.linalg.cross(omega,xyz)),dim=-1)
+
+    d0,d1=dt*tangent(q0,omega0),dt*tangent(q1,omega1)
+    curve=q0+(3*u.square()-2*u**3)*(q1-q0)+(u**3-2*u.square()+u)*d0+(u**3-u.square())*d1
+    slope=((6*u-6*u.square())*(q1-q0)+(3*u.square()-4*u+1)*d0+(3*u.square()-2*u)*d1)/dt
+    length=curve.norm(dim=-1,keepdim=True).clamp_min(1e-12)
+    q=curve/length
+    dq=(slope-q*(q*slope).sum(-1,keepdim=True))/length
+    w,xyz=q.split((1,3),dim=-1)
+    dw,dxyz=dq.split((1,3),dim=-1)
+    omega=2*(w*dxyz-dw*xyz+torch.linalg.cross(xyz,dxyz))
+    return q,omega
+
+
+def predicted_racket_path(prior, start, end, *, rotation_hermite=False):
     """Reconstruct the Body WM racket pose and twist at the start of each physics substep."""
     c0, q0, v0, w0 = start
     c1, q1, v1, w1 = end
     u = torch.arange(prior.steps, dtype=c0.dtype, device=c0.device)[:, None, None] / prior.steps
     center = c0 + (3*u.square()-2*u**3)*(c1-c0) + prior.dt*((u**3-2*u.square()+u)*v0 + (u**3-u.square())*v1)
     linear = (6*u-6*u.square())*(c1-c0)/prior.dt + (3*u.square()-4*u+1)*v0 + (3*u.square()-2*u)*v1
-    q1 = torch.where((q0*q1).sum(-1, keepdim=True) < 0, -q1, q1)
-    q = F.normalize(q0 + u*(q1-q0), dim=-1)
-    omega = w0 + u*(w1-w0)
+    if rotation_hermite:
+        q,omega=hermite_racket_rotation(q0,q1,w0,w1,u,prior.dt)
+    else:
+        q1 = torch.where((q0*q1).sum(-1, keepdim=True) < 0, -q1, q1)
+        q = F.normalize(q0 + u*(q1-q0), dim=-1)
+        omega = w0 + u*(w1-w0)
     return center, q, linear, omega
 
 
@@ -77,7 +102,7 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
         if any(x.shape[:2]!=(prior.steps,len(ball)) for x in measured_path):
             raise ValueError('Native racket samples must start at each physics substep')
     else:
-        center,q,linear,omega=predicted_racket_path(prior,start,end)
+        center,q,linear,omega=predicted_racket_path(prior,start,end,rotation_hermite=fitted.get('racket_rotation_hermite',False))
     g = prior.preview
     racket_radius = torch.maximum((g.racket_box_centers.norm(dim=-1) + g.racket_box_halves.norm(dim=-1)).max(),
                                   (g.racket_round_centers.norm(dim=-1) + g.racket_round_halves.flatten()

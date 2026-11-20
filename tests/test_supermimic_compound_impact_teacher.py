@@ -389,3 +389,33 @@ def test_friction_load_floor_caps_tangent_without_adding_normal_impulse():
         torch.testing.assert_close(normal,vel*0)
         assert tangent[0,1]<0 and tangent[0].norm()<=.030001
         torch.testing.assert_close(tangent[1],vel[1]*0)
+
+
+def test_quaternion_hermite_reproduces_both_world_twists_and_contact_point_derivative():
+    from scripts.evaluate_supermimic_contact_rollout import hermite_racket_rotation
+    from quadsmash.rl.supermimic_contact_pilot_v1 import _quat_rotate
+    dt=.01
+    q0=torch.nn.functional.normalize(torch.tensor([[.8,-.2,.3,.4]],dtype=torch.float64),dim=-1)
+    q1=-torch.nn.functional.normalize(q0+torch.tensor([[.02,.05,-.04,.01]]),dim=-1)
+    w0=q0.new_tensor([[3.,-1.,7.]])
+    w1=q0.new_tensor([[-1.,5.,.2]])
+    s=q0.new_tensor([0.,.47,1.])[:,None,None]
+    q,w=hermite_racket_rotation(q0,q1,w0,w1,s,dt)
+    torch.testing.assert_close(q[0],q0)
+    torch.testing.assert_close(q[-1],-q1)
+    torch.testing.assert_close(w[0],w0)
+    torch.testing.assert_close(w[-1],w1)
+    eps=1e-5
+    lever=q0.new_tensor([[[.03,-.12,.02]]]).expand(3,-1,-1)
+    qp,_=hermite_racket_rotation(q0,q1,w0,w1,s+eps,dt)
+    qm,_=hermite_racket_rotation(q0,q1,w0,w1,s-eps,dt)
+    numeric=(_quat_rotate(qp,lever)-_quat_rotate(qm,lever))/(2*eps*dt)
+    torch.testing.assert_close(numeric,torch.linalg.cross(w,_quat_rotate(q,lever)),atol=2e-8,rtol=2e-8)
+
+
+def test_native_endpoint_diagnostic_uses_authored_string_plane_normal():
+    from scripts.audit_supermimic_g07_racket_endpoints import racket_fields
+    vector=torch.zeros(1,3,dtype=torch.float64)
+    quat=torch.tensor([[.5,.5,.5,.5]],dtype=torch.float64)
+    got=racket_fields((vector,quat,vector,vector))
+    torch.testing.assert_close(got['normal'],torch.tensor([[0.,1.,0.]],dtype=torch.float64))

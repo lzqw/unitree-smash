@@ -21,6 +21,8 @@ def main():
         parser.add_argument('--'+key, type=Path, required=True)
     parser.add_argument('--split-racket-path',action='store_true',
                         help='Propagate separate shuttle states for measured racket pose or twist on the frozen robot trajectory')
+    parser.add_argument('--compare-rotation',action='store_true',
+                        help='Compare rotation interpolation with the same material and recorded native action')
     a=parser.parse_args()
     torch.set_num_threads(2)
     read=lambda path: json.loads(path.read_text())
@@ -70,15 +72,17 @@ def main():
         groups[group]=torch.tensor([c['group']==group for c in cases])
     results={}
     variants=[('authored',authored,False),('fixture_fit',fitted,False),('fixture_fit_with_floor',fitted,True)]
+    if a.compare_rotation:
+        variants=[('authored',authored,False),('authored_hermite',authored,False)]
     for mode,table,floor in variants:
-        cfg=dict(base,fitted=dict(base['fitted'],articulation_friction_floor=floor))
+        cfg=dict(base,fitted=dict(base['fitted'],articulation_friction_floor=floor,racket_rotation_hermite=mode=='authored_hermite'))
         branches={b:measure(runs[b],body,prior,table,cfg,launches,split_racket_path=a.split_racket_path)[-1] for b in ('minus','plus')}
         def signed(field):
             return branches['plus'][field]-branches['minus'][field]
         torch.testing.assert_close(signed('native'),native,rtol=0,atol=0)
         scores={}
         fields=['measured_racket','body_racket']
-        if a.split_racket_path:fields.extend(('native_pose','native_twist'))
+        if a.split_racket_path:fields.extend(('native_pose','native_twist','native_endpoints'))
         for field in fields:
             delta=signed(field)
             if mode=='authored' and field in ('measured_racket','body_racket'):
