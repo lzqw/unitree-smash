@@ -4,9 +4,9 @@ import argparse,hashlib,json
 from pathlib import Path
 import torch
 from quadsmash.control.g07_shared_target_residual_v1 import make_g07_residual_controller
-from quadsmash.rl.supermimic_g07_memory_preview_v1 import clone_execution_graph,restore_captured_execution,G07MemoryPreviewV1
+from quadsmash.rl.supermimic_g07_memory_preview_v1 import clone_execution_graph,G07MemoryPreviewV1
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import freeze_execution_modules
-from quadsmash.rl.supermimic_physical_capture_v1 import capture_controller
+from quadsmash.rl.supermimic_physical_capture_v1 import capture_controller, restore_archive_execution
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
     template=make_g07_residual_controller(torch.load(source,map_location='cpu',weights_only=False),128,torch.device('cpu'),'/home/autodrive/LZQW/unitree_smash')
     freeze_execution_modules(template)
     row=torch.load(args.archive/m['chunks'][8]['file'],map_location='cpu',weights_only=True)['rows'][4]
-    memory=restore_captured_execution(template,row['executor_before']);snapshot=capture_controller(memory)
+    memory=restore_archive_execution(template,row['executor_before']);snapshot=capture_controller(memory)
     native=clone_execution_graph(memory);branch=clone_execution_graph(memory,learning=True);sibling=clone_execution_graph(memory)
     ids=torch.tensor([0,3]);native.reset(ids);branch.reset(ids)
     obs=row['observation'];action=row['requested_action'];default=row['before']['physical']['joint_default'][0];limits=row['before']['auxiliary']['command_limits']

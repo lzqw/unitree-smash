@@ -10,7 +10,8 @@ import torch
 
 from .supermimic_physical_dataset_v1 import encode_physical
 from .supermimic_imagination_contract_v1 import require_physical_start
-from .supermimic_g07_memory_preview_v1 import restore_captured_execution, clone_execution_graph
+from .supermimic_g07_memory_preview_v1 import clone_execution_graph
+from .supermimic_physical_capture_v1 import restore_archive_execution
 
 
 def tensor_copy(tree,device):
@@ -55,7 +56,7 @@ class PhysicalImaginationStateV1:
             history_tick=before['history_tick'].to(device).clone())
         if '_actor_lane_mask' in row:
             context['actor_lane_mask']=row['_actor_lane_mask'].to(device).bool().clone()
-        executor=restore_captured_execution(executor_template,row['executor_before'],device=device)
+        executor=restore_archive_execution(executor_template,row['executor_before'],device=device)
         return cls(encode_physical(p),executor,memory,current_history,observation,context)
 
     def branch(self):

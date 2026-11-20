@@ -46,7 +46,7 @@ def tensor_tree_copy(value, *, cpu=False):
     return value
 
 
-def capture_controller(controller):
+def capture_controller(controller, *, plan_observation_cache=None):
     """Inspect attributes, not properties; preserve alias and omission evidence.
 
     No deepcopy of native handles, no state_dict/forward call, and no mutation.
@@ -55,6 +55,7 @@ def capture_controller(controller):
     """
     tensors, values, aliases, omitted, object_types = {}, {}, {}, {}, {}
     seen = {}
+    plan_observations = {}
 
     def visit(obj, path):
         # isinstance may consult a proxy's __class__. Only inspect its actual
@@ -80,6 +81,17 @@ def capture_controller(controller):
             aliases[path] = seen[id(obj)]
         else:
             seen[id(obj)] = path
+            if (plan_observation_cache is not None and cls is list
+                    and path.endswith('/used_public_observations') and '/logs/' in path):
+                # FullRacketRallyControllerV4 appends the output of public.tolist().
+                # Recording a string path for each of the 794 floats per lane
+                # duplicates the complete observation history on every tick.
+                matrix = np.asarray(obj)
+                if matrix.dtype == np.float64 and matrix.ndim == 2 and matrix.shape[1] == 794:
+                    encoded = matrix.astype('<f8', copy=False).tobytes()
+                    previous = plan_observation_cache.get(path)
+                    plan_observations[path] = previous if previous == encoded else encoded
+                    return
             if cls is dict:
                 for key, item in obj.items():
                     if not isinstance(key, str):
@@ -102,8 +114,29 @@ def capture_controller(controller):
                 omitted[path] = qualified
 
     visit(controller, 'controller')
-    return dict(tensors=tensors, values=values, aliases=aliases,
-                omitted=omitted, object_types=object_types)
+    snapshot = dict(tensors=tensors, values=values, aliases=aliases,
+                    omitted=omitted, object_types=object_types)
+    if plan_observation_cache is not None:
+        plan_observation_cache.clear()
+        plan_observation_cache.update(plan_observations)
+        snapshot['public_plan_observations_f64le_v1'] = plan_observations
+    return snapshot
+
+
+def restore_archive_execution(template, snapshot, *, device='cpu'):
+    """Decode archive storage into the original G07 reconstruction contract."""
+    from .supermimic_g07_memory_preview_v1 import restore_captured_execution
+
+    packed = snapshot.get('public_plan_observations_f64le_v1', {})
+    if packed:
+        values = dict(snapshot['values'])
+        for path, payload in packed.items():
+            if (not path.endswith('/used_public_observations') or '/logs/' not in path
+                    or not isinstance(payload, bytes) or len(payload) % (794 * 8) or path in values):
+                raise ValueError('Malformed packed G07 observation matrix')
+            values[path] = np.frombuffer(payload, dtype='<f8').reshape(-1, 794).tolist()
+        snapshot = dict(snapshot, values=values)
+    return restore_captured_execution(template, snapshot, device=device)
 
 
 @torch.no_grad()
@@ -138,7 +171,7 @@ def capture_state(env):
 class PhysicalTransitionArchive:
     schema = 'supermimic-native-physical-transition-v1'
 
-    def __init__(self, directory, *, metadata, chunk_ticks=32):
+    def __init__(self, directory, *, metadata, chunk_ticks=32, compact_plan_observations=False):
         if chunk_ticks < 1:
             raise ValueError('chunk_ticks must be positive')
         self.directory = Path(directory)
@@ -149,6 +182,9 @@ class PhysicalTransitionArchive:
                              substep_contact_traces=False,
                              auxiliary_schema=AUXILIARY_SCHEMA,
                              causal_plan_logs_captured=True)
+        self.plan_observation_cache = {} if compact_plan_observations else None
+        if compact_plan_observations:
+            self.metadata['controller_snapshot_encoding'] = 'public_plan_observations_f64le_v1'
         self.chunk_ticks = chunk_ticks
         self.pending = None
         self.rows = []
@@ -179,7 +215,7 @@ class PhysicalTransitionArchive:
         if self.task_sequence is not None:
             state['auxiliary']['not_captured'] = ['PhysX contact solver cache']
         self.begin_record(state, request, public,
-                          capture_controller(env._sm_residual_controller))
+                          capture_controller(env._sm_residual_controller, plan_observation_cache=self.plan_observation_cache))
         if self.task_sequence is not None:
             self.task_sequence.begin()
 
@@ -199,7 +235,7 @@ class PhysicalTransitionArchive:
             state['auxiliary']['not_captured'] = ['PhysX contact solver cache']
         self.finish_record(state, env._sm_final_action, env._sm_joint_targets,
                            reward, env.reset_terminated, env.reset_time_outs,
-                           capture_controller(env._sm_residual_controller))
+                           capture_controller(env._sm_residual_controller, plan_observation_cache=self.plan_observation_cache))
 
     def finish_record(self, state, final_action, targets, reward, terminated, timeout, memory):
         if self.pending is None:

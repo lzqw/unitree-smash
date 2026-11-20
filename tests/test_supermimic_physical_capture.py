@@ -134,3 +134,37 @@ def test_real_controller_memory_capture_before_and_after_cpu_action():
         assert len(snapshot['object_types']) >= 20
         assert all(reason.startswith(('network:', 'code:')) or reason == 'diagnostic logs'
                    for reason in snapshot['omitted'].values()), snapshot['omitted']
+
+
+def test_compact_causal_plan_roundtrip_and_mutable_native_buffers():
+    import io
+    from quadsmash.rl.supermimic_physical_capture_v1 import restore_archive_execution
+    from quadsmash.rl.supermimic_physical_capture_v1 import tensor_tree_copy
+
+    from quadsmash.control.full_racket_rally_controller_v4 import FullRacketRallyControllerV4
+    controller = object.__new__(FullRacketRallyControllerV4)
+    original = torch.linspace(-1.01, 1.09, 2 * 794, dtype=torch.float64).reshape(2, 794).tolist()
+    controller.logs = [dict(used_public_observations=original, valid=[True, False])]
+    template = object.__new__(FullRacketRallyControllerV4)
+    template.logs = []
+    baseline = capture_controller(controller)
+    cache = {}
+    first = capture_controller(controller, plan_observation_cache=cache)
+    second = capture_controller(controller, plan_observation_cache=cache)
+    key = 'controller/logs/0/used_public_observations'
+    field = 'public_plan_observations_f64le_v1'
+    assert first[field][key] is second[field][key]
+    stream = io.BytesIO()
+    torch.save(tensor_tree_copy([first, second], cpu=True), stream)
+    stream.seek(0)
+    after_load = torch.load(stream, weights_only=True)[1]
+    restored = restore_archive_execution(template, after_load)
+    assert capture_controller(restored) == baseline
+    restored.logs[0]['used_public_observations'][0][0] = 123.
+    original[0][0] = 342.
+    changed = capture_controller(controller, plan_observation_cache=cache)
+    assert changed[field][key] != first[field][key]
+    assert capture_controller(restore_archive_execution(template, first)) == baseline
+    controller.logs.clear()
+    capture_controller(controller, plan_observation_cache=cache)
+    assert not cache

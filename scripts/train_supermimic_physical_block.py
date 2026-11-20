@@ -750,7 +750,7 @@ def run(args, *, alternating=None):
         archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,policy_execution=policy_execution,control_ticks=0,transitions=0,chunks=[],
             scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=args.recovery_update_budget+args.approach_update_budget,
             replay_source_schema=['recent_online','older_online','initial_archive'],
-            replay_stage_schema=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery','approach_active','hit_prepare','contact_release','approach_failure','post_hit']),chunk_ticks=1000000)
+            replay_stage_schema=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery','approach_active','hit_prepare','contact_release','approach_failure','post_hit']),chunk_ticks=1000000,compact_plan_observations=True)
         archive.attach_task_sequence(env);env.physical_transition_archive=archive
         # The packed 800-tick archive is a separate stream from this fresh
         # native rollout.  Prevent windows from crossing the reset boundary
