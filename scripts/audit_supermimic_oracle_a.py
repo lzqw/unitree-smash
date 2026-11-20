@@ -96,6 +96,14 @@ def _mean(values: list[float]) -> float | None:
     return sum(values) / len(values) if values else None
 
 
+def _percentile(values: list[float], fraction: float) -> float | None:
+    if not values:
+        return None
+    values = sorted(values)
+    index = min(len(values) - 1, max(0, int(math.floor(fraction * (len(values) - 1)))))
+    return values[index]
+
+
 @torch.no_grad()
 def audit(probe_dir: Path) -> dict:
     nominal_path = probe_dir / "nominal_a" / "native_probe.pt"
@@ -265,6 +273,32 @@ def audit(probe_dir: Path) -> dict:
         for row in rows
     ]
     direction = [row["outgoing_direction_cosine"] for row in rows]
+    amplitude_ratio = [row["analytic_outgoing_speed_m_s"] / max(row["native_outgoing_speed_m_s"], 1e-8)
+                       for row in rows]
+    amplitude_error = [abs(value - 1.0) for value in amplitude_ratio]
+    normal_relative_error = [abs(row["native_normal_impulse_ns"] - row["analytic_normal_impulse_ns"])
+                             / max(abs(row["native_normal_impulse_ns"]), 1e-8) for row in rows]
+    tangent_relative_error = [abs(row["native_tangent_impulse_norm_ns"] - row["analytic_tangent_impulse_norm_ns"])
+                              / max(abs(row["native_tangent_impulse_norm_ns"]), 1e-8) for row in rows]
+    bucket_rows: dict[str, list[dict]] = {}
+    for row in rows:
+        speed = abs(row["normal_relative_speed_m_s"])
+        bucket = f"vn{sum(speed >= edge for edge in (1., 5., 10.))}"
+        bucket_rows.setdefault(bucket, []).append(row)
+    bucket_summary = {}
+    for bucket, values in sorted(bucket_rows.items()):
+        bucket_summary[bucket] = {
+            "count": len(values),
+            "direction_cosine_mean": _mean([item["outgoing_direction_cosine"] for item in values]),
+            "normal_impulse_mae_ns": _mean([
+                abs(item["native_normal_impulse_ns"] - item["analytic_normal_impulse_ns"])
+                for item in values
+            ]),
+            "amplitude_ratio_mean": _mean([
+                item["analytic_outgoing_speed_m_s"] / max(item["native_outgoing_speed_m_s"], 1e-8)
+                for item in values
+            ]),
+        }
     object_counts = {name: sum(row["nearest_gap_object"] == name for row in rows)
                      for name in ("racket", "ground", "net")}
     summary = {
@@ -276,7 +310,15 @@ def audit(probe_dir: Path) -> dict:
         "nearest_gap_object_counts": object_counts,
         "normal_impulse_mae_ns": _mean(normal_errors),
         "tangent_impulse_mae_ns": _mean(tangent_errors),
+        "normal_impulse_relative_error_mean": _mean(normal_relative_error),
+        "tangent_impulse_relative_error_mean": _mean(tangent_relative_error),
         "direction_cosine_mean": _mean(direction),
+        "direction_cosine_p10": _percentile(direction, .10),
+        "amplitude_ratio_mean": _mean(amplitude_ratio),
+        "amplitude_ratio_p10": _percentile(amplitude_ratio, .10),
+        "amplitude_ratio_p90": _percentile(amplitude_ratio, .90),
+        "amplitude_abs_error_mean": _mean(amplitude_error),
+        "bucket_summary": bucket_summary,
         "native_effective_mass_mean_kg": _mean([
             row["effective_mass_kg"] for row in rows if row["effective_mass_kg"] is not None
         ]),

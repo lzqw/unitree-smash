@@ -2,7 +2,7 @@ import json
 
 import torch
 
-from quadsmash.rl.supermimic_contact_pilot_v1 import build_pilot
+from quadsmash.rl.supermimic_contact_pilot_v1 import _trace_candidates, build_pilot
 
 
 def _trace(path, *, touching=True):
@@ -56,3 +56,22 @@ def test_pilot_reports_insufficient_candidates_without_duplication(tmp_path):
     assert manifest["pilot_status"] == "INSUFFICIENT_CANDIDATES"
     recorded = json.loads((tmp_path / "pilot" / "manifest.json").read_text())
     assert recorded["schema"] == "supermimic-racket-ball-contact-pilot-v1"
+
+
+def test_contact_matrix_keeps_multiple_slots_and_samples_lane_negatives(tmp_path):
+    source = tmp_path / "trace.pt"
+    _trace(source)
+    payload = torch.load(source, weights_only=False)
+    force = payload["tensors"]["racket_force_w"]
+    matrix = torch.zeros(force.shape[0], force.shape[1], 2, 3)
+    matrix[..., 0, :] = force
+    matrix[4:6, 0, 1, 1] = 7.
+    payload["tensors"]["contact_force_matrix_w"] = matrix
+    torch.save(payload, source)
+    rows, sensitivity = _trace_candidates(source, .001, 1, (.0001, .001, .005, .01))
+    contact = next(row for row in rows if row["contact_object"] == "racket")
+    assert contact["contact_slot_count"] == 2
+    assert contact["contact_slot_indices"] == [0, 1]
+    assert contact["slot_impulse_ns"][1][1] > 0
+    assert any(row["contact_object"] == "no_contact" and row["lane"] == 0 for row in rows)
+    assert set(sensitivity) == {"0.0001", "0.001", "0.005", "0.01"}

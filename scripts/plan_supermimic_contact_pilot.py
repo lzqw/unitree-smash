@@ -31,6 +31,8 @@ def make_plan(manifest: dict) -> dict:
     selected_contacts = int(manifest.get("selected_contacts", 0))
     requested_negatives = int(manifest.get("requested_negatives", 1000))
     selected_negatives = int(manifest.get("selected_negatives", 0))
+    coverage = manifest.get("coverage", {})
+    split = manifest.get("split", {})
     return {
         "schema": "supermimic-racket-ball-contact-pilot-plan-v1",
         "source_manifest_schema": manifest["schema"],
@@ -41,6 +43,8 @@ def make_plan(manifest: dict) -> dict:
             "near_miss": max(0, requested_negatives - selected_negatives),
         },
         "coverage_quotas": REQUIRED_BUCKETS,
+        "coverage_audit": coverage,
+        "split_audit": split,
         "required_fields": manifest.get("fields", []),
         "capture_requirements": [
             "native PhysX substeps at 0.0625 ms or the locked task physics dt",
@@ -55,7 +59,13 @@ def make_plan(manifest: dict) -> dict:
             "gpu_capture_workers": 2,
             "gpu_policy": "one bounded Isaac pair per worker, no learner updates",
         },
-        "status": "READY_FOR_NATIVE_CAPTURE" if selected_contacts < requested_contacts else "PILOT_COMPLETE",
+        "admission": manifest.get("admission", {
+            "policy_training_admitted": False,
+            "contact_bptt": "detached",
+            "v13_residual_gradient": "detached",
+        }),
+        "status": ("READY_FOR_NATIVE_CAPTURE" if manifest.get("pilot_status") != "READY"
+                   else "PILOT_COMPLETE"),
     }
 
 
