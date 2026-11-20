@@ -1,0 +1,1907 @@
+{
+  "material_sha256": "ea8cc7043592957e7f19992ad79226640d29674e44c7b4a4dd5cd1bfb7b0c6b9",
+  "coefficient_fit_sha256": "fe78a29ce2cc9be97ca3b47d458a1f95c61a82d3711e92a64f75235b26505d73",
+  "calibration_sha256": "f6bdf30799906e1f51ca00d9084dd752c7f214c14ae1113f6cbd205f31561bcd",
+  "wide_audit_sha256": "3c588202dfdd297b95d4a41f3e54a0b807befbfa4d580d678c4d7fdae0d95256",
+  "scale_plan_sha256": "c4d2f44da9f639a544782b772b47e08e7b51d4128ed9f27c6801391d778250de",
+  "physical_archives": {
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/wide/minus/spec_994074/trace.pt": "7c98dc4ad36f9c565e636095bc8db1b08b8a6c706ed81d2da9cf2e8bfb213469",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/wide/plus/spec_994074/trace.pt": "d4f8fdc2777bae3379d958b524dd1dbb5a1e63418d943435c1ae4ac69c89a0e3",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/half/minus/spec_994074/trace.pt": "e8eb6449b8739eb1b372b169be7a7901c23b34e8af7688663fcb5d8fd77e4c5a",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/half/plus/spec_994074/trace.pt": "5f93b7e9da3dae9e167792b02403371b7ed5ae030e5efbc8441153ebc3ef0e84",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/quarter/minus/spec_994074/trace.pt": "a3f55dba0310033f110783843f0ae6878248a6cfa5145406989f2e1f965b6070",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/quarter/plus/spec_994074/trace.pt": "cc02d1f42b2d650585987029081ca34ebb231cca1350867b98c883b90c88ebed",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/wide/minus/spec_994075/trace.pt": "502b84da671c896ba6899cc6d3b5f17fc053d62d7a2f220a7fa7f343d88fc5a8",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/wide/plus/spec_994075/trace.pt": "4a49ce229b943a32230681bfb3c965070adf655304e1d15d4a8a522aee897225",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/half/minus/spec_994075/trace.pt": "7a09f12be1111362aa9c5dbc0b0ac2200a5df5c1692116de2e09b264c72455dd",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/half/plus/spec_994075/trace.pt": "4d1847a2fe1228ae0e18644db1aca29a426729629f841e946b766ef37cc293f0",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/quarter/minus/spec_994075/trace.pt": "9a14bbd781501cb4f82598e90ea03242e6859f95a51f377951d59e8cc54facb3",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/quarter/plus/spec_994075/trace.pt": "59ad740a592fe48c94a4a535c2e1a95930f6d0765b5ce082a292bc178b3d33e6"
+  },
+  "units": "change in ball m/s per 1 m/s requested native surface perturbation",
+  "groups": {
+    "all": {
+      "native_wide_to_half": {
+        "rows": 256,
+        "supported": 209,
+        "component_rmse": 10.669549942016602,
+        "cosine_median": 0.8924781680107117,
+        "cosine_p10": -0.8356865644454956,
+        "gain_median": 1.1216307878494263,
+        "gain_p10": 0.5004650354385376
+      },
+      "native_half_to_quarter": {
+        "rows": 256,
+        "supported": 208,
+        "component_rmse": 13.939323425292969,
+        "cosine_median": 0.8663018941879272,
+        "cosine_p10": -0.9331286549568176,
+        "gain_median": 1.0399491786956787,
+        "gain_p10": 0.3275415301322937
+      },
+      "quarter_native_left_to_right": {
+        "rows": 256,
+        "supported": 207,
+        "component_rmse": 34.34646224975586,
+        "cosine_median": 0.6759986877441406,
+        "cosine_p10": -0.9898772239685059,
+        "gain_median": 0.9886397123336792,
+        "gain_p10": 0.11712070554494858
+      },
+      "model_vs_native_wide": {
+        "rows": 256,
+        "supported": 209,
+        "component_rmse": 3.165537118911743,
+        "cosine_median": 0.7749838829040527,
+        "cosine_p10": -0.15984094142913818,
+        "gain_median": 0.9439502954483032,
+        "gain_p10": 0.2147812694311142
+      },
+      "model_vs_native_half": {
+        "rows": 256,
+        "supported": 208,
+        "component_rmse": 8.522174835205078,
+        "cosine_median": 0.6969663500785828,
+        "cosine_p10": -0.2720169425010681,
+        "gain_median": 0.8873050808906555,
+        "gain_p10": 0.13465406000614166
+      },
+      "model_vs_native_quarter": {
+        "rows": 256,
+        "supported": 208,
+        "component_rmse": 9.620774269104004,
+        "cosine_median": 0.6612057685852051,
+        "cosine_p10": -0.14773428440093994,
+        "gain_median": 0.8592398166656494,
+        "gain_p10": 0.07715853303670883
+      }
+    },
+    "wide_stable": {
+      "native_wide_to_half": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 3.1573588848114014,
+        "cosine_median": 0.9996834397315979,
+        "cosine_p10": -0.1617622673511505,
+        "gain_median": 1.0012496709823608,
+        "gain_p10": 0.8335831165313721
+      },
+      "native_half_to_quarter": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 4.783563613891602,
+        "cosine_median": 0.9997004866600037,
+        "cosine_p10": 0.07030278444290161,
+        "gain_median": 0.9996699094772339,
+        "gain_p10": 0.9375945329666138
+      },
+      "quarter_native_left_to_right": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 25.44511604309082,
+        "cosine_median": 0.9991828203201294,
+        "cosine_p10": -0.9580901861190796,
+        "gain_median": 0.992440402507782,
+        "gain_p10": 0.2914983332157135
+      },
+      "model_vs_native_wide": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 1.9444985389709473,
+        "cosine_median": 0.8480348587036133,
+        "cosine_p10": 0.22425511479377747,
+        "gain_median": 1.003924012184143,
+        "gain_p10": 0.41522473096847534
+      },
+      "model_vs_native_half": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 3.1700704097747803,
+        "cosine_median": 0.8934409618377686,
+        "cosine_p10": 0.26997923851013184,
+        "gain_median": 1.0443655252456665,
+        "gain_p10": 0.19646933674812317
+      },
+      "model_vs_native_quarter": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 3.7826006412506104,
+        "cosine_median": 0.8669039011001587,
+        "cosine_p10": 0.14822736382484436,
+        "gain_median": 1.0087965726852417,
+        "gain_p10": 0.16127048432826996
+      }
+    },
+    "all_scales_stable": {
+      "native_wide_to_half": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 2.6180362701416016,
+        "cosine_median": 0.9999394416809082,
+        "cosine_p10": 0.8393477201461792,
+        "gain_median": 1.0003331899642944,
+        "gain_p10": 0.96971595287323
+      },
+      "native_half_to_quarter": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 3.3326220512390137,
+        "cosine_median": 0.9999651312828064,
+        "cosine_p10": 0.6714798808097839,
+        "gain_median": 0.9993177056312561,
+        "gain_p10": 0.963948667049408
+      },
+      "quarter_native_left_to_right": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 16.600696563720703,
+        "cosine_median": 0.9998170137405396,
+        "cosine_p10": 0.31540560722351074,
+        "gain_median": 0.9937364459037781,
+        "gain_p10": 0.8412343263626099
+      },
+      "model_vs_native_wide": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 1.1452938318252563,
+        "cosine_median": 0.9410274028778076,
+        "cosine_p10": 0.34198030829429626,
+        "gain_median": 1.0488016605377197,
+        "gain_p10": 0.5992476940155029
+      },
+      "model_vs_native_half": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 2.5468742847442627,
+        "cosine_median": 0.9564754962921143,
+        "cosine_p10": 0.30262166261672974,
+        "gain_median": 1.0599396228790283,
+        "gain_p10": 0.3664039373397827
+      },
+      "model_vs_native_quarter": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 1.8402377367019653,
+        "cosine_median": 0.9002039432525635,
+        "cosine_p10": 0.27610644698143005,
+        "gain_median": 1.0474871397018433,
+        "gain_p10": 0.1914307177066803
+      }
+    },
+    "wide_weak_and_all_scales_stable": {
+      "native_wide_to_half": {
+        "rows": 7,
+        "supported": 7,
+        "component_rmse": 3.225602626800537,
+        "cosine_median": 0.9992027878761292,
+        "cosine_p10": 0.06875495612621307,
+        "gain_median": 1.0047621726989746,
+        "gain_p10": 0.7217994332313538
+      },
+      "native_half_to_quarter": {
+        "rows": 7,
+        "supported": 7,
+        "component_rmse": 2.9292283058166504,
+        "cosine_median": 0.997958779335022,
+        "cosine_p10": -0.21799780428409576,
+        "gain_median": 0.9932303428649902,
+        "gain_p10": 0.940024197101593
+      },
+      "quarter_native_left_to_right": {
+        "rows": 7,
+        "supported": 7,
+        "component_rmse": 5.944075107574463,
+        "cosine_median": 0.9799450635910034,
+        "cosine_p10": -0.10010314732789993,
+        "gain_median": 0.9937364459037781,
+        "gain_p10": 0.392695814371109
+      },
+      "model_vs_native_wide": {
+        "rows": 7,
+        "supported": 7,
+        "component_rmse": 2.407029151916504,
+        "cosine_median": 0.31412485241889954,
+        "cosine_p10": 0.009440655820071697,
+        "gain_median": 0.6738475561141968,
+        "gain_p10": 0.1951514333486557
+      },
+      "model_vs_native_half": {
+        "rows": 7,
+        "supported": 7,
+        "component_rmse": 3.0072150230407715,
+        "cosine_median": 0.28982770442962646,
+        "cosine_p10": -0.22724859416484833,
+        "gain_median": 0.8299350738525391,
+        "gain_p10": 0.15067574381828308
+      },
+      "model_vs_native_quarter": {
+        "rows": 7,
+        "supported": 7,
+        "component_rmse": 2.957470178604126,
+        "cosine_median": 0.3679995536804199,
+        "cosine_p10": 0.09817475825548172,
+        "gain_median": 0.7106927633285522,
+        "gain_p10": 0.14156094193458557
+      }
+    },
+    "native_convergent_stable": {
+      "native_wide_to_half": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.1361597329378128,
+        "cosine_median": 0.9999653100967407,
+        "cosine_p10": 0.99726402759552,
+        "gain_median": 1.0012496709823608,
+        "gain_p10": 0.98808753490448
+      },
+      "native_half_to_quarter": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.04168526083230972,
+        "cosine_median": 0.9999972581863403,
+        "cosine_p10": 0.9973912239074707,
+        "gain_median": 0.9993177056312561,
+        "gain_p10": 0.9790257215499878
+      },
+      "quarter_native_left_to_right": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.11485321819782257,
+        "cosine_median": 0.9999040961265564,
+        "cosine_p10": 0.9799450635910034,
+        "gain_median": 0.9988440871238708,
+        "gain_p10": 0.9385457634925842
+      },
+      "model_vs_native_wide": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.8679288625717163,
+        "cosine_median": 0.9582740068435669,
+        "cosine_p10": 0.4404568374156952,
+        "gain_median": 1.0606224536895752,
+        "gain_p10": 0.8277584314346313
+      },
+      "model_vs_native_half": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.8609174489974976,
+        "cosine_median": 0.9677233695983887,
+        "cosine_p10": 0.403247207403183,
+        "gain_median": 1.0599396228790283,
+        "gain_p10": 0.8253836035728455
+      },
+      "model_vs_native_quarter": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.8528679013252258,
+        "cosine_median": 0.9638932943344116,
+        "cosine_p10": 0.4614699184894562,
+        "gain_median": 1.0699807405471802,
+        "gain_p10": 0.8193179965019226
+      }
+    },
+    "stable_without_native_convergence": {
+      "native_wide_to_half": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 6.493939399719238,
+        "cosine_median": 0.770003080368042,
+        "cosine_p10": -0.5188608169555664,
+        "gain_median": 0.9813891053199768,
+        "gain_p10": 0.6251373291015625
+      },
+      "native_half_to_quarter": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 8.275282859802246,
+        "cosine_median": -0.3381148874759674,
+        "cosine_p10": -0.9078871011734009,
+        "gain_median": 0.9254463911056519,
+        "gain_p10": 0.6319100260734558
+      },
+      "quarter_native_left_to_right": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 41.22330856323242,
+        "cosine_median": -0.4408542513847351,
+        "cosine_p10": -0.9798771142959595,
+        "gain_median": 0.5282208323478699,
+        "gain_p10": 0.12342531979084015
+      },
+      "model_vs_native_wide": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 2.048597574234009,
+        "cosine_median": 0.38943660259246826,
+        "cosine_p10": 0.014756113290786743,
+        "gain_median": 0.6738475561141968,
+        "gain_p10": 0.19314110279083252
+      },
+      "model_vs_native_half": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 6.014240741729736,
+        "cosine_median": 0.39597803354263306,
+        "cosine_p10": -0.2500057816505432,
+        "gain_median": 0.18742327392101288,
+        "gain_p10": 0.07865606248378754
+      },
+      "model_vs_native_quarter": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 4.138250350952148,
+        "cosine_median": 0.19959348440170288,
+        "cosine_p10": -0.27175188064575195,
+        "gain_median": 0.1545567512512207,
+        "gain_p10": 0.121823251247406
+      }
+    }
+  },
+  "case_ids": [
+    [
+      994074,
+      0
+    ],
+    [
+      994074,
+      1
+    ],
+    [
+      994074,
+      2
+    ],
+    [
+      994074,
+      3
+    ],
+    [
+      994074,
+      4
+    ],
+    [
+      994074,
+      5
+    ],
+    [
+      994074,
+      6
+    ],
+    [
+      994074,
+      7
+    ],
+    [
+      994074,
+      8
+    ],
+    [
+      994074,
+      9
+    ],
+    [
+      994074,
+      10
+    ],
+    [
+      994074,
+      11
+    ],
+    [
+      994074,
+      12
+    ],
+    [
+      994074,
+      13
+    ],
+    [
+      994074,
+      14
+    ],
+    [
+      994074,
+      15
+    ],
+    [
+      994074,
+      16
+    ],
+    [
+      994074,
+      17
+    ],
+    [
+      994074,
+      18
+    ],
+    [
+      994074,
+      19
+    ],
+    [
+      994074,
+      20
+    ],
+    [
+      994074,
+      21
+    ],
+    [
+      994074,
+      22
+    ],
+    [
+      994074,
+      23
+    ],
+    [
+      994074,
+      24
+    ],
+    [
+      994074,
+      25
+    ],
+    [
+      994074,
+      26
+    ],
+    [
+      994074,
+      27
+    ],
+    [
+      994074,
+      28
+    ],
+    [
+      994074,
+      29
+    ],
+    [
+      994074,
+      30
+    ],
+    [
+      994074,
+      31
+    ],
+    [
+      994074,
+      32
+    ],
+    [
+      994074,
+      33
+    ],
+    [
+      994074,
+      34
+    ],
+    [
+      994074,
+      35
+    ],
+    [
+      994074,
+      36
+    ],
+    [
+      994074,
+      37
+    ],
+    [
+      994074,
+      38
+    ],
+    [
+      994074,
+      39
+    ],
+    [
+      994074,
+      40
+    ],
+    [
+      994074,
+      41
+    ],
+    [
+      994074,
+      42
+    ],
+    [
+      994074,
+      43
+    ],
+    [
+      994074,
+      44
+    ],
+    [
+      994074,
+      45
+    ],
+    [
+      994074,
+      46
+    ],
+    [
+      994074,
+      47
+    ],
+    [
+      994074,
+      48
+    ],
+    [
+      994074,
+      49
+    ],
+    [
+      994074,
+      50
+    ],
+    [
+      994074,
+      51
+    ],
+    [
+      994074,
+      52
+    ],
+    [
+      994074,
+      53
+    ],
+    [
+      994074,
+      54
+    ],
+    [
+      994074,
+      55
+    ],
+    [
+      994074,
+      56
+    ],
+    [
+      994074,
+      57
+    ],
+    [
+      994074,
+      58
+    ],
+    [
+      994074,
+      59
+    ],
+    [
+      994074,
+      60
+    ],
+    [
+      994074,
+      61
+    ],
+    [
+      994074,
+      62
+    ],
+    [
+      994074,
+      63
+    ],
+    [
+      994074,
+      64
+    ],
+    [
+      994074,
+      65
+    ],
+    [
+      994074,
+      66
+    ],
+    [
+      994074,
+      67
+    ],
+    [
+      994074,
+      68
+    ],
+    [
+      994074,
+      69
+    ],
+    [
+      994074,
+      70
+    ],
+    [
+      994074,
+      71
+    ],
+    [
+      994074,
+      72
+    ],
+    [
+      994074,
+      73
+    ],
+    [
+      994074,
+      74
+    ],
+    [
+      994074,
+      75
+    ],
+    [
+      994074,
+      76
+    ],
+    [
+      994074,
+      77
+    ],
+    [
+      994074,
+      78
+    ],
+    [
+      994074,
+      79
+    ],
+    [
+      994074,
+      80
+    ],
+    [
+      994074,
+      81
+    ],
+    [
+      994074,
+      82
+    ],
+    [
+      994074,
+      83
+    ],
+    [
+      994074,
+      84
+    ],
+    [
+      994074,
+      85
+    ],
+    [
+      994074,
+      86
+    ],
+    [
+      994074,
+      87
+    ],
+    [
+      994074,
+      88
+    ],
+    [
+      994074,
+      89
+    ],
+    [
+      994074,
+      90
+    ],
+    [
+      994074,
+      91
+    ],
+    [
+      994074,
+      92
+    ],
+    [
+      994074,
+      93
+    ],
+    [
+      994074,
+      94
+    ],
+    [
+      994074,
+      95
+    ],
+    [
+      994074,
+      96
+    ],
+    [
+      994074,
+      97
+    ],
+    [
+      994074,
+      98
+    ],
+    [
+      994074,
+      99
+    ],
+    [
+      994074,
+      100
+    ],
+    [
+      994074,
+      101
+    ],
+    [
+      994074,
+      102
+    ],
+    [
+      994074,
+      103
+    ],
+    [
+      994074,
+      104
+    ],
+    [
+      994074,
+      105
+    ],
+    [
+      994074,
+      106
+    ],
+    [
+      994074,
+      107
+    ],
+    [
+      994074,
+      108
+    ],
+    [
+      994074,
+      109
+    ],
+    [
+      994074,
+      110
+    ],
+    [
+      994074,
+      111
+    ],
+    [
+      994074,
+      112
+    ],
+    [
+      994074,
+      113
+    ],
+    [
+      994074,
+      114
+    ],
+    [
+      994074,
+      115
+    ],
+    [
+      994074,
+      116
+    ],
+    [
+      994074,
+      117
+    ],
+    [
+      994074,
+      118
+    ],
+    [
+      994074,
+      119
+    ],
+    [
+      994074,
+      120
+    ],
+    [
+      994074,
+      121
+    ],
+    [
+      994074,
+      122
+    ],
+    [
+      994074,
+      123
+    ],
+    [
+      994074,
+      124
+    ],
+    [
+      994074,
+      125
+    ],
+    [
+      994074,
+      126
+    ],
+    [
+      994074,
+      127
+    ],
+    [
+      994075,
+      0
+    ],
+    [
+      994075,
+      1
+    ],
+    [
+      994075,
+      2
+    ],
+    [
+      994075,
+      3
+    ],
+    [
+      994075,
+      4
+    ],
+    [
+      994075,
+      5
+    ],
+    [
+      994075,
+      6
+    ],
+    [
+      994075,
+      7
+    ],
+    [
+      994075,
+      8
+    ],
+    [
+      994075,
+      9
+    ],
+    [
+      994075,
+      10
+    ],
+    [
+      994075,
+      11
+    ],
+    [
+      994075,
+      12
+    ],
+    [
+      994075,
+      13
+    ],
+    [
+      994075,
+      14
+    ],
+    [
+      994075,
+      15
+    ],
+    [
+      994075,
+      16
+    ],
+    [
+      994075,
+      17
+    ],
+    [
+      994075,
+      18
+    ],
+    [
+      994075,
+      19
+    ],
+    [
+      994075,
+      20
+    ],
+    [
+      994075,
+      21
+    ],
+    [
+      994075,
+      22
+    ],
+    [
+      994075,
+      23
+    ],
+    [
+      994075,
+      24
+    ],
+    [
+      994075,
+      25
+    ],
+    [
+      994075,
+      26
+    ],
+    [
+      994075,
+      27
+    ],
+    [
+      994075,
+      28
+    ],
+    [
+      994075,
+      29
+    ],
+    [
+      994075,
+      30
+    ],
+    [
+      994075,
+      31
+    ],
+    [
+      994075,
+      32
+    ],
+    [
+      994075,
+      33
+    ],
+    [
+      994075,
+      34
+    ],
+    [
+      994075,
+      35
+    ],
+    [
+      994075,
+      36
+    ],
+    [
+      994075,
+      37
+    ],
+    [
+      994075,
+      38
+    ],
+    [
+      994075,
+      39
+    ],
+    [
+      994075,
+      40
+    ],
+    [
+      994075,
+      41
+    ],
+    [
+      994075,
+      42
+    ],
+    [
+      994075,
+      43
+    ],
+    [
+      994075,
+      44
+    ],
+    [
+      994075,
+      45
+    ],
+    [
+      994075,
+      46
+    ],
+    [
+      994075,
+      47
+    ],
+    [
+      994075,
+      48
+    ],
+    [
+      994075,
+      49
+    ],
+    [
+      994075,
+      50
+    ],
+    [
+      994075,
+      51
+    ],
+    [
+      994075,
+      52
+    ],
+    [
+      994075,
+      53
+    ],
+    [
+      994075,
+      54
+    ],
+    [
+      994075,
+      55
+    ],
+    [
+      994075,
+      56
+    ],
+    [
+      994075,
+      57
+    ],
+    [
+      994075,
+      58
+    ],
+    [
+      994075,
+      59
+    ],
+    [
+      994075,
+      60
+    ],
+    [
+      994075,
+      61
+    ],
+    [
+      994075,
+      62
+    ],
+    [
+      994075,
+      63
+    ],
+    [
+      994075,
+      64
+    ],
+    [
+      994075,
+      65
+    ],
+    [
+      994075,
+      66
+    ],
+    [
+      994075,
+      67
+    ],
+    [
+      994075,
+      68
+    ],
+    [
+      994075,
+      69
+    ],
+    [
+      994075,
+      70
+    ],
+    [
+      994075,
+      71
+    ],
+    [
+      994075,
+      72
+    ],
+    [
+      994075,
+      73
+    ],
+    [
+      994075,
+      74
+    ],
+    [
+      994075,
+      75
+    ],
+    [
+      994075,
+      76
+    ],
+    [
+      994075,
+      77
+    ],
+    [
+      994075,
+      78
+    ],
+    [
+      994075,
+      79
+    ],
+    [
+      994075,
+      80
+    ],
+    [
+      994075,
+      81
+    ],
+    [
+      994075,
+      82
+    ],
+    [
+      994075,
+      83
+    ],
+    [
+      994075,
+      84
+    ],
+    [
+      994075,
+      85
+    ],
+    [
+      994075,
+      86
+    ],
+    [
+      994075,
+      87
+    ],
+    [
+      994075,
+      88
+    ],
+    [
+      994075,
+      89
+    ],
+    [
+      994075,
+      90
+    ],
+    [
+      994075,
+      91
+    ],
+    [
+      994075,
+      92
+    ],
+    [
+      994075,
+      93
+    ],
+    [
+      994075,
+      94
+    ],
+    [
+      994075,
+      95
+    ],
+    [
+      994075,
+      96
+    ],
+    [
+      994075,
+      97
+    ],
+    [
+      994075,
+      98
+    ],
+    [
+      994075,
+      99
+    ],
+    [
+      994075,
+      100
+    ],
+    [
+      994075,
+      101
+    ],
+    [
+      994075,
+      102
+    ],
+    [
+      994075,
+      103
+    ],
+    [
+      994075,
+      104
+    ],
+    [
+      994075,
+      105
+    ],
+    [
+      994075,
+      106
+    ],
+    [
+      994075,
+      107
+    ],
+    [
+      994075,
+      108
+    ],
+    [
+      994075,
+      109
+    ],
+    [
+      994075,
+      110
+    ],
+    [
+      994075,
+      111
+    ],
+    [
+      994075,
+      112
+    ],
+    [
+      994075,
+      113
+    ],
+    [
+      994075,
+      114
+    ],
+    [
+      994075,
+      115
+    ],
+    [
+      994075,
+      116
+    ],
+    [
+      994075,
+      117
+    ],
+    [
+      994075,
+      118
+    ],
+    [
+      994075,
+      119
+    ],
+    [
+      994075,
+      120
+    ],
+    [
+      994075,
+      121
+    ],
+    [
+      994075,
+      122
+    ],
+    [
+      994075,
+      123
+    ],
+    [
+      994075,
+      124
+    ],
+    [
+      994075,
+      125
+    ],
+    [
+      994075,
+      126
+    ],
+    [
+      994075,
+      127
+    ]
+  ],
+  "incident_labels": {
+    "all_scales_stable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "native_convergent_stable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "split": "development",
+  "policy_updates": 0,
+  "contact_bptt_admitted": false
+}

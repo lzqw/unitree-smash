@@ -74,12 +74,16 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
         close = (p-center[i]).norm(dim=-1) <= racket_radius
         delta = torch.zeros_like(v)
         inside = torch.zeros_like(hit)
+        impact_displacement = None
         if compound_racket and close.any():
             lane = close.nonzero().flatten()
-            normal, tangent, next_spin, active = compound_step(
+            normal, tangent, next_spin, active, impact_time = compound_step(
                 prior, p[lane], v[lane], spin[lane], center[i, lane], q[i, lane],
                 linear[i, lane], omega[i, lane], racket_material, offset, fitted['normal_impulse_scale'],
-                separation_gain=fitted.get('separation_velocity_gain', 0.))
+                separation_gain=fitted.get('separation_velocity_gain', 0.),
+                impact_geometry_fraction=fitted.get('impact_geometry_fraction', 0.), return_impact_time=True)
+            if fitted.get('impact_geometry_fraction', 0.):
+                impact_displacement = torch.zeros_like(p).index_copy(0,lane,impact_time[:, None]*(normal+tangent))
             delta = delta.index_copy(0, lane, normal + tangent)
             spin = spin.index_copy(0, lane, next_spin)
             hit[lane] |= active > 0
@@ -144,6 +148,8 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
         relative = v-prior.wind
         v = v + prior.sub_dt*(prior.gravity-prior.drag*relative.norm(dim=-1, keepdim=True)*relative) + delta
         p = p + prior.sub_dt*v
+        if impact_displacement is not None:
+            p = p - impact_displacement
     result = torch.cat((p, v), -1), hit
     return (*result, spin) if return_spin else result
 

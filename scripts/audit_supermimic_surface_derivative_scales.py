@@ -32,7 +32,7 @@ def vector_summary(reference, estimate):
     return result
 
 
-def read_trial(directory, seed, branch, expected, settings, prior, design=None):
+def read_trial(directory, seed, branch, expected, settings, prior, design=None, *, material=None):
     path = directory / branch / f'spec_{seed}' / 'trace.pt'
     trial = torch.load(path, mmap=True, weights_only=True, map_location='cpu')
     tr = trial['raw']['substep_trace']
@@ -54,7 +54,10 @@ def read_trial(directory, seed, branch, expected, settings, prior, design=None):
     stream[0] = stream[0] - origin
     out, _ = tick(prior, state, [x[0] for x in stream], [x[-1] for x in stream],
                   settings['fitted'], settings['solver']['pair_contact_offset_m'],
-                  torch.zeros(len(ball), dtype=torch.bool), measured_path=[x[:-1] for x in stream])
+                  None if material is not None else torch.zeros(len(ball), dtype=torch.bool),
+                  measured_path=[x[:-1] for x in stream],
+                  racket_material=material, compound_racket=material is not None,
+                  initial_spin=ball[:, 10:13] if material is not None else None)
     common = {k: v[k] for k in ('nominal_shuttle', 'joint_targets', 'direction_world', 'nominal_root_com_velocity')}
     common.update(court_origin=origin,ball_state=ball, racket_position=t[names[0]][0], racket_rotation=t[names[1]][0],
                   parent_lane=trial['parent_lane'])
@@ -70,7 +73,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('wide', 'scales', 'wide-audit', 'calibration', 'output'):
         parser.add_argument('--'+name, required=True, type=Path)
+    parser.add_argument('--compound-material',type=Path,help='Use the multi-shape solve and propagate incoming native spin')
+    parser.add_argument('--material-readout',type=Path,help='Optional two-material predictive coefficients fitted on calibration families')
     args = parser.parse_args()
+    if args.material_readout and not args.compound_material:
+        parser.error('A material readout requires the native source material contract')
     torch.set_num_threads(3)
     plan = json.loads((args.scales/'design.json').read_text())
     design = json.loads((args.wide/'design.json').read_text())
@@ -84,6 +91,23 @@ def main():
     directories = [args.wide, args.scales/'half', args.scales/'quarter']
     epsilons = [plan['wide_epsilon_mps'], *plan['epsilon_mps']]
     prov = json.loads((args.wide/'nominal_a'/'provenance.json').read_text())
+    material = None
+    if args.compound_material:
+        from quadsmash.rl.supermimic_racket_material_contract_v1 import validate_contract
+        from fit_supermimic_racket_material_response import material_table
+        teacher_path = Path(prov['args'][prov['args'].index('--teacher')+1])
+        if sha(teacher_path)!=prov['teacher_sha256']:
+            raise ValueError('Changed fixture teacher asset')
+        asset=torch.load(teacher_path,mmap=True,weights_only=True)['task_contract']['asset']['sha256']
+        contract=validate_contract(json.loads(args.compound_material.read_text()),asset)
+        material=torch.tensor(contract['effective'])
+        if args.material_readout:
+            fit=json.loads(args.material_readout.read_text())
+            if (fit['calibration_sha256']!=sha(args.calibration) or fit['material_sha256']!=sha(args.compound_material)
+                    or fit['split_hashes']['train']!=sha(args.wide/'train.json') or fit['final_holdout_opened']):
+                raise ValueError('Incompatible predictive coefficient calibration')
+            strings=torch.tensor([n.startswith('Collider/strip_') for n in contract['component_names']])
+            material=material_table(material,strings,torch.tensor(fit['selected']))
     for directory in directories:
         for branch in ('plus','minus'):
             check = json.loads((directory/branch/'provenance.json').read_text())
@@ -101,14 +125,14 @@ def main():
         if part != audit['split']:
             continue
         seed = int(sk)
-        common, nominal, base, _, digest = read_trial(args.wide,seed,'nominal_a',epsilons[0],cfg,prior,design)
+        common, nominal, base, _, digest = read_trial(args.wide,seed,'nominal_a',epsilons[0],cfg,prior,design,material=material)
         if digest != audit['archives'][str(args.wide/'nominal_a'/f'spec_{seed}'/'trace.pt')]:
             raise ValueError('Nominal panel changed')
         stable = torch.ones(len(base),dtype=torch.bool)
         for name,eps,dir_ in zip(('wide','half','quarter'),epsilons,directories):
             signed = {}
             for branch in ('minus','plus'):
-                ref, events, native, model, digest = read_trial(dir_,seed,branch,eps,cfg,prior,design)
+                ref, events, native, model, digest = read_trial(dir_,seed,branch,eps,cfg,prior,design,material=material)
                 if design.get('initial_racket_twist'):
                     verify_common_twist(common['native_write'],ref['native_write'])
                 if any(not torch.equal(v,ref[k]) for k,v in common.items() if k!='native_write'):
@@ -159,7 +183,9 @@ def main():
             comparisons['model_vs_native_'+tag]=('native_'+tag,'model_'+tag)
         results[group]={k:vector_summary(d[ref],d[pred]) for k,(ref,pred) in comparisons.items()}
     with args.output.open('x') as f:
-        json.dump(dict(calibration_sha256=sha(args.calibration),wide_audit_sha256=sha(args.wide_audit),
+        json.dump(dict(material_sha256=sha(args.compound_material) if args.compound_material else None,
+                       coefficient_fit_sha256=sha(args.material_readout) if args.material_readout else None,
+                       calibration_sha256=sha(args.calibration),wide_audit_sha256=sha(args.wide_audit),
                        scale_plan_sha256=sha(args.scales/'design.json'),physical_archives=hashes,
                        units='change in ball m/s per 1 m/s requested native surface perturbation',
                        groups=results,case_ids=[[seed,l] for seed in sorted({key[0] for key in by_case})

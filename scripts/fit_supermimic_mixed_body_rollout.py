@@ -108,7 +108,7 @@ def main():
     cli = argparse.ArgumentParser(description=__doc__)
     for name in ('source','ball','packed','split','reference-verification','probe-holdout','output'):
         cli.add_argument('--'+name,type=Path,required=True)
-    cli.add_argument('--training-collection',type=Path,
+    cli.add_argument('--training-collection',type=Path,action='append',default=[],
                      help='Use verified held-action windows for half of identification pairs in each batch')
     cli.add_argument('--include-recovery-events', action='store_true',
                      help='Split event slots between racket contacts and post-strike support or recovery transitions')
@@ -167,20 +167,25 @@ def main():
     count_natural=a.batch-count_pair-count_event
     if not lanes or pair_count<count_pair:
         raise ValueError('Not enough distinct measured training pairs')
-    sequence = None
-    sequence_receipt = None
-    if a.training_collection:
-        from quadsmash.rl.supermimic_policy_execution_v1 import contract
-        from quadsmash.rl.supermimic_training_probe_replay import training_windows
-        windows, sequence_receipt = training_windows(a.training_collection, task, contract(),
-                                                    set(range(len(launch)))-set(lanes))
+    from quadsmash.rl.supermimic_policy_execution_v1 import contract
+    from quadsmash.rl.supermimic_training_probe_replay import training_windows
+    sequences = []
+    sequence_receipts = []
+    used_archives = set()
+    for directory in a.training_collection:
+        windows, receipt = training_windows(directory,task,contract(),set(range(len(launch)))-set(lanes))
+        hashes = {v for branches in receipt['spec_branches'].values() for v in branches.values()}
+        if used_archives.intersection(hashes):
+            raise ValueError('Duplicated native branch in training collections')
+        used_archives.update(hashes)
         sequence_lanes = [lane for ids,_ in windows for lane in ids]
         if len(sequence_lanes)<count_pair//2:
             raise ValueError('Too few eligible signed training windows')
         needed = ('state','feet','present','targets','previous_action','elapsed','next_state')
         sequence = {b:{k:torch.cat([signed[b][k] for _,signed in windows],dim=1).to(device)
                        for k in needed} for b in ('minus','plus')}
-        sequence_launch = launch[sequence_lanes]
+        sequences.append((sequence,launch[sequence_lanes]))
+        sequence_receipts.append(receipt)
     horizons=(1,2,4,8,16,32,64)
     pools={}
     eligible = torch.zeros(data['episode'].shape[1], dtype=torch.bool)
@@ -197,8 +202,9 @@ def main():
                   train_lanes=lanes,excluded_lanes=sorted(held),pair_sources=[r['provenance']['source_sha256'] for r in parent_cfg['native_response_sources']],
                   root_angular_weight=a.root_angular_weight, windows_per_update=counts,
                   pair_count=pair_count,batch=a.batch,natural_count=count_natural,event_count=count_event,
-                  pair_count_per_update=count_pair,sequence_pairs_per_update=count_pair//2 if sequence else 0,
-                  sequence_receipt=sequence_receipt,horizons=horizons,updates_per_horizon=a.updates_per_horizon,
+                  pair_count_per_update=count_pair,sequence_pairs_per_update=count_pair//2 if sequences else 0,
+                  sequence_receipt=sequence_receipts[0] if len(sequence_receipts)==1 else None,
+                  sequence_receipts=sequence_receipts,horizons=horizons,updates_per_horizon=a.updates_per_horizon,
                   seed=20261121,lr=a.lr,actor_updates=0,critic_updates=0,policy_training_admitted=False)
     a.output.mkdir(parents=True,exist_ok=False)
     (a.output/'config.json').write_text(json.dumps(metadata,indent=2)+'\n')
@@ -213,11 +219,14 @@ def main():
                 selected=torch.cat([pool[torch.randperm(len(pool),generator=generator)[:counts[name]]]
                                     for name,pool in pools[h].items()]).to(device)
                 body,fk,gyro=rollout_terms(world,ball,data,launch,*selected.T,h)
-                n_seq = count_pair//2 if sequence else 0
+                n_seq = count_pair//2 if sequences else 0
                 ids=torch.randperm(pair_count,generator=generator)[:count_pair-n_seq].to(device)
                 point,jac,support=pair_terms(world,pairs,ids)
                 measured_steps = 2*len(ids)
-                if sequence:
+                if sequences:
+                    source_index=(step-1)%len(sequences)
+                    sequence, sequence_launch=sequences[source_index]
+                    support['sequence_source']=source_index
                     seq_ids=torch.randperm(len(sequence_launch),generator=generator)[:n_seq].to(device)
                     seq_h=min(h,sequence['minus']['state'].shape[0])
                     seq_point,seq_jac,support['sequence_by_tick']=sequence_terms(

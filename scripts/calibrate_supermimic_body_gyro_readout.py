@@ -41,7 +41,7 @@ def main():
     if allowed & set(meta['excluded_lanes']):
         raise ValueError('Training and held-out lanes overlap')
     windows, receipt = training_windows(args.training_collection, task, contract(), set(range(len(launch)))-allowed)
-    if receipt != meta['sequence_receipt']:
+    if receipt not in meta.get('sequence_receipts', [meta.get('sequence_receipt')]):
         raise ValueError('Signed training windows differ from the parent fit')
     model = PhysicalWorldV2(task['asset']['sha256']).eval().requires_grad_(False).to(device)
     model.load_state_dict(source['model'], strict=True)

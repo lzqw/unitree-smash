@@ -40,7 +40,7 @@ def solve_patch(normals, mu, restitution, velocity, spin, surface, radius, activ
 
 
 def compound_step(prior, position, velocity, spin, center, rotation, linear, angular,
-                  material, offset, normal_scale, *, compound=True, separation_gain=0.):
+                  material, offset, normal_scale, *, compound=True, separation_gain=0., impact_geometry_fraction=0., return_impact_time=False):
     """Predict one native-length substep from the incoming shuttle and current racket state."""
     geometry = prior.preview
     local = _quat_rotate_inverse(rotation, position - center)
@@ -50,8 +50,10 @@ def compound_step(prior, position, velocity, spin, center, rotation, linear, ang
                       round_gap(local, *rounded)), -1) - geometry.radius
     near_count = (gaps <= offset).sum(-1)
     count = int(near_count.max()) if compound else 1
+    time = position.new_zeros(len(position))
     if count == 0:
-        return torch.zeros_like(velocity), torch.zeros_like(velocity), spin, near_count
+        result = torch.zeros_like(velocity), torch.zeros_like(velocity), spin, near_count
+        return (*result, time) if return_impact_time else result
     gap, ids = gaps.topk(count, largest=False)
     normals = torch.cat((box_normal(local, geometry.racket_box_centers, geometry.racket_box_halves),
                          round_normal(local, *rounded)), 1)
@@ -60,7 +62,31 @@ def compound_step(prior, position, velocity, spin, center, rotation, linear, ang
     surface = linear[:, None] + torch.linalg.cross(angular[:, None].expand_as(lever), lever)
     vn = ((velocity[:, None] - surface) * n).sum(-1)
     active = (gap <= offset) & (gap + prior.sub_dt * vn <= 0) & (vn < 0)
+    if impact_geometry_fraction:
+        if not 0 < impact_geometry_fraction <= 1:
+            raise ValueError('Impact reconstruction fraction must be between zero and one')
+        # Solve for the earliest incoming surface crossing within the registered substep.
+        # An initial overlap begins at time zero, including when other shapes load later.
+        closing_time = gap.clamp_min(0) / (-vn).clamp_min(1e-10)
+        earliest = torch.where(active, closing_time, prior.sub_dt).amin(-1).clamp(max=prior.sub_dt)
+        time = torch.where(active.any(-1), earliest * impact_geometry_fraction, 0.)
+        angle = angular * time[:,None]
+        theta = angle.norm(dim=-1, keepdim=True)
+        dq = torch.cat(((theta*.5).cos(), .5*torch.sinc(theta/(2*torch.pi))*angle), -1)
+        # World-frame angular velocity left-multiplies the initial racket orientation.
+        impact_rotation = torch.cat((dq[:,:1]*rotation[:,:1]-(dq[:,1:]*rotation[:,1:]).sum(-1,keepdim=True),
+            dq[:,:1]*rotation[:,1:] + rotation[:,:1]*dq[:,1:] + torch.linalg.cross(dq[:,1:],rotation[:,1:])), -1)
+        impact_delta = position - center + time[:,None]*(velocity-linear)
+        local_hit = _quat_rotate_inverse(impact_rotation, impact_delta)
+        axes_hit = torch.cat((box_normal(local_hit, geometry.racket_box_centers, geometry.racket_box_halves),
+                              round_normal(local_hit, *rounded)), 1)
+        n = _quat_rotate(impact_rotation[:,None], axes_hit.gather(1, ids[...,None].expand(-1,-1,3)))
+        lever = impact_delta[:,None] - geometry.radius*n
+        surface = linear[:,None] + torch.linalg.cross(angular[:,None].expand_as(lever),lever)
+        gap = torch.cat((box_gap(local_hit,geometry.racket_box_centers,geometry.racket_box_halves),
+                         round_gap(local_hit,*rounded)), -1).gather(1,ids) - geometry.radius
     normal, tangent, spin = solve_patch(n, material[ids, 1], material[ids, 2], velocity, spin, surface,
                                        geometry.radius, active, normal_scale, 4 if compound else 1,
                                        return_spin=True, separation_velocity=separation_gain * gap / prior.sub_dt if separation_gain else None)
-    return normal, tangent, spin, active.sum(-1)
+    result = normal, tangent, spin, active.sum(-1)
+    return (*result, time) if return_impact_time else result

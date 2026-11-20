@@ -1,0 +1,726 @@
+{
+  "results": {
+    "train": {
+      "all": {
+        "native_normal": {
+          "rows": 896,
+          "supported": 734,
+          "absolute_rmse": 0.20654843747615814,
+          "gain_median": 0.9652077555656433,
+          "gain_p10": 0.4159359037876129,
+          "cosine_median": 0.9490983486175537,
+          "cosine_p10": 0.3549645245075226
+        },
+        "native_all": {
+          "rows": 896,
+          "supported": 734,
+          "absolute_rmse": 0.0008802990196272731,
+          "gain_median": 1.001876950263977,
+          "gain_p10": 1.0005525350570679,
+          "cosine_median": 0.9999998211860657,
+          "cosine_p10": 0.999998927116394
+        },
+        "native_normal_loaded_friction": {
+          "rows": 896,
+          "supported": 734,
+          "absolute_rmse": 0.006499283015727997,
+          "gain_median": 1.0018587112426758,
+          "gain_p10": 1.0005090236663818,
+          "cosine_median": 0.9999998211860657,
+          "cosine_p10": 0.999998927116394
+        },
+        "predicted_normal_native_friction": {
+          "rows": 896,
+          "supported": 734,
+          "absolute_rmse": 0.2999115586280823,
+          "gain_median": 0.9998950362205505,
+          "gain_p10": 0.5340420007705688,
+          "cosine_median": 0.9865638017654419,
+          "cosine_p10": -0.29748818278312683
+        },
+        "native_normal_predicted_friction": {
+          "rows": 896,
+          "supported": 734,
+          "absolute_rmse": 0.15033915638923645,
+          "gain_median": 0.9943268895149231,
+          "gain_p10": 0.4503896236419678,
+          "cosine_median": 0.974953293800354,
+          "cosine_p10": 0.41518673300743103
+        },
+        "predicted_both": {
+          "rows": 896,
+          "supported": 734,
+          "absolute_rmse": 0.31083324551582336,
+          "gain_median": 0.931296169757843,
+          "gain_p10": 0.17741915583610535,
+          "cosine_median": 0.7944151759147644,
+          "cosine_p10": -0.1064516231417656
+        }
+      },
+      "toi_switch": {
+        "native_normal": {
+          "rows": 331,
+          "supported": 331,
+          "absolute_rmse": 0.28029462695121765,
+          "gain_median": 0.9718903303146362,
+          "gain_p10": 0.49637076258659363,
+          "cosine_median": 0.9603487849235535,
+          "cosine_p10": 0.4380968511104584
+        },
+        "native_all": {
+          "rows": 331,
+          "supported": 331,
+          "absolute_rmse": 0.0011370198335498571,
+          "gain_median": 1.001782774925232,
+          "gain_p10": 1.0004782676696777,
+          "cosine_median": 0.9999997615814209,
+          "cosine_p10": 0.9999983310699463
+        },
+        "native_normal_loaded_friction": {
+          "rows": 331,
+          "supported": 331,
+          "absolute_rmse": 0.008774416521191597,
+          "gain_median": 1.0017727613449097,
+          "gain_p10": 1.0004428625106812,
+          "cosine_median": 0.9999997615814209,
+          "cosine_p10": 0.9999982714653015
+        },
+        "predicted_normal_native_friction": {
+          "rows": 331,
+          "supported": 331,
+          "absolute_rmse": 0.3239142894744873,
+          "gain_median": 1.0107412338256836,
+          "gain_p10": 0.7660198211669922,
+          "cosine_median": 0.9957869052886963,
+          "cosine_p10": 0.23560674488544464
+        },
+        "native_normal_predicted_friction": {
+          "rows": 331,
+          "supported": 331,
+          "absolute_rmse": 0.16333675384521484,
+          "gain_median": 0.9969753623008728,
+          "gain_p10": 0.49276605248451233,
+          "cosine_median": 0.9839763045310974,
+          "cosine_p10": 0.5338191986083984
+        },
+        "predicted_both": {
+          "rows": 331,
+          "supported": 331,
+          "absolute_rmse": 0.3502348065376282,
+          "gain_median": 0.9825993180274963,
+          "gain_p10": 0.4274476170539856,
+          "cosine_median": 0.9477376341819763,
+          "cosine_p10": 0.11221542209386826
+        }
+      },
+      "racket_stable": {
+        "native_normal": {
+          "rows": 176,
+          "supported": 176,
+          "absolute_rmse": 0.15025945007801056,
+          "gain_median": 0.9645667672157288,
+          "gain_p10": 0.34378528594970703,
+          "cosine_median": 0.9127456545829773,
+          "cosine_p10": 0.2688533067703247
+        },
+        "native_all": {
+          "rows": 176,
+          "supported": 176,
+          "absolute_rmse": 0.0005915217916481197,
+          "gain_median": 1.002295732498169,
+          "gain_p10": 1.0007997751235962,
+          "cosine_median": 0.9999998807907104,
+          "cosine_p10": 0.9999992847442627
+        },
+        "native_normal_loaded_friction": {
+          "rows": 176,
+          "supported": 176,
+          "absolute_rmse": 0.006508838385343552,
+          "gain_median": 1.002190113067627,
+          "gain_p10": 1.0007212162017822,
+          "cosine_median": 0.9999998807907104,
+          "cosine_p10": 0.9999991655349731
+        },
+        "predicted_normal_native_friction": {
+          "rows": 176,
+          "supported": 176,
+          "absolute_rmse": 0.14056947827339172,
+          "gain_median": 0.9997352361679077,
+          "gain_p10": 0.6963760852813721,
+          "cosine_median": 0.9992037415504456,
+          "cosine_p10": 0.7568681240081787
+        },
+        "native_normal_predicted_friction": {
+          "rows": 176,
+          "supported": 176,
+          "absolute_rmse": 0.14702337980270386,
+          "gain_median": 0.990683376789093,
+          "gain_p10": 0.370597243309021,
+          "cosine_median": 0.9566067457199097,
+          "cosine_p10": 0.29747122526168823
+        },
+        "predicted_both": {
+          "rows": 176,
+          "supported": 176,
+          "absolute_rmse": 0.19503450393676758,
+          "gain_median": 0.8997702598571777,
+          "gain_p10": 0.19394931197166443,
+          "cosine_median": 0.9102686047554016,
+          "cosine_p10": -0.02214789390563965
+        }
+      },
+      "manifold_switch": {
+        "native_normal": {
+          "rows": 223,
+          "supported": 223,
+          "absolute_rmse": 0.19168105721473694,
+          "gain_median": 0.944791853427887,
+          "gain_p10": 0.36464083194732666,
+          "cosine_median": 0.9409645795822144,
+          "cosine_p10": 0.26698362827301025
+        },
+        "native_all": {
+          "rows": 223,
+          "supported": 223,
+          "absolute_rmse": 0.0009564636275172234,
+          "gain_median": 1.0018298625946045,
+          "gain_p10": 1.0005079507827759,
+          "cosine_median": 0.9999998807907104,
+          "cosine_p10": 0.9999992847442627
+        },
+        "native_normal_loaded_friction": {
+          "rows": 223,
+          "supported": 223,
+          "absolute_rmse": 0.004690782632678747,
+          "gain_median": 1.0018272399902344,
+          "gain_p10": 1.0005022287368774,
+          "cosine_median": 0.9999998807907104,
+          "cosine_p10": 0.9999992847442627
+        },
+        "predicted_normal_native_friction": {
+          "rows": 223,
+          "supported": 223,
+          "absolute_rmse": 0.4359675943851471,
+          "gain_median": 0.9518017768859863,
+          "gain_p10": 0.3380366563796997,
+          "cosine_median": 0.7449425458908081,
+          "cosine_p10": -0.8083932995796204
+        },
+        "native_normal_predicted_friction": {
+          "rows": 223,
+          "supported": 223,
+          "absolute_rmse": 0.18480491638183594,
+          "gain_median": 0.9741140007972717,
+          "gain_p10": 0.4517472982406616,
+          "cosine_median": 0.9425399899482727,
+          "cosine_p10": 0.29059866070747375
+        },
+        "predicted_both": {
+          "rows": 223,
+          "supported": 223,
+          "absolute_rmse": 0.41964858770370483,
+          "gain_median": 0.6089439392089844,
+          "gain_p10": 0.09028907120227814,
+          "cosine_median": 0.4576910734176636,
+          "cosine_p10": -0.26222097873687744
+        }
+      },
+      "no_contact": {
+        "native_normal": {
+          "rows": 106,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "native_all": {
+          "rows": 106,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "native_normal_loaded_friction": {
+          "rows": 106,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "predicted_normal_native_friction": {
+          "rows": 106,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "native_normal_predicted_friction": {
+          "rows": 106,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "predicted_both": {
+          "rows": 106,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        }
+      },
+      "nonracket_contact": {
+        "native_normal": {
+          "rows": 56,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "native_all": {
+          "rows": 56,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "native_normal_loaded_friction": {
+          "rows": 56,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "predicted_normal_native_friction": {
+          "rows": 56,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "native_normal_predicted_friction": {
+          "rows": 56,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "predicted_both": {
+          "rows": 56,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        }
+      },
+      "object_switch": {
+        "native_normal": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.11537883430719376,
+          "gain_median": 0.9618600010871887,
+          "gain_p10": 0.9609507918357849,
+          "cosine_median": 0.9604679346084595,
+          "cosine_p10": 0.9604446291923523
+        },
+        "native_all": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.0004541776143014431,
+          "gain_median": 1.0006943941116333,
+          "gain_p10": 1.0003045797348022,
+          "cosine_median": 1.0,
+          "cosine_p10": 0.9999999403953552
+        },
+        "native_normal_loaded_friction": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.0004541776143014431,
+          "gain_median": 1.0006943941116333,
+          "gain_p10": 1.0003045797348022,
+          "cosine_median": 1.0,
+          "cosine_p10": 0.9999999403953552
+        },
+        "predicted_normal_native_friction": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.015393052250146866,
+          "gain_median": 0.9699661135673523,
+          "gain_p10": 0.9591212868690491,
+          "cosine_median": 0.9999510645866394,
+          "cosine_p10": 0.9999175071716309
+        },
+        "native_normal_predicted_friction": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.0042981114238500595,
+          "gain_median": 0.9989087581634521,
+          "gain_p10": 0.9971370100975037,
+          "cosine_median": 0.9999620318412781,
+          "cosine_p10": 0.9999266862869263
+        },
+        "predicted_both": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.01597541570663452,
+          "gain_median": 0.9672656655311584,
+          "gain_p10": 0.955552875995636,
+          "cosine_median": 0.9999999403953552,
+          "cosine_p10": 0.9999999403953552
+        }
+      }
+    },
+    "development": {
+      "all": {
+        "native_normal": {
+          "rows": 256,
+          "supported": 209,
+          "absolute_rmse": 0.1408831775188446,
+          "gain_median": 0.9855614900588989,
+          "gain_p10": 0.40506887435913086,
+          "cosine_median": 0.9587803483009338,
+          "cosine_p10": 0.29242396354675293
+        },
+        "native_all": {
+          "rows": 256,
+          "supported": 209,
+          "absolute_rmse": 0.005494173150509596,
+          "gain_median": 1.0018222332000732,
+          "gain_p10": 1.0005055665969849,
+          "cosine_median": 0.9999998807907104,
+          "cosine_p10": 0.9999985694885254
+        },
+        "native_normal_loaded_friction": {
+          "rows": 256,
+          "supported": 209,
+          "absolute_rmse": 0.005581094417721033,
+          "gain_median": 1.0018342733383179,
+          "gain_p10": 1.0005055665969849,
+          "cosine_median": 0.9999998807907104,
+          "cosine_p10": 0.9999982714653015
+        },
+        "predicted_normal_native_friction": {
+          "rows": 256,
+          "supported": 209,
+          "absolute_rmse": 0.30753421783447266,
+          "gain_median": 1.0039763450622559,
+          "gain_p10": 0.6579698920249939,
+          "cosine_median": 0.995859682559967,
+          "cosine_p10": -0.1325274556875229
+        },
+        "native_normal_predicted_friction": {
+          "rows": 256,
+          "supported": 209,
+          "absolute_rmse": 0.12098363041877747,
+          "gain_median": 0.9989712238311768,
+          "gain_p10": 0.4108182489871979,
+          "cosine_median": 0.9811127781867981,
+          "cosine_p10": 0.3169171214103699
+        },
+        "predicted_both": {
+          "rows": 256,
+          "supported": 209,
+          "absolute_rmse": 0.31890130043029785,
+          "gain_median": 0.9788873195648193,
+          "gain_p10": 0.21435026824474335,
+          "cosine_median": 0.935135543346405,
+          "cosine_p10": 0.05496308207511902
+        }
+      },
+      "toi_switch": {
+        "native_normal": {
+          "rows": 111,
+          "supported": 111,
+          "absolute_rmse": 0.14231103658676147,
+          "gain_median": 0.9856176972389221,
+          "gain_p10": 0.48523446917533875,
+          "cosine_median": 0.960931658744812,
+          "cosine_p10": 0.5616190433502197
+        },
+        "native_all": {
+          "rows": 111,
+          "supported": 111,
+          "absolute_rmse": 0.0006893665995448828,
+          "gain_median": 1.0017855167388916,
+          "gain_p10": 1.000478744506836,
+          "cosine_median": 0.9999997615814209,
+          "cosine_p10": 0.9999977350234985
+        },
+        "native_normal_loaded_friction": {
+          "rows": 111,
+          "supported": 111,
+          "absolute_rmse": 0.001607244834303856,
+          "gain_median": 1.0017855167388916,
+          "gain_p10": 1.000478744506836,
+          "cosine_median": 0.9999997615814209,
+          "cosine_p10": 0.9999976754188538
+        },
+        "predicted_normal_native_friction": {
+          "rows": 111,
+          "supported": 111,
+          "absolute_rmse": 0.3390158712863922,
+          "gain_median": 1.0087565183639526,
+          "gain_p10": 0.8750091791152954,
+          "cosine_median": 0.9975972771644592,
+          "cosine_p10": 0.2553922235965729
+        },
+        "native_normal_predicted_friction": {
+          "rows": 111,
+          "supported": 111,
+          "absolute_rmse": 0.10886936634778976,
+          "gain_median": 0.9989712238311768,
+          "gain_p10": 0.48388779163360596,
+          "cosine_median": 0.9881607890129089,
+          "cosine_p10": 0.5288012027740479
+        },
+        "predicted_both": {
+          "rows": 111,
+          "supported": 111,
+          "absolute_rmse": 0.3620350658893585,
+          "gain_median": 1.0010428428649902,
+          "gain_p10": 0.4630826413631439,
+          "cosine_median": 0.9600704312324524,
+          "cosine_p10": 0.11611027270555496
+        }
+      },
+      "manifold_switch": {
+        "native_normal": {
+          "rows": 49,
+          "supported": 49,
+          "absolute_rmse": 0.2036011815071106,
+          "gain_median": 0.9340949654579163,
+          "gain_p10": 0.3658188581466675,
+          "cosine_median": 0.9080696105957031,
+          "cosine_p10": 0.22291600704193115
+        },
+        "native_all": {
+          "rows": 49,
+          "supported": 49,
+          "absolute_rmse": 0.0007347484934143722,
+          "gain_median": 1.001758098602295,
+          "gain_p10": 1.000841736793518,
+          "cosine_median": 0.9999998807907104,
+          "cosine_p10": 0.9999995827674866
+        },
+        "native_normal_loaded_friction": {
+          "rows": 49,
+          "supported": 49,
+          "absolute_rmse": 0.0007347484934143722,
+          "gain_median": 1.001758098602295,
+          "gain_p10": 1.000841736793518,
+          "cosine_median": 0.9999998807907104,
+          "cosine_p10": 0.9999995827674866
+        },
+        "predicted_normal_native_friction": {
+          "rows": 49,
+          "supported": 49,
+          "absolute_rmse": 0.44831085205078125,
+          "gain_median": 0.9763011932373047,
+          "gain_p10": 0.4161102771759033,
+          "cosine_median": 0.7805225253105164,
+          "cosine_p10": -0.3234845995903015
+        },
+        "native_normal_predicted_friction": {
+          "rows": 49,
+          "supported": 49,
+          "absolute_rmse": 0.19525426626205444,
+          "gain_median": 0.9381194710731506,
+          "gain_p10": 0.35056501626968384,
+          "cosine_median": 0.9327394962310791,
+          "cosine_p10": 0.3031337857246399
+        },
+        "predicted_both": {
+          "rows": 49,
+          "supported": 49,
+          "absolute_rmse": 0.4490462839603424,
+          "gain_median": 0.5526606440544128,
+          "gain_p10": 0.11315058171749115,
+          "cosine_median": 0.5739069581031799,
+          "cosine_p10": 0.01159777119755745
+        }
+      },
+      "racket_stable": {
+        "native_normal": {
+          "rows": 46,
+          "supported": 46,
+          "absolute_rmse": 0.11643938720226288,
+          "gain_median": 0.9955281019210815,
+          "gain_p10": 0.4803513288497925,
+          "cosine_median": 0.9528900980949402,
+          "cosine_p10": 0.18478995561599731
+        },
+        "native_all": {
+          "rows": 46,
+          "supported": 46,
+          "absolute_rmse": 0.0005926317535340786,
+          "gain_median": 1.0019586086273193,
+          "gain_p10": 1.0007765293121338,
+          "cosine_median": 0.9999998807907104,
+          "cosine_p10": 0.9999989867210388
+        },
+        "native_normal_loaded_friction": {
+          "rows": 46,
+          "supported": 46,
+          "absolute_rmse": 0.0007886510575190187,
+          "gain_median": 1.0019696950912476,
+          "gain_p10": 1.000910758972168,
+          "cosine_median": 0.9999998807907104,
+          "cosine_p10": 0.9999988079071045
+        },
+        "predicted_normal_native_friction": {
+          "rows": 46,
+          "supported": 46,
+          "absolute_rmse": 0.18641412258148193,
+          "gain_median": 0.9955952167510986,
+          "gain_p10": 0.7397910356521606,
+          "cosine_median": 0.9991804957389832,
+          "cosine_p10": 0.4469701647758484
+        },
+        "native_normal_predicted_friction": {
+          "rows": 46,
+          "supported": 46,
+          "absolute_rmse": 0.10991335660219193,
+          "gain_median": 1.000291347503662,
+          "gain_p10": 0.5481686592102051,
+          "cosine_median": 0.9966927170753479,
+          "cosine_p10": 0.30440235137939453
+        },
+        "predicted_both": {
+          "rows": 46,
+          "supported": 46,
+          "absolute_rmse": 0.1863728016614914,
+          "gain_median": 0.9803470373153687,
+          "gain_p10": 0.24142299592494965,
+          "cosine_median": 0.9942827820777893,
+          "cosine_p10": 0.09976202249526978
+        }
+      },
+      "no_contact": {
+        "native_normal": {
+          "rows": 32,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "native_all": {
+          "rows": 32,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "native_normal_loaded_friction": {
+          "rows": 32,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "predicted_normal_native_friction": {
+          "rows": 32,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "native_normal_predicted_friction": {
+          "rows": 32,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "predicted_both": {
+          "rows": 32,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        }
+      },
+      "nonracket_contact": {
+        "native_normal": {
+          "rows": 16,
+          "supported": 1,
+          "absolute_rmse": 0.02184060774743557,
+          "gain_median": 0.0,
+          "gain_p10": 0.0,
+          "cosine_median": 0.0,
+          "cosine_p10": 0.0
+        },
+        "native_all": {
+          "rows": 16,
+          "supported": 1,
+          "absolute_rmse": 0.02184060774743557,
+          "gain_median": 0.0,
+          "gain_p10": 0.0,
+          "cosine_median": 0.0,
+          "cosine_p10": 0.0
+        },
+        "native_normal_loaded_friction": {
+          "rows": 16,
+          "supported": 1,
+          "absolute_rmse": 0.02184060774743557,
+          "gain_median": 0.0,
+          "gain_p10": 0.0,
+          "cosine_median": 0.0,
+          "cosine_p10": 0.0
+        },
+        "predicted_normal_native_friction": {
+          "rows": 16,
+          "supported": 1,
+          "absolute_rmse": 0.02184060774743557,
+          "gain_median": 0.0,
+          "gain_p10": 0.0,
+          "cosine_median": 0.0,
+          "cosine_p10": 0.0
+        },
+        "native_normal_predicted_friction": {
+          "rows": 16,
+          "supported": 1,
+          "absolute_rmse": 0.02184060774743557,
+          "gain_median": 0.0,
+          "gain_p10": 0.0,
+          "cosine_median": 0.0,
+          "cosine_p10": 0.0
+        },
+        "predicted_both": {
+          "rows": 16,
+          "supported": 1,
+          "absolute_rmse": 0.02184060774743557,
+          "gain_median": 0.0,
+          "gain_p10": 0.0,
+          "cosine_median": 0.0,
+          "cosine_p10": 0.0
+        }
+      },
+      "object_switch": {
+        "native_normal": {
+          "rows": 2,
+          "supported": 2,
+          "absolute_rmse": 0.2920283079147339,
+          "gain_median": 0.9605629444122314,
+          "gain_p10": 0.9641901254653931,
+          "cosine_median": 0.9604251384735107,
+          "cosine_p10": 0.9640641212463379
+        },
+        "native_all": {
+          "rows": 2,
+          "supported": 2,
+          "absolute_rmse": 0.00015199279005173594,
+          "gain_median": 1.0000196695327759,
+          "gain_p10": 1.000031590461731,
+          "cosine_median": 1.0,
+          "cosine_p10": 1.0
+        },
+        "native_normal_loaded_friction": {
+          "rows": 2,
+          "supported": 2,
+          "absolute_rmse": 0.00015199279005173594,
+          "gain_median": 1.0000196695327759,
+          "gain_p10": 1.000031590461731,
+          "cosine_median": 1.0,
+          "cosine_p10": 1.0
+        },
+        "predicted_normal_native_friction": {
+          "rows": 2,
+          "supported": 2,
+          "absolute_rmse": 0.005886150989681482,
+          "gain_median": 1.0052788257598877,
+          "gain_p10": 1.0053558349609375,
+          "cosine_median": 0.9999988675117493,
+          "cosine_p10": 0.9999989867210388
+        },
+        "native_normal_predicted_friction": {
+          "rows": 2,
+          "supported": 2,
+          "absolute_rmse": 0.0019685090519487858,
+          "gain_median": 1.0000582933425903,
+          "gain_p10": 1.0001096725463867,
+          "cosine_median": 0.9999983310699463,
+          "cosine_p10": 0.9999985098838806
+        },
+        "predicted_both": {
+          "rows": 2,
+          "supported": 2,
+          "absolute_rmse": 0.006205169949680567,
+          "gain_median": 1.0057096481323242,
+          "gain_p10": 1.0057474374771118,
+          "cosine_median": 0.9999994039535522,
+          "cosine_p10": 0.999999463558197
+        }
+      }
+    }
+  },
+  "scope": "Native incoming state supplied each substep; native impulse substitutions for attribution",
+  "calibration_sha256": "7312af620cb8662e6dd7b8d0c8ee1a7cbc44fcbd8ef56a66313d9c10b8415a92",
+  "material_sha256": "ea8cc7043592957e7f19992ad79226640d29674e44c7b4a4dd5cd1bfb7b0c6b9",
+  "final_holdout_opened": false,
+  "policy_updates": 0,
+  "contact_gradients_admitted": false
+}

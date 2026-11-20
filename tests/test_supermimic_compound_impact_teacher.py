@@ -160,3 +160,33 @@ def test_compound_spin_and_closing_speed_gradient_remain_consistent_with_signed_
     alpha = torch.tensor(0., dtype=n.dtype, requires_grad=True)
     jac = torch.autograd.functional.jacobian(step, alpha)
     torch.testing.assert_close(jac, (step(alpha + 1.e-6) - step(alpha - 1.e-6))/2.e-6)
+
+
+def test_compound_contact_mid_substep_uses_remaining_time_and_incoming_surface():
+    from scripts.evaluate_supermimic_contact_rollout import BallImpulsePriorV1, tick
+    from quadsmash.rl.supermimic_compound_racket import compound_step
+    prior = BallImpulsePriorV1().double()
+    g = prior.preview
+    center = torch.zeros((1,3),dtype=torch.double)
+    rotation = torch.tensor([[1.,0.,0.,0.]],dtype=torch.double)
+    count = len(g.racket_box_centers)+len(g.racket_round_centers)
+    material = torch.tensor([0.,0.,.72],dtype=torch.double).expand(count,-1)
+    strip = len(g.racket_box_centers)//2
+    p = g.racket_box_centers[strip:strip+1].clone()
+    p[:,0] += g.racket_box_halves[strip,0]+g.radius+prior.sub_dt
+    v = torch.tensor([[-2.,0.,0.]],dtype=torch.double)
+    n,t,spin,active,toi = compound_step(prior,p,v,center,center,rotation,center,center,
+        material,.0002,1.,impact_geometry_fraction=1.,return_impact_time=True)
+    assert active.item() > 0
+    torch.testing.assert_close(toi,torch.tensor([prior.sub_dt/2],dtype=p.dtype),rtol=1e-8,atol=1e-12)
+    torch.testing.assert_close(n+t,torch.tensor([[3.44,0.,0.]],dtype=p.dtype))
+    # Remove gravity, drag, and court collisions; check the endpoint displacement over this interval.
+    prior.gravity.zero_()
+    prior.drag = 0.
+    center = center + torch.tensor([[0.,0.,4.]],dtype=p.dtype)
+    p = p + center
+    start = (center,rotation,torch.zeros_like(v),torch.zeros_like(v))
+    end,_ = tick(prior,torch.cat((p,v),-1),start,start,dict(normal_impulse_scale=1.,impact_geometry_fraction=1.),
+                 .0002,racket_material=material,compound_racket=True)
+    expected = p + v*toi[:,None] + (v+n+t)*(prior.dt-toi[:,None])
+    torch.testing.assert_close(end[:,:3],expected,rtol=1e-8,atol=1e-10)

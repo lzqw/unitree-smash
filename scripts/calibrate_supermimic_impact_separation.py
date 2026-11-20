@@ -15,6 +15,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('collection', 'material', 'calibration', 'output'):
         p.add_argument('--'+name, type=Path, required=True)
+    p.add_argument('--parameter',choices=('separation_velocity_gain','impact_geometry_fraction'),
+                   default='separation_velocity_gain')
     a = p.parse_args()
     torch.set_num_threads(2)
     cfg = json.loads(a.calibration.read_text())
@@ -26,11 +28,11 @@ def main():
     material = torch.tensor(validate_contract(json.loads(a.material.read_text()), asset)['effective'])
     prior = BallImpulsePriorV1().eval()
     def score(split, gain):
-        settings = dict(cfg, fitted=dict(cfg['fitted'], separation_velocity_gain=gain))
+        settings = dict(cfg, fitted=dict(cfg['fitted'], **{a.parameter:gain}))
         return evaluate(a.collection, a.collection/(split+'.json'), split, prior, settings, material,
                         True, False, compound=True)
 
-    gains = [0., .025, .05, .1, .2, .4, .8, 1.]
+    gains = [0., .025, .05, .1, .2, .4, .8, 1.] if a.parameter=='separation_velocity_gain' else [0.,.25,.5,.75,1.]
     train = {str(g):score('train', g) for g in gains}
     base = train['0.0']
     def ok(r):
@@ -39,10 +41,10 @@ def main():
     choice = min((g for g in gains if ok(train[str(g)])), key=lambda g:train[str(g)]['balanced_loss'])
     dev = {str(g):score('development', g) for g in dict.fromkeys((0., choice))}
     with a.output.open('x') as f:
-        json.dump(dict(train=train, selected_gain=choice, development=dev, material_sha256=sha(a.material),
+        json.dump(dict(train=train, parameter=a.parameter, selected_gain=choice, development=dev, material_sha256=sha(a.material),
                        source_calibration_sha256=sha(a.calibration), split_hashes={k:sha(a.collection/(k+'.json'))
                        for k in ('train', 'development')}, final_holdout_opened=False, policy_updates=0,
-                       scope='Fit separation divided by physics dt at predicted contacts using calibration families only',
+                       scope='Fit the selected contact parameter at predicted events using calibration families only',
                        contact_gradients_admitted=False), f, indent=2, allow_nan=False)
 
 
