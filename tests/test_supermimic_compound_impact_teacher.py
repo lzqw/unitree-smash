@@ -110,3 +110,36 @@ def test_free_articulation_readout_preserves_uniform_root_velocity_change():
     torch.testing.assert_close(shifted[2] - base[2], delta.expand_as(base[2]))
     torch.testing.assert_close(shifted[1], base[1])
     torch.testing.assert_close(shifted[3], base[3])
+
+
+def test_native_fixture_uses_measured_court_origin_and_rejects_wrong_layout():
+    import pytest
+    from quadsmash.rl.supermimic_fixture_coordinates import fixture_court_origin
+    position = torch.tensor([[81.5,0.,1.],[1.5,16.,1.]])
+    layout = dict(mode='spaced16',environment_spacing_m=16.,origins_w=[[80.,0.,0.],[0.,16.,0.]])
+    packet = dict(fixture_layout=layout)
+    origin = fixture_court_origin(packet,position)
+    torch.testing.assert_close(position-origin, torch.tensor([[1.5,0.,1.]]).expand_as(position))
+    with pytest.raises(ValueError):
+        fixture_court_origin(packet, position, dict(fixture_layout='teacher',expected_origin_spacing_m=0.))
+    with pytest.raises(ValueError):
+        fixture_court_origin({}, position, dict(fixture_layout='teacher',expected_origin_spacing_m=0.))
+
+
+def test_signed_arm_drive_fit_preserves_leg_readout_and_fits_measured_arm_difference():
+    from scripts.fit_supermimic_signed_arm_drive import solve_update
+
+    generator = torch.Generator().manual_seed(73)
+    natural = torch.randn(24, 18, 3, dtype=torch.float64, generator=generator)
+    delta = torch.randn(32, 18, 3, dtype=torch.float64, generator=generator)
+    parent = torch.randn(18, 3, 2, dtype=torch.float64, generator=generator)
+    changed = parent.clone()
+    changed[12:, 0, 0] += 0.5
+    natural_target = torch.einsum('njf,jfo->njo', natural, parent)
+    signed_target = torch.einsum('njf,jfo->njo', delta, changed)
+    fitted = solve_update(natural, natural_target, delta, signed_target, parent)
+    torch.testing.assert_close(fitted[:12], parent[:12], atol=0, rtol=0)
+    error = lambda coef: (torch.einsum('njf,jfo->njo', delta, coef) - signed_target).square().sum()
+    assert error(fitted) < error(parent)
+    unchanged = solve_update(natural, natural_target, torch.zeros_like(delta), torch.zeros_like(signed_target), parent)
+    torch.testing.assert_close(unchanged, parent)

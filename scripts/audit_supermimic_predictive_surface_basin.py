@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import torch
+from quadsmash.rl.supermimic_fixture_coordinates import fixture_court_origin
 import torch.nn.functional as F
 
 from audit_supermimic_surface_derivative_scales import vector_summary
@@ -78,6 +79,9 @@ def main():
         t=raw['tensors'];s=t['shuttle_state_w'][0]
         ball=torch.cat((s[:,:3],s[:,7:10]),dim=-1)
         c,q,v,omega=[t[k][0] for k in ('racket_position_w','racket_quaternion_w','racket_linear_velocity_w','racket_angular_velocity_w')]
+        origin=fixture_court_origin(src,c,json.loads((a.wide/'design.json').read_text()))
+        c=c-origin
+        ball[:,:3]-=origin
         direction=src['velocity_intervention']['direction_world']
         features = motion_features(src, teacher) if motion is not None else None
         speeds=[];signatures=[]

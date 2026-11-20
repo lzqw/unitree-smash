@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import torch
+from quadsmash.rl.supermimic_fixture_coordinates import fixture_court_origin
 import torch.nn.functional as F
 
 from audit_supermimic_paired_racket_fixture import signatures, verify_initial_intervention, common_native_twist, verify_common_twist
@@ -31,7 +32,7 @@ def vector_summary(reference, estimate):
     return result
 
 
-def read_trial(directory, seed, branch, expected, settings, prior):
+def read_trial(directory, seed, branch, expected, settings, prior, design=None):
     path = directory / branch / f'spec_{seed}' / 'trace.pt'
     trial = torch.load(path, mmap=True, weights_only=True, map_location='cpu')
     tr = trial['raw']['substep_trace']
@@ -47,11 +48,15 @@ def read_trial(directory, seed, branch, expected, settings, prior):
     names = ('racket_position_w', 'racket_quaternion_w', 'racket_linear_velocity_w', 'racket_angular_velocity_w')
     ball = t['shuttle_state_w'][0]
     state = torch.cat((ball[:, :3], ball[:, 7:10]), dim=-1)
-    out, _ = tick(prior, state, [t[k][0] for k in names], [t[k][-1] for k in names],
+    origin = fixture_court_origin(trial,state[:,:3],design)
+    state[:,:3] -= origin
+    stream = [t[k] for k in names]
+    stream[0] = stream[0] - origin
+    out, _ = tick(prior, state, [x[0] for x in stream], [x[-1] for x in stream],
                   settings['fitted'], settings['solver']['pair_contact_offset_m'],
-                  torch.zeros(len(ball), dtype=torch.bool), measured_path=[t[k][:-1] for k in names])
+                  torch.zeros(len(ball), dtype=torch.bool), measured_path=[x[:-1] for x in stream])
     common = {k: v[k] for k in ('nominal_shuttle', 'joint_targets', 'direction_world', 'nominal_root_com_velocity')}
-    common.update(ball_state=ball, racket_position=t[names[0]][0], racket_rotation=t[names[1]][0],
+    common.update(court_origin=origin,ball_state=ball, racket_position=t[names[0]][0], racket_rotation=t[names[1]][0],
                   parent_lane=trial['parent_lane'])
     if 'sdk_cached_initial_twist' in v:
         common['native_write'] = common_native_twist(v)
@@ -96,14 +101,14 @@ def main():
         if part != audit['split']:
             continue
         seed = int(sk)
-        common, nominal, base, _, digest = read_trial(args.wide,seed,'nominal_a',epsilons[0],cfg,prior)
+        common, nominal, base, _, digest = read_trial(args.wide,seed,'nominal_a',epsilons[0],cfg,prior,design)
         if digest != audit['archives'][str(args.wide/'nominal_a'/f'spec_{seed}'/'trace.pt')]:
             raise ValueError('Nominal panel changed')
         stable = torch.ones(len(base),dtype=torch.bool)
         for name,eps,dir_ in zip(('wide','half','quarter'),epsilons,directories):
             signed = {}
             for branch in ('minus','plus'):
-                ref, events, native, model, digest = read_trial(dir_,seed,branch,eps,cfg,prior)
+                ref, events, native, model, digest = read_trial(dir_,seed,branch,eps,cfg,prior,design)
                 if design.get('initial_racket_twist'):
                     verify_common_twist(common['native_write'],ref['native_write'])
                 if any(not torch.equal(v,ref[k]) for k,v in common.items() if k!='native_write'):

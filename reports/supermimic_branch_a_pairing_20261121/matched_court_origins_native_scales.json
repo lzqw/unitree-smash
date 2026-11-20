@@ -1,0 +1,1905 @@
+{
+  "calibration_sha256": "7312af620cb8662e6dd7b8d0c8ee1a7cbc44fcbd8ef56a66313d9c10b8415a92",
+  "wide_audit_sha256": "3c588202dfdd297b95d4a41f3e54a0b807befbfa4d580d678c4d7fdae0d95256",
+  "scale_plan_sha256": "c4d2f44da9f639a544782b772b47e08e7b51d4128ed9f27c6801391d778250de",
+  "physical_archives": {
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/wide/minus/spec_994074/trace.pt": "7c98dc4ad36f9c565e636095bc8db1b08b8a6c706ed81d2da9cf2e8bfb213469",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/wide/plus/spec_994074/trace.pt": "d4f8fdc2777bae3379d958b524dd1dbb5a1e63418d943435c1ae4ac69c89a0e3",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/half/minus/spec_994074/trace.pt": "e8eb6449b8739eb1b372b169be7a7901c23b34e8af7688663fcb5d8fd77e4c5a",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/half/plus/spec_994074/trace.pt": "5f93b7e9da3dae9e167792b02403371b7ed5ae030e5efbc8441153ebc3ef0e84",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/quarter/minus/spec_994074/trace.pt": "a3f55dba0310033f110783843f0ae6878248a6cfa5145406989f2e1f965b6070",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/quarter/plus/spec_994074/trace.pt": "cc02d1f42b2d650585987029081ca34ebb231cca1350867b98c883b90c88ebed",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/wide/minus/spec_994075/trace.pt": "502b84da671c896ba6899cc6d3b5f17fc053d62d7a2f220a7fa7f343d88fc5a8",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/wide/plus/spec_994075/trace.pt": "4a49ce229b943a32230681bfb3c965070adf655304e1d15d4a8a522aee897225",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/half/minus/spec_994075/trace.pt": "7a09f12be1111362aa9c5dbc0b0ac2200a5df5c1692116de2e09b264c72455dd",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/half/plus/spec_994075/trace.pt": "4d1847a2fe1228ae0e18644db1aca29a426729629f841e946b766ef37cc293f0",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/quarter/minus/spec_994075/trace.pt": "9a14bbd781501cb4f82598e90ea03242e6859f95a51f377951d59e8cc54facb3",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/scales/quarter/plus/spec_994075/trace.pt": "59ad740a592fe48c94a4a535c2e1a95930f6d0765b5ce082a292bc178b3d33e6"
+  },
+  "units": "change in ball m/s per 1 m/s requested native surface perturbation",
+  "groups": {
+    "all": {
+      "native_wide_to_half": {
+        "rows": 256,
+        "supported": 209,
+        "component_rmse": 10.669549942016602,
+        "cosine_median": 0.8924781680107117,
+        "cosine_p10": -0.8356865644454956,
+        "gain_median": 1.1216307878494263,
+        "gain_p10": 0.5004650354385376
+      },
+      "native_half_to_quarter": {
+        "rows": 256,
+        "supported": 208,
+        "component_rmse": 13.939323425292969,
+        "cosine_median": 0.8663018941879272,
+        "cosine_p10": -0.9331286549568176,
+        "gain_median": 1.0399491786956787,
+        "gain_p10": 0.3275415301322937
+      },
+      "quarter_native_left_to_right": {
+        "rows": 256,
+        "supported": 207,
+        "component_rmse": 34.34646224975586,
+        "cosine_median": 0.6759986877441406,
+        "cosine_p10": -0.9898772239685059,
+        "gain_median": 0.9886397123336792,
+        "gain_p10": 0.11712070554494858
+      },
+      "model_vs_native_wide": {
+        "rows": 256,
+        "supported": 209,
+        "component_rmse": 2.5640573501586914,
+        "cosine_median": 0.8514854907989502,
+        "cosine_p10": -0.050779037177562714,
+        "gain_median": 0.6345307230949402,
+        "gain_p10": 0.09433893859386444
+      },
+      "model_vs_native_half": {
+        "rows": 256,
+        "supported": 208,
+        "component_rmse": 10.18485164642334,
+        "cosine_median": 0.7727625370025635,
+        "cosine_p10": -0.5278153419494629,
+        "gain_median": 0.46959203481674194,
+        "gain_p10": 0.0518486350774765
+      },
+      "model_vs_native_quarter": {
+        "rows": 256,
+        "supported": 208,
+        "component_rmse": 10.892348289489746,
+        "cosine_median": 0.727419376373291,
+        "cosine_p10": -0.15486201643943787,
+        "gain_median": 0.3832763433456421,
+        "gain_p10": 0.029403865337371826
+      }
+    },
+    "wide_stable": {
+      "native_wide_to_half": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 3.1573588848114014,
+        "cosine_median": 0.9996834397315979,
+        "cosine_p10": -0.1617622673511505,
+        "gain_median": 1.0012496709823608,
+        "gain_p10": 0.8335831165313721
+      },
+      "native_half_to_quarter": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 4.783563613891602,
+        "cosine_median": 0.9997004866600037,
+        "cosine_p10": 0.07030278444290161,
+        "gain_median": 0.9996699094772339,
+        "gain_p10": 0.9375945329666138
+      },
+      "quarter_native_left_to_right": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 25.44511604309082,
+        "cosine_median": 0.9991828203201294,
+        "cosine_p10": -0.9580901861190796,
+        "gain_median": 0.992440402507782,
+        "gain_p10": 0.2914983332157135
+      },
+      "model_vs_native_wide": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 2.0189857482910156,
+        "cosine_median": 0.958699107170105,
+        "cosine_p10": -0.08466760814189911,
+        "gain_median": 0.9517566561698914,
+        "gain_p10": 0.2056826651096344
+      },
+      "model_vs_native_half": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 3.5245580673217773,
+        "cosine_median": 0.9608233571052551,
+        "cosine_p10": 0.001316748559474945,
+        "gain_median": 0.9751996397972107,
+        "gain_p10": 0.06680991500616074
+      },
+      "model_vs_native_quarter": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 5.080210208892822,
+        "cosine_median": 0.9587073922157288,
+        "cosine_p10": -0.0672905221581459,
+        "gain_median": 0.970273494720459,
+        "gain_p10": 0.11072100698947906
+      }
+    },
+    "all_scales_stable": {
+      "native_wide_to_half": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 2.6180362701416016,
+        "cosine_median": 0.9999394416809082,
+        "cosine_p10": 0.8393477201461792,
+        "gain_median": 1.0003331899642944,
+        "gain_p10": 0.96971595287323
+      },
+      "native_half_to_quarter": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 3.3326220512390137,
+        "cosine_median": 0.9999651312828064,
+        "cosine_p10": 0.6714798808097839,
+        "gain_median": 0.9993177056312561,
+        "gain_p10": 0.963948667049408
+      },
+      "quarter_native_left_to_right": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 16.600696563720703,
+        "cosine_median": 0.9998170137405396,
+        "cosine_p10": 0.31540560722351074,
+        "gain_median": 0.9937364459037781,
+        "gain_p10": 0.8412343263626099
+      },
+      "model_vs_native_wide": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 1.5078237056732178,
+        "cosine_median": 0.9743189811706543,
+        "cosine_p10": 0.26599907875061035,
+        "gain_median": 0.9842198491096497,
+        "gain_p10": 0.33229994773864746
+      },
+      "model_vs_native_half": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 3.1917107105255127,
+        "cosine_median": 0.9914536476135254,
+        "cosine_p10": 0.06245316565036774,
+        "gain_median": 0.9858345985412598,
+        "gain_p10": 0.3714911937713623
+      },
+      "model_vs_native_quarter": {
+        "rows": 37,
+        "supported": 37,
+        "component_rmse": 4.172399997711182,
+        "cosine_median": 0.9870039224624634,
+        "cosine_p10": -0.006953755859285593,
+        "gain_median": 0.9839110374450684,
+        "gain_p10": 0.1569085568189621
+      }
+    },
+    "wide_weak_and_all_scales_stable": {
+      "native_wide_to_half": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 3.409186363220215,
+        "cosine_median": 0.9996503591537476,
+        "cosine_p10": 0.008042752742767334,
+        "gain_median": 1.0013785362243652,
+        "gain_p10": 0.9727952480316162
+      },
+      "native_half_to_quarter": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 3.039149761199951,
+        "cosine_median": 0.9993364214897156,
+        "cosine_p10": 0.00013679265975952148,
+        "gain_median": 0.9873618483543396,
+        "gain_p10": 0.9375945329666138
+      },
+      "quarter_native_left_to_right": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 6.3048624992370605,
+        "cosine_median": 0.9799450635910034,
+        "cosine_p10": 0.005380034446716309,
+        "gain_median": 0.9937364459037781,
+        "gain_p10": 0.5149262547492981
+      },
+      "model_vs_native_wide": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 3.5352580547332764,
+        "cosine_median": 0.002525836229324341,
+        "cosine_p10": -0.793279767036438,
+        "gain_median": 0.16741201281547546,
+        "gain_p10": 0.08599898964166641
+      },
+      "model_vs_native_half": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 5.784294605255127,
+        "cosine_median": -0.3109480142593384,
+        "cosine_p10": -0.8029094934463501,
+        "gain_median": 0.16671857237815857,
+        "gain_p10": 0.057031240314245224
+      },
+      "model_vs_native_quarter": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 9.811209678649902,
+        "cosine_median": 0.003685031086206436,
+        "cosine_p10": -0.5761361718177795,
+        "gain_median": 0.16876238584518433,
+        "gain_p10": 0.06984595954418182
+      }
+    },
+    "native_convergent_stable": {
+      "native_wide_to_half": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.1361597329378128,
+        "cosine_median": 0.9999653100967407,
+        "cosine_p10": 0.99726402759552,
+        "gain_median": 1.0012496709823608,
+        "gain_p10": 0.98808753490448
+      },
+      "native_half_to_quarter": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.04168526083230972,
+        "cosine_median": 0.9999972581863403,
+        "cosine_p10": 0.9973912239074707,
+        "gain_median": 0.9993177056312561,
+        "gain_p10": 0.9790257215499878
+      },
+      "quarter_native_left_to_right": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.11485321819782257,
+        "cosine_median": 0.9999040961265564,
+        "cosine_p10": 0.9799450635910034,
+        "gain_median": 0.9988440871238708,
+        "gain_p10": 0.9385457634925842
+      },
+      "model_vs_native_wide": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 1.395633578300476,
+        "cosine_median": 0.9921009540557861,
+        "cosine_p10": 0.36897456645965576,
+        "gain_median": 0.9858943819999695,
+        "gain_p10": 0.6945034861564636
+      },
+      "model_vs_native_half": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 2.263807535171509,
+        "cosine_median": 0.9947457909584045,
+        "cosine_p10": 0.3848828971385956,
+        "gain_median": 0.985945463180542,
+        "gain_p10": 0.6944836378097534
+      },
+      "model_vs_native_quarter": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 4.164688587188721,
+        "cosine_median": 0.9928134679794312,
+        "cosine_p10": 0.383285790681839,
+        "gain_median": 0.9859536290168762,
+        "gain_p10": 0.694377064704895
+      }
+    },
+    "stable_without_native_convergence": {
+      "native_wide_to_half": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 6.493939399719238,
+        "cosine_median": 0.770003080368042,
+        "cosine_p10": -0.5188608169555664,
+        "gain_median": 0.9813891053199768,
+        "gain_p10": 0.6251373291015625
+      },
+      "native_half_to_quarter": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 8.275282859802246,
+        "cosine_median": -0.3381148874759674,
+        "cosine_p10": -0.9078871011734009,
+        "gain_median": 0.9254463911056519,
+        "gain_p10": 0.6319100260734558
+      },
+      "quarter_native_left_to_right": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 41.22330856323242,
+        "cosine_median": -0.4408542513847351,
+        "cosine_p10": -0.9798771142959595,
+        "gain_median": 0.5282208323478699,
+        "gain_p10": 0.12342531979084015
+      },
+      "model_vs_native_wide": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 1.9890996217727661,
+        "cosine_median": 0.5072885751724243,
+        "cosine_p10": -0.13579821586608887,
+        "gain_median": 0.24395333230495453,
+        "gain_p10": 0.08599898964166641
+      },
+      "model_vs_native_half": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 6.028406143188477,
+        "cosine_median": 0.5543613433837891,
+        "cosine_p10": -0.5344554781913757,
+        "gain_median": 0.060977376997470856,
+        "gain_p10": 0.040482617914676666
+      },
+      "model_vs_native_quarter": {
+        "rows": 6,
+        "supported": 6,
+        "component_rmse": 4.2120161056518555,
+        "cosine_median": -0.02291194535791874,
+        "cosine_p10": -0.3988426625728607,
+        "gain_median": 0.08231420814990997,
+        "gain_p10": 0.06365545094013214
+      }
+    }
+  },
+  "case_ids": [
+    [
+      994074,
+      0
+    ],
+    [
+      994074,
+      1
+    ],
+    [
+      994074,
+      2
+    ],
+    [
+      994074,
+      3
+    ],
+    [
+      994074,
+      4
+    ],
+    [
+      994074,
+      5
+    ],
+    [
+      994074,
+      6
+    ],
+    [
+      994074,
+      7
+    ],
+    [
+      994074,
+      8
+    ],
+    [
+      994074,
+      9
+    ],
+    [
+      994074,
+      10
+    ],
+    [
+      994074,
+      11
+    ],
+    [
+      994074,
+      12
+    ],
+    [
+      994074,
+      13
+    ],
+    [
+      994074,
+      14
+    ],
+    [
+      994074,
+      15
+    ],
+    [
+      994074,
+      16
+    ],
+    [
+      994074,
+      17
+    ],
+    [
+      994074,
+      18
+    ],
+    [
+      994074,
+      19
+    ],
+    [
+      994074,
+      20
+    ],
+    [
+      994074,
+      21
+    ],
+    [
+      994074,
+      22
+    ],
+    [
+      994074,
+      23
+    ],
+    [
+      994074,
+      24
+    ],
+    [
+      994074,
+      25
+    ],
+    [
+      994074,
+      26
+    ],
+    [
+      994074,
+      27
+    ],
+    [
+      994074,
+      28
+    ],
+    [
+      994074,
+      29
+    ],
+    [
+      994074,
+      30
+    ],
+    [
+      994074,
+      31
+    ],
+    [
+      994074,
+      32
+    ],
+    [
+      994074,
+      33
+    ],
+    [
+      994074,
+      34
+    ],
+    [
+      994074,
+      35
+    ],
+    [
+      994074,
+      36
+    ],
+    [
+      994074,
+      37
+    ],
+    [
+      994074,
+      38
+    ],
+    [
+      994074,
+      39
+    ],
+    [
+      994074,
+      40
+    ],
+    [
+      994074,
+      41
+    ],
+    [
+      994074,
+      42
+    ],
+    [
+      994074,
+      43
+    ],
+    [
+      994074,
+      44
+    ],
+    [
+      994074,
+      45
+    ],
+    [
+      994074,
+      46
+    ],
+    [
+      994074,
+      47
+    ],
+    [
+      994074,
+      48
+    ],
+    [
+      994074,
+      49
+    ],
+    [
+      994074,
+      50
+    ],
+    [
+      994074,
+      51
+    ],
+    [
+      994074,
+      52
+    ],
+    [
+      994074,
+      53
+    ],
+    [
+      994074,
+      54
+    ],
+    [
+      994074,
+      55
+    ],
+    [
+      994074,
+      56
+    ],
+    [
+      994074,
+      57
+    ],
+    [
+      994074,
+      58
+    ],
+    [
+      994074,
+      59
+    ],
+    [
+      994074,
+      60
+    ],
+    [
+      994074,
+      61
+    ],
+    [
+      994074,
+      62
+    ],
+    [
+      994074,
+      63
+    ],
+    [
+      994074,
+      64
+    ],
+    [
+      994074,
+      65
+    ],
+    [
+      994074,
+      66
+    ],
+    [
+      994074,
+      67
+    ],
+    [
+      994074,
+      68
+    ],
+    [
+      994074,
+      69
+    ],
+    [
+      994074,
+      70
+    ],
+    [
+      994074,
+      71
+    ],
+    [
+      994074,
+      72
+    ],
+    [
+      994074,
+      73
+    ],
+    [
+      994074,
+      74
+    ],
+    [
+      994074,
+      75
+    ],
+    [
+      994074,
+      76
+    ],
+    [
+      994074,
+      77
+    ],
+    [
+      994074,
+      78
+    ],
+    [
+      994074,
+      79
+    ],
+    [
+      994074,
+      80
+    ],
+    [
+      994074,
+      81
+    ],
+    [
+      994074,
+      82
+    ],
+    [
+      994074,
+      83
+    ],
+    [
+      994074,
+      84
+    ],
+    [
+      994074,
+      85
+    ],
+    [
+      994074,
+      86
+    ],
+    [
+      994074,
+      87
+    ],
+    [
+      994074,
+      88
+    ],
+    [
+      994074,
+      89
+    ],
+    [
+      994074,
+      90
+    ],
+    [
+      994074,
+      91
+    ],
+    [
+      994074,
+      92
+    ],
+    [
+      994074,
+      93
+    ],
+    [
+      994074,
+      94
+    ],
+    [
+      994074,
+      95
+    ],
+    [
+      994074,
+      96
+    ],
+    [
+      994074,
+      97
+    ],
+    [
+      994074,
+      98
+    ],
+    [
+      994074,
+      99
+    ],
+    [
+      994074,
+      100
+    ],
+    [
+      994074,
+      101
+    ],
+    [
+      994074,
+      102
+    ],
+    [
+      994074,
+      103
+    ],
+    [
+      994074,
+      104
+    ],
+    [
+      994074,
+      105
+    ],
+    [
+      994074,
+      106
+    ],
+    [
+      994074,
+      107
+    ],
+    [
+      994074,
+      108
+    ],
+    [
+      994074,
+      109
+    ],
+    [
+      994074,
+      110
+    ],
+    [
+      994074,
+      111
+    ],
+    [
+      994074,
+      112
+    ],
+    [
+      994074,
+      113
+    ],
+    [
+      994074,
+      114
+    ],
+    [
+      994074,
+      115
+    ],
+    [
+      994074,
+      116
+    ],
+    [
+      994074,
+      117
+    ],
+    [
+      994074,
+      118
+    ],
+    [
+      994074,
+      119
+    ],
+    [
+      994074,
+      120
+    ],
+    [
+      994074,
+      121
+    ],
+    [
+      994074,
+      122
+    ],
+    [
+      994074,
+      123
+    ],
+    [
+      994074,
+      124
+    ],
+    [
+      994074,
+      125
+    ],
+    [
+      994074,
+      126
+    ],
+    [
+      994074,
+      127
+    ],
+    [
+      994075,
+      0
+    ],
+    [
+      994075,
+      1
+    ],
+    [
+      994075,
+      2
+    ],
+    [
+      994075,
+      3
+    ],
+    [
+      994075,
+      4
+    ],
+    [
+      994075,
+      5
+    ],
+    [
+      994075,
+      6
+    ],
+    [
+      994075,
+      7
+    ],
+    [
+      994075,
+      8
+    ],
+    [
+      994075,
+      9
+    ],
+    [
+      994075,
+      10
+    ],
+    [
+      994075,
+      11
+    ],
+    [
+      994075,
+      12
+    ],
+    [
+      994075,
+      13
+    ],
+    [
+      994075,
+      14
+    ],
+    [
+      994075,
+      15
+    ],
+    [
+      994075,
+      16
+    ],
+    [
+      994075,
+      17
+    ],
+    [
+      994075,
+      18
+    ],
+    [
+      994075,
+      19
+    ],
+    [
+      994075,
+      20
+    ],
+    [
+      994075,
+      21
+    ],
+    [
+      994075,
+      22
+    ],
+    [
+      994075,
+      23
+    ],
+    [
+      994075,
+      24
+    ],
+    [
+      994075,
+      25
+    ],
+    [
+      994075,
+      26
+    ],
+    [
+      994075,
+      27
+    ],
+    [
+      994075,
+      28
+    ],
+    [
+      994075,
+      29
+    ],
+    [
+      994075,
+      30
+    ],
+    [
+      994075,
+      31
+    ],
+    [
+      994075,
+      32
+    ],
+    [
+      994075,
+      33
+    ],
+    [
+      994075,
+      34
+    ],
+    [
+      994075,
+      35
+    ],
+    [
+      994075,
+      36
+    ],
+    [
+      994075,
+      37
+    ],
+    [
+      994075,
+      38
+    ],
+    [
+      994075,
+      39
+    ],
+    [
+      994075,
+      40
+    ],
+    [
+      994075,
+      41
+    ],
+    [
+      994075,
+      42
+    ],
+    [
+      994075,
+      43
+    ],
+    [
+      994075,
+      44
+    ],
+    [
+      994075,
+      45
+    ],
+    [
+      994075,
+      46
+    ],
+    [
+      994075,
+      47
+    ],
+    [
+      994075,
+      48
+    ],
+    [
+      994075,
+      49
+    ],
+    [
+      994075,
+      50
+    ],
+    [
+      994075,
+      51
+    ],
+    [
+      994075,
+      52
+    ],
+    [
+      994075,
+      53
+    ],
+    [
+      994075,
+      54
+    ],
+    [
+      994075,
+      55
+    ],
+    [
+      994075,
+      56
+    ],
+    [
+      994075,
+      57
+    ],
+    [
+      994075,
+      58
+    ],
+    [
+      994075,
+      59
+    ],
+    [
+      994075,
+      60
+    ],
+    [
+      994075,
+      61
+    ],
+    [
+      994075,
+      62
+    ],
+    [
+      994075,
+      63
+    ],
+    [
+      994075,
+      64
+    ],
+    [
+      994075,
+      65
+    ],
+    [
+      994075,
+      66
+    ],
+    [
+      994075,
+      67
+    ],
+    [
+      994075,
+      68
+    ],
+    [
+      994075,
+      69
+    ],
+    [
+      994075,
+      70
+    ],
+    [
+      994075,
+      71
+    ],
+    [
+      994075,
+      72
+    ],
+    [
+      994075,
+      73
+    ],
+    [
+      994075,
+      74
+    ],
+    [
+      994075,
+      75
+    ],
+    [
+      994075,
+      76
+    ],
+    [
+      994075,
+      77
+    ],
+    [
+      994075,
+      78
+    ],
+    [
+      994075,
+      79
+    ],
+    [
+      994075,
+      80
+    ],
+    [
+      994075,
+      81
+    ],
+    [
+      994075,
+      82
+    ],
+    [
+      994075,
+      83
+    ],
+    [
+      994075,
+      84
+    ],
+    [
+      994075,
+      85
+    ],
+    [
+      994075,
+      86
+    ],
+    [
+      994075,
+      87
+    ],
+    [
+      994075,
+      88
+    ],
+    [
+      994075,
+      89
+    ],
+    [
+      994075,
+      90
+    ],
+    [
+      994075,
+      91
+    ],
+    [
+      994075,
+      92
+    ],
+    [
+      994075,
+      93
+    ],
+    [
+      994075,
+      94
+    ],
+    [
+      994075,
+      95
+    ],
+    [
+      994075,
+      96
+    ],
+    [
+      994075,
+      97
+    ],
+    [
+      994075,
+      98
+    ],
+    [
+      994075,
+      99
+    ],
+    [
+      994075,
+      100
+    ],
+    [
+      994075,
+      101
+    ],
+    [
+      994075,
+      102
+    ],
+    [
+      994075,
+      103
+    ],
+    [
+      994075,
+      104
+    ],
+    [
+      994075,
+      105
+    ],
+    [
+      994075,
+      106
+    ],
+    [
+      994075,
+      107
+    ],
+    [
+      994075,
+      108
+    ],
+    [
+      994075,
+      109
+    ],
+    [
+      994075,
+      110
+    ],
+    [
+      994075,
+      111
+    ],
+    [
+      994075,
+      112
+    ],
+    [
+      994075,
+      113
+    ],
+    [
+      994075,
+      114
+    ],
+    [
+      994075,
+      115
+    ],
+    [
+      994075,
+      116
+    ],
+    [
+      994075,
+      117
+    ],
+    [
+      994075,
+      118
+    ],
+    [
+      994075,
+      119
+    ],
+    [
+      994075,
+      120
+    ],
+    [
+      994075,
+      121
+    ],
+    [
+      994075,
+      122
+    ],
+    [
+      994075,
+      123
+    ],
+    [
+      994075,
+      124
+    ],
+    [
+      994075,
+      125
+    ],
+    [
+      994075,
+      126
+    ],
+    [
+      994075,
+      127
+    ]
+  ],
+  "incident_labels": {
+    "all_scales_stable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "native_convergent_stable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "split": "development",
+  "policy_updates": 0,
+  "contact_bptt_admitted": false
+}

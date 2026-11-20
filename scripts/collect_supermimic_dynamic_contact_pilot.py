@@ -25,6 +25,21 @@ def record_intervened_initial_twist(trace, intervention):
     trace['contact_metadata']['initial_racket_twist_source'] = 'direct_native_link_velocity_after_intervention'
 
 
+def teacher_environment_inputs(teacher, execution_root):
+    contract = teacher['task_contract']
+    protocol_path = execution_root / contract['protocol_path']
+    if hashlib.sha256(protocol_path.read_bytes()).hexdigest() != contract['protocol_sha256']:
+        raise ValueError('Teacher protocol hash differs from execution checkout')
+    receipt = None
+    if contract.get('precision_receipt_sha256'):
+        receipt = execution_root / 'reports/G07_full_racket_v4/origin_precision_after_aim_queue01/PRECISION_ADMISSION.json'
+        if hashlib.sha256(receipt.read_bytes()).hexdigest() != contract['precision_receipt_sha256']:
+            raise ValueError('Teacher precision and isolation receipt changed')
+    if teacher['physics']['origin_spacing_m'] != contract['environment_spacing_m']:
+        raise ValueError('Teacher runtime spacing differs from its policy contract')
+    return contract, json.loads(protocol_path.read_text()), receipt
+
+
 def collect(args):
     import torch
     from quadsmash.physics.native import drag_force, quat_rotate
@@ -35,11 +50,24 @@ def collect(args):
     teacher = torch.load(args.teacher, weights_only=True, map_location='cpu')
     initial = teacher['raw']['start']['before']['physical']
     targets = teacher['raw']['final_joint_targets']
-    cfg = full_racket_cfg(args.lanes)
+    if args.fixture_layout == 'teacher':
+        from quadsmash.rl.supermimic_task_contract import make_task_cfg
+        contract, protocol, receipt = teacher_environment_inputs(teacher, args.execution_root)
+        cfg = make_task_cfg(args.lanes, contract, protocol, receipt)
+    else:
+        cfg = full_racket_cfg(args.lanes)
     cfg.sim.device = args.device
     cfg.seed = args.seed
-    env = FullRacketEnvV4(cfg)
+    env = FullRacketEnvV4(cfg, contact_flight_recovery=(
+        contract['contact_flight_recovery'] if args.fixture_layout == 'teacher' else None))
     try:
+        origins = env.scene.env_origins.detach().cpu().clone()
+        if cfg.scene.env_spacing == 0. and torch.count_nonzero(origins):
+            raise RuntimeError('Zero-spacing native fixture requires all measured origins to be zero')
+        layout = dict(mode=args.fixture_layout, environment_spacing_m=cfg.scene.env_spacing,
+                      origins_w=origins.tolist(), control_dt_s=cfg.sim.dt*cfg.decimation,
+                      physics_dt_s=cfg.sim.dt, teacher_protocol_sha256=teacher['task_contract']['protocol_sha256'])
+        (args.output/'runtime_layout.json').write_text(json.dumps(layout,indent=2))
         for batch in range(args.batches):
             seed = args.seed + batch
             rng = torch.Generator().manual_seed(seed)
@@ -193,7 +221,7 @@ def collect(args):
             temp = directory / 'trace.tmp'
             schema = 'native-unloaded-racket-oracle-v1' if args.unloaded_racket_oracle else 'native-controlled-contact-trial-v1'
             torch.save(dict(schema=schema, seed=seed, teacher=args.teacher.name,
-                            parent_lane=parent, parent_family=family, velocity_intervention=intervention, raw={'substep_trace': archive}), temp)
+                            parent_lane=parent, parent_family=family, fixture_layout=layout, velocity_intervention=intervention, raw={'substep_trace': archive}), temp)
             temp.replace(directory / 'trace.pt')
             print(json.dumps(dict(seed=seed, contact_lanes=int(contact.any(0).sum()),
                                   intervals=int((contact[1:] & ~contact[:-1]).sum()),
@@ -209,6 +237,8 @@ def main():
     parser.add_argument('--execution-root', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--seed', type=int, required=True)
+    parser.add_argument('--fixture-layout',choices=('teacher','spaced16'),default='teacher',
+                        help='Use the native teacher task layout; spaced16 reproduces the historical engineering fixture')
     parser.add_argument('--grazing-only', action='store_true', help='Target secondary impacts with tangential passes across the string bed')
     parser.add_argument('--batches', type=int, default=1)
     parser.add_argument('--lanes', type=int, default=128)

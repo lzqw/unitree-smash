@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import torch
+from quadsmash.rl.supermimic_fixture_coordinates import fixture_court_origin
 
 from audit_supermimic_paired_racket_fixture import verify_initial_intervention, common_native_twist, verify_common_twist
 from audit_supermimic_surface_derivative_scales import vector_summary
@@ -63,7 +64,11 @@ def main():
             for k in ('racket_force_w','racket_friction_force_w','net_force_matrix_w','ground_force_w'):
                 if a1[k].norm(dim=-1).max()>.001:raise ValueError('Shadow racket saw external shuttle contact')
             s=a0['shuttle_state_w'][0];ball=torch.cat((s[:,:3],s[:,7:10]),-1)
+            origin=fixture_court_origin(orig,ball[:,:3])
+            torch.testing.assert_close(origin,fixture_court_origin(shadow,ball[:,:3]),rtol=0,atol=0)
+            ball[:,:3]-=origin
             stream=[a1[k] for k in keys]
+            stream[0]=stream[0]-origin
             speed,_=tick(prior,ball,[x[0] for x in stream],[x[-1] for x in stream],cfg['fitted'],
                 cfg['solver']['pair_contact_offset_m'],torch.zeros(len(ball),dtype=torch.bool),measured_path=[x[:-1] for x in stream])
             batch.append(speed[:,3:])

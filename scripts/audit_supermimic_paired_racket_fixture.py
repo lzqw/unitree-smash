@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import torch
+from quadsmash.rl.supermimic_fixture_coordinates import fixture_court_origin
 
 from audit_supermimic_compound_impact_teacher import predict
 from audit_supermimic_paired_body_transfer import response_metrics
@@ -153,9 +154,13 @@ def main():
                 inputs[b]['native_write'] = common_native_twist(v)
             p=t['shuttle_state_w'][0];ball=torch.cat((p[:,:3],p[:,7:10]),-1)
             names=('racket_position_w','racket_quaternion_w','racket_linear_velocity_w','racket_angular_velocity_w')
-            stream=[t[k][:-1] for k in names]
-            pred,_=tick(prior,ball,[t[k][0] for k in names],[t[k][-1] for k in names],
-                cfg['fitted'],cfg['solver']['pair_contact_offset_m'],torch.zeros(len(p),dtype=torch.bool),measured_path=stream)
+            origin=fixture_court_origin(trial,ball[:,:3],design)
+            inputs[b]['court_origin']=origin
+            ball[:,:3]-=origin
+            stream=[t[k] for k in names]
+            stream[0]=stream[0]-origin
+            pred,_=tick(prior,ball,[x[0] for x in stream],[x[-1] for x in stream],
+                cfg['fitted'],cfg['solver']['pair_contact_offset_m'],torch.zeros(len(p),dtype=torch.bool),measured_path=[x[:-1] for x in stream])
             if design and (trial['parent_family']!=seed%16 or
                     trial['parent_family'] not in design[{'train':'calibration_families','development':'development_families',
                     'final':'reserved_final_families','previously_explored':'previously_explored_families'}[a.split]]):

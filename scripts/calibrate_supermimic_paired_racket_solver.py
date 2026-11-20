@@ -8,6 +8,7 @@ import torch
 import torch.nn.functional as F
 
 from audit_supermimic_paired_body_transfer import response_metrics
+from quadsmash.rl.supermimic_fixture_coordinates import fixture_court_origin
 from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, sha, tick
 
 
@@ -29,7 +30,9 @@ def read_split(report, root, split):
             tr=trial['raw']['substep_trace']['tensors']
             stream=[tr[k] for k in ('racket_position_w','racket_quaternion_w','racket_linear_velocity_w','racket_angular_velocity_w')]
             initial=tr['shuttle_state_w'][0]
-            branches[b].append((torch.cat((initial[:,:3],initial[:,7:10]),-1),tr['shuttle_state_w'][-1,:,7:10],stream))
+            origin=fixture_court_origin(trial,initial[:,:3],design)
+            stream[0]=stream[0]-origin
+            branches[b].append((torch.cat((initial[:,:3]-origin,initial[:,7:10]),-1),tr['shuttle_state_w'][-1,:,7:10],stream))
     return rows,branches
 
 
