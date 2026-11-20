@@ -110,7 +110,10 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     TRAIN_ARGS+=(--action-ball-checkpoint "$SM_ACTION_BALL_CHECKPOINT")
   fi
   if [[ -n "${SM_WM_ACTION_COLLECTION:-}" ]]; then
-    TRAIN_ARGS+=(--wm-action-collection "$SM_WM_ACTION_COLLECTION")
+    # One complete collection per line; preserve spaces in paths.
+    while IFS= read -r collection; do
+      if [[ -n "$collection" ]]; then TRAIN_ARGS+=(--wm-action-collection "$collection"); fi
+    done <<< "$SM_WM_ACTION_COLLECTION"
   fi
   if [[ "${SM_TRAINING_PROFILE:-large}" == large ]]; then
     TRAIN_ARGS+=(--training-profile large --wm-sampling-mode promotion --contact-validation-receipt "${SM_CONTACT_VALIDATION_RECEIPT:?contact validation evidence required}")

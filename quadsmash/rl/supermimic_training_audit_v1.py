@@ -1,6 +1,17 @@
 """Pure helpers for auditable WM sampling and actor rollback records."""
 
 
+def identification_window_capacity(collections, requested):
+    """Upper bound before joint source/event quotas and episode caps are applied.
+
+    Each signed lane covers exactly 16 control ticks, yielding one distinct
+    reset-safe 16-step training window. The two nominal repeats are controls.
+    """
+    available = sum(item["measured_windows"] for item in collections)
+    return dict(requested=requested, distinct_signed_windows=available,
+                unavoidable_shortfall=max(0, requested-available))
+
+
 def sampling_promotion_gate(report, mode="diagnostic"):
     """Return the explicit WM sampling contract for one optimizer batch.
 

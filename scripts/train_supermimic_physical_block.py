@@ -372,6 +372,11 @@ def run(args, *, alternating=None):
                 raise ValueError('Duplicate native action-identification data')
             used_branches.update(branches)
             action_collections.append(receipt)
+        from quadsmash.rl.supermimic_training_audit_v1 import identification_window_capacity
+        capacity = identification_window_capacity(action_collections, args.wm_source_quota.get('action_identification',0))
+        write(args.output/'action_identification_capacity.json',capacity)
+        if args.wm_sampling_mode=='promotion' and capacity['unavoidable_shortfall']:
+            raise ValueError(f'Insufficient distinct signed native windows for the WM batch: {capacity}')
         reference_bank=None
         if args.task_reference_bank is not None:
             from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
@@ -1000,6 +1005,9 @@ def run(args, *, alternating=None):
                     'effective_weight': sampling.get('effective_weight', {}).get('stage', {}),
                 }
                 if args.wm_sampling_mode=='promotion' and not sampling['promotion_gate']['passed']:
+                    write(args.output/'wm_sampling_failure.json', dict(
+                        head=head, attempt=iteration, batch_in_refresh=offset, native_tick=tick,
+                        world_updates_before_step=trainer.world_updates, sampling=sampling))
                     raise RuntimeError('WM promotion sampling contract failed: '+json.dumps(sampling['promotion_gate'],sort_keys=True))
                 sampling_seconds=time.perf_counter()-sampling_started
                 fit_started=time.perf_counter()

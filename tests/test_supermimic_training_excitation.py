@@ -52,3 +52,11 @@ def test_held_action_response_uses_the_whole_prefix(monkeypatch):
         assert support[f'tick_{tick}']['saturated']==1
         assert support[f'tick_{tick}']['jacobian_loss']>0
     assert torch.autograd.grad(jac+point,model.gain)[0]<0
+
+
+def test_distinct_window_capacity_uses_only_signed_eligible_lanes():
+    from quadsmash.rl.supermimic_training_audit_v1 import identification_window_capacity
+    first = dict(measured_windows=2*62)
+    assert identification_window_capacity([first],128)['unavoidable_shortfall']==4
+    assert identification_window_capacity([first, dict(measured_windows=16)],128)['unavoidable_shortfall']==0
+    assert identification_window_capacity([],0)['unavoidable_shortfall']==0
