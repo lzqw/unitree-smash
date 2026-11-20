@@ -354,6 +354,7 @@ def run(args, *, alternating=None):
         from quadsmash.rl.supermimic_paired_evaluation_v1 import paired_evaluation
         paired_eval_dir=args.output/'paired_evaluation'; paired_eval_dir.mkdir(exist_ok=True)
         paired_eval_snapshots={}; paired_eval_actor_snapshots={}
+        paired_eval_previous_stage={}
         def paired_action_probe(snapshot):
             """Evaluate deterministic actions on fixed causal starts for RMS audits."""
             if not hasattr(trainer,'budget_states'):
@@ -382,7 +383,8 @@ def run(args, *, alternating=None):
             paired_eval_actor_snapshots['pre-update']={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()}
             write(paired_eval_dir/'pre-update.json',dict(schema='supermimic-paired-fixed-case-evaluation-v1',stage='pre-update',
                 case_count=len(baseline_payload),case_ids=sorted(str(row.get('case_id')) for row in baseline_payload),
-                actor_parameter_delta={'available':False},scope='fixed 128-case reference supplied by user'))
+                records=baseline_payload,actor_parameter_delta={'available':False},
+                scope='fixed 128-case reference supplied by user'))
         from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache,APPROACH_TICKS,RECOVERY_TICKS,CRITIC_TICKS
         start_cache=load_start_cache(args.archive,manifest)
         lifecycle_stage(args.output, 'START_CACHE_LOADED')
@@ -408,6 +410,28 @@ def run(args, *, alternating=None):
         trainer.racket_loss_weight=float(args.racket_loss_weight)
         lifecycle_stage(args.output, 'TRAINER_READY')
         trainer.set_budget_state_library([as_state(row) for row in starts+critic_starts[:4]])
+        def paired_critic_td():
+            """Evaluate the current critic against the latest native RTG bank.
+
+            This is an audit metric.  It never supplies an Actor target and it
+            remains explicitly tied to the frozen policy identity in the bank.
+            """
+            if native_value_bank is None or native_value_bank.get('inputs') is None:
+                return None
+            inputs=native_value_bank.get('inputs'); targets=native_value_bank.get('rtg')
+            if inputs is None or targets is None or len(inputs)==0:
+                return None
+            device=next(trainer.critic.parameters()).device
+            values=[]
+            with torch.no_grad():
+                for part in inputs.split(128):
+                    values.append(trainer.critic(part.to(device)).detach().cpu().reshape(-1))
+            error=torch.cat(values)-targets.detach().cpu().reshape(-1)
+            return dict(sample_count=int(error.numel()),mae=float(error.abs().mean()),
+                        rmse=float(error.square().mean().sqrt()),bias=float(error.mean()),
+                        policy_id=native_value_bank.get('policy_id'),
+                        actor_sha256=native_value_bank.get('actor_sha256'),
+                        scope='latest frozen-policy native RTG audit; current-policy trust is separate')
         def approach_active(row):
             """Require a meaningful activation of the actual exported Approach gate."""
             observation=row['observation']
@@ -1167,22 +1191,18 @@ def run(args, *, alternating=None):
                 previous_stage=next(reversed(paired_eval_snapshots))
                 stage_name=('post-Recovery' if head=='recovery' else
                             'post-Approach' if head=='approach' else 'post-refresh')
-                paired=paired_evaluation(
-                    paired_eval_snapshots[previous_stage],native_records,stage=stage_name,
+                paired_eval_previous_stage=dict(previous_stage=previous_stage,stage_name=stage_name,
                     actor_before=paired_eval_actor_snapshots[previous_stage],
                     actor_after={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()},
                     action_before=paired_action_probe(paired_eval_actor_snapshots[previous_stage]),
-                    action_after=paired_action_probe({k:v.detach().cpu().clone() for k,v in actor.state_dict().items()}),
-                    wm_holdout=runtime_validation_path)
-                paired['comparison_from']=previous_stage
-                paired['policy_id']=policy_id
-                paired['actor_sha256']=actor_hash
-                write(paired_eval_dir/f'{stage_name}_{refresh_serial:02d}.json',paired)
-                receipt_paired=paired
+                    action_after=paired_action_probe({k:v.detach().cpu().clone() for k,v in actor.state_dict().items()}))
             else:
-                receipt_paired=None
-            paired_eval_snapshots[stage_name]=native_records
-            paired_eval_actor_snapshots[stage_name]={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()}
+                paired_eval_previous_stage={}
+            receipt_paired=None
+            stage_name=paired_eval_previous_stage.get('stage_name')
+            if stage_name is not None:
+                paired_eval_snapshots[stage_name]=native_records
+                paired_eval_actor_snapshots[stage_name]=paired_eval_previous_stage['actor_after']
             write(refresh_dir/'episodes_summary.json',native_records)
             cursor=len(env.rally_records) # these records belong to the frozen stream, not mixed monitoring
             receipt.update(start_tick=start_tick,end_tick=tick,actor_sha256=actor_hash,policy_execution=policy_execution,head=head,consumer_heads=list(consumer_heads),schedule_event_id=event_id,formal_evaluation=False,
@@ -1267,6 +1287,24 @@ def run(args, *, alternating=None):
                     minimum_event_episodes=dual_quality['wm_min_event_episodes'][h]) for h in ('recovery','approach')}
             else:
                 receipt['wm_quality']={h:dict(passed=None,reason='no calibrated independent validation bounds') for h in ('recovery','approach')}
+            if stage_name is not None:
+                # The paired report is written after the refresh has produced
+                # its actual WM and Critic audit results.  Previously this was
+                # a path string and omitted the value diagnostics entirely.
+                paired=paired_evaluation(
+                    paired_eval_snapshots[paired_eval_previous_stage['previous_stage']],native_records,
+                    stage=stage_name,
+                    actor_before=paired_eval_previous_stage['actor_before'],
+                    actor_after=paired_eval_previous_stage['actor_after'],
+                    action_before=paired_eval_previous_stage['action_before'],
+                    action_after=paired_eval_previous_stage['action_after'],
+                    critic_td=receipt.get('critic_holdout') or paired_critic_td(),
+                    wm_holdout=receipt.get('wm_quality'))
+                paired['comparison_from']=paired_eval_previous_stage['previous_stage']
+                paired['policy_id']=policy_id
+                paired['actor_sha256']=actor_hash
+                write(paired_eval_dir/f'{stage_name}_{refresh_serial:02d}.json',paired)
+                receipt_paired=paired
             receipt['reference_coverage']={h:reference_coverage(trainer.reference_bank,h,trainer.tracking_weight) for h in ('recovery','approach')}
             if actor_hash!=tensor_digest(actor.state_dict().items()):raise RuntimeError('Refresh WM/critic fitting changed actor')
             receipt.update(complete_episodes=128,actor_unchanged=True,world_updates=refresh_stats['world_updates'],critic_updates=len(fits),critic_fits=fits,
