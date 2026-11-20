@@ -1,0 +1,2232 @@
+{
+  "scope": "paired measured final target and action history sequences, control-step pose interpolation; native substep timing available at final intervention tick only",
+  "sources": {
+    "dataset": "57d4b73bcb9ce5c21801c0311bf6b964dd6de7728f9af47d24141a936981c7d9",
+    "body": "ec6f1e9ea611618eabf11281ceb285b5652c3baa253ce5aa17c28fe56d230e86",
+    "calibration": "7312af620cb8662e6dd7b8d0c8ee1a7cbc44fcbd8ef56a66313d9c10b8415a92"
+  },
+  "validation": {
+    "all": {
+      "body_endpoint_difference": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.1985653042793274,
+        "gain_median": 0.10146396607160568,
+        "gain_p10": 0.046659521758556366,
+        "cosine_median": -0.25421208143234253,
+        "cosine_p10": -0.5737388134002686
+      },
+      "local_sequence_jacobian": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.177981436252594,
+        "gain_median": 0.18042448163032532,
+        "gain_p10": 0.046434447169303894,
+        "cosine_median": -0.30460813641548157,
+        "cosine_p10": -0.7373194098472595
+      },
+      "native_robot_endpoint_difference": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.6484628915786743,
+        "gain_median": 0.6295559406280518,
+        "gain_p10": 0.10579497367143631,
+        "cosine_median": 0.03177356719970703,
+        "cosine_p10": -0.23710718750953674
+      },
+      "measured_substeps_with_predicted_ball": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.7317807674407959,
+        "gain_median": 0.4322519302368164,
+        "gain_p10": 0.057695988565683365,
+        "cosine_median": 0.03649432584643364,
+        "cosine_p10": -0.4968329668045044
+      },
+      "measured_substeps_with_native_event_start": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.7317807674407959,
+        "gain_median": 0.4322519302368164,
+        "gain_p10": 0.05769605189561844,
+        "cosine_median": 0.03649432584643364,
+        "cosine_p10": -0.49681758880615234
+      },
+      "native_incoming_plus_flight_and_reported_normal": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.14559052884578705,
+        "gain_median": 0.515469491481781,
+        "gain_p10": 0.22185876965522766,
+        "cosine_median": 0.07716798782348633,
+        "cosine_p10": -0.6208104491233826
+      },
+      "native_normal_and_measured_spin_oracle": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.022030174732208252,
+        "gain_median": 0.9999837875366211,
+        "gain_p10": 0.9781466722488403,
+        "cosine_median": 0.997962236404419,
+        "cosine_p10": 0.9202278256416321
+      },
+      "native_normal_and_incoming_slip_model": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.14052113890647888,
+        "gain_median": 0.4747655391693115,
+        "gain_p10": 0.2180928736925125,
+        "cosine_median": 0.026390817016363144,
+        "cosine_p10": -0.5914925336837769
+      },
+      "native_normal_and_measured_arm_model": {
+        "rows": 12,
+        "supported": 12,
+        "absolute_rmse": 0.18844430148601532,
+        "gain_median": 0.9428766369819641,
+        "gain_p10": 0.18590369820594788,
+        "cosine_median": 0.9344666004180908,
+        "cosine_p10": -0.9324439167976379
+      }
+    },
+    "stable": {
+      "body_endpoint_difference": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.19598662853240967,
+        "gain_median": 0.07186926901340485,
+        "gain_p10": 0.05342661589384079,
+        "cosine_median": -0.3457425534725189,
+        "cosine_p10": -0.6537240743637085
+      },
+      "local_sequence_jacobian": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.18887385725975037,
+        "gain_median": 0.07185456901788712,
+        "gain_p10": 0.05335773155093193,
+        "cosine_median": -0.34581369161605835,
+        "cosine_p10": -0.638024091720581
+      },
+      "native_robot_endpoint_difference": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.7916649580001831,
+        "gain_median": 0.6295559406280518,
+        "gain_p10": 0.08493644744157791,
+        "cosine_median": 0.03177356719970703,
+        "cosine_p10": -0.19659140706062317
+      },
+      "measured_substeps_with_predicted_ball": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.8939710855484009,
+        "gain_median": 0.41765087842941284,
+        "gain_p10": 0.05002709478139877,
+        "cosine_median": 0.03649432584643364,
+        "cosine_p10": -0.4729749262332916
+      },
+      "measured_substeps_with_native_event_start": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.8939710855484009,
+        "gain_median": 0.41765087842941284,
+        "gain_p10": 0.05002709478139877,
+        "cosine_median": 0.03649432584643364,
+        "cosine_p10": -0.47296980023384094
+      },
+      "native_incoming_plus_flight_and_reported_normal": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.16485171020030975,
+        "gain_median": 0.47580868005752563,
+        "gain_p10": 0.17399676144123077,
+        "cosine_median": 0.07716798782348633,
+        "cosine_p10": -0.6504578590393066
+      },
+      "native_normal_and_measured_spin_oracle": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.021047579124569893,
+        "gain_median": 0.9901648163795471,
+        "gain_p10": 0.9713020920753479,
+        "cosine_median": 0.997962236404419,
+        "cosine_p10": 0.9136302471160889
+      },
+      "native_normal_and_incoming_slip_model": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.15911303460597992,
+        "gain_median": 0.4556068480014801,
+        "gain_p10": 0.1684778332710266,
+        "cosine_median": 0.026390817016363144,
+        "cosine_p10": -0.7072444558143616
+      },
+      "native_normal_and_measured_arm_model": {
+        "rows": 8,
+        "supported": 8,
+        "absolute_rmse": 0.2080458402633667,
+        "gain_median": 0.508993923664093,
+        "gain_p10": 0.1396951824426651,
+        "cosine_median": 0.20632456243038177,
+        "cosine_p10": -0.9484727382659912
+      }
+    },
+    "toi_switch": {
+      "body_endpoint_difference": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.2036246955394745,
+        "gain_median": 0.30397462844848633,
+        "gain_p10": 0.1224098801612854,
+        "cosine_median": -0.04862063750624657,
+        "cosine_p10": -0.1925346404314041
+      },
+      "local_sequence_jacobian": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.15390092134475708,
+        "gain_median": 0.3052932024002075,
+        "gain_p10": 0.1226387768983841,
+        "cosine_median": -0.2559918165206909,
+        "cosine_p10": -0.7685713171958923
+      },
+      "native_robot_endpoint_difference": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.08969779312610626,
+        "gain_median": 0.4217774569988251,
+        "gain_p10": 0.26764604449272156,
+        "cosine_median": -0.03702428191900253,
+        "cosine_p10": -0.6423233151435852
+      },
+      "measured_substeps_with_predicted_ball": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.09022562950849533,
+        "gain_median": 0.4322519302368164,
+        "gain_p10": 0.2584155797958374,
+        "cosine_median": -0.03559993579983711,
+        "cosine_p10": -0.7081341743469238
+      },
+      "measured_substeps_with_native_event_start": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.09022562950849533,
+        "gain_median": 0.4322519302368164,
+        "gain_p10": 0.2584155797958374,
+        "cosine_median": -0.03559993579983711,
+        "cosine_p10": -0.7081341743469238
+      },
+      "native_incoming_plus_flight_and_reported_normal": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.0961126834154129,
+        "gain_median": 0.5601924061775208,
+        "gain_p10": 0.42199090123176575,
+        "cosine_median": 0.008457280695438385,
+        "cosine_p10": -0.4403035044670105
+      },
+      "native_normal_and_measured_spin_oracle": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.023874353617429733,
+        "gain_median": 0.9999901056289673,
+        "gain_p10": 0.9999856948852539,
+        "cosine_median": 0.9656849503517151,
+        "cosine_p10": 0.9562199115753174
+      },
+      "native_normal_and_incoming_slip_model": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.09276127070188522,
+        "gain_median": 0.4747655391693115,
+        "gain_p10": 0.37581756711006165,
+        "cosine_median": -0.030690962448716164,
+        "cosine_p10": -0.41288265585899353
+      },
+      "native_normal_and_measured_arm_model": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.14130689203739166,
+        "gain_median": 1.0045167207717896,
+        "gain_p10": 0.9570634365081787,
+        "cosine_median": 0.9456650614738464,
+        "cosine_p10": 0.7361553311347961
+      }
+    }
+  },
+  "samples": [
+    {
+      "case": "spec_00_tick267:lane96",
+      "native_delta": [
+        -0.0005211830139160156,
+        -0.004666328430175781,
+        0.06098222732543945
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          2.931663766503334e-05,
+          1.0536052286624908e-05,
+          -9.150058031082153e-05
+        ],
+        "racket_normal": [
+          -0.05301856994628906,
+          0.017833828926086426,
+          -0.21049661934375763
+        ],
+        "unexplained": [
+          0.05246734619140625,
+          -0.022510766983032227,
+          0.2715703248977661
+        ],
+        "spin_oracle_tangent": [
+          0.017362242564558983,
+          -0.030003413558006287,
+          0.2859231233596802
+        ],
+        "slip_at_measured_contact": [
+          0.014027734287083149,
+          -0.005597978830337524,
+          0.038561344146728516
+        ],
+        "measured_arm_tangent": [
+          0.01142515242099762,
+          0.011785656213760376,
+          0.12501204013824463
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "stable",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          13
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          13
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          13
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          13
+        ]
+      },
+      "body_endpoint_difference": [
+        -0.009871482849121094,
+        0.025263607501983643,
+        0.0015914440155029297
+      ],
+      "local_sequence_jacobian": [
+        -0.009903790429234505,
+        0.025267284363508224,
+        0.0015878325793892145
+      ],
+      "native_robot_endpoint_difference": [
+        -0.020293712615966797,
+        0.032531142234802246,
+        0.0035429000854492188
+      ],
+      "measured_substeps_with_predicted_ball": [
+        -0.022196292877197266,
+        0.03262609243392944,
+        0.0037577152252197266
+      ],
+      "measured_substeps_with_native_event_start": [
+        -0.022196292877197266,
+        0.03262609243392944,
+        0.0037577152252197266
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        -0.05298925191164017,
+        0.017844364047050476,
+        -0.21058812737464905
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        -0.035627007484436035,
+        -0.01215904951095581,
+        0.07533499598503113
+      ],
+      "native_normal_and_incoming_slip_model": [
+        -0.03896151855587959,
+        0.012246385216712952,
+        -0.17202678322792053
+      ],
+      "native_normal_and_measured_arm_model": [
+        -0.04156409949064255,
+        0.029630020260810852,
+        -0.08557608723640442
+      ]
+    },
+    {
+      "case": "spec_00_tick267:lane99",
+      "native_delta": [
+        0.07294988632202148,
+        -0.19435620307922363,
+        -0.12897932529449463
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          0.00025691837072372437,
+          0.00023140734992921352,
+          0.00017955154180526733
+        ],
+        "racket_normal": [
+          -0.08215904235839844,
+          0.02335333824157715,
+          0.024238765239715576
+        ],
+        "unexplained": [
+          0.15485286712646484,
+          -0.2179408073425293,
+          -0.1533975601196289
+        ],
+        "spin_oracle_tangent": [
+          0.08211424946784973,
+          -0.24826526641845703,
+          -0.15114575624465942
+        ],
+        "slip_at_measured_contact": [
+          0.004679262638092041,
+          -0.006487846374511719,
+          -0.004815161228179932
+        ],
+        "measured_arm_tangent": [
+          0.0708039402961731,
+          -0.12379312515258789,
+          -0.6222535371780396
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "toi_switch",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          51
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          51
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          50
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          52
+        ]
+      },
+      "body_endpoint_difference": [
+        -0.010669708251953125,
+        -0.0015685558319091797,
+        0.0015791654586791992
+      ],
+      "local_sequence_jacobian": [
+        -0.010610944591462612,
+        -0.001549926120787859,
+        0.0015928562497720122
+      ],
+      "native_robot_endpoint_difference": [
+        -0.03358268737792969,
+        0.030306577682495117,
+        0.01952219009399414
+      ],
+      "measured_substeps_with_predicted_ball": [
+        -0.016513824462890625,
+        0.0358734130859375,
+        0.02146589756011963
+      ],
+      "measured_substeps_with_native_event_start": [
+        -0.016513824462890625,
+        0.0358734130859375,
+        0.02146589756011963
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        -0.08190212398767471,
+        0.023584745824337006,
+        0.024418316781520844
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        0.0002121254801750183,
+        -0.22468051314353943,
+        -0.12672743201255798
+      ],
+      "native_normal_and_incoming_slip_model": [
+        -0.07722286134958267,
+        0.017096899449825287,
+        0.019603155553340912
+      ],
+      "native_normal_and_measured_arm_model": [
+        -0.011098183691501617,
+        -0.10020837932825089,
+        -0.5978352427482605
+      ]
+    },
+    {
+      "case": "spec_00_tick267:lane102",
+      "native_delta": [
+        0.27383676171302795,
+        0.08544158935546875,
+        -0.060491085052490234
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          -0.000380754005163908,
+          -0.00020478619262576103,
+          0.0002009943127632141
+        ],
+        "racket_normal": [
+          0.15110206604003906,
+          0.006796836853027344,
+          0.008530616760253906
+        ],
+        "unexplained": [
+          0.12311553955078125,
+          0.07884931564331055,
+          -0.06922340393066406
+        ],
+        "spin_oracle_tangent": [
+          0.12312865257263184,
+          0.07883763313293457,
+          -0.06924182176589966
+        ],
+        "slip_at_measured_contact": [
+          -0.027866721153259277,
+          -0.0005044341087341309,
+          -0.0019176602363586426
+        ],
+        "measured_arm_tangent": [
+          -0.0278778076171875,
+          -0.0005003809928894043,
+          -0.0019050240516662598
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "stable",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          37
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          37
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          37
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          37
+        ]
+      },
+      "body_endpoint_difference": [
+        0.3275470733642578,
+        -0.15451979637145996,
+        0.26789259910583496
+      ],
+      "local_sequence_jacobian": [
+        0.09391002357006073,
+        -0.043440695852041245,
+        0.06803901493549347
+      ],
+      "native_robot_endpoint_difference": [
+        0.3138063848018646,
+        0.0031404495239257812,
+        0.03046417236328125
+      ],
+      "measured_substeps_with_predicted_ball": [
+        0.12195765972137451,
+        0.0035262107849121094,
+        0.010278701782226562
+      ],
+      "measured_substeps_with_native_event_start": [
+        0.12195765972137451,
+        0.0035262107849121094,
+        0.010278701782226562
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        0.15072131156921387,
+        0.006592050660401583,
+        0.00873161107301712
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        0.2738499641418457,
+        0.08542968332767487,
+        -0.06051021069288254
+      ],
+      "native_normal_and_incoming_slip_model": [
+        0.12285459041595459,
+        0.006087616551667452,
+        0.006813950836658478
+      ],
+      "native_normal_and_measured_arm_model": [
+        0.12284350395202637,
+        0.006091669667512178,
+        0.006826587021350861
+      ]
+    },
+    {
+      "case": "spec_00_tick267:lane115",
+      "native_delta": [
+        0.005791664123535156,
+        0.05878925323486328,
+        0.11576437950134277
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          2.643326297402382e-05,
+          -6.866804324090481e-05,
+          -0.00016966462135314941
+        ],
+        "racket_normal": [
+          0.06177234649658203,
+          0.00014930963516235352,
+          0.0023943185806274414
+        ],
+        "unexplained": [
+          -0.056006431579589844,
+          0.05870860815048218,
+          0.11353981494903564
+        ],
+        "spin_oracle_tangent": [
+          -0.002133771777153015,
+          0.06583535671234131,
+          0.10340523719787598
+        ],
+        "slip_at_measured_contact": [
+          -3.787502646446228e-05,
+          -0.006839931011199951,
+          -3.999471664428711e-05
+        ],
+        "measured_arm_tangent": [
+          0.00061788409948349,
+          -0.01211664080619812,
+          0.01608806848526001
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "stable",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          19
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          19
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          19
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          19
+        ]
+      },
+      "body_endpoint_difference": [
+        -0.0026874542236328125,
+        -0.00798940658569336,
+        0.0009012222290039062
+      ],
+      "local_sequence_jacobian": [
+        -0.0026625997852534056,
+        -0.007982857525348663,
+        0.0009014124516397715
+      ],
+      "native_robot_endpoint_difference": [
+        0.019783973693847656,
+        -0.009214282035827637,
+        -0.0023190975189208984
+      ],
+      "measured_substeps_with_predicted_ball": [
+        0.0042858123779296875,
+        -0.010855317115783691,
+        -0.0013043880462646484
+      ],
+      "measured_substeps_with_native_event_start": [
+        0.0042858123779296875,
+        -0.010855436325073242,
+        -0.0013041496276855469
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        0.06179878115653992,
+        8.064159192144871e-05,
+        0.002224653959274292
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        0.0596650093793869,
+        0.06591600179672241,
+        0.10562989115715027
+      ],
+      "native_normal_and_incoming_slip_model": [
+        0.061760906130075455,
+        -0.006759289652109146,
+        0.002184659242630005
+      ],
+      "native_normal_and_measured_arm_model": [
+        0.06241666525602341,
+        -0.012035999447107315,
+        0.018312722444534302
+      ]
+    },
+    {
+      "case": "spec_01_tick270:lane114",
+      "native_delta": [
+        0.07439422607421875,
+        -0.5294681191444397,
+        0.00027942657470703125
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          -6.239861249923706e-07,
+          7.638474926352501e-06,
+          -2.1606683731079102e-07
+        ],
+        "racket_normal": [
+          -0.012690544128417969,
+          0.025641679763793945,
+          -0.04443329572677612
+        ],
+        "unexplained": [
+          0.08708477020263672,
+          -0.5551173686981201,
+          0.044712960720062256
+        ],
+        "spin_oracle_tangent": [
+          0.10859370231628418,
+          -0.5276200771331787,
+          0.05321502685546875
+        ],
+        "slip_at_measured_contact": [
+          0.00357968732714653,
+          -0.0004934296011924744,
+          0.009292185306549072
+        ],
+        "measured_arm_tangent": [
+          -0.007243841886520386,
+          0.018498539924621582,
+          0.05471104383468628
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "stable",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            false,
+            false,
+            true,
+            1
+          ],
+          1,
+          158
+        ],
+        "nominal_b": [
+          [
+            true,
+            false,
+            false,
+            true,
+            1
+          ],
+          1,
+          158
+        ],
+        "minus": [
+          [
+            true,
+            false,
+            false,
+            true,
+            1
+          ],
+          1,
+          158
+        ],
+        "plus": [
+          [
+            true,
+            false,
+            false,
+            true,
+            1
+          ],
+          1,
+          158
+        ]
+      },
+      "body_endpoint_difference": [
+        -0.02252817153930664,
+        0.04124593734741211,
+        -0.027097582817077637
+      ],
+      "local_sequence_jacobian": [
+        -0.03968974947929382,
+        0.06783189624547958,
+        -0.055942095816135406
+      ],
+      "native_robot_endpoint_difference": [
+        3.2178845405578613,
+        -1.600669026374817,
+        1.9395840167999268
+      ],
+      "measured_substeps_with_predicted_ball": [
+        3.534728527069092,
+        -2.059920310974121,
+        2.143960475921631
+      ],
+      "measured_substeps_with_native_event_start": [
+        3.534728527069092,
+        -2.059920310974121,
+        2.143960475921631
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        -0.012691168114542961,
+        0.02564931847155094,
+        -0.044433511793613434
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        0.09590253233909607,
+        -0.5019707679748535,
+        0.008781515061855316
+      ],
+      "native_normal_and_incoming_slip_model": [
+        -0.009111480787396431,
+        0.025155888870358467,
+        -0.03514132648706436
+      ],
+      "native_normal_and_measured_arm_model": [
+        -0.019935010001063347,
+        0.044147856533527374,
+        0.010277532041072845
+      ]
+    },
+    {
+      "case": "spec_01_tick270:lane125",
+      "native_delta": [
+        0.002632617950439453,
+        0.014469385147094727,
+        0.0008153915405273438
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          -1.5338882803916931e-06,
+          -2.840548404492438e-06,
+          1.4156103134155273e-07
+        ],
+        "racket_normal": [
+          0.005179405212402344,
+          0.001294851303100586,
+          0.0018032193183898926
+        ],
+        "unexplained": [
+          -0.002544403076171875,
+          0.01317739486694336,
+          -0.000988006591796875
+        ],
+        "spin_oracle_tangent": [
+          -0.002455286681652069,
+          0.01274961233139038,
+          -0.0001049041748046875
+        ],
+        "slip_at_measured_contact": [
+          -0.002163209021091461,
+          0.011201441287994385,
+          0.0005009174346923828
+        ],
+        "measured_arm_tangent": [
+          -0.0023178905248641968,
+          0.011400222778320312,
+          0.003055393695831299
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "stable",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          138
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          138
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          138
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          138
+        ]
+      },
+      "body_endpoint_difference": [
+        -0.0014553070068359375,
+        -0.0020705461502075195,
+        0.0026475191116333008
+      ],
+      "local_sequence_jacobian": [
+        -0.0014711576513946056,
+        -0.0020781380590051413,
+        0.002640422899276018
+      ],
+      "native_robot_endpoint_difference": [
+        -0.003275156021118164,
+        0.011866569519042969,
+        0.001466512680053711
+      ],
+      "measured_substeps_with_predicted_ball": [
+        -0.001224517822265625,
+        0.011777162551879883,
+        0.0014505386352539062
+      ],
+      "measured_substeps_with_native_event_start": [
+        -0.001224517822265625,
+        0.011777162551879883,
+        0.0014505386352539062
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        0.005177871324121952,
+        0.0012920107692480087,
+        0.0018033608794212341
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        0.002722584642469883,
+        0.01404162310063839,
+        0.0016984567046165466
+      ],
+      "native_normal_and_incoming_slip_model": [
+        0.003014662303030491,
+        0.012493452057242393,
+        0.002304278314113617
+      ],
+      "native_normal_and_measured_arm_model": [
+        0.0028599807992577553,
+        0.012692233547568321,
+        0.004858754575252533
+      ]
+    },
+    {
+      "case": "spec_02_tick266:lane98",
+      "native_delta": [
+        0.015233516693115234,
+        0.014631509780883789,
+        0.37851548194885254
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          1.2239441275596619e-05,
+          -8.132774382829666e-07,
+          -5.892664194107056e-05
+        ],
+        "racket_normal": [
+          0.07707500457763672,
+          -0.00845038890838623,
+          -0.009792923927307129
+        ],
+        "unexplained": [
+          -0.06185340881347656,
+          0.023082733154296875,
+          0.38836729526519775
+        ],
+        "spin_oracle_tangent": [
+          0.004937950521707535,
+          0.029671087861061096,
+          0.371815025806427
+        ],
+        "slip_at_measured_contact": [
+          0.0001400541514158249,
+          0.003357240930199623,
+          0.0017077326774597168
+        ],
+        "measured_arm_tangent": [
+          -0.003507860004901886,
+          -0.031267132610082626,
+          -0.36727988719940186
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "stable",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          147
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          147
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          147
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          147
+        ]
+      },
+      "body_endpoint_difference": [
+        0.010126113891601562,
+        -0.02151930332183838,
+        -0.007149934768676758
+      ],
+      "local_sequence_jacobian": [
+        0.01011849194765091,
+        -0.021522920578718185,
+        -0.0071519217453897
+      ],
+      "native_robot_endpoint_difference": [
+        0.035775184631347656,
+        -0.007914602756500244,
+        -0.0077478885650634766
+      ],
+      "measured_substeps_with_predicted_ball": [
+        -0.0007276535034179688,
+        -0.013914287090301514,
+        -0.0065402984619140625
+      ],
+      "measured_substeps_with_native_event_start": [
+        -0.0007276535034179688,
+        -0.013914287090301514,
+        -0.0065402984619140625
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        0.07708724588155746,
+        -0.00845120195299387,
+        -0.0098518505692482
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        0.0820252001285553,
+        0.0212198868393898,
+        0.3619631826877594
+      ],
+      "native_normal_and_incoming_slip_model": [
+        0.07722730189561844,
+        -0.005093961022794247,
+        -0.008144117891788483
+      ],
+      "native_normal_and_measured_arm_model": [
+        0.07357938587665558,
+        -0.03971833363175392,
+        -0.37713173031806946
+      ]
+    },
+    {
+      "case": "spec_02_tick266:lane111",
+      "native_delta": [
+        0.4542132616043091,
+        0.10529851913452148,
+        -0.022022247314453125
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          -0.0008093130309134722,
+          -0.00011553801596164703,
+          -2.600252628326416e-05
+        ],
+        "racket_normal": [
+          0.6338977813720703,
+          0.19390106201171875,
+          -0.07971572875976562
+        ],
+        "unexplained": [
+          -0.17887496948242188,
+          -0.08848714828491211,
+          0.05771923065185547
+        ],
+        "spin_oracle_tangent": [
+          -0.17888295650482178,
+          -0.08848756551742554,
+          0.05772772431373596
+        ],
+        "slip_at_measured_contact": [
+          -0.1194869875907898,
+          -0.03502529859542847,
+          0.012693703174591064
+        ],
+        "measured_arm_tangent": [
+          -0.1194801926612854,
+          -0.035025179386138916,
+          0.012687325477600098
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "stable",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          8
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          8
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          8
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          8
+        ]
+      },
+      "body_endpoint_difference": [
+        0.033117055892944336,
+        -0.0005888938903808594,
+        0.005321502685546875
+      ],
+      "local_sequence_jacobian": [
+        0.03310854732990265,
+        -0.0005949852638877928,
+        0.005330512300133705
+      ],
+      "native_robot_endpoint_difference": [
+        0.514879584312439,
+        0.14319753646850586,
+        -0.04956865310668945
+      ],
+      "measured_substeps_with_predicted_ball": [
+        0.5190377235412598,
+        0.14050865173339844,
+        -0.04624032974243164
+      ],
+      "measured_substeps_with_native_event_start": [
+        0.5190377235412598,
+        0.14050865173339844,
+        -0.04624032974243164
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        0.6330884695053101,
+        0.19378551840782166,
+        -0.07974173128604889
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        0.4542055130004883,
+        0.10529795289039612,
+        -0.022014006972312927
+      ],
+      "native_normal_and_incoming_slip_model": [
+        0.5136014819145203,
+        0.1587602198123932,
+        -0.06704802811145782
+      ],
+      "native_normal_and_measured_arm_model": [
+        0.5136082768440247,
+        0.15876033902168274,
+        -0.06705440580844879
+      ]
+    },
+    {
+      "case": "spec_03_tick271:lane112",
+      "native_delta": [
+        -0.19356203079223633,
+        0.12389349937438965,
+        0.015972137451171875
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          0.0005471997428685427,
+          -4.3937936425209045e-05,
+          -3.725290298461914e-07
+        ],
+        "racket_normal": [
+          -0.23510074615478516,
+          0.1538834571838379,
+          0.01809525489807129
+        ],
+        "unexplained": [
+          0.040991783142089844,
+          -0.029945850372314453,
+          -0.0021228790283203125
+        ],
+        "spin_oracle_tangent": [
+          0.04099076986312866,
+          -0.02995288372039795,
+          -0.0021113157272338867
+        ],
+        "slip_at_measured_contact": [
+          0.04059278964996338,
+          -0.02859938144683838,
+          -0.0024056434631347656
+        ],
+        "measured_arm_tangent": [
+          0.04059410095214844,
+          -0.028598666191101074,
+          -0.0024127960205078125
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "toi_switch",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          23
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          23
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          22
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          24
+        ]
+      },
+      "body_endpoint_difference": [
+        -0.26348429918289185,
+        -0.008364200592041016,
+        -0.19439458847045898
+      ],
+      "local_sequence_jacobian": [
+        0.13274329900741577,
+        -0.07132638990879059,
+        -0.031012870371341705
+      ],
+      "native_robot_endpoint_difference": [
+        -0.21226716041564941,
+        0.11249065399169922,
+        0.017032384872436523
+      ],
+      "measured_substeps_with_predicted_ball": [
+        -0.19551301002502441,
+        0.12129664421081543,
+        0.015722274780273438
+      ],
+      "measured_substeps_with_native_event_start": [
+        -0.19551301002502441,
+        0.12129664421081543,
+        0.015722274780273438
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        -0.23455354571342468,
+        0.15383951365947723,
+        0.018094882369041443
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        -0.19356277585029602,
+        0.12388662993907928,
+        0.015983566641807556
+      ],
+      "native_normal_and_incoming_slip_model": [
+        -0.1939607560634613,
+        0.12524013221263885,
+        0.015689238905906677
+      ],
+      "native_normal_and_measured_arm_model": [
+        -0.19395944476127625,
+        0.12524084746837616,
+        0.01568208634853363
+      ]
+    },
+    {
+      "case": "spec_03_tick271:lane126",
+      "native_delta": [
+        0.00547027587890625,
+        0.0038219690322875977,
+        -0.09332835674285889
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          0.00012039928697049618,
+          -3.7355348467826843e-06,
+          0.00012324005365371704
+        ],
+        "racket_normal": [
+          -0.030920028686523438,
+          0.04241228103637695,
+          -0.0006362199783325195
+        ],
+        "unexplained": [
+          0.0362701416015625,
+          -0.038586556911468506,
+          -0.09281527996063232
+        ],
+        "spin_oracle_tangent": [
+          0.011427868157625198,
+          -0.041140034794807434,
+          -0.09368330240249634
+        ],
+        "slip_at_measured_contact": [
+          0.0009280592203140259,
+          -0.00954371690750122,
+          0.001474827527999878
+        ],
+        "measured_arm_tangent": [
+          0.009670570492744446,
+          -0.027346909046173096,
+          -0.08320432901382446
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "toi_switch",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          58
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          58
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          57
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          58
+        ]
+      },
+      "body_endpoint_difference": [
+        -0.014348983764648438,
+        0.024508118629455566,
+        0.0015490055084228516
+      ],
+      "local_sequence_jacobian": [
+        -0.015823880210518837,
+        0.023696092888712883,
+        0.0020183695014566183
+      ],
+      "native_robot_endpoint_difference": [
+        -0.024009227752685547,
+        0.031292080879211426,
+        0.0013390779495239258
+      ],
+      "measured_substeps_with_predicted_ball": [
+        -0.02377462387084961,
+        0.03268921375274658,
+        0.0013886690139770508
+      ],
+      "measured_substeps_with_native_event_start": [
+        -0.02377462387084961,
+        0.03268921375274658,
+        0.0013886690139770508
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        -0.030799629166722298,
+        0.042408544570207596,
+        -0.0005129799246788025
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        -0.0193717610090971,
+        0.0012685097754001617,
+        -0.09419628232717514
+      ],
+      "native_normal_and_incoming_slip_model": [
+        -0.029871569946408272,
+        0.032864827662706375,
+        0.0009618476033210754
+      ],
+      "native_normal_and_measured_arm_model": [
+        -0.021129058673977852,
+        0.0150616355240345,
+        -0.08371730893850327
+      ]
+    },
+    {
+      "case": "spec_04_tick272:lane121",
+      "native_delta": [
+        -0.005486965179443359,
+        0.0409930944442749,
+        -0.22971904277801514
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          -4.7814566642045975e-05,
+          -4.03685262426734e-05,
+          0.00018519163131713867
+        ],
+        "racket_normal": [
+          -0.0074596405029296875,
+          -0.016350865364074707,
+          -0.12984243035316467
+        ],
+        "unexplained": [
+          0.0020208358764648438,
+          0.05738425254821777,
+          -0.10006189346313477
+        ],
+        "spin_oracle_tangent": [
+          0.004460044205188751,
+          0.056658804416656494,
+          -0.09790420532226562
+        ],
+        "slip_at_measured_contact": [
+          0.008382797241210938,
+          -0.004486680030822754,
+          0.025386154651641846
+        ],
+        "measured_arm_tangent": [
+          0.004187166690826416,
+          0.01171797513961792,
+          0.09278398752212524
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "stable",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          81
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          81
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          81
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            false,
+            true,
+            1
+          ],
+          1,
+          81
+        ]
+      },
+      "body_endpoint_difference": [
+        -0.005236625671386719,
+        0.00028777122497558594,
+        0.0030028820037841797
+      ],
+      "local_sequence_jacobian": [
+        -0.005237988196313381,
+        0.00029085762798786163,
+        0.0030104375910013914
+      ],
+      "native_robot_endpoint_difference": [
+        -0.012191295623779297,
+        -0.000667572021484375,
+        0.0013322830200195312
+      ],
+      "measured_substeps_with_predicted_ball": [
+        -0.012569427490234375,
+        0.0002372264862060547,
+        0.0011022090911865234
+      ],
+      "measured_substeps_with_native_event_start": [
+        -0.012569427490234375,
+        0.0002372264862060547,
+        0.0011022090911865234
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        -0.0075074550695717335,
+        -0.01639123447239399,
+        -0.12965723872184753
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        -0.0030474108643829823,
+        0.040267571806907654,
+        -0.22756144404411316
+      ],
+      "native_normal_and_incoming_slip_model": [
+        0.000875342171639204,
+        -0.020877914503216743,
+        -0.10427108407020569
+      ],
+      "native_normal_and_measured_arm_model": [
+        -0.0033202883787453175,
+        -0.00467325933277607,
+        -0.03687325119972229
+      ]
+    },
+    {
+      "case": "spec_04_tick272:lane127",
+      "native_delta": [
+        0.29580551385879517,
+        0.06490850448608398,
+        0.01299208402633667
+      ],
+      "repeat_delta": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "model_minus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "model_plus_contact_ticks": [
+        false,
+        false,
+        false,
+        false,
+        true
+      ],
+      "native_event_contributions": {
+        "incoming": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "flight": [
+          -0.00010587088763713837,
+          1.2522097676992416e-05,
+          -3.79905104637146e-05
+        ],
+        "racket_normal": [
+          0.3387460708618164,
+          0.06356191635131836,
+          0.010531902313232422
+        ],
+        "unexplained": [
+          -0.04283475875854492,
+          0.0013341903686523438,
+          0.0024979114532470703
+        ],
+        "spin_oracle_tangent": [
+          -0.04283958673477173,
+          0.0013316869735717773,
+          0.0025069713592529297
+        ],
+        "slip_at_measured_contact": [
+          -0.021183013916015625,
+          0.04675948619842529,
+          0.022431254386901855
+        ],
+        "measured_arm_tangent": [
+          -0.02117997407913208,
+          0.0467604398727417,
+          0.022424966096878052
+        ]
+      },
+      "native_branch_diagnostics": {
+        "minus": {
+          "spin_at_start": 0.0
+        },
+        "plus": {
+          "spin_at_start": 0.0
+        }
+      },
+      "group": "toi_switch",
+      "branch_events": {
+        "nominal_a": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          146
+        ],
+        "nominal_b": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          146
+        ],
+        "minus": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          147
+        ],
+        "plus": [
+          [
+            true,
+            true,
+            true,
+            false,
+            1
+          ],
+          1,
+          146
+        ]
+      },
+      "body_endpoint_difference": [
+        0.6457202434539795,
+        -0.295534610748291,
+        0.34091582894325256
+      ],
+      "local_sequence_jacobian": [
+        0.2841132581233978,
+        -0.14670875668525696,
+        0.15917223691940308
+      ],
+      "native_robot_endpoint_difference": [
+        0.30868983268737793,
+        0.09001350402832031,
+        0.04145614057779312
+      ],
+      "measured_substeps_with_predicted_ball": [
+        0.3239560127258301,
+        0.11105728149414062,
+        0.03425506502389908
+      ],
+      "measured_substeps_with_native_event_start": [
+        0.3239560127258301,
+        0.11105728149414062,
+        0.03425506502389908
+      ],
+      "native_incoming_plus_flight_and_reported_normal": [
+        0.3386402130126953,
+        0.06357444077730179,
+        0.010493911802768707
+      ],
+      "native_normal_and_measured_spin_oracle": [
+        0.2958006262779236,
+        0.06490612775087357,
+        0.013000883162021637
+      ],
+      "native_normal_and_incoming_slip_model": [
+        0.3174571990966797,
+        0.11033392697572708,
+        0.03292516618967056
+      ],
+      "native_normal_and_measured_arm_model": [
+        0.31746023893356323,
+        0.11033488065004349,
+        0.03291887789964676
+      ]
+    }
+  ],
+  "all_signed_traces_include_friction": false,
+  "contact_bptt_admitted": false,
+  "actor_updates": 0
+}

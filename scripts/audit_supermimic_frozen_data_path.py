@@ -26,7 +26,11 @@ def main():
         actor.eval();adapter.eval()
         before=tensor_digest(adapter.state_dict().items());actor_before=tensor_digest(actor.state_dict().items())
         initial=torch.load(a.initial_packed_data,map_location='cpu',weights_only=True)
-        replay=PhysicalLoopReplay(initial,adapter.task_model.memory_schema,capacity_ticks=1600)
+        from functools import partial
+        from quadsmash.rl.supermimic_approach_data_v1 import recorded_approach_metadata
+        labeler = partial(recorded_approach_metadata, schema=adapter.task_model.memory_schema,
+                          actor=actor, geometry=adapter.physical_model.geometry)
+        replay=PhysicalLoopReplay(initial,adapter.task_model.memory_schema,capacity_ticks=1600,approach_labeler=labeler)
         replay.new_stream(source='online',policy_version=0)
         stage='NATIVE_TO_REPLAY';ticks=0;started=time.perf_counter()
         for entry in manifest['chunks']:

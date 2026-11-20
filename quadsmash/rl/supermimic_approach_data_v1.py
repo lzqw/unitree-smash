@@ -25,28 +25,71 @@ def gate_on_actor_device(actor, observation):
         raise ValueError('Invalid Approach gate shape or values')
     return value.reshape(-1)
 
+def _task_labels(task, unknown):
+    def field(name):
+        return task[name].float() if name in task else unknown
+    qualified = field('legal_initial_contact') * field('string_hit') * field('airborne_string_hit')
+    velocity = task.get('outgoing_velocity')
+    attack = unknown
+    if velocity is not None:
+        attack = qualified * field('released') * (velocity.norm(dim=-1) >= 5.) * (velocity[..., 0] > 0.)
+        attack = torch.where(torch.isfinite(velocity).all(-1) | (qualified == 0) | (field('released') == 0),
+                             attack, unknown)
+    return dict(had_contact=field('had_contact'), released=field('released'), qualified=qualified,
+                frame_hit=field('frame_hit'), attack=attack, crossed_net=field('crossed_net'),
+                landed_target=field('landed_target'))
+
+
+def _racket_distance(physical, geometry):
+    kin = geometry(physical['joint_position'], physical['joint_velocity'], physical['root_position_w'],
+                   physical['root_quaternion_w'], physical['root_link_velocity_w'], physical['root_angular_velocity_w'])
+    return (kin['position'][:, geometry.ids['Racket']] - physical['ball_position_w']).norm(dim=-1)
+
+
 @torch.no_grad()
 def native_approach_metadata(row, actor, geometry):
-    before, after = row['before'], row['after']
+    before = row['before']
+    result = dict(approach_gate=gate_on_actor_device(actor, row['observation']).cpu(),
+                  racket_distance=_racket_distance(before['physical'], geometry).cpu())
+    for prefix, record in (('', before), ('next_', row['after'])):
+        q = record['physical']['joint_position']
+        labels = _task_labels(record['task'], q.new_full((len(q),), float('nan')))
+        result.update({prefix+k:v.detach().cpu() for k,v in labels.items()})
+    return result
+
+
+@torch.no_grad()
+def recorded_approach_metadata(tensors, schema, actor, geometry):
+    """Reconstruct replay labels from recorded observations and native value/valid pairs."""
+    from .supermimic_physical_dataset_v1 import decode_physical
+    state = tensors['state']
+    shape = state.shape[:2]
+    unknown = state.new_full(shape, float('nan'))
     result = {}
-    for prefix, record in (('', before), ('next_', after)):
-        task = record['task']; p = record['physical']
-        n = len(p['joint_position']); device = p['joint_position'].device
-        unknown = torch.full((n,), float('nan'), device=device)
-        def field(name):
-            return task[name].float() if name in task else unknown.clone()
-        contact = field('legal_initial_contact') * field('string_hit') * field('airborne_string_hit')
-        velocity = task.get('outgoing_velocity')
-        attack = (contact * field('released') * (velocity.norm(dim=-1)>=5.) * (velocity[:,0]>0.)) if velocity is not None else unknown.clone()
-        if prefix == '':
-            obs = row['observation']; obs = obs['policy'] if isinstance(obs,dict) else obs
-            result['approach_gate'] = gate_on_actor_device(actor, obs).cpu()
-            kin = geometry(p['joint_position'],p['joint_velocity'],p['root_position_w'],
-                           p['root_quaternion_w'],p['root_link_velocity_w'],p['root_angular_velocity_w'])
-            result['racket_distance'] = (kin['position'][:,geometry.ids['Racket']]-p['ball_position_w']).norm(dim=-1).cpu()
-        for name,value in dict(had_contact=field('had_contact'),released=field('released'),
-                               qualified=contact,frame_hit=field('frame_hit'),attack=attack,crossed_net=field('crossed_net'),landed_target=field('landed_target')).items():
-            result[prefix+name] = value.detach().cpu()
+    for prefix in ('', 'next_'):
+        values, valid = tensors[prefix+'values'], tensors[prefix+'valid']
+        if values.shape != (*shape, schema.width) or valid.shape != values.shape:
+            raise ValueError('Recorded Approach task fields have incompatible dimensions')
+        task = {}
+        offset = 0
+        for field in schema.fields:
+            if field.path.startswith('rally/'):
+                section = slice(offset, offset+field.width)
+                value = values[..., section].reshape(*shape, *field.shape)
+                mask = valid[..., section].reshape_as(value) > .5
+                task[field.path.removeprefix('rally/')] = value.masked_fill(~mask, float('nan'))
+            offset += field.width
+        result.update({prefix+k:v.cpu() for k,v in _task_labels(task, unknown).items()})
+    observation = tensors['observation']
+    if observation.shape != (*shape,794):
+        raise ValueError('Recorded gate requires the original per-lane public observation')
+    geom_device = next(geometry.buffers(), state).device
+    gates, distances = [], []
+    for obs, physical in zip(observation.flatten(0,1).split(1024), state.flatten(0,1).split(1024)):
+        gates.append(gate_on_actor_device(actor, obs).cpu())
+        distances.append(_racket_distance(decode_physical(physical.to(geom_device)), geometry).cpu())
+    result['approach_gate'] = torch.cat(gates).reshape(shape)
+    result['racket_distance'] = torch.cat(distances).reshape(shape)
     return result
 
 def approach_window_masks(metadata, valid, steps, *, gate_threshold=.25, min_gate_steps=4, near_distance=.30):

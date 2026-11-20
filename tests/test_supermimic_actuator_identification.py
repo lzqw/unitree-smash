@@ -79,3 +79,18 @@ def test_measured_slip_is_capped_by_normal_loading():
     normal_dv = torch.tensor([[[2., 0., 0.], [0., 0., 0.]]])
     prediction = tangent_at_measured_contact(trace, .025, normal_dv, .1)
     torch.testing.assert_close(prediction, torch.tensor([[0., .2, 0.], [0., 0., 0.]]))
+
+
+def test_offcenter_contact_normal_impulse_also_changes_tangential_speed():
+    from scripts.audit_supermimic_solver_action_response import tangent_from_contact_arm
+    radius = .025
+    arm = torch.tensor([[-radius,.001,0.],[-radius,0.,0.]])
+    velocity = torch.tensor([[-2.,.1,0.],[-2.,.1,0.]])
+    normal = torch.tensor([[3.,0.,0.],[3.,0.,0.]])
+    impulse = tangent_from_contact_arm(velocity,arm,normal,radius,1.)
+    total = impulse+normal
+    spin = torch.cross(arm,total,dim=-1)/(.4*radius**2)
+    point_velocity = velocity+total+torch.cross(spin,arm,dim=-1)
+    torch.testing.assert_close(point_velocity[:,1:], torch.zeros_like(point_velocity[:,1:]),atol=1e-6,rtol=0)
+    torch.testing.assert_close(impulse[1,1],torch.tensor(-.1*2/7))
+    assert impulse[0,1] < impulse[1,1]

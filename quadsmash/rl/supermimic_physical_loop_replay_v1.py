@@ -130,7 +130,7 @@ def _slice_lane(value, lane, lanes):
 
 class PhysicalLoopReplay:
     """CPU replay with chronological ring storage and reset-safe windows."""
-    def __init__(self, package, schema, *, capacity_ticks=16384):
+    def __init__(self, package, schema, *, capacity_ticks=16384, approach_labeler=None):
         self.schema = schema
         self.capacity = int(capacity_ticks)
         if self.capacity < 64:
@@ -148,6 +148,8 @@ class PhysicalLoopReplay:
         self.initial_stage_ids=_stage_ids_from_tensors(package['tensors'])
         self._ordered_cache=None
         self.training_probes=[]
+        self.approach_labeler = approach_labeler
+        self.initial_approach = approach_labeler(package['tensors']) if approach_labeler else {}
         for key, tensor in self.data.items():
             tensor[:source_count].copy_(package['tensors'][key])
         self.lanes = int(package['tensors']['state'].shape[1])
@@ -259,7 +261,13 @@ class PhysicalLoopReplay:
             raise ValueError('Training intervention crosses reset')
         source = torch.full((16,self.lanes), -1, dtype=torch.long)
         source[:,lanes] = SOURCE_CODES['action_identification']
-        return data, source, _stage_ids_from_tensors(data)
+        metadata = {}
+        if self.approach_labeler is not None:
+            for key, values in self.approach_labeler(tensors).items():
+                field = values.new_full((16,self.lanes), float('nan'))
+                field[:,lanes] = values
+                metadata[key] = field
+        return data, source, _stage_ids_from_tensors(data), metadata
 
     def _ordered(self):
         # Keep immutable initialization evidence outside the online ring; it
@@ -276,7 +284,10 @@ class PhysicalLoopReplay:
         sources=torch.cat((torch.zeros(shape,dtype=torch.long),self.source_ids[indices]))
         policies=torch.cat((torch.zeros(shape,dtype=torch.long),self.policy_versions[indices]))
         ticks=torch.cat((torch.arange(initial),self.native_ticks[indices]))
-        self._ordered_approach={k:torch.cat((torch.full(shape,float('nan')),v[indices])) for k,v in self.approach_metadata.items()}
+        self._ordered_approach = {
+            k:torch.cat((self.initial_approach[k] if k in self.initial_approach else v.new_full(shape,float('nan')),
+                         v[indices]))
+            for k,v in self.approach_metadata.items()}
         if self.training_probes:
             # Negative stream identities cannot collide with native online streams.
             # All proposal starts, native RTG and returns stay on the policy replay.
@@ -287,8 +298,10 @@ class PhysicalLoopReplay:
             stages = torch.cat([stages]+[p[2] for p in self.training_probes])
             policies = torch.cat((policies,torch.full((extra,self.lanes),-1,dtype=torch.long)))
             ticks = torch.cat((ticks,torch.full((extra,),-1,dtype=torch.long)))
-            self._ordered_approach = {k:torch.cat((v,v.new_full((extra,self.lanes),float('nan'))))
-                                      for k,v in self._ordered_approach.items()}
+            self._ordered_approach = {
+                k:torch.cat([v] + [p[3][k] if k in p[3] else v.new_full((16,self.lanes),float('nan'))
+                                    for p in self.training_probes])
+                for k,v in self._ordered_approach.items()}
         self._ordered_cache=(data,streams,stages,sources,policies,ticks)
         return self._ordered_cache
 
@@ -306,6 +319,10 @@ class PhysicalLoopReplay:
         # for both legacy and stratified callers; the old path still reports
         # the same metadata without requiring quotas.
         source_ids = source_ids_all[:valid.shape[0]]
+        # Subsets of one archived native stream can retain the same episode
+        # identity across an omitted interval. Never roll a WM window over it.
+        continuous_ticks = (native_ticks.unfold(0,steps,1).diff(dim=-1) == 1).all(-1)
+        valid &= (source_ids != SOURCE_CODES['online']) | continuous_ticks[:,None]
         valid &= source_ids>=0
         online_mask = source_ids == SOURCE_CODES['online']
         online_policy = policy_versions[:valid.shape[0]][online_mask]

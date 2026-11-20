@@ -122,3 +122,59 @@ def test_initial_archive_survives_online_ring_wrap_and_holdout_exclusion():
     window,lanes,report=replay.window(steps=16,batch=4,device='cpu',excluded_lanes=[1])
     assert lanes.tolist()==[0]*4
     assert not (window['episode']==0).any() # the singleton initial window cannot cross into online
+
+
+def test_recorded_gate_and_native_events_survive_sparse_intervention_replay():
+    from functools import partial
+    from quadsmash.rl.supermimic_approach_data_v1 import recorded_approach_metadata
+    from quadsmash.rl.supermimic_task_memory_schema_v1 import MemoryField, TaskMemorySchemaV1
+    class Actor(torch.nn.Module):
+        def approach_gate(self, observation):
+            return observation[:, 0]
+    class Geometry(torch.nn.Module):
+        ids = {'Racket': 0}
+        def forward(self, q, qd, p, *rest):
+            return {'position': p[:, None, :]}
+    schema = TaskMemorySchemaV1([MemoryField('rally/had_contact', (), 'bool', 1),
+                                 MemoryField('rally/released', (), 'bool', 1)])
+    n, t = 3, 16
+    data = {k:torch.zeros(t,n,w) for k,w in dict(state=55,next_state=55,values=2,valid=2,
+        next_values=2,next_valid=2,event_state=8,next_event_state=8,targets=18,previous_action=18,
+        feet=4,next_feet=4,torque=18,observation=794).items()}
+    for k in ('present','terminated','timeout','complete_reward'):
+        data[k] = torch.zeros(t,n,dtype=torch.bool)
+    data['elapsed'] = torch.zeros(t,n)
+    data['episode'] = torch.zeros(t,n,dtype=torch.long)
+    data['valid'].fill_(1);data['next_valid'].fill_(1)
+    data['observation'][:,2,0] = 1
+    data['state'][:,:,49] = .1
+    data['next_values'][7,2,0] = 1
+    data['next_valid'][7,2,1] = 0
+    labeler = partial(recorded_approach_metadata,schema=schema,actor=Actor(),geometry=Geometry())
+    replay = PhysicalLoopReplay({'tensors':data},schema,capacity_ticks=64,approach_labeler=labeler)
+    assert replay.initial_approach['racket_distance'][0,2].item() == pytest.approx(.1)
+    assert replay.initial_approach['next_released'][7,2].isnan()
+    assert replay.initial_approach['next_qualified'].isnan().all()
+    pair = {k:v[:,[2,0]] for k,v in data.items()}
+    replay.training_probes.append(replay.training_probe_stream([2,0],pair))
+    for source in ('initial_archive','action_identification'):
+        _,lanes,counts = replay.window(16,1,device='cpu',head='approach',
+            source_quota={source:1},stage_quota={'approach_active':1})
+        assert lanes.tolist()==[2] and counts['actual_event_coverage']['contact_release']==1
+        assert counts['fallback_count']==0
+    assert replay._ordered_approach['approach_gate'][-1,1].isnan()
+
+
+def test_same_episode_online_window_cannot_bridge_missing_native_ticks():
+    from quadsmash.rl.supermimic_physical_loop_replay_v1 import row_tensors
+    initial = row(0, [0], [0], [False])
+    data = {k: v.unsqueeze(0).repeat(4, *([1] * v.ndim))
+            for k, v in row_tensors(initial, Schema()).items()}
+    replay = PhysicalLoopReplay({'tensors': data}, Schema(), capacity_ticks=64)
+    replay.new_stream()
+    for tick in (10, 11, 100, 101):
+        replay.append(row(tick, [tick], [1], [False]), retain_start=False, native_tick=tick)
+    for steps, expected_online in ((2, 1), (3, 0)):
+        _, _, stats = replay.window(steps, 1, device='cpu', source_quota={'recent_online': 1},
+                                    stage_quota={'uniform': 1})
+        assert stats['source_counts']['recent_online'] == expected_online

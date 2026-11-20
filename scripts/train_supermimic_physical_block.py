@@ -357,7 +357,11 @@ def run(args, *, alternating=None):
             raise ValueError(f'WM holdout lane outside packed archive: {wm_holdout_lanes}')
         lifecycle_stage(args.output, 'LOADED_PACKED_DATA')
         runtime_validation_data=package['tensors'];runtime_validation_path=str(args.packed_data)
-        replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema,capacity_ticks=args.replay_capacity_ticks)
+        from functools import partial
+        from quadsmash.rl.supermimic_approach_data_v1 import recorded_approach_metadata
+        labeler = partial(recorded_approach_metadata, schema=adapter.task_model.memory_schema,
+                          actor=actor, geometry=adapter.physical_model.geometry)
+        replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema,capacity_ticks=args.replay_capacity_ticks,approach_labeler=labeler)
         lifecycle_stage(args.output, 'REPLAY_READY')
         # Resolve the exact execution contract before validating any reference
         # bank.  The reference-bank check runs during startup, before the

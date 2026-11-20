@@ -21,18 +21,41 @@ def sphere_tangent_from_spin(spin, normal_force, radius):
     return (0.4*radius*torch.cross(normals,delta_spin,dim=-1)).sum(dim=0)
 
 
-def tangent_at_measured_contact(trace, radius, normal_dv, friction):
+def tangent_from_contact_arm(relative, arm, normal_dv, radius, friction):
+    """Tangential no-slip impulse with a fixed moving surface and a solid sphere.
+
+    J/m is in m/s. An off-centre normal impulse also changes the tangential
+    velocity of the contact point through its angular response.
+    """
+    n = torch.nn.functional.normalize(normal_dv, dim=-1)
+    eye = torch.eye(3, dtype=arm.dtype, device=arm.device)
+    projection = eye - n[..., :, None]*n[..., None, :]
+    inverse_mass = eye + (arm.square().sum(-1)[..., None, None]*eye
+                          - arm[..., :, None]*arm[..., None, :]) / (.4*radius**2)
+    # The normal coordinate is fixed to zero in the tangent solve.
+    system = projection @ inverse_mass @ projection + n[..., :, None]*n[..., None, :]
+    rhs = projection @ (relative[..., None] + inverse_mass @ normal_dv[..., None])
+    sticking = -torch.linalg.solve(system, rhs).squeeze(-1)
+    limit = friction*normal_dv.norm(dim=-1,keepdim=True)
+    return sticking * (limit/sticking.norm(dim=-1,keepdim=True).clamp_min(1e-12)).clamp(max=1.)
+
+
+def tangent_at_measured_contact(trace, radius, normal_dv, friction, *, measured_arm=False):
     """Predict slip at measured force frames using the incoming sphere and racket velocities."""
     normal = torch.nn.functional.normalize(normal_dv,dim=-1)
     shuttle = trace['shuttle_state_w'][:-1]
     arm = -radius*normal
-    sphere_velocity = shuttle[...,7:10] + torch.cross(shuttle[...,10:13],arm,dim=-1)
     point = trace['racket_contact_position_w'][1:]
     point = torch.where(torch.isfinite(point).all(-1,keepdim=True),point,shuttle[...,:3]+arm)
+    if measured_arm:
+        arm = point-shuttle[...,:3]
+    sphere_velocity = shuttle[...,7:10] + torch.cross(shuttle[...,10:13],arm,dim=-1)
     racket_arm = point-trace['racket_position_w'][:-1]
     surface = trace['racket_linear_velocity_w'][:-1] + torch.cross(
         trace['racket_angular_velocity_w'][:-1],racket_arm,dim=-1)
     relative = sphere_velocity-surface
+    if measured_arm:
+        return tangent_from_contact_arm(relative, arm, normal_dv, radius, friction).sum(0)
     slip = relative-(relative*normal).sum(-1,keepdim=True)*normal
     magnitude = torch.minimum(2/7*slip.norm(dim=-1),friction*normal_dv.norm(dim=-1))
     return -(magnitude[...,None]*torch.nn.functional.normalize(slip,dim=-1)).sum(0)
@@ -121,6 +144,9 @@ def main():
             t['shuttle_state_w'][...,10:13], t['racket_force_w'], shuttle['collision_radius_m'])
         native_terms[b]['slip_at_measured_contact'] = tangent_at_measured_contact(
             t,shuttle['collision_radius_m'],t['racket_force_w'][1:]*(prior.sub_dt/mass),cfg['fitted']['friction'])
+        native_terms[b]['measured_arm_tangent'] = tangent_at_measured_contact(
+            t,shuttle['collision_radius_m'],t['racket_force_w'][1:]*(prior.sub_dt/mass),
+            cfg['fitted']['friction'],measured_arm=True)
         if friction_available:
             friction=t['racket_friction_force_w'][1:].sum(0)*(prior.sub_dt/mass)
             native_terms[b].update(racket_friction=friction,unexplained_after_friction=extra-friction)
@@ -179,6 +205,9 @@ def main():
     parts['slip_at_measured_contact'] = native_terms['plus']['slip_at_measured_contact']-native_terms['minus']['slip_at_measured_contact']
     predictions['native_normal_and_incoming_slip_model'] = (
         predictions['native_incoming_plus_flight_and_reported_normal'] + parts['slip_at_measured_contact'])
+    parts['measured_arm_tangent'] = native_terms['plus']['measured_arm_tangent']-native_terms['minus']['measured_arm_tangent']
+    predictions['native_normal_and_measured_arm_model'] = (
+        predictions['native_incoming_plus_flight_and_reported_normal'] + parts['measured_arm_tangent'])
     if friction_available:
         for key in ('racket_friction','unexplained_after_friction'):
             parts[key] = native_terms['plus'][key]-native_terms['minus'][key]
