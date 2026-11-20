@@ -54,9 +54,11 @@ def main():
                 if abs(trace['physics_dt_s']-prior.sub_dt)>1e-12 or trace['count']!=prior.steps+1:
                     raise ValueError('Event-tick substep coverage differs from the solver timebase')
                 t=trace['tensors']
-                traces[b].append((row['sample_id'], {key:t[key][:,lane].clone() for key in
-                    ('shuttle_state_w','racket_position_w','racket_quaternion_w',
-                     'racket_linear_velocity_w','racket_angular_velocity_w','racket_force_w')}))
+                fields = ['shuttle_state_w','racket_position_w','racket_quaternion_w',
+                          'racket_linear_velocity_w','racket_angular_velocity_w','racket_force_w']
+                if 'racket_friction_force_w' in t:
+                    fields.append('racket_friction_force_w')
+                traces[b].append((row['sample_id'], {key:t[key][:,lane].clone() for key in fields}))
             branches=[mode(runs[b],lane) for b in BRANCHES]
             if branches[0]!=branches[1]:group='nominal_mismatch'
             elif any(b[:2]!=branches[0][:2] for b in branches):group='contact_switch'
@@ -73,10 +75,13 @@ def main():
     mass=json.loads(config_path.read_text())['mass_kg']
     native_terms={}
     paths={}
+    friction_available=all('racket_friction_force_w' in entry for records in traces.values()
+                           for _,entry in records)
     for b,records in traces.items():
         lookup=dict(records)
         ordered=[lookup[row['sample_id']] for row in rows]
-        paths[b]={key:torch.stack([entry[key] for entry in ordered],1) for key in ordered[0]}
+        paths[b]={key:torch.stack([entry[key] for entry in ordered],1) for key in ordered[0]
+                  if key!='racket_friction_force_w' or friction_available}
         t=paths[b]
         vel=t['shuttle_state_w'][...,7:10]
         rel=vel[:-1]-prior.wind
@@ -85,6 +90,9 @@ def main():
         extra=(vel[-1]-vel[0])-flight-normal
         native_terms[b]=dict(incoming=vel[0],flight=flight,racket_normal=normal,unexplained=extra,
             spin_at_start=t['shuttle_state_w'][0,:,10:13].norm(dim=-1))
+        if friction_available:
+            friction=t['racket_friction_force_w'][1:].sum(0)*(prior.sub_dt/mass)
+            native_terms[b].update(racket_friction=friction,unexplained_after_friction=extra-friction)
         native_ball=f('step_next_states_'+b)[:,-1,49:]
         end=paths[b]['shuttle_state_w'][-1]
         torch.testing.assert_close(native_ball, torch.cat((end[:,:3],end[:,7:10]),-1),atol=1e-5,rtol=1e-5)
@@ -134,6 +142,12 @@ def main():
            ('incoming','flight','racket_normal','unexplained')}
     torch.testing.assert_close(sum(parts.values()),delta,atol=1e-5,rtol=1e-5)
     predictions['native_incoming_plus_flight_and_reported_normal']=parts['incoming']+parts['flight']+parts['racket_normal']
+    if friction_available:
+        for key in ('racket_friction','unexplained_after_friction'):
+            parts[key] = native_terms['plus'][key]-native_terms['minus'][key]
+        with_friction = predictions['native_incoming_plus_flight_and_reported_normal']+parts['racket_friction']
+        torch.testing.assert_close(with_friction+parts['unexplained_after_friction'],delta,atol=1e-5,rtol=1e-5)
+        predictions['native_incoming_plus_flight_and_reported_racket_forces']=with_friction
     tags=[modes[r['spec_name'],r['lane_index']]['group'] for r in rows]
     groups={}
     for name in ['all']+sorted(set(tags)):
@@ -149,7 +163,7 @@ def main():
                             **modes[row['spec_name'],row['lane_index']],**{k:v[i].tolist() for k,v in predictions.items()}))
     result=dict(scope='paired measured final target and action history sequences, control-step pose interpolation; native substep timing available at final intervention tick only',
                 sources={k:sha(getattr(a,k)) for k in ('dataset','body','calibration')},
-                validation=groups,samples=details,contact_bptt_admitted=False,actor_updates=0)
+                validation=groups,samples=details,all_signed_traces_include_friction=friction_available,contact_bptt_admitted=False,actor_updates=0)
     with a.output.open('x') as output:json.dump(result,output,indent=2,allow_nan=False)
 
 

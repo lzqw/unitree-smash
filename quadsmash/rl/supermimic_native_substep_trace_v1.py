@@ -116,12 +116,12 @@ class NativeSubstepTraceV1:
                 del values[field]
             if net_force_matrix is not None:
                 values["net_force_matrix_w"] = net_force_matrix[:, :, -1:]
-            if view is not None:
-                friction, _, counts, starts = view.get_friction_data(dt=env.physics_dt)
-                lane, _, indices = packed_point_indices(counts[:, :1], starts[:, :1])
-                friction_on_racket_pair = torch.zeros_like(values["racket_force_w"])
-                friction_on_racket_pair.index_add_(0, lane, friction[indices])
-                values["racket_friction_force_w"] = friction_on_racket_pair
+        if view is not None:
+            friction, _, counts, starts = view.get_friction_data(dt=env.physics_dt)
+            lane, _, indices = packed_point_indices(counts[:, :1], starts[:, :1])
+            friction_on_racket_pair = torch.zeros_like(values["racket_force_w"])
+            friction_on_racket_pair.index_add_(0, lane, friction[indices])
+            values["racket_friction_force_w"] = friction_on_racket_pair
         for key, value in values.items():
             if key not in self.buffers:
                 self.buffers[key] = torch.empty((self.capacity, *value.shape), device=value.device, dtype=value.dtype)
@@ -169,6 +169,8 @@ class NativeSubstepTraceV1:
             'racket_filter_index': 0,
             'ground_filter_index': 1,
             'normal_source': 'physx_contact_data' if self.manifold_frames else 'unavailable',
+            'friction_source': ('physx_filtered_racket_pair' if 'racket_friction_force_w' in tensors
+                                else 'unavailable'),
         }
         return dict(schema=self.schema, count=self.count, physics_dt_s=float(self.env.physics_dt),
                     start_frame=self.start_frame, end_frame=int(frames[-1]), tensors=tensors,

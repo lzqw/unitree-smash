@@ -85,3 +85,21 @@ def test_manual_frames_have_a_physics_clock_without_installing_task_hook():
     assert env.calls == []
     assert '_consume_physics_frame' not in vars(env)
     torch.testing.assert_close(result['ball_clock'][:, 0], torch.arange(4) * .001)
+
+
+def test_policy_probe_records_filtered_racket_friction_at_every_frame():
+    env=Env()
+    counts=torch.tensor([[1,0],[1,1]])
+    starts=torch.tensor([[2,0],[0,1]])
+    forces=torch.tensor([[1.,2.,3.],[90.,90.,90.],[4.,5.,6.]])
+    env.shuttle_contact.contact_physx_view=SimpleNamespace(
+        get_contact_data=lambda dt:(forces[:,:1],forces,forces,forces[:,:1],counts,starts),
+        get_friction_data=lambda dt:(forces,forces,counts,starts))
+    trace=NativeSubstepTraceV1(env)
+    for frame in (11,12,13):
+        env._consume_physics_frame(frame)
+    result=trace.finish()
+    actual=result['tensors']['racket_friction_force_w']
+    torch.testing.assert_close(actual,forces[[2,0]].expand(4,-1,-1))
+    assert result['contact_metadata']['friction_source']=='physx_filtered_racket_pair'
+    assert env.calls==[11,12,13]
