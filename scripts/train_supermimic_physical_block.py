@@ -1370,7 +1370,8 @@ def run(args, *, alternating=None):
                 row=schedule.block(event['block_key'],head,event['target'],event['proposal_limit'])
                 return {k:row[k] for k in ('attempts','accepted','rejected','backtracked')}
             def refresh_pair(event):
-                refresh_head=event.get('after_head','combined') if args.refresh_mode=='per-head' else 'combined'
+                refresh_mode=getattr(args,'refresh_mode','pair')
+                refresh_head=event.get('after_head','combined') if refresh_mode=='per-head' else 'combined'
                 return refresh_frozen_policy(refresh_head,event_id=event['id'],managed_refresh=True)
             def finalize_cycle(event):
                 totals=alternating.head_totals(event['cycle'])
