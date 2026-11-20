@@ -1,0 +1,52 @@
+{
+  "parent_design_sha256": "54fe052a945ba6d5fbf1e3f78651b9b20618a1a9659786e7b69bdcbbbda9eec7",
+  "seed": 994064,
+  "lanes": 128,
+  "batches": 16,
+  "epsilon_mps": [
+    0.025,
+    0.0125
+  ],
+  "wide_epsilon_mps": 0.05,
+  "branches": [
+    "minus",
+    "plus"
+  ],
+  "calibration_families": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "development_families": [
+    10,
+    11
+  ],
+  "purpose": "Test scale convergence of the physical signed derivative and match native contact signatures at all scales",
+  "controls": [
+    "same nominal launch, targets, direction, and initial poses",
+    "matching native loaded substeps, object and counts for stable group"
+  ],
+  "calibration_only_initial_audit": true,
+  "policy_training": false,
+  "fixture_layout": "teacher",
+  "native_reproducibility": {
+    "cosine": 0.8,
+    "gain_interval": [
+      0.5,
+      2.0
+    ],
+    "min_wide_response_mps": 0.01,
+    "all_native_samples_have_identical_event_signature": true,
+    "rules": [
+      "wide vs half central derivative",
+      "half vs quarter central derivative",
+      "quarter left vs right derivative"
+    ],
+    "full_panel_reporting": true
+  },
+  "surface_direction": "racket_face_normal"
+}
