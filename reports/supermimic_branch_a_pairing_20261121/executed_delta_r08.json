@@ -1,0 +1,162 @@
+{
+  "groups": {
+    "approach": {
+      "ticks": [
+        224,
+        240,
+        256,
+        272
+      ],
+      "groups": {
+        "all": {
+          "rows": 512,
+          "gaussian_kl_per_dim": 3.5743340953008915e-05,
+          "request": {
+            "rms": 0.00042094865289866095,
+            "max_abs": 0.002958706929348409,
+            "changed_rows": 39
+          },
+          "final_normalized": {
+            "rms": 0.00013622840594583067,
+            "max_abs": 0.0012557506561279297,
+            "changed_rows": 39
+          },
+          "final_target_rad": {
+            "rms": 0.00016659233518053382,
+            "max_abs": 0.0011835098266601562,
+            "changed_rows": 39
+          }
+        },
+        "recovery_active": {
+          "rows": 39,
+          "gaussian_kl_per_dim": 0.0004692459119984761,
+          "request": {
+            "rms": 0.0015252175751400278,
+            "max_abs": 0.002958706929348409,
+            "changed_rows": 39
+          },
+          "final_normalized": {
+            "rms": 0.0004935945454418917,
+            "max_abs": 0.0012557506561279297,
+            "changed_rows": 39
+          },
+          "final_target_rad": {
+            "rms": 0.0006036117606061992,
+            "max_abs": 0.0011835098266601562,
+            "changed_rows": 39
+          }
+        },
+        "recovery_inactive": {
+          "rows": 473,
+          "gaussian_kl_per_dim": 0.0,
+          "request": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_normalized": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_target_rad": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          }
+        }
+      }
+    },
+    "recovery": {
+      "ticks": [
+        384,
+        400,
+        416,
+        448,
+        480,
+        576,
+        672
+      ],
+      "groups": {
+        "all": {
+          "rows": 896,
+          "gaussian_kl_per_dim": 0.0005169603102678853,
+          "request": {
+            "rms": 0.0016008850641608453,
+            "max_abs": 0.007346343947574496,
+            "changed_rows": 748
+          },
+          "final_normalized": {
+            "rms": 0.0005089726859959645,
+            "max_abs": 0.002998087555170059,
+            "changed_rows": 748
+          },
+          "final_target_rad": {
+            "rms": 0.0006394801701689897,
+            "max_abs": 0.002938568592071533,
+            "changed_rows": 748
+          }
+        },
+        "recovery_active": {
+          "rows": 748,
+          "gaussian_kl_per_dim": 0.0006192465748663439,
+          "request": {
+            "rms": 0.0017521180298958952,
+            "max_abs": 0.007346343947574496,
+            "changed_rows": 748
+          },
+          "final_normalized": {
+            "rms": 0.0005570544943059522,
+            "max_abs": 0.002998087555170059,
+            "changed_rows": 748
+          },
+          "final_target_rad": {
+            "rms": 0.0006998908047788546,
+            "max_abs": 0.002938568592071533,
+            "changed_rows": 748
+          }
+        },
+        "recovery_inactive": {
+          "rows": 148,
+          "gaussian_kl_per_dim": 0.0,
+          "request": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_normalized": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_target_rad": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          }
+        }
+      }
+    }
+  },
+  "parameter_delta": {
+    "available": true,
+    "l2": 0.08637271076440811,
+    "rms": 0.00012590525147970766,
+    "max_abs": 0.00040054507553577423,
+    "changed_elements": 110929
+  },
+  "changed_tensors": [
+    "actor.recovery.0.weight",
+    "actor.recovery.0.bias",
+    "actor.recovery.2.weight",
+    "actor.recovery.2.bias",
+    "actor.recovery.4.weight",
+    "actor.recovery.4.bias"
+  ],
+  "before_actor_sha256": "73a3194ea2e44122df13663bcad9e9b0b543b7c6429bf3b06b133bfb1244646a",
+  "after_actor_sha256": "0c3ca08275fade74893ea5df7603210cbde2c1e7b9c2934bed756685774b1038",
+  "before_checkpoint_sha256": "8f510fe9f218beef791ac21675a19ed25d11f510a83fe247cddf2893bee08399",
+  "after_checkpoint_sha256": "b874282ce3f9304e0cb08ea7c6542c6dd66a53aa03257ead7852e8a2d313baca",
+  "archive_manifest_sha256": "ee3d9b989a48f7b33ca6ed8273023af0de77cb4ec1bb24814105a6d7b1eb0012",
+  "scope": "Both policies and G07 previews use the same recorded state, command limits, latch and controller memory in each lane"
+}

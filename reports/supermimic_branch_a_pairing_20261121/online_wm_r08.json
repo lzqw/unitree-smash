@@ -1,0 +1,929 @@
+{
+  "head_stage_checkpoint_sha256": "b874282ce3f9304e0cb08ea7c6542c6dd66a53aa03257ead7852e8a2d313baca",
+  "stage_actor_sha256": "0c3ca08275fade74893ea5df7603210cbde2c1e7b9c2934bed756685774b1038",
+  "stage_world_sha256": "082dbf1ff9886316f4983ce3f191873ef849b06e3561df1dc40677d40b082dfd",
+  "initial_world_sha256": "f850c9a3fdc8ddea14ba3285bf5b34ce1edabc8694b85b070ba2f2d13876ebd5",
+  "native_panel_sha256": "864d72e638b3b7ae871c0fcde2f54d710445da3eb293e97fa0504f1ba17aa8cf",
+  "native_capture_sha256": "9301709793d2f883e74cc7f6f1eb36ae40748798afff3c0f7188e15d3b3dc4a9",
+  "initial_score_sha256": "fc9505ebc2676a8ff4619ff8dcde791b0bafa870b8874ac3ef772faab24da889",
+  "native_behavior_actor_sha256": "2c84da909c60fd0d6816a665bf3929fb5d33bab80b078e46c8609bfea5f5a794",
+  "horizons": [
+    1,
+    2,
+    4,
+    8,
+    16,
+    32,
+    64
+  ],
+  "world_updates": 32,
+  "uniform_vs_formal_anchor": {
+    "passed": false,
+    "comparisons": [
+      {
+        "horizon": 1,
+        "metric": "body_rmse",
+        "anchor": 0.7593000531196594,
+        "candidate": 0.6408551335334778,
+        "passed": true
+      },
+      {
+        "horizon": 1,
+        "metric": "root_angular_mae",
+        "anchor": 0.06887523829936981,
+        "candidate": 0.07937154918909073,
+        "passed": false
+      },
+      {
+        "horizon": 2,
+        "metric": "body_rmse",
+        "anchor": 0.6688734292984009,
+        "candidate": 0.5838639140129089,
+        "passed": true
+      },
+      {
+        "horizon": 2,
+        "metric": "root_angular_mae",
+        "anchor": 0.10756724327802658,
+        "candidate": 0.12286748737096786,
+        "passed": false
+      },
+      {
+        "horizon": 4,
+        "metric": "body_rmse",
+        "anchor": 0.6698822975158691,
+        "candidate": 0.6191493272781372,
+        "passed": true
+      },
+      {
+        "horizon": 4,
+        "metric": "root_angular_mae",
+        "anchor": 0.15434597432613373,
+        "candidate": 0.16728541254997253,
+        "passed": false
+      },
+      {
+        "horizon": 8,
+        "metric": "body_rmse",
+        "anchor": 0.7968877553939819,
+        "candidate": 0.6664789319038391,
+        "passed": true
+      },
+      {
+        "horizon": 8,
+        "metric": "root_angular_mae",
+        "anchor": 0.21767553687095642,
+        "candidate": 0.20258496701717377,
+        "passed": true
+      },
+      {
+        "horizon": 16,
+        "metric": "body_rmse",
+        "anchor": 0.9510394334793091,
+        "candidate": 0.8135639429092407,
+        "passed": true
+      },
+      {
+        "horizon": 16,
+        "metric": "root_angular_mae",
+        "anchor": 0.24899061024188995,
+        "candidate": 0.22154314815998077,
+        "passed": true
+      },
+      {
+        "horizon": 32,
+        "metric": "body_rmse",
+        "anchor": 0.5116932392120361,
+        "candidate": 0.5018410682678223,
+        "passed": true
+      },
+      {
+        "horizon": 32,
+        "metric": "root_angular_mae",
+        "anchor": 0.25949662923812866,
+        "candidate": 0.2293778955936432,
+        "passed": true
+      },
+      {
+        "horizon": 64,
+        "metric": "body_rmse",
+        "anchor": 0.8340728282928467,
+        "candidate": 0.7706061601638794,
+        "passed": true
+      },
+      {
+        "horizon": 64,
+        "metric": "root_angular_mae",
+        "anchor": 0.322502076625824,
+        "candidate": 0.31311145424842834,
+        "passed": true
+      }
+    ]
+  },
+  "contact_vs_formal_anchor": {
+    "schema": "supermimic-wm-candidate-gate-v1",
+    "passed": true,
+    "checks": [
+      {
+        "metric": "event_aligned/0/1/ball_velocity_rmse",
+        "anchor": 5.963988780975342,
+        "candidate": 2.407034158706665,
+        "absolute_tolerance": 0.02,
+        "relative_tolerance": 0.05,
+        "delta": -3.5569546222686768,
+        "allowance": 0.31819943904876713,
+        "status": "improved"
+      },
+      {
+        "metric": "event_aligned/0/1/ball_forward_sign_error",
+        "anchor": 1.0,
+        "candidate": 0.09090909361839294,
+        "absolute_tolerance": 0.01,
+        "relative_tolerance": 0.05,
+        "delta": -0.9090909063816071,
+        "allowance": 0.060000000000000005,
+        "status": "improved"
+      },
+      {
+        "metric": "event_aligned/-1/1/ball_velocity_rmse",
+        "anchor": 1.044227123260498,
+        "candidate": 7.461565110133961e-05,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": -1.0441525076093967,
+        "allowance": 0.0,
+        "status": "improved"
+      },
+      {
+        "metric": "event_aligned/1/1/ball_velocity_rmse",
+        "anchor": 0.14868994057178497,
+        "candidate": 7.16102931619389e-07,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": -0.14868922446885335,
+        "allowance": 0.0,
+        "status": "improved"
+      },
+      {
+        "metric": "event_aligned/-1/4/ball_velocity_rmse",
+        "anchor": 3.0185673236846924,
+        "candidate": 1.223080039024353,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": -1.7954872846603394,
+        "allowance": 0.0,
+        "status": "improved"
+      },
+      {
+        "metric": "event_aligned/0/4/ball_velocity_rmse",
+        "anchor": 3.0161139965057373,
+        "candidate": 1.7536457777023315,
+        "absolute_tolerance": 0.03,
+        "relative_tolerance": 0.1,
+        "delta": -1.2624682188034058,
+        "allowance": 0.33161139965057373,
+        "status": "improved"
+      }
+    ],
+    "improvements": [
+      {
+        "metric": "event_aligned/0/1/ball_velocity_rmse",
+        "anchor": 5.963988780975342,
+        "candidate": 2.407034158706665,
+        "absolute_tolerance": 0.02,
+        "relative_tolerance": 0.05,
+        "delta": -3.5569546222686768,
+        "allowance": 0.31819943904876713,
+        "status": "improved"
+      },
+      {
+        "metric": "event_aligned/0/1/ball_forward_sign_error",
+        "anchor": 1.0,
+        "candidate": 0.09090909361839294,
+        "absolute_tolerance": 0.01,
+        "relative_tolerance": 0.05,
+        "delta": -0.9090909063816071,
+        "allowance": 0.060000000000000005,
+        "status": "improved"
+      },
+      {
+        "metric": "event_aligned/-1/1/ball_velocity_rmse",
+        "anchor": 1.044227123260498,
+        "candidate": 7.461565110133961e-05,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": -1.0441525076093967,
+        "allowance": 0.0,
+        "status": "improved"
+      },
+      {
+        "metric": "event_aligned/1/1/ball_velocity_rmse",
+        "anchor": 0.14868994057178497,
+        "candidate": 7.16102931619389e-07,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": -0.14868922446885335,
+        "allowance": 0.0,
+        "status": "improved"
+      },
+      {
+        "metric": "event_aligned/-1/4/ball_velocity_rmse",
+        "anchor": 3.0185673236846924,
+        "candidate": 1.223080039024353,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": -1.7954872846603394,
+        "allowance": 0.0,
+        "status": "improved"
+      },
+      {
+        "metric": "event_aligned/0/4/ball_velocity_rmse",
+        "anchor": 3.0161139965057373,
+        "candidate": 1.7536457777023315,
+        "absolute_tolerance": 0.03,
+        "relative_tolerance": 0.1,
+        "delta": -1.2624682188034058,
+        "allowance": 0.33161139965057373,
+        "status": "improved"
+      }
+    ],
+    "failures": [],
+    "contact_edge_improved": true,
+    "policy": "candidate must preserve every protected metric and improve the held-out contact-edge velocity metric",
+    "metric_specs": [
+      {
+        "name": "event_aligned/0/1/ball_velocity_rmse",
+        "absolute_tolerance": 0.02,
+        "relative_tolerance": 0.05
+      },
+      {
+        "name": "event_aligned/0/1/ball_forward_sign_error",
+        "absolute_tolerance": 0.01,
+        "relative_tolerance": 0.05
+      },
+      {
+        "name": "event_aligned/-1/1/ball_velocity_rmse",
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0
+      },
+      {
+        "name": "event_aligned/1/1/ball_velocity_rmse",
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0
+      },
+      {
+        "name": "event_aligned/-1/4/ball_velocity_rmse",
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0
+      },
+      {
+        "name": "event_aligned/0/4/ball_velocity_rmse",
+        "absolute_tolerance": 0.03,
+        "relative_tolerance": 0.1
+      }
+    ]
+  },
+  "uniform_vs_block_initial": {
+    "passed": false,
+    "comparisons": [
+      {
+        "horizon": 1,
+        "metric": "body_rmse",
+        "anchor": 0.6265144944190979,
+        "candidate": 0.6408551335334778,
+        "passed": false
+      },
+      {
+        "horizon": 1,
+        "metric": "root_angular_mae",
+        "anchor": 0.056367628276348114,
+        "candidate": 0.07937154918909073,
+        "passed": false
+      },
+      {
+        "horizon": 2,
+        "metric": "body_rmse",
+        "anchor": 0.5282575488090515,
+        "candidate": 0.5838639140129089,
+        "passed": false
+      },
+      {
+        "horizon": 2,
+        "metric": "root_angular_mae",
+        "anchor": 0.08279824256896973,
+        "candidate": 0.12286748737096786,
+        "passed": false
+      },
+      {
+        "horizon": 4,
+        "metric": "body_rmse",
+        "anchor": 0.5504452586174011,
+        "candidate": 0.6191493272781372,
+        "passed": false
+      },
+      {
+        "horizon": 4,
+        "metric": "root_angular_mae",
+        "anchor": 0.11917707324028015,
+        "candidate": 0.16728541254997253,
+        "passed": false
+      },
+      {
+        "horizon": 8,
+        "metric": "body_rmse",
+        "anchor": 0.5878320932388306,
+        "candidate": 0.6664789319038391,
+        "passed": false
+      },
+      {
+        "horizon": 8,
+        "metric": "root_angular_mae",
+        "anchor": 0.16191019117832184,
+        "candidate": 0.20258496701717377,
+        "passed": false
+      },
+      {
+        "horizon": 16,
+        "metric": "body_rmse",
+        "anchor": 0.721455991268158,
+        "candidate": 0.8135639429092407,
+        "passed": false
+      },
+      {
+        "horizon": 16,
+        "metric": "root_angular_mae",
+        "anchor": 0.16634121537208557,
+        "candidate": 0.22154314815998077,
+        "passed": false
+      },
+      {
+        "horizon": 32,
+        "metric": "body_rmse",
+        "anchor": 0.4153548777103424,
+        "candidate": 0.5018410682678223,
+        "passed": false
+      },
+      {
+        "horizon": 32,
+        "metric": "root_angular_mae",
+        "anchor": 0.17124643921852112,
+        "candidate": 0.2293778955936432,
+        "passed": false
+      },
+      {
+        "horizon": 64,
+        "metric": "body_rmse",
+        "anchor": 0.7120014429092407,
+        "candidate": 0.7706061601638794,
+        "passed": false
+      },
+      {
+        "horizon": 64,
+        "metric": "root_angular_mae",
+        "anchor": 0.24651190638542175,
+        "candidate": 0.31311145424842834,
+        "passed": false
+      }
+    ]
+  },
+  "contact_vs_block_initial": {
+    "schema": "supermimic-wm-candidate-gate-v1",
+    "passed": false,
+    "checks": [
+      {
+        "metric": "event_aligned/0/1/ball_velocity_rmse",
+        "anchor": 2.172872304916382,
+        "candidate": 2.407034158706665,
+        "absolute_tolerance": 0.02,
+        "relative_tolerance": 0.05,
+        "delta": 0.2341618537902832,
+        "allowance": 0.1286436152458191,
+        "status": "degraded"
+      },
+      {
+        "metric": "event_aligned/0/1/ball_forward_sign_error",
+        "anchor": 0.09090909361839294,
+        "candidate": 0.09090909361839294,
+        "absolute_tolerance": 0.01,
+        "relative_tolerance": 0.05,
+        "delta": 0.0,
+        "allowance": 0.014545454680919646,
+        "status": "unchanged"
+      },
+      {
+        "metric": "event_aligned/-1/1/ball_velocity_rmse",
+        "anchor": 0.00018808635650202632,
+        "candidate": 7.461565110133961e-05,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": -0.00011347070540068671,
+        "allowance": 0.0,
+        "status": "improved"
+      },
+      {
+        "metric": "event_aligned/1/1/ball_velocity_rmse",
+        "anchor": 8.365275050437049e-08,
+        "candidate": 7.16102931619389e-07,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": 6.324501811150185e-07,
+        "allowance": 0.0,
+        "status": "degraded"
+      },
+      {
+        "metric": "event_aligned/-1/4/ball_velocity_rmse",
+        "anchor": 1.028022289276123,
+        "candidate": 1.223080039024353,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": 0.19505774974822998,
+        "allowance": 0.0,
+        "status": "degraded"
+      },
+      {
+        "metric": "event_aligned/0/4/ball_velocity_rmse",
+        "anchor": 1.0495707988739014,
+        "candidate": 1.7536457777023315,
+        "absolute_tolerance": 0.03,
+        "relative_tolerance": 0.1,
+        "delta": 0.7040749788284302,
+        "allowance": 0.13495707988739014,
+        "status": "degraded"
+      }
+    ],
+    "improvements": [
+      {
+        "metric": "event_aligned/-1/1/ball_velocity_rmse",
+        "anchor": 0.00018808635650202632,
+        "candidate": 7.461565110133961e-05,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": -0.00011347070540068671,
+        "allowance": 0.0,
+        "status": "improved"
+      }
+    ],
+    "failures": [
+      {
+        "metric": "event_aligned/0/1/ball_velocity_rmse",
+        "anchor": 2.172872304916382,
+        "candidate": 2.407034158706665,
+        "absolute_tolerance": 0.02,
+        "relative_tolerance": 0.05,
+        "delta": 0.2341618537902832,
+        "allowance": 0.1286436152458191,
+        "status": "degraded"
+      },
+      {
+        "metric": "event_aligned/1/1/ball_velocity_rmse",
+        "anchor": 8.365275050437049e-08,
+        "candidate": 7.16102931619389e-07,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": 6.324501811150185e-07,
+        "allowance": 0.0,
+        "status": "degraded"
+      },
+      {
+        "metric": "event_aligned/-1/4/ball_velocity_rmse",
+        "anchor": 1.028022289276123,
+        "candidate": 1.223080039024353,
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0,
+        "delta": 0.19505774974822998,
+        "allowance": 0.0,
+        "status": "degraded"
+      },
+      {
+        "metric": "event_aligned/0/4/ball_velocity_rmse",
+        "anchor": 1.0495707988739014,
+        "candidate": 1.7536457777023315,
+        "absolute_tolerance": 0.03,
+        "relative_tolerance": 0.1,
+        "delta": 0.7040749788284302,
+        "allowance": 0.13495707988739014,
+        "status": "degraded"
+      },
+      {
+        "metric": "event_aligned/0/1/ball_velocity_rmse",
+        "status": "no_contact_edge_improvement"
+      }
+    ],
+    "contact_edge_improved": false,
+    "policy": "candidate must preserve every protected metric and improve the held-out contact-edge velocity metric",
+    "metric_specs": [
+      {
+        "name": "event_aligned/0/1/ball_velocity_rmse",
+        "absolute_tolerance": 0.02,
+        "relative_tolerance": 0.05
+      },
+      {
+        "name": "event_aligned/0/1/ball_forward_sign_error",
+        "absolute_tolerance": 0.01,
+        "relative_tolerance": 0.05
+      },
+      {
+        "name": "event_aligned/-1/1/ball_velocity_rmse",
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0
+      },
+      {
+        "name": "event_aligned/1/1/ball_velocity_rmse",
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0
+      },
+      {
+        "name": "event_aligned/-1/4/ball_velocity_rmse",
+        "absolute_tolerance": 0.0,
+        "relative_tolerance": 0.0
+      },
+      {
+        "name": "event_aligned/0/4/ball_velocity_rmse",
+        "absolute_tolerance": 0.03,
+        "relative_tolerance": 0.1
+      }
+    ]
+  },
+  "metrics": {
+    "1": {
+      "contact+0": {
+        "windows": 22,
+        "body_rmse": 0.8492706418037415,
+        "joint_position_mae": 0.007058409508317709,
+        "root_angular_mae": 0.416002482175827,
+        "ball_velocity_mae": 1.3723607063293457,
+        "ball_velocity_rmse": 2.407034158706665,
+        "ball_forward_sign_error": 0.09090909361839294,
+        "ball_position_p95": 0.07993125915527344,
+        "racket_position_mae": 0.010517324320971966,
+        "racket_velocity_mae": 0.8323503136634827,
+        "racket_angular_mae": 1.403554916381836
+      },
+      "contact+1": {
+        "windows": 22,
+        "body_rmse": 0.5833677649497986,
+        "joint_position_mae": 0.005067252088338137,
+        "root_angular_mae": 0.29057565331459045,
+        "ball_velocity_mae": 2.720449572279904e-07,
+        "ball_velocity_rmse": 7.16102931619389e-07,
+        "ball_forward_sign_error": 0.0,
+        "ball_position_p95": 2.2118884501765024e-10,
+        "racket_position_mae": 0.005289996974170208,
+        "racket_velocity_mae": 0.5562228560447693,
+        "racket_angular_mae": 0.9801585078239441
+      },
+      "contact-1": {
+        "windows": 22,
+        "body_rmse": 0.7757970094680786,
+        "joint_position_mae": 0.006731005851179361,
+        "root_angular_mae": 0.43481332063674927,
+        "ball_velocity_mae": 1.9208442608942278e-05,
+        "ball_velocity_rmse": 7.461565110133961e-05,
+        "ball_forward_sign_error": 0.0,
+        "ball_position_p95": 5.889639282941062e-07,
+        "racket_position_mae": 0.010095696896314621,
+        "racket_velocity_mae": 0.8036482930183411,
+        "racket_angular_mae": 1.2306169271469116
+      },
+      "uniform": {
+        "windows": 320,
+        "body_rmse": 0.6408551335334778,
+        "joint_position_mae": 0.003633761778473854,
+        "root_angular_mae": 0.07937154918909073,
+        "ball_velocity_mae": 0.07288014143705368,
+        "ball_velocity_rmse": 0.5616830587387085,
+        "ball_forward_sign_error": 0.0,
+        "ball_position_p95": 0.004331032745540142,
+        "racket_position_mae": 0.0012468599015846848,
+        "racket_velocity_mae": 0.12972994148731232,
+        "racket_angular_mae": 0.26066315174102783
+      }
+    },
+    "2": {
+      "contact+0": {
+        "windows": 22,
+        "body_rmse": 0.9545941352844238,
+        "joint_position_mae": 0.011384179815649986,
+        "root_angular_mae": 0.27216583490371704,
+        "ball_velocity_mae": 1.1448969841003418,
+        "ball_velocity_rmse": 1.7592682838439941,
+        "ball_forward_sign_error": 0.04545454680919647,
+        "ball_position_p95": 0.07318136096000671,
+        "racket_position_mae": 0.016581911593675613,
+        "racket_velocity_mae": 0.3840954005718231,
+        "racket_angular_mae": 0.5884867310523987
+      },
+      "contact+1": {
+        "windows": 22,
+        "body_rmse": 0.8966401815414429,
+        "joint_position_mae": 0.009449614211916924,
+        "root_angular_mae": 0.1609095185995102,
+        "ball_velocity_mae": 3.5972898331237957e-06,
+        "ball_velocity_rmse": 9.052370842255186e-06,
+        "ball_forward_sign_error": 0.0,
+        "ball_position_p95": 1.6830587412641762e-07,
+        "racket_position_mae": 0.007183364126831293,
+        "racket_velocity_mae": 0.26135408878326416,
+        "racket_angular_mae": 0.6312164068222046
+      },
+      "contact-1": {
+        "windows": 22,
+        "body_rmse": 1.2350901365280151,
+        "joint_position_mae": 0.013963291421532631,
+        "root_angular_mae": 0.3729594647884369,
+        "ball_velocity_mae": 0.9060764908790588,
+        "ball_velocity_rmse": 1.2273072004318237,
+        "ball_forward_sign_error": 0.0,
+        "ball_position_p95": 0.09555284678936005,
+        "racket_position_mae": 0.020683202892541885,
+        "racket_velocity_mae": 0.5897908210754395,
+        "racket_angular_mae": 0.9256515502929688
+      },
+      "uniform": {
+        "windows": 320,
+        "body_rmse": 0.5838639140129089,
+        "joint_position_mae": 0.007756603881716728,
+        "root_angular_mae": 0.12286748737096786,
+        "ball_velocity_mae": 0.09036107361316681,
+        "ball_velocity_rmse": 0.5518525838851929,
+        "ball_forward_sign_error": 0.0,
+        "ball_position_p95": 0.012676933780312538,
+        "racket_position_mae": 0.002528677461668849,
+        "racket_velocity_mae": 0.15753605961799622,
+        "racket_angular_mae": 0.28415584564208984
+      }
+    },
+    "4": {
+      "contact+0": {
+        "windows": 22,
+        "body_rmse": 0.8010305166244507,
+        "joint_position_mae": 0.01583612896502018,
+        "root_angular_mae": 0.2336399257183075,
+        "ball_velocity_mae": 1.141621708869934,
+        "ball_velocity_rmse": 1.7536457777023315,
+        "ball_forward_sign_error": 0.04545454680919647,
+        "ball_position_p95": 0.10607904195785522,
+        "racket_position_mae": 0.014835813082754612,
+        "racket_velocity_mae": 0.34871113300323486,
+        "racket_angular_mae": 1.2705820798873901
+      },
+      "contact+1": {
+        "windows": 22,
+        "body_rmse": 0.7581931352615356,
+        "joint_position_mae": 0.015336361713707447,
+        "root_angular_mae": 0.25927287340164185,
+        "ball_velocity_mae": 6.222702268132707e-06,
+        "ball_velocity_rmse": 1.4817672308709007e-05,
+        "ball_forward_sign_error": 0.0,
+        "ball_position_p95": 1.3672566865352564e-06,
+        "racket_position_mae": 0.007377282716333866,
+        "racket_velocity_mae": 0.35576772689819336,
+        "racket_angular_mae": 0.8795408606529236
+      },
+      "contact-1": {
+        "windows": 22,
+        "body_rmse": 0.8631057739257812,
+        "joint_position_mae": 0.01558726280927658,
+        "root_angular_mae": 0.28346723318099976,
+        "ball_velocity_mae": 0.9032620787620544,
+        "ball_velocity_rmse": 1.223080039024353,
+        "ball_forward_sign_error": 0.0,
+        "ball_position_p95": 0.1044691875576973,
+        "racket_position_mae": 0.021545754745602608,
+        "racket_velocity_mae": 0.36313310265541077,
+        "racket_angular_mae": 1.2727477550506592
+      },
+      "uniform": {
+        "windows": 320,
+        "body_rmse": 0.6191493272781372,
+        "joint_position_mae": 0.014285295270383358,
+        "root_angular_mae": 0.16728541254997253,
+        "ball_velocity_mae": 0.11616064608097076,
+        "ball_velocity_rmse": 0.5517798662185669,
+        "ball_forward_sign_error": 0.0,
+        "ball_position_p95": 0.0328405499458313,
+        "racket_position_mae": 0.005598500370979309,
+        "racket_velocity_mae": 0.19235734641551971,
+        "racket_angular_mae": 0.32731693983078003
+      }
+    },
+    "8": {
+      "contact+0": {
+        "windows": 22,
+        "body_rmse": 0.5851914286613464,
+        "joint_position_mae": 0.025241509079933167,
+        "root_angular_mae": 0.16469520330429077,
+        "ball_velocity_mae": 1.4682716131210327,
+        "ball_velocity_rmse": 2.317155599594116,
+        "ball_forward_sign_error": 0.09090909361839294,
+        "ball_position_p95": 0.3015441596508026,
+        "racket_position_mae": 0.021930254995822906,
+        "racket_velocity_mae": 0.313190758228302,
+        "racket_angular_mae": 0.5840685367584229
+      },
+      "contact+1": {
+        "windows": 22,
+        "body_rmse": 0.5647265911102295,
+        "joint_position_mae": 0.026869526132941246,
+        "root_angular_mae": 0.178436279296875,
+        "ball_velocity_mae": 0.40343859791755676,
+        "ball_velocity_rmse": 1.6412959098815918,
+        "ball_forward_sign_error": 0.04545454680919647,
+        "ball_position_p95": 0.1343086212873459,
+        "racket_position_mae": 0.013482767157256603,
+        "racket_velocity_mae": 0.27828818559646606,
+        "racket_angular_mae": 0.6104536056518555
+      },
+      "contact-1": {
+        "windows": 22,
+        "body_rmse": 0.6595033407211304,
+        "joint_position_mae": 0.02181210368871689,
+        "root_angular_mae": 0.1796850860118866,
+        "ball_velocity_mae": 1.0722754001617432,
+        "ball_velocity_rmse": 1.6694650650024414,
+        "ball_forward_sign_error": 0.0,
+        "ball_position_p95": 0.16963563859462738,
+        "racket_position_mae": 0.02760123461484909,
+        "racket_velocity_mae": 0.30854669213294983,
+        "racket_angular_mae": 0.5823466777801514
+      },
+      "uniform": {
+        "windows": 320,
+        "body_rmse": 0.6664789319038391,
+        "joint_position_mae": 0.02263956516981125,
+        "root_angular_mae": 0.20258496701717377,
+        "ball_velocity_mae": 0.14824312925338745,
+        "ball_velocity_rmse": 0.6231459379196167,
+        "ball_forward_sign_error": 0.0,
+        "ball_position_p95": 0.09127270430326462,
+        "racket_position_mae": 0.012113417498767376,
+        "racket_velocity_mae": 0.22988471388816833,
+        "racket_angular_mae": 0.3671598434448242
+      }
+    },
+    "16": {
+      "contact+0": {
+        "windows": 22,
+        "body_rmse": 0.5773795247077942,
+        "joint_position_mae": 0.03005487471818924,
+        "root_angular_mae": 0.20110508799552917,
+        "ball_velocity_mae": 1.5277646780014038,
+        "ball_velocity_rmse": 2.4338462352752686,
+        "ball_forward_sign_error": 0.09090909361839294,
+        "ball_position_p95": 0.7767283320426941,
+        "racket_position_mae": 0.026471463963389397,
+        "racket_velocity_mae": 0.3720623254776001,
+        "racket_angular_mae": 0.7566857933998108
+      },
+      "contact+1": {
+        "windows": 22,
+        "body_rmse": 0.573796272277832,
+        "joint_position_mae": 0.03295062109827995,
+        "root_angular_mae": 0.19260303676128387,
+        "ball_velocity_mae": 0.5182874798774719,
+        "ball_velocity_rmse": 1.8070762157440186,
+        "ball_forward_sign_error": 0.04545454680919647,
+        "ball_position_p95": 0.8726338148117065,
+        "racket_position_mae": 0.020857110619544983,
+        "racket_velocity_mae": 0.35695013403892517,
+        "racket_angular_mae": 0.6490052938461304
+      },
+      "contact-1": {
+        "windows": 22,
+        "body_rmse": 0.5815144777297974,
+        "joint_position_mae": 0.029869643971323967,
+        "root_angular_mae": 0.22832179069519043,
+        "ball_velocity_mae": 1.3375184535980225,
+        "ball_velocity_rmse": 2.213258981704712,
+        "ball_forward_sign_error": 0.04545454680919647,
+        "ball_position_p95": 0.7638689875602722,
+        "racket_position_mae": 0.03031347319483757,
+        "racket_velocity_mae": 0.3178005516529083,
+        "racket_angular_mae": 0.6120257377624512
+      },
+      "uniform": {
+        "windows": 320,
+        "body_rmse": 0.8135639429092407,
+        "joint_position_mae": 0.032321326434612274,
+        "root_angular_mae": 0.22154314815998077,
+        "ball_velocity_mae": 0.15358835458755493,
+        "ball_velocity_rmse": 0.5476140975952148,
+        "ball_forward_sign_error": 0.0031250000465661287,
+        "ball_position_p95": 0.2544745206832886,
+        "racket_position_mae": 0.023862631991505623,
+        "racket_velocity_mae": 0.26933175325393677,
+        "racket_angular_mae": 0.36362889409065247
+      }
+    },
+    "32": {
+      "contact+0": {
+        "windows": 22,
+        "body_rmse": 1.4708815813064575,
+        "joint_position_mae": 0.042593713849782944,
+        "root_angular_mae": 0.30557307600975037,
+        "ball_velocity_mae": 1.48989737033844,
+        "ball_velocity_rmse": 2.372936964035034,
+        "ball_forward_sign_error": 0.09090909361839294,
+        "ball_position_p95": 2.1256515979766846,
+        "racket_position_mae": 0.05111116170883179,
+        "racket_velocity_mae": 0.51762855052948,
+        "racket_angular_mae": 1.0471128225326538
+      },
+      "contact+1": {
+        "windows": 22,
+        "body_rmse": 1.4132592678070068,
+        "joint_position_mae": 0.04565535485744476,
+        "root_angular_mae": 0.392162024974823,
+        "ball_velocity_mae": 0.5037955641746521,
+        "ball_velocity_rmse": 1.7545549869537354,
+        "ball_forward_sign_error": 0.04545454680919647,
+        "ball_position_p95": 2.3308913707733154,
+        "racket_position_mae": 0.042817115783691406,
+        "racket_velocity_mae": 0.6136146783828735,
+        "racket_angular_mae": 1.2141231298446655
+      },
+      "contact-1": {
+        "windows": 22,
+        "body_rmse": 1.4926930665969849,
+        "joint_position_mae": 0.043594710528850555,
+        "root_angular_mae": 0.27293577790260315,
+        "ball_velocity_mae": 1.2993831634521484,
+        "ball_velocity_rmse": 2.152050733566284,
+        "ball_forward_sign_error": 0.04545454680919647,
+        "ball_position_p95": 2.1986958980560303,
+        "racket_position_mae": 0.05804002657532692,
+        "racket_velocity_mae": 0.5242009162902832,
+        "racket_angular_mae": 0.9279053211212158
+      },
+      "uniform": {
+        "windows": 320,
+        "body_rmse": 0.5018410682678223,
+        "joint_position_mae": 0.04071629419922829,
+        "root_angular_mae": 0.2293778955936432,
+        "ball_velocity_mae": 0.3235854208469391,
+        "ball_velocity_rmse": 1.3391361236572266,
+        "ball_forward_sign_error": 0.03437500074505806,
+        "ball_position_p95": 0.6579006314277649,
+        "racket_position_mae": 0.04653134196996689,
+        "racket_velocity_mae": 0.3131706118583679,
+        "racket_angular_mae": 0.4123084247112274
+      }
+    },
+    "64": {
+      "contact+0": {
+        "windows": 22,
+        "body_rmse": 0.7628214955329895,
+        "joint_position_mae": 0.05620553717017174,
+        "root_angular_mae": 0.40076225996017456,
+        "ball_velocity_mae": 1.535949945449829,
+        "ball_velocity_rmse": 1.9393006563186646,
+        "ball_forward_sign_error": 0.13636364042758942,
+        "ball_position_p95": 3.428234100341797,
+        "racket_position_mae": 0.059504229575395584,
+        "racket_velocity_mae": 0.4253123700618744,
+        "racket_angular_mae": 0.6374177932739258
+      },
+      "contact+1": {
+        "windows": 22,
+        "body_rmse": 0.7737257480621338,
+        "joint_position_mae": 0.05588197708129883,
+        "root_angular_mae": 0.37398332357406616,
+        "ball_velocity_mae": 1.2542805671691895,
+        "ball_velocity_rmse": 1.693228840827942,
+        "ball_forward_sign_error": 0.09090909361839294,
+        "ball_position_p95": 3.277494430541992,
+        "racket_position_mae": 0.05417662858963013,
+        "racket_velocity_mae": 0.4185592830181122,
+        "racket_angular_mae": 0.6038978099822998
+      },
+      "contact-1": {
+        "windows": 22,
+        "body_rmse": 0.7269903421401978,
+        "joint_position_mae": 0.05677613243460655,
+        "root_angular_mae": 0.38529491424560547,
+        "ball_velocity_mae": 1.652286171913147,
+        "ball_velocity_rmse": 2.049426794052124,
+        "ball_forward_sign_error": 0.13636364042758942,
+        "ball_position_p95": 3.239885091781616,
+        "racket_position_mae": 0.06181640177965164,
+        "racket_velocity_mae": 0.4446261525154114,
+        "racket_angular_mae": 0.6674727201461792
+      },
+      "uniform": {
+        "windows": 320,
+        "body_rmse": 0.7706061601638794,
+        "joint_position_mae": 0.052875809371471405,
+        "root_angular_mae": 0.31311145424842834,
+        "ball_velocity_mae": 0.6140437722206116,
+        "ball_velocity_rmse": 1.93856680393219,
+        "ball_forward_sign_error": 0.09062500298023224,
+        "ball_position_p95": 3.100661277770996,
+        "racket_position_mae": 0.08417002856731415,
+        "racket_velocity_mae": 0.4036177396774292,
+        "racket_angular_mae": 0.5407362580299377
+      }
+    }
+  },
+  "scope": "Offline monitoring on the same native launch panel with recorded executed targets. The online weights were generated after the initial panel declaration.",
+  "formal_promotion": false
+}

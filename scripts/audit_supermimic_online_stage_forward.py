@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+"""Score the actual online WM snapshot on recorded native launches after a policy block."""
+import argparse
+import json
+from pathlib import Path
+
+import torch
+
+from evaluate_supermimic_fresh_wm_panel import assess, check_panel, digest
+from rescore_supermimic_fresh_wm_panel import body_forward_check
+from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop, tensor_digest
+from quadsmash.rl.supermimic_physical_world_v1 import PhysicalWorldV1
+from quadsmash.rl.supermimic_wm_candidate_gate_v1 import compare_candidate_to_anchor
+
+
+def event_metrics(metrics):
+    return dict(event_aligned={str(offset):{str(h):groups[f'contact{offset:+d}'] for h,groups in metrics.items()
+                                            if f'contact{offset:+d}' in groups} for offset in (-1,0,1)})
+
+
+@torch.no_grad()
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    for name in ('panel','capture','initial-score','checkpoint','archive','safety-mapping','output'):
+        p.add_argument('--'+name,required=True,type=Path)
+    a = p.parse_args()
+    torch.set_num_threads(3)
+    read = lambda path: json.loads(path.read_text())
+    panel, measured, initial = read(a.panel), read(a.capture/'metrics.json'), read(a.initial_score)
+    native = a.capture/'native.pt'
+    root = Path(__file__).resolve().parents[1]
+    anchor_path, behavior_path = [Path(path) for path in panel['weights']]
+    check_panel(panel,root/'configs/g07_full_racket_eval_v4.json',root,[anchor_path,behavior_path])
+    if (digest(a.panel)!=initial['panel_sha256'] or measured['panel_sha256']!=initial['panel_sha256'] or
+        digest(native)!=measured['data_sha256'] or initial['data_sha256']!=measured['data_sha256'] or
+        measured['ticks']!=800 or measured['first_episodes']!=len(panel['cases']) or
+        initial['weights']!=panel['weights'] or measured['weights']!=panel['weights'] or
+        initial['transition']!='initial_components' or not initial['initial_physical_components']):
+        raise ValueError('Expected a complete, identical native panel and its deployed initial transition')
+    behavior = torch.load(behavior_path,weights_only=False,map_location='cpu',mmap=True)
+    if tensor_digest(behavior['actor'].items())!=measured['actor_sha256']:
+        raise ValueError('Panel behavior policy identity mismatch')
+    stage = torch.load(a.checkpoint,weights_only=False,map_location='cpu',mmap=True)
+    wm = stage['metadata']['physical_imagination']
+    paths = wm['checkpoint_paths']
+    _,adapter,_,_,manifest = load_physical_loop(archive=a.archive,physical_checkpoint=paths['physical'],
+        ball_checkpoint=paths['ball'],task_checkpoint=paths['task'],action_ball_checkpoint=paths.get('action_ball'),
+        safety_mapping=a.safety_mapping,execution_root=wm['g07_execution_root'],device='cpu')
+    if (behavior['metadata']['task_contract']!=stage['metadata']['task_contract'] or
+        manifest['task_contract']!=stage['metadata']['task_contract'] or
+        wm['checkpoint_sha256']!=adapter.manifest['checkpoint_sha256'] or
+        initial['body_candidate_sha256']!=digest(Path(paths['physical'])) or initial['ball_candidate_sha256']!=digest(Path(paths['ball'])) or
+        tensor_digest(adapter.state_dict().items())!=initial['runtime_world_sha256']):
+        raise ValueError('Online snapshot has a different task or starting WM')
+    adapter.load_state_dict(stage['world'],strict=True)
+    adapter.eval()
+    anchor = PhysicalWorldV1().eval()
+    anchor.load_state_dict(torch.load(anchor_path,weights_only=True,map_location='cpu')['model'])
+    data = torch.load(native,weights_only=True,map_location='cpu',mmap=True)
+    score = assess(data,panel['cases'],anchor,adapter,panel['horizons'],'cpu')
+    if score['windows']!=measured['windows'] or score['windows']!=initial['windows']:
+        raise ValueError('Different native windows')
+    baseline = score['metrics']['anchor']
+    current = score['metrics']['candidate']
+    before = {int(h):v for h,v in initial['metrics']['candidate'].items()}
+    for h in baseline:
+        for group, row in baseline[h].items():
+            for k,v in row.items():
+                if abs(v-initial['metrics']['anchor'][str(h)][group][k])>1.e-5:
+                    raise ValueError('Anchor does not reproduce the initial reference scores')
+    names=panel['prospective_body_comparison']['uniform_no_regression']
+    report=dict(head_stage_checkpoint_sha256=digest(a.checkpoint),stage_actor_sha256=tensor_digest(stage['actor'].items()),
+        stage_world_sha256=tensor_digest(adapter.state_dict().items()),initial_world_sha256=initial['runtime_world_sha256'],
+        native_panel_sha256=digest(a.panel),native_capture_sha256=measured['data_sha256'],initial_score_sha256=digest(a.initial_score),
+        native_behavior_actor_sha256=measured['actor_sha256'],horizons=panel['horizons'],world_updates=stage['world_updates'],
+        uniform_vs_formal_anchor=body_forward_check(score['metrics'],panel['horizons'],names),
+        contact_vs_formal_anchor=compare_candidate_to_anchor(event_metrics(baseline),event_metrics(current)),
+        uniform_vs_block_initial=body_forward_check(dict(anchor=before,candidate=current),panel['horizons'],names),
+        contact_vs_block_initial=compare_candidate_to_anchor(event_metrics(before),event_metrics(current)),
+        metrics=current,scope='Offline monitoring on the same native launch panel with recorded executed targets. The online weights were generated after the initial panel declaration.',
+        formal_promotion=False)
+    with a.output.open('x') as f:
+        json.dump(report,f,indent=2,allow_nan=False)
+        f.write('\n')
+
+
+if __name__=='__main__':main()
