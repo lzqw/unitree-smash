@@ -22,15 +22,11 @@
 
 ## B1 当前数据状态
 
-现有 204 个 native probe 归档得到 1077 个动态接触候选和 706039 个 near-miss 候选。当前 pilot 已选 1077 个动态 contact 和 1000 个 near-miss，距离第一轮 `2000+1000` 目标还缺 923 个动态 contact。覆盖审计仍缺中心、边缘、二次接触及地面/球网干扰桶。旧归档没有 PhysX manifold normal、racket part 和完整多接触顺序，这些字段在数据中保留为显式缺失或质量标记。
-
-详见 [`reports/supermimic_contact_pilot_20261120/REPORT.md`](../supermimic_contact_pilot_20261120/REPORT.md)。
+2026-11-21 受控原生采集结束，正式 pilot 已有 2000 条动态接触、1000 条负例，达到数据覆盖门槛。20 批原生数据支持 25 个击球网格、125 个后续接触区间及地面/球网干扰分层。首触解析校准的独立留出集 TOI P95 为 1 个子步，误报率为 1/69（1.45%），策略训练门槛仍未通过。[测量和准入明细](../supermimic_contact_pilot_20261120/REPORT.md)
 
 ## 验证
 
-支线 B 定向测试通过，共 `9 passed`。完整工作区测试仍有 full-racket 相关失败和错误，未通过放宽验收阈值处理。
-
-GPU 原生采集 smoke 已启动并在第 149 个控制 tick 停止，没有把未完成采集计入 pilot 数量。14 个带子步捕获的采集规格已保存在 `reports/supermimic_contact_pilot_20261120/specs/`，可继续补足剩余 923 条。
+本轮支线 B 的 4 组定向测试共 17 项通过。已核对逐点原生法向、摩擦、扣除重力/阻力后的冲量与动量变化、源文件哈希和 split 重叠。[启动前审查记录](../supermimic_contact_pilot_20261120/CODE_REVIEW.md)
 
 ## 上传范围
 

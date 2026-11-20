@@ -241,16 +241,22 @@ def _contact_intervals(mask: torch.Tensor) -> list[tuple[int, int]]:
 
 def _contact_region(local: torch.Tensor) -> tuple[str, tuple[int, int] | None]:
     yz = local[1:3]
-    normalized = yz / 0.11
+    config = _face_semiaxes()
+    normalized = yz / yz.new_tensor(config)
     if not torch.isfinite(normalized).all():
         return "unknown", None
-    if float(normalized.abs().max()) > 0.9:
-        return "edge", None
-    if float(normalized.norm()) > 0.75:
-        return "rim", None
-    grid = torch.floor((normalized.clamp(-.999, .999) + 1.) * 2.5).to(torch.int64)
-    ij = (int(grid[0]), int(grid[1]))
+    grid = torch.floor((normalized.clamp(-.999, .999) + 1.) * 2.5).long()
+    ij = (int(grid[0]), int(grid[1])) if float(normalized.abs().max()) <= 1.05 else None
+    if float(normalized.abs().max()) > .9:
+        return "edge", ij
+    if float(normalized.norm()) > .75:
+        return "rim", ij
     return ("center" if ij == (2, 2) else "grid_5x5"), ij
+
+
+@lru_cache(maxsize=1)
+def _face_semiaxes():
+    return tuple(load_racket()["assumptions"]["strings_semiaxes_yz_m"])
 
 
 def _bucket(row: dict) -> str:
@@ -365,11 +371,15 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
         ends = torch.where(mask & ~torch.cat((mask[1:], torch.zeros(1, dtype=torch.bool))))[0].tolist()
         contact_intervals = list(zip(starts, ends))
         lane_has_contact = bool(mask.any())
-        for order, (start, end) in enumerate(zip(starts, ends), 1):
+        for order, (start, end) in enumerate(contact_intervals, 1):
             before = max(start - 1, 0)
             after = min(end + 1, frames - 1)
             force = racket_force[start:end + 1, lane]
             impulse = force.sum(0) * dt
+            impulse_source = "integrated_contact_force_matrix"
+            if "racket_friction_force_w" in tensors:
+                impulse += tensors["racket_friction_force_w"][start:end+1, lane].sum(0) * dt
+                impulse_source = "physx_pair_normal_and_friction_forces"
             normal = force.mean(0)
             position = position_all[start, lane]
             quaternion = quaternion_all[start, lane]
@@ -433,7 +443,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 relative_velocity_w=relative.tolist(), impulse_ns=impulse.tolist(),
                 normal_impulse_ns=normal_impulse, tangential_impulse_ns=tangent_impulse.tolist(),
                 penetration_m=max(0., -gap), contact_order=order,
-                effective_mass_kg=mass, racket_part=racket_part, geometric_racket_part=geometric_part,
+                effective_mass_kg=mass, racket_part=(geometric_part if manifold_points else racket_part),
+                geometric_racket_part=geometric_part,
                 contact_region=region, contact_grid=grid, toi_phase=int((start % 160) / 40),
                 ball_state_before=_frame_state(tensors, before, lane),
                 ball_state_after=_frame_state(tensors, after, lane),
@@ -443,14 +454,18 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 toi_post_substep=_frame_state(tensors, after, lane),
                 outgoing_direction_w=(ball[after, lane, 7:10] / ball[after, lane, 7:10].norm().clamp_min(1e-12)).tolist(),
                 outgoing_speed_mps=float(ball[after, lane, 7:10].norm()),
-                quality_flags=["native_substep_force_integrated", "racket_part_unavailable"],
+                quality_flags=["native_substep_force_integrated",
+                               "part_classified_from_witness" if manifold_points else "racket_part_unavailable"],
                 normal_source=normal_source, manifold_points=manifold_points,
-                impulse_source="integrated_contact_force_matrix",
+                impulse_source=impulse_source,
                 effective_mass_source="inferred_from_normal_impulse_and_relative_speed",
                 interference_objects=[name for name, active in (
                     ("ground", bool(ground_touching[start:end + 1, lane].any())),
                     ("net", bool(net_touching[start:end + 1, lane].any())),
                 ) if active],
+                previous_force_free_substeps=(start - ends[order - 2] - 1 if order > 1 else None),
+                previous_peak_gap_m=(float(analytic_gaps[ends[order - 2]+1:start, lane].max())
+                                     if order > 1 else None),
                 contact_count_substeps=int(end - start + 1),
                 contact_slot_count=int(active_slots.sum()),
                 contact_slot_indices=[int(index) for index in active_slots.nonzero().flatten().tolist()],
@@ -462,7 +477,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 near_miss_contact_proximity="contact_positive",
                 physics_dt_s=dt,
                 contact_filter_paths=filter_paths,
-                racket_body_name=racket_body_name, racket_part_source=racket_part_source,
+                racket_body_name=racket_body_name,
+                racket_part_source=("native_manifold_point_and_authored_geometry" if manifold_points else racket_part_source),
                 **metadata,
             )
             row["bucket"] = _bucket(row)
@@ -470,7 +486,11 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
         # Sample hard negatives even in lanes that contain another contact.
         # Only a local neighborhood around a positive interval is excluded.
         lane_near_miss: list[dict] = []
-        for center in range(0, frames, max(1, near_miss_radius)):
+        stride = max(1, near_miss_radius)
+        centers = set(range(0, frames, stride))
+        for start, end in _contact_intervals(ground_touching[:, lane] | net_touching[:, lane]):
+            centers.add((start + end - 1) // 2)
+        for center in sorted(centers):
             if touching[max(0, center - near_miss_radius):min(frames, center + near_miss_radius + 1), lane].any():
                 continue
             ball_pos = ball[center, lane, :3]
@@ -509,8 +529,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                        impulse_source="zero_by_no_racket_force",
                        effective_mass_source="unavailable_without_contact",
                        interference_objects=[name for name, active in (
-                           ("ground", bool(ground_touching[:, lane].any())),
-                           ("net", bool(net_touching[:, lane].any())),
+                           ("ground", bool(ground_touching[max(0, center - 1):center + 2, lane].any())),
+                           ("net", bool(net_touching[max(0, center - 1):center + 2, lane].any())),
                        ) if active],
                        interference_object=interference,
                        contact_count_substeps=0, contact_slot_count=0,
@@ -535,7 +555,7 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
     return records, sensitivity
 
 
-def _select(rows: list[dict], target: int, seed: int) -> list[dict]:
+def _select(rows: list[dict], target: int, seed: int, *, distinct_lanes=False) -> list[dict]:
     if target <= 0 or not rows:
         return []
     generator = torch.Generator().manual_seed(seed)
@@ -544,11 +564,20 @@ def _select(rows: list[dict], target: int, seed: int) -> list[dict]:
     for index in order:
         grouped.setdefault(rows[index].get("bucket", "unknown"), []).append(rows[index])
     chosen: list[dict] = []
+    used = set()
     while len(chosen) < min(target, len(rows)) and grouped:
         for key in list(grouped):
             values = grouped[key]
             if values:
-                chosen.append(values.pop())
+                row = values.pop()
+                if distinct_lanes:
+                    identity = (row["capture_id"], row["lane"])
+                    if identity in used:
+                        if not values:
+                            grouped.pop(key)
+                        continue
+                    used.add(identity)
+                chosen.append(row)
                 if len(chosen) == min(target, len(rows)):
                     break
             if not values:
@@ -593,7 +622,7 @@ def _coverage(rows: list[dict]) -> dict:
               for index in range(4)}
     orders = {str(index): sum(min(int(row.get("contact_order", 0)), 2) == index for row in positives)
               for index in (1, 2)}
-    interference = {name: sum(name in row.get("interference_objects", []) for row in positives)
+    interference = {name: sum(name in row.get("interference_objects", []) for row in rows)
                     for name in ("ground", "net")}
     near_gap = {str(index): sum(row.get("gap_bucket") == f"gap{index}" for row in negatives)
                 for index in range(5)}
@@ -638,6 +667,12 @@ def _coverage(rows: list[dict]) -> dict:
     for key in ("vn", "vt", "incidence", "racket_linear", "racket_angular"):
         required[key] = {str(index): 25 for index in range(3 if key == "incidence" else 4)}
     required["part_geometry"] = {"strings": 100, "frame": 100}
+    observed["face_grid"] = dict(Counter(
+        f"{i},{j}" for row in positives if row.get("contact_grid")
+        for i, j in (row["contact_grid"],)))
+    required["face_grid"] = {f"{i},{j}": 3 for i in range(5) for j in range(5)}
+    observed["spec"] = dict(Counter(row["spec_id"] for row in positives if row.get("spec_id") != "spec_unknown"))
+    required["spec"] = dict.fromkeys(observed["spec"], 3)
     missing = []
     for category, values in required.items():
         for key, minimum in values.items():
@@ -658,25 +693,28 @@ def _assign_splits(rows: list[dict], seed: int) -> dict:
         group_key = f"spec:{spec_id}" if spec_id and spec_id != "spec_unknown" else (
             f"capture:{row.get('source_sha256', 'unknown')}" )
         groups.setdefault(group_key, []).append(row)
-    ordered = sorted(groups, key=lambda key: hashlib.sha256(f"{seed}:{key}".encode()).hexdigest())
     split_names = ("train", "validation", "test")
-    assignment: dict[str, str] = {}
-    for index, key in enumerate(ordered):
-        bucket = index % 10
-        assignment[key] = "train" if bucket < 7 else ("validation" if bucket < 9 else "test")
-    # With at least three independent groups, guarantee all split names exist.
-    for index, name in enumerate(split_names):
-        if ordered and name not in assignment.values() and index < len(ordered):
-            assignment[ordered[index]] = name
-    known_specs = {row.get("spec_id") for row in rows if row.get("spec_id") != "spec_unknown"}
-    if len(known_specs) >= 2:
-        # Hold out one complete spec group.  All source archives belonging to
-        # that spec move together, preserving source atomicity and making the
-        # test spec genuinely unseen during fitting.
-        holdout_spec = sorted(known_specs)[-1]
-        for key in ordered:
-            if any(row.get("spec_id") == holdout_spec for row in groups[key]):
-                assignment[key] = "test"
+    targets = dict(zip(split_names, (.70, .15, .15)))
+    known_specs = {row["spec_id"] for row in rows if row.get("spec_id") not in (None, "spec_unknown")}
+    # Keep large groups intact and balance actual rows. Reserve a known
+    # spec in test and seed the other nonempty splits before filling them.
+    def priority(key):
+        return (-len(groups[key]), hashlib.sha256(f"{seed}:{key}".encode()).hexdigest())
+
+    ordered = sorted(groups, key=priority)
+    assignment = {}
+    totals = dict.fromkeys(split_names, 0)
+    if known_specs:
+        holdout = min(("spec:" + spec for spec in known_specs), key=lambda key: (
+            abs(len(groups[key]) - len(rows) * targets["test"]), priority(key)))
+        assignment[holdout] = "test"
+        totals["test"] = len(groups[holdout])
+    for key in ordered:
+        if key in assignment:
+            continue
+        name = min(split_names, key=lambda name: totals[name] / targets[name])
+        assignment[key] = name
+        totals[name] += len(groups[key])
     source_assignment = {}
     for group_key, group_rows in groups.items():
         split_name = assignment[group_key]
@@ -748,7 +786,7 @@ def build_pilot(inputs: str | Path | list[str | Path], output: str | Path, *, co
     rows, duplicate_rows_removed = _deduplicate([row for group, _ in groups for row in group])
     positives = [row for row in rows if row["contact_object"] == "racket"]
     negatives_rows = [row for row in rows if row["contact_object"] == "no_contact"]
-    selected = _select(positives, contacts, seed) + _select(negatives_rows, negatives, seed + 1)
+    selected = _select(positives, contacts, seed) + _select(negatives_rows, negatives, seed + 1, distinct_lanes=True)
     selected.sort(key=lambda row: (row["contact_object"], row["source"], row["lane"], row["toi_frame"]))
     split = _assign_splits(selected, seed)
     coverage = _coverage(selected)
@@ -770,7 +808,7 @@ def build_pilot(inputs: str | Path | list[str | Path], output: str | Path, *, co
                                                          "contact_intervals": 0})
             for key in target:
                 target[key] += int(values.get(key, 0))
-    status = ("INSUFFICIENT_CANDIDATES" if len(positives) < contacts or len(negatives_rows) < negatives
+    status = ("INSUFFICIENT_CANDIDATES" if len(positives) < contacts or sum(r["contact_object"] == "no_contact" for r in selected) < negatives
               else ("INSUFFICIENT_COVERAGE" if not coverage["passed"] or not split["source_overlap_free"]
                     or not split["group_overlap_free"]
                     or not split["unseen_spec_holdout"] else "READY"))

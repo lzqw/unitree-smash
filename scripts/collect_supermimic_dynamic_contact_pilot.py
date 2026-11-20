@@ -51,11 +51,20 @@ def collect(args):
                 root_w, quat_rotate(pose[:, 3:7], data.body_com_pos_b[:, 0]))
             root_v += torch.stack([sample(-2, 2) for _ in range(3)], -1)
             root_w += torch.stack([sample(-7, 7) for _ in range(3)], -1)
+            quiet = lanes % 12 == 0
+            fast_spin = lanes % 12 == 3
+            root_v[quiet] *= .025
+            root_w[quiet] *= .025
+            root_w[fast_spin, 2] += 22.
+            joint_velocity = source('joint_velocity')
+            joint_velocity[quiet] *= .025
+            joint_targets = targets[parent].to(device)
+            joint_targets[quiet] = source('joint_position')[quiet]
             env.robot.write_root_pose_to_sim(pose)
             env.robot.write_root_velocity_to_sim(torch.cat((root_v, root_w), -1))
-            env.robot.write_joint_state_to_sim(source('joint_position'), source('joint_velocity'),
+            env.robot.write_joint_state_to_sim(source('joint_position'), joint_velocity,
                                               joint_ids=env.joint_ids)
-            env.robot.set_joint_position_target(targets[parent].to(device), joint_ids=env.joint_ids)
+            env.robot.set_joint_position_target(joint_targets, joint_ids=env.joint_ids)
             ball = env.shuttle.data.default_root_state.clone()
             ball[:, :3] = origin + origin.new_tensor([0., 0., 5.])
             env.shuttle.write_root_state_to_sim(ball)
@@ -79,10 +88,31 @@ def collect(args):
             target = torch.stack((side * .0256, y, z), -1)
             flight = sample(.0002, .0094)
             relative = torch.stack((-side * sample(.5, 18), sample(-10, 10), sample(-10, 10)), -1)
+            relative[lanes % 8 == 1, 1:] *= .025
+            grazing = torch.ones_like(lanes, dtype=torch.bool) if args.grazing_only else lanes % 8 == 5
+            target[grazing, 1] = sample(-.045, .045)[grazing]
+            target[grazing, 2] = sample(-.05, .05)[grazing]
+            relative[grazing, 0] = (-side * sample(.25, 2.0))[grazing]
+            relative[grazing, 1] = sample(10, 22)[grazing]
             offset = quat_rotate(q, target - flight[:, None] * relative)
             ball[:, :3] = data.body_link_pos_w[:, rid] + offset
             ball[:, 7:10] = (data.body_link_lin_vel_w[:, rid] + quat_rotate(q, relative)
                              + torch.linalg.cross(data.body_link_ang_vel_w[:, rid], offset))
+            # Local ground/net negatives challenge object attribution.
+            ground, net = lanes % 32 == 29, lanes % 32 == 30
+            if args.grazing_only:
+                ground.zero_()
+                net.zero_()
+            speed = sample(3, 14)
+            ball[ground, :3] = origin[ground] + torch.stack((
+                sample(2, 3), sample(-1, 1), .025 + flight * speed), -1)[ground]
+            ball[ground, 7:10] = 0.
+            ball[ground, 9] = -speed[ground]
+            plane = env.court_config["net_plane_x_m"]
+            ball[net, :3] = origin[net] + torch.stack((
+                plane - .027 - flight * speed, sample(-1, 1), sample(.9, 1.45)), -1)[net]
+            ball[net, 7:10] = 0.
+            ball[net, 7] = speed[net]
             env.shuttle.write_root_state_to_sim(ball)
             env.sim.forward()
             trace = NativeSubstepTraceV1(env, start_frame=env.sim.current_time_step_index)
@@ -121,6 +151,7 @@ def main():
     parser.add_argument('--execution-root', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--seed', type=int, required=True)
+    parser.add_argument('--grazing-only', action='store_true', help='Target secondary impacts with tangential passes across the string bed')
     parser.add_argument('--batches', type=int, default=1)
     parser.add_argument('--lanes', type=int, default=128)
     AppLauncher.add_app_launcher_args(parser)

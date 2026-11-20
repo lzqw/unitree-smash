@@ -7,15 +7,20 @@ native data, not interpolation or a contact-cache restoration mechanism.
 import torch
 
 
-def pack_manifold_frame(contact_data):
-    """Copy populated entries only, retaining the body/filter pair for every point."""
-    forces, points, normals, separation, counts, starts = contact_data
+def packed_point_indices(counts, starts):
     counts = counts.long()
     pairs = torch.arange(counts.numel(), device=counts.device).repeat_interleave(counts.flatten())
     offsets = counts.flatten().cumsum(0) - counts.flatten()
     point_index = torch.arange(pairs.numel(), device=pairs.device) - offsets[pairs]
     indices = starts.flatten()[pairs].long() + point_index
-    return dict(lane=pairs // counts.shape[1], filter_index=pairs % counts.shape[1],
+    return pairs // counts.shape[1], pairs % counts.shape[1], indices
+
+
+def pack_manifold_frame(contact_data):
+    """Copy populated entries only, retaining the body/filter pair for every point."""
+    forces, points, normals, separation, counts, starts = contact_data
+    lane, filters, indices = packed_point_indices(counts, starts)
+    return dict(lane=lane, filter_index=filters,
                 normal_force_n=forces[indices].flatten(), point_w=points[indices],
                 normal_w=normals[indices], separation_m=separation[indices].flatten())
 
@@ -104,6 +109,17 @@ class NativeSubstepTraceV1:
             net_force_matrix_w=(torch.zeros_like(force_matrix)
                                 if net_force_matrix is None else net_force_matrix),
             racket_contact_position_w=contact_positions[:, 0, 0])
+        if self.manual:
+            for field in ("joint_position", "joint_velocity", "applied_torque"):
+                del values[field]
+            if net_force_matrix is not None:
+                values["net_force_matrix_w"] = net_force_matrix[:, :, -1:]
+            if view is not None:
+                friction, _, counts, starts = view.get_friction_data(dt=env.physics_dt)
+                lane, _, indices = packed_point_indices(counts[:, :1], starts[:, :1])
+                friction_on_racket_pair = torch.zeros_like(values["racket_force_w"])
+                friction_on_racket_pair.index_add_(0, lane, friction[indices])
+                values["racket_friction_force_w"] = friction_on_racket_pair
         for key, value in values.items():
             if key not in self.buffers:
                 self.buffers[key] = torch.empty((self.capacity, *value.shape), device=value.device, dtype=value.dtype)

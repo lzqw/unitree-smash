@@ -1,0 +1,441 @@
+{
+  "schema": "supermimic-racket-ball-contact-pilot-v1",
+  "requested_contacts": 2000,
+  "requested_negatives": 1000,
+  "selected_contacts": 2000,
+  "selected_negatives": 1000,
+  "candidate_contacts": 2226,
+  "candidate_negatives": 100082,
+  "duplicate_rows_removed": 0,
+  "workers": 1,
+  "seed": 20261120,
+  "force_threshold_n": 0.001,
+  "substep_truth": true,
+  "threshold_sensitivity": {
+    "0.0001": {
+      "active_substeps": 2331,
+      "lanes_with_contact": 2092,
+      "contact_intervals": 2226
+    },
+    "0.001": {
+      "active_substeps": 2331,
+      "lanes_with_contact": 2092,
+      "contact_intervals": 2226
+    },
+    "0.005": {
+      "active_substeps": 2331,
+      "lanes_with_contact": 2092,
+      "contact_intervals": 2226
+    },
+    "0.01": {
+      "active_substeps": 2331,
+      "lanes_with_contact": 2092,
+      "contact_intervals": 2226
+    }
+  },
+  "coverage": {
+    "observed": {
+      "regions": {
+        "center": 225,
+        "grid_5x5": 822,
+        "rim": 427,
+        "edge": 526
+      },
+      "toi_phase": {
+        "0": 568,
+        "1": 539,
+        "2": 517,
+        "3": 376
+      },
+      "contact_order": {
+        "1": 1875,
+        "2": 125
+      },
+      "interference": {
+        "ground": 47,
+        "net": 42
+      },
+      "near_miss_gap": {
+        "0": 103,
+        "1": 195,
+        "2": 243,
+        "3": 248,
+        "4": 211
+      },
+      "near_miss_approach": {
+        "0": 261,
+        "1": 169,
+        "2": 193,
+        "3": 206,
+        "4": 171
+      },
+      "near_miss_proximity": {
+        "same_lane_near": 356,
+        "same_lane_far": 325,
+        "same_spec_other_lane": 319,
+        "no_contact_in_trace": 0
+      },
+      "vn": {
+        "2": 583,
+        "1": 559,
+        "0": 145,
+        "3": 713
+      },
+      "vt": {
+        "0": 218,
+        "3": 668,
+        "2": 772,
+        "1": 342
+      },
+      "incidence": {
+        "0": 656,
+        "2": 684,
+        "1": 660
+      },
+      "racket_linear": {
+        "0": 163,
+        "3": 1248,
+        "2": 506,
+        "1": 83
+      },
+      "racket_angular": {
+        "0": 164,
+        "2": 1321,
+        "3": 138,
+        "1": 377
+      },
+      "part_geometry": {
+        "strings": 1218,
+        "frame": 755,
+        "Shaft": 27
+      },
+      "face_grid": {
+        "2,2": 225,
+        "1,0": 81,
+        "2,0": 50,
+        "3,1": 84,
+        "4,3": 74,
+        "0,0": 71,
+        "1,2": 48,
+        "0,2": 62,
+        "3,4": 95,
+        "2,3": 85,
+        "3,3": 72,
+        "1,3": 81,
+        "0,3": 90,
+        "2,1": 91,
+        "4,1": 119,
+        "1,4": 47,
+        "2,4": 67,
+        "4,4": 62,
+        "4,0": 31,
+        "0,4": 29,
+        "4,2": 96,
+        "3,0": 57,
+        "0,1": 73,
+        "1,1": 77,
+        "3,2": 50
+      },
+      "spec": {
+        "fixture_family_3": 202,
+        "fixture_family_4": 220,
+        "fixture_family_5": 93,
+        "fixture_family_6": 94,
+        "fixture_family_7": 96,
+        "fixture_family_8": 96,
+        "fixture_family_9": 98,
+        "fixture_family_10": 106,
+        "fixture_family_11": 100,
+        "fixture_family_12": 106,
+        "fixture_family_13": 98,
+        "fixture_family_14": 97,
+        "fixture_family_15": 101,
+        "fixture_family_0": 103,
+        "fixture_family_1": 197,
+        "fixture_family_2": 193
+      }
+    },
+    "required": {
+      "regions": {
+        "center": 100,
+        "grid_5x5": 400,
+        "rim": 100,
+        "edge": 200
+      },
+      "toi_phase": {
+        "0": 50,
+        "1": 50,
+        "2": 50,
+        "3": 50
+      },
+      "contact_order": {
+        "1": 1,
+        "2": 100
+      },
+      "interference": {
+        "ground": 25,
+        "net": 25
+      },
+      "near_miss_gap": {
+        "0": 50,
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+      },
+      "near_miss_approach": {
+        "0": 50,
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+      },
+      "near_miss_proximity": {
+        "same_lane_near": 50,
+        "same_spec_other_lane": 50
+      },
+      "vn": {
+        "0": 25,
+        "1": 25,
+        "2": 25,
+        "3": 25
+      },
+      "vt": {
+        "0": 25,
+        "1": 25,
+        "2": 25,
+        "3": 25
+      },
+      "incidence": {
+        "0": 25,
+        "1": 25,
+        "2": 25
+      },
+      "racket_linear": {
+        "0": 25,
+        "1": 25,
+        "2": 25,
+        "3": 25
+      },
+      "racket_angular": {
+        "0": 25,
+        "1": 25,
+        "2": 25,
+        "3": 25
+      },
+      "part_geometry": {
+        "strings": 100,
+        "frame": 100
+      },
+      "face_grid": {
+        "0,0": 3,
+        "0,1": 3,
+        "0,2": 3,
+        "0,3": 3,
+        "0,4": 3,
+        "1,0": 3,
+        "1,1": 3,
+        "1,2": 3,
+        "1,3": 3,
+        "1,4": 3,
+        "2,0": 3,
+        "2,1": 3,
+        "2,2": 3,
+        "2,3": 3,
+        "2,4": 3,
+        "3,0": 3,
+        "3,1": 3,
+        "3,2": 3,
+        "3,3": 3,
+        "3,4": 3,
+        "4,0": 3,
+        "4,1": 3,
+        "4,2": 3,
+        "4,3": 3,
+        "4,4": 3
+      },
+      "spec": {
+        "fixture_family_3": 3,
+        "fixture_family_4": 3,
+        "fixture_family_5": 3,
+        "fixture_family_6": 3,
+        "fixture_family_7": 3,
+        "fixture_family_8": 3,
+        "fixture_family_9": 3,
+        "fixture_family_10": 3,
+        "fixture_family_11": 3,
+        "fixture_family_12": 3,
+        "fixture_family_13": 3,
+        "fixture_family_14": 3,
+        "fixture_family_15": 3,
+        "fixture_family_0": 3,
+        "fixture_family_1": 3,
+        "fixture_family_2": 3
+      }
+    },
+    "missing": [],
+    "passed": true
+  },
+  "split": {
+    "row_counts": {
+      "train": 2069,
+      "validation": 447,
+      "test": 484
+    },
+    "group_counts": {
+      "train": 12,
+      "validation": 2,
+      "test": 2
+    },
+    "source_overlap": {
+      "train:validation": [],
+      "train:test": [],
+      "validation:test": []
+    },
+    "source_overlap_free": true,
+    "group_overlap": {
+      "spec_id": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      },
+      "episode_id": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      },
+      "capture_id": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      },
+      "split_group": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      }
+    },
+    "group_overlap_free": true,
+    "spec_lane_family_overlap": {
+      "train:validation": [],
+      "train:test": [],
+      "validation:test": []
+    },
+    "specs": {
+      "train": [
+        "fixture_family_0",
+        "fixture_family_1",
+        "fixture_family_10",
+        "fixture_family_12",
+        "fixture_family_14",
+        "fixture_family_15",
+        "fixture_family_2",
+        "fixture_family_5",
+        "fixture_family_6",
+        "fixture_family_7",
+        "fixture_family_8",
+        "fixture_family_9"
+      ],
+      "validation": [
+        "fixture_family_13",
+        "fixture_family_3"
+      ],
+      "test": [
+        "fixture_family_11",
+        "fixture_family_4"
+      ]
+    },
+    "unseen_test_specs": [
+      "fixture_family_11",
+      "fixture_family_4"
+    ],
+    "unseen_spec_holdout": true
+  },
+  "coverage_requirements": {
+    "contact_region": [
+      "center",
+      "grid_5x5",
+      "rim",
+      "edge"
+    ],
+    "normal_incidence": "vn bands in bucket",
+    "tangential_relative_speed": "vt bands in bucket",
+    "racket_linear_speed": "lin bands in bucket",
+    "racket_angular_speed": "ang bands in bucket",
+    "toi_phase": "phase bands in bucket",
+    "racket_part": "recorded when source exposes part, otherwise explicit unknown",
+    "multiple_contact": "contact_order and contact_count_substeps",
+    "interference": [
+      "none",
+      "ground",
+      "net"
+    ]
+  },
+  "fields": [
+    "toi_frame",
+    "toi_time_s",
+    "contact_object",
+    "contact_point_w",
+    "normal_w",
+    "gap_m",
+    "relative_velocity_w",
+    "impulse_ns",
+    "normal_impulse_ns",
+    "tangential_impulse_ns",
+    "penetration_m",
+    "contact_order",
+    "effective_mass_kg",
+    "racket_part",
+    "ball_state_before",
+    "ball_state_after",
+    "racket_state_before",
+    "racket_state_after",
+    "toi_pre_substep",
+    "toi_post_substep",
+    "outgoing_direction_w",
+    "outgoing_speed_mps",
+    "normal_source",
+    "impulse_source",
+    "effective_mass_source",
+    "interference_objects",
+    "spec_id",
+    "episode_id",
+    "capture_id",
+    "lane_family",
+    "lane_hash",
+    "split_group",
+    "split",
+    "gap_bucket",
+    "approach_speed_mps",
+    "relative_speed_mps",
+    "contact_slot_count",
+    "contact_slot_indices",
+    "slot_impulse_ns",
+    "gap_source",
+    "contact_region",
+    "contact_grid",
+    "toi_phase",
+    "contact_count_substeps",
+    "physics_dt_s",
+    "quality_flags",
+    "bucket",
+    "interference_object",
+    "contact_filter_paths",
+    "racket_body_name",
+    "racket_part_source",
+    "probe_branch",
+    "event_id",
+    "near_miss_contact_proximity",
+    "manifold_points",
+    "geometric_racket_part"
+  ],
+  "quality_policy": "missing fields are explicit NaN and quality_flags",
+  "admission": {
+    "policy_training_admitted": false,
+    "contact_bptt": "detached",
+    "v13_residual_gradient": "detached"
+  },
+  "pilot_status": "READY",
+  "pilot_sha256": "7e41695ee31e2e2814e08bb1a32de02c7bf086632f6db58d0a85a50331e92d0a",
+  "manifest_sha256": "fcc79a4cd29b3dda1ecd38c77330f0702b274d08cacc028d5cea17bb8202abf9"
+}

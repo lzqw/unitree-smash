@@ -4,7 +4,17 @@
 
 入口：`scripts/build_supermimic_contact_pilot.py`
 
-该构建器读取已有 `native-one-control-tick-substeps-v1` 归档，在 CPU 上并行扫描每个子步，保留原始球/球拍状态、接触点、接触力积分、相对速度和 TOI 前后快照。接触矩阵保留所有 manifold slot，行中同时保存 slot 级冲量和有效 slot 索引。缺失的 PhysX manifold 字段显式写入 NaN 并附 `quality_flags`。
+该构建器读取已有 `native-one-control-tick-substeps-v1` 归档，在 CPU 上并行扫描每个子步，保留原始球/球拍状态、接触点、接触力积分、相对速度和 TOI 前后快照。原始对象 filter 分开处理，支持逐个保存 PhysX manifold 接触点和对应的法向冲量。缺失的 PhysX manifold 字段显式写入 NaN 并附 `quality_flags`。
+
+## 11 月 21 日正式 pilot
+
+20 批受控的原生铰接球拍试验得到 2226 个击球候选。根据覆盖配额选取 2000 个击球区间和 1000 个负例，每个负例来自单独的 capture/lane。三集合分别有 2069、447、484 行，按独立 teacher lane family 分组，已知 spec、原始采集文件和 episode 跨集合重叠均为零。所有正例都有 PhysX 逐点法向和分离距离。拍面部件是按原生接触点和配置几何得到的分类。样本来自一个 teacher 前缀的 16 组 lane family；跨策略或跨实验室的泛化仍需独立证据。
+
+125 个正例属于第二次及之后的接触区间。每次区间以连续球拍力定义，保留两次区间之间的无力步数和几何间隙，有助于区分实际分离与短暂断力。覆盖全部 25 个网格，另有 47 个地面、42 个球网干扰窗口。404148 个无球拍 manifold 的子步中，球拍力 P50/P95/P99 都是 0 N。
+
+先仅用训练集合校准解析首触时间、法向冲量尺度和摩擦。独立测试的 315 次首触全部检出，TOI 中位误差 0 子步，P95 为 1 子步。出球方向 P10 为 0.9873，速度幅值比中位数 0.9977。69 个整段无击球试验中有一个误报，FPR 1.45%，超过 1% 门槛。11/315 条出球法向分量符号有误。当前有数据准入，策略训练继续关闭；64 个控制步稳定性、Body WM 球拍输入与 V13 均未在本轮验收。
+
+正式数据位于本机 `/home/autodrive/LZQW/experiments/supermimic_b1_pilot_20261121/pilot.pt`，其完整原始数据来源保存在同目录 manifest 及 pilot 的 source_files 中。归档摘要、测量审计和首触校准分别见 [pilot 摘要](pilot_20261121_summary.json)、[子步测量](measurement_audit.json) 和 [独立集合结果](analytic_calibration.json)。
 
 ## 11 月 21 日复核
 
