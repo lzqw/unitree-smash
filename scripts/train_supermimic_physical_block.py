@@ -144,7 +144,11 @@ def main():
                         help='Weight of the FK racket position/normal/velocity auxiliary WM loss')
     parser.add_argument('--cpu-threads',type=int,default=4)
     parser.add_argument('--wm-batch-size',type=int,default=128,help='Supervised WM minibatch, multiple of128; native environments remain128')
-    parser.add_argument('--wm-source-quota',default='recent_online=64,older_online=32,initial_archive=32')
+    parser.add_argument('--wm-source-quota',
+                        default='recent_online=32,older_online=16,initial_archive=32,action_identification=32,contact_event=16',
+                        help='Source quotas per128 WM windows. Default targets natural62.5%%, action25%%, event12.5%%; diagnostic mode records shortages.')
+    parser.add_argument('--wm-sampling-mode',choices=('diagnostic','promotion'),default='diagnostic',
+                        help='diagnostic records quota fallback; promotion rejects shortfalls and fallback')
     parser.add_argument('--approach-refresh-interval',type=int,default=8)
     parser.add_argument('--wm-approach-stage-quota',default='uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8')
     parser.add_argument('--wm-contact-stage-quota',default='uniform=24,hit_prepare=32,contact_release=48,post_hit=24')
@@ -197,9 +201,12 @@ def main():
     if args.action_ball_checkpoint is not None and args.contact_validation_receipt is None and args.training_stage=='full_contact':
         parser.error('Action-ball candidate requires a current, calibrated native contact-validation receipt')
     if args.training_profile=='large' and args.training_stage=='full_contact' and args.contact_validation_receipt is None:parser.error('Large training requires contact-validation-receipt; model-only sensitivity is insufficient')
+    if args.training_profile=='large' and args.wm_sampling_mode!='promotion':
+        parser.error('Large training requires wm-sampling-mode=promotion')
     if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
     if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
     from quadsmash.rl.supermimic_alternating_schedule_v1 import make_plan,AlternatingSchedule,refresh_world_budgets,run_schedule
+    from quadsmash.rl.supermimic_training_audit_v1 import sampling_promotion_gate, rollback_audit
     alternating=None
     if args.update_mode=='sequential' and args.sequential_layout=='short-alternating' and args.training_stage!='wm_calibrate':
         if args.resume_start_block!='recovery' or args.actor_update_budget is not None:
@@ -219,7 +226,7 @@ def main():
     try:
         args.wm_approach_stage_quota=parse_quota(args.wm_approach_stage_quota,allowed={'uniform','approach_active','hit_prepare','contact_release','approach_failure','post_hit'},name='wm-approach-stage-quota')
         args.wm_contact_stage_quota=parse_quota(args.wm_contact_stage_quota,allowed={'uniform','hit_prepare','contact_release','post_hit'},name='wm-contact-stage-quota')
-        args.wm_source_quota=parse_quota(args.wm_source_quota,allowed={'recent_online','older_online','initial_archive'},name='wm-source-quota')
+        args.wm_source_quota=parse_quota(args.wm_source_quota,allowed={'recent_online','older_online','initial_archive','action_identification','contact_event'},name='wm-source-quota')
         args.wm_stage_quota=parse_quota(args.wm_stage_quota,allowed={'uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery'},name='wm-stage-quota')
         for field in ('wm_source_quota','wm_stage_quota','wm_approach_stage_quota','wm_contact_stage_quota'):
             setattr(args,field,scale_wm_quotas(getattr(args,field),args.wm_batch_size))
@@ -634,6 +641,7 @@ def run(args, *, alternating=None):
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
         config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=args.world_learning_rate,critic_lr=2e-4,
+            wm_sampling_mode=args.wm_sampling_mode,
             native_return_monitor=frozen_return_monitor.config,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
@@ -852,6 +860,23 @@ def run(args, *, alternating=None):
                     source_quota=sampling_source_quota,stage_quota=sampling_stage_quota,head=head,
                     recent_policy_window=args.wm_recent_policy_window,
                     recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes)
+                sampling['sampling_mode']=args.wm_sampling_mode
+                sampling['promotion_gate']=sampling_promotion_gate(sampling,args.wm_sampling_mode)
+                sampling['source_profile'] = {
+                    'requested': sampling.get('source_requested', {}),
+                    'actual': sampling.get('source_counts', {}),
+                    'shortfall': sampling.get('source_shortfall', {}),
+                    'effective_weight': sampling.get('effective_weight', {}).get('source', {}),
+                }
+                sampling['event_profile'] = {
+                    'requested': sampling.get('stage_requested', {}),
+                    'allocated': sampling.get('stage_counts', {}),
+                    'actual': sampling.get('stage_actual_counts', sampling.get('stage_counts', {})),
+                    'shortfall': sampling.get('stage_shortfall', {}),
+                    'effective_weight': sampling.get('effective_weight', {}).get('stage', {}),
+                }
+                if args.wm_sampling_mode=='promotion' and not sampling['promotion_gate']['passed']:
+                    raise RuntimeError('WM promotion sampling contract failed: '+json.dumps(sampling['promotion_gate'],sort_keys=True))
                 sampling_seconds=time.perf_counter()-sampling_started
                 fit_started=time.perf_counter()
                 stats=trainer.fit_world_window(window,launch[lanes]); del window
@@ -931,7 +956,9 @@ def run(args, *, alternating=None):
                 refresh_frozen_policy(block_name)
                 progress['refresh_at']=accepted;progress['pending_refresh']=False;save('latest.pt')
             while accepted<budget and attempts<max_attempts:
-                save(f'pre_proposal_{cycle_index}_{block_name}.pt')
+                proposal_checkpoint=args.output/f'pre_proposal_{cycle_index}_{block_name}.pt'
+                save(proposal_checkpoint.name)
+                pre_native_metrics=summarize_native_episodes(completed_records)
                 attempts+=1;global_attempt_id+=1;trainer.block_attempts=attempts
                 progress['attempts']=attempts;progress['proposal_in_flight']=True
                 trainer.actor_updates=accepted
@@ -986,6 +1013,7 @@ def run(args, *, alternating=None):
                 stats=trainer.imagine_update(state)
                 stats['actor_start_sampling']=start_sampling
                 stats['quality_protection']=quality
+                post_native_metrics=summarize_native_episodes(completed_records)
                 if stats['update_accepted']:
                     if not any(v>0.0 for v in stats['parameter_max_changes'].values()):
                         raise RuntimeError(f'{block_name} accepted update had zero trainable parameter change; no effective gradient')
@@ -995,6 +1023,16 @@ def run(args, *, alternating=None):
                     global_rejected+=1
                 backtracked=int(stats.get('update_accepted',False) and stats.get('backtrack_alpha',1.)<1.)
                 global_backtracked += backtracked
+                stats['pre_native_metrics'] = pre_native_metrics
+                stats['post_native_metrics'] = post_native_metrics
+                stats['rollback'] = rollback_audit(
+                    phase=block_name,
+                    update_index=accepted + 1,
+                    proposal_checkpoint=proposal_checkpoint,
+                    stats=stats,
+                    pre_metrics=pre_native_metrics,
+                    post_metrics=post_native_metrics,
+                    replay_stream=replay.current_stream)
                 progress.update(proposal_in_flight=False,attempts=attempts,accepted=accepted,rejected=progress.get('rejected',0)+int(not stats['update_accepted']),backtracked=progress.get('backtracked',0)+backtracked)
                 with torch.no_grad():request=trainer._actor_action(state,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
                 record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_key=str(cycle_index),block_accepted_updates=accepted,block_rejected=progress['rejected'],block_backtracked=progress['backtracked'],attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')

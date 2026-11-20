@@ -7,6 +7,7 @@ from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank
 from quadsmash.rl.supermimic_sequential_progress_v1 import SequentialProgress
 from quadsmash.rl.supermimic_long_run_contract_v1 import validate_budgets,verify_contact_receipt,verify_native_promotion,sha256
 from quadsmash.rl.supermimic_wm_validation_v1 import event_aligned_windows
+from quadsmash.rl.supermimic_training_audit_v1 import sampling_promotion_gate, rollback_audit
 
 
 def test_joint_flow_reroutes_recent_quota_to_scarce_contact():
@@ -118,4 +119,32 @@ def test_joint_episode_caps_are_part_of_feasibility_not_posthoc_greedy():
             source_quota={1:1,0:2},stage_quota={'uniform':2,'contact':1},episode_keys=episodes,max_per_episode=1)
         assert r['joint_quota_feasible'] and r['fallback_count']==0
         assert r['stage_counts']=={'uniform':2,'contact':1}
+        assert abs(sum(r['effective_weight']['source'].values()) - 1.0) < 1e-6
+        assert r['stage_actual_counts']['contact'] == 1
         assert chosen[:,0].sort().values.tolist()==[0,2,3]
+
+
+def test_wm_sampling_gate_allows_diagnostic_but_blocks_promotion_shortfall():
+    report = dict(source_shortfall={'action_identification': 8}, stage_shortfall={},
+                  fallback_count=3, joint_quota_feasible=False)
+    diagnostic = sampling_promotion_gate(report, 'diagnostic')
+    assert not diagnostic['passed'] and diagnostic['diagnostic_continuation_allowed']
+    promotion = sampling_promotion_gate(report, 'promotion')
+    assert not promotion['promotion_allowed']
+    assert promotion['shortfall']['source_shortfall.action_identification'] == 8
+
+
+def test_rollback_audit_distinguishes_alpha_backtrack_from_snapshot_restore():
+    common = dict(phase='approach', update_index=3, proposal_checkpoint='/tmp/pre.pt',
+                  pre_metrics={'complete5_rate': .2}, post_metrics={'complete5_rate': .21},
+                  replay_stream=4)
+    reduced = rollback_audit(**common, stats=dict(
+        update_accepted=True, backtrack_alpha=.5, objective_before=3., objective_after=2.8,
+        backtrack_trials=[{'budget_ok': False, 'loss': 4.}, {'budget_ok': True, 'loss': 2.8}]))
+    assert reduced['rollback_mode'] == 'alpha_backtrack'
+    assert not reduced['checkpoint_restored']
+    rejected = rollback_audit(**common, stats=dict(
+        update_accepted=False, backtrack_alpha=0., objective_before=3.,
+        rejection_reason='zero_total_gradient', backtrack_trials=[]))
+    assert rejected['rollback_mode'] == 'full_snapshot_restore'
+    assert rejected['parameter_snapshot_restored']

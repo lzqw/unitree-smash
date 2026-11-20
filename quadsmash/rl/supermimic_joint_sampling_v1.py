@@ -118,10 +118,16 @@ def sample_joint(stage_pools,source_labels,batch,generator,*,source_quota=None,s
     chosen=pairs[torch.tensor(selected)];selected_sources=sources[selected]
     counts={int(s):int((selected_sources==s).sum()) for s in sources.unique().tolist()}
     coverage={k:int(torch.isin(chosen[:,0]*width+chosen[:,1],v[:,0]*width+v[:,1]).sum()) for k,v in dict(stage_pools,**{'uniform':pools['uniform']}).items()}
+    actual_stage_counts={k:int(coverage.get(k,0)) for k in names}
     return chosen,dict(source_counts=counts,stage_counts={k:allocated_stage[k] for k in names},
+        stage_actual_counts=actual_stage_counts,
         source_requested=source_quota or {},stage_requested=stage_quota or tq,
         source_shortfall={k:max(0,v-counts.get(k,0)) for k,v in (source_quota or {}).items()},
-        stage_shortfall={k:max(0,v-allocated_stage[k]) for k,v in tq.items()},
+        stage_shortfall={k:max(0,v-actual_stage_counts.get(k,0)) for k,v in tq.items()},
         actual_event_coverage=coverage,fallback_count=batch-before_fallback,
         joint_flow_count=allocated,joint_quota_feasible=allocated==batch,allocator='grouped_integer' if episode_keys is not None else 'max_flow',
+        effective_weight={
+            'source': {int(k): float(v)/float(batch) for k,v in counts.items()},
+            'stage': {str(k): float(v)/float(batch) for k,v in actual_stage_counts.items()},
+        },
         max_per_episode=max_per_episode,actual_max_per_episode=max(ep_counts.values()),unique_window_count=batch)

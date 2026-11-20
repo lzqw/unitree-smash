@@ -6,8 +6,10 @@ from .supermimic_physical_capture_v1 import tensor_tree_copy
 from .supermimic_approach_data_v1 import FIELDS, approach_window_masks
 
 
-SOURCE_NAMES = ('recent_online', 'older_online', 'initial_archive')
-SOURCE_CODES = {'initial_archive': 0, 'online': 1}
+SOURCE_NAMES = ('recent_online', 'older_online', 'initial_archive',
+                'action_identification', 'contact_event')
+SOURCE_CODES = {'initial_archive': 0, 'online': 1,
+                'action_identification': 3, 'contact_event': 4}
 STAGE_NAMES = ('uniform', 'pre_touchdown', 'touchdown', 'post_touchdown',
                'recovery_failure', 'stable_recovery')
 
@@ -277,9 +279,17 @@ class PhysicalLoopReplay:
         latest_tick = int(native_ticks[:valid.shape[0]][online_mask.any(-1)].max()) if online_mask.any(-1).any() else 0
         recent = online_mask & (policy_versions[:valid.shape[0]] >= max(0, latest_policy-int(recent_policy_window)))
         recent &= native_ticks[:valid.shape[0], None] >= max(0, latest_tick-int(recent_tick_window))
-        source_codes = torch.where(source_ids == 0, torch.zeros_like(source_ids),
-                                   torch.where(recent, torch.ones_like(source_ids),
-                                               torch.full_like(source_ids, 2)))
+        source_codes = torch.where(
+            source_ids == SOURCE_CODES['initial_archive'],
+            torch.zeros_like(source_ids),
+            torch.where(
+                source_ids == SOURCE_CODES['action_identification'],
+                torch.full_like(source_ids, SOURCE_CODES['action_identification']),
+                torch.where(
+                    source_ids == SOURCE_CODES['contact_event'],
+                    torch.full_like(source_ids, SOURCE_CODES['contact_event']),
+                    torch.where(recent, torch.ones_like(source_ids),
+                                torch.full_like(source_ids, 2)))))
         if excluded_lanes:valid[:,list(excluded_lanes)]=False
         pools = {'uniform': valid.nonzero()}
         for i in range(8):
@@ -324,15 +334,29 @@ class PhysicalLoopReplay:
             # Preserve a named uniform category for requested batches that do
             # not have enough rare event windows.
             stage_pools['uniform'] = valid
+            # Mark contact windows as an explicit virtual source.  They remain
+            # in the same chronological Replay, while source quotas can reserve
+            # capacity for sparse contact evidence.
+            contact_start = ((d['next_event_state'][..., 1] > d['event_state'][..., 1]) |
+                             (d['next_event_state'][..., 6] > d['event_state'][..., 6]) |
+                             (d['next_event_state'][..., 7] > d['event_state'][..., 7]))
+            contact_start = contact_start.unfold(0, steps, 1).any(-1) & valid
+            source_codes = torch.where(
+                contact_start,
+                torch.full_like(source_codes, SOURCE_CODES['contact_event']),
+                source_codes)
             # Torch has no string tensor; use integer source codes internally.
             pairs = {}
             for name, mask in stage_pools.items():
                 pairs[name] = mask.nonzero()
             requested_sources = source_quota or {}
             numeric_source_quota = {
-                {'initial_archive': 0, 'recent_online': 1, 'older_online': 2}[name]: int(count)
+                {'initial_archive': 0, 'recent_online': 1, 'older_online': 2,
+                 'action_identification': SOURCE_CODES['action_identification'],
+                 'contact_event': SOURCE_CODES['contact_event']}[name]: int(count)
                 for name, count in requested_sources.items()
-                if name in ('initial_archive', 'recent_online', 'older_online')
+                if name in ('initial_archive', 'recent_online', 'older_online',
+                            'action_identification', 'contact_event')
             }
             identity=torch.stack((streams[:,None].expand_as(d['episode']),torch.arange(self.lanes)[None].expand_as(d['episode']),d['episode']),-1)
             _,episode_keys=torch.unique(identity.reshape(-1,3),dim=0,return_inverse=True)
@@ -341,10 +365,17 @@ class PhysicalLoopReplay:
                 pairs, source_codes, batch, self.generator,
                 source_quota=numeric_source_quota,
                 stage_quota=stage_quota or {},episode_keys=episode_keys)
-            source_names = {0: 'initial_archive', 1: 'recent_online', 2: 'older_online', 'all': 'all'}
+            source_names = {0: 'initial_archive', 1: 'recent_online', 2: 'older_online',
+                            SOURCE_CODES['action_identification']: 'action_identification',
+                            SOURCE_CODES['contact_event']: 'contact_event', 'all': 'all'}
             for key in ('source_counts', 'source_requested', 'source_shortfall'):
                 counts[key] = {source_names.get(name, str(name)): value
                                for name, value in counts[key].items()}
+            if 'effective_weight' in counts:
+                counts['effective_weight']['source'] = {
+                    source_names.get(name, str(name)): value
+                    for name, value in counts['effective_weight']['source'].items()
+                }
         else:
             chosen, counts = sample_event_windows(pools, batch, self.generator, iteration)
         t, lanes = chosen.unbind(1)
@@ -357,16 +388,26 @@ class PhysicalLoopReplay:
         start_stream = streams[t]
         start_source = source_codes[t, lanes]
         _,episode_counts=torch.unique(torch.stack((start_stream,lanes,start_episode),1),dim=0,return_counts=True)
+        actual_source_counts={
+            'initial_archive': int((start_source == 0).sum()),
+            'recent_online': int((start_source == 1).sum()),
+            'older_online': int((start_source == 2).sum()),
+            'action_identification': int((start_source == SOURCE_CODES['action_identification']).sum()),
+            'contact_event': int((start_source == SOURCE_CODES['contact_event']).sum()),
+        }
+        if not (source_quota or stage_quota):
+            actual_source_counts = {key: value for key, value in actual_source_counts.items()
+                                    if key in ('initial_archive', 'recent_online', 'older_online')}
         counts.update(dict(unique_window_count=int(torch.unique(chosen,dim=0).shape[0]),window_count=int(len(chosen)),
                            unique_episode_count=int(torch.unique(torch.stack((start_stream,lanes,start_episode),1),dim=0).shape[0]),
                            unique_stream_count=int(torch.unique(start_stream).numel()),
                            unique_source_count=int(torch.unique(start_source).numel()),
                            repeated_episode_max=int(episode_counts.max().item())
                            if start_episode.numel() else 0,
-                           source_counts={
-                               'initial_archive': int((start_source == 0).sum()),
-                               'recent_online': int((start_source == 1).sum()),
-                               'older_online': int((start_source == 2).sum()),
+                           source_counts=actual_source_counts,
+                           effective_weight={
+                               'source': {key: value / float(len(chosen)) for key, value in actual_source_counts.items()},
+                               'stage': counts.get('effective_weight', {}).get('stage', {}),
                            },
                            policy_version_min=int(policy_versions[t, lanes].min().item()) if len(chosen) else 0,
                            policy_version_max=int(policy_versions[t, lanes].max().item()) if len(chosen) else 0,
