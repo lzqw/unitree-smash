@@ -38,7 +38,7 @@ PILOT_FIELDS = (
     "contact_region", "contact_grid", "toi_phase", "contact_count_substeps",
     "physics_dt_s", "quality_flags", "bucket", "interference_object",
     "contact_filter_paths", "racket_part_source",
-    "probe_branch", "event_id",
+    "probe_branch", "event_id", "near_miss_contact_proximity",
 )
 
 
@@ -205,6 +205,18 @@ def _approach_bucket(speed: float) -> str:
     return f"approach{_band(speed, (0.5, 2., 5., 10.))}"
 
 
+def _near_miss_proximity(center: int, intervals: list[tuple[int, int]],
+                         trace_has_contact: bool, lane_has_contact: bool) -> str:
+    """Describe how a negative relates to contact in the same native trace."""
+    if lane_has_contact and intervals:
+        distance = min(min(abs(center - start), abs(center - end))
+                       for start, end in intervals)
+        return "same_lane_near" if distance <= 32 else "same_lane_far"
+    if trace_has_contact:
+        return "same_spec_other_lane"
+    return "no_contact_in_trace"
+
+
 def _contact_intervals(mask: torch.Tensor) -> list[tuple[int, int]]:
     padded = torch.cat((torch.zeros(1, dtype=torch.bool), mask,
                         torch.zeros(1, dtype=torch.bool)))
@@ -303,6 +315,9 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
         mask = touching[:, lane]
         starts = torch.where(mask & ~torch.cat((torch.zeros(1, dtype=torch.bool), mask[:-1])))[0].tolist()
         ends = torch.where(mask & ~torch.cat((mask[1:], torch.zeros(1, dtype=torch.bool))))[0].tolist()
+        contact_intervals = list(zip(starts, ends))
+        trace_has_contact = bool(touching.any())
+        lane_has_contact = bool(mask.any())
         for order, (start, end) in enumerate(zip(starts, ends), 1):
             before = max(start - 1, 0)
             after = min(end + 1, frames - 1)
@@ -369,6 +384,7 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 gap_source="measured_contact_point" if torch.isfinite(contact_point).all() else "analytic_racket_geometry",
                 approach_speed_mps=max(0., -vn), relative_speed_mps=float(relative.norm()),
                 gap_bucket=_gap_bucket(gap),
+                       near_miss_contact_proximity="contact_positive",
                 physics_dt_s=dt,
                 contact_filter_paths=filter_paths,
                 racket_part_source=racket_part_source,
@@ -427,11 +443,14 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                        gap_source="analytic_racket_geometry",
                        approach_speed_mps=max(0., -vn), relative_speed_mps=float(relative.norm()),
                        gap_bucket=_gap_bucket(gap), physics_dt_s=dt,
+                       near_miss_contact_proximity=_near_miss_proximity(
+                           center, contact_intervals, trace_has_contact, lane_has_contact),
                            contact_filter_paths=filter_paths,
                            racket_part_source=racket_part_source,
                        **metadata)
             row["bucket"] = ":".join(("near_miss", interference, str(row["toi_phase"]),
-                                        row["gap_bucket"], _approach_bucket(max(0., -vn))))
+                                        row["gap_bucket"], _approach_bucket(max(0., -vn)),
+                                        row["near_miss_contact_proximity"]))
             lane_near_miss.append(row)
         if len(lane_near_miss) > max_near_miss_per_lane > 0:
             indices = torch.linspace(0, len(lane_near_miss) - 1, max_near_miss_per_lane).round().long().tolist()
@@ -467,8 +486,13 @@ def _deduplicate(rows: list[dict]) -> tuple[list[dict], int]:
     seen = set()
     for row in rows:
         event_id = row.get("event_id")
-        key = ((event_id, row.get("contact_object"), row.get("lane"), row.get("toi_frame"),
-                row.get("contact_order")) if event_id else
+        # ``event_id`` identifies the declared spec/branch, while the capture
+        # hash identifies the actual native run.  Keeping both prevents
+        # repeated specs with different seeds/captures from collapsing into a
+        # single row.  Exact re-reads of one capture still deduplicate.
+        key = ((event_id, row.get("capture_id"), row.get("contact_object"),
+                row.get("lane"), row.get("toi_frame"), row.get("contact_order"))
+               if event_id else
                (row.get("source_sha256"), row.get("contact_object"), row.get("lane"),
                 row.get("toi_frame"), row.get("contact_order")))
         if key in seen:
@@ -491,8 +515,11 @@ def _coverage(rows: list[dict]) -> dict:
                     for name in ("ground", "net")}
     near_gap = {str(index): sum(row.get("gap_bucket") == f"gap{index}" for row in negatives)
                 for index in range(5)}
-    near_approach = {str(index): sum(row.get("bucket", "").endswith(f"approach{index}") for row in negatives)
+    near_approach = {str(index): sum(f":approach{index}:" in row.get("bucket", "") for row in negatives)
                      for index in range(5)}
+    near_proximity = {name: sum(row.get("near_miss_contact_proximity") == name for row in negatives)
+                      for name in ("same_lane_near", "same_lane_far",
+                                   "same_spec_other_lane", "no_contact_in_trace")}
     # These are intentionally hard minima for the 2k+1k pilot.  A manifest
     # can therefore be INSUFFICIENT_COVERAGE even when raw candidate counts
     # are large enough.
@@ -503,10 +530,12 @@ def _coverage(rows: list[dict]) -> dict:
         "interference": {"ground": 25, "net": 25},
         "near_miss_gap": {str(index): 50 for index in range(5)},
         "near_miss_approach": {str(index): 50 for index in range(5)},
+        "near_miss_proximity": {"same_lane_near": 50, "same_spec_other_lane": 50},
     }
     observed = {"regions": regions, "toi_phase": phases, "contact_order": orders,
                 "interference": interference, "near_miss_gap": near_gap,
-                "near_miss_approach": near_approach}
+                "near_miss_approach": near_approach,
+                "near_miss_proximity": near_proximity}
     missing = []
     for category, values in required.items():
         for key, minimum in values.items():
@@ -519,9 +548,14 @@ def _coverage(rows: list[dict]) -> dict:
 def _assign_splits(rows: list[dict], seed: int) -> dict:
     groups: dict[str, list[dict]] = {}
     for row in rows:
-        # A source archive is atomic.  This prevents lane-family groups from
-        # leaking the same capture into train and validation/test.
-        groups.setdefault(row.get("source_sha256", "unknown"), []).append(row)
+        # A known spec is the largest practical independent unit.  All source
+        # archives from one spec stay together, which gives a genuinely
+        # unseen-spec holdout.  Unknown-spec legacy rows fall back to capture
+        # atomicity so they cannot leak adjacent substeps.
+        spec_id = row.get("spec_id")
+        group_key = f"spec:{spec_id}" if spec_id and spec_id != "spec_unknown" else (
+            f"capture:{row.get('source_sha256', 'unknown')}" )
+        groups.setdefault(group_key, []).append(row)
     ordered = sorted(groups, key=lambda key: hashlib.sha256(f"{seed}:{key}".encode()).hexdigest())
     split_names = ("train", "validation", "test")
     assignment: dict[str, str] = {}
@@ -549,12 +583,35 @@ def _assign_splits(rows: list[dict], seed: int) -> dict:
                for left, right in (("train", "validation"), ("train", "test"), ("validation", "test"))}
     specs = {name: {row.get("spec_id") for row in rows if row["split"] == name}
              for name in split_names}
+    group_overlap = {}
+    for field in ("spec_id", "episode_id", "capture_id", "split_group"):
+        values = {name: {row.get(field) for row in rows if row["split"] == name}
+                  for name in split_names}
+        group_overlap[field] = {
+            f"{left}:{right}": sorted(values[left] & values[right])
+            for left, right in (("train", "validation"), ("train", "test"),
+                                ("validation", "test"))}
+    # A lane family can occur in multiple independent specs, so its global
+    # overlap is reported separately.  The atomic split key already binds the
+    # lane family inside each spec/capture group.
+    lane_family_values = {name: {f"{row.get('spec_id')}:{row.get('lane_family')}"
+                                 for row in rows if row["split"] == name}
+                          for name in split_names}
+    lane_family_overlap = {
+        f"{left}:{right}": sorted(lane_family_values[left] & lane_family_values[right])
+        for left, right in (("train", "validation"), ("train", "test"),
+                            ("validation", "test"))}
+    group_overlap_free = not any(
+        overlap for field in group_overlap.values() for overlap in field.values())
     unseen_test_specs = sorted((specs["test"] & known_specs) - specs["train"])
     return {
         "row_counts": {name: sum(row["split"] == name for row in rows) for name in split_names},
         "group_counts": {name: sum(value == name for value in assignment.values()) for name in split_names},
         "source_overlap": overlap,
         "source_overlap_free": not any(overlap.values()),
+        "group_overlap": group_overlap,
+        "group_overlap_free": group_overlap_free,
+        "spec_lane_family_overlap": lane_family_overlap,
         "specs": {name: sorted(value) for name, value in specs.items()},
         "unseen_test_specs": unseen_test_specs,
         "unseen_spec_holdout": len(known_specs) < 2 or bool(unseen_test_specs),
@@ -606,6 +663,7 @@ def build_pilot(inputs: str | Path | list[str | Path], output: str | Path, *, co
                 target[key] += int(values.get(key, 0))
     status = ("INSUFFICIENT_CANDIDATES" if len(positives) < contacts or len(negatives_rows) < negatives
               else ("INSUFFICIENT_COVERAGE" if not coverage["passed"] or not split["source_overlap_free"]
+                    or not split["group_overlap_free"]
                     or not split["unseen_spec_holdout"] else "READY"))
     manifest = dict(schema=SCHEMA, requested_contacts=contacts, requested_negatives=negatives,
                     selected_contacts=sum(r["contact_object"] == "racket" for r in selected),
