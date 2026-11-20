@@ -94,6 +94,11 @@ def pack_collection(collection: str | Path, output: str | Path) -> dict[str, Any
         pairs = {branch: runs[branch]["raw"] for branch in BRANCHES}
         start_physical = reference["raw"]["start"]["before"]["physical"]
         n = int(start_physical["joint_position"].shape[0])
+        selected_lanes = [int(lane) for lane in spec["lanes"]]
+        if any(lane < 0 or lane >= n for lane in selected_lanes):
+            raise ValueError(f"probe lane outside native batch for {spec_dir.name}")
+        if len(spec["request_directions"]) != len(selected_lanes):
+            raise ValueError(f"direction/lane count mismatch for {spec_dir.name}")
         def step_tensor(branch: str, key: str) -> torch.Tensor:
             sequence = pairs[branch].get("step_sequence", [])
             if not sequence:
@@ -104,7 +109,7 @@ def pack_collection(collection: str | Path, output: str | Path) -> dict[str, Any
         step_targets_plus = step_tensor("plus", "final_joint_targets")
         step_actions_minus = step_tensor("minus", "final_action")
         step_actions_plus = step_tensor("plus", "final_action")
-        for lane in range(n):
+        for row_index, lane in enumerate(selected_lanes):
             row: dict[str, Any] = {
                 "sample_id": f"{spec_dir.name}:lane{lane}",
                 "spec_name": spec_dir.name,
@@ -114,7 +119,7 @@ def pack_collection(collection: str | Path, output: str | Path) -> dict[str, Any
                 "action_tick": int(spec.get("action_tick", spec["tick"])),
                 "action_hold_ticks": int(spec.get("action_hold_ticks", 1)),
                 "epsilon_request": float(spec["epsilon_request"]),
-                "request_direction": torch.tensor(spec["request_directions"][lane], dtype=torch.float32),
+                "request_direction": torch.tensor(spec["request_directions"][row_index], dtype=torch.float32),
                 "state": encode_physical(start_physical)[lane].clone(),
                 "previous_action": start_physical["final_action"][lane].clone(),
                 "foot_contact": start_physical["foot_contact"][lane].clone(),
