@@ -272,6 +272,10 @@ def run(args, *, alternating=None):
     from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
     from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
     from quadsmash.rl.supermimic_run_lifecycle import close_resource,stage
+    # The alternating schedule is constructed in main(), but execution happens
+    # inside this function.  Import the runner here as well so the short
+    # alternating path does not depend on main()'s local namespace.
+    from quadsmash.rl.supermimic_alternating_schedule_v1 import run_schedule
     from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1
     from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
     lifecycle_stage(args.output, 'IMPORT_ALL')
