@@ -148,6 +148,8 @@ def main():
                         help='Weight of the FK racket position/normal/velocity auxiliary WM loss')
     parser.add_argument('--cpu-threads',type=int,default=4)
     parser.add_argument('--wm-batch-size',type=int,default=128,help='Supervised WM minibatch, multiple of128; native environments remain128')
+    parser.add_argument('--wm-bootstrap-max-ticks',type=int,default=0,
+                        help='Collect up to this many frozen native ticks to satisfy online quotas before the first proposal')
     parser.add_argument('--wm-action-collection',type=Path,action='append',default=[],
                         help='Completed train-only signed PhysX collections with native 16-step WM supervision')
     parser.add_argument('--wm-source-quota',
@@ -196,6 +198,8 @@ def main():
     if args.cycles < 1 or args.native_ticks_per_actor_update < 1 or args.replay_capacity_ticks < 64: parser.error('long-run budgets invalid')
     if args.refresh_ticks < 0 or args.refresh_world_updates < 0 or args.refresh_critic_updates < 0 or args.resume_warmup_ticks < 0: parser.error('refresh/resume budgets invalid')
     if args.world_updates_per_actor_update < 1: parser.error('world-updates-per-actor-update must be positive')
+    if args.wm_bootstrap_max_ticks < 0:
+        parser.error('Native WM bootstrap budget cannot be negative')
     if args.wm_batch_size < 128 or args.wm_batch_size%128: parser.error('wm-batch-size must be a positive multiple of128')
     if args.wm_recent_policy_window < 0 or args.wm_recent_tick_window < 1: parser.error('WM freshness windows invalid')
     if args.approach_refresh_interval < 1: parser.error('approach-refresh-interval must be positive')
@@ -717,6 +721,7 @@ def run(args, *, alternating=None):
             frozen_return_monitor.load_state_dict(resumed['frozen_return_monitor'])
         elif args.resume_training and args.training_profile=='large':
             raise ValueError('Large resume requires saved native-return monitoring state; do not reset trend history')
+        bootstrap_actor=None
         refresh_collector=None; frozen_policy_id=None; refresh_serial=int(resumed.get('refresh_serial',0)) if args.resume_training else 0
         archive_flush_rows=max(32,int(os.environ.get('QUADSMASH_ARCHIVE_FLUSH_ROWS','32')))
         archive_refresh_only=os.environ.get('QUADSMASH_ARCHIVE_REFRESH_ONLY','0')=='1'
@@ -734,6 +739,9 @@ def run(args, *, alternating=None):
                 row['block_name']='combined_refresh' if frozen_policy_id is not None else trainer.block_name
                 row['policy_id']=frozen_policy_id or f'mixed_v{global_accepted_id}'
                 row['collection_mode']='frozen_combination' if frozen_policy_id is not None else 'mixed_training'
+                if bootstrap_actor is not None:
+                    row.update(block_name='wm_bootstrap', policy_id=bootstrap_actor,
+                               collection_mode='frozen_wm_bootstrap')
                 row['stream_id']=replay.current_stream
                 row['native_tick']=tick
                 replay.append(row,policy_version=global_accepted_id,native_tick=tick,approach_metadata=sampling_metadata)
@@ -1042,6 +1050,54 @@ def run(args, *, alternating=None):
             aggregate.update(world_updates=len(reports),world_update_reports=reports,
                              world_update_seconds=time.perf_counter()-started)
             return aggregate
+        if args.wm_bootstrap_max_ticks and args.training_stage != 'wm_calibrate':
+            from quadsmash.rl.supermimic_training_audit_v1 import collect_until_quota
+            heads = {name:quota for name,budget,quota in (
+                ('recovery',args.recovery_update_budget,args.wm_stage_quota),
+                ('approach',args.approach_update_budget,args.wm_approach_stage_quota)) if budget > 0}
+            bootstrap_start = tick
+            bootstrap_actor = tensor_digest(actor.state_dict().items())
+            def sample_bootstrap():
+                reports = {}
+                for name,quota in heads.items():
+                    _,_,sample = replay.window(timebase.world_steps,args.wm_batch_size,0,
+                        source_quota=args.wm_source_quota,stage_quota=quota,head=name,
+                        recent_policy_window=args.wm_recent_policy_window,
+                        recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes)
+                    reports[name] = dict(source_counts=sample['source_counts'],stage_counts=sample['stage_counts'],
+                                         gate=sampling_promotion_gate(sample,'promotion'))
+                with (args.output/'wm_bootstrap.jsonl').open('a') as log:
+                    log.write(json.dumps(dict(start_tick=bootstrap_start,tick=tick,actor_sha256=bootstrap_actor,
+                                              reports=reports))+'\n')
+                return all(report['gate']['passed'] for report in reports.values())
+            def inspect_bootstrap():
+                rng_state = replay.generator.get_state()
+                try:
+                    return sample_bootstrap()
+                finally:
+                    replay.generator.set_state(rng_state)
+            @torch.inference_mode()
+            def collect_bootstrap(count):
+                nonlocal obs,tick,cursor
+                for _ in range(count):
+                    check_stop()
+                    obs,_,_,_=wrapper.step(native_actor_action(obs))
+                    tick+=1
+                    if not torch.isfinite(obs['policy']).all():
+                        raise FloatingPointError('Nonfinite native observation during WM bootstrap')
+                    for raw in env.rally_records[cursor:]:
+                        record=score_terminal_episode(raw,dict(protocol,_root=str(ROOT)))
+                        replay.actor_start_bank.label_terminal(record,replay.current_stream)
+                        with (args.output/'wm_bootstrap_episodes.jsonl').open('a') as log:
+                            log.write(json.dumps(dict(record,bootstrap_actor_sha256=bootstrap_actor))+'\n')
+                    cursor=len(env.rally_records)
+                archive.flush()
+            collect_until_quota(inspect_bootstrap,collect_bootstrap,args.wm_bootstrap_max_ticks)
+            if tensor_digest(actor.state_dict().items()) != bootstrap_actor:
+                raise RuntimeError('Actor changed during frozen native WM bootstrap')
+            if tick != bootstrap_start:
+                save('wm_bootstrap_ready.pt')
+            bootstrap_actor = None
         if args.training_stage=='wm_calibrate':
             calibration=run_world_updates(0,count=args.wm_calibration_updates,head='contact')
             write(args.output/'wm_calibration_completed.json',dict(training_stage=args.training_stage,

@@ -12,6 +12,20 @@ def identification_window_capacity(collections, requested):
                 unavoidable_shortfall=max(0, requested-available))
 
 
+def collect_until_quota(ready, collect, budget, *, interval=256):
+    """Test the actual joint sampler, collecting only until it succeeds or the tick budget expires."""
+    if budget < 0 or interval < 1:
+        raise ValueError('Invalid native bootstrap tick budget')
+    used = 0
+    while not ready():
+        if used == budget:
+            raise RuntimeError(f'Native WM bootstrap exhausted {used} ticks with unsatisfied joint quotas')
+        count = min(interval, budget-used)
+        collect(count)
+        used += count
+    return used
+
+
 def sampling_promotion_gate(report, mode="diagnostic"):
     """Return the explicit WM sampling contract for one optimizer batch.
 

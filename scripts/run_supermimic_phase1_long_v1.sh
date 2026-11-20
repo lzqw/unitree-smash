@@ -92,6 +92,7 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     --update-mode sequential --sequential-layout short-alternating --head-block-size "${SM_HEAD_BLOCK_SIZE:-8}"
     --refresh-mode "${SM_REFRESH_MODE:-pair}" --ball-side-mode shadow
     --cycles 1 --native-ticks-per-actor-update 16
+    --wm-bootstrap-max-ticks "${SM_WM_BOOTSTRAP_MAX_TICKS:-0}"
     --replay-capacity-ticks 16384 --refresh-ticks 800
     --refresh-world-updates 32 --refresh-critic-updates 20
     --world-updates-per-actor-update 4 --wm-batch-size "${SM_WM_BATCH_SIZE:-512}"
@@ -142,7 +143,7 @@ PY
   echo "[cycle $cycle] evaluation start $(date -Is)"
   (cd "$ROOT" && CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}" QUADSMASH_PYTHON="$PYTHON" \
     bash scripts/python.sh scripts/evaluate_supermimic_v1.py --checkpoint "$CANDIDATE" \
-      --output "$EVAL" --physics-device cuda:0 --headless \
+      --output "$EVAL" --g07-execution-root "$G07_ROOT" --physics-device cuda:0 --headless \
       --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false 2>&1 | tee "$EVAL.log")
   python_bin="$PYTHON"
   if ! (cd "$ROOT" && QUADSMASH_PYTHON="$PYTHON" bash scripts/python.sh scripts/verify_supermimic_promotion.py \

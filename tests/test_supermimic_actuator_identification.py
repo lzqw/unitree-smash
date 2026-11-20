@@ -32,3 +32,50 @@ def test_drive_torque_uses_target_error_damping_and_per_joint_saturation():
     torch.testing.assert_close(x[:,0,7],torch.tensor([0.,1.]))
     torque.sum().backward()
     torch.testing.assert_close(target.grad[:,0],torch.tensor([10.,0.]))
+
+
+def test_target_increment_preserves_anchor_at_hold_and_only_replaces_arm_response():
+    from scripts.audit_supermimic_pd_racket_transfer import advance_arm
+    state = torch.zeros(2, 55)
+    previous = torch.zeros(2, 18, dtype=torch.float64)
+    target = previous.clone()
+    target[1, 12] = .1
+    profile = {k:torch.ones(18, dtype=torch.float64) for k in
+               ('kp', 'kd', 'effort_limit', 'velocity_limit')}
+    features = torch.zeros(18, 13, dtype=torch.float64)
+    fit = dict(control_dt_s=.1, coefficients=(features, torch.ones_like(features),
+               torch.zeros(18, 13, 2, dtype=torch.float64), torch.ones(18, dtype=torch.float64)))
+    held = torch.full_like(state, .5)
+    out = held.clone()
+    out[:, :25] = 2
+    advance_arm(out, state, target, previous, previous, previous, profile, fit, held)
+    torch.testing.assert_close(out[0, 25:], held[0, 25:])
+    torch.testing.assert_close(out[1, 25], torch.tensor(.5005))
+    torch.testing.assert_close(out[1, 43], torch.tensor(.51))
+    assert (out[:, :25] == 2).all()
+
+
+def test_sphere_spin_oracle_uses_post_frame_and_recovers_tangential_impulse():
+    from scripts.audit_supermimic_solver_action_response import sphere_tangent_from_spin
+    n = torch.tensor([1.,0.,0.])
+    dv = torch.tensor([0.,.3,-.2])
+    radius = .025
+    spin = torch.zeros(3,1,3)
+    spin[1:] = -torch.cross(n,dv,dim=0)/(.4*radius)
+    normal = torch.zeros_like(spin)
+    normal[1] = 2*n
+    torch.testing.assert_close(sphere_tangent_from_spin(spin,normal,radius),dv[None])
+
+
+def test_measured_slip_is_capped_by_normal_loading():
+    from scripts.audit_supermimic_solver_action_response import tangent_at_measured_contact
+    zero = torch.zeros(2, 2, 3)
+    shuttle = torch.zeros(2, 2, 13)
+    surface = zero.clone()
+    surface[..., 1] = 10
+    trace = dict(shuttle_state_w=shuttle, racket_contact_position_w=zero,
+                 racket_position_w=zero, racket_linear_velocity_w=surface,
+                 racket_angular_velocity_w=zero)
+    normal_dv = torch.tensor([[[2., 0., 0.], [0., 0., 0.]]])
+    prediction = tangent_at_measured_contact(trace, .025, normal_dv, .1)
+    torch.testing.assert_close(prediction, torch.tensor([[0., .2, 0.], [0., 0., 0.]]))

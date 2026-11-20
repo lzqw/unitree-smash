@@ -12,6 +12,32 @@ from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branc
 from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES
 
 
+def sphere_tangent_from_spin(spin, normal_force, radius):
+    """Measured-spin oracle, assuming a single contact at minus radius times the normal."""
+    delta_spin = torch.diff(spin,dim=0)
+    normals = torch.nn.functional.normalize(normal_force[1:],dim=-1)
+    # I/(m*r) = 2*r/5 for the authored solid sphere. Opposite signs of
+    # the two cross products in the angular and linear relations cancel.
+    return (0.4*radius*torch.cross(normals,delta_spin,dim=-1)).sum(dim=0)
+
+
+def tangent_at_measured_contact(trace, radius, normal_dv, friction):
+    """Predict slip at measured force frames using the incoming sphere and racket velocities."""
+    normal = torch.nn.functional.normalize(normal_dv,dim=-1)
+    shuttle = trace['shuttle_state_w'][:-1]
+    arm = -radius*normal
+    sphere_velocity = shuttle[...,7:10] + torch.cross(shuttle[...,10:13],arm,dim=-1)
+    point = trace['racket_contact_position_w'][1:]
+    point = torch.where(torch.isfinite(point).all(-1,keepdim=True),point,shuttle[...,:3]+arm)
+    racket_arm = point-trace['racket_position_w'][:-1]
+    surface = trace['racket_linear_velocity_w'][:-1] + torch.cross(
+        trace['racket_angular_velocity_w'][:-1],racket_arm,dim=-1)
+    relative = sphere_velocity-surface
+    slip = relative-(relative*normal).sum(-1,keepdim=True)*normal
+    magnitude = torch.minimum(2/7*slip.norm(dim=-1),friction*normal_dv.norm(dim=-1))
+    return -(magnitude[...,None]*torch.nn.functional.normalize(slip,dim=-1)).sum(0)
+
+
 def mode(run,lane):
     raw=run['raw'];tr=raw['substep_trace']['tensors']
     contact=tr['racket_contact_position_valid'][:,lane].flatten().bool()
@@ -55,7 +81,7 @@ def main():
                     raise ValueError('Event-tick substep coverage differs from the solver timebase')
                 t=trace['tensors']
                 fields = ['shuttle_state_w','racket_position_w','racket_quaternion_w',
-                          'racket_linear_velocity_w','racket_angular_velocity_w','racket_force_w']
+                          'racket_linear_velocity_w','racket_angular_velocity_w','racket_force_w','racket_contact_position_w']
                 if 'racket_friction_force_w' in t:
                     fields.append('racket_friction_force_w')
                 traces[b].append((row['sample_id'], {key:t[key][:,lane].clone() for key in fields}))
@@ -72,7 +98,8 @@ def main():
     launch=torch.tensor([row['launch']['position_m']+row['launch']['velocity_mps'] for row in
                         json.loads(sp.read_text())['cases']])[lanes]
     config_path=Path(__file__).resolve().parents[1]/'configs/shuttle_physics_v2.json'
-    mass=json.loads(config_path.read_text())['mass_kg']
+    shuttle=json.loads(config_path.read_text())
+    mass=shuttle['mass_kg']
     native_terms={}
     paths={}
     friction_available=all('racket_friction_force_w' in entry for records in traces.values()
@@ -90,6 +117,10 @@ def main():
         extra=(vel[-1]-vel[0])-flight-normal
         native_terms[b]=dict(incoming=vel[0],flight=flight,racket_normal=normal,unexplained=extra,
             spin_at_start=t['shuttle_state_w'][0,:,10:13].norm(dim=-1))
+        native_terms[b]['spin_oracle_tangent'] = sphere_tangent_from_spin(
+            t['shuttle_state_w'][...,10:13], t['racket_force_w'], shuttle['collision_radius_m'])
+        native_terms[b]['slip_at_measured_contact'] = tangent_at_measured_contact(
+            t,shuttle['collision_radius_m'],t['racket_force_w'][1:]*(prior.sub_dt/mass),cfg['fitted']['friction'])
         if friction_available:
             friction=t['racket_friction_force_w'][1:].sum(0)*(prior.sub_dt/mass)
             native_terms[b].update(racket_friction=friction,unexplained_after_friction=extra-friction)
@@ -142,6 +173,12 @@ def main():
            ('incoming','flight','racket_normal','unexplained')}
     torch.testing.assert_close(sum(parts.values()),delta,atol=1e-5,rtol=1e-5)
     predictions['native_incoming_plus_flight_and_reported_normal']=parts['incoming']+parts['flight']+parts['racket_normal']
+    parts['spin_oracle_tangent'] = native_terms['plus']['spin_oracle_tangent']-native_terms['minus']['spin_oracle_tangent']
+    predictions['native_normal_and_measured_spin_oracle'] = (
+        predictions['native_incoming_plus_flight_and_reported_normal'] + parts['spin_oracle_tangent'])
+    parts['slip_at_measured_contact'] = native_terms['plus']['slip_at_measured_contact']-native_terms['minus']['slip_at_measured_contact']
+    predictions['native_normal_and_incoming_slip_model'] = (
+        predictions['native_incoming_plus_flight_and_reported_normal'] + parts['slip_at_measured_contact'])
     if friction_available:
         for key in ('racket_friction','unexplained_after_friction'):
             parts[key] = native_terms['plus'][key]-native_terms['minus'][key]

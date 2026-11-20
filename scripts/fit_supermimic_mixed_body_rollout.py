@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 
 import torch
@@ -26,14 +27,32 @@ def rollout_terms(model,ball,data,launch,ticks,lanes,horizon):
     state,feet,present = (data[k][ids] for k in ('state','feet','present'))
     body = state.new_zeros(())
     racket = state.new_zeros(())
+    gyro = state.new_zeros(())
     for step in range(horizon):
         ix = (ticks+step,lanes)
         state,feet,present = ball_transition(model,ball,state,data['targets'][ix],data['previous_action'][ix],
                                              feet,present,data['elapsed'][ix],launch[lanes])
         truth = data['next_state'][ix]
         body = body + robot_loss(state,truth)
+        gyro = gyro + torch.nn.functional.smooth_l1_loss(state[:,10:13], truth[:,10:13], beta=.1)
         racket = racket + racket_loss(racket_state(state,model.geometry), racket_state(truth,model.geometry))
-    return body/horizon, racket/horizon
+    return body/horizon, racket/horizon, gyro/horizon
+
+
+def event_pools(data, eligible, horizon, include_recovery):
+    valid = valid_windows(data['episode'],data['terminated'],data['timeout'],horizon) & eligible[None]
+    event = data['event_state']
+    after = data['next_event_state']
+    strike = (after[...,1] > event[...,1]).unfold(0,horizon,1).any(-1)
+    if not include_recovery:
+        return {'natural':(valid & ~strike).nonzero(), 'racket':(valid & strike).nonzero()}
+    post_strike = (event[...,0] > .5) & (event[...,1] > .5)
+    support_edge = data['feet'].bool().any(-1) != data['next_feet'].bool().any(-1)
+    recovery_edge = support_edge | (after[...,4] > event[...,4]) | (after[...,5] > event[...,5])
+    recovery = (post_strike & recovery_edge).unfold(0,horizon,1).any(-1)
+    return {'natural':(valid & ~strike & ~recovery).nonzero(),
+            'racket':(valid & strike).nonzero(),
+            'recovery':(valid & ~strike & recovery).nonzero()}
 
 
 def pair_terms(model, pairs, index):
@@ -91,12 +110,20 @@ def main():
         cli.add_argument('--'+name,type=Path,required=True)
     cli.add_argument('--training-collection',type=Path,
                      help='Use verified held-action windows for half of identification pairs in each batch')
+    cli.add_argument('--include-recovery-events', action='store_true',
+                     help='Split event slots between racket contacts and post-strike support or recovery transitions')
+    cli.add_argument('--root-angular-weight', type=float, default=0.,
+                     help='Extra weight on root angular velocity Huber loss in rad/s (beta 0.1)')
     cli.add_argument('--batch',type=int,default=32)
     cli.add_argument('--updates-per-horizon',type=int,default=8)
     cli.add_argument('--lr',type=float,default=1e-5)
     a=cli.parse_args()
     if a.batch<8 or a.batch%8 or a.updates_per_horizon<1 or not 0<a.lr<1:
         cli.error('Expected positive learning rate, steps and a batch divisible by eight')
+    if not math.isfinite(a.root_angular_weight) or a.root_angular_weight < 0:
+        cli.error('Root angular supervision weight must be finite and nonnegative')
+    if a.include_recovery_events and a.batch % 16:
+        cli.error('Splitting event slots equally requires a batch divisible by 16')
     if not torch.cuda.is_available():
         raise RuntimeError('GPU calibration requested but CUDA is unavailable')
     device=torch.device('cuda:0');torch.set_num_threads(2)
@@ -156,19 +183,19 @@ def main():
         sequence_launch = launch[sequence_lanes]
     horizons=(1,2,4,8,16,32,64)
     pools={}
-    contact=data['next_event_state'][...,1]>data['event_state'][...,1]
+    eligible = torch.zeros(data['episode'].shape[1], dtype=torch.bool)
+    eligible[lanes] = True
+    counts = {'natural':count_natural, 'racket':count_event}
+    if a.include_recovery_events:
+        counts.update(racket=count_event//2, recovery=count_event//2)
     for h in horizons:
-        valid=valid_windows(data['episode'],data['terminated'],data['timeout'],h)
-        eligible = torch.zeros(valid.shape[1], dtype=torch.bool)
-        eligible[lanes] = True
-        valid &= eligible
-        event=contact.unfold(0,h,1).any(-1)
-        pools[h]=((valid&~event).nonzero(),(valid&event).nonzero())
-        if any(len(x)<n for x,n in zip(pools[h],(count_natural,count_event))):
+        pools[h] = event_pools(data, eligible, h, a.include_recovery_events)
+        if any(len(pool) < counts[name] for name,pool in pools[h].items()):
             raise ValueError('Not enough reset-safe native windows')
     data={k:data[k].to(device) for k in ('state','next_state','targets','previous_action','feet','present','elapsed')}
     metadata=dict(source_sha256=digest(a.source),ball_sha256=digest(a.ball),packed_sha256=packed_hash,
                   train_lanes=lanes,excluded_lanes=sorted(held),pair_sources=[r['provenance']['source_sha256'] for r in parent_cfg['native_response_sources']],
+                  root_angular_weight=a.root_angular_weight, windows_per_update=counts,
                   pair_count=pair_count,batch=a.batch,natural_count=count_natural,event_count=count_event,
                   pair_count_per_update=count_pair,sequence_pairs_per_update=count_pair//2 if sequence else 0,
                   sequence_receipt=sequence_receipt,horizons=horizons,updates_per_horizon=a.updates_per_horizon,
@@ -183,9 +210,9 @@ def main():
             for _ in range(a.updates_per_horizon):
                 step+=1
                 # Without replacement inside each stratum in a batch.
-                selected=torch.cat([pool[torch.randperm(len(pool),generator=generator)[:n]]
-                                    for pool,n in zip(pools[h],(count_natural,count_event))]).to(device)
-                body,fk=rollout_terms(world,ball,data,launch,*selected.T,h)
+                selected=torch.cat([pool[torch.randperm(len(pool),generator=generator)[:counts[name]]]
+                                    for name,pool in pools[h].items()]).to(device)
+                body,fk,gyro=rollout_terms(world,ball,data,launch,*selected.T,h)
                 n_seq = count_pair//2 if sequence else 0
                 ids=torch.randperm(pair_count,generator=generator)[:count_pair-n_seq].to(device)
                 point,jac,support=pair_terms(world,pairs,ids)
@@ -199,13 +226,13 @@ def main():
                     jac=(len(ids)*jac+n_seq*seq_jac)/count_pair
                     measured_steps+=2*n_seq*seq_h
                 anchor=sum((v-initial[k]).square().mean() for k,v in world.body.named_parameters())
-                loss=.75*(body+fk)+.25*(point+jac)+.01*anchor
+                loss=.75*(body+fk+a.root_angular_weight*gyro)+.25*(point+jac)+.01*anchor
                 opt.zero_grad(set_to_none=True);loss.backward()
                 grad=torch.nn.utils.clip_grad_norm_(world.body.parameters(),5.,error_if_nonfinite=True)
                 if not torch.isfinite(loss):raise FloatingPointError('Nonfinite robot fit')
                 opt.step()
                 metrics=dict(update=step,horizon=h,natural_and_event_transitions=len(selected)*h,
-                             signed_pair_transitions=measured_steps,body=float(body.detach()),racket=float(fk.detach()),
+                             signed_pair_transitions=measured_steps,windows_by_event=counts,root_angular_huber=float(gyro.detach()),body=float(body.detach()),racket=float(fk.detach()),
                              jacobian=float(jac.detach()),pair_point=float(point.detach()),norm=float(grad),**support)
                 f.write(json.dumps(metrics,allow_nan=False)+'\n')
     payload=dict(schema=world.schema,model=world.state_dict(),source_manifest=source['source_manifest'],

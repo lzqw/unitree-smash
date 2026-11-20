@@ -18,14 +18,29 @@ from quadsmash.rl.supermimic_timebase_v2 import full_range_targets
 from quadsmash.rl.supermimic_toi_racket_objective import racket_features
 
 
-def advance_arm(output, state, target, last, torque, age, profile, fit):
+def advance_arm(output, state, target, last, torque, age, profile, fit, held_output=None):
+    """When anchored, transfer only the arm response to a change in executed target."""
     target = target.double()
-    age = torch.where((target-last).abs() <= 1e-6, age+1, 0.)
-    q, qd, torque = predict(state.double(), target, last, torque, age, profile,
-                            'pd_history', fit['coefficients'], fit['control_dt_s'])
-    output[:, 25:31] = q[:, 12:].to(output)
-    output[:, 43:49] = qd[:, 12:].to(output)
-    return target, torque, age
+    next_age = torch.where((target-last).abs() <= 1e-6, age+1, 0.)
+    def estimate(command, command_age):
+        return predict(state.double(), command, last, torque, command_age, profile,
+                       'pd_history', fit['coefficients'], fit['control_dt_s'])
+    q, qd, next_torque = estimate(target, next_age)
+    if held_output is None:
+        output[:, 25:31] = q[:, 12:].to(output)
+        output[:, 43:49] = qd[:, 12:].to(output)
+    else:
+        held_q, held_qd, _ = estimate(last, age+1)
+        output[:, 25:31] = held_output[:, 25:31] + (q-held_q)[:, 12:].to(output)
+        output[:, 43:49] = held_output[:, 43:49] + (qd-held_qd)[:, 12:].to(output)
+    return target, next_torque, next_age
+
+
+def variants(include_increment):
+    names = ['mixed_body', 'mixed_body_with_pd_arm']
+    if include_increment:
+        names.append('mixed_body_with_pd_target_increment')
+    return names
 
 
 def forward_panel(args, body, fit, profile, drive, suite, task, train):
@@ -59,7 +74,7 @@ def forward_panel(args, body, fit, profile, drive, suite, task, train):
     launches = torch.tensor([c['launch']['position_m']+c['launch']['velocity_mps']
                              for c in json.loads(suite.read_text())['cases']])[lane]
     result = {}
-    for use_pd in (False, True):
+    for variant in variants(args.pd_target_increment):
         state, feet, present = (data[k][tick,lane] for k in ('state','feet','present'))
         last = targets[tick-1,lane].double()
         torque = data['torque'][tick-1,lane][:,drive['joint_indices']].double()
@@ -68,10 +83,14 @@ def forward_panel(args, body, fit, profile, drive, suite, task, train):
         for i in range(64):
             ti = tick+i
             target = targets[ti,lane]
+            held_output = None
+            if variant == 'mixed_body_with_pd_target_increment':
+                held_output = body(state,last.to(state),data['previous_action'][ti,lane],
+                                   feet,present,data['elapsed'][ti,lane],launches)[0]
             predicted, feet, present = ball_transition(body, ball, state, target, data['previous_action'][ti,lane],
                                                         feet, present, data['elapsed'][ti,lane], launches)
-            if use_pd:
-                last, torque, age = advance_arm(predicted,state,target,last,torque,age,profile,fit)
+            if variant != 'mixed_body':
+                last, torque, age = advance_arm(predicted,state,target,last,torque,age,profile,fit,held_output)
             state = predicted
             if i+1 in (1,2,4,8,16,32,64):
                 truth = data['next_state'][ti,lane]
@@ -84,7 +103,7 @@ def forward_panel(args, body, fit, profile, drive, suite, task, train):
                     racket_velocity_mae=float(fk[:,3:6].abs().mean()), racket_normal_mae=float(fk[:,6:9].abs().mean()),
                     racket_angular_mae=float(fk[:,9:12].abs().mean()), ball_velocity_mae=float(err[:,52:].abs().mean()),
                     ball_position_p95=float(err[:,49:52].norm(dim=-1).quantile(.95)))
-        result['mixed_body_with_pd_arm' if use_pd else 'mixed_body'] = metrics
+        result[variant] = metrics
     return dict(windows=len(pairs), held_lanes=held, horizons=result,
                 source_sha256={k:file_hash(getattr(args,k)) for k in ('ball','packed','validation_split')})
 
@@ -96,6 +115,8 @@ def main():
         parser.add_argument('--' + key, type=Path, required=True)
     for key in ('ball', 'packed', 'validation-split'):
         parser.add_argument('--' + key, type=Path)
+    parser.add_argument('--pd-target-increment', action='store_true',
+                        help='Also anchor the PD arm response to the Body WM at the preceding executed target')
     args = parser.parse_args()
     if any([args.ball,args.packed,args.validation_split]) and not all([args.ball,args.packed,args.validation_split]):
         parser.error('Natural forward check requires ball, packed data and held-lane split together')
@@ -149,7 +170,7 @@ def main():
     fk = lambda s: racket_features(s, body.geometry)
     spans = dict(position=slice(0, 3), velocity=slice(3, 6), normal=slice(6, 9), angular=slice(9, 12))
     results = {}
-    for use_pd in (False, True):
+    for variant in variants(args.pd_target_increment):
         predictions = {}
         for branch in ('minus', 'plus'):
             state, elapsed, present = map(column, ('state', 'elapsed', 'present'))
@@ -158,9 +179,12 @@ def main():
             age = torch.zeros_like(last)
             predictions[branch] = []
             for step, target in enumerate(column('step_targets_'+branch).unbind(1)):
+                held_output = None
+                if variant == 'mixed_body_with_pd_target_increment':
+                    held_output = body(state,last.to(state),previous,feet,present,elapsed,launch)[0]
                 output, logits, present = body(state, target, previous, feet, present, elapsed, launch)
-                if use_pd:
-                    last, torque, age = advance_arm(output,state,target,last,torque,age,profile,fit)
+                if variant != 'mixed_body':
+                    last, torque, age = advance_arm(output,state,target,last,torque,age,profile,fit,held_output)
                 predictions[branch].append(fk(output))
                 state = torch.cat((output[:, :49], nominal[:, step, 49:]), -1)
                 previous = column('step_final_actions_'+branch)[:, step]
@@ -172,7 +196,7 @@ def main():
             noise = fk(column('step_next_states_nominal_b')[:, step]) - fk(nominal[:, step])
             delta = predictions['plus'][step] - predictions['minus'][step]
             metrics[step+1] = {k: response_metrics(truth[:, sl], delta[:, sl], noise[:, sl]) for k, sl in spans.items()}
-        results['mixed_body_with_pd_arm' if use_pd else 'mixed_body'] = metrics
+        results[variant] = metrics
     natural = forward_panel(args,body,fit,profile,drive,suite,task,train) if args.packed else None
     with args.output.open('x') as out:
         json.dump(dict(scope='held executed-command sequences, common nominal ball trajectory; six arm joints use the offline PD prior; pre-intervention hold age lower bound zero',

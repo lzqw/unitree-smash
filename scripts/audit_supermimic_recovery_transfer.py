@@ -76,6 +76,9 @@ def main():
     root=Path(__file__).resolve().parents[1]
     panel=json.loads(args.panel.read_text())
     check_panel(panel,root/'configs/g07_full_racket_eval_v4.json',root,[args.anchor,args.panel_actor])
+    prospective = panel.get('prospective_body_comparison')
+    if prospective and str(args.physical.resolve()) not in prospective['bodies']:
+        raise ValueError('Requested Recovery checkpoint was not declared before collection')
     measured=json.loads((args.capture/'metrics.json').read_text())
     data_path=args.capture/'native.pt'
     if (digest(data_path)!=measured['data_sha256'] or digest(args.panel)!=measured['panel_sha256']

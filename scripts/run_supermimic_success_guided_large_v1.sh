@@ -3,6 +3,7 @@ set -Eeuo pipefail
 # Code-only delivery: this launcher is not invoked by the CPU validation suite.
 # A supplied contact receipt is a prerequisite, not generated or marked passed here.
 export SM_TRAINING_PROFILE=large
+export SM_WM_BOOTSTRAP_MAX_TICKS="${SM_WM_BOOTSTRAP_MAX_TICKS:-2400}"
 export SM_CYCLES="${SM_CYCLES:-1}"
 export SM_RECOVERY_UPDATES="${SM_RECOVERY_UPDATES:-128}"
 export SM_APPROACH_UPDATES="${SM_APPROACH_UPDATES:-128}"

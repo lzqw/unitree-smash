@@ -35,6 +35,19 @@ def check_panel(panel, protocol_path, root, checkpoints):
     if (set(launches) & reserved or len(set(launches)) != len(launches)
             or len(set(c['case_id'] for c in panel['cases'])) != len(launches)):
         raise ValueError('Repeated or previously reserved launch')
+    prospective = panel.get('prospective_body_comparison')
+    if prospective is not None:
+        if not prospective['bodies']:
+            raise ValueError('No declared body checkpoint')
+        for path, expected in prospective['bodies'].items():
+            if digest(path) != expected:
+                raise ValueError('Prospective Body WM checkpoint changed')
+        if digest(prospective['calibration_path']) != prospective['calibration_sha256']:
+            raise ValueError('Prospective contact calibration changed')
+        for path, expected in prospective['previous_panels'].items():
+            previous = json.loads(Path(path).read_text())
+            if digest(path) != expected or set(launches).intersection(keys(previous['cases'])):
+                raise ValueError('Overlapping or changed previous native panel')
     if panel['weights'] != {str(p.resolve()): digest(p) for p in checkpoints}:
         raise ValueError('Frozen panel was declared for different checkpoints')
 
