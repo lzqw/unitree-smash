@@ -22,7 +22,7 @@ class PhysicalHorizonTrainer:
                  native_reference_target_budget_rad=None,trainable_names=None,
                  block_name='approach',actor_lr=5e-5,reference_bank=None,
                  tracking_weight=0.0,world_lr=2e-4,racket_loss_weight=1.0,
-                 approach_objective='task'):
+                 approach_objective='task',toi_racket_weight=1.0):
         self.actor,self.adapter,self.timebase=actor,adapter,timebase
         width=adapter.critic_input(initial_state).shape[-1]
         self.critic=MLP(width,(512,256,128),1).to(initial_state.physical.device)
@@ -39,6 +39,9 @@ class PhysicalHorizonTrainer:
         if approach_objective not in ('task','toi_racket_only'):
             raise ValueError('Unknown Approach objective')
         self.approach_objective=approach_objective
+        self.toi_racket_weight=float(toi_racket_weight)
+        if self.toi_racket_weight < 0:
+            raise ValueError('toi_racket_weight must be nonnegative')
         self.ball_loss_weight=4.0
         self.contact_ball_loss_weight=8.0
         self.racket_loss_weight=float(racket_loss_weight)
@@ -188,7 +191,11 @@ class PhysicalHorizonTrainer:
         selected=state.clock_goal_context.get('actor_lane_mask',torch.ones(len(state.physical),dtype=torch.bool,device=state.physical.device))
         survival=state.physical.new_ones(len(state.physical))
         reference=None
-        if self.reference_bank is not None and self.tracking_weight>0 and self.block_name in ('approach','recovery'):
+        toi_racket_weight=getattr(self,'toi_racket_weight',1.0)
+        reference_weight=(toi_racket_weight if self.block_name=='approach'
+                          and getattr(self,'approach_objective','task')=='toi_racket_only'
+                          else self.tracking_weight)
+        if self.reference_bank is not None and reference_weight>0 and self.block_name in ('approach','recovery'):
             # G07's causal current plan is available without consulting archived
             # future contacts. Missing plans use current-state phase matching.
             base=getattr(state.executor_memory,'reference_controller',None)
@@ -251,10 +258,14 @@ class PhysicalHorizonTrainer:
             for g,w in zip(gradients,[track_weights[i] for i in differentiable]):
                 if g is not None:responding|=(g.detach().abs().sum(-1)>0)&(w>0)
             nonzero_lanes=int(responding.sum())
-        loss=task_loss+self.tracking_weight*tracking_loss+self.anchor_coeff*anchor_loss
+        toi_racket_weight=getattr(self,'toi_racket_weight',1.0)
+        tracking_coeff=(toi_racket_weight if self.block_name=='approach'
+                        and getattr(self,'approach_objective','task')=='toi_racket_only'
+                        else self.tracking_weight)
+        loss=task_loss+tracking_coeff*tracking_loss+self.anchor_coeff*anchor_loss
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical BPTT objective')
         from .supermimic_dual_head_quality_v1 import reference_coverage
-        coverage=reference_coverage(self.reference_bank,self.block_name,self.tracking_weight)
+        coverage=reference_coverage(self.reference_bank,self.block_name,tracking_coeff)
         coverage.update(matched_lanes=int(reference['matched'].sum()) if reference else 0,
             effective_weight_sum=float(track_weight_sum.detach()),tracking_applied=bool(tracks and float(track_weight_sum.detach())>0))
         return dict(reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
@@ -286,7 +297,11 @@ class PhysicalHorizonTrainer:
                 if update_actor and rollout['gate_lanes']:
                     grad_stats=gradient_parts({k:rollout[k] for k in ('task','tracking','anchor')},parameters)
                     # Anchor-only momentum is not an effective task update.
-                    if grad_stats['task_gradient_norm']+self.tracking_weight*grad_stats['tracking_gradient_norm']>1e-12:
+                    toi_racket_weight=getattr(self,'toi_racket_weight',1.0)
+                    tracking_coeff=(toi_racket_weight if self.block_name=='approach'
+                                    and getattr(self,'approach_objective','task')=='toi_racket_only'
+                                    else self.tracking_weight)
+                    if grad_stats['task_gradient_norm']+tracking_coeff*grad_stats['tracking_gradient_norm']>1e-12:
                         rollout['loss'].backward()
                         norm=torch.sqrt(sum((p.grad.detach().square().sum() for p in parameters if p.grad is not None),rollout['loss'].new_zeros(())))
                         if not torch.isfinite(norm):raise FloatingPointError('Nonfinite actor gradient')
@@ -360,7 +375,8 @@ class PhysicalHorizonTrainer:
             objective_after=trials[-1]['loss'] if accepted else baseline_loss,adam_scaling='full proposal moments with alpha-scaled parameters',
             command_delta_budget=self.command_delta_budget,target_delta_budget_rad=self.target_delta_budget_rad,
             critic_updates=self.critic_updates,world_updates=self.world_updates,imagined_return_mean=ret_mean,
-            actor_gradient=gradient,parameter_max_changes=changes,tracking_loss=track_value,tracking_weight=self.tracking_weight,
+            actor_gradient=gradient,parameter_max_changes=changes,tracking_loss=track_value,
+            tracking_weight=self.tracking_weight,toi_racket_weight=getattr(self,'toi_racket_weight',1.0),
             tracking_steps=track_steps,matched_references=matched,**grad_stats,**track_stats,
             final_command_max_change=max(x[2] for x in command_delta),request_max_change=max(x[0] for x in command_delta),
             budget_report=self._relative_budget_report(),critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,

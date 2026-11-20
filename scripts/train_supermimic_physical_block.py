@@ -161,6 +161,8 @@ def main():
     parser.add_argument('--task-reference-bank',type=Path,default=None,
                         help='Optional success-only task-space reference bank')
     parser.add_argument('--tracking-weight',type=float,default=0.0)
+    parser.add_argument('--toi-racket-weight',type=float,default=1.0,
+                        help='Approach TOI-racket-only auxiliary loss weight')
     parser.add_argument('--approach-objective',choices=('task','toi_racket_only'),default='task',
                         help='Approach auxiliary objective. toi_racket_only uses event-aligned TOI racket references while ball contact gradients stay detached.')
     parser.add_argument('--paired-evaluation-baseline',type=Path,default=None,
@@ -195,7 +197,7 @@ def main():
     from quadsmash.rl.supermimic_frozen_return_monitor_v1 import FrozenReturnMonitor
     try:FrozenReturnMonitor(args.native_return_drop_tolerance,args.native_return_flat_tolerance,args.native_return_patience)
     except ValueError as exc:parser.error(str(exc))
-    if args.tracking_weight < 0 or (args.tracking_weight > 0 and args.task_reference_bank is None): parser.error('Positive tracking needs a validated reference bank')
+    if args.tracking_weight < 0 or args.toi_racket_weight < 0 or (args.tracking_weight > 0 and args.task_reference_bank is None): parser.error('Tracking weights and reference-bank settings are invalid')
     if args.approach_objective=='toi_racket_only' and args.task_reference_bank is None:
         parser.error('toi_racket_only requires a validated event-aligned task reference bank')
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
@@ -346,7 +348,7 @@ def run(args, *, alternating=None):
             if reference_bank.geometry_sha256 and reference_bank.geometry_sha256 != adapter.physical_model.geometry.model_sha256:
                 raise ValueError('Task reference bank geometry hash mismatch')
             execution_contract_sha256=hashlib.sha256(json.dumps(policy_execution,sort_keys=True,separators=(',',':')).encode()).hexdigest()
-            if args.tracking_weight>0 and reference_bank.execution_contract_sha256 != execution_contract_sha256:
+            if (args.tracking_weight>0 or (args.approach_objective=='toi_racket_only' and args.toi_racket_weight>0)) and reference_bank.execution_contract_sha256 != execution_contract_sha256:
                 raise ValueError('Task reference bank execution contract hash does not match current policy execution')
             reference_bank=reference_bank.to(torch.device('cuda:0'))
         lifecycle_stage(args.output, 'REFERENCE_BANK_READY', enabled=reference_bank is not None)
@@ -404,7 +406,8 @@ def run(args, *, alternating=None):
             native_reference_target_budget_rad=args.native_reference_target_budget_rad,
             trainable_names=RECOVERY_NAMES + APPROACH_NAMES,block_name='joint',
             reference_bank=reference_bank,tracking_weight=args.tracking_weight,
-            world_lr=args.world_learning_rate,approach_objective=args.approach_objective)
+            world_lr=args.world_learning_rate,approach_objective=args.approach_objective,
+            toi_racket_weight=args.toi_racket_weight)
         trainer.ball_loss_weight=float(args.wm_ball_loss_weight)
         trainer.contact_ball_loss_weight=float(args.wm_contact_ball_loss_weight)
         trainer.racket_loss_weight=float(args.racket_loss_weight)
