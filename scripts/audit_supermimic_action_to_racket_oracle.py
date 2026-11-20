@@ -107,6 +107,47 @@ def main():
         _normal(predictions['plus']) - _normal(predictions['minus']),
         _normal(native_states['plus']) - _normal(native_states['minus']))
 
+    temporal_metrics = []
+    step_minus = minus.get('step_sequence')
+    step_plus = plus.get('step_sequence')
+    step_targets_minus = pairs.get('step_targets_minus')
+    step_targets_plus = pairs.get('step_targets_plus')
+    if step_minus is not None and step_plus is not None and step_targets_minus is not None:
+        if len(step_minus) != len(step_plus) or len(step_minus) != step_targets_minus.shape[1]:
+            raise ValueError('Temporal native/model probe horizon mismatch')
+        def rollout(branch, step_targets, raw_sequence):
+            current = state.clone()
+            previous_step = previous.clone()
+            foot_step = feet.clone()
+            present_step = present.clone()
+            elapsed_step = elapsed.clone()
+            outputs = []
+            for index, target in enumerate(step_targets.unbind(1)):
+                current, logits, present_step = model(
+                    current, target, previous_step, foot_step, present_step,
+                    elapsed_step, launch)
+                foot_step = logits.sigmoid()
+                elapsed_step = elapsed_step + model.dt
+                outputs.append((racket_state(current, model.geometry),
+                                racket_state(raw_sequence[index]['next_state'][lanes].to(device), model.geometry)))
+                previous_step = raw_sequence[index]['final_action'][lanes].to(device)
+            return outputs
+        minus_temporal = rollout('minus', step_targets_minus.to(device), step_minus)
+        plus_temporal = rollout('plus', step_targets_plus.to(device), step_plus)
+        for index, ((pred_m, native_m), (pred_p, native_p)) in enumerate(
+                zip(minus_temporal, plus_temporal)):
+            model_delta_step = pred_p - pred_m
+            native_delta_step = native_p - native_m
+            temporal_metrics.append(dict(
+                control_step=index,
+                position=_vector_metrics(model_delta_step[:, :3], native_delta_step[:, :3]),
+                linear_velocity=_vector_metrics(model_delta_step[:, 12:15], native_delta_step[:, 12:15]),
+                angular_velocity=_vector_metrics(model_delta_step[:, 15:18], native_delta_step[:, 15:18]),
+                normal=_vector_metrics(
+                    _normal(pred_p) - _normal(pred_m),
+                    _normal(native_p) - _normal(native_m)),
+            ))
+
     target_diff = plus['final_joint_targets'][lanes] - minus['final_joint_targets'][lanes]
     final_diff = plus['final_normalized'][lanes] - minus['final_normalized'][lanes]
     request_diff = plus['request_after'][lanes] - minus['request_after'][lanes]
@@ -120,6 +161,7 @@ def main():
             final_target_max_abs=float(target_diff.abs().max()),
         ),
         metrics=metrics,
+        temporal_metrics=temporal_metrics,
         samples=[dict(
             lane=lane,
             model_position_delta=model_delta[i, :3].detach().cpu().tolist(),

@@ -129,3 +129,18 @@ marked as unavailable for policy-distribution Replay.
 The collection is still an identification experiment. It cannot issue a
 contact receipt or unlock Actor/Critic training until native response direction
 and amplitude pass on an independent holdout.
+
+The first held collection completed one spec at event tick 267 with four
+contact lanes, a four-tick lead and a four-tick hold. It produced four
+immutable paired records and was packed as
+`supermimic-action-identification-v1`, with `admitted_to_policy_training=false`.
+The final endpoint Body-WM/native gain ratios remained low, but the temporal
+rollout showed the expected delay effect. Across the five recorded control
+steps, median angular-velocity gain increased from 0.034 to 0.314 and median
+linear-velocity gain reached 0.300 at the first step. This confirms that a
+single endpoint metric was hiding actuator response over the held window, while
+also showing that the current Body WM still attenuates the response.
+
+The temporal Oracle artifact is
+`/home/autodrive/LZQW/experiments/supermimic_action_to_racket_oracle_20261120_lead4_hold4_v2_temporal.json`.
+It is diagnostic only and does not issue a native or contact receipt.
