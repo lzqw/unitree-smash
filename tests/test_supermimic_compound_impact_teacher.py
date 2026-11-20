@@ -23,3 +23,15 @@ def test_fixed_time_but_changed_loaded_points_is_reported_separately():
     assert classify([base,base,changed,base])=='manifold_switch'
     assert classify([base,base,(False,False,True,(11,),((2,1),)),base])=='toi_switch'
     assert classify([base,changed,base,base])=='nominal_mismatch'
+
+
+def test_velocity_intervention_uses_native_initial_twist_and_preserves_later_samples():
+    from scripts.collect_supermimic_dynamic_contact_pilot import record_intervened_initial_twist
+    trace=dict(tensors={k:torch.zeros(3,2,3) for k in ('racket_linear_velocity_w','racket_angular_velocity_w')},
+               contact_metadata={})
+    trace['tensors']['racket_linear_velocity_w'][1:]=4.
+    intervention=dict(native_velocity_readback={'after':{'racket_link':torch.ones(2,3),'racket_angular':torch.zeros(2,3)}})
+    record_intervened_initial_twist(trace,intervention)
+    assert trace['tensors']['racket_linear_velocity_w'][0].eq(1).all()
+    assert trace['tensors']['racket_linear_velocity_w'][1:].eq(4).all()
+    assert intervention['sdk_cached_initial_twist']['racket_link'].eq(0).all()

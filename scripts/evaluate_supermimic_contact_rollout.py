@@ -28,8 +28,16 @@ def racket(state, geometry):
             bodies['velocity'][:, i], bodies['angular_velocity'][:, i])
 
 
-def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measured_path=None):
+def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measured_path=None,
+         racket_material=None, initial_spin=None):
     p, v = ball[:, :3], ball[:, 3:]
+    spin = initial_spin
+    if spin is not None and spin.shape != v.shape:
+        raise ValueError('Spin must specify the incoming three-vector for each shuttle')
+    if racket_material is not None:
+        n_shapes = len(prior.preview.racket_box_centers) + len(prior.preview.racket_round_centers)
+        if racket_material.shape != (n_shapes, 3):
+            raise ValueError('Expected static friction, dynamic friction and restitution for each shape')
     if measured_path is not None:
         center,q,linear,omega=measured_path
         if any(x.shape[:2]!=(prior.steps,len(ball)) for x in measured_path):
@@ -64,21 +72,32 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
             if near.any():
                 lane = lane[near]
                 local = local[near]
-                nlocal, _ = prior.racket_surface(local)
+                nlocal, shape = prior.racket_surface(local)
                 n = _quat_rotate(q[i, lane], nlocal)
                 arm = _quat_rotate(q[i, lane], local - g.radius*nlocal)
                 rel = v[lane] - linear[i, lane] - torch.linalg.cross(omega[i, lane], arm)
                 vn = (rel*n).sum(-1)
                 active = (vn < 0) & (gap[near] + prior.sub_dt*vn <= 0)
-                normal = -(1+prior.restitution)*fitted['normal_impulse_scale']*vn.clamp(max=0)
+                if racket_material is None:
+                    mu_static = mu_dynamic = fitted['friction']
+                    restitution = prior.restitution
+                else:
+                    mu_static, mu_dynamic, restitution = racket_material[shape].unbind(-1)
+                normal = -(1+restitution)*fitted['normal_impulse_scale']*vn.clamp(max=0)
                 tan = rel - vn[:, None]*n
-                friction = torch.minimum(fitted.get('sticking_gain',2/7)*tan.norm(dim=-1), fitted['friction']*normal)
+                shuttle_arm = -g.radius*n
+                if spin is not None:
+                    tan = tan + torch.linalg.cross(spin[lane], shuttle_arm)
+                sticking = fitted.get('sticking_gain', 2/7)*tan.norm(dim=-1)
+                friction = torch.where(sticking <= mu_static*normal, sticking, mu_dynamic*normal)
                 delta[lane] = active[:, None]*(normal[:, None]*n - friction[:, None]*F.normalize(tan, dim=-1))
                 if previous_patch is not None:
                     inside[lane] = gap[near] <= 0
-                    slip = sliding_speed_change(gap[near], vn, tan, prior.sub_dt, fitted['friction'])
+                    slip = sliding_speed_change(gap[near], vn, tan, prior.sub_dt, mu_dynamic)
                     slip = torch.where((~previous_patch[lane]) & (slip*.0052/prior.sub_dt > .001), slip, 0.)
                     delta[lane] -= slip[:, None]*F.normalize(tan, dim=-1)
+                if spin is not None:
+                    spin = spin.index_add(0, lane, torch.linalg.cross(shuttle_arm, delta[lane]) / (.4*g.radius**2))
                 hit[lane] |= active
         if previous_patch is not None:
             previous_patch.copy_(inside)

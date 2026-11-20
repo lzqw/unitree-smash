@@ -11,6 +11,20 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 
+def record_intervened_initial_twist(trace, intervention):
+    """A root velocity write changes the native link before IsaacLab refreshes its pose-time cache."""
+    frames = trace['tensors']
+    actual = intervention['native_velocity_readback']['after']
+    for name, field in (('racket_linear_velocity_w', 'racket_link'), ('racket_angular_velocity_w','racket_angular')):
+        cached = frames[name][0]
+        observed = actual[field]
+        if cached.shape != observed.shape or not observed.isfinite().all():
+            raise ValueError('Incomplete native racket twist at intervention')
+        intervention.setdefault('sdk_cached_initial_twist', {})[field] = cached.clone()
+        cached.copy_(observed)
+    trace['contact_metadata']['initial_racket_twist_source'] = 'direct_native_link_velocity_after_intervention'
+
+
 def collect(args):
     import torch
     from quadsmash.physics.native import drag_force, quat_rotate
@@ -124,6 +138,14 @@ def collect(args):
                 direction = quat_rotate(q,direction_local)
                 sign = {'nominal_a':0,'nominal_b':0,'minus':-1,'plus':1}[args.velocity_pair_branch]
                 change = sign*args.surface_epsilon_mps*direction
+                view = env.robot.root_physx_view
+                def velocity_readback():
+                    com = view.get_link_velocities()[:, rid].clone()
+                    link = com[:, :3] + torch.linalg.cross(com[:, 3:], quat_rotate(q, -data.body_com_pos_b[:, rid]))
+                    return dict(root_com=view.get_root_velocities().cpu().clone(),
+                                dof=view.get_dof_velocities().cpu().clone(), racket_link=link.cpu().clone(),
+                                racket_angular=com[:, 3:].cpu().clone())
+                before_write = velocity_readback()
                 old_velocity = data.root_com_vel_w.clone()
                 new_velocity = old_velocity.clone()
                 new_velocity[:,:3] += change
@@ -133,6 +155,10 @@ def collect(args):
                         nominal_shuttle=ball.cpu(),joint_targets=joint_targets.cpu(),
                         scope='controlled moving surface response; no Actor command perturbation')
             env.sim.forward()
+            if intervention is not None:
+                intervention['native_velocity_readback'] = dict(
+                    before=before_write, after=velocity_readback(),
+                    scope='Raw native root and articulation link tensors at fixed pose, before the first physics advance')
             trace = NativeSubstepTraceV1(env, start_frame=env.sim.current_time_step_index)
             for _ in range(cfg.decimation):
                 force = drag_force(env.shuttle.data.root_lin_vel_w, cfg.shuttle_mass_kg,
@@ -143,6 +169,8 @@ def collect(args):
                 env.scene.update(env.physics_dt)
                 trace.observe_frame(env.sim.current_time_step_index)
             archive = tensor_tree_copy(trace.finish(), cpu=True)
+            if intervention is not None:
+                record_intervened_initial_twist(archive, intervention)
             series = archive['tensors']
             if not torch.isfinite(series['shuttle_state_w']).all() or not archive['manifold_frames']:
                 raise ValueError('Invalid fixture trace or missing native manifold stream')

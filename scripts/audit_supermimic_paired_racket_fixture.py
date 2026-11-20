@@ -71,6 +71,23 @@ def classify(rows):
     return 'racket_stable'
 
 
+def verify_initial_intervention(trace, intervention):
+    """Verify the native velocity write and the teacher tensor used at the first substep."""
+    kind = trace['contact_metadata'].get('initial_racket_twist_source')
+    if kind != 'direct_native_link_velocity_after_intervention':
+        raise ValueError('Missing direct native racket velocity readback')
+    raw = intervention['native_velocity_readback']
+    before, after = raw['before'], raw['after']
+    change = intervention['delta_world']
+    torch.testing.assert_close(after['root_com'][:, :3]-before['root_com'][:, :3], change, atol=2.e-5, rtol=0)
+    torch.testing.assert_close(after['racket_link']-before['racket_link'], change, atol=2.e-5, rtol=0)
+    for field in ('dof','racket_angular'):
+        torch.testing.assert_close(after[field], before[field], atol=2.e-5, rtol=0)
+    torch.testing.assert_close(after['root_com'][:, 3:], before['root_com'][:, 3:], atol=2.e-5, rtol=0)
+    for key, field in [('racket_linear_velocity_w','racket_link'),('racket_angular_velocity_w','racket_angular')]:
+        torch.testing.assert_close(trace['tensors'][key][0], after[field], atol=0, rtol=0)
+
+
 @torch.no_grad()
 def main():
     cli=argparse.ArgumentParser(description=__doc__)
@@ -108,6 +125,8 @@ def main():
             tr=trial['raw']['substep_trace'];t=tr['tensors'];v=trial['velocity_intervention']
             if v['branch']!=b or trial['seed']!=seed or tr['count']!=prior.steps+1 or tr['physics_dt_s']!=prior.sub_dt:
                 raise ValueError('Invalid physical branch or clock')
+            if design and design.get('initial_racket_twist'):
+                verify_initial_intervention(tr, v)
             sign={'nominal_a':0,'nominal_b':0,'minus':-1,'plus':1}[b]
             torch.testing.assert_close(v['delta_world'],sign*v['epsilon_mps']*v['direction_world'],atol=1e-7,rtol=0)
             inputs[b]=dict(nominal_shuttle=v['nominal_shuttle'],joint_targets=v['joint_targets'],
