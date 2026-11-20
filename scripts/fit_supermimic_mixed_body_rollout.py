@@ -52,10 +52,45 @@ def pair_terms(model, pairs, index):
     return point,jac,support
 
 
+
+def sequence_terms(model, ball, signed, index, launch, horizon):
+    """Differentiate the response to the full measured paired command prefix."""
+    feature_scale = launch.new_tensor([.03]*3+[1.]*3+[1.]*3+[3.]*3)
+    point = launch.new_zeros(())
+    jacobian = launch.new_zeros(())
+    stats = {}
+    rollout = {}
+    for sign in ('minus','plus'):
+        d = signed[sign]
+        rollout[sign] = (d['state'][0,index], d['feet'][0,index], d['present'][0,index])
+    for t in range(horizon):
+        pred, actual = [], []
+        for sign in ('minus','plus'):
+            d = signed[sign]
+            state, feet, present = rollout[sign]
+            rollout[sign] = ball_transition(model, ball, state, d['targets'][t,index],
+                                            d['previous_action'][t,index], feet, present,
+                                            d['elapsed'][t,index], launch[index])
+            state = rollout[sign][0]
+            truth = d['next_state'][t,index]
+            point = point + robot_loss(state,truth)/(2*horizon)
+            pred.append(racket_features(state,model.geometry))
+            actual.append(racket_features(truth,model.geometry))
+        # Prefix norm keeps the response identifiable after the held targets reconverge.
+        targets = [signed[sign]['targets'][:t+1,index].transpose(0,1).flatten(1)
+                   for sign in ('minus','plus')]
+        loss, support = normalized_response_loss(*pred,*actual,*targets,feature_scale)
+        jacobian = jacobian + loss/horizon
+        if t+1 in (1,2,4,8,16):
+            stats[f'tick_{t+1}'] = dict(**support, jacobian_loss=float(loss.detach()))
+    return point,jacobian,stats
+
 def main():
     cli = argparse.ArgumentParser(description=__doc__)
     for name in ('source','ball','packed','split','reference-verification','probe-holdout','output'):
         cli.add_argument('--'+name,type=Path,required=True)
+    cli.add_argument('--training-collection',type=Path,
+                     help='Use verified held-action windows for half of identification pairs in each batch')
     cli.add_argument('--batch',type=int,default=32)
     cli.add_argument('--updates-per-horizon',type=int,default=8)
     cli.add_argument('--lr',type=float,default=1e-5)
@@ -105,6 +140,20 @@ def main():
     count_natural=a.batch-count_pair-count_event
     if not lanes or pair_count<count_pair:
         raise ValueError('Not enough distinct measured training pairs')
+    sequence = None
+    sequence_receipt = None
+    if a.training_collection:
+        from quadsmash.rl.supermimic_policy_execution_v1 import contract
+        from quadsmash.rl.supermimic_training_probe_replay import training_windows
+        windows, sequence_receipt = training_windows(a.training_collection, task, contract(),
+                                                    set(range(len(launch)))-set(lanes))
+        sequence_lanes = [lane for ids,_ in windows for lane in ids]
+        if len(sequence_lanes)<count_pair//2:
+            raise ValueError('Too few eligible signed training windows')
+        needed = ('state','feet','present','targets','previous_action','elapsed','next_state')
+        sequence = {b:{k:torch.cat([signed[b][k] for _,signed in windows],dim=1).to(device)
+                       for k in needed} for b in ('minus','plus')}
+        sequence_launch = launch[sequence_lanes]
     horizons=(1,2,4,8,16,32,64)
     pools={}
     contact=data['next_event_state'][...,1]>data['event_state'][...,1]
@@ -121,7 +170,8 @@ def main():
     metadata=dict(source_sha256=digest(a.source),ball_sha256=digest(a.ball),packed_sha256=packed_hash,
                   train_lanes=lanes,excluded_lanes=sorted(held),pair_sources=[r['provenance']['source_sha256'] for r in parent_cfg['native_response_sources']],
                   pair_count=pair_count,batch=a.batch,natural_count=count_natural,event_count=count_event,
-                  pair_count_per_update=count_pair,horizons=horizons,updates_per_horizon=a.updates_per_horizon,
+                  pair_count_per_update=count_pair,sequence_pairs_per_update=count_pair//2 if sequence else 0,
+                  sequence_receipt=sequence_receipt,horizons=horizons,updates_per_horizon=a.updates_per_horizon,
                   seed=20261121,lr=a.lr,actor_updates=0,critic_updates=0,policy_training_admitted=False)
     a.output.mkdir(parents=True,exist_ok=False)
     (a.output/'config.json').write_text(json.dumps(metadata,indent=2)+'\n')
@@ -136,8 +186,18 @@ def main():
                 selected=torch.cat([pool[torch.randperm(len(pool),generator=generator)[:n]]
                                     for pool,n in zip(pools[h],(count_natural,count_event))]).to(device)
                 body,fk=rollout_terms(world,ball,data,launch,*selected.T,h)
-                ids=torch.randperm(pair_count,generator=generator)[:count_pair].to(device)
+                n_seq = count_pair//2 if sequence else 0
+                ids=torch.randperm(pair_count,generator=generator)[:count_pair-n_seq].to(device)
                 point,jac,support=pair_terms(world,pairs,ids)
+                measured_steps = 2*len(ids)
+                if sequence:
+                    seq_ids=torch.randperm(len(sequence_launch),generator=generator)[:n_seq].to(device)
+                    seq_h=min(h,sequence['minus']['state'].shape[0])
+                    seq_point,seq_jac,support['sequence_by_tick']=sequence_terms(
+                        world,ball,sequence,seq_ids,sequence_launch,seq_h)
+                    point=(len(ids)*point+n_seq*seq_point)/count_pair
+                    jac=(len(ids)*jac+n_seq*seq_jac)/count_pair
+                    measured_steps+=2*n_seq*seq_h
                 anchor=sum((v-initial[k]).square().mean() for k,v in world.body.named_parameters())
                 loss=.75*(body+fk)+.25*(point+jac)+.01*anchor
                 opt.zero_grad(set_to_none=True);loss.backward()
@@ -145,7 +205,7 @@ def main():
                 if not torch.isfinite(loss):raise FloatingPointError('Nonfinite robot fit')
                 opt.step()
                 metrics=dict(update=step,horizon=h,natural_and_event_transitions=len(selected)*h,
-                             signed_pair_transitions=2*count_pair,body=float(body.detach()),racket=float(fk.detach()),
+                             signed_pair_transitions=measured_steps,body=float(body.detach()),racket=float(fk.detach()),
                              jacobian=float(jac.detach()),pair_point=float(point.detach()),norm=float(grad),**support)
                 f.write(json.dumps(metrics,allow_nan=False)+'\n')
     payload=dict(schema=world.schema,model=world.state_dict(),source_manifest=source['source_manifest'],

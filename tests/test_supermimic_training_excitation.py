@@ -25,3 +25,30 @@ def test_probe_window_rejects_resets_anywhere_in_rollout():
     recorder.rows[2]['terminated'][1]=True
     with pytest.raises(ValueError,match='boundary'):
         recorder.payload()
+
+
+def test_held_action_response_uses_the_whole_prefix(monkeypatch):
+    from types import SimpleNamespace
+    from scripts import fit_supermimic_mixed_body_rollout as fit
+
+    # A one-tick command produces a response that persists after reconvergence.
+    def step(model, ball, state, targets, previous, feet, present, elapsed, launch):
+        return state + model.gain*targets[:, :1], feet, present
+    monkeypatch.setattr(fit,'ball_transition',step)
+    monkeypatch.setattr(fit,'racket_features',lambda state,geom:state[:,:12])
+    model=SimpleNamespace(gain=torch.tensor(.5,requires_grad=True),geometry=None)
+    windows={}
+    for sign,value in [('minus',-1.),('plus',1.)]:
+        targets=torch.zeros(2,2,18)
+        targets[0,0,0]=value
+        truth=targets[:,:,:1].cumsum(0).expand(-1,-1,55)
+        windows[sign]=dict(state=torch.zeros_like(truth),next_state=truth,
+                           targets=targets,previous_action=torch.zeros_like(targets),
+                           feet=torch.zeros(2,2,4),present=torch.ones(2,2,dtype=torch.bool),
+                           elapsed=torch.zeros(2,2))
+    point,jac,support=fit.sequence_terms(model,None,windows,torch.arange(2),torch.zeros(2,6),2)
+    for tick in (1,2):
+        assert support[f'tick_{tick}']['supported']==1
+        assert support[f'tick_{tick}']['saturated']==1
+        assert support[f'tick_{tick}']['jacobian_loss']>0
+    assert torch.autograd.grad(jac+point,model.gain)[0]<0

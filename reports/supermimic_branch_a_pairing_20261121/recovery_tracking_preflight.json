@@ -1,0 +1,55 @@
+{
+  "checkpoint": "/home/autodrive/LZQW/experiments/supermimic_a2_canary_20261120_final/pre_refresh_cycle000_pair000_refresh_after_approach.pt",
+  "device": "cuda:0",
+  "reference_sha256": "9d2c27647d29576a5d06639fa3519d2c32a98d494f562a20b017836f1d22e9eb",
+  "initial": {
+    "actor": "2c84da909c60fd0d6816a665bf3929fb5d33bab80b078e46c8609bfea5f5a794",
+    "world": "1419482e270766562b7b0a281a7351c7e5ccc16f0c70901572a71d40d510caa0",
+    "critic": "ee8cc6f7fd5a09759fa4615fa90274a1c7d36a5c1d1c856a07131e33cad71d51"
+  },
+  "native_start_policy": "73a3194ea2e44122df13663bcad9e9b0b543b7c6429bf3b06b133bfb1244646a",
+  "reference_policy": "2c84da909c60fd0d6816a665bf3929fb5d33bab80b078e46c8609bfea5f5a794",
+  "num_envs": 128,
+  "included_lanes": 88,
+  "reference_count": 26,
+  "tracking_weight": 1.0,
+  "contact_bptt": "detached",
+  "horizon": 64,
+  "starts": [
+    {
+      "gate_lanes": 76,
+      "tracking_active_lane_steps": 4864,
+      "tracking_effective_weight_sum": 4855.8544921875,
+      "tracking_nonzero_gradient_lanes": 76,
+      "matched_references": 128,
+      "task_gradient_norm": 25.273422241210938,
+      "tracking_gradient_norm": 0.058226410299539566,
+      "anchor_gradient_norm": 0.08189807832241058,
+      "task_tracking_cosine": 0.21354469656944275,
+      "tick": 384,
+      "task_value": 15.136932373046875,
+      "tracking_value": 0.06463917344808578
+    },
+    {
+      "gate_lanes": 74,
+      "tracking_active_lane_steps": 4736,
+      "tracking_effective_weight_sum": 4724.4150390625,
+      "tracking_nonzero_gradient_lanes": 74,
+      "matched_references": 128,
+      "task_gradient_norm": 14.871358871459961,
+      "tracking_gradient_norm": 0.05194886773824692,
+      "anchor_gradient_norm": 0.07398627698421478,
+      "task_tracking_cosine": 0.19564002752304077,
+      "tick": 448,
+      "task_value": 15.459406852722168,
+      "tracking_value": 0.07788563519716263
+    }
+  ],
+  "unchanged": true,
+  "optimizer_updates": {
+    "actor": 0,
+    "world": 0,
+    "critic": 0
+  },
+  "passed": true
+}
