@@ -26,13 +26,14 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=20261120)
     parser.add_argument("--force-threshold", type=float, default=.001)
     parser.add_argument("--near-miss-radius", type=int, default=4)
+    parser.add_argument("--split-pilot", type=Path, help="Pin a revision to the original pilot capture and group assignments")
     args = parser.parse_args()
     if args.contacts < 0 or args.negatives < 0 or args.workers < 1:
         parser.error("contacts/negatives must be nonnegative and workers must be positive")
     manifest = build_pilot(args.input, args.output, contacts=args.contacts,
                            negatives=args.negatives, workers=args.workers,
                            seed=args.seed, force_threshold=args.force_threshold,
-                           near_miss_radius=args.near_miss_radius)
+                           near_miss_radius=args.near_miss_radius, split_pilot=args.split_pilot)
     print(json.dumps(manifest, indent=2))
 
 

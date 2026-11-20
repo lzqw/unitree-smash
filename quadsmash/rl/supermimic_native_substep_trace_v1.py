@@ -110,6 +110,8 @@ class NativeSubstepTraceV1:
                                 if net_force_matrix is None else net_force_matrix),
             racket_contact_position_w=contact_positions[:, 0, 0])
         if self.manual:
+            if hasattr(contact, "net_forces_w"):
+                values["shuttle_total_normal_force_w"] = contact.net_forces_w[:, 0]
             for field in ("joint_position", "joint_velocity", "applied_torque"):
                 del values[field]
             if net_force_matrix is not None:

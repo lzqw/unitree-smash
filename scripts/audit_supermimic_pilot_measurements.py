@@ -42,7 +42,7 @@ def main():
         t = trace['tensors']
         dt = trace['physics_dt_s']
         f = t['racket_force_w']
-        norm = f.norm(dim=-1)
+        norm = torch.maximum(f.norm(dim=-1), t['racket_friction_force_w'].norm(dim=-1))
         absent = torch.ones_like(norm, dtype=torch.bool)
         for i, detail in enumerate(trace['manifold_frames']):
             absent[i, detail['lane'][detail['filter_index'] == 0]] = False
@@ -88,7 +88,7 @@ def main():
                   unique_negative_trials=len(negatives), matched_manifold_events=sum(bool(r['manifold_points']) for r in contacts),
                   threshold_sensitivity=sensitivity, noise_on_native_manifold_absent_steps={
                       'count':len(noise), **{f'p{q}':float(noise.quantile(q/100)) for q in (50,95,99)}},
-                  threshold_n=.001, threshold_basis='Frozen task force threshold tested against independent absence of PhysX manifold witnesses.',
+                  threshold_n=.001, threshold_basis='Racket response when either measured pair normal or friction force exceeds 0.001 N; native task hit uses normal force only.',
                   effective_mass_definition='Derived from native impulse and pre-impact speed at fixed restitution 0.72.',
                   inferred_effective_mass_kg={key:distribution(value) for key,value in mass_by.items()},
                   repeated_contact_peak_separation_m=distribution(local_gaps),

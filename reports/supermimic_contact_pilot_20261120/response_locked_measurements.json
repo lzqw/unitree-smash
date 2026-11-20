@@ -1,0 +1,203 @@
+{
+  "pilot_sha256": "2a855ab0c038e79d14d4c4d35a4b2d0d635f89c2ec9c46f0a64da5fe92b04023",
+  "archives": 20,
+  "unique_negative_trials": 1000,
+  "matched_manifold_events": 2000,
+  "threshold_sensitivity": {
+    "0.0001": {
+      "intervals": 2233,
+      "active_substeps": 2453,
+      "longest_interval": 18,
+      "false_active_without_manifold": 0,
+      "force_free_substeps": 409707,
+      "sum_active_impulse_magnitudes_ns": 148.0650372505188
+    },
+    "0.001": {
+      "intervals": 2233,
+      "active_substeps": 2453,
+      "longest_interval": 18,
+      "false_active_without_manifold": 0,
+      "force_free_substeps": 409707,
+      "sum_active_impulse_magnitudes_ns": 148.0650372505188
+    },
+    "0.005": {
+      "intervals": 2235,
+      "active_substeps": 2451,
+      "longest_interval": 16,
+      "false_active_without_manifold": 0,
+      "force_free_substeps": 409709,
+      "sum_active_impulse_magnitudes_ns": 148.06503582000732
+    },
+    "0.01": {
+      "intervals": 2234,
+      "active_substeps": 2450,
+      "longest_interval": 16,
+      "false_active_without_manifold": 0,
+      "force_free_substeps": 409710,
+      "sum_active_impulse_magnitudes_ns": 148.06503534317017
+    }
+  },
+  "noise_on_native_manifold_absent_steps": {
+    "count": 404148,
+    "p50": 0.0,
+    "p95": 0.0,
+    "p99": 0.0
+  },
+  "threshold_n": 0.001,
+  "threshold_basis": "Racket response when either measured pair normal or friction force exceeds 0.001 N; native task hit uses normal force only.",
+  "effective_mass_definition": "Derived from native impulse and pre-impact speed at fixed restitution 0.72.",
+  "inferred_effective_mass_kg": {
+    "all": {
+      "count": 1988,
+      "minimum": 0.00186433501988717,
+      "p10": 0.004657353881409599,
+      "median": 0.0048019992193700685,
+      "p90": 0.004957612428745058,
+      "maximum": 0.014783239035319933
+    },
+    "residual_to_shuttle_mass_kg": {
+      "count": 1988,
+      "minimum": -0.0033356649801128298,
+      "p10": -0.0005426461185904007,
+      "median": -0.00039800078062993127,
+      "p90": -0.0002423875712549423,
+      "maximum": 0.009583239035319933
+    },
+    "region/center": {
+      "count": 220,
+      "minimum": 0.0029523553190176233,
+      "p10": 0.004760452882404961,
+      "median": 0.004814574374563825,
+      "p90": 0.004917681486739736,
+      "maximum": 0.005155515607120906
+    },
+    "part/strings": {
+      "count": 1212,
+      "minimum": 0.0023380677551535934,
+      "p10": 0.004672382719277098,
+      "median": 0.00480996290587323,
+      "p90": 0.004932554219044092,
+      "maximum": 0.007510437182750223
+    },
+    "vn2": {
+      "count": 581,
+      "minimum": 0.0043516385788811346,
+      "p10": 0.004651626979556046,
+      "median": 0.004794557058642183,
+      "p90": 0.004949221460743041,
+      "maximum": 0.00520498790647932
+    },
+    "vt0": {
+      "count": 217,
+      "minimum": 0.0030246238898734112,
+      "p10": 0.004668419831815752,
+      "median": 0.004792858539095075,
+      "p90": 0.00489735109730402,
+      "maximum": 0.0049595987030635795
+    },
+    "region/grid_5x5": {
+      "count": 821,
+      "minimum": 0.0023380677551535934,
+      "p10": 0.004677246253811562,
+      "median": 0.004805197334468664,
+      "p90": 0.004929583738921424,
+      "maximum": 0.007510437182750223
+    },
+    "vn1": {
+      "count": 558,
+      "minimum": 0.00186433501988717,
+      "p10": 0.004645023676627288,
+      "median": 0.00478696184366102,
+      "p90": 0.0049094125967277915,
+      "maximum": 0.0080109049618377
+    },
+    "region/rim": {
+      "count": 425,
+      "minimum": 0.002571277232989401,
+      "p10": 0.004643042016666198,
+      "median": 0.004802702116594308,
+      "p90": 0.004948013781575376,
+      "maximum": 0.00694699860576094
+    },
+    "vn0": {
+      "count": 141,
+      "minimum": 0.0023380677551535934,
+      "p10": 0.004069780702629973,
+      "median": 0.004785188434334243,
+      "p90": 0.004906569132051902,
+      "maximum": 0.014783239035319933
+    },
+    "vt3": {
+      "count": 667,
+      "minimum": 0.00186433501988717,
+      "p10": 0.004644767943697144,
+      "median": 0.0047955196297645355,
+      "p90": 0.004942254037207424,
+      "maximum": 0.007510437182750223
+    },
+    "region/edge": {
+      "count": 522,
+      "minimum": 0.00186433501988717,
+      "p10": 0.004651815361793293,
+      "median": 0.004773990412318087,
+      "p90": 0.0049894518863796596,
+      "maximum": 0.014783239035319933
+    },
+    "part/frame": {
+      "count": 749,
+      "minimum": 0.00186433501988717,
+      "p10": 0.004633583794781459,
+      "median": 0.004773603143819169,
+      "p90": 0.004965997633488963,
+      "maximum": 0.014783239035319933
+    },
+    "vt2": {
+      "count": 766,
+      "minimum": 0.0022532652037924304,
+      "p10": 0.004656287876590323,
+      "median": 0.004813080466375495,
+      "p90": 0.004990534561274594,
+      "maximum": 0.00694699860576094
+    },
+    "vn3": {
+      "count": 708,
+      "minimum": 0.00437950765109664,
+      "p10": 0.004682973913303163,
+      "median": 0.0048342855564454555,
+      "p90": 0.004980364598270319,
+      "maximum": 0.0052068712674062856
+    },
+    "vt1": {
+      "count": 338,
+      "minimum": 0.0028331120461845237,
+      "p10": 0.0046563333877786,
+      "median": 0.0047968173578111385,
+      "p90": 0.004934544151452741,
+      "maximum": 0.014783239035319933
+    },
+    "part/Shaft": {
+      "count": 27,
+      "minimum": 0.004934328132033189,
+      "p10": 0.004963533755670965,
+      "median": 0.005013615687440576,
+      "p90": 0.005048823389475015,
+      "maximum": 0.005059200810593922
+    }
+  },
+  "repeated_contact_peak_separation_m": {
+    "count": 129,
+    "minimum": -2.8081238269805908e-05,
+    "p10": 1.1203438043594364e-05,
+    "median": 0.0010454319417476654,
+    "p90": 0.002610420435667038,
+    "maximum": 0.005525464192032814
+  },
+  "isolated_racket_momentum_relative_error": {
+    "count": 2453,
+    "minimum": 0.0,
+    "p10": 5.8130994062821626e-08,
+    "median": 1.794390698250936e-07,
+    "p90": 2.017590622926946e-06,
+    "maximum": 0.02658860944211483
+  }
+}

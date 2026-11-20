@@ -40,6 +40,7 @@ PILOT_FIELDS = (
     "split_group", "split", "gap_bucket", "approach_speed_mps", "relative_speed_mps",
     "contact_slot_count", "contact_slot_indices", "slot_impulse_ns", "gap_source",
     "contact_region", "contact_grid", "toi_phase", "contact_count_substeps",
+    "native_normal_force_event", "pair_normal_impulse_w_ns", "pair_friction_impulse_w_ns",
     "physics_dt_s", "quality_flags", "bucket", "interference_object",
     "contact_filter_paths", "racket_body_name", "racket_part_source",
     "probe_branch", "event_id", "near_miss_contact_proximity", "manifold_points", "geometric_racket_part",
@@ -335,7 +336,18 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
     quaternion_all = _as_tensor(tensors["racket_quaternion_w"]).float()
     local_all = _quat_rotate_inverse(quaternion_all, ball[..., :3] - position_all)
     analytic_gaps = _geometry_preview().racket_gap(local_all)
-    touching = racket_force.norm(dim=-1) > force_threshold
+    surface_model, _ = _surface_geometry()
+    local_normals = torch.cat([surface_model.racket_surface(chunk)[0]
+                               for chunk in local_all.reshape(-1, 3).split(1024)]).reshape_as(local_all)
+    surface_normals = _quat_rotate(quaternion_all, local_normals)
+    normal_strength = racket_force.norm(dim=-1)
+    friction = tensors.get("racket_friction_force_w")
+    response_strength = normal_strength
+    if friction is not None:
+        if friction.shape != racket_force.shape or not torch.isfinite(friction).all():
+            raise ValueError(f"{path}: invalid racket pair friction stream")
+        response_strength = torch.maximum(normal_strength, friction.norm(dim=-1))
+    touching = response_strength > force_threshold
     ground_touching = ground_force.norm(dim=-1) > force_threshold
     net_touching = net_force.norm(dim=-1) > force_threshold
     manifold_frames = trace.get("manifold_frames", [])
@@ -358,7 +370,7 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                         lane_family=f"teacher_family_{family}", parent_lane=int(package["parent_lane"][lane]))
             item["split_group"] = "|".join(item[key] for key in ("spec_id", "episode_id", "lane_family", "capture_id"))
     for threshold in sensitivity_thresholds:
-        threshold_touch = racket_force.norm(dim=-1) > threshold
+        threshold_touch = response_strength > threshold
         sensitivity[str(threshold)] = {
             "active_substeps": int(threshold_touch.sum()),
             "lanes_with_contact": int(threshold_touch.any(0).sum()),
@@ -377,8 +389,11 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
             force = racket_force[start:end + 1, lane]
             impulse = force.sum(0) * dt
             impulse_source = "integrated_contact_force_matrix"
-            if "racket_friction_force_w" in tensors:
-                impulse += tensors["racket_friction_force_w"][start:end+1, lane].sum(0) * dt
+            pair_normal_impulse = impulse.clone()
+            friction_impulse = None
+            if friction is not None:
+                friction_impulse = friction[start:end+1, lane].sum(0) * dt
+                impulse += friction_impulse
                 impulse_source = "physx_pair_normal_and_friction_forces"
             normal = force.mean(0)
             position = position_all[start, lane]
@@ -398,7 +413,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
             if manifold_points:
                 witness = max(manifold_points, key=lambda point: abs(point["normal_impulse_ns"]))
                 normal = torch.as_tensor(witness["normal_w"])
-                if normal.dot(impulse) < 0:
+                toward_ball = ball[witness["frame"], lane, :3] - torch.as_tensor(witness["point_w"])
+                if normal.dot(toward_ball) < 0:
                     normal = -normal
                 normal_source = "physx_manifold_dominant_point"
             if float(normal.norm()) < 1e-12:
@@ -418,7 +434,9 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
             vn = float((relative * normal).sum())
             normal_impulse = float((impulse * normal).sum())
             tangent_impulse = impulse - normal_impulse * normal
-            mass = normal_impulse / max(-(1.72) * vn, 1e-9) if vn < 0 else float("nan")
+            has_normal = bool((normal_strength[start:end + 1, lane] > force_threshold).any())
+            measured_jn = float(pair_normal_impulse.dot(normal))
+            mass = measured_jn / (-1.72 * vn) if vn < 0 and measured_jn > 0 and has_normal else float("nan")
             gap = (float((ball[start, lane, :3] - contact_point).norm() - .025)
                    if torch.isfinite(contact_point).all()
                    else float(analytic_gaps[start, lane]))
@@ -433,7 +451,11 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 _, component_index = surface_model.racket_surface(local[None])
                 geometric_part = component_names[int(component_index.item())]
             active_slots = racket_force_slots[start:end + 1, lane].norm(dim=-1).max(0).values > force_threshold
+            if not has_normal and active_slots.numel() == 1:
+                active_slots[0] = True
             slot_impulse = racket_force_slots[start:end + 1, lane].sum(0) * dt
+            if friction_impulse is not None and len(slot_impulse) == 1:
+                slot_impulse[0] += friction_impulse
             metadata = source_meta[lane]
             row = dict(
                 source=str(path), source_sha256=source_hash, lane=lane,
@@ -443,6 +465,9 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 relative_velocity_w=relative.tolist(), impulse_ns=impulse.tolist(),
                 normal_impulse_ns=normal_impulse, tangential_impulse_ns=tangent_impulse.tolist(),
                 penetration_m=max(0., -gap), contact_order=order,
+                native_normal_force_event=has_normal,
+                pair_normal_impulse_w_ns=pair_normal_impulse.tolist(),
+                pair_friction_impulse_w_ns=friction_impulse.tolist() if friction_impulse is not None else None,
                 effective_mass_kg=mass, racket_part=(geometric_part if manifold_points else racket_part),
                 geometric_racket_part=geometric_part,
                 contact_region=region, contact_grid=grid, toi_phase=int((start % 160) / 40),
@@ -498,9 +523,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
             quaternion = quaternion_all[center, lane]
             racket_lin = _as_tensor(tensors["racket_linear_velocity_w"])[center, lane].float()
             racket_ang = _as_tensor(tensors["racket_angular_velocity_w"])[center, lane].float()
-            normal = ball_pos - racket_pos
-            normal = normal / normal.norm().clamp_min(1e-12)
-            arm = ball_pos - racket_pos
+            normal = surface_normals[center, lane]
+            arm = ball_pos - racket_pos - surface_model.preview.radius * normal
             surface = racket_lin + torch.linalg.cross(racket_ang, arm)
             relative = ball[center, lane, 7:10] - surface
             vn = float((relative * normal).sum())
@@ -514,6 +538,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                        normal_w=normal.tolist(), gap_m=gap,
                        relative_velocity_w=relative.tolist(), impulse_ns=[0.] * 3,
                        normal_impulse_ns=0., tangential_impulse_ns=[0.] * 3,
+                       native_normal_force_event=False, pair_normal_impulse_w_ns=[0.] * 3,
+                       pair_friction_impulse_w_ns=[0.] * 3 if friction is not None else None,
                        penetration_m=0., contact_order=0, effective_mass_kg=float("nan"),
                        racket_part=racket_part, contact_region="near_miss", manifold_points=[],
                        contact_grid=None, toi_phase=int((center % 160) / 40),
@@ -525,7 +551,7 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                        toi_post_substep=_frame_state(tensors, min(frames - 1, center + 1), lane),
                        outgoing_direction_w=[float("nan")] * 3, outgoing_speed_mps=float("nan"),
                        quality_flags=["native_substep_no_racket_force", "near_miss_candidate"],
-                       normal_source="unavailable_without_manifold_normal",
+                       normal_source="nearest_authored_racket_surface",
                        impulse_source="zero_by_no_racket_force",
                        effective_mass_source="unavailable_without_contact",
                        interference_objects=[name for name, active in (
@@ -682,7 +708,7 @@ def _coverage(rows: list[dict]) -> dict:
             "passed": not missing}
 
 
-def _assign_splits(rows: list[dict], seed: int) -> dict:
+def _assign_splits(rows: list[dict], seed: int, frozen_sources: dict | None = None) -> dict:
     groups: dict[str, list[dict]] = {}
     for row in rows:
         # A known spec is the largest practical independent unit.  All source
@@ -704,17 +730,27 @@ def _assign_splits(rows: list[dict], seed: int) -> dict:
     ordered = sorted(groups, key=priority)
     assignment = {}
     totals = dict.fromkeys(split_names, 0)
-    if known_specs:
-        holdout = min(("spec:" + spec for spec in known_specs), key=lambda key: (
-            abs(len(groups[key]) - len(rows) * targets["test"]), priority(key)))
-        assignment[holdout] = "test"
-        totals["test"] = len(groups[holdout])
-    for key in ordered:
-        if key in assignment:
-            continue
-        name = min(split_names, key=lambda name: totals[name] / targets[name])
-        assignment[key] = name
-        totals[name] += len(groups[key])
+    if frozen_sources is not None:
+        if {r["source_sha256"] for r in rows} != set(frozen_sources):
+            raise ValueError("Revised pilot does not contain the same capture sources")
+        for key, group_rows in groups.items():
+            names = {frozen_sources[row["source_sha256"]] for row in group_rows}
+            if len(names) != 1 or not names <= set(split_names):
+                raise ValueError("Frozen split mixes assignments within an independent group")
+            assignment[key] = names.pop()
+            totals[assignment[key]] += len(group_rows)
+    else:
+        if known_specs:
+            holdout = min(("spec:" + spec for spec in known_specs), key=lambda key: (
+                abs(len(groups[key]) - len(rows) * targets["test"]), priority(key)))
+            assignment[holdout] = "test"
+            totals["test"] = len(groups[holdout])
+        for key in ordered:
+            if key in assignment:
+                continue
+            name = min(split_names, key=lambda name: totals[name] / targets[name])
+            assignment[key] = name
+            totals[name] += len(groups[key])
     source_assignment = {}
     for group_key, group_rows in groups.items():
         split_name = assignment[group_key]
@@ -767,7 +803,8 @@ def _assign_splits(rows: list[dict], seed: int) -> dict:
 
 def build_pilot(inputs: str | Path | list[str | Path], output: str | Path, *, contacts: int = 2000,
                 negatives: int = 1000, workers: int = 1, seed: int = 20261120,
-                force_threshold: float = .001, near_miss_radius: int = 4) -> dict:
+                force_threshold: float = .001, near_miss_radius: int = 4,
+                split_pilot: Path | None = None) -> dict:
     """Build the pilot archive and return its manifest."""
     if isinstance(inputs, (str, Path)):
         paths = [Path(inputs)]
@@ -788,7 +825,16 @@ def build_pilot(inputs: str | Path | list[str | Path], output: str | Path, *, co
     negatives_rows = [row for row in rows if row["contact_object"] == "no_contact"]
     selected = _select(positives, contacts, seed) + _select(negatives_rows, negatives, seed + 1, distinct_lanes=True)
     selected.sort(key=lambda row: (row["contact_object"], row["source"], row["lane"], row["toi_frame"]))
-    split = _assign_splits(selected, seed)
+    frozen_sources = None
+    if split_pilot is not None:
+        reference = torch.load(split_pilot, map_location="cpu", weights_only=True)
+        frozen_sources = {}
+        for row in reference["rows"]:
+            if frozen_sources.setdefault(row["source_sha256"], row["split"]) != row["split"]:
+                raise ValueError("Reference pilot has inconsistent capture assignment")
+    split = _assign_splits(selected, seed, frozen_sources)
+    if split_pilot is not None:
+        split["reference_pilot_sha256"] = hashlib.sha256(split_pilot.read_bytes()).hexdigest()
     coverage = _coverage(selected)
     output = Path(output).resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -818,6 +864,7 @@ def build_pilot(inputs: str | Path | list[str | Path], output: str | Path, *, co
                     candidate_contacts=len(positives), candidate_negatives=len(negatives_rows),
                     duplicate_rows_removed=duplicate_rows_removed,
                     workers=int(workers), seed=int(seed), force_threshold_n=float(force_threshold),
+                    response_definition="Measured racket normal or measured racket friction above threshold; legacy normal-only when friction unavailable.",
                     bucket_counts=buckets, substep_truth=True, threshold_sensitivity=sensitivity,
                     coverage=coverage, split=split,
                     coverage_requirements={

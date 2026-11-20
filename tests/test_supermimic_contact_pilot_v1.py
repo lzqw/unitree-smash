@@ -119,3 +119,30 @@ def test_deterministic_replays_count_once_and_changed_velocity_survives(tmp_path
     unique, count = _deduplicate([row, replay, varied])
     assert unique == [row, varied]
     assert count == 1
+
+
+def test_tangential_only_response_cannot_be_a_negative(tmp_path):
+    path = tmp_path / 'trace.pt'
+    _trace(path, touching=False)
+    package = torch.load(path, weights_only=True)
+    friction = torch.zeros_like(package['tensors']['racket_force_w'])
+    friction[3:5, 0, 1] = 6
+    package['tensors']['racket_friction_force_w'] = friction
+    torch.save(package, path)
+    rows, sensitivity = _trace_candidates(path, .001, 1, (.001,))
+    hit, = [r for r in rows if r['contact_object'] == 'racket']
+    assert hit['toi_frame'] == 3 and hit['contact_count_substeps'] == 2
+    assert hit['native_normal_force_event'] is False
+    torch.testing.assert_close(torch.tensor(hit['impulse_ns']), torch.tensor([0., .012, 0.]))
+    assert sensitivity['0.001']['active_substeps'] == 2
+    assert all(abs(r['toi_frame'] - 3.5) > 1.5 for r in rows
+               if r['lane'] == 0 and r['contact_object'] == 'no_contact')
+
+
+def test_revision_keeps_original_source_assignments():
+    from quadsmash.rl.supermimic_contact_pilot_v1 import _assign_splits
+    rows = [dict(source_sha256=f'source{i}', spec_id=f'spec{i}', episode_id=f'ep{i}',
+                 lane_family=f'family{i}', capture_id=f'cap{i}') for i in range(3)]
+    frozen = dict(source0='test', source1='train', source2='validation')
+    _assign_splits(rows, 9, frozen)
+    assert [r['split'] for r in rows] == ['test', 'train', 'validation']

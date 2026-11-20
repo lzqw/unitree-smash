@@ -1,0 +1,358 @@
+{
+  "schema": "supermimic-racket-ball-contact-pilot-v1",
+  "pilot_status": "READY",
+  "response_definition": "Measured racket normal or measured racket friction above threshold; legacy normal-only when friction unavailable.",
+  "candidate_contacts": 2233,
+  "selected_contacts": 2000,
+  "selected_negatives": 1000,
+  "force_threshold_n": 0.001,
+  "threshold_sensitivity": {
+    "0.0001": {
+      "active_substeps": 2453,
+      "lanes_with_contact": 2095,
+      "contact_intervals": 2233
+    },
+    "0.001": {
+      "active_substeps": 2453,
+      "lanes_with_contact": 2095,
+      "contact_intervals": 2233
+    },
+    "0.005": {
+      "active_substeps": 2451,
+      "lanes_with_contact": 2095,
+      "contact_intervals": 2235
+    },
+    "0.01": {
+      "active_substeps": 2450,
+      "lanes_with_contact": 2095,
+      "contact_intervals": 2234
+    }
+  },
+  "coverage": {
+    "observed": {
+      "regions": {
+        "center": 220,
+        "grid_5x5": 823,
+        "rim": 426,
+        "edge": 531
+      },
+      "toi_phase": {
+        "0": 570,
+        "1": 539,
+        "2": 515,
+        "3": 376
+      },
+      "contact_order": {
+        "1": 1871,
+        "2": 129
+      },
+      "interference": {
+        "ground": 46,
+        "net": 47
+      },
+      "near_miss_gap": {
+        "0": 107,
+        "1": 219,
+        "2": 256,
+        "3": 222,
+        "4": 196
+      },
+      "near_miss_approach": {
+        "0": 297,
+        "1": 160,
+        "2": 197,
+        "3": 182,
+        "4": 164
+      },
+      "near_miss_proximity": {
+        "same_lane_near": 321,
+        "same_lane_far": 331,
+        "same_spec_other_lane": 348,
+        "no_contact_in_trace": 0
+      },
+      "vn": {
+        "2": 581,
+        "1": 561,
+        "0": 150,
+        "3": 708
+      },
+      "vt": {
+        "0": 218,
+        "3": 674,
+        "2": 766,
+        "1": 342
+      },
+      "incidence": {
+        "0": 654,
+        "2": 688,
+        "1": 658
+      },
+      "racket_linear": {
+        "0": 161,
+        "3": 1249,
+        "2": 507,
+        "1": 83
+      },
+      "racket_angular": {
+        "0": 162,
+        "2": 1325,
+        "3": 138,
+        "1": 375
+      },
+      "part_geometry": {
+        "strings": 1214,
+        "frame": 759,
+        "Shaft": 27
+      },
+      "face_grid": {
+        "2,2": 220,
+        "1,0": 81,
+        "2,0": 50,
+        "3,1": 83,
+        "4,3": 74,
+        "0,3": 94,
+        "1,3": 83,
+        "0,0": 71,
+        "1,2": 49,
+        "0,2": 63,
+        "3,4": 95,
+        "2,3": 86,
+        "3,3": 71,
+        "2,1": 91,
+        "4,1": 119,
+        "1,4": 47,
+        "2,4": 66,
+        "4,4": 62,
+        "4,0": 30,
+        "4,2": 96,
+        "3,0": 57,
+        "0,1": 74,
+        "1,1": 76,
+        "3,2": 50,
+        "0,4": 29
+      },
+      "spec": {
+        "fixture_family_3": 201,
+        "fixture_family_4": 225,
+        "fixture_family_5": 86,
+        "fixture_family_6": 94,
+        "fixture_family_7": 102,
+        "fixture_family_8": 93,
+        "fixture_family_9": 96,
+        "fixture_family_10": 109,
+        "fixture_family_11": 99,
+        "fixture_family_12": 108,
+        "fixture_family_13": 97,
+        "fixture_family_14": 100,
+        "fixture_family_15": 102,
+        "fixture_family_0": 99,
+        "fixture_family_1": 200,
+        "fixture_family_2": 189
+      }
+    },
+    "required": {
+      "regions": {
+        "center": 100,
+        "grid_5x5": 400,
+        "rim": 100,
+        "edge": 200
+      },
+      "toi_phase": {
+        "0": 50,
+        "1": 50,
+        "2": 50,
+        "3": 50
+      },
+      "contact_order": {
+        "1": 1,
+        "2": 100
+      },
+      "interference": {
+        "ground": 25,
+        "net": 25
+      },
+      "near_miss_gap": {
+        "0": 50,
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+      },
+      "near_miss_approach": {
+        "0": 50,
+        "1": 50,
+        "2": 50,
+        "3": 50,
+        "4": 50
+      },
+      "near_miss_proximity": {
+        "same_lane_near": 50,
+        "same_spec_other_lane": 50
+      },
+      "vn": {
+        "0": 25,
+        "1": 25,
+        "2": 25,
+        "3": 25
+      },
+      "vt": {
+        "0": 25,
+        "1": 25,
+        "2": 25,
+        "3": 25
+      },
+      "incidence": {
+        "0": 25,
+        "1": 25,
+        "2": 25
+      },
+      "racket_linear": {
+        "0": 25,
+        "1": 25,
+        "2": 25,
+        "3": 25
+      },
+      "racket_angular": {
+        "0": 25,
+        "1": 25,
+        "2": 25,
+        "3": 25
+      },
+      "part_geometry": {
+        "strings": 100,
+        "frame": 100
+      },
+      "face_grid": {
+        "0,0": 3,
+        "0,1": 3,
+        "0,2": 3,
+        "0,3": 3,
+        "0,4": 3,
+        "1,0": 3,
+        "1,1": 3,
+        "1,2": 3,
+        "1,3": 3,
+        "1,4": 3,
+        "2,0": 3,
+        "2,1": 3,
+        "2,2": 3,
+        "2,3": 3,
+        "2,4": 3,
+        "3,0": 3,
+        "3,1": 3,
+        "3,2": 3,
+        "3,3": 3,
+        "3,4": 3,
+        "4,0": 3,
+        "4,1": 3,
+        "4,2": 3,
+        "4,3": 3,
+        "4,4": 3
+      },
+      "spec": {
+        "fixture_family_3": 3,
+        "fixture_family_4": 3,
+        "fixture_family_5": 3,
+        "fixture_family_6": 3,
+        "fixture_family_7": 3,
+        "fixture_family_8": 3,
+        "fixture_family_9": 3,
+        "fixture_family_10": 3,
+        "fixture_family_11": 3,
+        "fixture_family_12": 3,
+        "fixture_family_13": 3,
+        "fixture_family_14": 3,
+        "fixture_family_15": 3,
+        "fixture_family_0": 3,
+        "fixture_family_1": 3,
+        "fixture_family_2": 3
+      }
+    },
+    "missing": [],
+    "passed": true
+  },
+  "split": {
+    "row_counts": {
+      "train": 2052,
+      "validation": 445,
+      "test": 503
+    },
+    "group_counts": {
+      "train": 12,
+      "validation": 2,
+      "test": 2
+    },
+    "source_overlap": {
+      "train:validation": [],
+      "train:test": [],
+      "validation:test": []
+    },
+    "source_overlap_free": true,
+    "group_overlap": {
+      "spec_id": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      },
+      "episode_id": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      },
+      "capture_id": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      },
+      "split_group": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      }
+    },
+    "group_overlap_free": true,
+    "spec_lane_family_overlap": {
+      "train:validation": [],
+      "train:test": [],
+      "validation:test": []
+    },
+    "specs": {
+      "train": [
+        "fixture_family_0",
+        "fixture_family_1",
+        "fixture_family_10",
+        "fixture_family_12",
+        "fixture_family_14",
+        "fixture_family_15",
+        "fixture_family_2",
+        "fixture_family_5",
+        "fixture_family_6",
+        "fixture_family_7",
+        "fixture_family_8",
+        "fixture_family_9"
+      ],
+      "validation": [
+        "fixture_family_13",
+        "fixture_family_3"
+      ],
+      "test": [
+        "fixture_family_11",
+        "fixture_family_4"
+      ]
+    },
+    "unseen_test_specs": [
+      "fixture_family_11",
+      "fixture_family_4"
+    ],
+    "unseen_spec_holdout": true,
+    "reference_pilot_sha256": "7e41695ee31e2e2814e08bb1a32de02c7bf086632f6db58d0a85a50331e92d0a"
+  },
+  "admission": {
+    "policy_training_admitted": false,
+    "contact_bptt": "detached",
+    "v13_residual_gradient": "detached"
+  },
+  "pilot_path": "/home/autodrive/LZQW/experiments/supermimic_b1_response_locked_20261121/pilot.pt",
+  "pilot_sha256": "2a855ab0c038e79d14d4c4d35a4b2d0d635f89c2ec9c46f0a64da5fe92b04023",
+  "all_negative_windows_force_verified": 1000
+}
