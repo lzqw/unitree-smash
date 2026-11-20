@@ -52,6 +52,9 @@ def validate_spec(spec):
         direction=torch.tensor(spec['request_directions'],dtype=torch.float64)
     if direction.shape!=(len(probe_lanes(spec)),18) or not torch.isfinite(direction).all() or not (direction.norm(dim=-1)>0).all():
         raise ValueError('Need finite nonzero18D request direction per lane')
+    if spec.get('capture_wm_window') and (
+            spec.get('data_role') != 'training_action_identification' or spec['tick'] - action_tick + 1 != 16):
+        raise ValueError('Mixed WM fitting requires a declared 16-step training intervention')
     if 'capture_substeps' in spec and type(spec['capture_substeps']) is not bool:
         raise ValueError('capture_substeps must be an explicit boolean')
     epsilon=spec['epsilon_request']
@@ -73,17 +76,66 @@ def perturb_request(request,spec,branch):
     action[probe_lanes(spec)]+=sign*spec['epsilon_request']*request.new_tensor(direction)
     return action.clamp(-1,1)
 
+class TrainingWindowRecorder:
+    """Record true pre-reset WM supervision exclusively on intervened training lanes."""
+    def __init__(self, lanes):
+        self.lanes = list(lanes)
+        self.schema = None
+        self.before_state = None
+        self.rows = []
+
+    def begin(self, env, request, public):
+        if self.before_state is not None:
+            raise RuntimeError('Missing end of previous probe transition')
+        self.before_state = capture_state(env)
+        self.public = public.detach().clone()
+        self.request = request.detach().clone()
+
+    def finish(self, env, reward):
+        from .supermimic_physical_loop_replay_v1 import row_tensors
+        from .supermimic_task_memory_schema_v1 import TaskMemorySchemaV1
+
+        before = self.before_state
+        after = capture_state(env)
+        if (before is None or after['control_tick'] != before['control_tick'] + 1
+                or not torch.equal(after['episode_index'], before['episode_index'])):
+            raise RuntimeError('Native WM labels must precede reset at the next control boundary')
+        if self.schema is None:
+            memory = dict(rally=before['task'], recovery=before['recovery'], auxiliary=before['auxiliary'])
+            self.schema = TaskMemorySchemaV1.from_native(memory, env.num_envs)
+        row = row_tensors(dict(before=before, after=after, final_joint_targets=env._sm_joint_targets,
+                               terminated=env.reset_terminated, timeout=env.reset_time_outs,
+                               reward_components=env._sm_reward_components), self.schema)
+        row.update(observation=self.public, requested_action=self.request, final_action=env._sm_final_action,
+                   applied_joint_torque=after['applied_torque'])
+        self.rows.append({key: value[self.lanes].detach().cpu() for key, value in row.items()})
+        self.before_state = None
+
+    def payload(self):
+        if self.before_state is not None or len(self.rows) != 16:
+            raise ValueError('Incomplete native WM window')
+        data = {key: torch.stack([r[key] for r in self.rows]) for key in self.rows[0]}
+        if (data['terminated'] | data['timeout']).any() or not (data['episode'] == data['episode'][0]).all():
+            raise ValueError('Perturbation crosses a selected episode boundary')
+        return dict(schema=self.schema.manifest(), lanes=self.lanes, tensors=data)
+
+
 class NativePairCapture:
     def __init__(self,spec,branch):
         self.spec=validate_spec(spec);self.branch=branch
         if branch not in BRANCHES:raise ValueError('Unknown probe branch')
-        self.prefix=hashlib.sha256();self.start=None;self.raw=None;self.substep_trace=None
+        self.prefix=hashlib.sha256();self.start=None;self.raw=None;self.substep_trace=None;self.wm_recorder=None
         self.step_records=[]
     def before(self,tick,env,observation,request):
         action_tick = self.spec.get('action_tick', self.spec['tick'])
         event_tick = self.spec['tick']
         action_hold_ticks = self.spec.get('action_hold_ticks', 1)
         if tick==action_tick:
+            if self.spec.get('capture_wm_window'):
+                if env.physical_transition_archive is not None:
+                    raise ValueError('A native recorder already owns this environment')
+                self.wm_recorder = TrainingWindowRecorder(probe_lanes(self.spec))
+                env.physical_transition_archive = self.wm_recorder
             state=capture_state(env)
             self.start=tensor_tree_copy(dict(before=state,observation=observation,executor_before=capture_controller(env._sm_residual_controller)),cpu=True)
             self.step_records=[]
@@ -110,7 +162,7 @@ class NativePairCapture:
         event_tick = self.spec['tick']
         if action_tick <= tick <= event_tick and self.start is not None:
             current=capture_state(env)
-            self.step_records.append(dict(
+            self.step_records.append(tensor_tree_copy(dict(
                 next_state=encode_physical(current['physical']),
                 final_action=current['physical']['final_action'],
                 final_joint_targets=env._sm_joint_targets,
@@ -118,7 +170,7 @@ class NativePairCapture:
                 ball_present=current['physical']['ball_present'],
                 elapsed_s=current['physical']['elapsed_s'],
                 done=done,
-            ))
+            ), cpu=True))
         if tick < action_tick:
             self.prefix.update(tree_digest(dict(targets=env._sm_joint_targets,final=env._sm_final_action,done=done)).encode())
         elif tick==event_tick:
@@ -130,6 +182,9 @@ class NativePairCapture:
                 request_after=self.request_after,task_after=captured['task'],recovery_after=captured['recovery'],
                 next_feet=captured['physical']['foot_contact'],command_valid_lanes=valid),cpu=True)
             self.raw['step_sequence']=tensor_tree_copy(self.step_records,cpu=True)
+            if self.wm_recorder is not None:
+                self.raw['wm_window'] = self.wm_recorder.payload()
+                env.physical_transition_archive = None
             if trace is not None:self.raw['substep_trace']=tensor_tree_copy(trace,cpu=True)
     def save(self,output,actor,task_contract,policy_execution,physics,seed):
         if self.raw is None:raise ValueError('Native probe did not finish')
