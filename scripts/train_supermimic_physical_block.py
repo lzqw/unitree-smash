@@ -275,7 +275,7 @@ def run(args, *, alternating=None):
     # The alternating schedule is constructed in main(), but execution happens
     # inside this function.  Import the runner here as well so the short
     # alternating path does not depend on main()'s local namespace.
-    from quadsmash.rl.supermimic_alternating_schedule_v1 import run_schedule
+    from quadsmash.rl.supermimic_alternating_schedule_v1 import run_schedule,refresh_world_budgets
     from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1
     from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
     lifecycle_stage(args.output, 'IMPORT_ALL')
