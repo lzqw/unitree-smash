@@ -212,9 +212,10 @@ class PhysicalHorizonTrainer:
                 event_time=intercept['time']
             reference=self.reference_bank.bind(state.physical,self.block_name,geometry=self.adapter.physical_model.geometry,
                 elapsed=state.clock_goal_context['elapsed'],event_time=event_time,**({'require_toi':True} if toi_only else {}))
+            reference['matched'] = reference['matched'] & selected
             if toi_only:
                 reference['intercept']=intercept
-                reference['matched']=reference['matched'] & intercept['valid'] & selected
+                reference['matched']=reference['matched'] & intercept['valid']
         toi_coverage_preserved=True
         for tick in range(cfg.imagination_steps):
             active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7
