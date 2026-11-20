@@ -57,6 +57,20 @@ def execute_scoped_native(output, run, app):
         close_native(output, None, app, primary_failed=failed)
 
 
+def native_process_main(main):
+    """Exit a process-owned Kit 5.1 run after scoped cleanup and preserve failures."""
+    os.environ['QUADSMASH_SKIP_KIT_CLOSE'] = '1'
+    try:
+        main()
+    except BaseException:
+        traceback.print_exc()
+        sys.stderr.flush()
+        os._exit(1)
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(0)
+
+
 def release_kit_stat_cache(output):
     """Reset the identified import cache while PhysX/Kit are still alive.
 

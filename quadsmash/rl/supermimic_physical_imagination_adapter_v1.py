@@ -69,7 +69,7 @@ class PhysicalImaginationAdapter(nn.Module):
         self.contact_bptt_mode=validate_contact_bptt_mode(mode)
         self.manifest['contact_bptt_mode']=self.contact_bptt_mode
 
-    def forward(self,state:PhysicalImaginationStateV1,actor_action):
+    def forward(self,state:PhysicalImaginationStateV1,actor_action,*,detach_ball=False):
         if int(self.task_model.fit_updates)==0:
             raise RuntimeError('Physical loop requires fitted task memory/event model')
         c=state.clock_goal_context
@@ -83,10 +83,11 @@ class PhysicalImaginationAdapter(nn.Module):
         # unverified ball/contact Jacobian can reach the actor.  This only
         # affects imagination gradients.  World-model supervision continues to
         # use the complete native ball target in fit_world_window().
-        if self.contact_bptt_mode in ('blocked', 'detached', 'precontact'):
+        if detach_ball or self.contact_bptt_mode in ('blocked', 'detached', 'precontact'):
+            force_detach=detach_ball
             detach_ball = torch.ones(len(predicted), dtype=torch.bool,
                                      device=predicted.device)
-            if self.contact_bptt_mode == 'precontact':
+            if self.contact_bptt_mode == 'precontact' and not force_detach:
                 rally = state.task_memory.get('rally', {})
                 had_contact = rally.get('had_contact')
                 if had_contact is not None:

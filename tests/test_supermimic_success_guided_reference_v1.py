@@ -87,3 +87,28 @@ def test_unknown_reference_identity_cannot_claim_holdout_independence():
     del bank.entries[0]['lane_id']
     with pytest.raises(ValueError,match='identity missing'):
         bank.assert_excludes([2])
+
+
+def test_toi_surrogate_uses_racket_at_arrival_without_ball_gradient():
+    from quadsmash.rl.supermimic_toi_racket_objective import intercept_loss
+    geometry, data=fixture()
+    bank=TaskSpaceReferenceBankV1.from_packed(data,geometry)
+    before=data['state'][3].clone().requires_grad_()
+    after=before.detach().clone().requires_grad_()
+    start=torch.tensor([.03,.03,.03]);end=start+.01
+    ref=bank.bind(before,'approach',geometry=geometry,elapsed=start,require_toi=True)
+    ref['intercept']=dict(time=torch.tensor([.035,.041,float('inf')]),
+                          valid=torch.tensor([True,True,False]),position=before.detach()[:,49:52]+.05)
+    loss,weights=intercept_loss(before,after,start,end,ref,torch.ones(3,dtype=torch.bool),torch.ones(3),geometry)
+    assert weights.tolist()==[1,0,0]
+    for grad in torch.autograd.grad(loss,(before,after)):
+        assert grad[0,:49].norm()>0 and grad[:,49:].count_nonzero()==0
+        assert grad[1:].count_nonzero()==0
+
+    fixed=torch.tensor([.7,0.,0.])
+    _,w=intercept_loss(before,after,start,end,ref,torch.ones(3,dtype=torch.bool),
+                       torch.tensor([.1,1.,1.]),geometry,fixed_weights=fixed)
+    torch.testing.assert_close(w,fixed)
+    _,lost=intercept_loss(before,after,start,end,ref,torch.zeros(3,dtype=torch.bool),
+                          torch.ones(3),geometry,fixed_weights=fixed)
+    assert not ((fixed<=0)|(lost>0)).all()

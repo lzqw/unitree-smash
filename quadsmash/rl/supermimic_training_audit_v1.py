@@ -44,7 +44,9 @@ def rollback_audit(*, phase, update_index, proposal_checkpoint,
     backtracked = accepted and alpha < 1.0
     rejected = not accepted
     reasons = []
-    for trial in trials[:-1] if len(trials) > 1 else trials:
+    for trial in (trials[:-1] if accepted else trials):
+        if not trial.get("toi_coverage_preserved", True):
+            reasons.append("lost_toi_lane")
         if not bool(trial.get("budget_ok", True)):
             reasons.append("command_or_target_budget")
         if float(trial.get("loss", stats.get("objective_before", 0.0))) > float(stats.get("objective_before", 0.0)):
@@ -61,6 +63,7 @@ def rollback_audit(*, phase, update_index, proposal_checkpoint,
         "rollback_mode": "alpha_backtrack" if backtracked else ("full_snapshot_restore" if rejected else "none"),
         "pre_metrics": pre_metrics,
         "post_metrics": post_metrics,
+        "native_metric_scope": "mixed-policy collection through this proposal; updated actor evaluated at next frozen refresh",
         "pre_actor_loss": stats.get("objective_before"),
         "post_actor_loss": stats.get("objective_after"),
         "kl": stats.get("kl"),

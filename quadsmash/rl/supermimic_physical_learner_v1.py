@@ -184,27 +184,39 @@ class PhysicalHorizonTrainer:
     def frozen_hash(self):
         return tensor_digest((k,v) for k,v in self.actor.state_dict().items() if k not in self.trainable_names)
 
-    def _rollout_objective(self, initial_state, *, effective_weights=None):
+    def tracking_coefficient(self, head):
+        if head=='approach' and getattr(self,'approach_objective','task')=='toi_racket_only':
+            return self.toi_racket_weight
+        return self.tracking_weight
+
+    def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None):
         from .supermimic_approach_data_v1 import masked_lane_mean
         cfg=self.timebase; state=initial_state.branch()
         states=[]; rewards=[]; dones=[]; valid=[]; anchors=[]; gates=[]; tracks=[]; track_weights=[]; track_states=[]
         selected=state.clock_goal_context.get('actor_lane_mask',torch.ones(len(state.physical),dtype=torch.bool,device=state.physical.device))
         survival=state.physical.new_ones(len(state.physical))
         reference=None
-        toi_racket_weight=getattr(self,'toi_racket_weight',1.0)
-        reference_weight=(toi_racket_weight if self.block_name=='approach'
-                          and getattr(self,'approach_objective','task')=='toi_racket_only'
-                          else self.tracking_weight)
-        if self.reference_bank is not None and reference_weight>0 and self.block_name in ('approach','recovery'):
+        toi_only = self.block_name=='approach' and getattr(self,'approach_objective','task')=='toi_racket_only'
+        if toi_only:
+            from .supermimic_toi_racket_objective import flight_intercept, intercept_loss
+            intercept=flight_intercept(state,cfg.imagination_steps*cfg.control_dt_s)
+        tracking_coeff=self.tracking_coefficient(self.block_name)
+        if self.reference_bank is not None and tracking_coeff>0 and self.block_name in ('approach','recovery'):
             # G07's causal current plan is available without consulting archived
             # future contacts. Missing plans use current-state phase matching.
             base=getattr(state.executor_memory,'reference_controller',None)
             event_time=getattr(base,'event_time',None) if self.block_name=='approach' else None
             if event_time is not None and hasattr(base,'planned'):
                 event_time=torch.where(base.planned,event_time,torch.full_like(event_time,float('nan')))
+            if toi_only:
+                event_time=intercept['time']
             reference=self.reference_bank.bind(state.physical,self.block_name,geometry=self.adapter.physical_model.geometry,
-                elapsed=state.clock_goal_context['elapsed'],event_time=event_time)
-        for _ in range(cfg.imagination_steps):
+                elapsed=state.clock_goal_context['elapsed'],event_time=event_time,**({'require_toi':True} if toi_only else {}))
+            if toi_only:
+                reference['intercept']=intercept
+                reference['matched']=reference['matched'] & intercept['valid'] & selected
+        toi_coverage_preserved=True
+        for tick in range(cfg.imagination_steps):
             active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7
             if not active.any():break
             current=self.adapter.critic_input(state)
@@ -219,20 +231,16 @@ class PhysicalHorizonTrainer:
             if self.block_name=='approach':
                 if 'had_contact' not in rally:track_mask=torch.zeros_like(track_mask)
                 else:track_mask=track_mask&(rally['had_contact'].reshape(-1)<.5)
-            if self.block_name=='approach' and getattr(self,'approach_objective','task')=='toi_racket_only':
-                # Restrict the auxiliary reference gradient to the verified
-                # event-aligned TOI neighbourhood.  The ball/contact branch
-                # remains detached by the selected precontact stage.
-                if reference is not None:
-                    elapsed=state.clock_goal_context['elapsed'].reshape(-1)
-                    toi_phase=(elapsed+reference['offset']-reference['anchor_time']).abs()<=.03
-                    track_mask=track_mask&toi_phase
-            state,reward,done,_=self.adapter(state,action)
+            previous=state
+            state,reward,done,_=self.adapter(state,action,**({'detach_ball': True} if toi_only else {}))
             if reference is not None:
-                if self.block_name=='approach' and getattr(self,'approach_objective','task')=='toi_racket_only':
-                    numerator,denominator,weights=self.reference_bank.toi_loss(
-                        state.physical,reference,self.block_name,self.adapter.physical_model.geometry,
-                        valid_mask=track_mask,weights=survival,return_components=True)
+                if toi_only:
+                    numerator,weights=intercept_loss(previous.physical,state.physical,
+                        previous.clock_goal_context['elapsed'].reshape(-1),state.clock_goal_context['elapsed'].reshape(-1),
+                        reference,track_mask,survival,self.adapter.physical_model.geometry,
+                        fixed_weights=None if baseline_toi_weights is None else baseline_toi_weights[tick])
+                    if baseline_toi_weights is not None:
+                        toi_coverage_preserved &= bool(((baseline_toi_weights[tick]<=0) | (weights>0)).all())
                 else:
                     numerator,denominator,weights=self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
                         geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival,return_components=True)
@@ -247,6 +255,8 @@ class PhysicalHorizonTrainer:
         # that were selected by the original proposal's gate/survival trace.
         if effective_weights is not None:weights=effective_weights.detach()
         task_loss=-masked_lane_mean(ret,weights)
+        if toi_only:
+            task_loss=task_loss.detach()
         anchor_loss=masked_lane_mean(torch.stack(anchors).sum(0),weights)
         track_weight_sum=torch.stack(track_weights).sum() if tracks else ret.new_zeros(())
         tracking_loss=torch.stack(tracks).sum()/track_weight_sum.clamp_min(1e-8) if tracks else ret.sum()*0.
@@ -258,17 +268,16 @@ class PhysicalHorizonTrainer:
             for g,w in zip(gradients,[track_weights[i] for i in differentiable]):
                 if g is not None:responding|=(g.detach().abs().sum(-1)>0)&(w>0)
             nonzero_lanes=int(responding.sum())
-        toi_racket_weight=getattr(self,'toi_racket_weight',1.0)
-        tracking_coeff=(toi_racket_weight if self.block_name=='approach'
-                        and getattr(self,'approach_objective','task')=='toi_racket_only'
-                        else self.tracking_weight)
-        loss=task_loss+tracking_coeff*tracking_loss+self.anchor_coeff*anchor_loss
+        loss=tracking_coeff*tracking_loss+self.anchor_coeff*anchor_loss
+        if not toi_only:
+            loss=loss+task_loss
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical BPTT objective')
         from .supermimic_dual_head_quality_v1 import reference_coverage
         coverage=reference_coverage(self.reference_bank,self.block_name,tracking_coeff)
         coverage.update(matched_lanes=int(reference['matched'].sum()) if reference else 0,
             effective_weight_sum=float(track_weight_sum.detach()),tracking_applied=bool(tracks and float(track_weight_sum.detach())>0))
-        return dict(reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
+        return dict(toi_weights=torch.stack(track_weights).detach() if toi_only and tracks else None,
+                    toi_coverage_preserved=toi_coverage_preserved,reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
                     gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
                     critic_data=(torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid)),
                     tracking_steps=len(tracks),tracking_objective=getattr(self,'approach_objective','task') if self.block_name=='approach' else 'recovery_reference',
@@ -297,10 +306,7 @@ class PhysicalHorizonTrainer:
                 if update_actor and rollout['gate_lanes']:
                     grad_stats=gradient_parts({k:rollout[k] for k in ('task','tracking','anchor')},parameters)
                     # Anchor-only momentum is not an effective task update.
-                    toi_racket_weight=getattr(self,'toi_racket_weight',1.0)
-                    tracking_coeff=(toi_racket_weight if self.block_name=='approach'
-                                    and getattr(self,'approach_objective','task')=='toi_racket_only'
-                                    else self.tracking_weight)
+                    tracking_coeff=self.tracking_coefficient(self.block_name)
                     if grad_stats['task_gradient_norm']+tracking_coeff*grad_stats['tracking_gradient_norm']>1e-12:
                         rollout['loss'].backward()
                         norm=torch.sqrt(sum((p.grad.detach().square().sum() for p in parameters if p.grad is not None),rollout['loss'].new_zeros(())))
@@ -320,9 +326,13 @@ class PhysicalHorizonTrainer:
                                         bounded &= (native['final_normalized_command_delta']<=self.native_reference_command_budget and native['final_joint_target_delta_rad']<=self.native_reference_target_budget_rad)
                                     # Measure final executable commands on identical real states/memory.
                                     effect=max(self._max_budget_delta(n,b)[2] for n,b in zip(self._budget_snapshot(),before_budget))
-                                    restore_rng(); candidate_loss=float(self._rollout_objective(initial_state,effective_weights=rollout['effective_weights'])['loss'])
-                                trials.append(dict(alpha=candidate_alpha,loss=candidate_loss,budget_ok=bool(bounded),final_command_change=effect))
-                                if bounded and effect>0 and candidate_loss<=baseline_loss:
+                                    restore_rng()
+                                    evaluation=self._rollout_objective(initial_state,effective_weights=rollout['effective_weights'],
+                                                                      baseline_toi_weights=rollout['toi_weights'])
+                                    candidate_loss=float(evaluation['loss'])
+                                    coverage_ok=evaluation['toi_coverage_preserved']
+                                trials.append(dict(alpha=candidate_alpha,loss=candidate_loss,budget_ok=bool(bounded),toi_coverage_preserved=coverage_ok,final_command_change=effect))
+                                if bounded and coverage_ok and effect>0 and candidate_loss<=baseline_loss:
                                     alpha=candidate_alpha;accepted=True;break
                             if accepted:
                                 # Adam moments correspond to the original same-gradient proposal;

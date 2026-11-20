@@ -123,9 +123,15 @@ class TaskSpaceReferenceBankV1:
                     features=task_space_features(seq,geometry,mode).detach()
                     # Match within the same event phase. Terminal features are
                     # offline reference labels; never supplied to current actor.
+                    toi_data = {}
+                    if mode == 'approach':
+                        from .supermimic_toi_racket_objective import racket_features
+                        contact_state = seq[anchor:anchor+1]
+                        kin = racket_features(contact_state, geometry).detach()[0]
+                        toi_data['toi_racket'] = torch.cat((kin[:3] - contact_state[0,49:52], kin[3:]))
                     choices=torch.arange(max(0,anchor-64),anchor+1,device=seq.device) if mode=='approach' else torch.arange(anchor,len(seq),device=seq.device)
                     digest=hashlib.sha256(seq.cpu().contiguous().numpy().tobytes()+mode.encode()).hexdigest()
-                    entries.append(dict(mode=mode,features=features,times=times.detach(),anchor_time=float(times[anchor]),
+                    entries.append(dict(**toi_data,mode=mode,features=features,times=times.detach(),anchor_time=float(times[anchor]),
                                         choices=choices,policy_id=str(policy_id),lane_id=lane,episode_id=int(d['episode'][end,lane]),
                                         digest=digest,source_sha256=source_sha256,terminal_verified=True,
                                         score_schema=label['scoring_schema'] if label else 'event-flags-only'))
@@ -147,9 +153,13 @@ class TaskSpaceReferenceBankV1:
         self.entries=list(reversed(kept))
         self.excluded_lanes=tuple(sorted(excluded))
 
-    def bind(self,initial_physical,mode,*,geometry,elapsed,event_time=None):
+    def bind(self,initial_physical,mode,*,geometry,elapsed,event_time=None,require_toi=False):
         current=task_space_features(initial_physical,geometry,mode).detach()
         candidates=[e for e in self.entries if e['mode']==mode]
+        if require_toi:
+            candidates=[e for e in candidates if 'toi_racket' in e]
+            if not candidates:
+                raise ValueError('Rebuild Approach references from native episodes with racket angular velocity')
         if not candidates:return None
         best=current.new_full((len(current),),float('inf')); chosen=torch.zeros(len(current),dtype=torch.long,device=current.device)
         aligned=current.new_zeros(len(current))
@@ -178,7 +188,8 @@ class TaskSpaceReferenceBankV1:
         anchor_time=anchor_table[chosen]
         anchor_index=(time_table[chosen]-anchor_time[:,None]).abs().argmin(-1)
         anchor_features=feature_table[chosen,anchor_index]
-        return dict(indices=chosen,matched=torch.isfinite(best)&(best<=self.match_distance_threshold),
+        toi_data = {'toi_racket':torch.stack([e['toi_racket'].to(current) for e in candidates])[chosen]} if require_toi else {}
+        return dict(**toi_data,indices=chosen,matched=torch.isfinite(best)&(best<=self.match_distance_threshold),
                     times=time_table[chosen],features=feature_table[chosen],lengths=sizes[chosen],
                     distance=best,offset=aligned-elapsed.detach().reshape(-1),
                     anchor_time=anchor_time,anchor_features=anchor_features)

@@ -26,3 +26,20 @@ def test_failed_compression_never_publishes_chunk_and_preserves_failure_artifact
     path=tmp_path/'chunk.pt.zst'
     with pytest.raises(RuntimeError,match='9'):storage.write_archive_chunk(path,b'payload',compress=True,reserve_bytes=0)
     assert not path.exists() and path.with_name(path.name+'.pending').exists()
+
+
+@pytest.mark.parametrize('compressed',[False, True])
+def test_resume_reads_verified_rows_and_releases_temporary_file(tmp_path, compressed):
+    import io
+    import torch
+    data=io.BytesIO()
+    torch.save(dict(rows=[{'sample':torch.arange(8)}]),data)
+    name='chunk.pt.zst' if compressed else 'chunk.pt'
+    receipt=storage.write_archive_chunk(tmp_path/name,data.getvalue(),compress=compressed,reserve_bytes=0)
+    receipt.update(file=name,ticks=1)
+    with storage.read_archive_rows(tmp_path,receipt,scratch=tmp_path) as rows:
+        torch.testing.assert_close(rows[0]['sample'],torch.arange(8))
+    assert list(tmp_path.iterdir())==[tmp_path/name]
+    with pytest.raises(ValueError,match='hash mismatch'):
+        with storage.read_archive_rows(tmp_path,dict(receipt,sha256='bad'),scratch=tmp_path):
+            pass

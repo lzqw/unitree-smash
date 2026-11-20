@@ -23,10 +23,10 @@ fi
 mkdir "$RUN_ROOT/tensorboard"
 REF_BANK="${SM_TASK_REFERENCE_BANK:?set SM_TASK_REFERENCE_BANK to a terminal-verified v2 bank}"
 TRACK_WEIGHT="${SM_TRACKING_WEIGHT:?declare SM_TRACKING_WEIGHT before this experiment}"
-R_UPDATES="${SM_RECOVERY_UPDATES:-256}"
-A_UPDATES="${SM_APPROACH_UPDATES:-256}"
-R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-512}"
-A_PROPOSALS="${SM_APPROACH_PROPOSALS:-512}"
+R_UPDATES="${SM_RECOVERY_UPDATES:-128}"
+A_UPDATES="${SM_APPROACH_UPDATES:-128}"
+R_PROPOSALS="${SM_RECOVERY_PROPOSALS:-256}"
+A_PROPOSALS="${SM_APPROACH_PROPOSALS:-256}"
 CYCLES="${SM_CYCLES:-1}"
 TB_PID=""
 cleanup(){
@@ -41,6 +41,32 @@ echo "CONFIG=$ROOT/configs/supermimic_success_guided_v2.json"
 
 "$PYTHON" -m tensorboard.main --logdir "$RUN_ROOT/tensorboard" --host 127.0.0.1 --port "${SM_TENSORBOARD_PORT:-6006}" >"$RUN_ROOT/tensorboard.log" 2>&1 &
 TB_PID=$!
+"$PYTHON" - "$TB_PID" "${SM_TENSORBOARD_PORT:-6006}" "$RUN_ROOT/tensorboard" <<'PYTB'
+import json
+import os
+from pathlib import Path
+import sys
+import time
+from urllib.request import urlopen
+
+pid, port, logdir = sys.argv[1:]
+for _ in range(60):
+    try:
+        os.kill(int(pid), 0)
+    except ProcessLookupError:
+        sys.exit('TensorBoard exited during startup. See tensorboard.log.')
+    try:
+        with urlopen(f'http://127.0.0.1:{port}/data/logdir', timeout=1) as response:
+            served = json.load(response)['logdir']
+    except (OSError, ValueError, KeyError):
+        time.sleep(1)
+        continue
+    if Path(served).resolve() != Path(logdir).resolve():
+        sys.exit('TensorBoard port belongs to a different log directory.')
+    break
+else:
+    sys.exit('TensorBoard did not serve this run within 60 seconds.')
+PYTB
 
 PREV=""
 if [[ -n "${SM_RESUME_CHECKPOINT:-}" ]]; then
@@ -84,7 +110,7 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     TRAIN_ARGS+=(--action-ball-checkpoint "$SM_ACTION_BALL_CHECKPOINT")
   fi
   if [[ "${SM_TRAINING_PROFILE:-large}" == large ]]; then
-    TRAIN_ARGS+=(--training-profile large --contact-validation-receipt "${SM_CONTACT_VALIDATION_RECEIPT:?contact validation evidence required}")
+    TRAIN_ARGS+=(--training-profile large --wm-sampling-mode promotion --contact-validation-receipt "${SM_CONTACT_VALIDATION_RECEIPT:?contact validation evidence required}")
   fi
   if [[ -n "$PREV" ]]; then
     TRAIN_ARGS+=(--resume-training "$PREV" --resume-warmup-ticks 0)

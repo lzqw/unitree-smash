@@ -184,6 +184,7 @@ def test_launcher_and_configs_match_pair_refresh_and_keep_native_promotion():
     assert 'SM_CYCLES:-1' in outer and 'SM_RECOVERY_UPDATES:-128' in outer and 'SM_APPROACH_UPDATES:-128' in outer
     assert c['imagination_s']==.64 and c['world_window_s']==.16
     shell=(root/'scripts/run_supermimic_phase1_long_v1.sh').read_text()
+    assert '--training-profile large --wm-sampling-mode promotion' in shell
     assert '--sequential-layout short-alternating' in shell
     assert 'SM_REFRESH_MODE:-pair' in shell and 'SM_TRAINING_PROFILE:-large' in shell
     assert shell.index('verify_supermimic_promotion.py')>shell.index('scripts/evaluate_supermimic_v1.py')

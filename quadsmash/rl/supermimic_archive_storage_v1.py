@@ -1,4 +1,7 @@
 """Bounded archive writes; preserve pending bytes and never publish partial chunks."""
+from contextlib import contextmanager
+import tempfile
+import zipfile
 import hashlib
 import os
 from pathlib import Path
@@ -36,3 +39,28 @@ def write_archive_chunk(path,payload,*,compress=False,reserve_bytes=RESERVE_BYTE
     with path.open('rb') as stream:
         for block in iter(lambda:stream.read(1<<20),b''):digest.update(block)
     return dict(sha256=digest.hexdigest(),serialized_bytes=len(payload),bytes=path.stat().st_size,storage_guard=budget)
+
+@contextmanager
+def read_archive_rows(directory, receipt, *, scratch):
+    """Hash compressed bytes, then map the serialized CPU tensors one chunk at a time."""
+    import torch
+    path = Path(directory) / receipt['file']
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        for block in iter(lambda:stream.read(8 << 20), b''):
+            digest.update(block)
+    if digest.hexdigest() != receipt['sha256']:
+        raise ValueError('Resume archive hash mismatch: '+str(path))
+    with tempfile.TemporaryDirectory(dir=scratch, prefix='replay_read_') as temp:
+        if path.suffix == '.zst':
+            require_archive_space(scratch, receipt.get('serialized_bytes', 0))
+            unpacked = Path(temp)/'chunk.pt'
+            with unpacked.open('wb') as stream:
+                subprocess.run(['zstd','-q','-d','-c',str(path)],stdout=stream,check=True)
+            if 'serialized_bytes' in receipt and unpacked.stat().st_size!=receipt['serialized_bytes']:
+                raise ValueError('Replay decompressed size mismatch')
+            path = unpacked
+        chunk = torch.load(path, map_location='cpu', weights_only=True, mmap=zipfile.is_zipfile(path))
+        if len(chunk['rows'])!=receipt['ticks']:
+            raise ValueError('Archived tick count differs from receipt')
+        yield chunk['rows']

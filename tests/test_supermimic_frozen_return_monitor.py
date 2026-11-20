@@ -40,3 +40,15 @@ def test_resume_threshold_changes_and_case_contract_changes_rejected():
     m=FrozenReturnMonitor();observe(m,-10)
     with pytest.raises(ValueError):FrozenReturnMonitor(patience=3).load_state_dict(m.state_dict())
     with pytest.raises(ValueError):m.observe(records(-9),policy_id='p',actor_sha256='p',contract_sha256='changed-task')
+
+
+def test_repeated_frozen_validation_does_not_consume_plateau_patience():
+    m=FrozenReturnMonitor()
+    observe(m,-10)
+    assert observe(m,-10)['flat_streak']==0
+    state=m.state_dict()
+    state['flat']=1  # Older refresh-only checkpoint.
+    resumed=FrozenReturnMonitor();resumed.load_state_dict(state)
+    assert observe(resumed,-10,'next')['flat_streak']==1
+    assert observe(resumed,-10,'next')['stop_reason'] is None
+    assert observe(resumed,-10,'third')['stop_reason']=='native-frozen-return-plateau'

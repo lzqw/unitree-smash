@@ -32,7 +32,10 @@ class FrozenReturnMonitor:
                 raise ValueError('Native monitoring protocol/case set changed')
             delta=mean-previous['mean'];row['delta']=delta
             self.decline=self.decline+1 if delta < -self.config['drop_tolerance'] else 0
-            self.flat=self.flat+1 if abs(delta)<=self.config['flat_tolerance'] else 0
+            repeated=previous['actor_sha256']==actor_sha256
+            row['same_actor_as_previous']=repeated
+            if not repeated:
+                self.flat=self.flat+1 if abs(delta)<=self.config['flat_tolerance'] else 0
             if self.decline>=self.config['patience']:self.stop_reason='native-frozen-return-declining'
             elif self.flat>=self.config['patience']:self.stop_reason='native-frozen-return-plateau'
         self.rows.append(row)
@@ -46,3 +49,10 @@ class FrozenReturnMonitor:
     def load_state_dict(self,state):
         if state['schema']!=self.schema or state['config']!=self.config:raise ValueError('Native monitor resume contract differs')
         self.rows=list(state['rows']);self.decline=int(state['decline']);self.flat=int(state['flat']);self.stop_reason=state['stop_reason']
+        if not self.stop_reason and any(a['actor_sha256']==b['actor_sha256'] for a,b in zip(self.rows,self.rows[1:])):
+            # Older runs counted re-evaluation of one frozen policy as another
+            # optimizer result. Reconstruct only the plateau streak on resume.
+            self.flat=0
+            for a,b in zip(self.rows,self.rows[1:]):
+                if a['actor_sha256']!=b['actor_sha256']:
+                    self.flat=self.flat+1 if abs(b['mean']-a['mean'])<=self.config['flat_tolerance'] else 0

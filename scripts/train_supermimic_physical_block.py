@@ -202,6 +202,8 @@ def main():
     try:FrozenReturnMonitor(args.native_return_drop_tolerance,args.native_return_flat_tolerance,args.native_return_patience)
     except ValueError as exc:parser.error(str(exc))
     if args.tracking_weight < 0 or args.toi_racket_weight < 0 or (args.tracking_weight > 0 and args.task_reference_bank is None): parser.error('Tracking weights and reference-bank settings are invalid')
+    if args.approach_objective=='toi_racket_only' and (args.toi_racket_weight<=0 or args.training_stage=='full_contact'):
+        parser.error('TOI-only Approach requires positive racket weight and a detached-contact diagnostic stage')
     if args.approach_objective=='toi_racket_only' and args.task_reference_bank is None:
         parser.error('toi_racket_only requires a validated event-aligned task reference bank')
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
@@ -530,17 +532,11 @@ def run(args, *, alternating=None):
                 directory=Path(directory)
                 receipt=replay_receipts[archive_index] if replay_receipts is not None else json.loads((directory/'manifest.json').read_text())
                 for item in receipt['chunks']:
-                    path=directory/item['file']
-                    if hashlib.sha256(path.read_bytes()).hexdigest()!=item['sha256']:raise ValueError('Resume archive hash mismatch')
-                    if path.suffix == '.zst':
-                        proc=subprocess.run(['zstd','-q','-d','-c',str(path)],check=True,capture_output=True)
-                        chunk=torch.load(io.BytesIO(proc.stdout),map_location='cpu',weights_only=True)
-                    else:
-                        chunk=torch.load(path,map_location='cpu',weights_only=True)
-                    # Rebuild only the compact chronological ring on resume.
-                    # Dynamic executor starts are restored separately below;
-                    # reconstructing every historical tree would be unbounded.
-                    for row in chunk['rows']:replay.append(row,retain_start=False,policy_version=row.get('policy_version',0))
+                    from quadsmash.rl.supermimic_archive_storage_v1 import read_archive_rows
+                    with read_archive_rows(directory,item,scratch=args.output) as rows:
+                        for row in rows:
+                            replay.append(row,retain_start=False,policy_version=row.get('policy_version',0))
+                    del rows
             if 'actor_start_bank' in resumed:
                 replay.actor_start_bank.load_state_dict(tensor_tree_copy(resumed['actor_start_bank'],cpu=True))
             elif args.resume_start_block=='approach':
@@ -885,7 +881,7 @@ def run(args, *, alternating=None):
                 native_return_scope='matching-execution frozen-policy completed episodes only; validation lanes excluded',epoch_budget=2)
             write(args.output/'native_critic_calibration.json',native_calibration_fit)
         def check_head_quality(head,attempt):
-            coverage=reference_coverage(trainer.reference_bank,head,trainer.tracking_weight)
+            coverage=reference_coverage(trainer.reference_bank,head,trainer.tracking_coefficient(head))
             write(args.output/(head+'_reference_coverage.json'),coverage)
             if dual_quality is None:
                 return dict(enforced=False,reference=coverage,reason='no calibrated dual-head bounds configured')
@@ -1139,7 +1135,7 @@ def run(args, *, alternating=None):
                 stats['post_native_metrics'] = post_native_metrics
                 stats['rollback'] = rollback_audit(
                     phase=block_name,
-                    update_index=accepted + 1,
+                    update_index=accepted if stats['update_accepted'] else accepted+1,
                     proposal_checkpoint=proposal_checkpoint,
                     stats=stats,
                     pre_metrics=pre_native_metrics,
@@ -1201,7 +1197,12 @@ def run(args, *, alternating=None):
             refresh_dir.mkdir(exist_ok=False)
             from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
             actor_hash=tensor_digest(actor.state_dict().items())
-            refresh_collector=FrozenRefresh(128,800,timebase.gamma,policy_id,adapter.task_model.memory_schema,stage_ticks=tuple(sorted(set(CRITIC_TICKS+APPROACH_TICKS+RECOVERY_TICKS))),start_encoder=encode_native_value_start)
+            fit_ticks=sorted(set(CRITIC_TICKS+APPROACH_TICKS+RECOVERY_TICKS))
+            # Consecutive native inputs permit a one-step TD diagnostic. Only
+            # the originally specified phases are eligible for calibration.
+            capture_ticks=sorted(set(fit_ticks) | {t+1 for t in fit_ticks if t+1<800})
+            refresh_collector=FrozenRefresh(128,800,timebase.gamma,policy_id,adapter.task_model.memory_schema,
+                stage_ticks=capture_ticks,start_encoder=encode_native_value_start)
             replay.new_stream(source='online',policy_version=global_accepted_id)
             start_tick=tick
             record_cursor=len(env.rally_records)
@@ -1298,9 +1299,11 @@ def run(args, *, alternating=None):
             native_value_bank=dict(inputs=x,rtg=y,identity=native_identity,head_masks={h:torch.cat(v) for h,v in native_masks.items()},
                 policy_id=policy_id,actor_sha256=actor_hash,policy_execution=policy_execution,source_sha256=file_sha(refresh_dir/'complete_episodes.pt'),accepted_updates=global_accepted_id,
                 label_actor_state={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()})
-            native_rows=torch.arange(len(y))
+            train_mask=torch.isin(phase_ids,torch.tensor(fit_ticks))
             if wm_holdout_lanes:
-                train_mask,_=split_native_value_rows(native_value_bank,wm_holdout_lanes);native_rows=native_rows[train_mask]
+                permitted,_=split_native_value_rows(native_value_bank,wm_holdout_lanes)
+                train_mask &= permitted
+            native_rows=torch.where(train_mask)[0]
             visited=torch.zeros(len(y),dtype=torch.bool)
             order=native_rows[torch.randperm(len(native_rows),generator=replay.generator)]
             fits=[]
@@ -1354,7 +1357,7 @@ def run(args, *, alternating=None):
                 paired['actor_sha256']=actor_hash
                 write(paired_eval_dir/f'{stage_name}_{refresh_serial:02d}.json',paired)
                 receipt_paired=paired
-            receipt['reference_coverage']={h:reference_coverage(trainer.reference_bank,h,trainer.tracking_weight) for h in ('recovery','approach')}
+            receipt['reference_coverage']={h:reference_coverage(trainer.reference_bank,h,trainer.tracking_coefficient(h)) for h in ('recovery','approach')}
             if actor_hash!=tensor_digest(actor.state_dict().items()):raise RuntimeError('Refresh WM/critic fitting changed actor')
             receipt.update(complete_episodes=128,actor_unchanged=True,world_updates=refresh_stats['world_updates'],critic_updates=len(fits),critic_fits=fits,
                            warmup_ticks=0,partial_suffix_scope='WM only, excluded from calibration')
