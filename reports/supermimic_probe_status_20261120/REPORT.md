@@ -203,6 +203,15 @@ improved early linear-velocity gain but degraded some late-step direction and
 velocity samples. The fit remains offline evidence only and does not issue a
 WM or contact receipt.
 
+A five-fold leave-one-event-spec check was also run for 128 updates per fold,
+rotating the held-out specification over all five event ticks. Racket position
+or linear-velocity error improved in some folds, but full robot-state MAE
+increased in every fold and angular-velocity error increased in most folds.
+The 12-row action-identification set is therefore useful for diagnosing delayed
+response, but too small and specialized to replace the natural-distribution
+WM. The fitted body remains a diagnostic candidate with no policy-training
+admission.
+
 ## Current gate
 
 The collection environment and data path are operational, and natural plus
