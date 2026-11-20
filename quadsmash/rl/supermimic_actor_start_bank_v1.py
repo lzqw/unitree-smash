@@ -17,11 +17,23 @@ class ActorStartBank:
         prior=self.last_gate.get(stream,torch.zeros_like(gate));self.last_gate[stream]=gate.clone()
         onset=pre&(((gate>0)&(gate<=.25))|((gate>.25)&(prior<=.25)))
         active=pre&(gate>.25)
+        # Native collection runs under inference mode.  Tensors created by
+        # boolean operations there are inference tensors and cannot later be
+        # updated when terminal labels arrive.  Materialize ordinary CPU
+        # tensors for the mutable mask state kept by this bank.
+        def mutable_mask(value):
+            out=torch.empty(value.shape,dtype=torch.bool)
+            out.copy_(value.to(dtype=torch.bool))
+            return out
+        onset=mutable_mask(onset)
+        active=mutable_mask(active)
         if not (onset|active).any():return
         if not onset.any() and native_tick-self.last_tick.get(stream,-100)<4:return
         self.last_tick[stream]=native_tick;self.seen+=1
         entry=dict(start=start,stream=int(stream),policy_version=int(policy_version),native_tick=int(native_tick),
-                   masks=dict(gate_onset=onset,pre_contact=active,failure_pre=torch.zeros_like(active),success_near=torch.zeros_like(active)))
+                   masks=dict(gate_onset=onset,pre_contact=active,
+                              failure_pre=torch.zeros(active.shape,dtype=torch.bool),
+                              success_near=torch.zeros(active.shape,dtype=torch.bool)))
         # Reservoir avoids "last 8 lanes" and retains pre-event snapshots until
         # terminal labels arrive. No snapshot is synthesized by mixing G07 trees.
         if len(self.entries)<self.capacity:self.entries.append(entry)
