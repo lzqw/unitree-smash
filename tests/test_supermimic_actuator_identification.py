@@ -94,3 +94,17 @@ def test_offcenter_contact_normal_impulse_also_changes_tangential_speed():
     torch.testing.assert_close(point_velocity[:,1:], torch.zeros_like(point_velocity[:,1:]),atol=1e-6,rtol=0)
     torch.testing.assert_close(impulse[1,1],torch.tensor(-.1*2/7))
     assert impulse[0,1] < impulse[1,1]
+
+
+def test_signed_impulse_breakdown_preserves_clock_and_branch_order():
+    from scripts.audit_supermimic_solver_action_response import signed_impulse_components
+    minus = torch.tensor([[[1., 0., 0.]], [[1., 0., 0.]], [[0., 0., 0.]], [[0., 0., 0.]]])
+    plus = torch.tensor([[[0., 2., 0.]], [[0., 0., 0.]], [[0., 0., 3.]], [[0., 0., 0.]]])
+    parts = signed_impulse_components(minus, plus)
+    torch.testing.assert_close(parts['amplitude_on_shared_substeps'], torch.tensor([[.5, .5, 0.]]))
+    torch.testing.assert_close(parts['direction_on_shared_substeps'], torch.tensor([[-1.5, 1.5, 0.]]))
+    torch.testing.assert_close(parts['unmatched_substeps'], torch.tensor([[-1., 0., 3.]]))
+    torch.testing.assert_close(sum(parts.values()), (plus-minus).sum(0))
+    reverse = signed_impulse_components(plus, minus)
+    for key in parts:
+        torch.testing.assert_close(parts[key], -reverse[key])

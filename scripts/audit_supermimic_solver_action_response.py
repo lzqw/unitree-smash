@@ -61,6 +61,26 @@ def tangent_at_measured_contact(trace, radius, normal_dv, friction, *, measured_
     return -(magnitude[...,None]*torch.nn.functional.normalize(slip,dim=-1)).sum(0)
 
 
+def signed_impulse_components(minus, plus):
+    """Attribute plus-minus velocity impulse on the common native substep clock.
+
+    A substep with force on just one branch is accounted for separately because
+    the direction on the unloaded branch is undefined.
+    """
+    minus_size = minus.norm(dim=-1, keepdim=True)
+    plus_size = plus.norm(dim=-1, keepdim=True)
+    shared = (minus_size > 0) & (plus_size > 0)
+    minus_axis = minus / torch.where(shared, minus_size, 1.)
+    plus_axis = plus / torch.where(shared, plus_size, 1.)
+    amplitude = .5 * (plus_size - minus_size) * (plus_axis + minus_axis)
+    direction = .5 * (plus_size + minus_size) * (plus_axis - minus_axis)
+    return {
+        'amplitude_on_shared_substeps': torch.where(shared, amplitude, 0.).sum(0),
+        'direction_on_shared_substeps': torch.where(shared, direction, 0.).sum(0),
+        'unmatched_substeps': torch.where(shared, 0., plus-minus).sum(0),
+    }
+
+
 def mode(run,lane):
     raw=run['raw'];tr=raw['substep_trace']['tensors']
     contact=tr['racket_contact_position_valid'][:,lane].flatten().bool()
@@ -214,6 +234,14 @@ def main():
         with_friction = predictions['native_incoming_plus_flight_and_reported_normal']+parts['racket_friction']
         torch.testing.assert_close(with_friction+parts['unexplained_after_friction'],delta,atol=1e-5,rtol=1e-5)
         predictions['native_incoming_plus_flight_and_reported_racket_forces']=with_friction
+    attribution = {}
+    for force, key in [('racket_force_w', 'racket_normal'), ('racket_friction_force_w', 'racket_friction')]:
+        if force not in paths['minus']:
+            continue
+        minus, plus = (paths[b][force][1:].double() * (prior.sub_dt/mass) for b in ('minus', 'plus'))
+        components = signed_impulse_components(minus, plus)
+        torch.testing.assert_close(sum(components.values()), (plus-minus).sum(0))
+        attribution[key] = components
     tags=[modes[r['spec_name'],r['lane_index']]['group'] for r in rows]
     groups={}
     for name in ['all']+sorted(set(tags)):
@@ -223,6 +251,8 @@ def main():
     for i,row in enumerate(rows):
         details.append(dict(case=row['sample_id'],native_delta=delta[i].tolist(),repeat_delta=repeat[i].tolist(),
                             model_minus_contact_ticks=hm[i].tolist(),model_plus_contact_ticks=hp[i].tolist(),
+                            signed_impulse_breakdown_mps={key:{term:v[i].tolist() for term,v in components.items()}
+                                for key,components in attribution.items()},
                             native_event_contributions={k:v[i].tolist() for k,v in parts.items()},
                             native_branch_diagnostics={b:{k:v[i].tolist() for k,v in native_terms[b].items()
                                 if k == 'spin_at_start'} for b in ('minus','plus')},
