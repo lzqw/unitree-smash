@@ -43,6 +43,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     for name in ('wide','labels','wide-audit','calibration','output'):
         ap.add_argument('--'+name,type=Path,required=True)
+    ap.add_argument('--motion-readout',type=Path,help='Frozen unloaded-racket motion model fitted to calibration families only')
     a=ap.parse_args();torch.set_num_threads(3)
     audit=json.loads(a.wide_audit.read_text());labels=json.loads(a.labels.read_text())
     if audit['split'] not in ('train','development') or labels['wide_audit_sha256']!=sha(a.wide_audit) or labels['split']!=audit['split']:
@@ -54,6 +55,17 @@ def main():
     prior=BallImpulsePriorV1().eval()
     eps=[.05,.025,.0125]
     times=torch.arange(prior.steps)*prior.sub_dt
+    motion = None
+    if a.motion_readout:
+        from fit_supermimic_unloaded_racket_motion import motion_features, predict_motion
+        prov = json.loads((a.wide/'nominal_a'/'provenance.json').read_text())
+        teacher_path = Path(prov['args'][prov['args'].index('--teacher')+1])
+        motion = torch.load(a.motion_readout, weights_only=True)
+        if (motion['schema'] != 'unloaded-articulation-motion-readout-v1'
+                or motion['design_sha256'] != sha(a.wide/'design.json')
+                or motion['teacher_sha256'] != sha(teacher_path) or motion['physics_dt_s'] != prior.sub_dt):
+            raise ValueError('Mismatch between motion model and validation fixture')
+        teacher = torch.load(teacher_path, weights_only=True, mmap=True)
     events=[];sufficient=[];pred=[]
     for seed in sorted({r['seed'] for r in rows}):
         # Only a single branch is opened: all seven trajectories start from this same native state.
@@ -67,9 +79,13 @@ def main():
         ball=torch.cat((s[:,:3],s[:,7:10]),dim=-1)
         c,q,v,omega=[t[k][0] for k in ('racket_position_w','racket_quaternion_w','racket_linear_velocity_w','racket_angular_velocity_w')]
         direction=src['velocity_intervention']['direction_world']
+        features = motion_features(src, teacher) if motion is not None else None
         speeds=[];signatures=[]
         for e in (0.,-eps[0],eps[0],-eps[1],eps[1],-eps[2],eps[2]):
-            stream=motion_from_initial(c,q,v+e*direction,omega,times)
+            if motion is None:
+                stream=motion_from_initial(c,q,v+e*direction,omega,times)
+            else:
+                stream=predict_motion(motion,features,[c,q,v+e*direction,omega],times)
             sig={}
             out,_=tick(prior,ball,[x[0] for x in stream],[x[-1] for x in stream],
                        cfg['fitted'],cfg['solver']['pair_contact_offset_m'],torch.zeros(len(ball),dtype=torch.bool),
@@ -89,7 +105,7 @@ def main():
         groups[name]=g
     with a.output.open('x') as f:
         json.dump(dict(scope='Pre-impact state and prescribed perturbation only; hyperparameters fixed by physical convergence diagnostic',
-                       groups=groups,labels_sha256=sha(a.labels),calibration_sha256=sha(a.calibration),
+                       motion_readout_sha256=sha(a.motion_readout) if motion is not None else None,groups=groups,labels_sha256=sha(a.labels),calibration_sha256=sha(a.calibration),
                        contact_bptt_admitted=False,actor_updates=0),f,indent=2,allow_nan=False)
 
 

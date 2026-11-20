@@ -91,3 +91,22 @@ def test_unloaded_native_shadow_is_rejected_as_a_measured_ball_response(tmp_path
         _trace_candidates(path, .001, 4)
     with pytest.raises(ValueError):
         trajectory(packet, None)
+
+
+def test_free_articulation_readout_preserves_uniform_root_velocity_change():
+    from scripts.fit_supermimic_unloaded_racket_motion import predict_motion
+    t = torch.arange(4) * .0025
+    features = torch.zeros(2, 3)
+    residual = torch.zeros(4, 12, dtype=torch.double)
+    residual[1:, 6] = .2
+    model = dict(mean=torch.zeros(3), scale=torch.ones(3),
+                 weights=torch.zeros(3, 48, dtype=torch.double), intercept=residual.flatten())
+    c = torch.zeros(2, 3)
+    q = torch.tensor([[1., 0., 0., 0.]]).expand(2, -1)
+    delta = torch.tensor([[.1, -.02, 0.], [-.04, 0., .05]])
+    base = predict_motion(model, features, (c, q, c, c), t)
+    shifted = predict_motion(model, features, (c, q, delta, c), t)
+    torch.testing.assert_close(shifted[0] - base[0], t[:, None, None] * delta)
+    torch.testing.assert_close(shifted[2] - base[2], delta.expand_as(base[2]))
+    torch.testing.assert_close(shifted[1], base[1])
+    torch.testing.assert_close(shifted[3], base[3])
