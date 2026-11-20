@@ -152,6 +152,7 @@ def main() -> int:
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--updates', type=int, default=256)
     parser.add_argument('--batch-rows', type=int, default=4)
+    parser.add_argument('--validation-spec', default=None)
     parser.add_argument('--racket-loss-weight', type=float, default=1.0)
     parser.add_argument('--anchor-weight', type=float, default=1e-7)
     parser.add_argument('--device', default='cuda:0')
@@ -210,7 +211,9 @@ def main() -> int:
     }
     spec_names = [str(row['spec_name']) for row in rows]
     unique_specs = sorted(set(spec_names))
-    validation_spec = unique_specs[-1]
+    validation_spec = args.validation_spec or unique_specs[-1]
+    if validation_spec not in unique_specs:
+        raise ValueError('validation-spec is not present in the dataset')
     train_indices = torch.tensor(
         [i for i, name in enumerate(spec_names) if name != validation_spec],
         dtype=torch.long)
