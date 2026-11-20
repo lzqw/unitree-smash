@@ -602,14 +602,10 @@ def run(args, *, alternating=None):
                 runtime_validation_data=torch.load(runtime_validation_path,map_location='cpu',weights_only=True)['tensors']
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
         if args.paired_evaluation_baseline is not None:
-            baseline_payload=json.loads(args.paired_evaluation_baseline.read_text())
-            if isinstance(baseline_payload,dict):
-                baseline_payload=baseline_payload.get('records',baseline_payload.get('episodes',baseline_payload))
-            if not isinstance(baseline_payload,list):
-                raise ValueError('Paired evaluation baseline must be a JSON record list or episodes_summary payload')
-            from quadsmash.rl.supermimic_paired_evaluation_v1 import verify_baseline
+            from scripts.compare_supermimic_fixed_stages import load_training_baseline
             baseline_hash=tensor_digest(actor.state_dict().items())
-            verify_baseline(baseline_payload,baseline_hash,policy_execution)
+            baseline_payload=load_training_baseline(args.paired_evaluation_baseline,baseline_hash,
+                                                    policy_execution,manifest['task_contract'])
             paired_eval_snapshots['pre-update']=baseline_payload
             paired_eval_actor_snapshots['pre-update']={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()}
             write(paired_eval_dir/'pre-update.json',dict(schema='supermimic-paired-fixed-case-evaluation-v1',stage='pre-update',

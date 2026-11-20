@@ -68,3 +68,32 @@ def test_native_td_pairs_adjacent_ticks_in_same_lane_and_episode():
     identities = [(0, 0, 1), (0, 0, 2), (1, 0, 3), (0, 1, 3), (0, 0, 6)]
     td = native_critic_td([2, 3, 0, 0, 0], [5, 4, 9, 9, 9], identities, .5)
     assert td['sample_count'] == 1 and td['mae'] == 2.5
+
+
+def test_load_native_training_baseline_uses_completed_frozen_run_and_rejects_conflicts(tmp_path):
+    import json
+    import pytest
+    from scripts.compare_supermimic_fixed_stages import load_training_baseline
+    from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
+    rows = [row(i,True,True,True,True,2.) for i in range(128)]
+    execution, task = {'gate':'causal'}, {'suite':'fixed'}
+    metrics = dict(actor_parameters_unchanged=True,num_envs=128,optimizer_updates={'actor':0},
+                   scoring_schema='s',actor_state_sha256='a',task_contract=task,policy_execution=execution,
+                   native_episode_metrics=summarize_native_episodes(rows))
+    for name, data in dict(startup={'argv':['--seed','1']}, completed={'control_ticks':800,'episodes':128},
+                           metrics=metrics,episodes_summary=rows,task_contract=task,initial_states={},
+                           physics={},policy_execution={'contract':execution}).items():
+        (tmp_path/(name+'.json')).write_text(json.dumps(data))
+    path = tmp_path/'episodes_summary.json'
+    assert all(r['actor_sha256']=='a' for r in load_training_baseline(path,'a',execution,task))
+    with pytest.raises(ValueError,match='loaded actor'):
+        load_training_baseline(path,'b',execution,task)
+    rows[0]['actor_sha256']='b'
+    path.write_text(json.dumps(rows))
+    with pytest.raises(ValueError,match='Baseline differs'):
+        load_training_baseline(path,'a',execution,task)
+    rows[0].pop('actor_sha256')
+    rows[0]['complete5']=False
+    path.write_text(json.dumps(rows))
+    with pytest.raises(ValueError,match='scores disagree'):
+        load_training_baseline(path,'a',execution,task)

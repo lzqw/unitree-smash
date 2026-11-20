@@ -4,7 +4,8 @@ import argparse
 import json
 from pathlib import Path
 
-from quadsmash.rl.supermimic_paired_evaluation_v1 import paired_evaluation
+from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
+from quadsmash.rl.supermimic_paired_evaluation_v1 import paired_evaluation, verify_baseline
 from scripts.evaluate_supermimic_fresh_wm_panel import digest
 
 
@@ -31,6 +32,29 @@ def load_run(folder):
             or metrics['policy_execution'] != identity['execution'] or metrics['task_contract'] != identity['task']):
         raise ValueError('Inconsistent native evaluation metadata')
     return rows, identity, metrics['actor_state_sha256']
+
+
+def load_training_baseline(path, actor_hash, execution, task):
+    """Accept the per-row training export or the complete frozen evaluator bundle."""
+    if path.name == 'episodes_summary.json' and (path.parent/'completed.json').is_file():
+        rows, identity, recorded_actor = load_run(path.parent)
+        if recorded_actor != actor_hash or identity['execution'] != execution or identity['task'] != task:
+            raise ValueError('Frozen evaluation differs from the loaded actor, execution or task')
+        summary = summarize_native_episodes(rows)
+        metrics = read(path.parent, 'metrics')['native_episode_metrics']
+        for key in ('completed_episodes','qualified_airborne_string_contact','ball_side_complete_except_recovery',
+                    'complete5','conditional_recovery_count','native_episode_return_mean'):
+            if summary[key] != metrics[key]:
+                raise ValueError(f'Baseline episode scores disagree with the frozen evaluation for {key}')
+        rows = [dict({'actor_sha256':recorded_actor,'policy_execution':identity['execution']}, **row) for row in rows]
+    else:
+        rows = json.loads(path.read_text())
+        if isinstance(rows, dict):
+            rows = rows.get('records',rows.get('episodes'))
+    if not isinstance(rows,list):
+        raise ValueError('Expected a list of paired baseline episode records')
+    verify_baseline(rows,actor_hash,execution)
+    return rows
 
 
 def main():
