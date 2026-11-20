@@ -38,6 +38,7 @@ PILOT_FIELDS = (
     "contact_region", "contact_grid", "toi_phase", "contact_count_substeps",
     "physics_dt_s", "quality_flags", "bucket", "interference_object",
     "contact_filter_paths", "racket_part_source",
+    "probe_branch", "event_id",
 )
 
 
@@ -163,20 +164,25 @@ def _first_finite_slot(points: torch.Tensor, start: int, lane: int) -> torch.Ten
     return torch.full((3,), float("nan"), dtype=values.dtype)
 
 
-def _source_metadata(path: Path, source_hash: str, lane: int) -> dict[str, str]:
+def _source_metadata(path: Path, source_hash: str, lane: int,
+                     probe_branch: str | None = None) -> dict[str, str]:
     text = str(path.resolve())
     names = path.resolve().parts
     spec_match = next((part for part in reversed(names)
                        if re.search(r"(?:^|[-_])spec[-_]?\d+", part, re.I)), None)
     episode_match = re.search(r"(?:episode|ep)[-_]?(\d+)", text, re.I)
     spec_id = spec_match or "spec_unknown"
+    if probe_branch is None:
+        probe_branch = next((part for part in reversed(names)
+                             if part in {"nominal_a", "nominal_b", "minus", "plus"}), "unknown")
     episode_id = f"episode_{episode_match.group(1)}" if episode_match else f"episode_{source_hash[:12]}"
     capture_id = f"capture_{source_hash[:12]}"
     lane_family = f"lane_family_{lane // 8}"
     lane_hash = hashlib.sha256(f"{source_hash}:{lane}".encode()).hexdigest()[:16]
     split_group = "|".join((spec_id, episode_id, lane_family, capture_id))
     return dict(spec_id=spec_id, episode_id=episode_id, capture_id=capture_id,
-                lane_family=lane_family, lane_hash=lane_hash, split_group=split_group)
+                lane_family=lane_family, lane_hash=lane_hash, split_group=split_group,
+                probe_branch=str(probe_branch), event_id=f"{spec_id}:{probe_branch}")
 
 
 def _analytic_gap(ball_pos: torch.Tensor, racket_pos: torch.Tensor,
@@ -278,12 +284,13 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
     net_touching = net_force.norm(dim=-1) > force_threshold
     records: list[dict] = []
     source_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+    probe_branch = package.get("branch")
     contact_metadata = trace.get("contact_metadata", {})
     filter_paths = contact_metadata.get("filter_prim_paths")
     racket_body_name = contact_metadata.get("racket_body_name")
     racket_part = racket_body_name or "unknown"
     racket_part_source = ("native_contact_metadata" if racket_body_name else "unavailable_in_archive")
-    source_meta = [_source_metadata(path, source_hash, lane) for lane in range(lanes)]
+    source_meta = [_source_metadata(path, source_hash, lane, probe_branch) for lane in range(lanes)]
     sensitivity: dict[str, dict[str, int]] = {}
     for threshold in sensitivity_thresholds:
         threshold_touch = racket_force.norm(dim=-1) > threshold
@@ -459,8 +466,11 @@ def _deduplicate(rows: list[dict]) -> tuple[list[dict], int]:
     unique = []
     seen = set()
     for row in rows:
-        key = (row.get("source_sha256"), row.get("contact_object"), row.get("lane"),
-               row.get("toi_frame"), row.get("contact_order"))
+        event_id = row.get("event_id")
+        key = ((event_id, row.get("contact_object"), row.get("lane"), row.get("toi_frame"),
+                row.get("contact_order")) if event_id else
+               (row.get("source_sha256"), row.get("contact_object"), row.get("lane"),
+                row.get("toi_frame"), row.get("contact_order")))
         if key in seen:
             continue
         seen.add(key)
