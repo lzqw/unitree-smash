@@ -33,3 +33,11 @@ def test_event_probe_spec_can_apply_action_before_event_tick():
         dict(tick=12, lanes=[2], contact=[2], frame=[]),
         'approach', 0.01, action_lead_ticks=2)
     assert spec['action_tick'] == 10
+
+
+def test_event_probe_spec_can_hold_action_window():
+    spec = make_event_aligned_spec(
+        dict(tick=12, lanes=[2], contact=[2], frame=[]),
+        'approach', 0.01, action_lead_ticks=4, action_hold_ticks=4)
+    assert spec['action_tick'] == 8
+    assert spec['action_hold_ticks'] == 4

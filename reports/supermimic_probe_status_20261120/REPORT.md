@@ -74,6 +74,33 @@ an analytic miss merely because the final tick is non-contact.
 The fixed diagnostic output is saved at
 `/home/autodrive/LZQW/experiments/supermimic_native_response_fit_v13_20261120_highdev/diagnostics_fixed.json`.
 
+## Action-to-racket Oracle A/B
+
+The offline Oracle compares the same paired probe through PhysX endpoint
+states and through `PhysicalWorldV2` endpoint predictions. On the 7 contact
+lanes, Body WM gain ratios have the following medians:
+
+| Quantity | Body-WM/native gain ratio | Direction cosine median |
+|---|---:|---:|
+| Racket position | 0.085 | 0.359 |
+| Racket linear velocity | 0.142 | 0.908 |
+| Racket angular velocity | 0.029 | 0.909 |
+| Racket normal change | 0.011 | 0.860 |
+
+The diagnostic artifact is
+`/home/autodrive/LZQW/experiments/supermimic_action_to_racket_oracle_20261120.json`.
+This confirms a large action-to-racket amplitude loss, especially in angular
+velocity. The leading bottleneck is therefore the Body WM execution response
+and probe timing, rather than V13 head capacity alone.
+
+## Data-collection change
+
+Event-aligned native probe specs now support `action_hold_ticks`. A signed
+perturbation can be held for a causal 2--8 tick window while the nominal policy
+continues to generate the base request. The default remains one tick for
+backward compatibility. This enables the next probe set to measure action
+delay and actuator response instead of only a single late perturbation.
+
 ## Verification status
 
 - Contact event dataset tests: 5 passed.

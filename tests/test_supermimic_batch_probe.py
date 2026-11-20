@@ -51,6 +51,15 @@ def test_saturation_not_faked_as_executable_request_delta():
     assert torch.equal(request,torch.ones_like(request))
 
 
+def test_action_hold_window_is_validated():
+    s=dict(spec(), action_tick=268, action_hold_ticks=4)
+    assert validate_spec(s)==s
+    with pytest.raises(ValueError, match='hold window'):
+        validate_spec(dict(s, action_tick=270))
+    with pytest.raises(ValueError, match='positive integer'):
+        validate_spec(dict(s, action_hold_ticks=0))
+
+
 def test_batch_bundle_preserves_lane_alignment_and_explicit_holdout_subset(tmp_path):
     import json,hashlib
     from scripts.build_supermimic_probe_region import build

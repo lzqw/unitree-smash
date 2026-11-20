@@ -35,6 +35,11 @@ def validate_spec(spec):
     action_tick = spec.get('action_tick', spec['tick'])
     if type(action_tick) is not int or not 1 <= action_tick <= spec['tick']:
         raise ValueError('Action tick must be an integer at or before the event tick')
+    action_hold_ticks = spec.get('action_hold_ticks', 1)
+    if type(action_hold_ticks) is not int or action_hold_ticks < 1:
+        raise ValueError('Action hold ticks must be a positive integer')
+    if action_tick + action_hold_ticks - 1 > spec['tick']:
+        raise ValueError('Action hold window must end at or before the event tick')
     if spec['schema']=='native-paired-prefix-spec-v1':
         if 'lanes' in spec or 'request_directions' in spec:raise ValueError('Mixed probe schemas')
         if type(spec.get('lane'))is not int or not 0<=spec['lane']<128:raise ValueError('Probe lane outside original128')
@@ -77,6 +82,7 @@ class NativePairCapture:
     def before(self,tick,env,observation,request):
         action_tick = self.spec.get('action_tick', self.spec['tick'])
         event_tick = self.spec['tick']
+        action_hold_ticks = self.spec.get('action_hold_ticks', 1)
         if tick==action_tick:
             state=capture_state(env)
             self.start=tensor_tree_copy(dict(before=state,observation=observation,executor_before=capture_controller(env._sm_residual_controller)),cpu=True)
@@ -88,6 +94,11 @@ class NativePairCapture:
                 from .supermimic_native_substep_trace_v1 import NativeSubstepTraceV1
                 self.substep_trace=NativeSubstepTraceV1(env)
             return action
+        if action_tick < tick < action_tick + action_hold_ticks:
+            # Hold the same signed intervention over a short control window.
+            # The policy still produces the nominal request each tick, while
+            # the probe applies a causal, bounded offset before execution.
+            return perturb_request(request, self.spec, self.branch)
         if tick == event_tick and self.spec.get('capture_substeps',False):
             from .supermimic_native_substep_trace_v1 import NativeSubstepTraceV1
             self.substep_trace=NativeSubstepTraceV1(env)

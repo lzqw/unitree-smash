@@ -11,10 +11,13 @@ from pathlib import Path
 import torch
 
 
-def make_event_aligned_spec(row, head, epsilon, capture_substeps=False, action_lead_ticks=0):
+def make_event_aligned_spec(row, head, epsilon, capture_substeps=False,
+                            action_lead_ticks=0, action_hold_ticks=1):
     """Represent exactly the lanes whose recorded edge selected this tick."""
     if action_lead_ticks < 0 or action_lead_ticks >= row['tick']:
         raise ValueError('Action lead must leave a positive action tick')
+    if action_hold_ticks < 1 or action_lead_ticks + action_hold_ticks > row['tick']:
+        raise ValueError('Action hold window must end at the event tick')
     lanes = list(row['lanes'])
     directions = []
     for lane in lanes:
@@ -30,6 +33,7 @@ def make_event_aligned_spec(row, head, epsilon, capture_substeps=False, action_l
         request_directions=directions,
         capture_substeps=bool(capture_substeps),
         action_tick=int(row['tick']) - int(action_lead_ticks),
+        action_hold_ticks=int(action_hold_ticks),
         event_alignment=dict(
             contact_validation_lanes=list(row['contact']),
             frame_validation_lanes=list(row['frame']),
@@ -50,9 +54,12 @@ def main():
                         help='Record a bounded native substep trace for each probe.')
     parser.add_argument('--action-lead-ticks', type=int, default=0,
                         help='Apply the perturbation before the recorded event tick.')
+    parser.add_argument('--action-hold-ticks', type=int, default=1,
+                        help='Hold the signed perturbation for this many control ticks.')
     args = parser.parse_args()
-    if args.max_specs < 1 or args.epsilon <= 0 or args.action_lead_ticks < 0:
-        raise ValueError('max-specs and epsilon must be positive, with nonnegative action lead')
+    if (args.max_specs < 1 or args.epsilon <= 0 or args.action_lead_ticks < 0
+            or args.action_hold_ticks < 1):
+        raise ValueError('max-specs and epsilon must be positive, with valid action timing')
     if args.output.exists():
         raise FileExistsError(args.output)
 
@@ -99,7 +106,8 @@ def main():
     args.output.mkdir(parents=True)
     for index, row in enumerate(chosen):
         spec = make_event_aligned_spec(row, args.head, args.epsilon,
-                                       args.capture_substeps, args.action_lead_ticks)
+                                       args.capture_substeps, args.action_lead_ticks,
+                                       args.action_hold_ticks)
         (args.output / f'spec_{index:02d}_tick{row["tick"]:03d}.json').write_text(
             json.dumps(spec, indent=2) + '\n'
         )
@@ -111,6 +119,7 @@ def main():
         epsilon_request=args.epsilon,
         capture_substeps=bool(args.capture_substeps),
         action_lead_ticks=int(args.action_lead_ticks),
+        action_hold_ticks=int(args.action_hold_ticks),
         validation_lanes=validation,
         selected_ticks=chosen,
         covered_validation_lanes=sorted(covered),
