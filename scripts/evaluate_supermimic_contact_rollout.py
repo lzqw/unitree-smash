@@ -30,14 +30,29 @@ def racket(state, geometry):
             bodies['velocity'][:, i], bodies['angular_velocity'][:, i])
 
 
+def predicted_racket_path(prior, start, end):
+    """Reconstruct the Body WM racket pose and twist at the start of each physics substep."""
+    c0, q0, v0, w0 = start
+    c1, q1, v1, w1 = end
+    u = torch.arange(prior.steps, dtype=c0.dtype, device=c0.device)[:, None, None] / prior.steps
+    center = c0 + (3*u.square()-2*u**3)*(c1-c0) + prior.dt*((u**3-2*u.square()+u)*v0 + (u**3-u.square())*v1)
+    linear = (6*u-6*u.square())*(c1-c0)/prior.dt + (3*u.square()-4*u+1)*v0 + (3*u.square()-2*u)*v1
+    q1 = torch.where((q0*q1).sum(-1, keepdim=True) < 0, -q1, q1)
+    q = F.normalize(q0 + u*(q1-q0), dim=-1)
+    omega = w0 + u*(w1-w0)
+    return center, q, linear, omega
+
+
 def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measured_path=None,
-         racket_material=None, initial_spin=None, event_trace=None, compound_racket=False, return_spin=False, local_mobility=None, shuttle_mass=None):
+         racket_material=None, initial_spin=None, event_trace=None, compound_racket=False, return_spin=False, local_mobility=None, shuttle_mass=None, trace_normal_impulse=False):
     p, v = ball[:, :3], ball[:, 3:]
     if local_mobility is not None and (not compound_racket or local_mobility.shape!=(len(p),6,6)
             or shuttle_mass is None or not 0<shuttle_mass):
         raise ValueError('A per-lane articulated racket and positive shuttle mass are required')
     if compound_racket and (racket_material is None or previous_patch is not None):
         raise ValueError('Compound rollout needs measured shape materials and supports multiple contacts per substep')
+    if trace_normal_impulse and (not compound_racket or event_trace is None):
+        raise ValueError('A compound contact event trace is required for surface normal attribution')
     if event_trace is not None:
         if event_trace:
             raise ValueError('An empty event trace is required for a new control interval')
@@ -53,6 +68,8 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
         if racket_material.shape != (n_shapes, 3):
             raise ValueError('Expected static friction, dynamic friction and restitution for each shape')
     if compound_racket and event_trace is not None:
+        if trace_normal_impulse:
+            event_trace['normal_impulse_dv'] = p.new_zeros((*dims,3))
         event_trace['near_shape_count'] = torch.zeros(dims,dtype=torch.int32,device=p.device)
         event_trace['shape_regime'] = torch.zeros((*dims,n_shapes),dtype=torch.uint8,device=p.device)
     if measured_path is not None:
@@ -60,14 +77,7 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
         if any(x.shape[:2]!=(prior.steps,len(ball)) for x in measured_path):
             raise ValueError('Native racket samples must start at each physics substep')
     else:
-        c0, q0, v0, w0 = start
-        c1, q1, v1, w1 = end
-        u = torch.arange(prior.steps, dtype=p.dtype, device=p.device)[:, None, None] / prior.steps
-        center = c0 + (3*u.square()-2*u**3)*(c1-c0) + prior.dt*((u**3-2*u.square()+u)*v0 + (u**3-u.square())*v1)
-        linear = (6*u-6*u.square())*(c1-c0)/prior.dt + (3*u.square()-4*u+1)*v0 + (3*u.square()-2*u)*v1
-        q1 = torch.where((q0*q1).sum(-1, keepdim=True) < 0, -q1, q1)
-        q = F.normalize(q0 + u*(q1-q0), dim=-1)
-        omega = w0 + u*(w1-w0)
+        center,q,linear,omega=predicted_racket_path(prior,start,end)
     g = prior.preview
     racket_radius = torch.maximum((g.racket_box_centers.norm(dim=-1) + g.racket_box_halves.norm(dim=-1)).max(),
                                   (g.racket_round_centers.norm(dim=-1) + g.racket_round_halves.flatten()
@@ -96,9 +106,12 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
                 separation_gain=fitted.get('separation_velocity_gain', 0.),
                 impact_geometry_fraction=fitted.get('impact_geometry_fraction', 0.), return_impact_time=True, load_trace=load_trace,
                 local_mobility=local_mobility[lane] if local_mobility is not None else None,shuttle_mass=shuttle_mass,
-                temporal_solver=fitted.get('temporal_solver'),patch_inertia=fitted.get('patch_inertia'))
+                temporal_solver=fitted.get('temporal_solver'),patch_inertia=fitted.get('patch_inertia'),
+                articulation_friction_floor=fitted.get('articulation_friction_floor',False))
             if event_trace is not None:
                 regime = load_trace['regime']
+                if trace_normal_impulse:
+                    event_trace['normal_impulse_dv'][i,lane] = normal
                 event_trace['shape_regime'][i,lane] = regime
                 event_trace['near_shape_count'][i,lane] = load_trace['near_shape_count'].int()
                 event_trace['racket'][i,lane] = (regime>0).sum(-1)-1

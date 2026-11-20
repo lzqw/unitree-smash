@@ -15,7 +15,10 @@ def main():
     for key in ('wide','calibration','material','readout','output'):
         p.add_argument('--'+key,type=Path,required=True)
     p.add_argument('--fit-patch-inertia',action='store_true',help='Fit separate effective tangential inertias for one and multiple active shapes on calibration only')
+    p.add_argument('--articulation-friction-floor',action='store_true',help='Test the prepared friction load floor on both frozen contact solvers')
     a=p.parse_args();torch.set_num_threads(2)
+    if a.articulation_friction_floor and a.fit_patch_inertia:
+        p.error('Select one contact calibration study')
     read=lambda path:json.loads(path.read_text())
     fit=read(a.readout)
     cfg=read(a.calibration)
@@ -36,7 +39,9 @@ def main():
         scores[split]={}
         def score(mode,ratios=None):
             settings=dict(cfg['fitted'])
-            if mode=='temporal':
+            if mode.endswith('_floor'):
+                settings['articulation_friction_floor']=True
+            if mode in ('temporal','temporal_floor'):
                 settings.update(separation_velocity_gain=0.,temporal_solver=dict(position_iterations=8,
                                 velocity_iterations=2,bounce_speed=.05))
             elif ratios is not None:
@@ -45,6 +50,10 @@ def main():
             return panel.evaluate(coefs)[1]
         anchor=score('compound')
         scores[split]['compound']=anchor
+        if a.articulation_friction_floor:
+            for mode in ('compound_floor','temporal','temporal_floor'):
+                scores[split][mode]=score(mode)
+            continue
         if not a.fit_patch_inertia:
             scores[split]['temporal']=score('temporal')
             continue

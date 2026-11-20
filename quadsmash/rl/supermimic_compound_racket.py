@@ -7,8 +7,10 @@ from .supermimic_contact_pilot_v1 import _quat_rotate, _quat_rotate_inverse
 
 
 def solve_patch(normals, mu, restitution, velocity, spin, surface, radius, active,
-                normal_scale, iterations, *, return_spin=False, separation_velocity=None, load_trace=None, inertia_ratio=None):
+                normal_scale, iterations, *, return_spin=False, separation_velocity=None, load_trace=None, inertia_ratio=None, friction_load_floor=None):
     """Projected normal and friction impulses in velocity units, with per-shape Coulomb bounds."""
+    if friction_load_floor is not None:
+        friction_load_floor = torch.where(active, friction_load_floor.clamp_min(0), 0.)
     arm = -radius * normals
     supports = normals.shape[1]
     sticking_response = (2/7) if inertia_ratio is None else (inertia_ratio/(1+inertia_ratio))[:,None]
@@ -31,7 +33,8 @@ def solve_patch(normals, mu, restitution, velocity, spin, surface, radius, activ
             linear = linear + (load - loads[j])[:, None] * normal
             loads[j] = load
             proposed = friction[j] - sticking_response * (relative - vn[:, None] * normal)
-            bound = load * mu[:, j]
+            friction_load = load if friction_load_floor is None else torch.maximum(load, friction_load_floor[:, j])
+            bound = friction_load * mu[:, j]
             tangent = proposed * (bound / proposed.norm(dim=-1).clamp_min(1e-12)).clamp(max=1)[:, None]
             change = tangent - friction[j]
             linear = linear + change
@@ -42,14 +45,16 @@ def solve_patch(normals, mu, restitution, velocity, spin, surface, radius, activ
     if load_trace is not None:
         # One discrete state per shape: unloaded, sticking, sliding.
         loaded = normal_loads > 1.e-8
-        sliding = tangents.norm(dim=-1) >= (mu * normal_loads - 1.e-8).clamp_min(0)
+        friction_load = normal_loads if friction_load_floor is None else torch.maximum(normal_loads,friction_load_floor)
+        loaded = loaded | (tangents.norm(dim=-1)>1.e-8)
+        sliding = tangents.norm(dim=-1) >= (mu * friction_load - 1.e-8).clamp_min(0)
         load_trace['regime'] = loaded.to(torch.uint8) * (1 + sliding.to(torch.uint8))
     total = ((normal_loads[..., None] * normals).sum(1), tangents.sum(1))
     return (*total, angular) if return_spin else total
 
 
 def compound_step(prior, position, velocity, spin, center, rotation, linear, angular,
-                  material, offset, normal_scale, *, compound=True, separation_gain=0., impact_geometry_fraction=0., return_impact_time=False, load_trace=None, local_mobility=None, shuttle_mass=None, temporal_solver=None, patch_inertia=None):
+                  material, offset, normal_scale, *, compound=True, separation_gain=0., impact_geometry_fraction=0., return_impact_time=False, load_trace=None, local_mobility=None, shuttle_mass=None, temporal_solver=None, patch_inertia=None, articulation_friction_floor=False):
     """Predict one native-length substep from the incoming shuttle and current racket state."""
     geometry = prior.preview
     local = _quat_rotate_inverse(rotation, position - center)
@@ -105,16 +110,26 @@ def compound_step(prior, position, velocity, spin, center, rotation, linear, ang
         if not (0 < single <= 1 and 0 < multiple <= 1) or temporal_solver is not None or local_mobility is not None:
             raise ValueError('Expected two positive effective tangential inertias for a prescribed-surface solve')
         ratio = torch.where(active.sum(-1)>1, velocity.new_tensor(multiple), velocity.new_tensor(single))
+    friction_floor = None
+    if articulation_friction_floor:
+        if local_mobility is not None:
+            raise ValueError('The prescribed-surface friction load estimate requires zero racket mobility')
+        # Per-shape approximation to the articulation solver's prepared minimum friction load.
+        # Expressed as delta velocity for a sphere; the native solver uses articulated unit response.
+        vn = ((velocity[:,None]-surface)*n).sum(-1)
+        bounce = torch.where((vn < -.05) & (-vn*prior.sub_dt > gap), -vn*material[ids,2], 0.)
+        estimate = (bounce-vn-gap/prior.sub_dt).clamp_min(0)
+        friction_floor = torch.where(active, .25*estimate, 0.)
     if temporal_solver is not None:
         if local_mobility is not None or impact_geometry_fraction or separation_gain:
             raise ValueError('Temporal solve supplies its own separation dynamics on prescribed surfaces')
         from .supermimic_temporal_contact_patch import solve_temporal_patch
         normal,tangent,spin = solve_temporal_patch(n,gap,material[ids,1],material[ids,2],velocity,spin,surface,
-            geometry.radius,active,normal_scale,prior.sub_dt,**temporal_solver,load_trace=patch_trace)
+            geometry.radius,active,normal_scale,prior.sub_dt,**temporal_solver,load_trace=patch_trace,friction_load_floor=friction_floor)
     elif local_mobility is None:
         normal, tangent, spin = solve_patch(n,material[ids,1],material[ids,2],velocity,spin,surface,
                                             geometry.radius,active,normal_scale,4 if compound else 1,
-                                            return_spin=True,separation_velocity=separation,load_trace=patch_trace,inertia_ratio=ratio)
+                                            return_spin=True,separation_velocity=separation,load_trace=patch_trace,inertia_ratio=ratio,friction_load_floor=friction_floor)
     else:
         from .supermimic_full_body_geometry_v1 import rotation as rotation_matrix
         from .supermimic_mobile_racket_contact import solve_mobile_patch

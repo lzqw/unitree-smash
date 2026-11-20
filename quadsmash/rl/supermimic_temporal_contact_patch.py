@@ -4,7 +4,7 @@ import torch
 
 def solve_temporal_patch(n, gap, mu, restitution, velocity, spin, surface, radius, active,
                          normal_scale, dt, position_iterations, velocity_iterations, bounce_speed,
-                         *, load_trace=None):
+                         *, load_trace=None, friction_load_floor=None):
     """Integrate the relative constraint displacement during position iterations.
 
     Normal impulses use a speculative separation and an incoming-speed rebound target.
@@ -13,6 +13,8 @@ def solve_temporal_patch(n, gap, mu, restitution, velocity, spin, surface, radiu
     if position_iterations < 1 or velocity_iterations < 0 or dt <= 0 or bounce_speed < 0:
         raise ValueError('Invalid temporal contact solver configuration')
     dt_iter = dt/position_iterations
+    if friction_load_floor is not None:
+        friction_load_floor = torch.where(active, friction_load_floor.clamp_min(0), 0.)
     arm = -radius*n
     linear, angular = velocity, spin
     closing = ((velocity[:,None]-surface)*n).sum(-1)
@@ -41,7 +43,8 @@ def solve_temporal_patch(n, gap, mu, restitution, velocity, spin, surface, radiu
             drift = elapsed_displacement[:,j]
             drift = drift-(drift*axis).sum(-1,keepdim=True)*axis
             request=tangents[j]-(2./7)*(slip+.8*drift/dt_iter)
-            bound=mu[:,j]*load
+            friction_load=load if friction_load_floor is None else torch.maximum(load,friction_load_floor[:,j])
+            bound=mu[:,j]*friction_load
             tangent=request*(bound/request.norm(dim=-1).clamp_min(1.e-12)).clamp(max=1)[:,None]
             delta=tangent-tangents[j]
             linear=linear+delta
@@ -53,7 +56,9 @@ def solve_temporal_patch(n, gap, mu, restitution, velocity, spin, surface, radiu
     tangents=torch.stack(tangents,1)
     if load_trace is not None:
         loaded=loads>1.e-8
-        sliding=tangents.norm(dim=-1)>=(mu*loads-1.e-8).clamp_min(0)
+        friction_load=loads if friction_load_floor is None else torch.maximum(loads,friction_load_floor)
+        loaded=loaded | (tangents.norm(dim=-1)>1.e-8)
+        sliding=tangents.norm(dim=-1)>=(mu*friction_load-1.e-8).clamp_min(0)
         load_trace['regime']=loaded.to(torch.uint8)*(1+sliding.to(torch.uint8))
     # Use the calibrated finite-mass scale on the net impulse once.
     return ((loads[...,None]*n).sum(1)*normal_scale,tangents.sum(1)*normal_scale,

@@ -346,3 +346,46 @@ def test_friction_trace_integrates_native_forces_and_retains_missing_normal_evid
     torch.testing.assert_close(response['actual'],torch.tensor([[0.,0.,0.],[0.,.1,0.]],dtype=torch.float64))
     assert [r['step'] for r in records] == [0,1]
     assert all(r['lane']==1 and r['normal_points']==0 for r in records)
+
+
+def test_free_drive_preview_uses_preimpact_pose_and_only_the_unloaded_increment():
+    from scripts.audit_supermimic_unloaded_racket_transfer import preimpact_drive_preview
+    pose = torch.tensor([[[1.,0.,0.]], [[2.,0.,0.]], [[3.,0.,0.]]])
+    quat = torch.ones(3,1,4)
+    drive = torch.tensor([[[0.,0.,0.]], [[.1,0.,0.]], [[.4,0.,0.]]])
+    output = preimpact_drive_preview([pose,quat,pose,2*pose], [2*pose,quat,drive,3*drive])
+    torch.testing.assert_close(output[0],pose[:-1])
+    torch.testing.assert_close(output[1],quat[:-1])
+    torch.testing.assert_close(output[2],pose[:-1]+drive.diff(dim=0))
+    torch.testing.assert_close(output[3],2*pose[:-1]+3*drive.diff(dim=0))
+
+
+def test_solver_consensus_rejects_a_shifted_impact_or_reversed_response():
+    from scripts.audit_supermimic_predictive_surface_basin import solver_consensus
+    slots=torch.zeros(2,3,dtype=torch.long)
+    event={k:slots.clone() for k in ('racket','ground','net','shape_regime')}
+    shifted={k:v.clone() for k,v in event.items()}
+    shifted['racket'][1,0]=1
+    x=torch.ones(3,3)
+    other=x.clone()
+    other[1]=-1
+    valid=torch.ones(3,dtype=torch.bool)
+    assert solver_consensus([event],[shifted],x,other,valid,valid).tolist()==[False,False,True]
+
+
+def test_friction_load_floor_caps_tangent_without_adding_normal_impulse():
+    from quadsmash.rl.supermimic_compound_racket import solve_patch
+    from quadsmash.rl.supermimic_temporal_contact_patch import solve_temporal_patch
+    normals=torch.tensor([[[1.,0.,0.]],[[1.,0.,0.]]])
+    vel=torch.tensor([[0.,1.,0.],[0.,1.,0.]])
+    surface=torch.zeros_like(normals)
+    active=torch.tensor([[True],[False]])
+    friction=torch.full((2,1),.3)
+    zero=torch.zeros(2,1)
+    opts={'friction_load_floor':torch.full((2,1),.1)}
+    for normal,tangent,_ in (
+        solve_patch(normals,friction,zero,vel,vel*0,surface,.025,active,1.,4,return_spin=True,**opts),
+        solve_temporal_patch(normals,zero,friction,zero,vel,vel*0,surface,.025,active,1.,.0000625,8,2,.05,**opts)):
+        torch.testing.assert_close(normal,vel*0)
+        assert tangent[0,1]<0 and tangent[0].norm()<=.030001
+        torch.testing.assert_close(tangent[1],vel[1]*0)

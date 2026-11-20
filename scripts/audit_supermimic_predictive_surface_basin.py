@@ -42,6 +42,17 @@ def stable_prediction(events,speeds,eps):
     return stable,local,responses[0]
 
 
+def solver_consensus(first_events, second_events, first_response, second_response, first_valid, second_valid):
+    """Test event and gain agreement using only the two pre-impact model predictions."""
+    same = first_valid & second_valid
+    for first, second in zip(first_events, second_events, strict=True):
+        for field in ('racket', 'ground', 'net', 'shape_regime'):
+            eq = first[field] == second[field]
+            same = same & eq.reshape(*eq.shape[:2], -1).all(-1).all(0)
+    ratio = second_response.norm(dim=-1) / first_response.norm(dim=-1).clamp_min(1.e-12)
+    return same & (F.cosine_similarity(first_response, second_response) >= .8) & (ratio >= .5) & (ratio <= 2.)
+
+
 @torch.no_grad()
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
@@ -50,7 +61,11 @@ def main():
     ap.add_argument('--motion-readout',type=Path,help='Frozen unloaded-racket motion model fitted to calibration families only')
     ap.add_argument('--compound-material',type=Path)
     ap.add_argument('--material-readout',type=Path)
+    ap.add_argument('--solver-consensus', action='store_true',
+                    help='Compare the baseline and temporal solver on identical initial states and all perturbations')
     a=ap.parse_args();torch.set_num_threads(3)
+    if a.solver_consensus and not a.compound_material:
+        ap.error('Cross-solver comparison requires the per-shape material contract')
     if a.material_readout and not a.compound_material:
         ap.error('A material readout requires the native shape contract')
     audit=json.loads(a.wide_audit.read_text());labels=json.loads(a.labels.read_text())
@@ -81,6 +96,7 @@ def main():
     if material_sha!=labels.get('material_sha256') or readout_sha!=labels.get('coefficient_fit_sha256'):
         raise ValueError('Different contact transition in derivative labels')
     events=[];sufficient=[];unique_shape=[];pred=[]
+    consensus=[];normal_aligned=[]
     for seed in sorted({r['seed'] for r in rows}):
         # Only a single branch is opened: all seven trajectories start from this same native state.
         path=a.wide/'nominal_a'/f'spec_{seed}'/'trace.pt'
@@ -98,6 +114,7 @@ def main():
         direction=src['velocity_intervention']['direction_world']
         features = motion_features(src, teacher) if motion is not None else None
         speeds=[];signatures=[]
+        temporal_speeds=[];temporal_signatures=[]
         for e in (0.,-eps[0],eps[0],-eps[1],eps[1],-eps[2],eps[2]):
             if motion is None:
                 stream=motion_from_initial(c,q,v+e*direction,omega,times)
@@ -108,9 +125,25 @@ def main():
                        cfg['fitted'],cfg['solver']['pair_contact_offset_m'],
                        None if material is not None else torch.zeros(len(ball),dtype=torch.bool),
                        measured_path=stream,event_trace=sig,racket_material=material,
-                       initial_spin=s[:,10:13] if material is not None else None,compound_racket=material is not None)
+                       initial_spin=s[:,10:13] if material is not None else None,compound_racket=material is not None,
+                       trace_normal_impulse=a.solver_consensus and e==0.)
             speeds.append(out[:,3:]);signatures.append(sig)
+            if a.solver_consensus:
+                other={}
+                temporal_cfg=dict(cfg['fitted'],separation_velocity_gain=0.,
+                                  temporal_solver=dict(position_iterations=8,velocity_iterations=2,bounce_speed=.05))
+                alt,_=tick(prior,ball,[x[0] for x in stream],[x[-1] for x in stream],
+                           temporal_cfg,cfg['solver']['pair_contact_offset_m'],measured_path=stream,
+                           event_trace=other,racket_material=material,initial_spin=s[:,10:13],compound_racket=True)
+                temporal_speeds.append(alt[:,3:])
+                temporal_signatures.append(other)
         stable,qualified,d=stable_prediction(signatures,speeds,eps)
+        if a.solver_consensus:
+            _,other_valid,other_response=stable_prediction(temporal_signatures,temporal_speeds,eps)
+            consensus.append(solver_consensus(signatures,temporal_signatures,d,other_response,qualified,other_valid))
+            normal=signatures[0]['normal_impulse_dv'].sum(0)
+            normal_aligned.append((F.cosine_similarity(direction,normal).abs()>=.8) &
+                                  (F.cosine_similarity(d,normal).abs()>=.8))
         if material is not None:
             isolated=qualified.clone()
             for event in signatures:
@@ -127,9 +160,18 @@ def main():
                native_convergent_diagnostic=true)
     if unique_shape:
         masks['predicted_convergent_single_near_shape']=torch.cat(unique_shape)
+    if consensus:
+        masks['predicted_cross_solver_consensus']=torch.cat(consensus)
+        masks['predicted_cross_solver_consensus_single_shape']=torch.cat(consensus)&torch.cat(unique_shape)
+        masks['predicted_cross_solver_normal_aligned']=torch.cat(consensus)&torch.cat(normal_aligned)
+        masks['predicted_cross_solver_normal_aligned_single_shape']=masks['predicted_cross_solver_normal_aligned']&torch.cat(unique_shape)
     for name,mask in masks.items():
         g=dict(rows=int(mask.sum()),native_convergent=int((true&mask).sum()),
                false_positive_no_native_racket=sum(t=='no_contact' and bool(x) for t,x in zip(types,mask)))
+        if a.solver_consensus and name.startswith('predicted_cross_solver'):
+            g['selected_case_ids']=[[row['seed'],row['lane']] for row,keep in zip(rows,mask) if keep]
+            g['native_event_counts']={event:sum(t==event and bool(keep) for t,keep in zip(types,mask))
+                                      for event in sorted(set(types))}
         if mask.any():g['signed']=vector_summary(native[mask],model[mask])
         groups[name]=g
     with a.output.open('x') as f:

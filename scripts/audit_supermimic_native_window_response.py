@@ -7,7 +7,7 @@ from pathlib import Path
 import torch
 
 from audit_supermimic_paired_body_transfer import response_metrics
-from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, PhysicalWorldV2, racket, sha, tick
+from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, PhysicalWorldV2, predicted_racket_path, racket, sha, tick
 from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branch, _same_contract
 from quadsmash.rl.supermimic_native_manifold_groups import classify, signatures
 from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES, perturb_request, select_substep_lanes
@@ -52,7 +52,7 @@ def window_signature(sequence, steps):
 
 
 @torch.no_grad()
-def measure(run, body, prior, material, cfg, launch):
+def measure(run, body, prior, material, cfg, launch, *, split_racket_path=False):
     spec,raw = run['spec'],run['raw']
     lanes = spec['lanes']
     ts = complete_window(raw,spec,prior.steps)
@@ -66,6 +66,8 @@ def measure(run, body, prior, material, cfg, launch):
     torch.testing.assert_close(state[:,49:],torch.cat((first[:,:3],first[:,7:10]),-1))
     teacher_ball = state[:,49:]
     teacher_spin = body_spin = first[:,10:13]
+    hybrids = ({mode:(teacher_ball,teacher_spin) for mode in ('native_pose','native_twist')}
+               if split_racket_path else {})
     timeline = []
     for trace,control in zip(ts,raw['step_sequence']):
         t = trace['tensors']
@@ -81,6 +83,13 @@ def measure(run, body, prior, material, cfg, launch):
         teacher_ball,teacher_hit,teacher_spin = tick(prior,teacher_ball,*args,initial_spin=teacher_spin,
                                                     measured_path=native_path,**settings)
         body_ball,body_hit,body_spin = tick(prior,state[:,49:],*args,initial_spin=body_spin,**settings)
+        if hybrids:
+            estimate = predicted_racket_path(prior,start,end)
+            for mode,path in [('native_pose',(*native_path[:2],*estimate[2:])),
+                              ('native_twist',(*estimate[:2],*native_path[2:]))]:
+                incoming,spin=hybrids[mode]
+                new_ball,_,new_spin=tick(prior,incoming,*args,initial_spin=spin,measured_path=path,**settings)
+                hybrids[mode]=new_ball,new_spin
         state = torch.cat((robot[:,:49],body_ball),-1)
         previous = control['final_action'][lanes]
         feet = contact.sigmoid()
@@ -91,6 +100,7 @@ def measure(run, body, prior, material, cfg, launch):
                              native_racket_angular=t['racket_angular_velocity_w'][-1], target=targets,
                              final_action=previous, measured_racket_hit=teacher_hit,body_racket_hit=body_hit,
                              topology=signatures(trace)))
+        timeline[-1].update({name:b[:,3:] for name,(b,_) in hybrids.items()})
     return timeline
 
 
