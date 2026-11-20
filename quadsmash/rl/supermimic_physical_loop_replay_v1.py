@@ -147,6 +147,7 @@ class PhysicalLoopReplay:
         self.initial_data={key:package['tensors'][key] for key in self.required}
         self.initial_stage_ids=_stage_ids_from_tensors(package['tensors'])
         self._ordered_cache=None
+        self.training_probes=[]
         for key, tensor in self.data.items():
             tensor[:source_count].copy_(package['tensors'][key])
         self.lanes = int(package['tensors']['state'].shape[1])
@@ -240,6 +241,26 @@ class PhysicalLoopReplay:
         self.new_starts.append(start)
         self.new_starts = self.new_starts[-32:]
 
+    def training_probe_stream(self, lanes, tensors):
+        """Expand measured lanes to the fixed suite layout. Missing lanes are never eligible."""
+        if (not lanes or len(set(lanes)) != len(lanes) or min(lanes)<0 or max(lanes)>=self.lanes):
+            raise ValueError('Invalid training probe lanes')
+        data = {}
+        for key in self.required:
+            value, example = tensors[key], self.initial_data[key]
+            if value.shape != (16, len(lanes), *example.shape[2:]):
+                raise ValueError(f'Native probe field shape mismatch: {key}')
+            if value.is_floating_point() and not torch.isfinite(value).all():
+                raise ValueError(f'Nonfinite native probe field: {key}')
+            data[key] = example.new_zeros((16, self.lanes, *example.shape[2:]))
+            data[key][:, lanes] = value.to(example)
+        if ((tensors['terminated'] | tensors['timeout']).any()
+                or not (tensors['episode'] == tensors['episode'][0]).all()):
+            raise ValueError('Training intervention crosses reset')
+        source = torch.full((16,self.lanes), -1, dtype=torch.long)
+        source[:,lanes] = SOURCE_CODES['action_identification']
+        return data, source, _stage_ids_from_tensors(data)
+
     def _ordered(self):
         # Keep immutable initialization evidence outside the online ring; it
         # must not disappear after capacity ticks. Cache gathering across the
@@ -256,6 +277,18 @@ class PhysicalLoopReplay:
         policies=torch.cat((torch.zeros(shape,dtype=torch.long),self.policy_versions[indices]))
         ticks=torch.cat((torch.arange(initial),self.native_ticks[indices]))
         self._ordered_approach={k:torch.cat((torch.full(shape,float('nan')),v[indices])) for k,v in self.approach_metadata.items()}
+        if self.training_probes:
+            # Negative stream identities cannot collide with native online streams.
+            # All proposal starts, native RTG and returns stay on the policy replay.
+            data = {k:torch.cat([v]+[p[0][k] for p in self.training_probes]) for k,v in data.items()}
+            extra = len(self.training_probes)*16
+            streams = torch.cat((streams,-torch.arange(1,len(self.training_probes)+1).repeat_interleave(16)))
+            sources = torch.cat([sources]+[p[1] for p in self.training_probes])
+            stages = torch.cat([stages]+[p[2] for p in self.training_probes])
+            policies = torch.cat((policies,torch.full((extra,self.lanes),-1,dtype=torch.long)))
+            ticks = torch.cat((ticks,torch.full((extra,),-1,dtype=torch.long)))
+            self._ordered_approach = {k:torch.cat((v,v.new_full((extra,self.lanes),float('nan'))))
+                                      for k,v in self._ordered_approach.items()}
         self._ordered_cache=(data,streams,stages,sources,policies,ticks)
         return self._ordered_cache
 
@@ -273,7 +306,8 @@ class PhysicalLoopReplay:
         # for both legacy and stratified callers; the old path still reports
         # the same metadata without requiring quotas.
         source_ids = source_ids_all[:valid.shape[0]]
-        online_mask = source_ids != 0
+        valid &= source_ids>=0
+        online_mask = source_ids == SOURCE_CODES['online']
         online_policy = policy_versions[:valid.shape[0]][online_mask]
         latest_policy = int(online_policy.max()) if online_policy.numel() else 0
         latest_tick = int(native_ticks[:valid.shape[0]][online_mask.any(-1)].max()) if online_mask.any(-1).any() else 0
@@ -342,7 +376,7 @@ class PhysicalLoopReplay:
                              (d['next_event_state'][..., 7] > d['event_state'][..., 7]))
             contact_start = contact_start.unfold(0, steps, 1).any(-1) & valid
             source_codes = torch.where(
-                contact_start,
+                contact_start & (source_ids != SOURCE_CODES['action_identification']),
                 torch.full_like(source_codes, SOURCE_CODES['contact_event']),
                 source_codes)
             # Torch has no string tensor; use integer source codes internally.

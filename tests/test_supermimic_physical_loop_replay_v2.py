@@ -96,3 +96,26 @@ def test_contact_sampler_uses_event_windows_without_approach_metadata():
         stage_quota={'uniform': 2, 'hit_prepare': 2, 'contact_release': 2, 'post_hit': 2})
     assert report['actual_event_coverage']['contact_release'] > 0
     assert report['stage_shortfall']['contact_release'] == 0
+
+
+def test_intervention_windows_respect_lane_and_stream_boundaries_and_keep_source():
+    t,n = 16,4
+    data = _data(t,n)
+    for key in ('state','next_state','values','valid','next_values','next_valid','targets','previous_action','torque'):
+        data[key] = torch.zeros(t,n,3)
+    for key in ('present','terminated','timeout'):
+        data[key] = torch.zeros(t,n,dtype=torch.bool)
+    data['episode'] = torch.zeros(t,n,dtype=torch.long)
+    replay = PhysicalLoopReplay({'tensors':data},None,capacity_ticks=64)
+    for branch in (-1.,1.):
+        pair = {k:v[:,[1,3]].clone() for k,v in data.items()}
+        pair['targets'].fill_(branch)
+        pair['next_event_state'][4,:,1]=1
+        replay.training_probes.append(replay.training_probe_stream([1,3],pair))
+    window,lanes,report = replay.window(t,2,device='cpu',head='contact',
+        source_quota={'action_identification':2},stage_quota={'contact_release':2},excluded_lanes=[3])
+    assert lanes.tolist()==[1,1] and report['fallback_count']==0
+    assert report['source_counts']['action_identification']==2
+    assert set(window['targets'][0,:,0].tolist())=={-1.,1.}
+    assert torch.equal(window['targets'][0],window['targets'][-1])
+    assert not replay.new_starts

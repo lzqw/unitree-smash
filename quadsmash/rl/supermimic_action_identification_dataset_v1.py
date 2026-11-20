@@ -54,7 +54,9 @@ def _same_contract(runs: dict[str, dict[str, Any]]) -> None:
                 raise ValueError(f"probe contract mismatch for {branch}: {key}")
         if tree_digest(run["raw"]["start"]) != tree_digest(reference["raw"]["start"]):
             raise ValueError(f"probe start mismatch for {branch}")
-        if not bool(run["raw"]["command_valid_lanes"].all()):
+        spec = run["spec"]
+        lanes = spec["lanes"] if "lanes" in spec else [spec["lane"]]
+        if not bool(run["raw"]["command_valid_lanes"][lanes].all()):
             raise ValueError(f"probe crosses reset for {branch}")
     if reference.get("restore_mode") != "from-ground-identical-prefix":
         raise ValueError("identification probes require identical ground restoration")
@@ -90,6 +92,8 @@ def pack_collection(collection: str | Path, output: str | Path) -> dict[str, Any
         validate_spec(spec)
         runs = {branch: _load_branch(spec_dir, branch) for branch in BRANCHES}
         _same_contract(runs)
+        if runs[BRANCHES[0]]["spec"] != spec:
+            raise ValueError("Source specification differs from executed probe")
         reference = runs[BRANCHES[0]]
         pairs = {branch: runs[branch]["raw"] for branch in BRANCHES}
         start_physical = reference["raw"]["start"]["before"]["physical"]

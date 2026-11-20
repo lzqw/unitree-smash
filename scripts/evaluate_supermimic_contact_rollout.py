@@ -102,6 +102,10 @@ def main():
     cli = argparse.ArgumentParser(description=__doc__)
     for name in ('packed', 'checkpoint', 'calibration', 'output'):
         cli.add_argument('--'+name, type=Path, required=True)
+    candidate = cli.add_mutually_exclusive_group()
+    candidate.add_argument('--body-candidate',type=Path,help='Mixed-rollout Body WM replayed on its parent split')
+    candidate.add_argument('--online-checkpoint', type=Path,
+                     help='Replay the online Body WM on the same cases; prior training overlap is possible')
     cli.add_argument('--start', type=int, required=True)
     cli.add_argument('--initial-slip', action='store_true', help='Apply sliding response once when entering a separating overlap')
     args = cli.parse_args()
@@ -122,7 +126,24 @@ def main():
     checkpoint = torch.load(args.checkpoint, weights_only=True, map_location='cpu')
     contract = checkpoint['source_manifest']['task_contract']
     base = PhysicalWorldV2(contract['asset']['sha256']).eval()
-    base.load_state_dict(checkpoint['model'], strict=True)
+    weights = checkpoint['model']
+    parent_hash = sha(args.checkpoint)
+    if args.online_checkpoint:
+        online = torch.load(args.online_checkpoint, weights_only=False, mmap=True, map_location='cpu')
+        metadata = online['metadata']
+        if (metadata['task_contract'] != contract or
+                metadata['physical_imagination']['checkpoint_sha256']['physical'] != parent_hash):
+            raise ValueError('Online body has different physical model or task ancestry')
+        weights = {k.removeprefix('physical_model.'):v for k,v in online['world'].items()
+                   if k.startswith('physical_model.')}
+    elif args.body_candidate:
+        fitted = torch.load(args.body_candidate,weights_only=True,map_location='cpu')
+        cal = fitted['calibration']
+        if (fitted['schema']!=base.schema or cal['source_sha256']!=parent_hash or
+                cal['packed_sha256']!=source_hash or set(lanes.tolist()) & set(cal['train_lanes'])):
+            raise ValueError('Different parent or overlapping mixed calibration/evaluation lanes')
+        weights = fitted['model']
+    base.load_state_dict(weights, strict=True)
     suite = ROOT/contract['suite']['path']
     if sha(suite) != contract['suite']['sha256']:
         raise ValueError('Launch suite identity mismatch')
@@ -182,6 +203,12 @@ def main():
     report = dict(scope='64 control ticks autoregressive ball; recorded final joint commands; original whole-lane Body WM holdout',
                   start_tick=start, initial_slip=args.initial_slip, lanes=lanes.tolist(), results=result, checkpoint_sha256=sha(args.checkpoint),
                   packed_sha256=source_hash, calibration_sha256=sha(args.calibration), policy_training_admitted=False)
+    if args.online_checkpoint:
+        report.update(scope='Online Body WM on its parent model panel; online exposure possible, diagnostic only',
+                      parent_checkpoint_sha256=parent_hash, checkpoint_sha256=sha(args.online_checkpoint))
+    elif args.body_candidate:
+        report.update(scope='Mixed body candidate compared on unchanged parent holdout with recorded native commands',
+                      parent_checkpoint_sha256=parent_hash, checkpoint_sha256=sha(args.body_candidate))
     with args.output.open('x') as stream:
         json.dump(report, stream, indent=2, allow_nan=False)
         stream.write('\n')

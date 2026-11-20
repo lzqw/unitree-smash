@@ -124,7 +124,10 @@ def assess(data, cases, anchor, adapter, horizons, device):
                 ix=torch.tensor([g==group for g in groups],device=device)
                 result[group]=dict(windows=int(ix.sum()),body_rmse=float(err[ix,:49].square().mean().sqrt()),
                     joint_position_mae=float(err[ix,13:31].abs().mean()),root_angular_mae=float(err[ix,10:13].abs().mean()),
-                    ball_velocity_mae=float(err[ix,52:].abs().mean()),ball_position_p95=float(err[ix,49:52].norm(dim=-1).quantile(.95)),
+                    ball_velocity_mae=float(err[ix,52:].abs().mean()),
+                    ball_velocity_rmse=float(err[ix,52:].square().mean().sqrt()),
+                    ball_forward_sign_error=float(((s[ix,52]>0)!=(target[ix,52]>0)).float().mean()),
+                    ball_position_p95=float(err[ix,49:52].norm(dim=-1).quantile(.95)),
                     racket_position_mae=float(fk[ix,:3].abs().mean()),racket_velocity_mae=float(fk[ix,3:6].abs().mean()),
                     racket_angular_mae=float(fk[ix,9:12].abs().mean()))
             metrics[name][i+1]=result

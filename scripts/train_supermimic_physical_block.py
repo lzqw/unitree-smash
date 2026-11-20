@@ -148,6 +148,8 @@ def main():
                         help='Weight of the FK racket position/normal/velocity auxiliary WM loss')
     parser.add_argument('--cpu-threads',type=int,default=4)
     parser.add_argument('--wm-batch-size',type=int,default=128,help='Supervised WM minibatch, multiple of128; native environments remain128')
+    parser.add_argument('--wm-action-collection',type=Path,action='append',default=[],
+                        help='Completed train-only signed PhysX collections with native 16-step WM supervision')
     parser.add_argument('--wm-source-quota',
                         default='recent_online=32,older_online=16,initial_archive=32,action_identification=32,contact_event=16',
                         help='Source quotas per128 WM windows. Default targets natural62.5%%, action25%%, event12.5%%; diagnostic mode records shortages.')
@@ -360,6 +362,16 @@ def run(args, *, alternating=None):
         # UnboundLocalError on valid TOI-racket canary runs.
         from quadsmash.rl.supermimic_policy_execution_v1 import contract as execution_contract
         policy_execution = execution_contract()
+        from quadsmash.rl.supermimic_training_probe_replay import import_training_collection
+        action_collections = []
+        used_branches = set()
+        for path in args.wm_action_collection:
+            receipt = import_training_collection(replay,path,manifest['task_contract'],policy_execution,wm_holdout_lanes)
+            branches = {h for group in receipt['spec_branches'].values() for h in group.values()}
+            if used_branches & branches:
+                raise ValueError('Duplicate native action-identification data')
+            used_branches.update(branches)
+            action_collections.append(receipt)
         reference_bank=None
         if args.task_reference_bank is not None:
             from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
@@ -480,6 +492,10 @@ def run(args, *, alternating=None):
         refresh_world_updates=0;refresh_critic_updates=0
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
+            old_collections = resumed['metadata'].get('wm_action_collections', [])
+            if any(item['spec_branches'] not in [r['spec_branches'] for r in action_collections]
+                   for item in old_collections):
+                raise ValueError('Resume omitted or replaced previously used native action evidence')
             # Training stage, contact-gradient mode and WM trainability are
             # deliberately mutable across a resume (for example, a detached
             # shadow canary can be resumed as TOI-racket-only).  Compare the
@@ -748,7 +764,7 @@ def run(args, *, alternating=None):
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
         config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=args.world_learning_rate,critic_lr=2e-4,
-            wm_sampling_mode=args.wm_sampling_mode,
+            wm_action_collections=action_collections,wm_sampling_mode=args.wm_sampling_mode,
             native_return_monitor=frozen_return_monitor.config,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
@@ -768,7 +784,7 @@ def run(args, *, alternating=None):
             paired_evaluation_baseline=str(args.paired_evaluation_baseline.resolve()) if args.paired_evaluation_baseline else None,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         write(args.output/'config.json',config)
-        metadata=dict(policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
+        metadata=dict(wm_action_collections=action_collections,policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
         global_attempt_id=0;global_accepted_id=0;global_rejected=0;global_backtracked=0
         if args.resume_training:
@@ -956,7 +972,7 @@ def run(args, *, alternating=None):
             # for online mixed-policy training, but solving it 256 times over a
             # 102400-transition archive dominates the calibration wall time and
             # leaves the GPU idle.  Use the existing event-pool sampler here.
-            calibration_fast_path = args.training_stage == 'wm_calibrate'
+            calibration_fast_path = args.training_stage == 'wm_calibrate' and not action_collections
             sampling_source_quota = None if calibration_fast_path else args.wm_source_quota
             sampling_stage_quota = None if calibration_fast_path else quotas
             total=int(args.world_updates_per_actor_update if count is None else count)

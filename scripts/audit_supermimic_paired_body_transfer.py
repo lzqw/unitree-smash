@@ -38,6 +38,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for field in ('dataset','natural','candidate','suite','output'):
         p.add_argument('--'+field,type=Path,required=True)
+    p.add_argument('--body-candidate',type=Path,help='Optional mixed-fit Body WM; the probe lanes must be held out')
     args=p.parse_args();torch.set_num_threads(3)
     ck=torch.load(args.candidate,map_location='cpu',weights_only=False,mmap=True)
     task=ck['metadata']['task_contract']
@@ -57,7 +58,15 @@ def main():
     native={name:field('step_next_states_'+name) for name in ('minus','plus','nominal_b')}
     spans=dict(position=slice(0,3),velocity=slice(3,6),normal=slice(6,9),angular_velocity=slice(9,12))
     result={}
-    for name,model in [('natural',v1),('candidate',body)]:
+    models = [('natural',v1),('candidate',body)]
+    if args.body_candidate:
+        fitted = torch.load(args.body_candidate,map_location='cpu',weights_only=True)
+        if (set(fitted['calibration']['train_lanes']) & set(lanes) or fitted['source_manifest']['task_contract']!=task):
+            raise ValueError('Mixed-fit body has incompatible task or overlapping action-ID lanes')
+        mixed = PhysicalWorldV2(task['asset']['sha256']).eval()
+        mixed.load_state_dict(fitted['model'],strict=True)
+        models.append(('mixed_body',mixed))
+    for name,model in models:
         pred={}
         for branch in ('minus','plus'):
             state=field('state');previous=field('previous_action');feet=field('foot_contact').float()
@@ -78,6 +87,7 @@ def main():
     payload=dict(models=result,source_sha256={k:file_hash(getattr(args,k)) for k in ('candidate','natural','dataset','suite')},
                  lanes=lanes,specs=[r['spec_name'] for r in rows],rows=len(rows),optimizer_updates=0,
                  scope='diagnostic held-command pairs; common recorded nominal ball between steps, measured branch commands, predicted robot/contact')
+    if args.body_candidate: payload['source_sha256']['mixed_body'] = file_hash(args.body_candidate)
     args.output.write_text(json.dumps(payload,indent=2,allow_nan=False)+'\n')
 
 
