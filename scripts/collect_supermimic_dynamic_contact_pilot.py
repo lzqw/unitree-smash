@@ -114,6 +114,24 @@ def collect(args):
             ball[net, 7:10] = 0.
             ball[net, 7] = speed[net]
             env.shuttle.write_root_state_to_sim(ball)
+            intervention = None
+            if args.velocity_pair_branch is not None:
+                # Freeze the nominal shuttle launch before varying the moving surface.
+                # Changing the target command here would measure a different derivative.
+                direction_rng = torch.Generator().manual_seed(seed+1_000_000)
+                direction_local = torch.nn.functional.normalize(torch.randn(
+                    (args.lanes,3),generator=direction_rng),dim=-1).to(device)
+                direction = quat_rotate(q,direction_local)
+                sign = {'nominal_a':0,'nominal_b':0,'minus':-1,'plus':1}[args.velocity_pair_branch]
+                change = sign*args.surface_epsilon_mps*direction
+                old_velocity = data.root_com_vel_w.clone()
+                new_velocity = old_velocity.clone()
+                new_velocity[:,:3] += change
+                env.robot.write_root_velocity_to_sim(new_velocity)
+                intervention = dict(branch=args.velocity_pair_branch,epsilon_mps=args.surface_epsilon_mps,
+                        direction_world=direction.cpu(),delta_world=change.cpu(),nominal_root_com_velocity=old_velocity.cpu(),
+                        nominal_shuttle=ball.cpu(),joint_targets=joint_targets.cpu(),
+                        scope='controlled moving surface response; no Actor command perturbation')
             env.sim.forward()
             trace = NativeSubstepTraceV1(env, start_frame=env.sim.current_time_step_index)
             for _ in range(cfg.decimation):
@@ -135,7 +153,7 @@ def collect(args):
             directory.mkdir()
             temp = directory / 'trace.tmp'
             torch.save(dict(schema='native-controlled-contact-trial-v1', seed=seed, teacher=args.teacher.name,
-                            parent_lane=parent, parent_family=family, raw={'substep_trace': archive}), temp)
+                            parent_lane=parent, parent_family=family, velocity_intervention=intervention, raw={'substep_trace': archive}), temp)
             temp.replace(directory / 'trace.pt')
             print(json.dumps(dict(seed=seed, contact_lanes=int(contact.any(0).sum()),
                                   intervals=int((contact[1:] & ~contact[:-1]).sum()),
@@ -154,8 +172,13 @@ def main():
     parser.add_argument('--grazing-only', action='store_true', help='Target secondary impacts with tangential passes across the string bed')
     parser.add_argument('--batches', type=int, default=1)
     parser.add_argument('--lanes', type=int, default=128)
+    parser.add_argument('--velocity-pair-branch',choices=('nominal_a','nominal_b','minus','plus'))
+    parser.add_argument('--surface-epsilon-mps',type=float,default=.05,
+                        help='Per-sign linear velocity change of the robot root after defining the common shuttle launch')
     AppLauncher.add_app_launcher_args(parser)
     args = parser.parse_args()
+    if args.velocity_pair_branch and not 0 < args.surface_epsilon_mps < float('inf'):
+        parser.error('Expected a positive finite surface speed intervention')
     if min(args.batches, args.lanes) <= 0 or not args.teacher.is_file():
         parser.error('Positive trial dimensions and an existing native teacher are required')
     os.environ['QUADSMASH_G07_EXECUTION_ROOT'] = str(args.execution_root.resolve())

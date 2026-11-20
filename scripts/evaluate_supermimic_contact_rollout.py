@@ -72,7 +72,7 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
                 active = (vn < 0) & (gap[near] + prior.sub_dt*vn <= 0)
                 normal = -(1+prior.restitution)*fitted['normal_impulse_scale']*vn.clamp(max=0)
                 tan = rel - vn[:, None]*n
-                friction = torch.minimum(2/7*tan.norm(dim=-1), fitted['friction']*normal)
+                friction = torch.minimum(fitted.get('sticking_gain',2/7)*tan.norm(dim=-1), fitted['friction']*normal)
                 delta[lane] = active[:, None]*(normal[:, None]*n - friction[:, None]*F.normalize(tan, dim=-1))
                 if previous_patch is not None:
                     inside[lane] = gap[near] <= 0
