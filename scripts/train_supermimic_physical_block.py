@@ -1530,13 +1530,26 @@ def run(args, *, alternating=None):
         failed=True;(args.output/'failure_traceback.txt').write_text(traceback.format_exc())
         write(args.output/'failure.json',dict(phase=phase,native_ticks=tick,
             actor_updates=trainer.actor_updates if trainer else 0,type=type(error).__name__,message=str(error)))
-        if trainer is not None and 'save' in locals():save('interrupted.pt')
+        if trainer is not None and 'save' in locals():
+            try:
+                save('interrupted.pt')
+            except BaseException as cleanup_error:
+                write(args.output/'cleanup_failure.json',dict(
+                    type=type(cleanup_error).__name__,message=str(cleanup_error),
+                    original_type=type(error).__name__,original_message=str(error)))
         raise
     finally:
         if writer is not None:
             writer.flush(); writer.close()
         if archive is not None:
-            archive.flush()
+            try:
+                archive.flush()
+            except BaseException as cleanup_error:
+                if failed:
+                    write(args.output/'archive_cleanup_failure.json',dict(
+                        type=type(cleanup_error).__name__,message=str(cleanup_error)))
+                else:
+                    raise
             if archive.task_sequence is not None:archive.task_sequence.close()
         close_resource(args.output,'ENV',env,primary_failed=failed)
 
