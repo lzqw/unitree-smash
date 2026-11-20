@@ -28,16 +28,21 @@ def racket(state, geometry):
             bodies['velocity'][:, i], bodies['angular_velocity'][:, i])
 
 
-def tick(prior, ball, start, end, fitted, offset, previous_patch=None):
+def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measured_path=None):
     p, v = ball[:, :3], ball[:, 3:]
-    c0, q0, v0, w0 = start
-    c1, q1, v1, w1 = end
-    u = torch.arange(prior.steps, dtype=p.dtype, device=p.device)[:, None, None] / prior.steps
-    center = c0 + (3*u.square()-2*u**3)*(c1-c0) + prior.dt*((u**3-2*u.square()+u)*v0 + (u**3-u.square())*v1)
-    linear = (6*u-6*u.square())*(c1-c0)/prior.dt + (3*u.square()-4*u+1)*v0 + (3*u.square()-2*u)*v1
-    q1 = torch.where((q0*q1).sum(-1, keepdim=True) < 0, -q1, q1)
-    q = F.normalize(q0 + u*(q1-q0), dim=-1)
-    omega = w0 + u*(w1-w0)
+    if measured_path is not None:
+        center,q,linear,omega=measured_path
+        if any(x.shape[:2]!=(prior.steps,len(ball)) for x in measured_path):
+            raise ValueError('Native racket samples must start at each physics substep')
+    else:
+        c0, q0, v0, w0 = start
+        c1, q1, v1, w1 = end
+        u = torch.arange(prior.steps, dtype=p.dtype, device=p.device)[:, None, None] / prior.steps
+        center = c0 + (3*u.square()-2*u**3)*(c1-c0) + prior.dt*((u**3-2*u.square()+u)*v0 + (u**3-u.square())*v1)
+        linear = (6*u-6*u.square())*(c1-c0)/prior.dt + (3*u.square()-4*u+1)*v0 + (3*u.square()-2*u)*v1
+        q1 = torch.where((q0*q1).sum(-1, keepdim=True) < 0, -q1, q1)
+        q = F.normalize(q0 + u*(q1-q0), dim=-1)
+        omega = w0 + u*(w1-w0)
     g = prior.preview
     racket_radius = torch.maximum((g.racket_box_centers.norm(dim=-1) + g.racket_box_halves.norm(dim=-1)).max(),
                                   (g.racket_round_centers.norm(dim=-1) + g.racket_round_halves.flatten()

@@ -1,0 +1,78 @@
+{
+  "pre_to_R8": {
+    "groups": {
+      "approach": {
+        "action_rms": 0.000221664939409551,
+        "mean_kl_per_dim": 9.91130654891071e-06,
+        "rows": 512,
+        "ticks": [
+          224,
+          240,
+          256,
+          272
+        ]
+      },
+      "recovery": {
+        "action_rms": 0.0018040225897249646,
+        "mean_kl_per_dim": 0.0006564790007799205,
+        "rows": 896,
+        "ticks": [
+          384,
+          400,
+          416,
+          448,
+          480,
+          576,
+          672
+        ]
+      }
+    },
+    "parameter_delta": {
+      "available": true,
+      "l2": 0.09273339807987213,
+      "rms": 0.00013517712068278342,
+      "max_abs": 0.0004003280773758888,
+      "changed_elements": 110930
+    },
+    "before": "73a3194ea2e44122df13663bcad9e9b0b543b7c6429bf3b06b133bfb1244646a",
+    "after": "7d0366dd3287a905f385febc372ff763f70daf1308cc68554476f31a8454c71e"
+  },
+  "R8_to_R8A8": {
+    "groups": {
+      "approach": {
+        "action_rms": 0.0008615747831135255,
+        "mean_kl_per_dim": 0.0001497348371258806,
+        "rows": 512,
+        "ticks": [
+          224,
+          240,
+          256,
+          272
+        ]
+      },
+      "recovery": {
+        "action_rms": 4.951077561008749e-05,
+        "mean_kl_per_dim": 4.944659100227556e-07,
+        "rows": 896,
+        "ticks": [
+          384,
+          400,
+          416,
+          448,
+          480,
+          576,
+          672
+        ]
+      }
+    },
+    "parameter_delta": {
+      "available": true,
+      "l2": 0.0813465565443039,
+      "rms": 0.00011857868230435997,
+      "max_abs": 0.000356452539563179,
+      "changed_elements": 110930
+    },
+    "before": "7d0366dd3287a905f385febc372ff763f70daf1308cc68554476f31a8454c71e",
+    "after": "2c84da909c60fd0d6816a665bf3929fb5d33bab80b078e46c8609bfea5f5a794"
+  }
+}

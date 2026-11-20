@@ -196,6 +196,8 @@ def _run_native(args, stop_request):
                        actual_origins_m=env.scene.env_origins.cpu().tolist(),
                        ground_size_m=list(cfg.ground_size_m), sweep_audit_iterations=cfg.sweep_audit_iterations)
         write_json(args.output/'physics.json', physics)
+        from quadsmash.rl.supermimic_actuator_identification import actuator_contract
+        write_json(args.output/'actuator_contract.json', actuator_contract(env, contract))
         first, cursor, numerical = {}, 0, 0
         head_active_lane_steps=dict(recovery=0,approach=0)
         mapping = dict(max_final_target_error_rad=0., tolerance_rad=2e-6,

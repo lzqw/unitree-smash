@@ -17,6 +17,8 @@ def main():
     for name in ('panel','capture','candidate','anchor','archive','safety-mapping','output'):
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--body-candidate',type=Path)
+    p.add_argument('--contact-calibration',type=Path,help='Frozen native racket contact fit for diagnostic transfer')
+    p.add_argument('--teacher-racket',action='store_true',help='Use measured robot endpoints during contact transfer')
     p.add_argument('--device',default='cpu')
     a=p.parse_args();torch.set_num_threads(3)
     root=Path(__file__).resolve().parents[1]
@@ -44,7 +46,32 @@ def main():
             raise ValueError('Body candidate has different robot ancestry or physics contract')
         adapter.physical_model.load_state_dict(candidate['model'],strict=True)
     data=torch.load(path,map_location='cpu',weights_only=True,mmap=True)
-    result=assess(data,panel['cases'],anchor,adapter,panel['horizons'],a.device)
+    if a.teacher_racket and not a.contact_calibration:
+        p.error('--teacher-racket requires the contact solver')
+    contact_step = None
+    if a.contact_calibration:
+        from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, racket, tick
+        settings=json.loads(a.contact_calibration.read_text())
+        prior=BallImpulsePriorV1().to(a.device).eval()
+        if abs(prior.dt-manifest['task_contract']['control_dt_s'])>1e-10:
+            raise ValueError('Contact solver control period mismatch')
+        body=adapter.physical_model
+        def contact_step(inputs,observed_next,previous_patch):
+            state,_,_,_,present,elapsed,launch=inputs
+            prediction,logits,active=body(*inputs)
+            endpoint=observed_next if a.teacher_racket else prediction
+            # Recorded robot supervision intervenes only in the teacher branch. Ball always rolls forward.
+            ball=body.prior(state,present,elapsed,launch)[0][:,49:].clone()
+            patch=torch.zeros_like(previous_patch)
+            if present.any():
+                mask=present.bool()
+                held_patch=previous_patch[mask]
+                ball[mask],_=tick(prior,state[mask,49:],racket(state[mask],body.geometry),
+                                  racket(endpoint[mask],body.geometry),settings['fitted'],
+                                  settings['solver']['pair_contact_offset_m'],held_patch)
+                patch[mask]=held_patch
+            return torch.cat((endpoint[:,:49],ball),-1),logits.sigmoid(),active,patch
+    result=assess(data,panel['cases'],anchor,adapter,panel['horizons'],a.device,contact_step=contact_step)
     if result['windows']!=measured['windows']:raise RuntimeError('Comparison window IDs changed')
     def gate_metrics(model):
         return dict(event_aligned={str(offset):{str(h):groups[f'contact{offset:+d}']
@@ -53,6 +80,9 @@ def main():
                   gate_metrics(result['metrics']['candidate'])),panel_sha256=measured['panel_sha256'],
                   data_sha256=measured['data_sha256'],weights=panel['weights'],
                   body_candidate_sha256=digest(a.body_candidate) if a.body_candidate else None,
+                  contact_calibration_sha256=digest(a.contact_calibration) if a.contact_calibration else None,
+                  contact_input='native_robot_teacher' if a.teacher_racket else 'autoregressive_robot',
+                  patch_initialization='fresh at window start' if a.contact_calibration else None,
                   actor_updates=0,formal_promotion=False)
     with a.output.open('x') as f:json.dump(result,f,allow_nan=False,indent=2)
 

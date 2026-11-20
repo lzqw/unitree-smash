@@ -1,0 +1,315 @@
+{
+  "scope": "isolated joint identification; fixed executed command sequences; only previous native torque at initialization, predicted torque thereafter",
+  "measured_actuator_types": {
+    "legs": "ImplicitActuator",
+    "arm": "ImplicitActuator"
+  },
+  "train_lanes": [
+    9,
+    10,
+    12,
+    19,
+    20,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    31,
+    33,
+    35,
+    36,
+    42,
+    43,
+    45,
+    47,
+    52,
+    54,
+    55,
+    56,
+    58,
+    63,
+    64,
+    66,
+    67,
+    68,
+    69,
+    71,
+    72,
+    75,
+    78,
+    79,
+    80,
+    82,
+    83,
+    88,
+    91,
+    92,
+    93,
+    95
+  ],
+  "held_lanes": [
+    0,
+    3,
+    4,
+    5,
+    7,
+    8,
+    11,
+    13,
+    15,
+    18,
+    30,
+    32,
+    37,
+    48,
+    49,
+    50,
+    51,
+    57,
+    59,
+    60,
+    61,
+    65,
+    70,
+    74,
+    77,
+    86,
+    101,
+    109,
+    110,
+    115,
+    120,
+    127
+  ],
+  "train_transitions": 35950,
+  "validation_windows": 320,
+  "drive_sha256": "9e0406f1d7bb6a1a56fb4155f3ff55705aa91019097f4fb083c51ede3009522e",
+  "packed_sha256": "03463185ebcb5a211e0ee458edee10a1e577fbdd5f17c59934f7fae6a89a4295",
+  "results": {
+    "state_only": {
+      "horizon": {
+        "1": {
+          "arm_position_mae_rad": 0.0007438464699614113,
+          "arm_velocity_mae_rad_s": 0.09987100121626474,
+          "all_joint_position_mae_rad": 0.0026654761362292167,
+          "all_joint_velocity_mae_rad_s": 0.45857930532391167,
+          "torque_estimate_mae_nm": 2.5159632705165165
+        },
+        "2": {
+          "arm_position_mae_rad": 0.0021278442785262774,
+          "arm_velocity_mae_rad_s": 0.15754133817881388,
+          "all_joint_position_mae_rad": 0.00799640607067921,
+          "all_joint_velocity_mae_rad_s": 0.6933135708732853,
+          "torque_estimate_mae_nm": 2.561353063523132
+        },
+        "4": {
+          "arm_position_mae_rad": 0.006278855270751203,
+          "arm_velocity_mae_rad_s": 0.2523969568478603,
+          "all_joint_position_mae_rad": 0.02264075749826232,
+          "all_joint_velocity_mae_rad_s": 0.911375770960149,
+          "torque_estimate_mae_nm": 2.6026034875135315
+        },
+        "8": {
+          "arm_position_mae_rad": 0.017462939068150253,
+          "arm_velocity_mae_rad_s": 0.347934767269398,
+          "all_joint_position_mae_rad": 0.056136357609120835,
+          "all_joint_velocity_mae_rad_s": 1.157622653480931,
+          "torque_estimate_mae_nm": 2.5508884580312814
+        },
+        "16": {
+          "arm_position_mae_rad": 0.040883254731841685,
+          "arm_velocity_mae_rad_s": 0.4139790549714835,
+          "all_joint_position_mae_rad": 0.10962138283102468,
+          "all_joint_velocity_mae_rad_s": 1.163581456883248,
+          "torque_estimate_mae_nm": 2.5259405676634925
+        },
+        "32": {
+          "arm_position_mae_rad": 0.08875842971600771,
+          "arm_velocity_mae_rad_s": 0.6001533688137843,
+          "all_joint_position_mae_rad": 0.18662642121378148,
+          "all_joint_velocity_mae_rad_s": 1.1763871767431189,
+          "torque_estimate_mae_nm": 2.5481026356190126
+        },
+        "64": {
+          "arm_position_mae_rad": 0.2022204418772627,
+          "arm_velocity_mae_rad_s": 0.7663125527543849,
+          "all_joint_position_mae_rad": 0.38180855105323336,
+          "all_joint_velocity_mae_rad_s": 1.5894072965433326,
+          "torque_estimate_mae_nm": 3.14958827856333
+        }
+      },
+      "inverse_inertia": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "executed_target": {
+      "horizon": {
+        "1": {
+          "arm_position_mae_rad": 0.000749081810937591,
+          "arm_velocity_mae_rad_s": 0.1015953730979627,
+          "all_joint_position_mae_rad": 0.0026156792983227676,
+          "all_joint_velocity_mae_rad_s": 0.45607193648889793,
+          "torque_estimate_mae_nm": 0.5643338051819088
+        },
+        "2": {
+          "arm_position_mae_rad": 0.0021304814513117562,
+          "arm_velocity_mae_rad_s": 0.15501436860624257,
+          "all_joint_position_mae_rad": 0.007983202733118628,
+          "all_joint_velocity_mae_rad_s": 0.6872951271046179,
+          "torque_estimate_mae_nm": 0.8239620135845829
+        },
+        "4": {
+          "arm_position_mae_rad": 0.006021468219857936,
+          "arm_velocity_mae_rad_s": 0.2263798222960619,
+          "all_joint_position_mae_rad": 0.022350214250764017,
+          "all_joint_velocity_mae_rad_s": 0.8746073386869165,
+          "torque_estimate_mae_nm": 1.2995924788124746
+        },
+        "8": {
+          "arm_position_mae_rad": 0.014772163087140196,
+          "arm_velocity_mae_rad_s": 0.2563054647069507,
+          "all_joint_position_mae_rad": 0.05234499818203399,
+          "all_joint_velocity_mae_rad_s": 1.0267992768819385,
+          "torque_estimate_mae_nm": 2.0484856067051704
+        },
+        "16": {
+          "arm_position_mae_rad": 0.02472443565245105,
+          "arm_velocity_mae_rad_s": 0.2690592042483496,
+          "all_joint_position_mae_rad": 0.09075432573385511,
+          "all_joint_velocity_mae_rad_s": 0.9882543663227946,
+          "torque_estimate_mae_nm": 2.739542956753356
+        },
+        "32": {
+          "arm_position_mae_rad": 0.03568550405005291,
+          "arm_velocity_mae_rad_s": 0.224706813225954,
+          "all_joint_position_mae_rad": 0.12790684679444955,
+          "all_joint_velocity_mae_rad_s": 1.0696074617223006,
+          "torque_estimate_mae_nm": 3.0259122788780086
+        },
+        "64": {
+          "arm_position_mae_rad": 0.041004708551322995,
+          "arm_velocity_mae_rad_s": 0.29751249010543435,
+          "all_joint_position_mae_rad": 0.3333178298632476,
+          "all_joint_velocity_mae_rad_s": 1.2695651756059034,
+          "torque_estimate_mae_nm": 3.326280079092412
+        }
+      },
+      "inverse_inertia": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "pd_history": {
+      "horizon": {
+        "1": {
+          "arm_position_mae_rad": 0.000553293547084465,
+          "arm_velocity_mae_rad_s": 0.06242575838892015,
+          "all_joint_position_mae_rad": 0.0024185029760288215,
+          "all_joint_velocity_mae_rad_s": 0.4311609606858131,
+          "torque_estimate_mae_nm": 0.3281710725603727
+        },
+        "2": {
+          "arm_position_mae_rad": 0.0014025213546943855,
+          "arm_velocity_mae_rad_s": 0.08979137587847567,
+          "all_joint_position_mae_rad": 0.007340788933909664,
+          "all_joint_velocity_mae_rad_s": 0.6169661080297342,
+          "torque_estimate_mae_nm": 0.5743791737635394
+        },
+        "4": {
+          "arm_position_mae_rad": 0.003559662262641239,
+          "arm_velocity_mae_rad_s": 0.11808291811693652,
+          "all_joint_position_mae_rad": 0.019793341184468956,
+          "all_joint_velocity_mae_rad_s": 0.8003397628902456,
+          "torque_estimate_mae_nm": 0.9989470363452805
+        },
+        "8": {
+          "arm_position_mae_rad": 0.007618118120503554,
+          "arm_velocity_mae_rad_s": 0.11828638763044223,
+          "all_joint_position_mae_rad": 0.04641304692917302,
+          "all_joint_velocity_mae_rad_s": 0.866996066675944,
+          "torque_estimate_mae_nm": 1.6671565401550867
+        },
+        "16": {
+          "arm_position_mae_rad": 0.012018900362733509,
+          "arm_velocity_mae_rad_s": 0.11258549270528237,
+          "all_joint_position_mae_rad": 0.07579406533130845,
+          "all_joint_velocity_mae_rad_s": 0.9276012386488643,
+          "torque_estimate_mae_nm": 2.3073561412677828
+        },
+        "32": {
+          "arm_position_mae_rad": 0.016172936894228846,
+          "arm_velocity_mae_rad_s": 0.09304512178650225,
+          "all_joint_position_mae_rad": 0.11101164766089094,
+          "all_joint_velocity_mae_rad_s": 0.7890823145524503,
+          "torque_estimate_mae_nm": 2.85612109602139
+        },
+        "64": {
+          "arm_position_mae_rad": 0.017600114248635515,
+          "arm_velocity_mae_rad_s": 0.1557039456390389,
+          "all_joint_position_mae_rad": 0.14938875555948894,
+          "all_joint_velocity_mae_rad_s": 0.8437646371186048,
+          "torque_estimate_mae_nm": 3.216976512810907
+        }
+      },
+      "inverse_inertia": [
+        2.1183092050230754,
+        2.6453148423554844,
+        5.866144948131987,
+        6.268046326348135,
+        3.2258529523912167,
+        3.7105616248714703,
+        9.523300791095465,
+        7.948117731784065,
+        3.3303352408918814,
+        3.5463688007844545,
+        11.272012877893067,
+        13.014319588271361,
+        2.729470715111112,
+        1.6600591124653372,
+        2.529392581481094,
+        4.375662405952951,
+        2.558427206460261,
+        2.327657033397024
+      ]
+    }
+  },
+  "actor_updates": 0,
+  "contact_bptt_admitted": false
+}

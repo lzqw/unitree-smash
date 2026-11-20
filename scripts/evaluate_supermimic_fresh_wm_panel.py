@@ -76,7 +76,7 @@ class TransitionRecorder:
 
 
 @torch.no_grad()
-def assess(data, cases, anchor, adapter, horizons, device):
+def assess(data, cases, anchor, adapter, horizons, device, *, contact_step=None):
     from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
     from quadsmash.rl.supermimic_toi_racket_objective import racket_features
 
@@ -107,10 +107,13 @@ def assess(data, cases, anchor, adapter, horizons, device):
     for name in ('anchor','candidate'):
         s=buffer['state'][0];feet=buffer['feet'][0].float();present=buffer['present'][0]
         metrics[name]={}
+        patch = torch.zeros_like(present, dtype=torch.bool)
         for i in range(horizon):
             inputs=(s,buffer['targets'][i],buffer['previous_action'][i],feet,present,buffer['elapsed'][i],launch)
             if name=='anchor':
                 s,logits,present=anchor(*inputs);feet=logits.sigmoid()
+            elif contact_step is not None:
+                s,feet,present,patch=contact_step(inputs,buffer['next_state'][i],patch)
             else:
                 s,feet,present=ball_transition(adapter.physical_model,adapter.ball_model,*inputs,action_model=adapter.action_ball_model)
             if i+1 not in horizons:
