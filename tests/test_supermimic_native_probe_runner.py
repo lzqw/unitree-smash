@@ -19,3 +19,21 @@ def test_child_environment_explicitly_exports_project_import_path():
     assert env['PYTHONPATH'].split(':')[:1] == ['/home/autodrive/supermimic_work_20261118']
     assert env['PYTHONPATH'].endswith(':/existing')
     assert env['PYTHONUNBUFFERED'] == '1'
+
+
+def test_resume_rejects_wrong_spec_or_corrupt_data(tmp_path):
+    from scripts.run_supermimic_event_aligned_native_probes import completed_probe_hash, sha256
+    import json
+
+    probe = tmp_path / 'native_probe.pt'
+    spec = {'tick': 271}
+    probe.write_bytes(b'probe')
+    digest = sha256(probe)
+    (tmp_path / 'native_probe_manifest.json').write_text(json.dumps(
+        {'sha256': digest, 'spec': spec, 'branch': 'nominal_a'}))
+    assert completed_probe_hash(tmp_path, 'nominal_a', spec) is None
+    (tmp_path / 'shutdown_diagnostic.json').write_text('{"control_ticks": 272}')
+    assert completed_probe_hash(tmp_path, 'nominal_a', spec) == digest
+    assert completed_probe_hash(tmp_path, 'nominal_b', spec) is None
+    probe.write_bytes(b'corrupt')
+    assert completed_probe_hash(tmp_path, 'nominal_a', spec) is None

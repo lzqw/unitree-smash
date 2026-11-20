@@ -43,3 +43,11 @@ git diff --check HEAD~5..HEAD
 该批次使用已审查的可恢复 launcher，启动前仍需确认当前 B1 fill 已结束且 GPU 只保留 A2 canary。采集完成后重新运行本文件中的测试和 pilot manifest 审计。
 
 后续复核修正了 legacy `spec_unknown` 的审计边界。unknown 行继续按 capture 原子切分，并从已知 spec 的跨 split overlap 集合排除。修正后的测试和 unknown-spec 合成审计均通过，代码提交为 `71b9833`。
+
+## 11 月 21 日复核与运行范围
+
+逐行对照 FullRacketEnvV4 的 _consume_physics_frame 和 Isaac Lab ContactSensor 的点聚合实现后，撤回前文对原始五维矩阵的解释。球端第 0、1 个 filter 分别是球拍和地面。inverse_net 最后一个 filter 对应球，其余项属于机器人。刚体名 Racket 仅提供刚体身份。球网平面穿越不足以证明发生球网接触，原 cross-event 批次暂缓。
+
+修复包括按对象取力和位置，单独保存 PhysX get_contact_data 返回的逐点法向、法向力、位置、分离距离和 filter 归属，分开保存刚体名与缺失的部件标签。新增计数和续跑检查覆盖 checkpoint、分支、规格、文件散列和完成的控制步。四组定向测试共 16 项通过，其中包括地面单独受力、地面和拍面同时受力、机器人碰网、稀疏接触点索引、损坏的续跑文件和独立的子步时钟。
+
+短窗 GPU 首次试运行限 1 个进程、1 批、32 条 lane、seed 270080。核对了 teacher 的 128×18 关节目标、原始场景偏移、root link 到质心速度换算、1 个准备子步与 160 个测量子步、规定的空气阻力、新建输出目录和原子写入。使用 tick271 nominal_a 的球拍运动状态和原生铰接模型。采集器 SHA256 为 e2c58b0cfc04dbaca91d44abe80bbe461689a6a23119bad66ec286695a4d2b7b，trace 为 f178ddc89fadf1c476acafeb44933ac57ec3dc910cb52ccd2b2106724de8795d。此次结论限短窗试运行。扩量前须核对实际物理帧、逐点冲量与 filter 合力的一致性、重复事件及每个分桶的实测支持。

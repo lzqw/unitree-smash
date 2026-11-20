@@ -51,6 +51,22 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def completed_probe_hash(directory: Path, branch: str, spec: dict) -> str | None:
+    receipt_path = directory / 'native_probe_manifest.json'
+    probe = directory / 'native_probe.pt'
+    shutdown = directory / 'shutdown_diagnostic.json'
+    if (directory / 'failure.json').exists() or not all(
+            path.is_file() for path in (receipt_path, probe, shutdown)):
+        return None
+    receipt = json.loads(receipt_path.read_text())
+    diagnostic = json.loads(shutdown.read_text())
+    if (receipt.get('branch') != branch or receipt.get('spec') != spec or
+            diagnostic.get('control_ticks') != spec['tick'] + 1):
+        return None
+    digest = sha256(probe)
+    return digest if digest == receipt.get('sha256') else None
+
+
 def _parse_source(args: argparse.Namespace) -> list[str]:
     if bool(args.checkpoint) == bool(args.init_policy_checkpoint):
         raise ValueError('Specify exactly one of --checkpoint and --init-policy-checkpoint')
@@ -126,14 +142,24 @@ def main() -> int:
         g07_execution_root=str(args.g07_execution_root.resolve()),
         physics_device=args.physics_device,
         seed=args.seed,
+        source_sha256=sha256(args.checkpoint or args.init_policy_checkpoint),
         cuda_device_count=torch.cuda.device_count(),
         started_at=time.time(),
     )
     startup_path = args.output / 'startup.json'
     if args.resume and startup_path.is_file():
         previous = json.loads(startup_path.read_text())
-        if previous.get('spec_manifest_sha256') != startup.get('spec_manifest_sha256'):
-            parser.error('Resume collection spec manifest does not match existing output')
+        for field in ('spec_manifest_sha256', 'specs', 'seed', 'physics_device', 'g07_execution_root'):
+            if previous.get(field) != startup[field]:
+                parser.error(f'Resume collection differs in {field}')
+        if 'source_sha256' in previous:
+            if previous['source_sha256'] != startup['source_sha256']:
+                parser.error('Resume checkpoint differs from recorded checkpoint')
+        else:
+            previous_argv = previous.get('argv', [])
+            option, path = source_args[:2]
+            if option not in previous_argv or previous_argv[previous_argv.index(option) + 1:][:1] != [path]:
+                parser.error('Resume checkpoint path differs from legacy collection')
     else:
         startup_path.write_text(json.dumps(startup, indent=2) + '\n')
 
@@ -146,10 +172,11 @@ def main() -> int:
         for branch in BRANCHES:
             branch_output = args.output / spec_name / branch
             probe_path = branch_output / 'native_probe.pt'
-            if args.resume and probe_path.is_file():
+            digest = completed_probe_hash(branch_output, branch, spec) if args.resume else None
+            if digest is not None:
                 completed.append(dict(spec=spec_name, branch=branch, command=[], exit_code=0,
                                       elapsed_s=0.0, output=str(branch_output),
-                                      probe_path=str(probe_path), probe_sha256=sha256(probe_path),
+                                      probe_path=str(probe_path), probe_sha256=digest,
                                       resumed=True))
                 continue
             if args.resume and branch_output.exists():
@@ -176,6 +203,10 @@ def main() -> int:
             ]
             jobs.append((spec_name, branch, branch_output, command))
 
+    total_branches = len(jobs) + len(completed)
+
+    spec_by_name = {path.stem: spec for path, spec in specs}
+
     def run_job(job):
         spec_name, branch, branch_output, command = job
         log_path = branch_output.parent / f'{branch}.launcher.log'
@@ -187,7 +218,7 @@ def main() -> int:
         return dict(spec=spec_name, branch=branch, command=command,
                     exit_code=result.returncode, elapsed_s=time.time() - started,
                     output=str(branch_output), probe_path=str(probe_path),
-                    probe_sha256=sha256(probe_path) if probe_path.is_file() else None)
+                    probe_sha256=completed_probe_hash(branch_output, branch, spec_by_name[spec_name]))
 
     # Each Isaac child uses roughly 3 GB on the RTX 5080.  Keep the default
     # serial mode for compatibility, while allowing a bounded two-child run
@@ -200,15 +231,15 @@ def main() -> int:
             completed.sort(key=lambda row: (row['spec'], BRANCHES.index(row['branch'])))
             (args.output / 'status.json').write_text(json.dumps(dict(
                 schema='event-aligned-native-probe-collection-v1', status='RUNNING',
-                workers=args.workers, total=len(jobs) + len(completed), completed=completed), indent=2) + '\n')
-            if item['exit_code'] != 0 or not Path(item['probe_path']).is_file():
+                workers=args.workers, total=total_branches, completed=completed), indent=2) + '\n')
+            if item['exit_code'] != 0 or item['probe_sha256'] is None:
                 (args.output / 'failure.json').write_text(json.dumps(item, indent=2) + '\n')
                 for other in futures:
                     other.cancel()
                 return 1
 
     status = dict(schema='event-aligned-native-probe-collection-v1', status='COLLECTION_FINISHED',
-                  workers=args.workers, total=len(jobs) + len(completed),
+                  workers=args.workers, total=total_branches,
                   actor_updates=0, world_updates=0, critic_updates=0,
                   completed=completed, finished_at=time.time())
     (args.output / 'status.json').write_text(json.dumps(status, indent=2) + '\n')

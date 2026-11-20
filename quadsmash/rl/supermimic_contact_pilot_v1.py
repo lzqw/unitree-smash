@@ -37,8 +37,8 @@ PILOT_FIELDS = (
     "contact_slot_count", "contact_slot_indices", "slot_impulse_ns", "gap_source",
     "contact_region", "contact_grid", "toi_phase", "contact_count_substeps",
     "physics_dt_s", "quality_flags", "bucket", "interference_object",
-    "contact_filter_paths", "racket_part_source",
-    "probe_branch", "event_id", "near_miss_contact_proximity",
+    "contact_filter_paths", "racket_body_name", "racket_part_source",
+    "probe_branch", "event_id", "near_miss_contact_proximity", "manifold_points",
 )
 
 
@@ -281,27 +281,54 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
     dt = float(trace.get("physics_dt_s", 0.0))
     if dt <= 0:
         raise ValueError(f"{path}: trace physics_dt_s must be positive")
+    metadata = trace.get("contact_metadata", {})
     racket_force_slots = _force_slots(tensors, "contact_force_matrix_w", "racket_force_w", frames, lanes)
-    racket_force = racket_force_slots.sum(dim=2)
+    point_slots = _position_slots(tensors, frames, lanes)
     ground_force = _force_tensor(tensors, "ground_force_w", frames, lanes)
-    net_force_slots = _force_slots(tensors, "net_force_matrix_w", "net_force_w", frames, lanes)
-    net_force = net_force_slots.sum(dim=2)
+    racket_index = int(metadata.get("racket_filter_index", 0))
+    matrix = tensors.get("contact_force_matrix_w")
+    # Native [time, lane, sensor body, filter, xyz] stores a separate
+    # object pair per filter. The reduced 4-D slot archive is racket-only.
+    if matrix is not None and matrix.ndim == 5:
+        if matrix.shape[2] != 1:
+            raise ValueError(f"{path}: expected one sensed shuttle body")
+        ground_index = int(metadata.get("ground_filter_index", 1))
+        if not 0 <= racket_index < matrix.shape[3] or racket_index == ground_index:
+            raise ValueError(f"{path}: invalid shuttle contact filter mapping")
+        if 0 <= ground_index < matrix.shape[3]:
+            ground_force = racket_force_slots[:, :, ground_index]
+        racket_force_slots = racket_force_slots[:, :, racket_index:racket_index + 1]
+        positions = tensors.get("contact_position_matrix_w")
+        if positions is not None:
+            if positions.shape != matrix.shape:
+                raise ValueError(f"{path}: force and position filters do not align")
+            point_slots = point_slots[:, :, racket_index:racket_index + 1]
+    racket_force = racket_force_slots.sum(dim=2)
+    net_matrix = tensors.get("net_force_matrix_w")
+    if net_matrix is not None and net_matrix.ndim == 5:
+        # inverse_net measures force on the net. Only its final filter
+        # corresponds to the shuttle. Earlier filters are robot bodies.
+        net_force = -net_matrix[:, :, 0, -1].float()
+    else:
+        net_force = _force_slots(tensors, "net_force_matrix_w", "net_force_w", frames, lanes).sum(dim=2)
     position_all = _as_tensor(tensors["racket_position_w"]).float()
     quaternion_all = _as_tensor(tensors["racket_quaternion_w"]).float()
     local_all = _quat_rotate_inverse(quaternion_all, ball[..., :3] - position_all)
     analytic_gaps = _geometry_preview().racket_gap(local_all)
-    point_slots = _position_slots(tensors, frames, lanes)
     touching = racket_force.norm(dim=-1) > force_threshold
     ground_touching = ground_force.norm(dim=-1) > force_threshold
     net_touching = net_force.norm(dim=-1) > force_threshold
+    manifold_frames = trace.get("manifold_frames", [])
+    if manifold_frames and len(manifold_frames) != frames:
+        raise ValueError(f"{path}: manifold frames do not match consumed state clock")
     records: list[dict] = []
     source_hash = hashlib.sha256(path.read_bytes()).hexdigest()
     probe_branch = package.get("branch")
     contact_metadata = trace.get("contact_metadata", {})
     filter_paths = contact_metadata.get("filter_prim_paths")
     racket_body_name = contact_metadata.get("racket_body_name")
-    racket_part = racket_body_name or "unknown"
-    racket_part_source = ("native_contact_metadata" if racket_body_name else "unavailable_in_archive")
+    racket_part = "unknown"
+    racket_part_source = "collider_part_unavailable"
     source_meta = [_source_metadata(path, source_hash, lane, probe_branch) for lane in range(lanes)]
     sensitivity: dict[str, dict[str, int]] = {}
     for threshold in sensitivity_thresholds:
@@ -311,12 +338,12 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
             "lanes_with_contact": int(threshold_touch.any(0).sum()),
             "contact_intervals": sum(len(_contact_intervals(threshold_touch[:, lane])) for lane in range(lanes)),
         }
+    trace_has_contact = bool(touching.any())
     for lane in range(lanes):
         mask = touching[:, lane]
         starts = torch.where(mask & ~torch.cat((torch.zeros(1, dtype=torch.bool), mask[:-1])))[0].tolist()
         ends = torch.where(mask & ~torch.cat((mask[1:], torch.zeros(1, dtype=torch.bool))))[0].tolist()
         contact_intervals = list(zip(starts, ends))
-        trace_has_contact = bool(touching.any())
         lane_has_contact = bool(mask.any())
         for order, (start, end) in enumerate(zip(starts, ends), 1):
             before = max(start - 1, 0)
@@ -326,14 +353,34 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
             normal = force.mean(0)
             position = position_all[start, lane]
             quaternion = quaternion_all[start, lane]
+            manifold_points = []
+            for frame in range(start, end + 1) if manifold_frames else ():
+                detail = manifold_frames[frame]
+                indices = ((detail["lane"] == lane) &
+                           (detail["filter_index"] == racket_index)).nonzero().flatten().tolist()
+                for index in indices:
+                    manifold_points.append(dict(
+                        frame=frame, point_w=detail["point_w"][index].tolist(),
+                        normal_w=detail["normal_w"][index].tolist(),
+                        separation_m=float(detail["separation_m"][index]),
+                        normal_impulse_ns=float(detail["normal_force_n"][index]) * dt))
+            normal_source = "racket_force_direction_proxy"
+            if manifold_points:
+                witness = max(manifold_points, key=lambda point: abs(point["normal_impulse_ns"]))
+                normal = torch.as_tensor(witness["normal_w"])
+                if normal.dot(impulse) < 0:
+                    normal = -normal
+                normal_source = "physx_manifold_dominant_point"
             if float(normal.norm()) < 1e-12:
                 normal = ball[start, lane, :3] - position
             normal = normal / normal.norm().clamp_min(1e-12)
             contact_point = _first_finite_slot(point_slots, start, lane)
+            if manifold_points:
+                contact_point = torch.as_tensor(witness["point_w"])
             arm = contact_point - position
-            racket_lin = _as_tensor(tensors["racket_linear_velocity_w"])[start, lane].float()
-            racket_ang = _as_tensor(tensors["racket_angular_velocity_w"])[start, lane].float()
-            ball_vel = ball[start, lane, 7:10]
+            racket_lin = _as_tensor(tensors["racket_linear_velocity_w"])[before, lane].float()
+            racket_ang = _as_tensor(tensors["racket_angular_velocity_w"])[before, lane].float()
+            ball_vel = ball[before, lane, 7:10]
             if not torch.isfinite(arm).all():
                 arm = torch.zeros(3, dtype=position.dtype)
             surface = racket_lin + torch.linalg.cross(racket_ang, arm)
@@ -345,6 +392,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
             gap = (float((ball[start, lane, :3] - contact_point).norm() - .025)
                    if torch.isfinite(contact_point).all()
                    else float(analytic_gaps[start, lane]))
+            if manifold_points:
+                gap = min(point["separation_m"] for point in manifold_points)
             local = _quat_rotate_inverse(quaternion[None], ((contact_point - position) if torch.isfinite(contact_point).all()
                                                             else (ball[start, lane, :3] - position))[None])[0]
             region, grid = _contact_region(local)
@@ -369,8 +418,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 toi_post_substep=_frame_state(tensors, after, lane),
                 outgoing_direction_w=(ball[after, lane, 7:10] / ball[after, lane, 7:10].norm().clamp_min(1e-12)).tolist(),
                 outgoing_speed_mps=float(ball[after, lane, 7:10].norm()),
-                quality_flags=["native_substep_force_integrated"] + (["racket_part_unavailable"] if not racket_body_name else []),
-                normal_source="racket_force_direction_proxy",
+                quality_flags=["native_substep_force_integrated", "racket_part_unavailable"],
+                normal_source=normal_source, manifold_points=manifold_points,
                 impulse_source="integrated_contact_force_matrix",
                 effective_mass_source="inferred_from_normal_impulse_and_relative_speed",
                 interference_objects=[name for name, active in (
@@ -381,13 +430,14 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 contact_slot_count=int(active_slots.sum()),
                 contact_slot_indices=[int(index) for index in active_slots.nonzero().flatten().tolist()],
                 slot_impulse_ns=slot_impulse.tolist(),
-                gap_source="measured_contact_point" if torch.isfinite(contact_point).all() else "analytic_racket_geometry",
+                gap_source=("physx_manifold_separation" if manifold_points else
+                            "measured_contact_point" if torch.isfinite(contact_point).all() else "analytic_racket_geometry"),
                 approach_speed_mps=max(0., -vn), relative_speed_mps=float(relative.norm()),
                 gap_bucket=_gap_bucket(gap),
-                       near_miss_contact_proximity="contact_positive",
+                near_miss_contact_proximity="contact_positive",
                 physics_dt_s=dt,
                 contact_filter_paths=filter_paths,
-                racket_part_source=racket_part_source,
+                racket_body_name=racket_body_name, racket_part_source=racket_part_source,
                 **metadata,
             )
             row["bucket"] = _bucket(row)
@@ -420,7 +470,7 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                        relative_velocity_w=relative.tolist(), impulse_ns=[0.] * 3,
                        normal_impulse_ns=0., tangential_impulse_ns=[0.] * 3,
                        penetration_m=0., contact_order=0, effective_mass_kg=float("nan"),
-                           racket_part=racket_part, contact_region="near_miss",
+                       racket_part=racket_part, contact_region="near_miss", manifold_points=[],
                        contact_grid=None, toi_phase=int((center % 160) / 40),
                        ball_state_before=_frame_state(tensors, max(0, center - 1), lane),
                        ball_state_after=_frame_state(tensors, min(frames - 1, center + 1), lane),
@@ -445,8 +495,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                        gap_bucket=_gap_bucket(gap), physics_dt_s=dt,
                        near_miss_contact_proximity=_near_miss_proximity(
                            center, contact_intervals, trace_has_contact, lane_has_contact),
-                           contact_filter_paths=filter_paths,
-                           racket_part_source=racket_part_source,
+                       contact_filter_paths=filter_paths,
+                       racket_body_name=racket_body_name, racket_part_source=racket_part_source,
                        **metadata)
             row["bucket"] = ":".join(("near_miss", interference, str(row["toi_phase"]),
                                         row["gap_bucket"], _approach_bucket(max(0., -vn)),

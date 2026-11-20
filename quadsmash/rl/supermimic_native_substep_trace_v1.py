@@ -7,10 +7,23 @@ native data, not interpolation or a contact-cache restoration mechanism.
 import torch
 
 
+def pack_manifold_frame(contact_data):
+    """Copy populated entries only, retaining the body/filter pair for every point."""
+    forces, points, normals, separation, counts, starts = contact_data
+    counts = counts.long()
+    pairs = torch.arange(counts.numel(), device=counts.device).repeat_interleave(counts.flatten())
+    offsets = counts.flatten().cumsum(0) - counts.flatten()
+    point_index = torch.arange(pairs.numel(), device=pairs.device) - offsets[pairs]
+    indices = starts.flatten()[pairs].long() + point_index
+    return dict(lane=pairs // counts.shape[1], filter_index=pairs % counts.shape[1],
+                normal_force_n=forces[indices].flatten(), point_w=points[indices],
+                normal_w=normals[indices], separation_m=separation[indices].flatten())
+
+
 class NativeSubstepTraceV1:
     schema = 'native-one-control-tick-substeps-v1'
 
-    def __init__(self, env):
+    def __init__(self, env, *, start_frame=None):
         self.env = env
         self.original = env._consume_physics_frame
         self.had_instance_method = '_consume_physics_frame' in vars(env)
@@ -18,11 +31,15 @@ class NativeSubstepTraceV1:
         self.capacity = int(env.cfg.decimation) + 1
         self.count = 0
         self.buffers = {}
+        self.manifold_frames = []
         self.active = True
         self.closed = False
-        self.start_frame = int(env._sim_step_counter)
+        self.start_frame = int(env._sim_step_counter if start_frame is None else start_frame)
         self.last_recorded_frame = self.start_frame
+        self.manual = start_frame is not None
         self._record(self.start_frame)
+        if self.manual:
+            return
 
         def wrapped(frame):
             before = int(env._last_physics_frame)
@@ -37,6 +54,13 @@ class NativeSubstepTraceV1:
         self.wrapper = wrapped
         env._consume_physics_frame = wrapped
 
+    def observe_frame(self, frame):
+        """Append one already advanced native frame in a controlled contact fixture."""
+        if not self.manual or self.closed or frame != self.last_recorded_frame + 1:
+            raise RuntimeError('Expected the next native fixture physics frame')
+        self._record(frame)
+        self.last_recorded_frame = frame
+
     @torch.no_grad()
     def _record(self, frame):
         if self.count >= self.capacity:
@@ -47,13 +71,19 @@ class NativeSubstepTraceV1:
         contact = env.shuttle_contact.data
         force_matrix = contact.force_matrix_w
         contact_positions = contact.contact_pos_w
+        view = getattr(env.shuttle_contact, "contact_physx_view", None)
+        if view is not None:
+            if force_matrix.shape[1] != 1:
+                raise ValueError("Expected one shuttle sensor body per environment")
+            self.manifold_frames.append(pack_manifold_frame(view.get_contact_data(dt=env.physics_dt)))
         sensors = getattr(getattr(env, 'scene', None), 'sensors', None)
         net_sensor = sensors.get('inverse_net') if hasattr(sensors, 'get') else None
         net_force_matrix = (None if net_sensor is None else
                             getattr(getattr(net_sensor, 'data', None), 'force_matrix_w', None))
         values = dict(
             physics_frame=torch.tensor(frame, device=env.device, dtype=torch.long),
-            ball_clock=env.ball_clock,
+            ball_clock=(torch.full_like(env.ball_clock, (frame - self.start_frame) * env.physics_dt)
+                        if self.manual else env.ball_clock),
             shuttle_state_w=env.shuttle.data.root_state_w,
             racket_position_w=data.body_link_pos_w[:, rid],
             racket_quaternion_w=data.body_link_quat_w[:, rid],
@@ -83,6 +113,10 @@ class NativeSubstepTraceV1:
     def close(self):
         if self.closed:
             return
+        if self.manual:
+            self.active = False
+            self.closed = True
+            return
         if self.env._consume_physics_frame is not self.wrapper:
             raise RuntimeError('Native trace hook replaced unexpectedly')
         if self.had_instance_method:
@@ -109,16 +143,16 @@ class NativeSubstepTraceV1:
         if body_names is not None and self.env.racket_body_id < len(body_names):
             racket_body_name = str(body_names[self.env.racket_body_id])
         filter_paths = getattr(getattr(getattr(self.env, 'shuttle_contact', None), 'cfg', None),
-                               'filter_prim_paths', None)
+                               'filter_prim_paths_expr', None)
         contact_metadata = {
             'racket_body_id': int(self.env.racket_body_id),
             'racket_body_name': racket_body_name,
             'filter_prim_paths': None if filter_paths is None else [str(path) for path in filter_paths],
             'racket_filter_index': 0,
             'ground_filter_index': 1,
-            'normal_source': 'not_exposed_by_isaaclab_contact_sensor',
+            'normal_source': 'physx_contact_data' if self.manifold_frames else 'unavailable',
         }
         return dict(schema=self.schema, count=self.count, physics_dt_s=float(self.env.physics_dt),
                     start_frame=self.start_frame, end_frame=int(frames[-1]), tensors=tensors,
-                    contact_metadata=contact_metadata,
+                    contact_metadata=contact_metadata, manifold_frames=self.manifold_frames,
                     scope='observed consumed native frames; no object-tree snapshots or extra event updates')
