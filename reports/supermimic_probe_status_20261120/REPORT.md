@@ -144,3 +144,23 @@ also showing that the current Body WM still attenuates the response.
 The temporal Oracle artifact is
 `/home/autodrive/LZQW/experiments/supermimic_action_to_racket_oracle_20261120_lead4_hold4_v2_temporal.json`.
 It is diagnostic only and does not issue a native or contact receipt.
+
+## Offline natural-distribution WM fit
+
+An independent 256-update GPU fit was run on the 102400-transition frozen
+archive with complete-lane holdout before normalization. It produced
+`/home/autodrive/LZQW/experiments/supermimic_wm_action_identification_baseline_20261120_v2/world.pt`.
+There were zero Actor and Critic updates. Holdout ball-velocity MAE changed as
+follows:
+
+| Horizon | Initial | Final |
+|---:|---:|---:|
+| 1 | 0.1205 | 0.0799 m/s |
+| 8 | 0.8724 | 0.3325 m/s |
+| 16 | 1.5441 | 0.4654 m/s |
+| 64 | 5.3858 | 0.8976 m/s |
+
+The 64-step ball-position p95 error decreased from 8.0644 m to 2.1084 m. This
+is a useful natural-distribution WM calibration result, but it does not prove
+contact-gradient correctness or policy improvement. The action-identification
+collection remains a separate source and has not been mixed into this fit.
