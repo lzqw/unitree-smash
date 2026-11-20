@@ -9,6 +9,8 @@ from windows with no measured racket force and retain the closest gap.
 
 from __future__ import annotations
 
+from collections import Counter
+from functools import lru_cache
 import hashlib
 import json
 import math
@@ -21,6 +23,8 @@ from typing import Any
 import torch
 
 from quadsmash.rl.supermimic_ball_geometry_preview_v1 import BallGeometryPreviewV1
+from quadsmash.rl.supermimic_ball_impulse_prior_v1 import BallImpulsePriorV1
+from quadsmash.physics.full_racket_v4 import load_racket, parts, string_strips
 
 
 SCHEMA = "supermimic-racket-ball-contact-pilot-v1"
@@ -38,7 +42,7 @@ PILOT_FIELDS = (
     "contact_region", "contact_grid", "toi_phase", "contact_count_substeps",
     "physics_dt_s", "quality_flags", "bucket", "interference_object",
     "contact_filter_paths", "racket_body_name", "racket_part_source",
-    "probe_branch", "event_id", "near_miss_contact_proximity", "manifold_points",
+    "probe_branch", "event_id", "near_miss_contact_proximity", "manifold_points", "geometric_racket_part",
 )
 
 
@@ -50,6 +54,16 @@ def _geometry_preview() -> BallGeometryPreviewV1:
     if _GEOMETRY_PREVIEW is None:
         _GEOMETRY_PREVIEW = BallGeometryPreviewV1().eval()
     return _GEOMETRY_PREVIEW
+
+
+@lru_cache(maxsize=1)
+def _surface_geometry():
+    config = load_racket()
+    components = [part for part in parts(config) if part["collision"]]
+    names = ["strings"] * len(string_strips(config))
+    names.extend(part["name"] for part in components if part["kind"] == "box")
+    names.extend(part["name"] for part in components if part["kind"] in ("capsule", "cylinder"))
+    return BallImpulsePriorV1().eval(), names
 
 
 def _as_tensor(value: Any) -> torch.Tensor:
@@ -274,7 +288,7 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
     tensors = trace.get("tensors", {})
     required = ("shuttle_state_w", "racket_position_w", "racket_quaternion_w",
                 "racket_linear_velocity_w", "racket_angular_velocity_w")
-    if any(key not in tensors for key in required):
+    if ("racket_force_w" not in tensors and "contact_force_matrix_w" not in tensors) or any(key not in tensors for key in required):
         return [], {}
     ball = _as_tensor(tensors["shuttle_state_w"]).float()
     frames, lanes = ball.shape[:2]
@@ -331,6 +345,12 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
     racket_part_source = "collider_part_unavailable"
     source_meta = [_source_metadata(path, source_hash, lane, probe_branch) for lane in range(lanes)]
     sensitivity: dict[str, dict[str, int]] = {}
+    if package.get("schema") == "native-controlled-contact-trial-v1":
+        family = int(package["parent_family"])
+        for lane, item in enumerate(source_meta):
+            item.update(spec_id=f"fixture_family_{family}", episode_id=f"fixture_{package['seed']}_{lane}",
+                        lane_family=f"teacher_family_{family}", parent_lane=int(package["parent_lane"][lane]))
+            item["split_group"] = "|".join(item[key] for key in ("spec_id", "episode_id", "lane_family", "capture_id"))
     for threshold in sensitivity_thresholds:
         threshold_touch = racket_force.norm(dim=-1) > threshold
         sensitivity[str(threshold)] = {
@@ -397,6 +417,11 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
             local = _quat_rotate_inverse(quaternion[None], ((contact_point - position) if torch.isfinite(contact_point).all()
                                                             else (ball[start, lane, :3] - position))[None])[0]
             region, grid = _contact_region(local)
+            geometric_part = None
+            if torch.isfinite(contact_point).all():
+                surface_model, component_names = _surface_geometry()
+                _, component_index = surface_model.racket_surface(local[None])
+                geometric_part = component_names[int(component_index.item())]
             active_slots = racket_force_slots[start:end + 1, lane].norm(dim=-1).max(0).values > force_threshold
             slot_impulse = racket_force_slots[start:end + 1, lane].sum(0) * dt
             metadata = source_meta[lane]
@@ -408,7 +433,7 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 relative_velocity_w=relative.tolist(), impulse_ns=impulse.tolist(),
                 normal_impulse_ns=normal_impulse, tangential_impulse_ns=tangent_impulse.tolist(),
                 penetration_m=max(0., -gap), contact_order=order,
-                effective_mass_kg=mass, racket_part=racket_part,
+                effective_mass_kg=mass, racket_part=racket_part, geometric_racket_part=geometric_part,
                 contact_region=region, contact_grid=grid, toi_phase=int((start % 160) / 40),
                 ball_state_before=_frame_state(tensors, before, lane),
                 ball_state_after=_frame_state(tensors, after, lane),
@@ -545,6 +570,13 @@ def _deduplicate(rows: list[dict]) -> tuple[list[dict], int]:
                if event_id else
                (row.get("source_sha256"), row.get("contact_object"), row.get("lane"),
                 row.get("toi_frame"), row.get("contact_order")))
+        if row.get("contact_object") == "racket" and row.get("toi_pre_substep") is not None:
+            # Equal physics observations in deterministic replays are one sample
+            # even if the archive embeds a different branch or serializer metadata.
+            observations = [row["toi_pre_substep"], row["toi_post_substep"], row["impulse_ns"],
+                            row["contact_point_w"], row["contact_count_substeps"], row["physics_dt_s"]]
+            digest = hashlib.sha256(json.dumps(observations, sort_keys=True).encode()).digest()
+            key = ("measured_contact", digest)
         if key in seen:
             continue
         seen.add(key)
@@ -570,6 +602,22 @@ def _coverage(rows: list[dict]) -> dict:
     near_proximity = {name: sum(row.get("near_miss_contact_proximity") == name for row in negatives)
                       for name in ("same_lane_near", "same_lane_far",
                                    "same_spec_other_lane", "no_contact_in_trace")}
+    strata = {key: Counter() for key in ("vn", "vt", "incidence", "racket_linear", "racket_angular", "part_geometry")}
+    for row in positives:
+        relative = torch.as_tensor(row["relative_velocity_w"])
+        normal = torch.as_tensor(row["normal_w"])
+        vn = relative.dot(normal)
+        vt = (relative - vn * normal).norm()
+        incidence = math.degrees(math.atan2(float(vt), abs(float(vn))))
+        racket = row["racket_state_before"]
+        for key, value, edges in (
+                ("vn", abs(float(vn)), (1., 5., 10.)), ("vt", float(vt), (1., 5., 10.)),
+                ("incidence", incidence, (30., 60.)),
+                ("racket_linear", torch.as_tensor(racket["racket_linear_velocity_w"]).norm().item(), (.5, 2., 5.)),
+                ("racket_angular", torch.as_tensor(racket["racket_angular_velocity_w"]).norm().item(), (1., 5., 15.))):
+            strata[key][str(_band(value, edges))] += 1
+        part = row.get("geometric_racket_part") or "unknown"
+        strata["part_geometry"]["frame" if part.startswith("Frame_") else part] += 1
     # These are intentionally hard minima for the 2k+1k pilot.  A manifest
     # can therefore be INSUFFICIENT_COVERAGE even when raw candidate counts
     # are large enough.
@@ -586,6 +634,10 @@ def _coverage(rows: list[dict]) -> dict:
                 "interference": interference, "near_miss_gap": near_gap,
                 "near_miss_approach": near_approach,
                 "near_miss_proximity": near_proximity}
+    observed.update({key: dict(counts) for key, counts in strata.items()})
+    for key in ("vn", "vt", "incidence", "racket_linear", "racket_angular"):
+        required[key] = {str(index): 25 for index in range(3 if key == "incidence" else 4)}
+    required["part_geometry"] = {"strings": 100, "frame": 100}
     missing = []
     for category, values in required.items():
         for key, minimum in values.items():
@@ -660,7 +712,7 @@ def _assign_splits(rows: list[dict], seed: int) -> dict:
                             ("validation", "test"))}
     group_overlap_free = not any(
         overlap for field in group_overlap.values() for overlap in field.values())
-    unseen_test_specs = sorted((specs["test"] & known_specs) - specs["train"])
+    unseen_test_specs = sorted((specs["test"] & known_specs) - specs["train"] - specs["validation"])
     return {
         "row_counts": {name: sum(row["split"] == name for row in rows) for name in split_names},
         "group_counts": {name: sum(value == name for value in assignment.values()) for name in split_names},
@@ -671,7 +723,7 @@ def _assign_splits(rows: list[dict], seed: int) -> dict:
         "spec_lane_family_overlap": lane_family_overlap,
         "specs": {name: sorted(value) for name, value in specs.items()},
         "unseen_test_specs": unseen_test_specs,
-        "unseen_spec_holdout": len(known_specs) < 2 or bool(unseen_test_specs),
+        "unseen_spec_holdout": bool(unseen_test_specs) and all(split_sources.values()),
     }
 
 

@@ -106,3 +106,16 @@ def test_native_filters_separate_ground_and_robot_net_from_racket(tmp_path):
     assert contacts[0]["racket_body_name"] == "Racket"
     assert contacts[0]["racket_part"] == "unknown"
     torch.testing.assert_close(torch.tensor(contacts[0]["impulse_ns"]), torch.tensor([.01, 0., 0.]))
+
+
+def test_deterministic_replays_count_once_and_changed_velocity_survives(tmp_path):
+    from quadsmash.rl.supermimic_contact_pilot_v1 import _deduplicate
+    path = tmp_path / 'trace.pt'
+    _trace(path)
+    rows, _ = _trace_candidates(path, .001, 1)
+    row = next(r for r in rows if r['contact_object'] == 'racket')
+    replay = dict(row, source_sha256='repeat', capture_id='another', event_id='nominal_b')
+    varied = dict(replay, toi_post_substep={**replay['toi_post_substep'], 'ball_state_w': [9.] * 13})
+    unique, count = _deduplicate([row, replay, varied])
+    assert unique == [row, varied]
+    assert count == 1
