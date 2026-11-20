@@ -32,6 +32,16 @@ def test_recommended_window_matches_control_and_imagination_horizons():
     assert window["post_window_s"] == 0.64
 
 
+def test_recommended_window_supports_short_event_core():
+    window = recommended_window(
+        control_dt_s=0.01,
+        pre_control_ticks=4,
+        post_control_ticks=8,
+    )
+    assert window["pre_window_s"] == 0.04
+    assert window["post_window_s"] == 0.08
+
+
 def test_explicit_lane_split_is_recorded_and_used(tmp_path):
     packed = tmp_path / "packed.pt"
     tensors = {

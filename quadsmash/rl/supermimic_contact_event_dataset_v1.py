@@ -27,7 +27,9 @@ EVENT_COLUMNS = {
 }
 
 
-def recommended_window(*, control_dt_s: float = 0.01) -> dict:
+def recommended_window(*, control_dt_s: float = 0.01,
+                       pre_control_ticks: int = 4,
+                       post_control_ticks: int = 64) -> dict:
     """Return the event window used by the first packed-replay build.
 
     Four ticks cover the 40 ms pre-impact approach.  Sixty-four ticks cover
@@ -35,15 +37,20 @@ def recommended_window(*, control_dt_s: float = 0.01) -> dict:
     immediate recovery context.  The values remain explicit in the manifest
     so later datasets can be compared without relying on defaults.
     """
-    pre_ticks = 4
-    post_ticks = 64
+    pre_ticks = int(pre_control_ticks)
+    post_ticks = int(post_control_ticks)
+    if pre_ticks < 0 or post_ticks < 1:
+        raise ValueError("pre_control_ticks must be nonnegative and post_control_ticks positive")
     return dict(
         pre_control_ticks=pre_ticks,
         post_control_ticks=post_ticks,
         control_dt_s=float(control_dt_s),
         pre_window_s=pre_ticks * float(control_dt_s),
         post_window_s=post_ticks * float(control_dt_s),
-        rationale="pre-impact approach plus full 64-step post-impact WM horizon",
+        rationale=(
+            "event-aligned approach window plus configurable post-impact horizon; "
+            "use post_control_ticks=8 for the event core and 64 for WM rollout"
+        ),
     )
 
 
@@ -134,7 +141,9 @@ def _load_lane_split(path: str | Path | None, lane_count: int):
 
 def build_from_packed(packed_path: str | Path, output_dir: str | Path, *, negative_ratio: int = 2,
                       max_negative: int | None = None,
-                      lane_split_manifest: str | Path | None = None) -> dict:
+                      lane_split_manifest: str | Path | None = None,
+                      pre_control_ticks: int = 4,
+                      post_control_ticks: int = 64) -> dict:
     """Build a compact event dataset from a packed native replay."""
     packed_path = Path(packed_path).resolve()
     output_dir = Path(output_dir).resolve()
@@ -150,7 +159,11 @@ def build_from_packed(packed_path: str | Path, output_dir: str | Path, *, negati
             for lane in lanes
         }
     control_dt_s = float(package.get("source_manifest", {}).get("control_dt_s", 0.01))
-    window = recommended_window(control_dt_s=control_dt_s)
+    window = recommended_window(
+        control_dt_s=control_dt_s,
+        pre_control_ticks=pre_control_ticks,
+        post_control_ticks=post_control_ticks,
+    )
     pre, post = window["pre_control_ticks"], window["post_control_ticks"]
     events: list[dict] = []
     for kind, column in EVENT_COLUMNS.items():
