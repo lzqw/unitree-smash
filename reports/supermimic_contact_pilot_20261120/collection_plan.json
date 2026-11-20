@@ -1,0 +1,62 @@
+{
+  "schema": "supermimic-racket-ball-contact-pilot-plan-v1",
+  "source_manifest_schema": "supermimic-racket-ball-contact-pilot-v1",
+  "target": {
+    "dynamic_contacts": 2000,
+    "near_miss": 1000
+  },
+  "already_measured": {
+    "dynamic_contacts": 1077,
+    "near_miss": 1000
+  },
+  "remaining": {
+    "dynamic_contacts": 923,
+    "near_miss": 0
+  },
+  "coverage_quotas": {
+    "center_5x5": 400,
+    "frame_edge": 400,
+    "normal_relative_speed": 300,
+    "tangential_relative_speed": 250,
+    "racket_linear_velocity": 200,
+    "racket_angular_velocity": 200,
+    "toi_phase": 150,
+    "repeat_contact": 100
+  },
+  "required_fields": [
+    "toi_frame",
+    "toi_time_s",
+    "contact_object",
+    "contact_point_w",
+    "normal_w",
+    "gap_m",
+    "relative_velocity_w",
+    "impulse_ns",
+    "normal_impulse_ns",
+    "tangential_impulse_ns",
+    "penetration_m",
+    "contact_order",
+    "effective_mass_kg",
+    "racket_part",
+    "ball_state_before",
+    "ball_state_after",
+    "racket_state_before",
+    "racket_state_after",
+    "outgoing_direction_w",
+    "outgoing_speed_mps"
+  ],
+  "capture_requirements": [
+    "native PhysX substeps at 0.0625 ms or the locked task physics dt",
+    "TOI pre/post states over at least 8 ms on each side when available",
+    "racket part and manifold normal from the native sensor when exposed",
+    "contact order and effective mass retained for repeated contacts",
+    "ground and net sensor streams retained beside racket contact",
+    "negative/no-contact windows sampled independently of the contact rows"
+  ],
+  "parallelism": {
+    "cpu_trace_workers": 8,
+    "gpu_capture_workers": 2,
+    "gpu_policy": "one bounded Isaac pair per worker, no learner updates"
+  },
+  "status": "READY_FOR_NATIVE_CAPTURE"
+}

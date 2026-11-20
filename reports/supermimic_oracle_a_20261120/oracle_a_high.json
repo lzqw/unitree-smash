@@ -1,0 +1,553 @@
+{
+  "schema": "supermimic-oracle-a-v1",
+  "scope": "B0 native PhysX substep versus analytic TOI/impulse diagnostic",
+  "probe_dir": "/home/autodrive/LZQW/experiments/supermimic_native_probe_validation_20261119_seed882073/gpu_probe_current_c0722fc_run225943/spec_00_tick267",
+  "source_branch": "nominal_a",
+  "source_schema": "native-paired-prefix-run-v1",
+  "summary": {
+    "contact_event_count": 7,
+    "lane_count": 128,
+    "lane_with_contact_count": 7,
+    "multi_contact_event_count": 0,
+    "max_contact_substep_count": 1,
+    "nearest_gap_object_counts": {
+      "racket": 7,
+      "ground": 0,
+      "net": 0
+    },
+    "normal_impulse_mae_ns": 0.00596753294978823,
+    "tangent_impulse_mae_ns": 0.001997121476701328,
+    "direction_cosine_mean": 0.9992136103766305,
+    "native_effective_mass_mean_kg": 0.004785706545841532,
+    "native_effective_mass_min_kg": 0.00456330953166234,
+    "native_effective_mass_max_kg": 0.004967475612299909,
+    "toi_fraction_mean": 0.007766464696941304,
+    "repeat_max_abs_error": 0.0,
+    "analytic_model": {
+      "restitution": 0.72,
+      "friction": 0.08,
+      "mass_kg": 0.0052,
+      "drag_k_per_m": 0.025442307692307695,
+      "native_dt_s": 6.25e-05,
+      "limitations": [
+        "finite racket effective mass is inferred from native impulse",
+        "PhysX manifold force is sampled at substep resolution",
+        "racket force edge is authoritative for racket contact",
+        "ground/net labels are gap-based interference diagnostics"
+      ]
+    }
+  },
+  "events": [
+    {
+      "lane": 46,
+      "substep_index": 119,
+      "contact_order": 0,
+      "contact_interval_end": 120,
+      "contact_substep_count": 1,
+      "contact_object": "racket",
+      "nearest_gap_object": "racket",
+      "toi_fraction": 0.0,
+      "toi_s": 0.0,
+      "absolute_substep_time_s": 0.0073750000000000005,
+      "racket_part": 74,
+      "contact_point_m": [
+        1.2347056865692139,
+        0.0313069149851799,
+        1.8490041494369507
+      ],
+      "normal": [
+        0.9249854683876038,
+        0.11412042379379272,
+        -0.362461656332016
+      ],
+      "normal_relative_speed_m_s": -7.684300422668457,
+      "incoming_speed_m_s": 8.734146118164062,
+      "native_outgoing_speed_m_s": 6.222813606262207,
+      "analytic_outgoing_speed_m_s": 7.8803181648254395,
+      "outgoing_direction_cosine": 0.9971669316291809,
+      "native_dv_m_s": [
+        11.36839771270752,
+        0.997420072555542,
+        -2.674137592315674
+      ],
+      "analytic_dv_m_s": [
+        12.623087882995605,
+        1.363868236541748,
+        -3.8215887546539307
+      ],
+      "native_impulse_ns": [
+        0.05911566689610481,
+        0.005186584312468767,
+        -0.013905515894293785
+      ],
+      "analytic_impulse_ns": [
+        0.06564005464315414,
+        0.007092115003615618,
+        -0.019872261211276054
+      ],
+      "native_normal_impulse_ns": 0.06031324714422226,
+      "analytic_normal_impulse_ns": 0.06872838735580444,
+      "native_tangent_impulse_ns": [
+        0.003326788544654846,
+        -0.0016963891685009003,
+        0.007955724373459816
+      ],
+      "native_tangent_impulse_norm_ns": 0.008788561448454857,
+      "analytic_tangent_impulse_ns": [
+        0.0020673000253736973,
+        -0.0007511974545195699,
+        0.005039142444729805
+      ],
+      "analytic_tangent_impulse_norm_ns": 0.005498270969837904,
+      "effective_mass_kg": 0.00456330953166234,
+      "analytic_effective_mass_kg": 0.0052,
+      "racket_force_norm_n": 963.0281372070312,
+      "ground_gap_m": 1.8240041732788086,
+      "net_gap_m": 0.3932721018791199,
+      "contact_position_valid": true,
+      "native_contact_position_m": [
+        1.2115294933319092,
+        0.02944178692996502,
+        1.858136773109436
+      ]
+    },
+    {
+      "lane": 85,
+      "substep_index": 79,
+      "contact_order": 0,
+      "contact_interval_end": 80,
+      "contact_substep_count": 1,
+      "contact_object": "racket",
+      "nearest_gap_object": "racket",
+      "toi_fraction": 0.0,
+      "toi_s": 0.0,
+      "absolute_substep_time_s": 0.004875,
+      "racket_part": 46,
+      "contact_point_m": [
+        1.1570669412612915,
+        0.02504606358706951,
+        1.8185954093933105
+      ],
+      "normal": [
+        0.9807752370834351,
+        0.19373063743114471,
+        0.02341686375439167
+      ],
+      "normal_relative_speed_m_s": -9.593302726745605,
+      "incoming_speed_m_s": 9.539227485656738,
+      "native_outgoing_speed_m_s": 6.270169258117676,
+      "analytic_outgoing_speed_m_s": 7.701530456542969,
+      "outgoing_direction_cosine": 0.9996398687362671,
+      "native_dv_m_s": [
+        14.882978439331055,
+        2.3632471561431885,
+        1.4589343070983887
+      ],
+      "analytic_dv_m_s": [
+        16.291397094726562,
+        2.5503616333007812,
+        1.204146146774292
+      ],
+      "native_impulse_ns": [
+        0.07739149034023285,
+        0.012288885191082954,
+        0.00758645823225379
+      ],
+      "analytic_impulse_ns": [
+        0.08471526205539703,
+        0.013261880725622177,
+        0.006261560134589672
+      ],
+      "native_normal_impulse_ns": 0.07846204191446304,
+      "analytic_normal_impulse_ns": 0.08580249547958374,
+      "native_tangent_impulse_ns": [
+        0.00043786317110061646,
+        -0.0029116161167621613,
+        0.00574912317097187
+      ],
+      "native_tangent_impulse_norm_ns": 0.006459230091422796,
+      "analytic_tangent_impulse_ns": [
+        0.0005623031756840646,
+        -0.0033606926444917917,
+        0.004252334591001272
+      ],
+      "analytic_tangent_impulse_norm_ns": 0.005449109245091677,
+      "effective_mass_kg": 0.004755136737440795,
+      "analytic_effective_mass_kg": 0.0052,
+      "racket_force_norm_n": 1259.42578125,
+      "ground_gap_m": 1.7935954332351685,
+      "net_gap_m": 0.42557936906814575,
+      "contact_position_valid": true,
+      "native_contact_position_m": [
+        1.13257896900177,
+        0.02022431790828705,
+        1.818192481994629
+      ]
+    },
+    {
+      "lane": 95,
+      "substep_index": 12,
+      "contact_order": 0,
+      "contact_interval_end": 13,
+      "contact_substep_count": 1,
+      "contact_object": "racket",
+      "nearest_gap_object": "racket",
+      "toi_fraction": 0.0,
+      "toi_s": 0.0,
+      "absolute_substep_time_s": 0.0006875,
+      "racket_part": 44,
+      "contact_point_m": [
+        1.1906453371047974,
+        0.04570838063955307,
+        1.783988118171692
+      ],
+      "normal": [
+        0.9977095723152161,
+        0.060496214777231216,
+        -0.030262865126132965
+      ],
+      "normal_relative_speed_m_s": -9.047391891479492,
+      "incoming_speed_m_s": 8.919797897338867,
+      "native_outgoing_speed_m_s": 6.497146129608154,
+      "analytic_outgoing_speed_m_s": 7.8228254318237305,
+      "outgoing_direction_cosine": 0.9997148513793945,
+      "native_dv_m_s": [
+        14.376327514648438,
+        0.8463594317436218,
+        1.1264848709106445
+      ],
+      "analytic_dv_m_s": [
+        15.562952995300293,
+        0.8215092420578003,
+        0.5119085311889648
+      ],
+      "native_impulse_ns": [
+        0.07475690543651581,
+        0.004401069134473801,
+        0.00585772143676877
+      ],
+      "analytic_impulse_ns": [
+        0.08092735707759857,
+        0.004271848127245903,
+        0.0026619243435561657
+      ],
+      "native_normal_impulse_ns": 0.07467465847730637,
+      "analytic_normal_impulse_ns": 0.08091987669467926,
+      "native_tangent_impulse_ns": [
+        0.00025328248739242554,
+        -0.00011646514758467674,
+        0.008117590099573135
+      ],
+      "native_tangent_impulse_norm_ns": 0.00812237523496151,
+      "analytic_tangent_impulse_ns": [
+        0.00019282705034129322,
+        -0.0006234978209249675,
+        0.00511079141870141
+      ],
+      "analytic_tangent_impulse_norm_ns": 0.005152292549610138,
+      "effective_mass_kg": 0.004798675644369971,
+      "analytic_effective_mass_kg": 0.0052,
+      "racket_force_norm_n": 1203.489501953125,
+      "ground_gap_m": 1.7589881420135498,
+      "net_gap_m": 0.3775675892829895,
+      "contact_position_valid": true,
+      "native_contact_position_m": [
+        1.1659101247787476,
+        0.04414641112089157,
+        1.7842845916748047
+      ]
+    },
+    {
+      "lane": 96,
+      "substep_index": 13,
+      "contact_order": 0,
+      "contact_interval_end": 14,
+      "contact_substep_count": 1,
+      "contact_object": "racket",
+      "nearest_gap_object": "racket",
+      "toi_fraction": 0.0,
+      "toi_s": 0.0,
+      "absolute_substep_time_s": 0.00075,
+      "racket_part": 28,
+      "contact_point_m": [
+        1.173323631286621,
+        0.015878964215517044,
+        1.72982656955719
+      ],
+      "normal": [
+        0.9951059818267822,
+        0.09854813665151596,
+        -0.007236757315695286
+      ],
+      "normal_relative_speed_m_s": -8.103857040405273,
+      "incoming_speed_m_s": 8.463726997375488,
+      "native_outgoing_speed_m_s": 5.58154296875,
+      "analytic_outgoing_speed_m_s": 6.418939590454102,
+      "outgoing_direction_cosine": 0.999668538570404,
+      "native_dv_m_s": [
+        13.066457748413086,
+        1.1089484691619873,
+        0.9071102142333984
+      ],
+      "analytic_dv_m_s": [
+        13.89860725402832,
+        1.1501070261001587,
+        0.731574296951294
+      ],
+      "native_impulse_ns": [
+        0.06794557720422745,
+        0.00576653191819787,
+        0.004716973286122084
+      ],
+      "analytic_impulse_ns": [
+        0.07227275520563126,
+        0.0059805563651025295,
+        0.0038041863590478897
+      ],
+      "native_normal_impulse_ns": 0.0681471899151802,
+      "analytic_normal_impulse_ns": 0.07248089462518692,
+      "native_tangent_impulse_ns": [
+        0.00013189762830734253,
+        -0.000949246808886528,
+        0.00521013792604208
+      ],
+      "native_tangent_impulse_norm_ns": 0.005297546740621328,
+      "analytic_tangent_impulse_ns": [
+        0.00014658551663160324,
+        -0.0011623002355918288,
+        0.004328712821006775
+      ],
+      "analytic_tangent_impulse_norm_ns": 0.004484437871724367,
+      "effective_mass_kg": 0.0048890866479340475,
+      "analytic_effective_mass_kg": 0.0052,
+      "racket_force_norm_n": 1092.720947265625,
+      "ground_gap_m": 1.7048265933990479,
+      "net_gap_m": 0.3594207167625427,
+      "contact_position_valid": true,
+      "native_contact_position_m": [
+        1.1485413312911987,
+        0.013417243957519531,
+        1.729939579963684
+      ]
+    },
+    {
+      "lane": 99,
+      "substep_index": 51,
+      "contact_order": 0,
+      "contact_interval_end": 52,
+      "contact_substep_count": 1,
+      "contact_object": "racket",
+      "nearest_gap_object": "racket",
+      "toi_fraction": 0.0,
+      "toi_s": 0.0,
+      "absolute_substep_time_s": 0.003125,
+      "racket_part": 49,
+      "contact_point_m": [
+        1.12818443775177,
+        0.05080487206578255,
+        1.8288370370864868
+      ],
+      "normal": [
+        0.9585822820663452,
+        0.28059566020965576,
+        0.048847854137420654
+      ],
+      "normal_relative_speed_m_s": -8.37263298034668,
+      "incoming_speed_m_s": 8.966117858886719,
+      "native_outgoing_speed_m_s": 5.396401882171631,
+      "analytic_outgoing_speed_m_s": 6.6938300132751465,
+      "outgoing_direction_cosine": 0.9998782873153687,
+      "native_dv_m_s": [
+        12.923572540283203,
+        2.4974422454833984,
+        1.5832982063293457
+      ],
+      "analytic_dv_m_s": [
+        14.0447998046875,
+        3.109447956085205,
+        1.3375135660171509
+      ],
+      "native_impulse_ns": [
+        0.06720257550477982,
+        0.012986700050532818,
+        0.008233150467276573
+      ],
+      "analytic_impulse_ns": [
+        0.07303296029567719,
+        0.016169128939509392,
+        0.006955070421099663
+      ],
+      "native_normal_impulse_ns": 0.06846538186073303,
+      "analytic_normal_impulse_ns": 0.0748848244547844,
+      "native_tangent_impulse_ns": [
+        0.0015728771686553955,
+        -0.006224389187991619,
+        0.004888763651251793
+      ],
+      "native_tangent_impulse_norm_ns": 0.008069508709013462,
+      "analytic_tangent_impulse_ns": [
+        0.0012496915878728032,
+        -0.00484322989359498,
+        0.0032971075270324945
+      ],
+      "analytic_tangent_impulse_norm_ns": 0.005990786477923393,
+      "effective_mass_kg": 0.004754233783283001,
+      "analytic_effective_mass_kg": 0.0052,
+      "racket_force_norm_n": 1095.8116455078125,
+      "ground_gap_m": 1.8038370609283447,
+      "net_gap_m": 0.4542589485645294,
+      "contact_position_valid": true,
+      "native_contact_position_m": [
+        1.104261040687561,
+        0.04399237409234047,
+        1.828378677368164
+      ]
+    },
+    {
+      "lane": 102,
+      "substep_index": 37,
+      "contact_order": 0,
+      "contact_interval_end": 38,
+      "contact_substep_count": 1,
+      "contact_object": "racket",
+      "nearest_gap_object": "racket",
+      "toi_fraction": 0.0,
+      "toi_s": 0.0,
+      "absolute_substep_time_s": 0.0022500000000000003,
+      "racket_part": 76,
+      "contact_point_m": [
+        1.2124793529510498,
+        -0.01798257976770401,
+        1.876847267150879
+      ],
+      "normal": [
+        0.5594850182533264,
+        -0.4453783631324768,
+        0.6990098357200623
+      ],
+      "normal_relative_speed_m_s": -8.194417953491211,
+      "incoming_speed_m_s": 9.609891891479492,
+      "native_outgoing_speed_m_s": 7.035989761352539,
+      "analytic_outgoing_speed_m_s": 7.863404750823975,
+      "outgoing_direction_cosine": 0.9995393753051758,
+      "native_dv_m_s": [
+        8.874553680419922,
+        -5.1132330894470215,
+        8.900657653808594
+      ],
+      "analytic_dv_m_s": [
+        8.807670593261719,
+        -5.787906169891357,
+        9.42595100402832
+      ],
+      "native_impulse_ns": [
+        0.046147678047418594,
+        -0.026588812470436096,
+        0.04628342017531395
+      ],
+      "analytic_impulse_ns": [
+        0.04579988867044449,
+        -0.0300971120595932,
+        0.049014944583177567
+      ],
+      "native_normal_impulse_ns": 0.07001358270645142,
+      "analytic_normal_impulse_ns": 0.0732908844947815,
+      "native_tangent_impulse_ns": [
+        0.006976127624511719,
+        0.0045937225222587585,
+        -0.002656761556863785
+      ],
+      "native_tangent_impulse_norm_ns": 0.008765102364122868,
+      "analytic_tangent_impulse_ns": [
+        0.004794741049408913,
+        0.0025450552348047495,
+        -0.0022160972002893686
+      ],
+      "analytic_tangent_impulse_norm_ns": 0.005863270256668329,
+      "effective_mass_kg": 0.004967475612299909,
+      "analytic_effective_mass_kg": 0.0052,
+      "racket_force_norm_n": 1120.2176513671875,
+      "ground_gap_m": 1.8518472909927368,
+      "net_gap_m": 0.42889776825904846,
+      "contact_position_valid": true,
+      "native_contact_position_m": [
+        1.198492169380188,
+        -0.006848227698355913,
+        1.8593720197677612
+      ]
+    },
+    {
+      "lane": 115,
+      "substep_index": 19,
+      "contact_order": 0,
+      "contact_interval_end": 20,
+      "contact_substep_count": 1,
+      "contact_object": "racket",
+      "nearest_gap_object": "racket",
+      "toi_fraction": 0.05436525287858913,
+      "toi_s": 3.3978283049118205e-06,
+      "absolute_substep_time_s": 0.001128397828304912,
+      "racket_part": 40,
+      "contact_point_m": [
+        1.2122952938079834,
+        0.02897922694683075,
+        1.7679401636123657
+      ],
+      "normal": [
+        0.9980231523513794,
+        0.05810709297657013,
+        -0.023945124819874763
+      ],
+      "normal_relative_speed_m_s": -7.799727916717529,
+      "incoming_speed_m_s": 7.967794418334961,
+      "native_outgoing_speed_m_s": 5.8968682289123535,
+      "analytic_outgoing_speed_m_s": 6.976154804229736,
+      "outgoing_direction_cosine": 0.9988874197006226,
+      "native_dv_m_s": [
+        12.34305191040039,
+        0.2270960807800293,
+        0.8538048267364502
+      ],
+      "analytic_dv_m_s": [
+        13.440229415893555,
+        0.29360419511795044,
+        0.6343234777450562
+      ],
+      "native_impulse_ns": [
+        0.06418386846780777,
+        0.0011808996787294745,
+        0.004439785145223141
+      ],
+      "analytic_impulse_ns": [
+        0.06988919526338577,
+        0.0015267417766153812,
+        0.003298482159152627
+      ],
+      "native_normal_impulse_ns": 0.06401929259300232,
+      "analytic_normal_impulse_ns": 0.069760762155056,
+      "native_tangent_impulse_ns": [
+        0.0002911314368247986,
+        -0.002539075445383787,
+        0.005972735118120909
+      ],
+      "native_tangent_impulse_norm_ns": 0.006496554706245661,
+      "analytic_tangent_impulse_ns": [
+        0.0002663359045982361,
+        -0.0025268534664064646,
+        0.004968912340700626
+      ],
+      "analytic_tangent_impulse_norm_ns": 0.005580861587077379,
+      "effective_mass_kg": 0.004772027863900667,
+      "analytic_effective_mass_kg": 0.0052,
+      "racket_force_norm_n": 1024.49072265625,
+      "ground_gap_m": 1.7429512739181519,
+      "net_gap_m": 0.3506646156311035,
+      "contact_position_valid": true,
+      "native_contact_position_m": [
+        1.187347173690796,
+        0.027514811605215073,
+        1.768518090248108
+      ]
+    }
+  ]
+}

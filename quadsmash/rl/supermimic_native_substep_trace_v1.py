@@ -45,6 +45,12 @@ class NativeSubstepTraceV1:
         data = env.robot.data
         rid = env.racket_body_id
         contact = env.shuttle_contact.data
+        force_matrix = contact.force_matrix_w
+        contact_positions = contact.contact_pos_w
+        sensors = getattr(getattr(env, 'scene', None), 'sensors', None)
+        net_sensor = sensors.get('inverse_net') if hasattr(sensors, 'get') else None
+        net_force_matrix = (None if net_sensor is None else
+                            getattr(getattr(net_sensor, 'data', None), 'force_matrix_w', None))
         values = dict(
             physics_frame=torch.tensor(frame, device=env.device, dtype=torch.long),
             ball_clock=env.ball_clock,
@@ -56,8 +62,18 @@ class NativeSubstepTraceV1:
             joint_position=data.joint_pos[:, env.joint_ids],
             joint_velocity=data.joint_vel[:, env.joint_ids],
             applied_torque=data.applied_torque[:, env.joint_ids],
-            racket_force_w=contact.force_matrix_w[:, 0, 0],
-            racket_contact_position_w=contact.contact_pos_w[:, 0, 0])
+            # Keep the raw pair slots so the pilot can distinguish racket,
+            # ground and later-added filters without reconstructing a contact
+            # cache.  The first pair remains the legacy racket fields used by
+            # existing consumers.
+            contact_force_matrix_w=force_matrix,
+            contact_position_matrix_w=contact_positions,
+            racket_force_w=force_matrix[:, 0, 0],
+            ground_force_w=(force_matrix[:, 0, 1]
+                            if force_matrix.shape[2] > 1 else torch.zeros_like(force_matrix[:, 0, 0])),
+            net_force_matrix_w=(torch.zeros_like(force_matrix)
+                                if net_force_matrix is None else net_force_matrix),
+            racket_contact_position_w=contact_positions[:, 0, 0])
         for key, value in values.items():
             if key not in self.buffers:
                 self.buffers[key] = torch.empty((self.capacity, *value.shape), device=value.device, dtype=value.dtype)

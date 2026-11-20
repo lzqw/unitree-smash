@@ -19,9 +19,11 @@ import subprocess
 import sys
 import time
 
-from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES, validate_spec
-
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES, validate_spec
 
 
 def kit_args_option(value: str) -> str:
