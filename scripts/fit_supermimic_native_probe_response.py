@@ -241,19 +241,6 @@ def response_diagnostics(model, physical, ball, pairs):
     if minus is None or plus is None:
         return {'samples': []}
 
-    def difference(name, velocity=False):
-        left=minus.get(name); right=plus.get(name)
-        if left is None or right is None:
-            return None
-        value=right-left
-        if velocity and value.shape[-1] == 6:
-            value=value[:,3:6]
-        return value.detach().cpu().tolist()
-
-    impulse_minus=minus.get('impulse_info') or {}
-    impulse_plus=plus.get('impulse_info') or {}
-    action_minus=minus.get('action_model_info') or {}
-    action_plus=plus.get('action_model_info') or {}
     def tick_summary(rollout, index):
         result=[]
         for tick, detail in enumerate(rollout.get('impact_by_tick', [])):
@@ -278,45 +265,56 @@ def response_diagnostics(model, physical, ball, pairs):
                     if torch.is_tensor((detail.get('action_model_info') or {}).get('impulse_residual_dv')) else None,
             ))
         return result
+    def first_active(summary):
+        for item in summary:
+            if bool(item.get('active')):
+                return item
+        return None
+
+    def any_active(summary, object_id=None):
+        for item in summary:
+            if not bool(item.get('active')):
+                continue
+            if object_id is None or item.get('object_id') == object_id:
+                return True
+        return False
+
     count=len(pairs['state'])
     rows=[]
     for index in range(count):
-        def item(source,key):
-            value=source.get(key)
-            if value is None:return None
-            if torch.is_tensor(value):return value[index].detach().cpu().tolist()
-            return value
+        minus_ticks=tick_summary(minus, index)
+        plus_ticks=tick_summary(plus, index)
+        minus_first=first_active(minus_ticks)
+        plus_first=first_active(plus_ticks)
+
+        def tick_value(item, key):
+            return None if item is None else item.get(key)
+
         rows.append(dict(
-            analytic_delta_v=None if difference('analytic_ball',True) is None else difference('analytic_ball',True)[index],
-            legacy_delta_v=None if difference('legacy_correction',True) is None else difference('legacy_correction',True)[index],
-            action_residual_delta_v=None if difference('action_residual',True) is None else difference('action_residual',True)[index],
-            impulse_action_residual_delta_v=None if difference('impulse_action_residual',True) is None else difference('impulse_action_residual',True)[index],
-            final_delta_v=None if difference('predicted_ball',True) is None else difference('predicted_ball',True)[index],
-            minus_analytic_contact_active=item(impulse_minus,'active'),
-            plus_analytic_contact_active=item(impulse_plus,'active'),
-            minus_analytic_object_id=item(impulse_minus,'object_id'),
-            plus_analytic_object_id=item(impulse_plus,'object_id'),
-            minus_toi_gap=item(impulse_minus,'toi_gap'),
-            plus_toi_gap=item(impulse_plus,'toi_gap'),
-            minus_impact_time_s=item(impulse_minus,'time'),
-            plus_impact_time_s=item(impulse_plus,'time'),
-            minus_normal_speed=item(impulse_minus,'normal_speed'),
-            plus_normal_speed=item(impulse_plus,'normal_speed'),
-            minus_impulse_dv=item(impulse_minus,'impulse_dv'),
-            plus_impulse_dv=item(impulse_plus,'impulse_dv'),
-            minus_predicted_impact_probability=item(action_minus,'predicted_impact_probability'),
-            plus_predicted_impact_probability=item(action_plus,'predicted_impact_probability'),
-            minus_impact_by_tick=tick_summary(minus, index),
-            plus_impact_by_tick=tick_summary(plus, index),
+            # These fields are event-aligned.  A rollout can contact the ball
+            # before its final control tick, so reading only the final
+            # transition would incorrectly report a missed analytic contact.
+            minus_analytic_contact_active=any_active(minus_ticks),
+            plus_analytic_contact_active=any_active(plus_ticks),
+            minus_analytic_racket_contact=any_active(minus_ticks, 0),
+            plus_analytic_racket_contact=any_active(plus_ticks, 0),
+            minus_first_impact=tick_value(minus_first, 'tick'),
+            plus_first_impact=tick_value(plus_first, 'tick'),
+            minus_analytic_object_id=tick_value(minus_first, 'object_id'),
+            plus_analytic_object_id=tick_value(plus_first, 'object_id'),
+            minus_toi_gap=tick_value(minus_first, 'toi_gap'),
+            plus_toi_gap=tick_value(plus_first, 'toi_gap'),
+            minus_impact_time_s=tick_value(minus_first, 'impact_time_s'),
+            plus_impact_time_s=tick_value(plus_first, 'impact_time_s'),
+            minus_normal_speed=tick_value(minus_first, 'normal_speed'),
+            plus_normal_speed=tick_value(plus_first, 'normal_speed'),
+            minus_impulse_dv=tick_value(minus_first, 'impulse_dv'),
+            plus_impulse_dv=tick_value(plus_first, 'impulse_dv'),
+            minus_impact_by_tick=minus_ticks,
+            plus_impact_by_tick=plus_ticks,
         ))
-    active = []
-    racket = []
-    for row in rows:
-        plus_active = row.get('plus_analytic_contact_active')
-        plus_object = row.get('plus_analytic_object_id')
-        active.append(bool(plus_active) if plus_active is not None else False)
-        racket.append(bool(plus_active) and plus_object == 0
-                      if plus_object is not None else False)
+    active = [bool(row['plus_analytic_contact_active']) for row in rows]
+    racket = [bool(row['plus_analytic_racket_contact']) for row in rows]
     native_modes = pairs.get('native_contact_modes')
     return {
         'samples': rows,

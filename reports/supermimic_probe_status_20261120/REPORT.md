@@ -1,0 +1,74 @@
+# SuperMimic probe and WM status, 2026-11-20
+
+## Scope
+
+This report covers the offline contact-window dataset, the high-epsilon native
+probe collection, and the V13 native-response calibration. No Recovery or
+Approach Actor/Critic update was started.
+
+## Data and windows
+
+- Frozen PhysX archive: 102,400 control-boundary transitions, 800 ticks by
+  128 lanes.
+- Event records: 1,026 episodes/events with train, development validation and
+  final holdout identities kept separate.
+- Core event window: 4 control ticks before the event and 8 after it.
+- Full WM context: 4 ticks before and 64 after it.
+- The archive has no PhysX substep truth. The new high-epsilon probe contains
+  substep traces and is used only for native-response diagnostics.
+
+## Native probe
+
+The completed high-epsilon region contains 7 paired samples from one contact
+specification. All 7 minus and plus branches report an analytic racket impact
+at control tick 0. First impact substeps are recorded in the region artifact.
+The plus-minus native ball response norms are:
+
+```text
+0.0054706, 0.0187744, 0.0142132, 0.1178561,
+0.0230743, 0.0070241, 0.0195362 m/s
+```
+
+The region artifact is
+`/home/autodrive/LZQW/experiments/supermimic_native_contact_regions_20261120_eps005_high/spec_00_tick271_contact.pt`.
+
+## V13 calibration
+
+The 256-update GPU fit used 24 calibration samples, 7 development samples and
+8 final holdout samples.
+
+| Split | Final response RMSE | Zero-response baseline | Minimum cosine | Maximum relative error |
+|---|---:|---:|---:|---:|
+| Development | 0.0270241 | 0.0271134 | 0.2590 | 0.99955 |
+| Final holdout | 0.0081691 | 0.0081819 | -0.08345 | 1.00844 |
+
+The candidate does not pass native direction or amplitude acceptance. Its
+predicted V13 residual is nonzero, but the residual is almost the same for the
+minus and plus branches. The body-model predicted robot endpoint does change,
+with plus-minus robot-state norms from about 0.0034 to 0.0341, but this change
+is not being converted into the measured ball-response difference.
+
+## Diagnostic correction
+
+`fit_supermimic_native_probe_response.py` now summarizes impact metadata across
+every control tick in a rollout. It reports the first predicted impact, object
+id, TOI, impulse and residual, and counts any active racket impact across the
+whole rollout. This prevents a contact at an early tick from being reported as
+an analytic miss merely because the final tick is non-contact.
+
+The fixed diagnostic output is saved at
+`/home/autodrive/LZQW/experiments/supermimic_native_response_fit_v13_20261120_highdev/diagnostics_fixed.json`.
+
+## Verification status
+
+- Contact event dataset tests: 5 passed.
+- Diagnostic script syntax check: passed.
+- GPU V13 fit: completed, candidate rejected by native direction and
+  amplitude criteria.
+- WM validation receipt: not issued.
+- Contact validation receipt: not issued.
+- Actor/Critic policy learning: not started.
+
+The current next engineering target is to separate the Action to Racket
+response from the Racket to Ball response. Increasing V13 updates without
+that separation is not expected to improve the native response metrics.
