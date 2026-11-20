@@ -354,6 +354,22 @@ def run(args, *, alternating=None):
         from quadsmash.rl.supermimic_paired_evaluation_v1 import paired_evaluation
         paired_eval_dir=args.output/'paired_evaluation'; paired_eval_dir.mkdir(exist_ok=True)
         paired_eval_snapshots={}; paired_eval_actor_snapshots={}
+        def paired_action_probe(snapshot):
+            """Evaluate deterministic actions on fixed causal starts for RMS audits."""
+            if not hasattr(trainer,'budget_states'):
+                return None
+            current={k:v.detach().clone() for k,v in actor.state_dict().items()}
+            try:
+                actor.load_state_dict(snapshot,strict=True)
+                values=[]
+                with torch.no_grad():
+                    for probe_state in trainer.budget_states[:4]:
+                        values.append(trainer._actor_action(probe_state.branch(),sample=False)[0].detach().cpu())
+                return torch.cat(values,dim=0)
+            except (RuntimeError, AttributeError, KeyError):
+                return None
+            finally:
+                actor.load_state_dict(current,strict=True)
         if args.paired_evaluation_baseline is not None:
             baseline_payload=json.loads(args.paired_evaluation_baseline.read_text())
             if isinstance(baseline_payload,dict):
@@ -1153,6 +1169,8 @@ def run(args, *, alternating=None):
                     paired_eval_snapshots[previous_stage],native_records,stage=stage_name,
                     actor_before=paired_eval_actor_snapshots[previous_stage],
                     actor_after={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()},
+                    action_before=paired_action_probe(paired_eval_actor_snapshots[previous_stage]),
+                    action_after=paired_action_probe({k:v.detach().cpu().clone() for k,v in actor.state_dict().items()}),
                     wm_holdout=runtime_validation_path)
                 paired['comparison_from']=previous_stage
                 paired['policy_id']=policy_id
