@@ -29,8 +29,15 @@ def racket(state, geometry):
 
 
 def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measured_path=None,
-         racket_material=None, initial_spin=None):
+         racket_material=None, initial_spin=None, event_trace=None):
     p, v = ball[:, :3], ball[:, 3:]
+    if event_trace is not None:
+        if event_trace:
+            raise ValueError('An empty event trace is required for a new control interval')
+        dims = (prior.steps, len(ball))
+        event_trace.update(racket=torch.full(dims,-1,device=ball.device,dtype=torch.int64),
+                           ground=torch.zeros(dims,device=ball.device,dtype=torch.bool),
+                           net=torch.zeros(dims,device=ball.device,dtype=torch.bool))
     spin = initial_spin
     if spin is not None and spin.shape != v.shape:
         raise ValueError('Spin must specify the incoming three-vector for each shuttle')
@@ -98,11 +105,16 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
                     delta[lane] -= slip[:, None]*F.normalize(tan, dim=-1)
                 if spin is not None:
                     spin = spin.index_add(0, lane, torch.linalg.cross(shuttle_arm, delta[lane]) / (.4*g.radius**2))
+                if event_trace is not None:
+                    loaded = delta[lane].norm(dim=-1) > 0.
+                    event_trace['racket'][i,lane[loaded]] = shape[loaded]
                 hit[lane] |= active
         if previous_patch is not None:
             previous_patch.copy_(inside)
         gap = p[:, 2]-g.radius
         ground = (gap <= offset) & (v[:, 2] < 0) & (gap + prior.sub_dt*v[:, 2] <= 0)
+        if event_trace is not None:
+            event_trace['ground'][i] = ground
         delta[ground, 2] -= (1+prior.restitution)*v[ground, 2]
         at_net = (p[:, 0] >= net_lo) & (p[:, 0] <= net_hi)
         if at_net.any():
@@ -114,6 +126,8 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
                 n, _ = prior.net_surface(p[lane])
                 vn = (v[lane]*n).sum(-1)
                 active = (vn < 0) & (net_gap[near] + prior.sub_dt*vn <= 0)
+                if event_trace is not None:
+                    event_trace['net'][i,lane] = active
                 delta[lane] -= ((1+prior.restitution)*vn*active)[:, None]*n
         relative = v-prior.wind
         v = v + prior.sub_dt*(prior.gravity-prior.drag*relative.norm(dim=-1, keepdim=True)*relative) + delta

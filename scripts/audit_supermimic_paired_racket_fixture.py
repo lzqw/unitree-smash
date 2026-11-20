@@ -135,6 +135,8 @@ def main():
             path=a.collection/b/f'spec_{seed}'/'trace.pt'
             hashes[str(path)]=sha(path)
             trial=torch.load(path,mmap=True,map_location='cpu',weights_only=True)
+            if trial.get('schema')!='native-controlled-contact-trial-v1':
+                raise ValueError('A loaded native fixture is required for impact labels')
             tr=trial['raw']['substep_trace'];t=tr['tensors'];v=trial['velocity_intervention']
             if v['branch']!=b or trial['seed']!=seed or tr['count']!=prior.steps+1 or tr['physics_dt_s']!=prior.sub_dt:
                 raise ValueError('Invalid physical branch or clock')

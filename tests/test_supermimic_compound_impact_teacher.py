@@ -52,3 +52,42 @@ def test_velocity_pair_compares_link_readback_at_same_forward_boundary():
     plus['after_racket_reference'][0,0]+=.0002
     with pytest.raises(AssertionError):
         verify_common_twist(ref,plus)
+
+
+def test_coupled_manifold_recovers_two_mass_normal_impulse():
+    from scripts.audit_supermimic_articulated_manifold import coupled_impulse
+    normal=torch.tensor([[0.,0.,1.]],dtype=torch.float64)
+    inverse=torch.zeros(6,6,dtype=normal.dtype)
+    inverse[2,2]=2.
+    n,f=coupled_impulse(normal,-3*normal,-.025*normal,torch.zeros_like(normal),inverse,
+                         radius=.025,mass=.0052,restitution=.72,mu=.08)
+    torch.testing.assert_close(n,normal[0]*(3*1.72/(1+.0052*2)))
+    torch.testing.assert_close(f,torch.zeros_like(f))
+
+
+def test_model_only_basin_excludes_switched_contact_part_and_boundary():
+    from scripts.audit_supermimic_predictive_surface_basin import stable_prediction
+    events=[]
+    speeds=[]
+    for i,x in enumerate([0.,-.05,.05,-.025,.025,-.0125,.0125]):
+        ids=torch.full((2,2),-1,dtype=torch.long)
+        ids[0]=0
+        if i==6:ids[0,1]=1
+        events.append(dict(racket=ids,ground=torch.zeros_like(ids,dtype=torch.bool),net=torch.zeros_like(ids,dtype=torch.bool)))
+        speeds.append(torch.tensor([[x,0.,0.],[x,0.,0.]]))
+    stable, qualified, derivative=stable_prediction(events,speeds,[.05,.025,.0125])
+    assert stable.tolist()==qualified.tolist()==[True,False]
+    torch.testing.assert_close(derivative,speeds[2]/.05)
+
+
+def test_unloaded_native_shadow_is_rejected_as_a_measured_ball_response(tmp_path):
+    import pytest
+    from quadsmash.rl.supermimic_contact_pilot_v1 import _trace_candidates
+    from scripts.calibrate_supermimic_pilot_oracle import trajectory
+    packet = {'schema': 'native-unloaded-racket-oracle-v1'}
+    path = tmp_path / 'trace.pt'
+    torch.save(packet, path)
+    with pytest.raises(ValueError):
+        _trace_candidates(path, .001, 4)
+    with pytest.raises(ValueError):
+        trajectory(packet, None)

@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""Test a pre-impact, model-only basin selector against independent native finite differences."""
+import argparse
+import json
+from pathlib import Path
+
+import torch
+import torch.nn.functional as F
+
+from audit_supermimic_surface_derivative_scales import vector_summary
+from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, sha, tick
+
+
+def motion_from_initial(center,quat,velocity,omega,times):
+    # Constant world twist of the link origin over one short diagnostic control interval.
+    times=times[:,None,None]
+    half=.5*times*omega.norm(dim=-1,keepdim=True)
+    dxyz=.5*times*omega*torch.sinc(half/torch.pi)
+    dw=half.cos()
+    w=dw*quat[None,:,:1]-(dxyz*quat[None,:,1:]).sum(-1,keepdim=True)
+    xyz=dw*quat[None,:,1:]+quat[None,:,:1]*dxyz+torch.linalg.cross(dxyz,quat[None,:,1:])
+    return [center+times*velocity,torch.cat((w,xyz),-1),velocity.expand(len(times),-1,-1),omega.expand(len(times),-1,-1)]
+
+
+def stable_prediction(events,speeds,eps):
+    nominal=events[0]
+    stable=((nominal['racket']>=0).sum(0)==1)&~nominal['ground'].any(0)&~nominal['net'].any(0)
+    for event in events[1:]:
+        for name in nominal:
+            stable &= (nominal[name]==event[name]).all(0)
+    local=stable.clone()
+    responses=[(speeds[i+1]-speeds[i])/(2*e) for e,i in zip(eps,(1,3,5))]
+    left=(speeds[0]-speeds[5])/eps[-1];right=(speeds[6]-speeds[0])/eps[-1]
+    for x,y in [(responses[0],responses[1]),(responses[1],responses[2]),(left,right)]:
+        ratio=y.norm(dim=-1)/x.norm(dim=-1).clamp_min(1.e-12)
+        local&=(F.cosine_similarity(x,y)>=.8)&(ratio>=.5)&(ratio<=2.)
+    local&=responses[0].norm(dim=-1)*2*eps[0]>.01
+    return stable,local,responses[0]
+
+
+@torch.no_grad()
+def main():
+    ap=argparse.ArgumentParser(description=__doc__)
+    for name in ('wide','labels','wide-audit','calibration','output'):
+        ap.add_argument('--'+name,type=Path,required=True)
+    a=ap.parse_args();torch.set_num_threads(3)
+    audit=json.loads(a.wide_audit.read_text());labels=json.loads(a.labels.read_text())
+    if audit['split'] not in ('train','development') or labels['wide_audit_sha256']!=sha(a.wide_audit) or labels['split']!=audit['split']:
+        raise ValueError('Expected a matching calibration or development native panel')
+    cfg=json.loads(a.calibration.read_text())
+    if labels['calibration_sha256']!=sha(a.calibration):raise ValueError('Solver changed')
+    rows=sorted(audit['samples'],key=lambda r:(r['seed'],r['lane']))
+    if labels['case_ids']!=[[r['seed'],r['lane']] for r in rows]: raise ValueError('Different native cases or labels')
+    prior=BallImpulsePriorV1().eval()
+    eps=[.05,.025,.0125]
+    times=torch.arange(prior.steps)*prior.sub_dt
+    events=[];sufficient=[];pred=[]
+    for seed in sorted({r['seed'] for r in rows}):
+        # Only a single branch is opened: all seven trajectories start from this same native state.
+        path=a.wide/'nominal_a'/f'spec_{seed}'/'trace.pt'
+        if sha(path)!=audit['archives'][str(path)]:raise ValueError('Parent nominal trace changed')
+        src=torch.load(path,weights_only=True,mmap=True)
+        raw=src['raw']['substep_trace']
+        if raw['contact_metadata'].get('initial_racket_twist_source')!='direct_native_link_velocity_after_intervention':
+            raise ValueError('Requires direct initial native surface twist')
+        t=raw['tensors'];s=t['shuttle_state_w'][0]
+        ball=torch.cat((s[:,:3],s[:,7:10]),dim=-1)
+        c,q,v,omega=[t[k][0] for k in ('racket_position_w','racket_quaternion_w','racket_linear_velocity_w','racket_angular_velocity_w')]
+        direction=src['velocity_intervention']['direction_world']
+        speeds=[];signatures=[]
+        for e in (0.,-eps[0],eps[0],-eps[1],eps[1],-eps[2],eps[2]):
+            stream=motion_from_initial(c,q,v+e*direction,omega,times)
+            sig={}
+            out,_=tick(prior,ball,[x[0] for x in stream],[x[-1] for x in stream],
+                       cfg['fitted'],cfg['solver']['pair_contact_offset_m'],torch.zeros(len(ball),dtype=torch.bool),
+                       measured_path=stream,event_trace=sig)
+            speeds.append(out[:,3:]);signatures.append(sig)
+        stable,qualified,d=stable_prediction(signatures,speeds,eps)
+        events.append(stable);sufficient.append(qualified);pred.append(d)
+    native=torch.tensor([r['delta']['native'] for r in rows])/(2*eps[0])
+    model=torch.cat(pred);all_rows=torch.ones(len(rows),dtype=torch.bool)
+    true=torch.tensor(labels['incident_labels']['native_convergent_stable'])
+    types=[r['kind'] for r in rows]
+    groups={}
+    for name,mask in [('all',all_rows),('predicted_event_stable',torch.cat(events)),('predicted_convergent',torch.cat(sufficient)),('native_convergent_diagnostic',true)]:
+        g=dict(rows=int(mask.sum()),native_convergent=int((true&mask).sum()),
+               false_positive_no_native_racket=sum(t=='no_contact' and bool(x) for t,x in zip(types,mask)))
+        if mask.any():g['signed']=vector_summary(native[mask],model[mask])
+        groups[name]=g
+    with a.output.open('x') as f:
+        json.dump(dict(scope='Pre-impact state and prescribed perturbation only; hyperparameters fixed by physical convergence diagnostic',
+                       groups=groups,labels_sha256=sha(a.labels),calibration_sha256=sha(a.calibration),
+                       contact_bptt_admitted=False,actor_updates=0),f,indent=2,allow_nan=False)
+
+
+if __name__=='__main__':main()

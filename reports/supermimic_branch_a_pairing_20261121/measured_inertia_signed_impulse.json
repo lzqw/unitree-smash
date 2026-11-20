@@ -1,0 +1,75 @@
+{
+  "physical_mobility_sha256": "b20e553e3b9e176b3c15930ec3bb4f41668dce9af42905378c4351522eb16c1a",
+  "calibration_sha256": "7312af620cb8662e6dd7b8d0c8ee1a7cbc44fcbd8ef56a66313d9c10b8415a92",
+  "lanes": [
+    96,
+    99,
+    102,
+    115
+  ],
+  "scope": "Native contact-point and normal teacher at loaded frames, causal incoming velocities. No measured load magnitude in the applied impulse. Friction-only frames remain in target.",
+  "signed": {
+    "normal": {
+      "infinite": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.1829654113829003,
+        "gain_median": 1.070416123030577,
+        "gain_p10": 0.41787342236869224,
+        "cosine_median": 0.7878183083786527,
+        "cosine_p10": 0.0346832346984513
+      },
+      "articulated": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.17051536276704754,
+        "gain_median": 0.9765368862224972,
+        "gain_p10": 0.3859256651599359,
+        "cosine_median": 0.7842251701697247,
+        "cosine_p10": 0.061123132399983876
+      }
+    },
+    "friction": {
+      "infinite": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.14666730902274858,
+        "gain_median": 0.1727276874387608,
+        "gain_p10": 0.13953109924399468,
+        "cosine_median": -0.6985336626875396,
+        "cosine_p10": -0.7268580153107148
+      },
+      "articulated": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.1440957258606676,
+        "gain_median": 0.17844055299887368,
+        "gain_p10": 0.14076340747662394,
+        "cosine_median": -0.6699931690755421,
+        "cosine_p10": -0.7411111694577456
+      }
+    },
+    "both": {
+      "infinite": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.17856783376321744,
+        "gain_median": 0.45714349008109467,
+        "gain_p10": 0.26512496745310765,
+        "cosine_median": 0.2922471353348963,
+        "cosine_p10": -0.3641740145202853
+      },
+      "articulated": {
+        "rows": 4,
+        "supported": 4,
+        "absolute_rmse": 0.17500538422110692,
+        "gain_median": 0.4059127954742819,
+        "gain_p10": 0.24674433675595223,
+        "cosine_median": 0.347936679880584,
+        "cosine_p10": -0.3450346780362846
+      }
+    }
+  },
+  "policy_updates": 0,
+  "contact_bptt_admitted": false
+}

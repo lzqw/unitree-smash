@@ -157,7 +157,11 @@ def main():
         json.dump(dict(calibration_sha256=sha(args.calibration),wide_audit_sha256=sha(args.wide_audit),
                        scale_plan_sha256=sha(args.scales/'design.json'),physical_archives=hashes,
                        units='change in ball m/s per 1 m/s requested native surface perturbation',
-                       groups=results,split=audit['split'],policy_updates=0,contact_bptt_admitted=False),f,indent=2,allow_nan=False)
+                       groups=results,case_ids=[[seed,l] for seed in sorted({key[0] for key in by_case})
+                                             for l in range(design['lanes'])],
+                       incident_labels={k:torch.cat(v).tolist() for k,v in groups.items()
+                                        if k in ('all_scales_stable','native_convergent_stable')},
+                       split=audit['split'],policy_updates=0,contact_bptt_admitted=False),f,indent=2,allow_nan=False)
 
 
 if __name__=='__main__':

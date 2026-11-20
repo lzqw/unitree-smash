@@ -164,7 +164,11 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('dataset','body','calibration','output'):
         p.add_argument('--'+k,required=True,type=Path)
+    p.add_argument('--actuator',type=Path,help='Audit the independently calibrated six arm drives through the same ball solver')
+    p.add_argument('--drive',type=Path,help='Measured contract for the actuator calibration')
     a=p.parse_args();torch.set_num_threads(3)
+    if bool(a.actuator)!=bool(a.drive):
+        p.error('The actuator and its native drive contract are required together')
     ds=torch.load(a.dataset,map_location='cpu',weights_only=True)
     ck=torch.load(a.body,map_location='cpu',weights_only=True)
     folder=Path(ds['source_collection'])
@@ -178,6 +182,17 @@ def main():
     rows=ds['rows'];lanes=[r['lane_index'] for r in rows]
     if set(lanes)&set(ck['calibration']['train_lanes']):raise ValueError('Overlapping action-ID and fit lanes')
     shuttle=json.loads((Path(__file__).resolve().parents[1]/'configs/shuttle_physics_v2.json').read_text())
+    pd_start={}
+    if a.actuator:
+        from audit_supermimic_pd_racket_transfer import advance_arm
+        from quadsmash.rl.supermimic_timebase_v2 import full_range_targets
+        fit=torch.load(a.actuator,map_location='cpu',weights_only=True)
+        if (fit['schema']!='native-joint-pd-history-v1' or fit['mode']!='pd_history'
+                or fit['task_contract']!=task or fit['drive_sha256']!=sha(a.drive)
+                or set(fit['train_lanes'])&set(lanes)):
+            raise ValueError('Actuator fit ancestry or held lanes differ')
+        profile={k:torch.tensor(v,dtype=torch.float64) for k,v in json.loads(a.drive.read_text())['profiles'][0].items()
+                 if k!='position_limits'}
     modes={}
     traces={b:[] for b in ('minus','plus')}
     for name in sorted(set(r['spec_name'] for r in rows)):
@@ -188,6 +203,10 @@ def main():
                 raise ValueError('Probe source or robot identity changed')
         for row in (r for r in rows if r['spec_name']==name):
             lane=row['lane_index']
+            if a.actuator:
+                start=runs['minus']['raw']['start']['before']
+                last=full_range_targets(start['physical']['final_action'],start['auxiliary']['command_limits'])
+                pd_start[row['sample_id']]=(last[lane],start['applied_torque'][lane])
             for b in traces:
                 trace=runs[b]['raw']['substep_trace']
                 if abs(trace['physics_dt_s']-prior.sub_dt)>1e-12 or trace['count']!=prior.steps+1:
@@ -256,14 +275,21 @@ def main():
     t0,t1=f('step_targets_minus'),f('step_targets_plus')
     u0,u1=f('step_final_actions_minus'),f('step_final_actions_plus')
     if not bool(f('present').all()):raise ValueError('Contact-only evaluator requires ball in flight')
-    def forward(alpha,teacher=None,*,event_path=None,native_event_start=False):
+    def forward(alpha,teacher=None,*,event_path=None,native_event_start=False,arm_variant=None):
         targets=torch.lerp(t0,t1,alpha[:,None,None])
         actions=torch.lerp(u0,u1,alpha[:,None,None])
         s=f('state');prev=f('previous_action');feet=f('foot_contact').float()
         time=f('elapsed');active=f('present');patch=torch.zeros_like(active).bool()
         events=[]
+        if arm_variant:
+            last,torque=[torch.stack(x).double() for x in zip(*(pd_start[r['sample_id']] for r in rows))]
+            age=torch.zeros_like(last)
         for i in range(targets.shape[1]):
             robot,logits,_=body(s,targets[:,i],prev,feet,active,time,launch)
+            if arm_variant:
+                held=body(s,last.to(s),prev,feet,active,time,launch)[0] if arm_variant=='anchored_pd_arm' else None
+                robot=robot.clone()
+                last,torque,age=advance_arm(robot,s,targets[:,i],last,torque,age,profile,fit,held)
             if teacher is not None:robot=teacher[:,i]
             start_ball=s[:,49:]
             measured=None
@@ -287,7 +313,17 @@ def main():
     with torch.no_grad():
         minus,hm=forward(torch.zeros_like(alpha));plus,hp=forward(torch.ones_like(alpha))
         oracle0,_=forward(torch.zeros_like(alpha),native['minus']);oracle1,_=forward(torch.ones_like(alpha),native['plus'])
-    predictions={'body_endpoint_difference':plus-minus,'local_sequence_jacobian':jac.detach(),
+    arm_metrics={}
+    if a.actuator:
+        for variant in ('pd_arm','anchored_pd_arm'):
+            with torch.no_grad():
+                left,_=forward(torch.zeros_like(alpha),arm_variant=variant)
+                right,_=forward(torch.ones_like(alpha),arm_variant=variant)
+            midpoint,_=forward(alpha,arm_variant=variant)
+            arm_metrics[variant+'_difference']=right-left
+            arm_metrics[variant+'_local_jacobian']=torch.stack([torch.autograd.grad(
+                midpoint[:,j].sum(),alpha,retain_graph=j<2)[0] for j in range(3)],-1).detach()
+    predictions={**arm_metrics,'body_endpoint_difference':plus-minus,'local_sequence_jacobian':jac.detach(),
                  'native_robot_endpoint_difference':oracle1-oracle0}
     with torch.no_grad():
         for native_start in (False,True):
@@ -350,7 +386,7 @@ def main():
                                 if k == 'spin_at_start'} for b in ('minus','plus')},
                             **modes[row['spec_name'],row['lane_index']],**{k:v[i].tolist() for k,v in predictions.items()}))
     result=dict(scope='paired measured final target and action history sequences, control-step pose interpolation; native substep timing available at final intervention tick only',
-                sources={k:sha(getattr(a,k)) for k in ('dataset','body','calibration')},
+                sources={k:sha(getattr(a,k)) for k in ('dataset','body','calibration','actuator','drive') if getattr(a,k)},
                 validation=groups,samples=details,all_signed_traces_include_friction=friction_available,contact_bptt_admitted=False,actor_updates=0)
     with a.output.open('x') as output:json.dump(result,output,indent=2,allow_nan=False)
 

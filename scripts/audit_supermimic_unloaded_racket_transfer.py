@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+"""Use a collision-free native racket trajectory to predict the loaded fixture's ball response."""
+import argparse
+import json
+from pathlib import Path
+
+import torch
+
+from audit_supermimic_paired_racket_fixture import verify_initial_intervention, common_native_twist, verify_common_twist
+from audit_supermimic_surface_derivative_scales import vector_summary
+from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, sha, tick
+
+
+@torch.no_grad()
+def main():
+    cli=argparse.ArgumentParser(description=__doc__)
+    for key in ('loaded','unloaded','wide-audit','labels','calibration','output'):
+        cli.add_argument('--'+key,type=Path,required=True)
+    a=cli.parse_args();torch.set_num_threads(2)
+    cfg=json.loads(a.calibration.read_text())
+    wide=json.loads(a.wide_audit.read_text());labels=json.loads(a.labels.read_text())
+    if (wide['split'] not in ('train','development') or labels['wide_audit_sha256']!=sha(a.wide_audit)
+            or labels['calibration_sha256']!=sha(a.calibration)):
+        raise ValueError('Different native cases or solver')
+    rows=sorted(wide['samples'],key=lambda r:(r['seed'],r['lane']))
+    if labels['case_ids']!=[[r['seed'],r['lane']] for r in rows]:raise ValueError('Mismatched case labels')
+    prior=BallImpulsePriorV1().eval()
+    branch_values={};paths={}
+    impulse_dv=[]
+    keys=('racket_position_w','racket_quaternion_w','racket_linear_velocity_w','racket_angular_velocity_w')
+    collector_hashes = {}
+    for b in ('minus','plus','nominal_a'):
+        lp,up=[json.loads((p/b/'provenance.json').read_text()) for p in (a.loaded,a.unloaded)]
+        for source, provenance in [('loaded', lp), ('unloaded', up)]:
+            if collector_hashes.setdefault(source, provenance['collector_sha256']) != provenance['collector_sha256']:
+                raise ValueError('Collector changed within the paired branches')
+        for key in ('teacher_sha256','trace_recorder_sha256','lanes','batches','seed'):
+            if lp[key]!=up[key]:raise ValueError('Different setup: '+key)
+        batch=[]
+        for seed in sorted({r['seed'] for r in rows}):
+            load=a.loaded/b/f'spec_{seed}'/'trace.pt';unload=a.unloaded/b/f'spec_{seed}'/'trace.pt'
+            if sha(load)!=wide['archives'][str(load)]:raise ValueError('Native target changed')
+            paths[str(unload)]=sha(unload)
+            orig,shadow=[torch.load(p,weights_only=True,mmap=True) for p in (load,unload)]
+            if orig['schema']!='native-controlled-contact-trial-v1' or shadow['schema']!='native-unloaded-racket-oracle-v1':
+                raise ValueError('Wrong fixture pairing')
+            for x in (orig, shadow):
+                intervention = x['velocity_intervention']
+                if x['seed'] != seed or intervention['branch'] != b or x['parent_family'] != seed % 16:
+                    raise ValueError('Native branch or launch family mismatch')
+                verify_initial_intervention(x['raw']['substep_trace'], intervention)
+            if [r['lane'] for r in rows if r['seed'] == seed] != list(range(lp['lanes'])):
+                raise ValueError('Expected all registered lanes in physical row order')
+            vo,vs=orig['velocity_intervention'],shadow['velocity_intervention']
+            if not vs['unloaded_racket_oracle'] or vo.get('unloaded_racket_oracle'):
+                raise ValueError('Expected the ball intervention only in the unloaded fixture')
+            verify_common_twist(common_native_twist(vo),common_native_twist(vs))
+            for k in ('nominal_shuttle','direction_world','joint_targets','nominal_root_com_velocity','delta_world'):
+                torch.testing.assert_close(vo[k],vs[k],rtol=0,atol=0)
+            torch.testing.assert_close(orig['parent_lane'],shadow['parent_lane'],rtol=0,atol=0)
+            a0,a1=[x['raw']['substep_trace']['tensors'] for x in (orig,shadow)]
+            for k in keys:torch.testing.assert_close(a0[k][0],a1[k][0],rtol=0,atol=0)
+            for k in ('racket_force_w','racket_friction_force_w','net_force_matrix_w','ground_force_w'):
+                if a1[k].norm(dim=-1).max()>.001:raise ValueError('Shadow racket saw external shuttle contact')
+            s=a0['shuttle_state_w'][0];ball=torch.cat((s[:,:3],s[:,7:10]),-1)
+            stream=[a1[k] for k in keys]
+            speed,_=tick(prior,ball,[x[0] for x in stream],[x[-1] for x in stream],cfg['fitted'],
+                cfg['solver']['pair_contact_offset_m'],torch.zeros(len(ball),dtype=torch.bool),measured_path=[x[:-1] for x in stream])
+            batch.append(speed[:,3:])
+            if b=='nominal_a':
+                impulse_dv.append((a0['racket_linear_velocity_w']-a1['racket_linear_velocity_w']).norm(dim=-1).amax(0))
+        branch_values[b]=torch.cat(batch)
+    d=branch_values['plus']-branch_values['minus']
+    n=torch.tensor([r['delta']['native'] for r in rows]);teacher=torch.tensor([r['delta']['native_racket_analytic_rollout'] for r in rows])
+    groups={}
+    for label,mask in [('all',torch.ones(len(rows),dtype=torch.bool)),('wide_stable',torch.tensor([r['kind']=='racket_stable' for r in rows])),
+                      ('native_convergent',torch.tensor(labels['incident_labels']['native_convergent_stable']))]:
+        if mask.any():
+            impact=torch.cat(impulse_dv)[mask]
+            groups[label]=dict(loaded=vector_summary(n[mask],teacher[mask]),unloaded=vector_summary(n[mask],d[mask]),
+                              peak_racket_recoil_median_mps=float(impact.median()),peak_racket_recoil_p90_mps=float(impact.quantile(.9)))
+    with a.output.open('x') as out:
+        json.dump(dict(groups=groups,split=wide['split'],unloaded_hashes=paths,collector_hashes=collector_hashes,loaded_audit_sha256=sha(a.wide_audit),
+                  labels_sha256=sha(a.labels),model_calibration_sha256=sha(a.calibration),policy_updates=0,contact_bptt_admitted=False,
+                  scope='Free articulated racket path supplied by separate native simulation; ball initial state and all outcomes refer to the loaded fixture'),out,indent=2,allow_nan=False)
+
+
+if __name__=='__main__':main()

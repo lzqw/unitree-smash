@@ -25,6 +25,8 @@ def quantile(values, q):
 
 
 def trajectory(archive, prior, *, response_truth=False):
+    if archive.get('schema') == 'native-unloaded-racket-oracle-v1':
+        raise ValueError('Unloaded racket motion cannot supply native impact targets')
     trace = archive['raw']['substep_trace']
     t = trace['tensors']
     state = t['shuttle_state_w']

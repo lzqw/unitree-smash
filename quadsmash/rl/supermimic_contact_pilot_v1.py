@@ -289,6 +289,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                       sensitivity_thresholds: tuple[float, ...] = (),
                       max_near_miss_per_lane: int = 128) -> tuple[list[dict], dict]:
     package = torch.load(path, map_location="cpu", weights_only=False)
+    if package.get("schema") == "native-unloaded-racket-oracle-v1":
+        raise ValueError("Unloaded racket motion has no shuttle response labels")
     trace = _first_trace(package)
     if trace is None:
         return [], {}

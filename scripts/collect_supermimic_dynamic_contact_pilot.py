@@ -127,7 +127,13 @@ def collect(args):
                 plane - .027 - flight * speed, sample(-1, 1), sample(.9, 1.45)), -1)[net]
             ball[net, 7:10] = 0.
             ball[net, 7] = speed[net]
-            env.shuttle.write_root_state_to_sim(ball)
+            if args.unloaded_racket_oracle:
+                parked = ball.clone()
+                parked[:, :3] = origin + ball.new_tensor([0.,0.,5.])
+                parked[:, 7:] = 0.
+                env.shuttle.write_root_state_to_sim(parked)
+            else:
+                env.shuttle.write_root_state_to_sim(ball)
             intervention = None
             if args.velocity_pair_branch is not None:
                 # Freeze the nominal shuttle launch before varying the moving surface.
@@ -153,7 +159,8 @@ def collect(args):
                 intervention = dict(branch=args.velocity_pair_branch,epsilon_mps=args.surface_epsilon_mps,
                         direction_world=direction.cpu(),delta_world=change.cpu(),nominal_root_com_velocity=old_velocity.cpu(),
                         nominal_shuttle=ball.cpu(),joint_targets=joint_targets.cpu(),
-                        scope='controlled moving surface response; no Actor command perturbation')
+                        scope='controlled moving surface response; no Actor command perturbation',
+                        unloaded_racket_oracle=args.unloaded_racket_oracle)
             env.sim.forward()
             if intervention is not None:
                 intervention['native_velocity_readback'] = dict(
@@ -175,12 +182,17 @@ def collect(args):
             if not torch.isfinite(series['shuttle_state_w']).all() or not archive['manifold_frames']:
                 raise ValueError('Invalid fixture trace or missing native manifold stream')
             contact = series['racket_force_w'].norm(dim=-1) > .001
+            if args.unloaded_racket_oracle:
+                if any(series[k].norm(dim=-1).max() > .001 for k in
+                       ('racket_force_w','racket_friction_force_w','ground_force_w','net_force_matrix_w')):
+                    raise ValueError('Unexpected contact in unloaded racket oracle')
             if contact[0].any():
                 raise ValueError('Stale racket contact at fixture initialization')
             directory = args.output / f'spec_{seed}'
             directory.mkdir()
             temp = directory / 'trace.tmp'
-            torch.save(dict(schema='native-controlled-contact-trial-v1', seed=seed, teacher=args.teacher.name,
+            schema = 'native-unloaded-racket-oracle-v1' if args.unloaded_racket_oracle else 'native-controlled-contact-trial-v1'
+            torch.save(dict(schema=schema, seed=seed, teacher=args.teacher.name,
                             parent_lane=parent, parent_family=family, velocity_intervention=intervention, raw={'substep_trace': archive}), temp)
             temp.replace(directory / 'trace.pt')
             print(json.dumps(dict(seed=seed, contact_lanes=int(contact.any(0).sum()),
@@ -201,10 +213,14 @@ def main():
     parser.add_argument('--batches', type=int, default=1)
     parser.add_argument('--lanes', type=int, default=128)
     parser.add_argument('--velocity-pair-branch',choices=('nominal_a','nominal_b','minus','plus'))
+    parser.add_argument('--unloaded-racket-oracle',action='store_true',
+                        help='Record a native robot trajectory with the shuttle parked; use only alongside a matched loaded fixture')
     parser.add_argument('--surface-epsilon-mps',type=float,default=.05,
                         help='Per-sign linear velocity change of the robot root after defining the common shuttle launch')
     AppLauncher.add_app_launcher_args(parser)
     args = parser.parse_args()
+    if args.unloaded_racket_oracle and not args.velocity_pair_branch:
+        parser.error('An unloaded racket oracle requires an explicit paired branch')
     if args.velocity_pair_branch and not 0 < args.surface_epsilon_mps < float('inf'):
         parser.error('Expected a positive finite surface speed intervention')
     if min(args.batches, args.lanes) <= 0 or not args.teacher.is_file():

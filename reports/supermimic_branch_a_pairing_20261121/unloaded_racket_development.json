@@ -1,0 +1,89 @@
+{
+  "groups": {
+    "all": {
+      "loaded": {
+        "rows": 256,
+        "supported": 208,
+        "component_rmse": 0.5558101534843445,
+        "cosine_median": 0.8214544057846069,
+        "cosine_p10": -0.6003381609916687,
+        "gain_median": 0.6344135403633118,
+        "gain_p10": 0.09648054093122482
+      },
+      "unloaded": {
+        "rows": 256,
+        "supported": 208,
+        "component_rmse": 0.5042915940284729,
+        "cosine_median": 0.8417295813560486,
+        "cosine_p10": -0.5646034479141235,
+        "gain_median": 0.6133620738983154,
+        "gain_p10": 0.0858815386891365
+      },
+      "peak_racket_recoil_median_mps": 0.7357318997383118,
+      "peak_racket_recoil_p90_mps": 2.0614144802093506
+    },
+    "wide_stable": {
+      "loaded": {
+        "rows": 53,
+        "supported": 53,
+        "component_rmse": 0.3439469337463379,
+        "cosine_median": 0.9805972576141357,
+        "cosine_p10": 0.0022742985747754574,
+        "gain_median": 0.9824304580688477,
+        "gain_p10": 0.40614181756973267
+      },
+      "unloaded": {
+        "rows": 53,
+        "supported": 53,
+        "component_rmse": 0.1507708579301834,
+        "cosine_median": 0.9891871809959412,
+        "cosine_p10": 0.08675584197044373,
+        "gain_median": 0.9824304580688477,
+        "gain_p10": 0.40614181756973267
+      },
+      "peak_racket_recoil_median_mps": 1.1761194467544556,
+      "peak_racket_recoil_p90_mps": 1.9497250318527222
+    },
+    "native_convergent": {
+      "loaded": {
+        "rows": 20,
+        "supported": 20,
+        "component_rmse": 0.07513142377138138,
+        "cosine_median": 0.9923834204673767,
+        "cosine_p10": 0.9706833362579346,
+        "gain_median": 0.9857393503189087,
+        "gain_p10": 0.736926257610321
+      },
+      "unloaded": {
+        "rows": 20,
+        "supported": 20,
+        "component_rmse": 0.027012178674340248,
+        "cosine_median": 0.9925889372825623,
+        "cosine_p10": 0.9789260029792786,
+        "gain_median": 0.9857393503189087,
+        "gain_p10": 0.736954391002655
+      },
+      "peak_racket_recoil_median_mps": 0.6071692705154419,
+      "peak_racket_recoil_p90_mps": 2.0542166233062744
+    }
+  },
+  "split": "development",
+  "unloaded_hashes": {
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/unloaded_surface_test/minus/spec_994074/trace.pt": "5143d2aa5783dee66ffcf025c642b25d9b6635d4982297987a70e16268a6420f",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/unloaded_surface_test/minus/spec_994075/trace.pt": "084c143f09f5742b52c9198389ec79595490787c5be9b50974b3fe4d5754b184",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/unloaded_surface_test/plus/spec_994074/trace.pt": "ee3efa710101beaa7a9623cb81624fabdfd700cec2a2a2eceddea664810f35fd",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/unloaded_surface_test/plus/spec_994075/trace.pt": "90820eed0d1fa592e82edb7bd0f218826ee91664b79e0b2e57d2efc5fcb74fb4",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/unloaded_surface_test/nominal_a/spec_994074/trace.pt": "f3c14159f2b8cf6c5a47793313536e6f065d4d7c5443f9b54d6e8b3249539e7a",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/unloaded_surface_test/nominal_a/spec_994075/trace.pt": "4becc93abb669fea427ba28f9eb13ca929463e53638d92e1301b44cc6be4fc40"
+  },
+  "collector_hashes": {
+    "loaded": "da663e80bb7ac90edbd84dfd71765eeac4607e0c9096fe67d5f811649b4ef99b",
+    "unloaded": "44c58c35d6dd016f82d41073b09e0d6d8c398c09f19db71ebb751be60fdd3eaa"
+  },
+  "loaded_audit_sha256": "b9b74ccc9dc725a9a4124cba53c22a907d479da6cd0efadcd12ceb21cb3aa360",
+  "labels_sha256": "25130db228540359b4cddb60672d27fe0ad7b71078836afd2a7b2fe7c9d43418",
+  "model_calibration_sha256": "7312af620cb8662e6dd7b8d0c8ee1a7cbc44fcbd8ef56a66313d9c10b8415a92",
+  "policy_updates": 0,
+  "contact_bptt_admitted": false,
+  "scope": "Free articulated racket path supplied by separate native simulation; ball initial state and all outcomes refer to the loaded fixture"
+}

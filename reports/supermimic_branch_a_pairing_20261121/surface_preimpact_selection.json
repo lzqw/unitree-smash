@@ -1,0 +1,65 @@
+{
+  "scope": "Pre-impact state and prescribed perturbation only; hyperparameters fixed by physical convergence diagnostic",
+  "groups": {
+    "all": {
+      "rows": 256,
+      "native_convergent": 20,
+      "false_positive_no_native_racket": 33,
+      "signed": {
+        "rows": 256,
+        "supported": 208,
+        "component_rmse": 6.515130996704102,
+        "cosine_median": 0.6502846479415894,
+        "cosine_p10": -0.5266876816749573,
+        "gain_median": 0.5296823382377625,
+        "gain_p10": 0.06336050480604172
+      }
+    },
+    "predicted_event_stable": {
+      "rows": 95,
+      "native_convergent": 13,
+      "false_positive_no_native_racket": 1,
+      "signed": {
+        "rows": 95,
+        "supported": 94,
+        "component_rmse": 7.05886173248291,
+        "cosine_median": 0.5482358336448669,
+        "cosine_p10": -0.5376686453819275,
+        "gain_median": 0.46969595551490784,
+        "gain_p10": 0.0616418831050396
+      }
+    },
+    "predicted_convergent": {
+      "rows": 93,
+      "native_convergent": 13,
+      "false_positive_no_native_racket": 1,
+      "signed": {
+        "rows": 93,
+        "supported": 92,
+        "component_rmse": 7.09199857711792,
+        "cosine_median": 0.5494942665100098,
+        "cosine_p10": -0.5819624662399292,
+        "gain_median": 0.48923438787460327,
+        "gain_p10": 0.06468111276626587
+      }
+    },
+    "native_convergent_diagnostic": {
+      "rows": 20,
+      "native_convergent": 20,
+      "false_positive_no_native_racket": 0,
+      "signed": {
+        "rows": 20,
+        "supported": 20,
+        "component_rmse": 0.8003167510032654,
+        "cosine_median": 0.9884647130966187,
+        "cosine_p10": 0.7817816734313965,
+        "gain_median": 0.9857463836669922,
+        "gain_p10": 0.6705955266952515
+      }
+    }
+  },
+  "labels_sha256": "25130db228540359b4cddb60672d27fe0ad7b71078836afd2a7b2fe7c9d43418",
+  "calibration_sha256": "7312af620cb8662e6dd7b8d0c8ee1a7cbc44fcbd8ef56a66313d9c10b8415a92",
+  "contact_bptt_admitted": false,
+  "actor_updates": 0
+}
