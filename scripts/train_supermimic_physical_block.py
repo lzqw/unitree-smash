@@ -217,6 +217,9 @@ def main():
         parser.error('Large training requires wm-sampling-mode=promotion')
     if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
     if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
+    if args.resume_reset_schedule and (args.resume_training is None or args.resume_next_cycle or
+                                       args.training_profile!='bounded' or args.training_stage=='full_contact'):
+        parser.error('Fresh schedule requires a bounded non-promotable checkpoint continuation')
     if args.resume_without_replay and (args.resume_training is None or args.training_profile=='large' or args.training_stage=='full_contact'):
         parser.error('resume-without-replay is restricted to bounded non-promotable diagnostics')
     from quadsmash.rl.supermimic_alternating_schedule_v1 import make_plan,AlternatingSchedule,refresh_world_budgets,run_schedule
@@ -376,34 +379,21 @@ def run(args, *, alternating=None):
         paired_eval_previous_stage={}
         def paired_action_probe(snapshot):
             """Evaluate deterministic actions on fixed causal starts for RMS audits."""
-            if not hasattr(trainer,'budget_states'):
-                return None
             current={k:v.detach().clone() for k,v in actor.state_dict().items()}
             try:
                 actor.load_state_dict(snapshot,strict=True)
                 values=[]
                 with torch.no_grad():
-                    for probe_state in trainer.budget_states[:4]:
+                    for probe_state in paired_probe_states:
                         values.append(trainer._actor_action(probe_state.branch(),sample=False)[0].detach().cpu())
                 log_std=getattr(actor,'log_std',None)
                 return dict(action=torch.cat(values,dim=0),
-                            log_std=None if log_std is None else log_std.detach().cpu().clone())
+                            log_std=None if log_std is None else log_std.detach().clamp(-8.,1.).cpu().clone(),
+                            clipped_action=True)
             except (RuntimeError, AttributeError, KeyError):
                 return None
             finally:
                 actor.load_state_dict(current,strict=True)
-        if args.paired_evaluation_baseline is not None:
-            baseline_payload=json.loads(args.paired_evaluation_baseline.read_text())
-            if isinstance(baseline_payload,dict):
-                baseline_payload=baseline_payload.get('records',baseline_payload.get('episodes',baseline_payload))
-            if not isinstance(baseline_payload,list):
-                raise ValueError('Paired evaluation baseline must be a JSON record list or episodes_summary payload')
-            paired_eval_snapshots['pre-update']=baseline_payload
-            paired_eval_actor_snapshots['pre-update']={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()}
-            write(paired_eval_dir/'pre-update.json',dict(schema='supermimic-paired-fixed-case-evaluation-v1',stage='pre-update',
-                case_count=len(baseline_payload),case_ids=sorted(str(row.get('case_id')) for row in baseline_payload),
-                records=baseline_payload,actor_parameter_delta={'available':False},
-                scope='fixed 128-case reference supplied by user'))
         from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache,APPROACH_TICKS,RECOVERY_TICKS,CRITIC_TICKS
         start_cache=load_start_cache(args.archive,manifest)
         lifecycle_stage(args.output, 'START_CACHE_LOADED')
@@ -430,7 +420,8 @@ def run(args, *, alternating=None):
         trainer.racket_loss_weight=float(args.racket_loss_weight)
         lifecycle_stage(args.output, 'TRAINER_READY')
         trainer.set_budget_state_library([as_state(row) for row in starts+critic_starts[:4]])
-        def paired_critic_td():
+        paired_probe_states=tuple(trainer.budget_states) if args.paired_evaluation_baseline else ()
+        def paired_critic_audit():
             """Evaluate the current critic against the latest native RTG bank.
 
             This is an audit metric.  It never supplies an Actor target and it
@@ -446,8 +437,11 @@ def run(args, *, alternating=None):
             with torch.no_grad():
                 for part in inputs.split(128):
                     values.append(trainer.critic(part.to(device)).detach().cpu().reshape(-1))
-            error=torch.cat(values)-targets.detach().cpu().reshape(-1)
-            return dict(sample_count=int(error.numel()),mae=float(error.abs().mean()),
+            from quadsmash.rl.supermimic_paired_evaluation_v1 import native_critic_td
+            predictions=torch.cat(values)
+            td=native_critic_td(predictions,targets,native_value_bank['identity'],timebase.gamma)
+            error=predictions-targets.detach().cpu().reshape(-1)
+            return dict(td=td,sample_count=int(error.numel()),mae=float(error.abs().mean()),
                         rmse=float(error.square().mean().sqrt()),bias=float(error.mean()),
                         policy_id=native_value_bank.get('policy_id'),
                         actor_sha256=native_value_bank.get('actor_sha256'),
@@ -504,7 +498,7 @@ def run(args, *, alternating=None):
             if resumed['adapter_schema']!=adapter.schema or saved_contract!=current_contract:
                 raise ValueError('Resume physical model/execution source mismatch')
             actor.load_state_dict(resumed['actor'],strict=True);adapter.load_state_dict(resumed['world'],strict=True)
-            if resumed.get('reference_bank') is not None:
+            if reference_bank is None and resumed.get('reference_bank') is not None:
                 from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
                 trainer.reference_bank=TaskSpaceReferenceBankV1.from_payload(resumed['reference_bank']).to('cuda:0')
                 trainer.reference_bank.assert_excludes(wm_holdout_lanes)
@@ -578,10 +572,25 @@ def run(args, *, alternating=None):
                 runtime_validation_path=saved_validation['path']
                 runtime_validation_data=torch.load(runtime_validation_path,map_location='cpu',weights_only=True)['tensors']
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
+        if args.paired_evaluation_baseline is not None:
+            baseline_payload=json.loads(args.paired_evaluation_baseline.read_text())
+            if isinstance(baseline_payload,dict):
+                baseline_payload=baseline_payload.get('records',baseline_payload.get('episodes',baseline_payload))
+            if not isinstance(baseline_payload,list):
+                raise ValueError('Paired evaluation baseline must be a JSON record list or episodes_summary payload')
+            from quadsmash.rl.supermimic_paired_evaluation_v1 import verify_baseline
+            baseline_hash=tensor_digest(actor.state_dict().items())
+            verify_baseline(baseline_payload,baseline_hash,policy_execution)
+            paired_eval_snapshots['pre-update']=baseline_payload
+            paired_eval_actor_snapshots['pre-update']={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()}
+            write(paired_eval_dir/'pre-update.json',dict(schema='supermimic-paired-fixed-case-evaluation-v1',stage='pre-update',
+                actor_sha256=baseline_hash,case_count=len(baseline_payload),case_ids=sorted(str(row.get('case_id')) for row in baseline_payload),
+                records=baseline_payload,actor_parameter_delta={'available':False},
+                scope='fixed 128-case reference supplied by user'))
         from quadsmash.rl.supermimic_sequential_progress_v1 import SequentialProgress
-        schedule=SequentialProgress()
-        if args.resume_training and not args.resume_next_cycle and 'sequential_progress' in resumed:
-            schedule.load_state_dict(resumed['sequential_progress'])
+        schedule=SequentialProgress.for_run(resumed.get('sequential_progress') if args.resume_training else None,
+                                            fresh=args.resume_reset_schedule or args.resume_next_cycle)
+        if args.resume_training and not args.resume_next_cycle and not args.resume_reset_schedule:
             if alternating is None and schedule.complete():raise ValueError('Completed schedule requires explicit resume-next-cycle and native acceptance')
         if args.resume_training and not args.resume_next_cycle:
             saved_alternating=resumed.get('alternating_schedule')
@@ -1238,8 +1247,9 @@ def run(args, *, alternating=None):
             receipt_paired=None
             stage_name=paired_eval_previous_stage.get('stage_name')
             if stage_name is not None:
-                paired_eval_snapshots[stage_name]=native_records
-                paired_eval_actor_snapshots[stage_name]=paired_eval_previous_stage['actor_after']
+                snapshot_id=f'{stage_name}_{refresh_serial:02d}'
+                paired_eval_snapshots[snapshot_id]=native_records
+                paired_eval_actor_snapshots[snapshot_id]=paired_eval_previous_stage['actor_after']
             write(refresh_dir/'episodes_summary.json',native_records)
             cursor=len(env.rally_records) # these records belong to the frozen stream, not mixed monitoring
             receipt.update(start_tick=start_tick,end_tick=tick,actor_sha256=actor_hash,policy_execution=policy_execution,head=head,consumer_heads=list(consumer_heads),schedule_event_id=event_id,formal_evaluation=False,
@@ -1302,7 +1312,7 @@ def run(args, *, alternating=None):
             receipt['critic_stage_coverage']={str(t):dict(eligible=int((phase_ids==t).sum()),used=int(((phase_ids==t)&visited).sum())) for t in sorted(set(native_stage))}
             atomic_torch_save(dict(native_value_bank,stage=phase_ids),refresh_dir/'native_critic_labels.pt')
             if wm_holdout_lanes:
-                receipt['critic_holdout']={h:critic_holdout(trainer.critic,native_value_bank,h,wm_holdout_lanes,current_actor_sha256=actor_hash,current_execution=policy_execution,limits=dual_quality['critic_upper_bounds'][h]) for h in ('recovery','approach')}
+                receipt['critic_holdout']={h:critic_holdout(trainer.critic,native_value_bank,h,wm_holdout_lanes,current_actor_sha256=actor_hash,current_execution=policy_execution,limits=dual_quality['critic_upper_bounds'][h] if dual_quality is not None else None) for h in ('recovery','approach')}
             if trainer.reference_bank is not None:
                 from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
                 source_hash=hashlib.sha256((refresh_dir/'complete_episodes.pt').read_bytes()).hexdigest()
@@ -1328,6 +1338,7 @@ def run(args, *, alternating=None):
                 # The paired report is written after the refresh has produced
                 # its actual WM and Critic audit results.  Previously this was
                 # a path string and omitted the value diagnostics entirely.
+                critic_audit=paired_critic_audit()
                 paired=paired_evaluation(
                     paired_eval_snapshots[paired_eval_previous_stage['previous_stage']],native_records,
                     stage=stage_name,
@@ -1335,8 +1346,9 @@ def run(args, *, alternating=None):
                     actor_after=paired_eval_previous_stage['actor_after'],
                     action_before=paired_eval_previous_stage['action_before'],
                     action_after=paired_eval_previous_stage['action_after'],
-                    critic_td=receipt.get('critic_holdout') or paired_critic_td(),
+                    critic_td=critic_audit.get('td') if critic_audit else None,
                     wm_holdout=receipt.get('wm_quality'))
+                paired['critic_native_rtg_fit']=receipt.get('critic_holdout') or critic_audit
                 paired['comparison_from']=paired_eval_previous_stage['previous_stage']
                 paired['policy_id']=policy_id
                 paired['actor_sha256']=actor_hash

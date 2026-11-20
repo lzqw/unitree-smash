@@ -34,3 +34,37 @@ def test_paired_evaluation_requires_same_case_identity_and_reports_deltas():
 
 def test_parameter_delta_is_explicit_when_unavailable():
     assert parameter_delta(None, {'x': torch.ones(1)}) == {'available': False}
+
+
+def test_clean_resume_cannot_credit_completed_block_and_resume_still_restores_it():
+    from quadsmash.rl.supermimic_sequential_progress_v1 import SequentialProgress
+    old = SequentialProgress()
+    old.block('pair0', 'recovery', 8, 16).update(status='done', accepted=8, attempts=9)
+    for fresh, expected in ((False, 8), (True, 0)):
+        restored = SequentialProgress.for_run(old.state_dict(), fresh=fresh)
+        assert restored.block('pair0', 'recovery', 8, 16)['accepted'] == expected
+
+
+def test_paired_baseline_rejects_extra_cases_and_other_policy():
+    import pytest
+    from quadsmash.rl.supermimic_paired_evaluation_v1 import verify_baseline
+    before = [dict(row(i, True, True, True, True, 0.), actor_sha256='actor',
+                   policy_execution={'gate': 'native'}) for i in range(128)]
+    verify_baseline(before, 'actor', {'gate': 'native'})
+    with pytest.raises(ValueError, match='loaded actor'):
+        verify_baseline(before, 'another', {'gate': 'native'})
+    with pytest.raises(ValueError, match='128'):
+        paired_evaluation(before + before[:1], before, stage='repeat')
+    report = paired_evaluation(before, before, stage='scale', action_before={
+        'action': torch.zeros(2, 1), 'log_std': torch.zeros(1)}, action_after={
+        'action': torch.zeros(2, 1), 'log_std': torch.ones(1)})
+    expected = torch.distributions.kl_divergence(
+        torch.distributions.Normal(0., 1.), torch.distributions.Normal(0., torch.exp(torch.tensor(1.))))
+    assert abs(report['actor_kl'] - expected.item()) < 1e-6
+
+
+def test_native_td_pairs_adjacent_ticks_in_same_lane_and_episode():
+    from quadsmash.rl.supermimic_paired_evaluation_v1 import native_critic_td
+    identities = [(0, 0, 1), (0, 0, 2), (1, 0, 3), (0, 1, 3), (0, 0, 6)]
+    td = native_critic_td([2, 3, 0, 0, 0], [5, 4, 9, 9, 9], identities, .5)
+    assert td['sample_count'] == 1 and td['mae'] == 2.5

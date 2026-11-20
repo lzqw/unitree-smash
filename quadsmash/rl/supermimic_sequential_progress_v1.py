@@ -4,6 +4,13 @@ import copy
 class SequentialProgress:
     schema='sequential-proposal-progress-v1'
     def __init__(self):self.cycles={}
+    @classmethod
+    def for_run(cls, saved, *, fresh):
+        progress = cls()
+        if saved is not None and not fresh:
+            progress.load_state_dict(saved)
+        return progress
+
     def block(self,cycle,head,target,limit):
         key=f'{cycle}/{head}'
         if key not in self.cycles:self.cycles[key]=dict(target=target,limit=limit,attempts=0,accepted=0,rejected=0,backtracked=0,status='new',refresh_at=0,pending_refresh=False)

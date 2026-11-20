@@ -13,6 +13,15 @@ def _case_key(row):
     return str(row['case_id'])
 
 
+def verify_baseline(rows, actor_hash, execution):
+    if len(rows) != 128 or len({_case_key(row) for row in rows}) != 128:
+        raise ValueError('Expected exactly 128 unique baseline cases')
+    if any(row.get('actor_sha256') != actor_hash for row in rows):
+        raise ValueError('Baseline differs from loaded actor or lacks actor identity')
+    if any(row.get('policy_execution') != execution for row in rows):
+        raise ValueError('Baseline policy execution does not match this run')
+
+
 def failure_taxonomy(row):
     """Return mutually useful failure labels without dropping successes."""
     labels=[]
@@ -32,6 +41,32 @@ def _taxonomy(rows):
     counts=Counter()
     for row in rows: counts.update(failure_taxonomy(row))
     return dict(sorted(counts.items()))
+
+
+def native_critic_td(values, returns, identities, gamma):
+    """One-step Bellman residual on consecutive states within a frozen native episode."""
+    values = torch.as_tensor(values).detach().cpu().reshape(-1).double()
+    returns = torch.as_tensor(returns).detach().cpu().reshape(-1).double()
+    if len(values) != len(identities) or len(returns) != len(values):
+        raise ValueError('Critic audit requires aligned state, RTG and value rows')
+    by_state = {}
+    for i, identity in enumerate(identities):
+        key = tuple(map(int, identity))
+        if key in by_state:
+            prior = by_state[key]
+            if not (torch.isclose(values[prior], values[i]) and torch.isclose(returns[prior], returns[i])):
+                raise ValueError('Conflicting duplicate frozen state')
+        by_state[key] = i
+    pairs = [(i, by_state[(lane, ep, t+1)]) for (lane, ep, t), i in by_state.items()
+             if (lane, ep, t+1) in by_state]
+    if not pairs:
+        return dict(sample_count=0, available=False)
+    current, following = torch.tensor(pairs).T
+    reward = returns[current] - gamma * returns[following]
+    residual = reward + gamma * values[following] - values[current]
+    return dict(sample_count=len(pairs), available=True, gamma=gamma,
+                mae=float(residual.abs().mean()), rmse=float(residual.square().mean().sqrt()),
+                bias=float(residual.mean()), scope='adjacent observed frozen states; reward recovered from native RTG')
 
 
 def parameter_delta(before, after):
@@ -55,7 +90,7 @@ def paired_evaluation(pre, post, *, stage, actor_before=None, actor_after=None,
                       wm_holdout=None):
     """Compare two records for exactly the same fixed case identities."""
     pre_map={_case_key(row):row for row in pre};post_map={_case_key(row):row for row in post}
-    if len(pre_map)!=128 or len(post_map)!=128 or set(pre_map)!=set(post_map):
+    if len(pre)!=128 or len(post)!=128 or len(pre_map)!=128 or len(post_map)!=128 or set(pre_map)!=set(post_map):
         raise ValueError('Paired evaluation requires the same 128 unique case ids')
     before=[pre_map[key] for key in sorted(pre_map)]
     after=[post_map[key] for key in sorted(post_map)]
@@ -95,12 +130,18 @@ def paired_evaluation(pre, post, *, stage, actor_before=None, actor_after=None,
         result['action_rms']=float(delta.square().mean().sqrt())
         if (isinstance(action_before,dict) and isinstance(action_after,dict)
                 and action_before.get('log_std') is not None and action_after.get('log_std') is not None):
+            if ((action_before.get('clipped_action') and (a.abs() >= 1).any()) or
+                    (action_after.get('clipped_action') and (b.abs() >= 1).any())):
+                result['actor_kl_available'] = False
+                result['actor_kl_reason'] = 'clipped means cannot identify Gaussian KL'
+                return result
             mu0,mu1=a,b
             log0=torch.as_tensor(action_before['log_std']).float().reshape(1,-1)
             log1=torch.as_tensor(action_after['log_std']).float().reshape(1,-1)
             var0, var1=(2.*log0).exp(),(2.*log1).exp()
-            result['actor_kl']=float(.5*(log1-log0+(var0+(mu0-mu1).square())/var1-1.).mean())
+            result['actor_kl']=float(.5*(2*(log1-log0)+(var0+(mu0-mu1).square())/var1-1.).mean())
             result['actor_kl_available']=True
+            result['actor_kl_scope']='pre-clamp diagonal Gaussian KL, mean per action dimension'
         else:
             result['actor_kl_available']=False
     else:
