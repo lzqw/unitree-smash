@@ -575,8 +575,13 @@ def _assign_splits(rows: list[dict], seed: int) -> dict:
         for key in ordered:
             if any(row.get("spec_id") == holdout_spec for row in groups[key]):
                 assignment[key] = "test"
+    source_assignment = {}
+    for group_key, group_rows in groups.items():
+        split_name = assignment[group_key]
+        for row in group_rows:
+            source_assignment[row.get("source_sha256", "unknown")] = split_name
     for row in rows:
-        row["split"] = assignment.get(row.get("source_sha256"), "train")
+        row["split"] = source_assignment.get(row.get("source_sha256", "unknown"), "train")
     split_sources = {name: {row.get("source_sha256") for row in rows if row["split"] == name}
                      for name in split_names}
     overlap = {f"{left}:{right}": sorted(split_sources[left] & split_sources[right])
