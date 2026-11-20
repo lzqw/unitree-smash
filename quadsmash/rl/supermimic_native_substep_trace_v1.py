@@ -102,6 +102,23 @@ class NativeSubstepTraceV1:
         tensors = {k: v[:self.count].clone() for k, v in self.buffers.items()}
         # Undefined contact positions are retained; zero is never substituted.
         tensors['racket_contact_position_valid'] = torch.isfinite(tensors['racket_contact_position_w']).all(-1)
+        body_names = getattr(getattr(self.env.robot, 'data', None), 'body_names', None)
+        if body_names is None:
+            body_names = getattr(self.env.robot, 'body_names', None)
+        racket_body_name = None
+        if body_names is not None and self.env.racket_body_id < len(body_names):
+            racket_body_name = str(body_names[self.env.racket_body_id])
+        filter_paths = getattr(getattr(getattr(self.env, 'shuttle_contact', None), 'cfg', None),
+                               'filter_prim_paths', None)
+        contact_metadata = {
+            'racket_body_id': int(self.env.racket_body_id),
+            'racket_body_name': racket_body_name,
+            'filter_prim_paths': None if filter_paths is None else [str(path) for path in filter_paths],
+            'racket_filter_index': 0,
+            'ground_filter_index': 1,
+            'normal_source': 'not_exposed_by_isaaclab_contact_sensor',
+        }
         return dict(schema=self.schema, count=self.count, physics_dt_s=float(self.env.physics_dt),
                     start_frame=self.start_frame, end_frame=int(frames[-1]), tensors=tensors,
+                    contact_metadata=contact_metadata,
                     scope='observed consumed native frames; no object-tree snapshots or extra event updates')

@@ -37,6 +37,7 @@ PILOT_FIELDS = (
     "contact_slot_count", "contact_slot_indices", "slot_impulse_ns", "gap_source",
     "contact_region", "contact_grid", "toi_phase", "contact_count_substeps",
     "physics_dt_s", "quality_flags", "bucket", "interference_object",
+    "contact_filter_paths", "racket_part_source",
 )
 
 
@@ -277,6 +278,11 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
     net_touching = net_force.norm(dim=-1) > force_threshold
     records: list[dict] = []
     source_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+    contact_metadata = trace.get("contact_metadata", {})
+    filter_paths = contact_metadata.get("filter_prim_paths")
+    racket_body_name = contact_metadata.get("racket_body_name")
+    racket_part = racket_body_name or "unknown"
+    racket_part_source = ("native_contact_metadata" if racket_body_name else "unavailable_in_archive")
     source_meta = [_source_metadata(path, source_hash, lane) for lane in range(lanes)]
     sensitivity: dict[str, dict[str, int]] = {}
     for threshold in sensitivity_thresholds:
@@ -331,7 +337,7 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 relative_velocity_w=relative.tolist(), impulse_ns=impulse.tolist(),
                 normal_impulse_ns=normal_impulse, tangential_impulse_ns=tangent_impulse.tolist(),
                 penetration_m=max(0., -gap), contact_order=order,
-                effective_mass_kg=mass, racket_part="unknown",
+                effective_mass_kg=mass, racket_part=racket_part,
                 contact_region=region, contact_grid=grid, toi_phase=int((start % 160) / 40),
                 ball_state_before=_frame_state(tensors, before, lane),
                 ball_state_after=_frame_state(tensors, after, lane),
@@ -341,7 +347,7 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 toi_post_substep=_frame_state(tensors, after, lane),
                 outgoing_direction_w=(ball[after, lane, 7:10] / ball[after, lane, 7:10].norm().clamp_min(1e-12)).tolist(),
                 outgoing_speed_mps=float(ball[after, lane, 7:10].norm()),
-                quality_flags=["native_substep_force_integrated", "racket_part_unavailable"],
+                quality_flags=["native_substep_force_integrated"] + (["racket_part_unavailable"] if not racket_body_name else []),
                 normal_source="racket_force_direction_proxy",
                 impulse_source="integrated_contact_force_matrix",
                 effective_mass_source="inferred_from_normal_impulse_and_relative_speed",
@@ -357,6 +363,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                 approach_speed_mps=max(0., -vn), relative_speed_mps=float(relative.norm()),
                 gap_bucket=_gap_bucket(gap),
                 physics_dt_s=dt,
+                contact_filter_paths=filter_paths,
+                racket_part_source=racket_part_source,
                 **metadata,
             )
             row["bucket"] = _bucket(row)
@@ -389,7 +397,7 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                        relative_velocity_w=relative.tolist(), impulse_ns=[0.] * 3,
                        normal_impulse_ns=0., tangential_impulse_ns=[0.] * 3,
                        penetration_m=0., contact_order=0, effective_mass_kg=float("nan"),
-                       racket_part="unknown", contact_region="near_miss",
+                           racket_part=racket_part, contact_region="near_miss",
                        contact_grid=None, toi_phase=int((center % 160) / 40),
                        ball_state_before=_frame_state(tensors, max(0, center - 1), lane),
                        ball_state_after=_frame_state(tensors, min(frames - 1, center + 1), lane),
@@ -412,6 +420,8 @@ def _trace_candidates(path: Path, force_threshold: float, near_miss_radius: int,
                        gap_source="analytic_racket_geometry",
                        approach_speed_mps=max(0., -vn), relative_speed_mps=float(relative.norm()),
                        gap_bucket=_gap_bucket(gap), physics_dt_s=dt,
+                           contact_filter_paths=filter_paths,
+                           racket_part_source=racket_part_source,
                        **metadata)
             row["bucket"] = ":".join(("near_miss", interference, str(row["toi_phase"]),
                                         row["gap_bucket"], _approach_bucket(max(0., -vn))))
