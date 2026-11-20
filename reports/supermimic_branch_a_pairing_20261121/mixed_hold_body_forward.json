@@ -1,0 +1,600 @@
+{
+  "scope": "held executed-command sequences, common nominal ball trajectory; six arm joints use the offline PD prior; pre-intervention hold age lower bound zero",
+  "rows": 12,
+  "lanes": [
+    96,
+    99,
+    102,
+    115,
+    114,
+    125,
+    98,
+    111,
+    112,
+    126,
+    121,
+    127
+  ],
+  "models": {
+    "mixed_body": {
+      "1": {
+        "position": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.00010043834481621161,
+          "gain_median": 0.6117827296257019,
+          "gain_p10": 0.049399346113204956,
+          "cosine_median": 0.8219490051269531,
+          "cosine_p10": -0.23918326199054718
+        },
+        "velocity": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0119503578171134,
+          "gain_median": 0.653172492980957,
+          "gain_p10": 0.04494113475084305,
+          "cosine_median": 0.939008355140686,
+          "cosine_p10": 0.006507749203592539
+        },
+        "normal": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0002639844606164843,
+          "gain_median": 0.927489161491394,
+          "gain_p10": 0.08335047960281372,
+          "cosine_median": 0.9876447916030884,
+          "cosine_p10": -0.930728018283844
+        },
+        "angular": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.03786997124552727,
+          "gain_median": 0.8793211579322815,
+          "gain_p10": 0.0438382662832737,
+          "cosine_median": 0.9508562088012695,
+          "cosine_p10": -0.437339186668396
+        }
+      },
+      "2": {
+        "position": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.00020769820548593998,
+          "gain_median": 0.8064903616905212,
+          "gain_p10": 0.05194079875946045,
+          "cosine_median": 0.9724003076553345,
+          "cosine_p10": 0.30438166856765747
+        },
+        "velocity": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.01038078311830759,
+          "gain_median": 0.9535267353057861,
+          "gain_p10": 0.07233303785324097,
+          "cosine_median": 0.9571824669837952,
+          "cosine_p10": 0.6548771262168884
+        },
+        "normal": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0005305907689034939,
+          "gain_median": 0.9587135314941406,
+          "gain_p10": 0.09653466939926147,
+          "cosine_median": 0.9933561086654663,
+          "cosine_p10": -0.8882269859313965
+        },
+        "angular": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.03226908668875694,
+          "gain_median": 0.8419725894927979,
+          "gain_p10": 0.052006859332323074,
+          "cosine_median": 0.9441299438476562,
+          "cosine_p10": -0.24048855900764465
+        }
+      },
+      "3": {
+        "position": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0002933203359134495,
+          "gain_median": 0.8926527500152588,
+          "gain_p10": 0.06482952833175659,
+          "cosine_median": 0.9815835356712341,
+          "cosine_p10": 0.7896414399147034
+        },
+        "velocity": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.009018022567033768,
+          "gain_median": 0.9933021068572998,
+          "gain_p10": 0.15037578344345093,
+          "cosine_median": 0.9582203030586243,
+          "cosine_p10": 0.8294920325279236
+        },
+        "normal": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0007568333530798554,
+          "gain_median": 0.8619927167892456,
+          "gain_p10": 0.09302927553653717,
+          "cosine_median": 0.9977455139160156,
+          "cosine_p10": -0.39893636107444763
+        },
+        "angular": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.026050154119729996,
+          "gain_median": 0.6686162948608398,
+          "gain_p10": 0.12544457614421844,
+          "cosine_median": 0.971599817276001,
+          "cosine_p10": 0.8926188349723816
+        }
+      },
+      "4": {
+        "position": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.00035917232162319124,
+          "gain_median": 0.921157956123352,
+          "gain_p10": 0.08842701464891434,
+          "cosine_median": 0.978559136390686,
+          "cosine_p10": 0.9361790418624878
+        },
+        "velocity": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.008180421777069569,
+          "gain_median": 0.9212704300880432,
+          "gain_p10": 0.25905415415763855,
+          "cosine_median": 0.9728768467903137,
+          "cosine_p10": 0.8164389133453369
+        },
+        "normal": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0009422576986253262,
+          "gain_median": 0.7529504895210266,
+          "gain_p10": 0.07070663571357727,
+          "cosine_median": 0.9946363568305969,
+          "cosine_p10": 0.7780352830886841
+        },
+        "angular": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.02164892479777336,
+          "gain_median": 0.6872242093086243,
+          "gain_p10": 0.24899375438690186,
+          "cosine_median": 0.9549497365951538,
+          "cosine_p10": 0.8154271245002747
+        }
+      },
+      "5": {
+        "position": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0003301673859823495,
+          "gain_median": 0.8817910552024841,
+          "gain_p10": 0.15084415674209595,
+          "cosine_median": 0.9841666221618652,
+          "cosine_p10": 0.9329816699028015
+        },
+        "velocity": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.01700388640165329,
+          "gain_median": 0.6145045161247253,
+          "gain_p10": 0.1981818526983261,
+          "cosine_median": -0.5604439973831177,
+          "cosine_p10": -0.862725019454956
+        },
+        "normal": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.000890953466296196,
+          "gain_median": 0.6847262382507324,
+          "gain_p10": 0.12630057334899902,
+          "cosine_median": 0.9912537932395935,
+          "cosine_p10": 0.9711169004440308
+        },
+        "angular": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.040776900947093964,
+          "gain_median": 0.7040369510650635,
+          "gain_p10": 0.3471943438053131,
+          "cosine_median": 0.24061575531959534,
+          "cosine_p10": -0.9572455883026123
+        }
+      }
+    },
+    "mixed_body_with_pd_arm": {
+      "1": {
+        "position": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 7.799291051924229e-05,
+          "gain_median": 0.704629123210907,
+          "gain_p10": 0.4406315088272095,
+          "cosine_median": 0.9778605103492737,
+          "cosine_p10": 0.21240684390068054
+        },
+        "velocity": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.01352296955883503,
+          "gain_median": 1.1139721870422363,
+          "gain_p10": 0.8191985487937927,
+          "cosine_median": 0.9530064463615417,
+          "cosine_p10": 0.7576161026954651
+        },
+        "normal": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.00016743954620324075,
+          "gain_median": 0.6554195880889893,
+          "gain_p10": 0.49242812395095825,
+          "cosine_median": 0.9877398610115051,
+          "cosine_p10": -0.5309724807739258
+        },
+        "angular": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.01700284145772457,
+          "gain_median": 1.0566504001617432,
+          "gain_p10": 0.8619813919067383,
+          "cosine_median": 0.9975868463516235,
+          "cosine_p10": 0.4465367794036865
+        }
+      },
+      "2": {
+        "position": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.00016522686928510666,
+          "gain_median": 0.8355585932731628,
+          "gain_p10": 0.5706579089164734,
+          "cosine_median": 0.939146101474762,
+          "cosine_p10": 0.686953604221344
+        },
+        "velocity": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.007076168432831764,
+          "gain_median": 1.2282702922821045,
+          "gain_p10": 0.8089725971221924,
+          "cosine_median": 0.9477447271347046,
+          "cosine_p10": 0.9275804162025452
+        },
+        "normal": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.00021792911866214126,
+          "gain_median": 0.8384284377098083,
+          "gain_p10": 0.7044638991355896,
+          "cosine_median": 0.9985485672950745,
+          "cosine_p10": -0.19261740148067474
+        },
+        "angular": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.009559821337461472,
+          "gain_median": 0.9753257632255554,
+          "gain_p10": 0.8143574595451355,
+          "cosine_median": 0.9945535659790039,
+          "cosine_p10": 0.9719485640525818
+        }
+      },
+      "3": {
+        "position": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.00019698416872415692,
+          "gain_median": 0.8402799963951111,
+          "gain_p10": 0.7344403266906738,
+          "cosine_median": 0.9529814720153809,
+          "cosine_p10": 0.8515846133232117
+        },
+        "velocity": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.008833374828100204,
+          "gain_median": 0.9749394655227661,
+          "gain_p10": 0.5807445049285889,
+          "cosine_median": 0.9458034634590149,
+          "cosine_p10": 0.6747819781303406
+        },
+        "normal": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.00025346269831061363,
+          "gain_median": 0.8795650005340576,
+          "gain_p10": 0.7626523971557617,
+          "cosine_median": 0.9982905983924866,
+          "cosine_p10": 0.7282416820526123
+        },
+        "angular": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.009162599220871925,
+          "gain_median": 0.9156766533851624,
+          "gain_p10": 0.8100773096084595,
+          "cosine_median": 0.9945365190505981,
+          "cosine_p10": 0.9735798835754395
+        }
+      },
+      "4": {
+        "position": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0002324308588868007,
+          "gain_median": 1.0101568698883057,
+          "gain_p10": 0.6058071255683899,
+          "cosine_median": 0.9600910544395447,
+          "cosine_p10": 0.8788191676139832
+        },
+        "velocity": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.011949124746024609,
+          "gain_median": 0.8476278781890869,
+          "gain_p10": 0.2723771631717682,
+          "cosine_median": 0.9302103519439697,
+          "cosine_p10": 0.18967075645923615
+        },
+        "normal": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0002832605387084186,
+          "gain_median": 0.8559808731079102,
+          "gain_p10": 0.6681351661682129,
+          "cosine_median": 0.997048556804657,
+          "cosine_p10": 0.9204760193824768
+        },
+        "angular": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.011752964928746223,
+          "gain_median": 0.8344928622245789,
+          "gain_p10": 0.6682980060577393,
+          "cosine_median": 0.9650440216064453,
+          "cosine_p10": 0.943996787071228
+        }
+      },
+      "5": {
+        "position": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0002954761730507016,
+          "gain_median": 0.7967355251312256,
+          "gain_p10": 0.43120601773262024,
+          "cosine_median": 0.9522730708122253,
+          "cosine_p10": 0.9034507274627686
+        },
+        "velocity": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.030902624130249023,
+          "gain_median": 1.668304443359375,
+          "gain_p10": 0.21398667991161346,
+          "cosine_median": -0.7429264783859253,
+          "cosine_p10": -0.9401114583015442
+        },
+        "normal": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.0002546033647377044,
+          "gain_median": 0.9029186964035034,
+          "gain_p10": 0.8419452905654907,
+          "cosine_median": 0.9946083426475525,
+          "cosine_p10": 0.9594908356666565
+        },
+        "angular": {
+          "rows": 12,
+          "supported": 12,
+          "absolute_rmse": 0.04642710089683533,
+          "gain_median": 1.1874668598175049,
+          "gain_p10": 0.39278438687324524,
+          "cosine_median": 0.7033788561820984,
+          "cosine_p10": -0.12067814916372299
+        }
+      }
+    }
+  },
+  "natural_forward": {
+    "windows": 320,
+    "held_lanes": [
+      14,
+      15,
+      16,
+      17,
+      21,
+      34,
+      37,
+      38,
+      39,
+      40,
+      41,
+      44,
+      46,
+      53,
+      57,
+      62,
+      73,
+      76,
+      81,
+      84,
+      85,
+      86,
+      87,
+      89,
+      90,
+      94,
+      97,
+      107,
+      114,
+      116,
+      123,
+      125
+    ],
+    "horizons": {
+      "mixed_body": {
+        "1": {
+          "body_rmse": 0.4455215036869049,
+          "root_angular_mae": 0.06577051430940628,
+          "racket_position_mae": 0.0005950574413873255,
+          "racket_velocity_mae": 0.059809837490320206,
+          "racket_normal_mae": 0.0009839151753112674,
+          "racket_angular_mae": 0.1272192746400833,
+          "ball_velocity_mae": 0.03609617426991463,
+          "ball_position_p95": 0.002223006449639797
+        },
+        "2": {
+          "body_rmse": 0.5751780271530151,
+          "root_angular_mae": 0.08875824511051178,
+          "racket_position_mae": 0.0012900338042527437,
+          "racket_velocity_mae": 0.08810590952634811,
+          "racket_normal_mae": 0.0020740607287734747,
+          "racket_angular_mae": 0.17491275072097778,
+          "ball_velocity_mae": 0.05816438049077988,
+          "ball_position_p95": 0.00685645267367363
+        },
+        "4": {
+          "body_rmse": 0.5350335240364075,
+          "root_angular_mae": 0.11503048241138458,
+          "racket_position_mae": 0.0026790164411067963,
+          "racket_velocity_mae": 0.11416638642549515,
+          "racket_normal_mae": 0.004016300663352013,
+          "racket_angular_mae": 0.20317865908145905,
+          "ball_velocity_mae": 0.07852461189031601,
+          "ball_position_p95": 0.02047818899154663
+        },
+        "8": {
+          "body_rmse": 0.6934345960617065,
+          "root_angular_mae": 0.13954761624336243,
+          "racket_position_mae": 0.005184801761060953,
+          "racket_velocity_mae": 0.12445946782827377,
+          "racket_normal_mae": 0.007426476571708918,
+          "racket_angular_mae": 0.21564242243766785,
+          "ball_velocity_mae": 0.11424514651298523,
+          "ball_position_p95": 0.054463647305965424
+        },
+        "16": {
+          "body_rmse": 0.5612570643424988,
+          "root_angular_mae": 0.12770910561084747,
+          "racket_position_mae": 0.010421132668852806,
+          "racket_velocity_mae": 0.13368535041809082,
+          "racket_normal_mae": 0.01195764634758234,
+          "racket_angular_mae": 0.21915613114833832,
+          "ball_velocity_mae": 0.13714994490146637,
+          "ball_position_p95": 0.14707598090171814
+        },
+        "32": {
+          "body_rmse": 0.4229273796081543,
+          "root_angular_mae": 0.1375194489955902,
+          "racket_position_mae": 0.019504304975271225,
+          "racket_velocity_mae": 0.13453935086727142,
+          "racket_normal_mae": 0.02074206992983818,
+          "racket_angular_mae": 0.21988575160503387,
+          "ball_velocity_mae": 0.3313134014606476,
+          "ball_position_p95": 0.5194870829582214
+        },
+        "64": {
+          "body_rmse": 0.504366397857666,
+          "root_angular_mae": 0.1538635641336441,
+          "racket_position_mae": 0.031134065240621567,
+          "racket_velocity_mae": 0.1459399312734604,
+          "racket_normal_mae": 0.03397587686777115,
+          "racket_angular_mae": 0.21613925695419312,
+          "ball_velocity_mae": 0.5262640714645386,
+          "ball_position_p95": 1.7745442390441895
+        }
+      },
+      "mixed_body_with_pd_arm": {
+        "1": {
+          "body_rmse": 0.44522595405578613,
+          "root_angular_mae": 0.06577051430940628,
+          "racket_position_mae": 0.0006932059768587351,
+          "racket_velocity_mae": 0.08552452176809311,
+          "racket_normal_mae": 0.0007993588806129992,
+          "racket_angular_mae": 0.12021990120410919,
+          "ball_velocity_mae": 0.03609617426991463,
+          "ball_position_p95": 0.002223006449639797
+        },
+        "2": {
+          "body_rmse": 0.5731661319732666,
+          "root_angular_mae": 0.09017257392406464,
+          "racket_position_mae": 0.0016540158540010452,
+          "racket_velocity_mae": 0.13776542246341705,
+          "racket_normal_mae": 0.0019979143980890512,
+          "racket_angular_mae": 0.1925167739391327,
+          "ball_velocity_mae": 0.058164920657873154,
+          "ball_position_p95": 0.006794318091124296
+        },
+        "4": {
+          "body_rmse": 0.5376185774803162,
+          "root_angular_mae": 0.12013425678014755,
+          "racket_position_mae": 0.004413212649524212,
+          "racket_velocity_mae": 0.17627137899398804,
+          "racket_normal_mae": 0.005162112880498171,
+          "racket_angular_mae": 0.2555979788303375,
+          "ball_velocity_mae": 0.07869506627321243,
+          "ball_position_p95": 0.021773412823677063
+        },
+        "8": {
+          "body_rmse": 0.7127736210823059,
+          "root_angular_mae": 0.1608702838420868,
+          "racket_position_mae": 0.010346705093979836,
+          "racket_velocity_mae": 0.2103714495897293,
+          "racket_normal_mae": 0.011534814722836018,
+          "racket_angular_mae": 0.29149165749549866,
+          "ball_velocity_mae": 0.11638341099023819,
+          "ball_position_p95": 0.05706609785556793
+        },
+        "16": {
+          "body_rmse": 0.5982221961021423,
+          "root_angular_mae": 0.15893547236919403,
+          "racket_position_mae": 0.019276466220617294,
+          "racket_velocity_mae": 0.24350401759147644,
+          "racket_normal_mae": 0.02037671022117138,
+          "racket_angular_mae": 0.30360451340675354,
+          "ball_velocity_mae": 0.1380474716424942,
+          "ball_position_p95": 0.15604452788829803
+        },
+        "32": {
+          "body_rmse": 0.4360322058200836,
+          "root_angular_mae": 0.1668555736541748,
+          "racket_position_mae": 0.03446054458618164,
+          "racket_velocity_mae": 0.20895250141620636,
+          "racket_normal_mae": 0.03080620802938938,
+          "racket_angular_mae": 0.26617637276649475,
+          "ball_velocity_mae": 0.3312676250934601,
+          "ball_position_p95": 0.5249195098876953
+        },
+        "64": {
+          "body_rmse": 0.5358250737190247,
+          "root_angular_mae": 0.19377201795578003,
+          "racket_position_mae": 0.05270804837346077,
+          "racket_velocity_mae": 0.26894375681877136,
+          "racket_normal_mae": 0.044011712074279785,
+          "racket_angular_mae": 0.33947721123695374,
+          "ball_velocity_mae": 0.5356963872909546,
+          "ball_position_p95": 1.844818353652954
+        }
+      }
+    },
+    "source_sha256": {
+      "ball": "6b535a671251a626810446e887f8cbdd1f2f6959ef6a37df563387dbbdd28aa9",
+      "packed": "03463185ebcb5a211e0ee458edee10a1e577fbdd5f17c59934f7fae6a89a4295",
+      "validation_split": "d15006f1e060c2185a1f0365548f1bc957fb19f6e6c4650738ed4cc59dbff2c5"
+    }
+  },
+  "actor_updates": 0,
+  "contact_bptt_admitted": false,
+  "sources": {
+    "body": "fc1ee68fbfcdefe95be0cec6812c4516f156d4e8d6b3b3836c07374f8967327d",
+    "actuator": "27c526aba1b33396c61ec0ec0bca7fe6adf39c9b16786bbd2153a0bcb62d9b2b",
+    "drive": "9e0406f1d7bb6a1a56fb4155f3ff55705aa91019097f4fb083c51ede3009522e",
+    "dataset": "57d4b73bcb9ce5c21801c0311bf6b964dd6de7728f9af47d24141a936981c7d9"
+  }
+}

@@ -28,6 +28,8 @@ class PairedMaterialFit:
         self.native=torch.tensor([r['delta']['native'] for r in rows])
         self.repeat=torch.tensor([r['repeat']['native'] for r in rows])
         self.stable=torch.tensor([r['kind']=='racket_stable' for r in rows])
+        self.mobility=None
+        self.shuttle_mass=None
         self.streams={}
         self.spins={}
         seeds=sorted({r['seed'] for r in rows})
@@ -43,10 +45,11 @@ class PairedMaterialFit:
         absolute=[]
         for b,batch in self.streams.items():
             ys=[]
-            for (initial,outgoing,stream),spin in zip(batch,self.spins[b],strict=True):
+            for i,((initial,outgoing,stream),spin) in enumerate(zip(batch,self.spins[b],strict=True)):
                 ball,_=tick(self.prior,initial,[v[0] for v in stream],[v[-1] for v in stream],
                     self.settings['fitted'],self.settings['solver']['pair_contact_offset_m'],
-                    measured_path=[v[:-1] for v in stream],racket_material=table,initial_spin=spin,compound_racket=True)
+                    measured_path=[v[:-1] for v in stream],racket_material=table,initial_spin=spin,compound_racket=True,
+                    local_mobility=self.mobility[i] if self.mobility is not None else None,shuttle_mass=self.shuttle_mass)
                 ys.append(ball[:,3:])
                 absolute.append(ball[:,3:]-outgoing)
             predicted[b]=torch.cat(ys)

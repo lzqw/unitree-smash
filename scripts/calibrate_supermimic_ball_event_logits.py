@@ -7,6 +7,7 @@ from pathlib import Path
 import torch
 
 from fit_supermimic_mixed_body_rollout import digest
+from quadsmash.rl.supermimic_evidence_binding_v1 import json_sha
 from quadsmash.rl.supermimic_ball_residual_v1 import ball_geometry_features
 from quadsmash.rl.supermimic_ball_residual_v2 import BallResidualV2, RacketSweepSupportedBallV2
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
@@ -50,6 +51,63 @@ def fit_racket_readout(sets, hidden, slope, bias):
         row_change_l2=float(adjustment.detach().norm()))
 
 
+def frozen_training_source(folder, task):
+    manifest = json.loads((folder/'manifest.json').read_text())
+    identity = json.loads((folder.parent/'loaded_runtime_identity.json').read_text())['identity']
+    path = folder/'complete_episodes.pt'
+    labels = torch.load(folder/'native_critic_labels.pt', map_location='cpu', weights_only=True, mmap=True)
+    checksum = digest(path)
+    if (identity['task_contract_sha256'] != json_sha(task) or identity['policy_execution'] != manifest['policy_execution']
+            or manifest['actor_unchanged'] is not True or manifest['formal_evaluation'] is not False
+            or checksum != labels['source_sha256']):
+        raise ValueError(f'Incompatible frozen training collection in {folder}')
+    archive = torch.load(path, map_location='cpu', weights_only=True, mmap=True)
+    receipt = archive['receipt']
+    if (any(receipt[k] != manifest[k] for k in receipt)
+            or any(labels[k] != receipt[k] for k in ('policy_id','actor_sha256','policy_execution'))
+            or archive['policy_id'] != receipt['policy_id']):
+        raise ValueError(f'Frozen collection identities disagree in {folder}')
+    suite = Path(task['suite']['path'])
+    if not suite.is_absolute():
+        suite = Path(__file__).resolve().parents[1]/suite
+    if digest(suite) != task['suite']['sha256']:
+        raise ValueError('Training case suite has changed')
+    cases = json.loads(suite.read_text())['cases']
+    episodes = json.loads((folder/'episodes_summary.json').read_text())
+    data = archive['tensors']
+    lengths = data['valid_lengths']
+    if (len(cases) != len(lengths) or manifest['complete_episodes'] != len(lengths)
+            or lengths.tolist() != receipt['lengths'] or not ((lengths > 0) & (lengths <= len(data['state']))).all()
+            or sorted(row['env_id'] for row in episodes) != list(range(len(lengths)))):
+        raise ValueError('Incomplete or duplicated frozen lane identities')
+    for row in episodes:
+        lane = row['env_id']
+        if (row['case_id'] != cases[lane]['case_id'] or row['episode_index'] != receipt['episode_ids'][lane]
+                or not (data['episode'][:lengths[lane],lane] == row['episode_index']).all()):
+            raise ValueError('Frozen episode and fixed case identities disagree')
+    return data, dict(path=str(path), sha256=checksum, policy_id=receipt['policy_id'],
+                      actor_sha256=receipt['actor_sha256'], suite_sha256=task['suite']['sha256'])
+
+
+def training_groups(data, lanes):
+    edge=data['next_event_state'][...,1]>data['event_state'][...,1]
+    frame=data['next_event_state'][...,6]>data['event_state'][...,6]
+    hit=edge|frame
+    valid=data['present'].bool() & ~(data['terminated']|data['timeout'])
+    eligible=torch.zeros_like(valid)
+    eligible[:,lanes]=True
+    valid &= eligible
+    same=data['episode'][1:]==data['episode'][:-1]
+    pre=torch.zeros_like(hit);pre[:-1]=same & hit[1:] & ~hit[:-1]
+    post=torch.zeros_like(hit);post[1:]=same & hit[:-1] & ~hit[1:]
+    if 'valid_lengths' in data:
+        inside = torch.arange(len(hit))[:, None] < data['valid_lengths'][None, :]
+        valid &= inside
+        pre[:-1] &= inside[1:]
+        post[1:] &= inside[:-1]
+    return {k:valid & v for k,v in {'pre':pre,'edge':hit,'post':post,'ordinary':~(pre|hit|post)}.items()}
+
+
 @torch.no_grad()
 def main():
     cli = argparse.ArgumentParser(description=__doc__)
@@ -59,6 +117,8 @@ def main():
                      help='Fit the existing racket logit row on measured deviations, including difficult pre-contact frames')
     cli.add_argument('--fit-swept-support', action='store_true',
                      help='Calibrate a causal racket-only geometric support on the same training lanes')
+    cli.add_argument('--frozen-refresh', action='append', default=[], type=Path,
+                     help='Complete scored frozen training collection from the same case suite (repeatable)')
     a=cli.parse_args()
     torch.set_num_threads(3)
     body=torch.load(a.body,map_location='cpu',weights_only=True)
@@ -81,42 +141,45 @@ def main():
     lanes=meta['train_lanes']
     if not lanes or set(lanes)&set(meta['excluded_lanes']):
         raise ValueError('Invalid training lanes')
-    edge=data['next_event_state'][...,1]>data['event_state'][...,1]
-    frame=data['next_event_state'][...,6]>data['event_state'][...,6]
-    hit=edge|frame
-    valid=data['present'].bool() & ~(data['terminated']|data['timeout'])
-    eligible=torch.zeros_like(valid)
-    eligible[:,lanes]=True
-    valid &= eligible
-    same=data['episode'][1:]==data['episode'][:-1]
-    pre=torch.zeros_like(hit);pre[:-1]=same & hit[1:] & ~hit[:-1]
-    post=torch.zeros_like(hit);post[1:]=same & hit[:-1] & ~hit[1:]
-    groups={'pre':pre,'edge':hit,'post':post,'ordinary':~(pre|hit|post)}
+    sources=[(data,dict(path=str(a.packed),sha256=meta['packed_sha256'],source='initial'))]
+    checksums={meta['packed_sha256']}
+    for folder in a.frozen_refresh:
+        tensors, info = frozen_training_source(folder,task)
+        if info['sha256'] in checksums:
+            raise ValueError('Duplicate calibration source')
+        checksums.add(info['sha256'])
+        sources.append((tensors,dict(info,source='frozen_refresh')))
     sets={}
     hidden={}
     generator=torch.Generator().manual_seed(20261121)
-    for name,mask in groups.items():
-        indices=(valid & mask).nonzero()
-        if name=='ordinary':
-            indices=indices[torch.randperm(len(indices),generator=generator)[:4096]]
-        if not len(indices):raise ValueError('Missing measured training events in '+name)
-        gap_batches=[]
-        joined=[]
-        encoded=[]
-        for batch in indices.split(256):
-            t,l=batch.T
-            state=data['state'][t,l].to(device)
-            geometry=ball_geometry_features(state,world.geometry)
-            if sweep is not None:
-                gap_batches.append(sweep.min_racket_gap(geometry))
-            features=ball.normalized(geometry)
-            representation=ball.gate.net[:-1](features)
-            logits=ball.gate.net[-1](representation)
-            encoded.append(representation)
-            response=(ball.response(features).reshape(-1,4,6)*ball.residual_scale)[:,:,3:]
-            _,free_v=world.flight(state[:,49:52],state[:,52:55])
-            target=data['next_state'][t,l,52:55].to(device)-free_v
-            joined.append((logits,response,target))
+    collected={name:([],[],[]) for name in ('ordinary','edge','pre','post')}
+    for data, info in sources:
+        info['samples']={}
+        for name, mask in training_groups(data,lanes).items():
+            indices=mask.nonzero()
+            if name=='ordinary':
+                indices=indices[torch.randperm(len(indices),generator=generator)[:4096]]
+            info['samples'][name]=len(indices)
+            joined, encoded, gap_batches=collected[name]
+            for batch in indices.split(256):
+                if not len(batch):
+                    continue
+                t,l=batch.T
+                state=data['state'][t,l].to(device)
+                geometry=ball_geometry_features(state,world.geometry)
+                if sweep is not None:
+                    gap_batches.append(sweep.min_racket_gap(geometry))
+                features=ball.normalized(geometry)
+                representation=ball.gate.net[:-1](features)
+                logits=ball.gate.net[-1](representation)
+                encoded.append(representation)
+                response=(ball.response(features).reshape(-1,4,6)*ball.residual_scale)[:,:,3:]
+                _,free_v=world.flight(state[:,49:52],state[:,52:55])
+                target=data['next_state'][t,l,52:55].to(device)-free_v
+                joined.append((logits,response,target))
+    for name,(joined,encoded,gap_batches) in collected.items():
+        if not joined:
+            raise ValueError('Missing measured training events in '+name)
         sets[name]=tuple(torch.cat(x) for x in zip(*joined))
         hidden[name]=torch.cat(encoded)
         if gap_batches:
@@ -177,6 +240,7 @@ def main():
                            geometry_hashes=sweep.preview.geometry_hashes, train_candidates=len(candidates))
         ball = sweep
     info=dict(swept_racket_support=support_fit,racket_readout_fit=tail_fit,source_ball_sha256=digest(a.ball),fitted_body_sha256=digest(a.body),
+              calibration_sources=[info for _,info in sources],unique_training_lanes=len(set(lanes)),
               packed_sha256=meta['packed_sha256'],train_lanes=lanes,excluded_lanes=meta['excluded_lanes'],
               samples={k:len(v[0]) for k,v in sets.items()},before_rmse_mps=original,after_rmse_mps=errors,
               temperature_inverse=slope,racket_logit_offset=bias,contact_bptt_admitted=False,actor_updates=0)

@@ -68,6 +68,27 @@ def read_trial(directory, seed, branch, expected, settings, prior, design=None, 
     return common, signatures(tr), t['shuttle_state_w'][-1, :, 7:10], out[:, 3:], sha(path)
 
 
+def read_material(wide, prov, material_path, readout_path, calibration_path):
+    material = None
+    if material_path:
+        from quadsmash.rl.supermimic_racket_material_contract_v1 import validate_contract
+        from fit_supermimic_racket_material_response import material_table
+        teacher_path = Path(prov['args'][prov['args'].index('--teacher')+1])
+        if sha(teacher_path)!=prov['teacher_sha256']:
+            raise ValueError('Changed fixture teacher asset')
+        asset=torch.load(teacher_path,mmap=True,weights_only=True)['task_contract']['asset']['sha256']
+        contract=validate_contract(json.loads(material_path.read_text()),asset)
+        material=torch.tensor(contract['effective'])
+        if readout_path:
+            fit=json.loads(readout_path.read_text())
+            if (fit['calibration_sha256']!=sha(calibration_path) or fit['material_sha256']!=sha(material_path)
+                    or fit['split_hashes']['train']!=sha(wide/'train.json') or fit['final_holdout_opened']):
+                raise ValueError('Incompatible predictive coefficient calibration')
+            strings=torch.tensor([n.startswith('Collider/strip_') for n in contract['component_names']])
+            material=material_table(material,strings,torch.tensor(fit['selected']))
+    return material
+
+
 @torch.no_grad()
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -91,23 +112,7 @@ def main():
     directories = [args.wide, args.scales/'half', args.scales/'quarter']
     epsilons = [plan['wide_epsilon_mps'], *plan['epsilon_mps']]
     prov = json.loads((args.wide/'nominal_a'/'provenance.json').read_text())
-    material = None
-    if args.compound_material:
-        from quadsmash.rl.supermimic_racket_material_contract_v1 import validate_contract
-        from fit_supermimic_racket_material_response import material_table
-        teacher_path = Path(prov['args'][prov['args'].index('--teacher')+1])
-        if sha(teacher_path)!=prov['teacher_sha256']:
-            raise ValueError('Changed fixture teacher asset')
-        asset=torch.load(teacher_path,mmap=True,weights_only=True)['task_contract']['asset']['sha256']
-        contract=validate_contract(json.loads(args.compound_material.read_text()),asset)
-        material=torch.tensor(contract['effective'])
-        if args.material_readout:
-            fit=json.loads(args.material_readout.read_text())
-            if (fit['calibration_sha256']!=sha(args.calibration) or fit['material_sha256']!=sha(args.compound_material)
-                    or fit['split_hashes']['train']!=sha(args.wide/'train.json') or fit['final_holdout_opened']):
-                raise ValueError('Incompatible predictive coefficient calibration')
-            strings=torch.tensor([n.startswith('Collider/strip_') for n in contract['component_names']])
-            material=material_table(material,strings,torch.tensor(fit['selected']))
+    material = read_material(args.wide,prov,args.compound_material,args.material_readout,args.calibration)
     for directory in directories:
         for branch in ('plus','minus'):
             check = json.loads((directory/branch/'provenance.json').read_text())

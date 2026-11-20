@@ -7,7 +7,7 @@ from .supermimic_contact_pilot_v1 import _quat_rotate, _quat_rotate_inverse
 
 
 def solve_patch(normals, mu, restitution, velocity, spin, surface, radius, active,
-                normal_scale, iterations, *, return_spin=False, separation_velocity=None):
+                normal_scale, iterations, *, return_spin=False, separation_velocity=None, load_trace=None):
     """Projected normal and friction impulses in velocity units, with per-shape Coulomb bounds."""
     arm = -radius * normals
     supports = normals.shape[1]
@@ -35,12 +35,19 @@ def solve_patch(normals, mu, restitution, velocity, spin, surface, radius, activ
             linear = linear + change
             angular = angular + torch.linalg.cross(lever, change) / (.4 * radius**2)
             friction[j] = tangent
-    total = ((torch.stack(loads, 1)[..., None] * normals).sum(1), torch.stack(friction, 1).sum(1))
+    normal_loads = torch.stack(loads, 1)
+    tangents = torch.stack(friction, 1)
+    if load_trace is not None:
+        # One discrete state per shape: unloaded, sticking, sliding.
+        loaded = normal_loads > 1.e-8
+        sliding = tangents.norm(dim=-1) >= (mu * normal_loads - 1.e-8).clamp_min(0)
+        load_trace['regime'] = loaded.to(torch.uint8) * (1 + sliding.to(torch.uint8))
+    total = ((normal_loads[..., None] * normals).sum(1), tangents.sum(1))
     return (*total, angular) if return_spin else total
 
 
 def compound_step(prior, position, velocity, spin, center, rotation, linear, angular,
-                  material, offset, normal_scale, *, compound=True, separation_gain=0., impact_geometry_fraction=0., return_impact_time=False):
+                  material, offset, normal_scale, *, compound=True, separation_gain=0., impact_geometry_fraction=0., return_impact_time=False, load_trace=None, local_mobility=None, shuttle_mass=None):
     """Predict one native-length substep from the incoming shuttle and current racket state."""
     geometry = prior.preview
     local = _quat_rotate_inverse(rotation, position - center)
@@ -51,6 +58,8 @@ def compound_step(prior, position, velocity, spin, center, rotation, linear, ang
     near_count = (gaps <= offset).sum(-1)
     count = int(near_count.max()) if compound else 1
     time = position.new_zeros(len(position))
+    if load_trace is not None:
+        load_trace['regime'] = torch.zeros_like(gaps, dtype=torch.uint8)
     if count == 0:
         result = torch.zeros_like(velocity), torch.zeros_like(velocity), spin, near_count
         return (*result, time) if return_impact_time else result
@@ -85,8 +94,22 @@ def compound_step(prior, position, velocity, spin, center, rotation, linear, ang
         surface = linear[:,None] + torch.linalg.cross(angular[:,None].expand_as(lever),lever)
         gap = torch.cat((box_gap(local_hit,geometry.racket_box_centers,geometry.racket_box_halves),
                          round_gap(local_hit,*rounded)), -1).gather(1,ids) - geometry.radius
-    normal, tangent, spin = solve_patch(n, material[ids, 1], material[ids, 2], velocity, spin, surface,
-                                       geometry.radius, active, normal_scale, 4 if compound else 1,
-                                       return_spin=True, separation_velocity=separation_gain * gap / prior.sub_dt if separation_gain else None)
+    patch_trace = {} if load_trace is not None else None
+    separation = separation_gain * gap / prior.sub_dt if separation_gain else None
+    if local_mobility is None:
+        normal, tangent, spin = solve_patch(n,material[ids,1],material[ids,2],velocity,spin,surface,
+                                            geometry.radius,active,normal_scale,4 if compound else 1,
+                                            return_spin=True,separation_velocity=separation,load_trace=patch_trace)
+    else:
+        from .supermimic_full_body_geometry_v1 import rotation as rotation_matrix
+        from .supermimic_mobile_racket_contact import solve_mobile_patch
+        R = rotation_matrix(impact_rotation if impact_geometry_fraction else rotation)
+        zeros = torch.zeros_like(R)
+        transport = torch.cat((torch.cat((R,zeros),-1),torch.cat((zeros,R),-1)),-2)
+        spatial = transport @ local_mobility @ transport.transpose(-1,-2)
+        normal,tangent,spin = solve_mobile_patch(n,material[ids,1],material[ids,2],velocity,spin,surface,
+            lever,geometry.radius,active,normal_scale,4 if compound else 1,spatial,shuttle_mass,separation,patch_trace)
+    if load_trace is not None:
+        load_trace['regime'].scatter_(1, ids, patch_trace['regime'])
     result = normal, tangent, spin, active.sum(-1)
     return (*result, time) if return_impact_time else result

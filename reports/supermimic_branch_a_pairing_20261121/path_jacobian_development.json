@@ -1,0 +1,131 @@
+{
+  "groups": {
+    "all": {
+      "rows": 256,
+      "nonfinite": 0,
+      "native_vs_local": {
+        "rows": 256,
+        "supported": 209,
+        "component_rmse": 0.5480824112892151,
+        "cosine_median": 0.4617246687412262,
+        "cosine_p10": -0.9480761289596558,
+        "gain_median": 0.9529195427894592,
+        "gain_p10": 0.15017971396446228
+      },
+      "native_vs_model_secant": {
+        "rows": 256,
+        "supported": 209,
+        "component_rmse": 0.3165537118911743,
+        "cosine_median": 0.7749838829040527,
+        "cosine_p10": -0.15984097123146057,
+        "gain_median": 0.9439502358436584,
+        "gain_p10": 0.2147812694311142
+      },
+      "model_secant_vs_local": {
+        "rows": 256,
+        "supported": 208,
+        "component_rmse": 0.5304345488548279,
+        "cosine_median": 0.972761332988739,
+        "cosine_p10": -0.9807026386260986,
+        "gain_median": 1.0000154972076416,
+        "gain_p10": 0.1885349601507187
+      },
+      "branch_negative_vs_branch_positive": {
+        "rows": 256,
+        "supported": 207,
+        "component_rmse": 1.4104526042938232,
+        "cosine_median": 0.9254282712936401,
+        "cosine_p10": -0.9992645978927612,
+        "gain_median": 0.999146580696106,
+        "gain_p10": 0.28783777356147766
+      }
+    },
+    "wide_stable": {
+      "rows": 46,
+      "nonfinite": 0,
+      "native_vs_local": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 0.1947554349899292,
+        "cosine_median": 0.8480634689331055,
+        "cosine_p10": 0.22426339983940125,
+        "gain_median": 1.0039066076278687,
+        "gain_p10": 0.4215344190597534
+      },
+      "native_vs_model_secant": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 0.19444984197616577,
+        "cosine_median": 0.8480348587036133,
+        "cosine_p10": 0.22425511479377747,
+        "gain_median": 1.003924012184143,
+        "gain_p10": 0.41522473096847534
+      },
+      "model_secant_vs_local": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 0.003536609932780266,
+        "cosine_median": 1.0,
+        "cosine_p10": 0.9999958276748657,
+        "gain_median": 1.0000114440917969,
+        "gain_p10": 0.9999674558639526
+      },
+      "branch_negative_vs_branch_positive": {
+        "rows": 46,
+        "supported": 46,
+        "component_rmse": 0.007425505202263594,
+        "cosine_median": 0.9999772906303406,
+        "cosine_p10": 0.999049961566925,
+        "gain_median": 0.9998228549957275,
+        "gain_p10": 0.9793848395347595
+      }
+    },
+    "native_convergent": {
+      "rows": 31,
+      "nonfinite": 0,
+      "native_vs_local": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.08679716289043427,
+        "cosine_median": 0.9582791924476624,
+        "cosine_p10": 0.4410763084888458,
+        "gain_median": 1.0606268644332886,
+        "gain_p10": 0.8277105689048767
+      },
+      "native_vs_model_secant": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.08679282665252686,
+        "cosine_median": 0.9582740068435669,
+        "cosine_p10": 0.4404568374156952,
+        "gain_median": 1.0606223344802856,
+        "gain_p10": 0.8277583718299866
+      },
+      "model_secant_vs_local": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 3.508629743009806e-05,
+        "cosine_median": 1.0,
+        "cosine_p10": 0.9999999403953552,
+        "gain_median": 1.0000114440917969,
+        "gain_p10": 0.9999766945838928
+      },
+      "branch_negative_vs_branch_positive": {
+        "rows": 31,
+        "supported": 31,
+        "component_rmse": 0.004644499160349369,
+        "cosine_median": 0.9999615550041199,
+        "cosine_p10": 0.9993976354598999,
+        "gain_median": 0.9999096393585205,
+        "gain_p10": 0.9916886687278748
+      }
+    }
+  },
+  "label_sha256": "7e2c3c13b47d283d216d1d55f3bb5facdc476f4dab7d7834c4dd068606a27f7f",
+  "split": "development",
+  "device": "cpu",
+  "differentiation": "Midpoint of two recorded surface pose and twist sequences; alpha from 0 to 1",
+  "units": "m/s per signed interval",
+  "actor_updates": 0,
+  "contact_gradients_admitted": false
+}

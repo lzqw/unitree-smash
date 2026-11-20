@@ -190,3 +190,89 @@ def test_compound_contact_mid_substep_uses_remaining_time_and_incoming_surface()
                  .0002,racket_material=material,compound_racket=True)
     expected = p + v*toi[:,None] + (v+n+t)*(prior.dt-toi[:,None])
     torch.testing.assert_close(end[:,:3],expected,rtol=1e-8,atol=1e-10)
+
+
+def test_compound_basin_requires_same_loaded_shape_and_friction_regime():
+    from scripts.audit_supermimic_predictive_surface_basin import stable_prediction
+    events=[]
+    speeds=[]
+    for i,dx in enumerate([0.,-.05,.05,-.025,.025,-.0125,.0125]):
+        regime=torch.tensor([[[1,0],[1,0],[1,0]]],dtype=torch.uint8)
+        if i==6:
+            regime[0,1]=torch.tensor([0,1])
+            regime[0,2]=torch.tensor([2,0])
+        flag=torch.zeros(1,3,dtype=torch.bool)
+        events.append(dict(racket=torch.zeros(1,3,dtype=torch.long),ground=flag,net=flag,shape_regime=regime))
+        speeds.append(torch.tensor([[dx,0.,0.]]).expand(3,-1))
+    events_stable,derivatives_stable,_=stable_prediction(events,speeds,[.05,.025,.0125])
+    assert events_stable.tolist()==derivatives_stable.tolist()==[True,False,False]
+
+
+def test_finite_racket_mass_reduces_elastic_normal_impulse_at_known_mass_ratio():
+    from quadsmash.rl.supermimic_mobile_racket_contact import solve_mobile_patch
+    normal=torch.tensor([[[1.,0.,0.]]])
+    v=torch.tensor([[-2.,0.,0.]])
+    one=torch.ones(1,1)
+    mobility=torch.zeros(1,6,6)
+    mobility[:,:3,:3]=torch.eye(3)*0.5
+    dv,df,spin=solve_mobile_patch(normal,0*one,one,v,torch.zeros_like(v),0*normal,0*normal,.025,
+                                  one.bool(),1.,4,mobility,1.)
+    torch.testing.assert_close(dv,torch.tensor([[4/1.5,0.,0.]]))
+    torch.testing.assert_close(df+spin,0*v)
+
+
+def test_zero_racket_mobility_matches_prescribed_surface_for_two_contacts():
+    from quadsmash.rl.supermimic_mobile_racket_contact import solve_mobile_patch
+    normals=torch.tensor([[[1.,0.,0.],[0.,1.,0.]]])
+    mu=torch.tensor([[.15,.3]])
+    v=torch.tensor([[-3.,-1.,.2]])
+    w=torch.tensor([[.5,0.,1.]])
+    s=torch.zeros_like(normals)
+    active=torch.ones_like(mu,dtype=torch.bool)
+    base=solve_patch(normals,mu,mu,v,w,s,.025,active,.96,4,return_spin=True)
+    mobile=solve_mobile_patch(normals,mu,mu,v,w,s,s,.025,active,.96,4,torch.zeros(1,6,6),.0052)
+    for x,y in zip(base,mobile):
+        torch.testing.assert_close(x,y,rtol=1e-5,atol=1e-5)
+
+
+def test_spin_limit_propagates_free_rotation_without_changing_translational_flight():
+    from scripts.evaluate_supermimic_contact_rollout import BallImpulsePriorV1, tick
+    prior = BallImpulsePriorV1()
+    ball = torch.tensor([[5., 0., 4., 1., 2., 3.]])
+    zero = torch.zeros(1,3)
+    pose = (zero, torch.tensor([[1.,0.,0.,0.]]), zero, zero)
+    spin = torch.tensor([[0.,-120.,160.]])
+    kwargs = dict(initial_spin=spin, return_spin=True)
+    free, _, original_spin = tick(prior, ball, pose, pose, {}, .0002, **kwargs)
+    capped, _, capped_spin = tick(prior, ball, pose, pose, {'pre_solve_spin_limit_rad_s':100.}, .0002, **kwargs)
+    torch.testing.assert_close(free, capped)
+    torch.testing.assert_close(original_spin, spin)
+    torch.testing.assert_close(capped_spin, spin/2)
+
+
+def test_motion_derivative_uses_each_lanes_complete_motion_and_shortest_quaternion_arc():
+    from scripts.audit_supermimic_surface_path_jacobian import interpolate_motion
+    alpha = torch.tensor([.3,.7], requires_grad=True)
+    p = torch.zeros(3,2,3)
+    delta = torch.arange(1,7).reshape(3,2,1).expand_as(p).float()
+    q = torch.zeros(3,2,4)
+    q[:,:,0] = 1.
+    motion = interpolate_motion((p,q,p,p),(delta,-q,delta,delta),alpha)
+    torch.testing.assert_close(motion[1],q)
+    grad, = torch.autograd.grad(motion[0][:,:,0].sum(), alpha)
+    torch.testing.assert_close(grad,delta[:,:,0].sum(0))
+
+
+def test_frozen_readout_windows_exclude_padding_future_events_and_protected_lanes():
+    from scripts.calibrate_supermimic_ball_event_logits import training_groups
+    data = {k:torch.zeros(5,2,dtype=torch.bool) for k in ('present','terminated','timeout')}
+    data['present'].fill_(True)
+    data['episode'] = torch.zeros(5,2,dtype=torch.long)
+    data['event_state'] = torch.zeros(5,2,8)
+    data['next_event_state'] = torch.zeros(5,2,8)
+    data['next_event_state'][3,:,1] = 1
+    data['valid_lengths'] = torch.tensor([3,5])
+    groups = training_groups(data,[0])
+    assert not any(mask.any() for k,mask in groups.items() if k!='ordinary')
+    assert groups['ordinary'][:,0].tolist() == [True,True,True,False,False]
+    assert not groups['ordinary'][:,1].any()

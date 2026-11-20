@@ -8,7 +8,7 @@ import torch
 from quadsmash.rl.supermimic_fixture_coordinates import fixture_court_origin
 
 from audit_supermimic_paired_racket_fixture import verify_initial_intervention, common_native_twist, verify_common_twist
-from audit_supermimic_surface_derivative_scales import vector_summary
+from audit_supermimic_surface_derivative_scales import vector_summary, read_material
 from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, sha, tick
 
 
@@ -17,7 +17,10 @@ def main():
     cli=argparse.ArgumentParser(description=__doc__)
     for key in ('loaded','unloaded','wide-audit','labels','calibration','output'):
         cli.add_argument('--'+key,type=Path,required=True)
+    cli.add_argument('--compound-material',type=Path)
+    cli.add_argument('--material-readout',type=Path)
     a=cli.parse_args();torch.set_num_threads(2)
+    if a.material_readout and not a.compound_material:cli.error('Source material missing')
     cfg=json.loads(a.calibration.read_text())
     wide=json.loads(a.wide_audit.read_text());labels=json.loads(a.labels.read_text())
     if (wide['split'] not in ('train','development') or labels['wide_audit_sha256']!=sha(a.wide_audit)
@@ -26,7 +29,13 @@ def main():
     rows=sorted(wide['samples'],key=lambda r:(r['seed'],r['lane']))
     if labels['case_ids']!=[[r['seed'],r['lane']] for r in rows]:raise ValueError('Mismatched case labels')
     prior=BallImpulsePriorV1().eval()
-    branch_values={};paths={}
+    prov=json.loads((a.loaded/'nominal_a/provenance.json').read_text())
+    material=read_material(a.loaded,prov,a.compound_material,a.material_readout,a.calibration)
+    mat_sha=sha(a.compound_material) if a.compound_material else None
+    fit_sha=sha(a.material_readout) if a.material_readout else None
+    if labels.get('material_sha256')!=mat_sha or labels.get('coefficient_fit_sha256')!=fit_sha:
+        raise ValueError('Native derivative study and transfer must reference the same solver')
+    branch_values={};loaded_values={};paths={}
     impulse_dv=[]
     keys=('racket_position_w','racket_quaternion_w','racket_linear_velocity_w','racket_angular_velocity_w')
     collector_hashes = {}
@@ -37,7 +46,7 @@ def main():
                 raise ValueError('Collector changed within the paired branches')
         for key in ('teacher_sha256','trace_recorder_sha256','lanes','batches','seed'):
             if lp[key]!=up[key]:raise ValueError('Different setup: '+key)
-        batch=[]
+        batch=[];loaded_batch=[]
         for seed in sorted({r['seed'] for r in rows}):
             load=a.loaded/b/f'spec_{seed}'/'trace.pt';unload=a.unloaded/b/f'spec_{seed}'/'trace.pt'
             if sha(load)!=wide['archives'][str(load)]:raise ValueError('Native target changed')
@@ -67,16 +76,20 @@ def main():
             origin=fixture_court_origin(orig,ball[:,:3])
             torch.testing.assert_close(origin,fixture_court_origin(shadow,ball[:,:3]),rtol=0,atol=0)
             ball[:,:3]-=origin
-            stream=[a1[k] for k in keys]
-            stream[0]=stream[0]-origin
-            speed,_=tick(prior,ball,[x[0] for x in stream],[x[-1] for x in stream],cfg['fitted'],
-                cfg['solver']['pair_contact_offset_m'],torch.zeros(len(ball),dtype=torch.bool),measured_path=[x[:-1] for x in stream])
-            batch.append(speed[:,3:])
+            for fields,output in ((a1,batch),(a0,loaded_batch)):
+                stream=[fields[k] for k in keys]
+                stream[0]=stream[0]-origin
+                speed,_=tick(prior,ball,[x[0] for x in stream],[x[-1] for x in stream],cfg['fitted'],
+                    cfg['solver']['pair_contact_offset_m'],None if material is not None else torch.zeros(len(ball),dtype=torch.bool),
+                    measured_path=[x[:-1] for x in stream],initial_spin=s[:,10:13] if material is not None else None,
+                    compound_racket=material is not None,racket_material=material)
+                output.append(speed[:,3:])
             if b=='nominal_a':
                 impulse_dv.append((a0['racket_linear_velocity_w']-a1['racket_linear_velocity_w']).norm(dim=-1).amax(0))
         branch_values[b]=torch.cat(batch)
+        loaded_values[b]=torch.cat(loaded_batch)
     d=branch_values['plus']-branch_values['minus']
-    n=torch.tensor([r['delta']['native'] for r in rows]);teacher=torch.tensor([r['delta']['native_racket_analytic_rollout'] for r in rows])
+    n=torch.tensor([r['delta']['native'] for r in rows]);teacher=loaded_values['plus']-loaded_values['minus']
     groups={}
     for label,mask in [('all',torch.ones(len(rows),dtype=torch.bool)),('wide_stable',torch.tensor([r['kind']=='racket_stable' for r in rows])),
                       ('native_convergent',torch.tensor(labels['incident_labels']['native_convergent_stable']))]:
@@ -86,7 +99,7 @@ def main():
                               peak_racket_recoil_median_mps=float(impact.median()),peak_racket_recoil_p90_mps=float(impact.quantile(.9)))
     with a.output.open('x') as out:
         json.dump(dict(groups=groups,split=wide['split'],unloaded_hashes=paths,collector_hashes=collector_hashes,loaded_audit_sha256=sha(a.wide_audit),
-                  labels_sha256=sha(a.labels),model_calibration_sha256=sha(a.calibration),policy_updates=0,contact_bptt_admitted=False,
+                  material_sha256=mat_sha,coefficient_fit_sha256=fit_sha,labels_sha256=sha(a.labels),model_calibration_sha256=sha(a.calibration),policy_updates=0,contact_bptt_admitted=False,
                   scope='Free articulated racket path supplied by separate native simulation; ball initial state and all outcomes refer to the loaded fixture'),out,indent=2,allow_nan=False)
 
 

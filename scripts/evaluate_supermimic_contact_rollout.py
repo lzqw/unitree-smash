@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """64-control-tick contact transfer with frozen Body WM and recorded commands."""
+import math
 import argparse
 import hashlib
 import json
@@ -30,9 +31,12 @@ def racket(state, geometry):
 
 
 def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measured_path=None,
-         racket_material=None, initial_spin=None, event_trace=None, compound_racket=False, return_spin=False):
+         racket_material=None, initial_spin=None, event_trace=None, compound_racket=False, return_spin=False, local_mobility=None, shuttle_mass=None):
     p, v = ball[:, :3], ball[:, 3:]
-    if compound_racket and (racket_material is None or previous_patch is not None or event_trace is not None):
+    if local_mobility is not None and (not compound_racket or local_mobility.shape!=(len(p),6,6)
+            or shuttle_mass is None or not 0<shuttle_mass):
+        raise ValueError('A per-lane articulated racket and positive shuttle mass are required')
+    if compound_racket and (racket_material is None or previous_patch is not None):
         raise ValueError('Compound rollout needs measured shape materials and supports multiple contacts per substep')
     if event_trace is not None:
         if event_trace:
@@ -48,6 +52,8 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
         n_shapes = len(prior.preview.racket_box_centers) + len(prior.preview.racket_round_centers)
         if racket_material.shape != (n_shapes, 3):
             raise ValueError('Expected static friction, dynamic friction and restitution for each shape')
+    if compound_racket and event_trace is not None:
+        event_trace['shape_regime'] = torch.zeros((*dims,n_shapes),dtype=torch.uint8,device=p.device)
     if measured_path is not None:
         center,q,linear,omega=measured_path
         if any(x.shape[:2]!=(prior.steps,len(ball)) for x in measured_path):
@@ -70,18 +76,29 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
     net_hi = torch.maximum((g.net_centers[:, 0]+g.net_halves[:, 0]).max(),
                            (g.post_centers[:, 0]+g.post_radii.flatten()).max()) + g.radius + offset
     hit = torch.zeros(len(p), dtype=torch.bool, device=p.device)
+    spin_limit = fitted.get('pre_solve_spin_limit_rad_s')
+    if spin_limit is not None and (not math.isfinite(spin_limit) or spin_limit<=0 or spin is None):
+        raise ValueError('Pre-solve spin limiting requires a positive speed and a propagated spin')
     for i in range(prior.steps):
+        if spin_limit is not None:
+            spin = spin * (spin_limit/spin.norm(dim=-1,keepdim=True).clamp_min(1.e-12)).clamp(max=1.)
         close = (p-center[i]).norm(dim=-1) <= racket_radius
         delta = torch.zeros_like(v)
         inside = torch.zeros_like(hit)
         impact_displacement = None
         if compound_racket and close.any():
             lane = close.nonzero().flatten()
+            load_trace = {} if event_trace is not None else None
             normal, tangent, next_spin, active, impact_time = compound_step(
                 prior, p[lane], v[lane], spin[lane], center[i, lane], q[i, lane],
                 linear[i, lane], omega[i, lane], racket_material, offset, fitted['normal_impulse_scale'],
                 separation_gain=fitted.get('separation_velocity_gain', 0.),
-                impact_geometry_fraction=fitted.get('impact_geometry_fraction', 0.), return_impact_time=True)
+                impact_geometry_fraction=fitted.get('impact_geometry_fraction', 0.), return_impact_time=True, load_trace=load_trace,
+                local_mobility=local_mobility[lane] if local_mobility is not None else None,shuttle_mass=shuttle_mass)
+            if event_trace is not None:
+                regime = load_trace['regime']
+                event_trace['shape_regime'][i,lane] = regime
+                event_trace['racket'][i,lane] = (regime>0).sum(-1)-1
             if fitted.get('impact_geometry_fraction', 0.):
                 impact_displacement = torch.zeros_like(p).index_copy(0,lane,impact_time[:, None]*(normal+tangent))
             delta = delta.index_copy(0, lane, normal + tangent)

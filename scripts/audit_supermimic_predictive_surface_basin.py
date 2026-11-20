@@ -8,7 +8,7 @@ import torch
 from quadsmash.rl.supermimic_fixture_coordinates import fixture_court_origin
 import torch.nn.functional as F
 
-from audit_supermimic_surface_derivative_scales import vector_summary
+from audit_supermimic_surface_derivative_scales import vector_summary, read_material
 from evaluate_supermimic_contact_rollout import BallImpulsePriorV1, sha, tick
 
 
@@ -28,7 +28,8 @@ def stable_prediction(events,speeds,eps):
     stable=((nominal['racket']>=0).sum(0)==1)&~nominal['ground'].any(0)&~nominal['net'].any(0)
     for event in events[1:]:
         for name in nominal:
-            stable &= (nominal[name]==event[name]).all(0)
+            same = (nominal[name] == event[name]).reshape(*nominal[name].shape[:2],-1)
+            stable &= same.all(-1).all(0)
     local=stable.clone()
     responses=[(speeds[i+1]-speeds[i])/(2*e) for e,i in zip(eps,(1,3,5))]
     left=(speeds[0]-speeds[5])/eps[-1];right=(speeds[6]-speeds[0])/eps[-1]
@@ -45,7 +46,11 @@ def main():
     for name in ('wide','labels','wide-audit','calibration','output'):
         ap.add_argument('--'+name,type=Path,required=True)
     ap.add_argument('--motion-readout',type=Path,help='Frozen unloaded-racket motion model fitted to calibration families only')
+    ap.add_argument('--compound-material',type=Path)
+    ap.add_argument('--material-readout',type=Path)
     a=ap.parse_args();torch.set_num_threads(3)
+    if a.material_readout and not a.compound_material:
+        ap.error('A material readout requires the native shape contract')
     audit=json.loads(a.wide_audit.read_text());labels=json.loads(a.labels.read_text())
     if audit['split'] not in ('train','development') or labels['wide_audit_sha256']!=sha(a.wide_audit) or labels['split']!=audit['split']:
         raise ValueError('Expected a matching calibration or development native panel')
@@ -67,6 +72,12 @@ def main():
                 or motion['teacher_sha256'] != sha(teacher_path) or motion['physics_dt_s'] != prior.sub_dt):
             raise ValueError('Mismatch between motion model and validation fixture')
         teacher = torch.load(teacher_path, weights_only=True, mmap=True)
+    prov=json.loads((a.wide/'nominal_a'/'provenance.json').read_text())
+    material=read_material(a.wide,prov,a.compound_material,a.material_readout,a.calibration)
+    material_sha=sha(a.compound_material) if material is not None else None
+    readout_sha=sha(a.material_readout) if a.material_readout else None
+    if material_sha!=labels.get('material_sha256') or readout_sha!=labels.get('coefficient_fit_sha256'):
+        raise ValueError('Different contact transition in derivative labels')
     events=[];sufficient=[];pred=[]
     for seed in sorted({r['seed'] for r in rows}):
         # Only a single branch is opened: all seven trajectories start from this same native state.
@@ -92,8 +103,10 @@ def main():
                 stream=predict_motion(motion,features,[c,q,v+e*direction,omega],times)
             sig={}
             out,_=tick(prior,ball,[x[0] for x in stream],[x[-1] for x in stream],
-                       cfg['fitted'],cfg['solver']['pair_contact_offset_m'],torch.zeros(len(ball),dtype=torch.bool),
-                       measured_path=stream,event_trace=sig)
+                       cfg['fitted'],cfg['solver']['pair_contact_offset_m'],
+                       None if material is not None else torch.zeros(len(ball),dtype=torch.bool),
+                       measured_path=stream,event_trace=sig,racket_material=material,
+                       initial_spin=s[:,10:13] if material is not None else None,compound_racket=material is not None)
             speeds.append(out[:,3:]);signatures.append(sig)
         stable,qualified,d=stable_prediction(signatures,speeds,eps)
         events.append(stable);sufficient.append(qualified);pred.append(d)
@@ -109,6 +122,7 @@ def main():
         groups[name]=g
     with a.output.open('x') as f:
         json.dump(dict(scope='Pre-impact state and prescribed perturbation only; hyperparameters fixed by physical convergence diagnostic',
+                       material_sha256=material_sha,coefficient_fit_sha256=readout_sha,
                        motion_readout_sha256=sha(a.motion_readout) if motion is not None else None,groups=groups,labels_sha256=sha(a.labels),calibration_sha256=sha(a.calibration),
                        contact_bptt_admitted=False,actor_updates=0),f,indent=2,allow_nan=False)
 
