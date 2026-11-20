@@ -20,6 +20,8 @@
 
 near-miss 现在会在包含其他接触的 lane 中采样，并按解析几何 gap、接近速度和干扰对象分桶。对 `0.0001/0.001/0.005/0.01 N` 的阈值敏感性审计在现有归档上均得到 1077 个动态区间，说明当前力信号远高于阈值，后续仍需补采低冲量边界样本。
 
+新采集的 native trace 还会保存 racket body 名称、接触 filter 路径和 filter index。旧归档缺少这些静态元数据，因此旧行仍保留显式 unknown，不回填猜测值。
+
 pilot 行按 source archive 做原子切分，并保留 spec、episode、capture 和 lane hash。当前切分为 train/validation/test `1479/364/234`，source overlap 为零，`spec_04_tick279` 作为未见 spec holdout。状态仍为 `INSUFFICIENT_CANDIDATES`，不能进入训练。
 
 下一批采集需要沿中心、5×5、拍框/边缘、入射法向速度、切向速度、球拍线/角速度、TOI 相位、二次接触及地面/球网干扰补足剩余 923 条。negative 已有足够数量，可与动态采集并行运行，negative 采集不再等待动态 contact 完成。

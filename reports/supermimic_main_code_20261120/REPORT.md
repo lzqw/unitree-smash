@@ -8,11 +8,11 @@
 
 ## 当前代码交付
 
-- `supermimic_native_substep_trace_v1.py` 保存原始接触矩阵、接触位置矩阵、球拍力、地面力和球网传感器流。
+- `supermimic_native_substep_trace_v1.py` 保存原始接触矩阵、接触位置矩阵、球拍力、地面力和球网传感器流，并记录 racket body/filter 元数据。
 - `audit_supermimic_oracle_a.py` 对已有 native PhysX 子步执行 TOI、接触对象、出球方向、法向/切向冲量和有效质量审计。
 - `supermimic_contact_pilot_v1.py` 从原生子步归档构建动态接触和 near-miss pilot，CPU trace reader 支持并行 worker。接触矩阵不再丢弃 manifold slot，near-miss 在含接触 lane 中保持采样，并生成 gap/approach bucket、阈值敏感性、来源 hash 和无泄漏切分审计。
 - `build_supermimic_contact_pilot.py` 和 `plan_supermimic_contact_pilot.py` 提供 B1 构建与剩余配额计划。
-- `run_supermimic_event_aligned_native_probes.py` 支持从仓库目录直接启动原生子步采集。
+- `run_supermimic_event_aligned_native_probes.py` 支持从仓库目录直接启动原生子步采集，并支持保留完整 probe、归档未完成分支后续采集。
 
 ## B0 结果
 
