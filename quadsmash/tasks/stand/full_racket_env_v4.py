@@ -1,6 +1,7 @@
 """Full racket, suspended regulation net, court-scale rally and legal events."""
 from pathlib import Path
 import itertools
+import os
 import numpy as np
 import torch
 from pxr import Usd,UsdPhysics
@@ -19,7 +20,12 @@ from quadsmash.physics.rally_rules_v4 import RallyRulesV4
 
 def full_racket_cfg(num_envs=16,physics_dt=.0000625):
     cfg=BallEnvCfg();racket,court=load_racket(),load_court()
-    cfg.robot.spawn.usd_path=str(ROOT/racket['output_asset'])
+    # The isolated SuperMimic worktree contains the learner code, while the
+    # frozen G07 execution root owns the measured USD/configuration assets.
+    # Keep asset resolution on the explicit execution root used by the task
+    # contract instead of silently resolving through the learner worktree.
+    asset_root = Path(os.environ.get('QUADSMASH_G07_EXECUTION_ROOT', ROOT)).expanduser().resolve()
+    cfg.robot.spawn.usd_path=str(asset_root/racket['output_asset'])
     cfg.scene.num_envs,cfg.scene.env_spacing=num_envs,court['environment_spacing_m']
     cfg.ground_size_m=(4096.,4096.,.1)
     cfg.sim.device='cuda:0';cfg.sim.dt=physics_dt
@@ -280,6 +286,11 @@ class FullRacketEnvV4(BallEnv):
             for i in complete.cpu().tolist():
                 row={name:bool(getattr(self.rally,name)[i]) for name in self.rally.flags}
                 row.update(env_id=i,episode_index=int(self.episode_index[i]),
+                    # Preserve the immutable evaluation-case identity through
+                    # the asynchronous reset record.  Frozen return
+                    # monitoring compares this identity across refreshes.
+                    case_id=(self.cases[i].get('case_id', f'ENV{i}')
+                             if self.cases is not None else f'ENV{i}'),
                     episode_timeout=bool(self.reset_time_outs[i]),
                     episode_duration_s=float(self.episode_length_buf[i] * self.step_dt),
                     complete_smash=bool(self.rally.complete(self.rally_recovery_success)[i]),

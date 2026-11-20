@@ -29,6 +29,10 @@ def score_terminal_episode(row, protocol):
             and row['jump']['episode_index'] != row['episode_index']):
         raise ValueError('Jump evidence belongs to another episode')
     result = summarize_episode(row)
+    # Keep the case identity attached to the scored record.  The frozen
+    # return monitor uses it to reject lane duplication or case-set drift
+    # across refreshes.
+    result['case_id'] = row.get('case_id', f"ENV{int(row['env_id'])}")
     label = classify(row, protocol, 5.)
     original = label['original_outcomes']
     result['raw_environment_flags'] = {
