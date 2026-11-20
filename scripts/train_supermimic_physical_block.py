@@ -273,6 +273,10 @@ def main():
 
 def run(args, *, alternating=None):
     from quadsmash.rl.supermimic_run_lifecycle import stage as lifecycle_stage
+    # These audits are consumed by nested WM/actor callbacks.  Import them in
+    # the run scope as well as the CLI setup scope so frozen refreshes cannot
+    # hit a late NameError after spending hundreds of native ticks.
+    from quadsmash.rl.supermimic_training_audit_v1 import sampling_promotion_gate, rollback_audit
     lifecycle_stage(args.output, 'RUN_ENTER')
     import torch
     lifecycle_stage(args.output, 'IMPORT_TORCH')
