@@ -23,6 +23,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('panel','capture','initial-score','checkpoint','archive','safety-mapping','output'):
         p.add_argument('--'+name,required=True,type=Path)
+    p.add_argument('--compare-components',action='store_true',help='Replay the panel with only body or ball weights from the online stage')
     a = p.parse_args()
     torch.set_num_threads(3)
     read = lambda path: json.loads(path.read_text())
@@ -52,6 +53,12 @@ def main():
         initial['body_candidate_sha256']!=digest(Path(paths['physical'])) or initial['ball_candidate_sha256']!=digest(Path(paths['ball'])) or
         tensor_digest(adapter.state_dict().items())!=initial['runtime_world_sha256']):
         raise ValueError('Online snapshot has a different task or starting WM')
+    initial_components = {}
+    if a.compare_components:
+        for name in ('physical_model','ball_model','action_ball_model'):
+            module = getattr(adapter,name)
+            if module is not None:
+                initial_components[name] = {k:v.clone() for k,v in module.state_dict().items()}
     adapter.load_state_dict(stage['world'],strict=True)
     adapter.eval()
     anchor = PhysicalWorldV1().eval()
@@ -79,6 +86,18 @@ def main():
         contact_vs_block_initial=compare_candidate_to_anchor(event_metrics(before),event_metrics(current)),
         metrics=current,scope='Offline monitoring on the same native launch panel with recorded executed targets. The online weights were generated after the initial panel declaration.',
         formal_promotion=False)
+    if a.compare_components:
+        report['component_comparisons'] = {}
+        for group, restored in [('online_body_only',('ball_model','action_ball_model')),
+                                ('online_ball_only',('physical_model',))]:
+            adapter.load_state_dict(stage['world'],strict=True)
+            for name in restored:
+                if name in initial_components:
+                    getattr(adapter,name).load_state_dict(initial_components[name],strict=True)
+            comparison = assess(data,panel['cases'],anchor,adapter,panel['horizons'],'cpu')
+            if comparison['windows'] != score['windows']:
+                raise ValueError('The component comparison uses different windows')
+            report['component_comparisons'][group] = comparison['metrics']['candidate']
     with a.output.open('x') as f:
         json.dump(report,f,indent=2,allow_nan=False)
         f.write('\n')
