@@ -21,14 +21,29 @@ def fit_drive(features, errors):
     return solve.solution.squeeze(-1).to(features), solve.rank.tolist()
 
 
+def arm_drive_features(state,target):
+    return torch.stack((target[...,12:18]-state[...,25:31],state[...,43:49]),-1)
+
+
+def arm_drive_hook(coefficients):
+    if coefficients.shape!=(6,2) or not torch.isfinite(coefficients).all():
+        raise ValueError('Expected six pairs of finite arm drive coefficients')
+
+    def corrected(module,inputs,output):
+        prior,target=inputs[:2]
+        state,logits,active=output
+        dv=(arm_drive_features(prior,target)*coefficients).sum(-1)
+        corrected_state=state.clone()
+        corrected_state[:,43:49]+=dv
+        corrected_state[:,25:31]+=(.5*module.dt)*dv
+        return corrected_state,logits,active
+    return corrected
+
+
 @torch.no_grad()
 def audit_drive(args,world,ball,trainwin,trainlaunch,devwin,devlaunch,data,eligible,launch,identity):
     from supermimic_paired_body_candidate import fields, signed_rollout
-    arm = slice(25,31)
     velocity = slice(43,49)
-
-    def features(state, target):
-        return torch.stack((target[...,12:18]-state[...,arm],state[...,velocity]),-1)
 
     measured=trainwin['state']
     estimates=[]
@@ -36,16 +51,7 @@ def audit_drive(args,world,ball,trainwin,trainlaunch,devwin,devlaunch,data,eligi
         state,_,_=world(measured[i],trainwin['targets'][i],trainwin['previous_action'][i],trainwin['feet'][i],
                         trainwin['present'][i],trainwin['elapsed'][i],trainlaunch)
         estimates.append(state[:,velocity])
-    coef,rank=fit_drive(features(measured,trainwin['targets']),trainwin['next_state'][...,velocity]-torch.stack(estimates))
-
-    def corrected(module,inputs,output):
-        prior, target=inputs[:2]
-        state, logits, active=output
-        dv=(features(prior,target)*coef).sum(-1)
-        state=state.clone()
-        state[:,velocity]+=dv
-        state[:,arm]+=(.5*module.dt)*dv
-        return state,logits,active
+    coef,rank=fit_drive(arm_drive_features(measured,trainwin['targets']),trainwin['next_state'][...,velocity]-torch.stack(estimates))
 
     pools=event_pools(data,~eligible,64,True)
     rng=torch.Generator().manual_seed(9222)
@@ -70,8 +76,13 @@ def audit_drive(args,world,ball,trainwin,trainlaunch,devwin,devlaunch,data,eligi
     result=dict(identity=identity,train_pairs=len(trainlaunch)//2,development_pairs=len(devlaunch)//2,
                 coefficients=coef.tolist(),rank=rank,actor_updates=0,critic_updates=0,
                 final_holdout_opened=False,windows={k:torch.stack(v,1).tolist() for k,v in windows.items()})
-    for name in ('baseline','calibrated'):
-        hook=world.register_forward_hook(corrected) if name=='calibrated' else None
+    models={'baseline':None,'calibrated':coef}
+    if args.fit_drive_trajectories:
+        from supermimic_arm_rollout_calibration import fit_trajectories
+        models['trajectory'],result['trajectory_fit']=fit_trajectories(
+            world,ball,trainwin,trainlaunch,data,eligible,launch,coef.abs().clamp_min(.001),arm_drive_hook)
+    for name,coefficients in models.items():
+        hook=world.register_forward_hook(arm_drive_hook(coefficients)) if coefficients is not None else None
         try:
             result[name]=dict(training=score(trainwin,trainlaunch),development=score(devwin,devlaunch),
                               natural=validate(world,ball,data,windows,launch,args.device))

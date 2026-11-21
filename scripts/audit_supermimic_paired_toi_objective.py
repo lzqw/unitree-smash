@@ -132,6 +132,7 @@ def main():
     for k in ('decision','development','shadow','bank','output'):
         p.add_argument('--'+k,required=True,type=Path)
     p.add_argument('--training',type=Path,help='Registered training-only response panel for component calibration')
+    p.add_argument('--arm-drive-fit',type=Path,help='Check a source-matched offline trajectory correction along the same native command sequences')
     args=p.parse_args();torch.set_num_threads(2)
     read=lambda f:json.loads(f.read_text())
     decision,shadow=read(args.decision),read(args.shadow)
@@ -151,6 +152,14 @@ def main():
     adapter.load_state_dict(ws); adapter.eval().requires_grad_(False)
     bank=TaskSpaceReferenceBankV1.from_payload(torch.load(args.bank,weights_only=True,map_location='cpu'))
     src=read(args.development/'completed.json')
+    if args.arm_drive_fit:
+        from supermimic_arm_drive_audit import arm_drive_hook
+        calibration=read(args.arm_drive_fit)
+        if (calibration['identity']['world']!=decision['world_sha256'] or calibration['final_holdout_opened']
+                or calibration['identity']['development']!=src['wide']):
+            raise ValueError('Different arm calibration source or development panel')
+        coef=torch.tensor(calibration['trajectory_fit']['coefficients'])
+        adapter.physical_model.register_forward_hook(arm_drive_hook(coef))
     result={s:score(args.development/s,src[s],adapter,template,launch,bank,manifest['task_contract'],
             ck['metadata']['policy_execution'],set(ck['config']['wm_holdout_lanes'])) for s in ('wide','half','quarter')}
     if args.training:
@@ -166,6 +175,8 @@ def main():
         result['training_status_sha256']=status
     result.update(shadow_sha256=digest(args.shadow),decision_sha256=digest(args.decision),actor_updates=0,
           scope='Fixed causal reference at the common prefix. Measured and modeled racket objectives along recorded command histories. Three scales share launch cases. This is not an Actor parameter gradient or a contact receipt.')
+    if args.arm_drive_fit:
+        result['arm_drive_fit_sha256']=digest(args.arm_drive_fit)
     with args.output.open('x') as stream:
         json.dump(result,stream,indent=2,allow_nan=False)
 

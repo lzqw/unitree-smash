@@ -168,3 +168,38 @@ def test_drive_fit_uses_signed_and_absolute_motion_and_tolerates_unexcited_joint
     actual,rank=fit_drive(features,errors)
     torch.testing.assert_close((features*actual).sum(-1),errors)
     assert rank==[2,2,2,2,0,2]
+
+
+def test_tangent_probe_direction_uses_an_independent_executed_arm_axis():
+    from scripts.declare_supermimic_tangent_probe import tangent_directions
+    jac=torch.tensor([[[5.,0.,0.,0.,0.,0.],[0.,4.,0.,0.,0.,0.],[0.,0.,3.,0.,0.,0.]]])
+    normal=torch.tensor([[1.,0.,0.]])
+    previous=torch.tensor([[0.,1.,0.,0.,0.,0.]])
+    d=tangent_directions(jac,normal,previous)
+    torch.testing.assert_close(d,torch.tensor([[0.,0.,1.,0.,0.,0.]],dtype=torch.float64))
+
+
+def test_body_trajectory_objective_preserves_source_weights_when_windows_repeat():
+    from scripts.supermimic_arm_rollout_calibration import calibration_objective
+    panels={(s,4,'center'):torch.tensor([.5,1.,2.]) for s in ('paired','natural','racket','recovery')}
+    ref=calibration_objective(panels,panels).square().sum()
+    key=('natural',4,'center')
+    with_repeats=dict(panels)
+    with_repeats[key]=panels[key].repeat(5)
+    torch.testing.assert_close(ref,torch.tensor(1.))
+    torch.testing.assert_close(calibration_objective(with_repeats,with_repeats).square().sum(),ref)
+
+
+def test_alternative_arm_probe_rejects_repeated_direction_or_changed_prefix():
+    import pytest
+    from scripts.compare_supermimic_probe_directions import verify_alternate_directions
+
+    first = [0.] * 12 + [1., 0., 0., 0., 0., 0.]
+    second = [0.] * 12 + [0., 1., 0., 0., 0., 0.]
+    old = dict(lanes=[9], tick=278, request_directions=[first], direction_seed=83)
+    alternate = dict(lanes=[9], tick=278, request_directions=[second],
+                     direction_design='training_prefix_tangent_orthogonal', source_direction_seed=83)
+    verify_alternate_directions(old, alternate)
+    for change in (dict(request_directions=[first]), dict(tick=277), dict(source_direction_seed=84)):
+        with pytest.raises(ValueError):
+            verify_alternate_directions(old, dict(alternate, **change))
