@@ -225,6 +225,8 @@ def main():
                         help='Use a training-fitted contact target plane in bounded TOI-only imagination')
     parser.add_argument('--toi-racket-weight',type=float,default=1.0,
                         help='Approach TOI-racket-only auxiliary loss weight')
+    parser.add_argument('--diagnostic-critic-loss',action='store_true',
+                        help='Research only: monitor the minibatch critic MSE after warmup; retain finite-value and update checks')
     parser.add_argument('--continuous-approach-starts',action='store_true',
                         help='Advance the four start quotas across short blocks using checkpointed Approach attempts')
     parser.add_argument('--approach-objective',choices=('task','toi_racket_only'),default='task',
@@ -243,6 +245,8 @@ def main():
     if args.extend_completed_research and (not research or args.resume_training is None or
                                            args.resume_reset_schedule or args.resume_next_cycle):
         parser.error('Extending research cycles requires continuation of a saved research schedule')
+    if args.diagnostic_critic_loss and not research:
+        parser.error('--diagnostic-critic-loss requires research_scale')
     if research != (args.training_stage == 'research_contact'):
         parser.error('research_scale uses the non-promotable research_contact stage')
     if research and (args.sequential_layout!='short-alternating' or args.update_mode!='sequential' or
@@ -629,6 +633,8 @@ def run(args, *, alternating=None):
         plane_calibration = None
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
+            if research and not args.resume_reset_schedule and resumed['config'].get('diagnostic_critic_loss'):
+                args.diagnostic_critic_loss=True
             saved_plane = resumed['config'].get('intercept_plane_calibration')
             if args.approach_objective=='toi_racket_only' and args.training_profile in ('bounded','research_scale'):
                 plane_calibration = saved_plane
@@ -1009,7 +1015,8 @@ def run(args, *, alternating=None):
             wm_separate_supervision=args.wm_separate_supervision,wm_direct_long_body_supervision=args.wm_direct_long_body_supervision,wm_active_flight_batch=args.wm_active_flight_batch,wm_natural_flight_batch=args.wm_natural_flight_batch,wm_natural_flight_loss=args.wm_natural_flight_loss,
             wm_action_collections=action_collections,wm_sampling_mode=args.wm_sampling_mode,
             native_return_monitor=frozen_return_monitor.config,
-            policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
+            policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=None if args.diagnostic_critic_loss else 50.,
+            diagnostic_critic_loss=args.diagnostic_critic_loss,critic_mse_reference=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
             native_reference_command_budget=args.native_reference_command_budget,
             native_reference_target_budget_rad=args.native_reference_target_budget_rad,
@@ -1107,15 +1114,16 @@ def run(args, *, alternating=None):
             if args.stop_request['signal'] is not None:raise InterruptedError(args.stop_request['signal'])
             if frozen_return_monitor.stop_reason:raise RuntimeError('Native return stop remains active: '+frozen_return_monitor.stop_reason)
         def ensure_critic():
+            maximum=config['critic_max_loss']
             for retry in range(32):
-                if critic_ready(trainer.critic_updates,trainer.last_critic_loss):return
+                if critic_ready(trainer.critic_updates,trainer.last_critic_loss,maximum=maximum):return
                 check_stop()
                 state=training_state(starts[retry%len(starts)])
                 stats=trainer.imagine_update(state,update_actor=False)
                 print('PHYSICAL_CRITIC='+json.dumps(stats),flush=True)
                 with (args.output/'critic_history.jsonl').open('a') as f:f.write(json.dumps(stats)+'\n')
                 save('latest.pt')
-            if not critic_ready(trainer.critic_updates,trainer.last_critic_loss):
+            if not critic_ready(trainer.critic_updates,trainer.last_critic_loss,maximum=maximum):
                 raise RuntimeError('Contextual critic quality gate did not pass within finite32-block budget')
         stage_ticks=list(CRITIC_TICKS)
         # WM calibration is deliberately actor/critic blocked.  Constructing
@@ -1441,6 +1449,7 @@ def run(args, *, alternating=None):
                 trainer.actor_updates=accepted
                 trainer.actor_attempts=attempts
                 check_stop();cover_critic();ensure_critic()
+                critic_loss_before_proposal=trainer.last_critic_loss
                 if shutil.disk_usage(args.output).free<8*1024**3:raise RuntimeError('Disk guard: less than8GiB free')
                 started=time.perf_counter()
                 with torch.inference_mode():
@@ -1567,6 +1576,7 @@ def run(args, *, alternating=None):
                 finally:
                     if research:adapter.action_ball_model.detach_residual_for_actor=False
                 if research:
+                    stats['critic_loss_before_proposal']=critic_loss_before_proposal
                     stats['contact_aux_weight']=trainer.contact_aux_weight
                     stats['research_elapsed_s']=time.monotonic()-research_started
                 stats['actor_start_sampling']=start_sampling

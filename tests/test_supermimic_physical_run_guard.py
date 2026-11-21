@@ -22,3 +22,10 @@ def test_atomic_checkpoint_preserves_real_update_counter(tmp_path):
     assert not path.with_name('latest.pt.pending').exists()
     atomic_torch_save(dict(actor_updates=9,last_critic_loss=0.,weight=torch.zeros(3)),path)
     assert torch.load(path,weights_only=True)['actor_updates']==9
+
+
+def test_research_monitor_still_requires_finite_loss_and_completed_warmup():
+    assert critic_ready(2388, 135.227, maximum=None)
+    assert not critic_ready(2388, 135.227)
+    for updates, loss in [(199, 0.), (200, None), (200, float('nan')), (200, float('inf'))]:
+        assert not critic_ready(updates, loss, maximum=None)

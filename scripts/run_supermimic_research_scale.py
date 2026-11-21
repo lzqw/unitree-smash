@@ -25,6 +25,8 @@ def main():
         ap.add_argument('--'+key,type=Path,required=True)
     ap.add_argument('--training-seed', type=int,
                     help='Use an independent learner and replay seed with the same starting weights and native cases')
+    ap.add_argument('--diagnostic-critic-loss',action='store_true',
+                    help='Match a G0 control to a G1 arm with monitored minibatch critic loss')
     ap.add_argument('--continuous-approach-starts',action='store_true',
                     help='Match a G0 control to a G1 arm with continuous Approach quotas')
     ap.add_argument('--arm',choices=('G0','G1'),required=True)
@@ -55,6 +57,8 @@ def main():
     # An old G1 supervisor starts G0 without this flag to replay its original block-local draw order.
     if (a.arm=='G1' or a.continuous_approach_starts) and '--continuous-approach-starts' not in cmd:
         cmd.append('--continuous-approach-starts')
+    if (a.arm=='G1' or a.diagnostic_critic_loss) and '--diagnostic-critic-loss' not in cmd:
+        cmd.append('--diagnostic-critic-loss')
     if a.training_seed is not None:
         cmd.extend(['--research-training-seed',str(a.training_seed)])
     registration=dict(command=cmd,arm=a.arm,initial=composition,expected_retained_updates=256,

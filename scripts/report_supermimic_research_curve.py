@@ -33,7 +33,7 @@ def scalars(row):
     head = row['block']
     metrics = {f'{head}/{key}': row[key] for key in (
         'objective_before', 'objective_after', 'final_command_max_change', 'task_gradient_norm',
-        'tracking_gradient_norm', 'effective_gate_lanes', 'critic_loss', 'contact_aux_weight',
+        'tracking_gradient_norm', 'effective_gate_lanes', 'critic_loss', 'critic_loss_before_proposal', 'contact_aux_weight',
         'native_collect_seconds', 'bptt_seconds', 'world_update_seconds') if key in row}
     if head == 'approach' and row.get('contact_aux_weight', 0) > 0:
         for key in ('outgoing_impact_lanes', 'task_tracking_cosine'):
