@@ -1,0 +1,117 @@
+{
+  "run": "paired_adam_direction_0040/G1",
+  "update": "R25",
+  "physical_collection": {
+    "stream_id": 10,
+    "behavior_version": 101,
+    "actor_sha256": "4cdff56a171c5cad2a523af9c37c67fb9db82df868558dc1ba7775ddd1304b92",
+    "native_ticks": [
+      6526,
+      6653
+    ],
+    "chunks": {
+      "chunk_00004.pt.zst": "8289271697e4c49074663a1e7471e3e5747fbb46b991987b18ffe9c5bf0a4984",
+      "chunk_00005.pt.zst": "1f06e9db902914947d1a125c11a6b78db9cb7bbb89615457b51db398b63efd3a",
+      "chunk_00006.pt.zst": "762ec5594349f15c7e71430772a0a70134925bf31a8357dd0f60cc2fc975bd9d",
+      "chunk_00007.pt.zst": "8c9dd2a0fe14f09504dacc8878ab840c2a6ac98311c47a5602e7a2c290f867dd"
+    },
+    "valid_16_step_starts": 5085,
+    "training_lanes": 45,
+    "training_qualified_edges": 0,
+    "training_frame_edges": 0,
+    "training_body_edges": 0,
+    "eligible_events": {
+      "post_landing_support_loss": 0,
+      "pre_touchdown": 0,
+      "touchdown": 0,
+      "post_touchdown": 0,
+      "recovery_failure": 0,
+      "stable_recovery": 0,
+      "post_landing_unload": 0
+    }
+  },
+  "paired_actor_requests": {
+    "source_actor_sha256": "3f3d4e17a47de7ed2874a801db97dca2cf061f82a29aba952d218e13ebfc246a",
+    "collection_actor_sha256": "4cdff56a171c5cad2a523af9c37c67fb9db82df868558dc1ba7775ddd1304b92",
+    "native_state_rows": 16384,
+    "action_dim": 18,
+    "recorded_request_max_error": 5.960464477539063e-08,
+    "recorded_request_rms_error": 5.019984249324344e-09,
+    "paired_request_max_delta": 0.03609618917107582,
+    "paired_request_rms_delta": 0.0006920221357165311,
+    "changed_state_rows_gt_1e_6": 289,
+    "changed_lane_count": 66,
+    "approach_gate_gt_quarter_rows": 46,
+    "approach_gate_gt_quarter_lanes": 18,
+    "paired_active_request_rms": 0.01232585195210756,
+    "launch_edges": 128
+  },
+  "wm": {
+    "window_counts": {
+      "initial_archive": 256,
+      "recent_online": 192,
+      "older_online": 64,
+      "action_identification": 208,
+      "contact_event": 304
+    },
+    "online_transition_uses_by_behavior": {
+      "8": 1680,
+      "16": 1040,
+      "17": 1024,
+      "33": 208,
+      "69": 3242,
+      "77": 886,
+      "41": 64,
+      "85": 272,
+      "93": 80,
+      "49": 32
+    },
+    "collection_behavior_uses": 0,
+    "world_updates": 192,
+    "passed": true,
+    "metrics_H64": {
+      "flight": [
+        {
+          "horizon": 64,
+          "metric": "ball_velocity_rmse",
+          "anchor": 1.2001900672912598,
+          "candidate": 0.9946404695510864,
+          "passed": true
+        }
+      ],
+      "body": [
+        {
+          "horizon": 64,
+          "metric": "body_rmse",
+          "anchor": 0.6821431517601013,
+          "candidate": 0.5500328540802002,
+          "passed": true
+        },
+        {
+          "horizon": 64,
+          "metric": "root_angular_mae",
+          "anchor": 0.265298992395401,
+          "candidate": 0.16558174788951874,
+          "passed": true
+        }
+      ]
+    }
+  },
+  "recovery": {
+    "start_families": {
+      "risk": 8,
+      "landing": 4,
+      "stable": 4,
+      "initial_archive": 0
+    },
+    "start_stages": {
+      "pre_body_ground": 3,
+      "post_landing_support_loss": 2,
+      "recovery_failure": 3,
+      "touchdown": 2,
+      "post_touchdown": 2,
+      "stable_recovery": 4
+    }
+  },
+  "completed_native_episodes": 0
+}
