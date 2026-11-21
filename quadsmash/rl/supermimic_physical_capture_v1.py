@@ -247,10 +247,16 @@ class PhysicalTransitionArchive:
             raise RuntimeError('Nonconsecutive native control ticks')
         if final_action.shape != targets.shape or targets.shape[-1] != 18:
             raise ValueError('Expected final18-joint command')
-        row = dict(self.pending, after=state, final_action=final_action,
-                   final_joint_targets=targets, reward=reward,
-                   terminated=terminated, timeout=timeout, executor_after=memory)
-        self.rows.append(tensor_tree_copy(row))
+        # begin_record already owns its inputs, as does finish's reward snapshot.
+        # The task trace also contains nested sequences: preserve its archive
+        # representation and detach it from the recorder before its next tick.
+        row = dict(self.pending)
+        if 'task_sequence' in row:
+            row['task_sequence'] = tensor_tree_copy(row['task_sequence'])
+        row.update(tensor_tree_copy(dict(after=state, final_action=final_action,
+            final_joint_targets=targets, reward=reward, terminated=terminated,
+            timeout=timeout, executor_after=memory)))
+        self.rows.append(row)
         self.pending = None
         self.ticks += 1
         self.transitions += len(reward)

@@ -1,0 +1,28 @@
+{
+  "source_chunk": "chunk_00006.pt.zst",
+  "source_sha256": "f9315991bd53df64632b0b223836dca56d4aefaa4b4fa3d642d6aa49887bc3d3",
+  "base_commit": "b26bc5f",
+  "lane_count": 128,
+  "control_ticks": 32,
+  "pytorch_threads": 2,
+  "identical_serialized_native_rows": 32,
+  "finish_record_seconds": {
+    "old": [
+      0.17110228404635563,
+      0.2021437730290927,
+      0.15845921699656174,
+      0.1603381250752136
+    ],
+    "new": [
+      0.08851879704161547,
+      0.085769197990885,
+      0.08333339600358158,
+      0.08354375296039507
+    ]
+  },
+  "median_seconds": {
+    "old": 0.16572020456078462,
+    "new": 0.08465647547564004
+  },
+  "scope": "CPU replay of finish_record on captured pre-reset inputs. Timings exclude begin_record, disk, hash comparison, PhysX and any optimizer work."
+}
