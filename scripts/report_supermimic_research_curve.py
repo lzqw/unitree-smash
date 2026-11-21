@@ -35,6 +35,16 @@ def scalars(row):
         'objective_before', 'objective_after', 'final_command_max_change', 'task_gradient_norm',
         'tracking_gradient_norm', 'effective_gate_lanes', 'critic_loss', 'contact_aux_weight',
         'native_collect_seconds', 'bptt_seconds', 'world_update_seconds') if key in row}
+    if head == 'approach' and row.get('contact_aux_weight', 0) > 0:
+        for key in ('outgoing_impact_lanes', 'task_tracking_cosine'):
+            if key in row:
+                metrics['approach/'+key] = row[key]
+        if all(key in row for key in ('task_gradient_norm','tracking_gradient_norm','toi_racket_weight')):
+            outgoing_norm = row['contact_aux_weight'] * row['task_gradient_norm']
+            tracking_norm = row['toi_racket_weight'] * row['tracking_gradient_norm']
+            metrics['approach/weighted_outgoing_gradient_norm'] = outgoing_norm
+            if tracking_norm > 0:
+                metrics['approach/outgoing_to_tracking_gradient_ratio'] = outgoing_norm / tracking_norm
     metrics[head+'/accepted'] = int(row['update_accepted'])
     metrics['gpu/peak_allocated_GiB'] = row['peak_gpu_bytes'] / 2**30
     guard = row.get('fixed_native_forward')

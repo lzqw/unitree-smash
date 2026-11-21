@@ -94,6 +94,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         for key in ('gate_steps','gate_lanes','tracking_steps','tracking_active_lane_steps','tracking_effective_weight_sum',
                     'tracking_nonzero_gradient_lanes','matched_references'):
             counts[key]=counts.get(key,0)+row[key]
+        if 'outgoing_impact_lanes' in row:
+            counts['outgoing_impact_lanes']=counts.get('outgoing_impact_lanes',0)+row['outgoing_impact_lanes']
         report=row['reference_coverage']
         by_record.append(dict(gate_lanes=n,matched=row['matched_references'],tracking_lane_steps=row['tracking_active_lane_steps']))
         if torch.is_grad_enabled():

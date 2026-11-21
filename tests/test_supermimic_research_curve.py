@@ -112,3 +112,16 @@ def test_interaction_budget_uses_only_collections_completed_by_checkpoint(tmp_pa
     refresh['result']['policy_id'] = 'wrong'
     with pytest.raises(ValueError, match='identity'):
         checkpoint_interactions(ck, 90, 2)
+
+
+def test_contact_contribution_separates_weighted_gradient_from_coverage():
+    row = dict(block='approach', update_accepted=True, peak_gpu_bytes=0, toi_racket_weight=2.,
+               task_gradient_norm=5., tracking_gradient_norm=.25, task_tracking_cosine=-.5)
+    assert 'approach/outgoing_to_tracking_gradient_ratio' not in scalars(row)
+    active = scalars(dict(row, contact_aux_weight=.1, outgoing_impact_lanes=2))
+    assert active['approach/weighted_outgoing_gradient_norm'] == .5
+    assert active['approach/outgoing_to_tracking_gradient_ratio'] == 1.
+    assert active['approach/outgoing_impact_lanes'] == 2
+    legacy = scalars(dict(row, contact_aux_weight=.1, tracking_gradient_norm=0))
+    assert 'approach/outgoing_impact_lanes' not in legacy
+    assert 'approach/outgoing_to_tracking_gradient_ratio' not in legacy

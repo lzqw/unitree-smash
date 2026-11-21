@@ -1,0 +1,94 @@
+{
+  "scope": "CPU offline prospective G1 auxiliary on frozen R8+A8, one fixed archive tick 272. Evenly spaced rows among TOI-eligible training lane IDs. No policy step or environment interaction. This is an imagined gradient, not a native Jacobian.",
+  "retained": 16,
+  "eligible": 30,
+  "selected": [
+    10,
+    20,
+    23,
+    26,
+    29,
+    43,
+    56,
+    63,
+    69,
+    79,
+    82,
+    93
+  ],
+  "tick": 272,
+  "actor_sha256": "06d4bfdce73720325339a34fc2c4b5548f3f4f5c72f38d8eacfcb2cb11b168c8",
+  "world_sha256": "f387e58471cfc1dd47e62f8fabd692d261680596c6d68d5e8507dac1a52a9808",
+  "aux_weight": 0.1,
+  "groups": [
+    {
+      "logged_outgoing_impact_lanes": 4,
+      "lanes": [
+        10,
+        20,
+        23,
+        26
+      ],
+      "active_gate_lanes": 4,
+      "impacted": {
+        "26": 2.7200000286102295,
+        "23": 2.740000009536743,
+        "20": 2.7799999713897705,
+        "10": 2.7899999618530273
+      },
+      "outgoing_cost": 0.005675941705703735,
+      "toi_loss": 0.30286020040512085,
+      "task_gradient_norm": 2.9426751136779785,
+      "tracking_gradient_norm": 0.4663563370704651,
+      "anchor_gradient_norm": 0.29394838213920593,
+      "task_tracking_cosine": -0.33733445405960083,
+      "weighted_outgoing_to_toi_gradient_norm_ratio": 0.6309928438333516
+    },
+    {
+      "logged_outgoing_impact_lanes": 4,
+      "lanes": [
+        29,
+        43,
+        56,
+        63
+      ],
+      "active_gate_lanes": 4,
+      "impacted": {
+        "43": 2.740000009536743,
+        "56": 2.740000009536743,
+        "63": 2.75,
+        "29": 2.7899999618530273
+      },
+      "outgoing_cost": 0.5030739903450012,
+      "toi_loss": 0.5321863889694214,
+      "task_gradient_norm": 19.100147247314453,
+      "tracking_gradient_norm": 1.5753910541534424,
+      "anchor_gradient_norm": 0.2973968982696533,
+      "task_tracking_cosine": 0.4694896936416626,
+      "weighted_outgoing_to_toi_gradient_norm_ratio": 1.2124067352647356
+    },
+    {
+      "logged_outgoing_impact_lanes": 4,
+      "lanes": [
+        69,
+        79,
+        82,
+        93
+      ],
+      "active_gate_lanes": 4,
+      "impacted": {
+        "69": 2.7300000190734863,
+        "93": 2.740000009536743,
+        "79": 2.819999933242798,
+        "82": 2.819999933242798
+      },
+      "outgoing_cost": 0.00037601590156555176,
+      "toi_loss": 0.45155537128448486,
+      "task_gradient_norm": 0.28556153178215027,
+      "tracking_gradient_norm": 1.2064324617385864,
+      "anchor_gradient_norm": 0.3135409653186798,
+      "task_tracking_cosine": 0.5245227217674255,
+      "weighted_outgoing_to_toi_gradient_norm_ratio": 0.023669914465881358
+    }
+  ]
+}

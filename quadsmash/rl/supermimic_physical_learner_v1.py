@@ -366,7 +366,8 @@ class PhysicalHorizonTrainer:
             coverage['reference_usage_by_sha256']={reference['reference_digests'][i]:n for i,n in zip(ids.tolist(),counts.tolist())}
         coverage.update(matched_lanes=int(reference['matched'].sum()) if reference else 0,
             effective_weight_sum=float(track_weight_sum.detach()),tracking_applied=bool(tracks and float(track_weight_sum.detach())>0))
-        return dict(toi_weights=all_track_weights.detach() if toi_only and tracks else None,
+        aux_stats={'outgoing_impact_lanes': int(impact_lanes.sum())} if contact_weight and torch.is_grad_enabled() else {}
+        return dict(**aux_stats,toi_weights=all_track_weights.detach() if toi_only and tracks else None,
                     toi_coverage_preserved=toi_coverage_preserved,reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
                     gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
                     critic_data=(torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid)),
@@ -436,6 +437,8 @@ class PhysicalHorizonTrainer:
             ret_mean=float(rollout['ret'].detach().mean()); track_value=float(rollout['tracking'].detach())
             gate_steps=rollout['gate_steps'];gate_lanes=rollout['gate_lanes'];track_steps=rollout['tracking_steps']
             track_stats={k:rollout[k] for k in ('tracking_active_lane_steps','tracking_effective_weight_sum','tracking_nonzero_gradient_lanes')}
+            if 'outgoing_impact_lanes' in rollout:
+                track_stats['outgoing_impact_lanes']=rollout['outgoing_impact_lanes']
             matched=rollout['matched_references'];coverage=rollout['reference_coverage']
             del rollout
         except BaseException:
