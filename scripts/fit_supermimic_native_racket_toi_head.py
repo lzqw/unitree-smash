@@ -58,6 +58,15 @@ def fixture(root,split,prior):
     return data,[r['kind'] for r in rows],torch.tensor([r['repeat']['native'] for r in rows])
 
 
+def control_event_groups(signatures_by_tick, branches):
+    from quadsmash.rl.supermimic_native_manifold_groups import classify
+
+    groups = []
+    for tick in zip(*(signatures_by_tick[b] for b in branches), strict=True):
+        groups.extend(classify(events) for events in zip(*tick, strict=True))
+    return groups
+
+
 def g07(root,prior):
     from audit_supermimic_native_window_response import complete_window,window_signature
     from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branch,_same_contract
@@ -75,10 +84,12 @@ def g07(root,prior):
     specs=runs['nominal_a']['spec']
     lanes=specs['lanes']
     signatures_by_branch={};data={};nominal={};sequences={}
+    signatures_by_tick = {}
     for name,run in runs.items():
         traces=complete_window(run['raw'],specs,prior.steps)
         torch.testing.assert_close(run['raw']['request_after'],perturb_request(run['raw']['request_before'],specs,name),atol=0,rtol=0)
         signs=[signatures(t) for t in traces]
+        signatures_by_tick[name] = signs
         signatures_by_branch[name]=[window_signature([s[i] for s in signs],prior.steps) for i in range(len(lanes))]
         items=[]
         sequence=[]
@@ -108,7 +119,8 @@ def g07(root,prior):
                    unchanged_lanes=[lane for lane,value in zip(lanes,command_delta.tolist()) if value==0],
                    first_native_loaded_interval={name:[row[3][0] if row[2] else None for row in rows]
                                                  for name,rows in signatures_by_branch.items()})
-    return data,groups*len(traces),nominal['nominal_b']-nominal['nominal_a'],groups,sequences,execution
+    tick_groups = control_event_groups(signatures_by_tick, BRANCHES)
+    return data,tick_groups,nominal['nominal_b']-nominal['nominal_a'],groups,sequences,execution
 
 
 def predicted_state(model,prior,row):
@@ -124,7 +136,7 @@ def prediction(model,prior,row):
 
 
 @torch.no_grad()
-def free_rollout(model,prior,sequences,groups,repeat,execution):
+def free_rollout(model,prior,sequences,groups,repeat,execution,baseline_model=None):
     targets={}
     outputs={key:{} for key in ('baseline','candidate')}
     timings={name:{} for name in outputs}
@@ -136,8 +148,9 @@ def free_rollout(model,prior,sequences,groups,repeat,execution):
                 row=prepare(prior,state,target,stream)
                 loaded=row['active'] & (row['object_id']==0)
                 first_times=torch.where(loaded & first_times.isinf(),tick_index*prior.dt+row['time'],first_times)
-                state=(predicted_state(model,prior,row) if name=='candidate' else
-                       torch.cat((row['analytic_position'],row['analytic']),1))
+                response = model if name == 'candidate' else baseline_model
+                state = (predicted_state(response, prior, row) if response is not None else
+                         torch.cat((row['analytic_position'], row['analytic']), 1))
             outputs[name][b]=state[:,3:]
             timings[name][b]=first_times
         targets[b]={'target':seq[-1][1]}
@@ -182,6 +195,7 @@ def metrics(native,output):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('fixture','calibration','output'):p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--calibrated-slip', type=Path, help='Use the admitted native/Body first-impact calibration as a frozen baseline')
     p.add_argument('--evaluate-head',type=Path,help='Evaluate saved fixture weights without running the optimizer')
     p.add_argument('--g07-training',type=Path)
     p.add_argument('--g07-development',type=Path)
@@ -235,20 +249,36 @@ def main():
     data={b:{k:v.to(device) for k,v in r.items()} for b,r in data.items()}
     prior=prior.to(device)
     model=V13().to(device)
+    analytic = None
+    predictor = model
+    slip_sha = None
+    if a.calibrated_slip:
+        from calibrate_supermimic_toi_slip import TOISlip
+        slip = json.loads(a.calibrated_slip.read_text())
+        if (not a.g07_training or not slip['development_passed'] or not slip['body_racket_response_passed']
+                or slip['final_holdout_opened'] or slip['calibration_sha256'] != sha(a.calibration)
+                or slip['fixture_sha256'] != {s: provenance[s] for s in ('train', 'development')}
+                or slip['g07_training']['status_sha256'] != provenance['g07_train']
+                or slip['g07_sha256'] != provenance['g07_development']):
+            raise ValueError('Tangential calibration must pass both racket-input checks on these archives')
+        config = slip['selected']
+        analytic = TOISlip(config['friction'], config['sticking'])
+        predictor = TOISlip(config['friction'], config['sticking'], residual=model)
+        slip_sha = sha(a.calibrated_slip)
     opt=torch.optim.Adam(model.impulse_residual_head.parameters(),lr=.001)
     n=len(data['plus']['target'])
     updates=0 if a.evaluate_head else 128
     if a.evaluate_head:
         ck=torch.load(a.evaluate_head,map_location='cpu',weights_only=True)
         if (ck['schema']!='supermimic-supervised-native-racket-head-v1' or ck['v13_semantics_version']!=model.V13_SEMANTICS_VERSION
-            or ck['analytic']!=prior.calibration_manifest() or not set(fit_labels)<=ck['source_sha256'].keys()
+            or ck.get('slip_calibration_sha256')!=slip_sha or ck['analytic']!=prior.calibration_manifest() or not set(fit_labels)<=ck['source_sha256'].keys()
             or any(provenance.get(key)!=digest for key,digest in ck['source_sha256'].items())):
             raise ValueError('Fixture head or source binding changed')
         model.impulse_residual_head.load_state_dict(ck['state'],strict=True)
     for _ in range(updates):
         ix=torch.randint(n,(128,),device=device)
         rows={b:{k:v[ix] for k,v in r.items()} for b,r in data.items()}
-        pred={b:prediction(model,prior,rows[b]) for b in rows}
+        pred={b:prediction(predictor,prior,rows[b]) for b in rows}
         err={b:pred[b]-rows[b]['target'] for b in rows}
         loss=sum(F.smooth_l1_loss(v,torch.zeros_like(v),beta=.1) for v in err.values())/2
         signed=err['plus']-err['minus']
@@ -260,10 +290,12 @@ def main():
     with torch.no_grad():
         for label,native in stages.items():
             row=native[0]
-            report[label]=dict(baseline=metrics(native,{b:v['analytic'] for b,v in row.items()}),
-                               candidate=metrics(native,{b:prediction(model,prior,v) for b,v in row.items()}))
+            baseline = {b: prediction(analytic, prior, v) if analytic is not None else v['analytic']
+                        for b, v in row.items()}
+            report[label]=dict(baseline=metrics(native,baseline),
+                               candidate=metrics(native,{b:prediction(predictor,prior,v) for b,v in row.items()}))
     for k,seq in sequences.items():
-        report[k+'_free_rollout']=free_rollout(model,prior,seq,unique[k],stages[k][2],execution[k])
+        report[k+'_free_rollout']=free_rollout(predictor,prior,seq,unique[k],stages[k][2],execution[k],baseline_model=analytic)
     validations=[report['development']]
     if a.g07_development:
         validations.extend([report['g07_development'],report['g07_development_free_rollout']])
@@ -274,7 +306,7 @@ def main():
                     and .5<=m['gain_median']<=2 and m['absolute_rmse']<baseline['stable_signed']['absolute_rmse']
                     and v['absolute_rmse']<=baseline['absolute_rmse'] and v['all_signed']['absolute_rmse']<=baseline['all_signed']['absolute_rmse']
                     and (v['no_contact_signed_rmse'] is None or v['no_contact_signed_rmse']<=baseline['no_contact_signed_rmse']))
-    evidence=dict(training_device=str(a.device),groups=group_counts,executed_target_audits=execution,scores=report,source_sha256=provenance,design_sha256=sha(a.fixture/'design.json'),
+    evidence=dict(slip_calibration_sha256=slip_sha,training_device=str(a.device),groups=group_counts,executed_target_audits=execution,scores=report,source_sha256=provenance,design_sha256=sha(a.fixture/'design.json'),
                   calibration_sha256=sha(a.calibration),heldout_opened=False,actor_updates=0,wm_updates=updates,
                   development_passed=all(map(qualifies,validations)),policy_training_admitted=False,
                   scope='V13 TOI-head supervised calibration with measured racket endpoints. G07 intervals use recorded incoming shuttle states.')
@@ -285,7 +317,8 @@ def main():
         path=a.evaluate_head
     else:
         atomic_torch_save(dict(schema='supermimic-supervised-native-racket-head-v1',v13_semantics_version=model.V13_SEMANTICS_VERSION,
-                           state=model.impulse_residual_head.state_dict(),analytic=prior.calibration_manifest(),source_sha256=provenance),path)
+                           state=model.impulse_residual_head.state_dict(),analytic=prior.calibration_manifest(),
+                           slip_calibration_sha256=slip_sha,source_sha256=provenance),path)
     evidence['checkpoint_sha256']=sha(path)
     (a.output/'result.json').write_text(json.dumps(evidence,indent=2,allow_nan=False)+'\n')
 

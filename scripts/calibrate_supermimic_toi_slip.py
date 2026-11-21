@@ -14,7 +14,8 @@ from quadsmash.rl.supermimic_ball_impulse_prior_v1 import BallImpulsePriorV1
 class TOISlip:
     """Velocity-unit sticking impulse capped by a fraction of the predicted normal impulse."""
 
-    def __init__(self, friction, sticking):
+    def __init__(self, friction, sticking, residual=None):
+        self.residual = residual
         self.friction = friction
         self.sticking = sticking
 
@@ -25,7 +26,10 @@ class TOISlip:
         bound = self.friction * row['impulse_dv'].norm(dim=-1, keepdim=True)
         scale = torch.minimum(torch.full_like(bound, self.sticking), bound / slip.norm(dim=-1, keepdim=True).clamp_min(1e-12))
         active = present.reshape(-1).bool() & row['active'].reshape(-1).bool() & (row['object_id'] == 0)
-        return dict(impulse_residual_active=active, impulse_residual_dv=-slip * scale * active[:, None])
+        dv = -slip * scale
+        if self.residual is not None:
+            dv = dv + self.residual.toi_response(row, present)['impulse_residual_dv']
+        return dict(impulse_residual_active=active, impulse_residual_dv=dv * active[:, None])
 
 
 def integrated_friction(root, split, physics, prior):
@@ -86,8 +90,16 @@ def signed_training_capture(root, development_root, prior, mass):
     signed = rows['plus']['target'] - rows['minus']['target']
     above_noise = signed.norm(dim=-1) > (3 * repeats.norm(dim=-1)).clamp_min(1e-8)
     comparable = torch.tensor([kind in ('racket_stable','toi_switch','manifold_switch') for kind in groups])
-    if not (above_noise & comparable).any():
-        raise ValueError('Training pairs do not resolve a signed native racket response')
+    if 'nominal_mismatch' in by_lane:
+        raise ValueError('Nominal repeat changed native contact timing or topology')
+    lane_ids = commands['lanes']
+    target_changed = torch.tensor(commands['max_joint_target_difference_rad']) > 0
+    usable = (above_noise & comparable).reshape(-1, len(lane_ids)) & target_changed
+    if not usable.any():
+        raise ValueError('No loaded control interval resolves a signed native response above repeat noise with a changed target')
+    supported_lanes = [lane for lane, ok in zip(lane_ids, usable.any(0).tolist()) if ok]
+    stable = torch.tensor([kind == 'racket_stable' for kind in groups]).reshape_as(usable)
+    stable_lanes = [lane for lane, ok in zip(lane_ids, (usable & stable).any(0).tolist()) if ok]
     labels = {}
     status = json.loads((root / 'status.json').read_text())
     for b in rows:
@@ -97,10 +109,13 @@ def signed_training_capture(root, development_root, prior, mass):
         if labels[b].shape != rows[b]['target'].shape or not torch.isfinite(labels[b]).all():
             raise ValueError('G07 friction labels do not match native transitions')
     return (rows, groups, repeats), labels, dict(status_sha256=sha(root/'status.json'), commands=commands,
-        lane_counts={k:by_lane.count(k) for k in sorted(set(by_lane))}, supported_racket_lane_ticks=int((above_noise & comparable).sum()))
+        lane_counts={k:by_lane.count(k) for k in sorted(set(by_lane))},
+        control_interval_counts={k:groups.count(k) for k in sorted(set(groups))},
+        supported_racket_lane_ticks=int(usable.sum()), supported_racket_lane_ids=supported_lanes,
+        supported_stable_contact_lane_ids=stable_lanes)
 
 
-def body_transfer(root, checkpoint, prior, model, groups, repeats, sequences, commands, replay=None, source_stage=None, measured=None):
+def body_transfer(root, checkpoint, prior, model, groups, repeats, sequences, commands, replay=None, source_stage=None, measured=None, racket_outputs=None, body_anchor_interval=None):
     from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branch
     from quadsmash.rl.supermimic_physical_dataset_v1 import encode_physical
     from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
@@ -148,12 +163,19 @@ def body_transfer(root, checkpoint, prior, model, groups, repeats, sequences, co
         previous, feet, elapsed, present = [initial[k][lanes] for k in
                                             ('final_action', 'foot_contact', 'elapsed_s', 'ball_present')]
         first = torch.full((len(lanes),), float('inf'))
+        if racket_outputs is not None:
+            racket_outputs[branch] = []
         for i, (control, (_, label, native_racket)) in enumerate(zip(raw['step_sequence'], seq, strict=True)):
+            if i and body_anchor_interval and i % body_anchor_interval == 0:
+                observed = raw['step_sequence'][i-1]['next_state'][lanes]
+                state = torch.cat((observed[:, :49], state[:, 49:]), 1)
             robot, contact, present_next = body(state, control['final_joint_targets'][lanes],
                                                 previous, feet.float(), present, elapsed, launch)
             if not present.all() or not present_next.all():
                 raise ValueError('Unexpected launch boundary in the Body oracle')
             stream = [torch.stack((v, w)) for v, w in zip(racket(state, body.geometry), racket(robot, body.geometry), strict=True)]
+            if racket_outputs is not None:
+                racket_outputs[branch].append(tuple(v[-1] for v in stream))
             if measured:
                 # Diagnostic exchange of pose and twist independently. Only interval endpoints enter the prior.
                 replace = {'center': (0,), 'rotation': (1,), 'pose': (0,1), 'twist': (2,3), 'both': (0,1,2,3)}[measured]
