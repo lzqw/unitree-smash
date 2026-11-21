@@ -8,6 +8,8 @@ import argparse,hashlib,json,os,shutil,subprocess,sys,time,traceback,signal,io
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
+LEARNER_SEED = 20261114
+NATIVE_TRAIN128_SEED = 882072
 
 
 def write(path,value):
@@ -369,7 +371,7 @@ def run(args, *, alternating=None):
     from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
     lifecycle_stage(args.output, 'IMPORT_ALL')
     env=trainer=archive=None;writer=None;failed=False;tick=0;phase='LOAD'
-    torch.set_num_threads(args.cpu_threads);torch.manual_seed(20261114)
+    torch.set_num_threads(args.cpu_threads);torch.manual_seed(LEARNER_SEED)
     try:
         lifecycle_stage(args.output, 'BEFORE_LOAD_PHYSICAL_LOOP')
         actor,adapter,template,launch,manifest=load_physical_loop(archive=args.archive,
@@ -789,10 +791,10 @@ def run(args, *, alternating=None):
         contract,protocol,cases,receipt=resolve_task_contract(
             source, source_path, execution_root=execution_root, root=execution_root)
         if contract!=manifest['task_contract']:raise ValueError('Native task contract changed')
-        cfg=make_task_cfg(128,contract,protocol,receipt);cfg.seed=882072;cfg.sim.device='cuda:0'
+        cfg=make_task_cfg(128,contract,protocol,receipt);cfg.seed=NATIVE_TRAIN128_SEED;cfg.sim.device='cuda:0'
         class TrainingEnv(SuperMimicEnvV1,FrozenPanelEnv):pass
         phase='ENV';stage(args.output,'BEFORE_ENV')
-        env=TrainingEnv(cfg,cases=cases,reset_noise=zero_panel_reset_noise(128,882072),
+        env=TrainingEnv(cfg,cases=cases,reset_noise=zero_panel_reset_noise(128,NATIVE_TRAIN128_SEED),
             residual_policy_checkpoint=source,g07_execution_root=execution_root,
             native_return_gamma=timebase.gamma,contact_flight_recovery=contract['contact_flight_recovery'])
         wrapper=RslRlVecEnvWrapper(env,clip_actions=None);obs,_=wrapper.reset()

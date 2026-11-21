@@ -8,6 +8,11 @@ import subprocess
 import sys
 import time
 
+if __package__:
+    from .train_supermimic_physical_block import LEARNER_SEED, NATIVE_TRAIN128_SEED
+else:
+    from train_supermimic_physical_block import LEARNER_SEED, NATIVE_TRAIN128_SEED
+
 
 def digest(path):
     with path.open('rb') as stream:
@@ -44,7 +49,8 @@ def main():
     a.output.mkdir(parents=True,exist_ok=False)
     env=dict(os.environ,PYTHONPATH='.:scripts',OMP_NUM_THREADS='2',QUADSMASH_ZSTD_ARCHIVE='1')
     registration=dict(command=cmd,arm=a.arm,initial=composition,expected_retained_updates=256,
-                      max_proposals=512,train_case_seed=20261114,compression='zstd',
+                      max_proposals=512,train_case_seed=NATIVE_TRAIN128_SEED,learner_initial_seed=LEARNER_SEED,
+                      learner_rng_at_start='restored from composition checkpoint',compression='zstd',
                       previous_registration_sha256=digest(a.source_registration),
                       baseline_path=cmd[cmd.index('--paired-evaluation-baseline')+1])
     (a.output/'registration.json').write_text(json.dumps(registration,indent=2)+'\n')
