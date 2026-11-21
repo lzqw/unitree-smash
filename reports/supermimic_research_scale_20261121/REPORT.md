@@ -62,3 +62,5 @@ G1 的 R6 断点在旧配对入口会因当前 Actor 已更新而被拒绝。现
 新增累计扩展入口 `PYTHONPATH=.:scripts python scripts/extend_supermimic_research_scale.py --parent <已完成的组目录> --total-retained 1024 --output <新目录> --tensorboard <原TensorBoard根目录>`，后续终点可取 2048。入口使用上阶段冻结采集、WM 和 Critic 刷新全部结束后的 latest.pt。调度器核对原计划与回执，直接进入下一周期的 Recovery，沿用真实交互计数、学习器和采样器状态，完成扩展后执行独立 512 案例评分。新进程从新的原生回合开始；已有 Replay 通过归档恢复。新 checkpoint 保存训练墙钟，首个旧版 G1 的续接计时使用原 launcher 的进程耗时，包含其启动与 Replay 重建。
 
 在实际 R8+A4 checkpoint 上做了只读 CPU 检查。两个 Head 各有 6 个 Adam 参数状态，WM 有 64 个、Critic 有 14 个，Replay 随机状态与四份归档清单已保存。恢复出的调度指向首个 Approach 块的第 4 次保留更新。CPU 回归覆盖 256→1024→2048 的累计预算、保留的周期及冻结回执、使用刷新前 checkpoint 的拒绝路径，以及接触事件跨阶段累计。675 项通过。主训练仍在 256 阶段，尚无原生扩展成绩。[实际断点检查](cumulative_resume_inspection.json)
+
+在 R8 权重和两个真实原生记录上检查了 G07 执行器状态的分支复制。对只含浮点数的计划观测列表保留独立副本，避免为每个历史标量递归分派。每个记录取相同三条 lane，四组交错计时的复制中位数分别从 38.52 降至 5.41 ms、从 42.59 降至 7.64 ms。H4 时逐步最终关节目标、55 维物理状态和执行命令梯度均逐元素相等。676 项 CPU 回归通过。该局部优化供后续进程使用，完整 G1 墙钟按实际运行版本统计。[分支复制基准](g07_branch_clone_parity.json)

@@ -106,6 +106,10 @@ def clone_execution_graph(value, *, learning=False, memo=None):
         owner = clone_execution_graph(value.__self__, learning=learning, memo=memo)
         fn = inspect.unwrap(value.__func__) if learning else value.__func__
         result = types.MethodType(fn, owner)
+    elif type(value) is list and value and type(value[0]) is float and all(type(x) is float for x in value):
+        # Public plan observations are long, mutable lists of immutable floats.
+        # Give the branch its own list while preserving the exact scalar objects.
+        result = value.copy()
     elif isinstance(value, (list, tuple, dict)):
         result = {} if isinstance(value, dict) else []
         memo[id(value)] = result

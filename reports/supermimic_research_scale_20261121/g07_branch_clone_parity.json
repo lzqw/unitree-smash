@@ -1,0 +1,40 @@
+{
+  "baseline_commit": "2ec2947",
+  "actor_sha256": "009e85659eacef63c4164e5f0a04a93b7613a563a71247e08594cda4be83043c",
+  "horizon": 4,
+  "timing_scope": "CPU branch copy, four alternating measurement pairs, eight clones per timing. Forward and gradient parity use the actual R8 models and original G07 executor.",
+  "rows": [
+    {
+      "native_tick": 224,
+      "lanes": [
+        9,
+        22,
+        73
+      ],
+      "clone_median_ms": {
+        "previous": 38.52044393715914,
+        "current": 5.406388499977766
+      },
+      "equal_final_targets": true,
+      "equal_physical_state": true,
+      "equal_command_gradient": true,
+      "gradient_norm": 1.9356541633605957
+    },
+    {
+      "native_tick": 400,
+      "lanes": [
+        9,
+        22,
+        73
+      ],
+      "clone_median_ms": {
+        "previous": 42.59315749914094,
+        "current": 7.6430744975368725
+      },
+      "equal_final_targets": true,
+      "equal_physical_state": true,
+      "equal_command_gradient": true,
+      "gradient_norm": 0.26731622219085693
+    }
+  ]
+}

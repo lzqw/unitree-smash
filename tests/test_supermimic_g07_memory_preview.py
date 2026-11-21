@@ -49,3 +49,14 @@ def test_bound_callbacks_and_mutable_aliases_rebind_to_branch():
     assert branch.first.callback.__self__ is branch.first
     branch.first.callback()
     assert obj.plan==[] and branch.first.plan==['called']
+
+
+def test_float_plan_rows_keep_aliases_and_branch_local_mutations():
+    row = [float(i) for i in range(794)]
+    log = {'used_public_observations': [row, row], 'mixed': [0., {'row': row}]}
+    branch = clone_execution_graph(log, learning=True)
+    cloned = branch['used_public_observations'][0]
+    assert cloned == row and cloned is not row
+    assert cloned is branch['used_public_observations'][1] is branch['mixed'][1]['row']
+    cloned[0] = 1.
+    assert row[0] == 0.
