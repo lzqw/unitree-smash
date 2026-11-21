@@ -77,3 +77,35 @@ def test_native_body_source_uses_executed_command_history_and_checks_resets(monk
     steps[3]['done'][0]=True
     with pytest.raises(ValueError,match='uninterrupted'):
         fit.recorded_body_inputs(raw,[2,0],.01)
+
+
+def test_signed_arm_loss_learns_opposing_commands_without_penalizing_common_offset(monkeypatch):
+    from types import SimpleNamespace
+    from scripts import supermimic_paired_body_candidate as fit
+
+    rows = [*range(25,31), *range(43,49)]
+    monkeypatch.setattr(fit, 'CHECKS', (1,))
+    monkeypatch.setattr(fit, 'signed_rollout', lambda world,ball,window,launch: iter([window['prediction']]))
+    monkeypatch.setattr(fit, 'robot_loss', lambda state,truth: state.new_zeros(()))
+    monkeypatch.setattr(fit, 'fields', lambda state,geometry: state[:,:12])
+    truth = torch.zeros(4,55)
+    truth[2:,rows] = 1
+    prediction = truth.clone()
+    prediction[:,rows] += 2
+    world = SimpleNamespace(geometry=None)
+
+    def evaluate(value):
+        return fit.paired_terms(world, None, {'prediction':value, 'next_state':truth[None]},
+                                torch.ones(4,6), {1:torch.ones(12)}, training=False,
+                                arm_rows=rows, arm_scales={1:torch.ones(12)})
+
+    loss,scores = evaluate(prediction)
+    assert loss == 0 and scores[1]['arm_position_signed_rmse_rad'] == 0
+    prediction[2,rows[1]] -= .5
+    prediction.requires_grad_()
+    loss,scores = evaluate(prediction)
+    loss.backward()
+    assert loss > 0 and scores[1]['arm_position_signed_rmse_rad'] > 0
+    assert scores[1]['arm_velocity_signed_rmse_rad_s'] == 0
+    assert prediction.grad[2,rows[1]] < 0 and prediction.grad[0,rows[1]] > 0
+    assert prediction.grad.count_nonzero() == 2

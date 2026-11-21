@@ -49,18 +49,8 @@ def development_window(root,task,execution,excluded):
     if (spec['data_role']!='development_action_response' or len(ids)!=len(set(ids)) or not set(ids)<=set(excluded)
             or runs['plus']['task_contract']!=task or runs['plus']['policy_execution']!=execution):
         raise ValueError('Unexpected held-out physical cases')
-    result={}
-    for sign in ('minus','plus'):
-        raw=runs[sign]['raw']
-        initial=raw['start']['before']['physical']
-        seq=raw['step_sequence']
-        if len(seq)!=16:
-            raise ValueError('Unexpected native development horizon')
-        result[sign]=dict(state=encode_physical(initial)[ids][None],feet=initial['foot_contact'][ids][None],
-            present=initial['ball_present'][ids][None],targets=torch.stack([s['final_joint_targets'][ids] for s in seq]),
-            previous_action=torch.stack([initial['final_action'][ids],*[s['final_action'][ids] for s in seq[:-1]]]),
-            next_state=torch.stack([s['next_state'][ids] for s in seq]),
-            elapsed=torch.stack([initial['elapsed_s'][ids]+i*task['control_dt_s'] for i in range(16)]))
+    result={sign:recorded_body_inputs(runs[sign]['raw'],ids,task['control_dt_s'])
+            for sign in ('minus','plus')}
     torch.testing.assert_close(result['minus']['state'],result['plus']['state'],rtol=0,atol=0)
     return ids,result
 
