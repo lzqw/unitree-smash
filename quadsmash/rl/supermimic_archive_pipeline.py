@@ -9,11 +9,30 @@ from .supermimic_archive_storage_v1 import require_archive_space, write_archive_
 from .supermimic_physical_capture_v1 import tensor_tree_copy
 
 
+def native_event_counts(rows):
+    """First paid contact and frame latch edges, once per native lane-tick."""
+    lanes = rows[0]['before']['event_state'].shape[0]
+    totals = dict(qualified_contact=0, frame=0, qualified_or_frame=0)
+    for row in rows:
+        before, after = (row[side]['event_state'] for side in ('before','after'))
+        if before.shape != (lanes,8) or after.shape != before.shape:
+            raise ValueError('Unexpected native paid-event schema')
+        qualified = after[:,1] > before[:,1]
+        frame = after[:,6] > before[:,6]
+        totals['qualified_contact'] += int(qualified.sum())
+        totals['frame'] += int(frame.sum())
+        totals['qualified_or_frame'] += int((qualified | frame).sum())
+    return dict(collection_modes=sorted({r['collection_mode'] for r in rows}),
+                blocks=sorted({r['block_name'] for r in rows}), **totals)
+
+
 def serialize(directory, name, schema, snapshot):
     started = time.perf_counter()
     payload = io.BytesIO()
     torch.save(dict(schema=schema, rows=snapshot), payload)
     receipt = write_archive_chunk(directory / name, payload.getbuffer(), compress=True)
+    if snapshot and 'collection_mode' in snapshot[0]:
+        receipt['native_events'] = native_event_counts(snapshot)
     return dict(file=name, ticks=len(snapshot), compression='zstd', **receipt), time.perf_counter() - started
 
 

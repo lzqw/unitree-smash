@@ -85,12 +85,15 @@ def main():
     origin = arm_origin(reg)
     manifest = json.loads(manifest_path.read_text())
     writer = EventFileWriter(str(args.tensorboard))
+    from scripts.report_supermimic_native_contact_counts import NativeContactCounts
+    contacts = NativeContactCounts(arm)
     offset = 0
     heads = {'recovery': 0, 'approach': 0}
     attempts = 0
     try:
         while True:
             live = owner and owner.is_running() and owner.status() != psutil.STATUS_ZOMBIE
+            contacts.update(writer)
             rows, offset = read_new(arm/'train/training_history.jsonl', offset)
             for row in rows:
                 pos = axes(row, origin, manifest['num_envs'])

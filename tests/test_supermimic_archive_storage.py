@@ -75,3 +75,19 @@ def test_pipeline_failure_blocks_all_checkpoint_boundaries(tmp_path, monkeypatch
         with pytest.raises(OSError, match='disk failure'):
             op()
     assert archive.chunks == []
+
+
+def test_native_contact_counts_use_edges_and_do_not_double_count_a_lane_tick():
+    import torch
+    from quadsmash.rl.supermimic_archive_pipeline import native_event_counts
+    old=torch.zeros(4,8)
+    old[0,1]=1
+    new=old.clone()
+    new[1:3,1]=1
+    new[2:,6]=1
+    def row(before,after):
+        return dict(before={'event_state':before}, after={'event_state':after},
+                    block_name='approach', collection_mode='mixed_training')
+    result=native_event_counts([row(old,new),row(new,new)])
+    assert result==dict(qualified_contact=2,frame=2,qualified_or_frame=3,
+                        blocks=['approach'],collection_modes=['mixed_training'])

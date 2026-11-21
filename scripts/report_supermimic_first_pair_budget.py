@@ -7,7 +7,7 @@ from pathlib import Path
 from scripts.report_supermimic_research_curve import read_new
 
 
-def first_pair_budget(plan, rows, historical):
+def first_pair_budget(plan, rows, historical, *, shared_baseline_pending=False):
     blocks = [e for e in plan if e['kind'] == 'train']
     first = blocks[:2]
     if len(first) != 2 or [e['head'] for e in first] != ['recovery', 'approach']:
@@ -31,13 +31,13 @@ def first_pair_budget(plan, rows, historical):
                   for e in blocks)
     refreshes = sum(e['kind'] == 'refresh' for e in plan)
     frozen = refreshes * historical['frozen_collection']['proposal_record_to_episodes_file_seconds']
-    # The registered panel evaluator scores two checkpoints offline per research arm.
-    fixed = 2 * historical['evaluation']['elapsed_s']
+    panels = 2 + int(shared_baseline_pending)
+    fixed = panels * historical['evaluation']['elapsed_s']
     return dict(first_pair=costs, first_pair_wall_seconds=wall, planned_retained=sum(e['target'] for e in blocks),
                 remaining_regular_hours_at_first_pair=(regular-wall)/3600,
                 historical_full_collection_hours=frozen/3600, historical_fixed_panel_hours=fixed/3600,
                 estimated_remaining_hours_after_first_pair=(regular-wall+frozen+fixed)/3600,
-                frozen_collections=refreshes, fixed_panels=2,
+                frozen_collections=refreshes, fixed_panels=panels, shared_zero_update_evaluation_pending=shared_baseline_pending,
                 scope='One arm after its first R/A pair. Includes retries in measured blocks. '
                       'Start-up after replay restore is included in the first Recovery block. '
                       'Uses historical native collection and evaluation costs. Additional refresh fitting, '
@@ -50,7 +50,9 @@ def write_budget(arm):
         return None
     plan = json.loads((arm/'train/config.json').read_text())['alternating_plan']
     reference = Path(__file__).resolve().parents[1]/'reports/supermimic_r16_and_contact_fit_20261121/runtime_cost_snapshot.json'
-    budget = first_pair_budget(plan, rows, json.loads(reference.read_text()))
+    shared_baseline_pending = not (arm.parent/'research_fixed128_zero/completed.json').is_file()
+    budget = first_pair_budget(plan, rows, json.loads(reference.read_text()),
+                               shared_baseline_pending=shared_baseline_pending)
     if budget is not None:
         path = arm/'first_pair_budget.json'
         temp = path.with_suffix('.tmp')

@@ -45,3 +45,6 @@ def test_first_pair_budget_waits_for_both_heads_and_counts_rejections():
     assert result['first_pair']['recovery']['bptt_seconds'] == 45.
     assert result['first_pair_wall_seconds'] == 180.
     assert result['estimated_remaining_hours_after_first_pair'] == (180*15+320)/3600
+    first_arm=first_pair_budget(plan,rows,historical,shared_baseline_pending=True)
+    assert first_arm['fixed_panels']==3
+    assert first_arm['estimated_remaining_hours_after_first_pair']==(180*15+380)/3600
