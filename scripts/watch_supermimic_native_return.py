@@ -123,7 +123,7 @@ def monitor(arm, trainer):
         raise ValueError('Process and arm do not match')
     registration = json.loads((arm/'registration.json').read_text())
     manifest_path = train/'native_transitions/manifest.json'
-    while not manifest_path.exists() and trainer.is_running():
+    while not manifest_path.exists() and trainer.is_running() and trainer.status() != psutil.STATUS_ZOMBIE:
         time.sleep(5)
     if not manifest_path.exists():
         return
@@ -166,29 +166,57 @@ def monitor(arm, trainer):
             acknowledged = consumed
             trend.cohorts.clear()
             trend.raw_means.clear()
-            break
+            # read_new advanced past the whole batch. Finish pending rows once
+            # the operator resumes this trainer so each cohort keeps its tick.
+            while trainer.is_running() and trainer.status() == psutil.STATUS_STOPPED:
+                time.sleep(5)
+            if not trainer.is_running() or trainer.status() == psutil.STATUS_ZOMBIE:
+                return
         time.sleep(5)
+
+
+def monitor_registered_arm(arm, trainer, *, wait_for_lock):
+    """A launcher and an attached supervisor can follow the same arm."""
+    with (arm/'native_return_watch.lock').open('a') as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX if wait_for_lock else fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return
+        if trainer.is_running() and trainer.status() != psutil.STATUS_ZOMBIE:
+            print(f'Monitoring {arm} PID {trainer.pid}', flush=True)
+            monitor(arm, trainer)
 
 
 if __name__ == '__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--revision',type=Path,required=True)
-    parser.add_argument('--supervisor-pid',type=int,required=True)
+    target=parser.add_mutually_exclusive_group(required=True)
+    target.add_argument('--arm-dir',type=Path)
+    target.add_argument('--revision',type=Path)
+    process=parser.add_mutually_exclusive_group(required=True)
+    process.add_argument('--trainer-pid',type=int)
+    process.add_argument('--supervisor-pid',type=int)
     args=parser.parse_args()
-    root=args.revision.resolve()
-    supervisor=psutil.Process(args.supervisor_pid)
-    with (root/'native_return_watch.lock').open('a') as lock:
-        fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        while supervisor.is_running() and supervisor.status()!=psutil.STATUS_ZOMBIE:
-            for child in supervisor.children():
-                try:
-                    cmd=child.cmdline()
-                    if 'scripts/train_supermimic_physical_block.py' not in cmd:
+    if (args.arm_dir is None) != (args.trainer_pid is None):
+        parser.error('Supply --arm-dir with --trainer-pid or --revision with --supervisor-pid')
+    if args.arm_dir is not None:
+        try:
+            monitor_registered_arm(args.arm_dir.resolve(), psutil.Process(args.trainer_pid), wait_for_lock=True)
+        except psutil.NoSuchProcess:
+            pass
+    else:
+        root=args.revision.resolve()
+        supervisor=psutil.Process(args.supervisor_pid)
+        with (root/'native_return_watch.lock').open('a') as lock:
+            fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+            while supervisor.is_running() and supervisor.status()!=psutil.STATUS_ZOMBIE:
+                for child in supervisor.children():
+                    try:
+                        cmd=child.cmdline()
+                        if 'scripts/train_supermimic_physical_block.py' not in cmd:
+                            continue
+                        arm=Path(cmd[cmd.index('--output')+1]).resolve().parent
+                        if arm.parent==root:
+                            monitor_registered_arm(arm, child, wait_for_lock=False)
+                    except psutil.NoSuchProcess:
                         continue
-                    arm=Path(cmd[cmd.index('--output')+1]).resolve().parent
-                    if arm.parent==root:
-                        print(f'Monitoring {arm} PID {child.pid}',flush=True)
-                        monitor(arm,child)
-                except psutil.NoSuchProcess:
-                    continue
-            time.sleep(5)
+                time.sleep(5)

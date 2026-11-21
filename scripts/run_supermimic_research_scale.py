@@ -84,7 +84,11 @@ def run_registered_arm(output, tensorboard, registration):
     repo = Path(__file__).resolve().parents[1]
     with (output/'train.log').open('w') as log:
         with subprocess.Popen([sys.executable,*cmd],cwd=repo,env=env,stdout=log,stderr=subprocess.STDOUT) as trainer:
-            with (output/'curve_export.log').open('w') as curve_log, (output/'resources.log').open('w') as resource_log:
+            with ((output/'curve_export.log').open('w') as curve_log, (output/'resources.log').open('w') as resource_log,
+                  (output/'native_return_watch.log').open('w') as return_log):
+                return_watch = subprocess.Popen([sys.executable,'scripts/watch_supermimic_native_return.py',
+                    '--arm-dir',str(output.resolve()),'--trainer-pid',str(trainer.pid)],
+                    cwd=repo,env=env,stdout=return_log,stderr=subprocess.STDOUT)
                 monitor = subprocess.Popen([sys.executable,'scripts/report_supermimic_research_curve.py',
                     '--arm-dir',str(output.resolve()),'--tensorboard',str((tensorboard/(arm+'_learning')).resolve()),
                     '--follow-pid',str(trainer.pid)],cwd=repo,env=env,stdout=curve_log,stderr=subprocess.STDOUT)
@@ -94,8 +98,9 @@ def run_registered_arm(output, tensorboard, registration):
                 result = trainer.wait()
                 resource_result = resources.wait()
                 monitor_result = monitor.wait()
+                watch_result = return_watch.wait()
     (output/'exit.json').write_text(json.dumps(dict(returncode=result,curve_export_returncode=monitor_result,
-        resource_monitor_returncode=resource_result,
+        resource_monitor_returncode=resource_result, native_return_watch_returncode=watch_result,
         wall_seconds=time.time()-started))+'\n')
     return result
 

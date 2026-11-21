@@ -78,3 +78,49 @@ def test_native_collection_accumulates_distinct_body_lanes_before_first_reset():
     assert collect([[0, 0, 0], [0, 0, 1]], [[1, 0, 0], [1, 0, 1]]) == 1
     assert collect([[1, 0, 1], [1, 0, 1]], [[1, 0, 1], [0, 1, 0]]) == 2
     assert seen.tolist() == [True, True, False]
+
+
+def test_registered_arm_and_external_watcher_only_observe_once(tmp_path, monkeypatch):
+    import fcntl
+    import psutil
+    from scripts import watch_supermimic_native_return as watch
+    calls = []
+    monkeypatch.setattr(watch, 'monitor', lambda arm, process: calls.append((arm, process.pid)))
+    trainer = psutil.Process()
+    with (tmp_path/'native_return_watch.lock').open('a') as existing:
+        fcntl.flock(existing, fcntl.LOCK_EX)
+        watch.monitor_registered_arm(tmp_path, trainer, wait_for_lock=False)
+        assert not calls
+    watch.monitor_registered_arm(tmp_path, trainer, wait_for_lock=True)
+    assert calls == [(tmp_path, trainer.pid)]
+
+
+def test_pause_and_resume_with_buffered_collections_preserves_each_cohort(tmp_path, monkeypatch):
+    import json
+    from types import SimpleNamespace
+    from scripts import watch_supermimic_native_return as watch
+    train = tmp_path/'train'
+    (train/'native_transitions').mkdir(parents=True)
+    (train/'native_transitions/manifest.json').write_text('{}')
+    (tmp_path/'registration.json').write_text(json.dumps(dict(arm='G1', baseline_path=str(tmp_path/'baseline.json'))))
+    baseline = {(str(i), i): case(i, 0) for i in range(16)}
+    monkeypatch.setattr(watch, 'FirstEpisodeReturns', lambda *args: SimpleNamespace(baseline=baseline))
+    episodes = [case(i, -(i//4+1)) for i in range(16)]
+    history = [dict(completed_native_episodes=n, native_ticks=n*8, accepted_id=n//4) for n in (4,8,12,16)]
+    for path, rows in ((train/'native_episodes.jsonl', episodes), (train/'native_collection_history.jsonl', history)):
+        path.write_text(''.join(json.dumps(row)+'\n' for row in rows))
+    trainer = SimpleNamespace(pid=1, state=watch.psutil.STATUS_RUNNING, alive=True)
+    trainer.cmdline = lambda: ['scripts/train_supermimic_physical_block.py','--output',str(train),'--recovery-rollout-landing']
+    trainer.is_running = lambda: trainer.alive
+    trainer.status = lambda: trainer.state
+    trainer.suspend = lambda: setattr(trainer, 'state', watch.psutil.STATUS_STOPPED)
+    def resume_or_finish(_):
+        if trainer.state == watch.psutil.STATUS_STOPPED:
+            trainer.state = watch.psutil.STATUS_RUNNING
+        else:
+            trainer.alive = False
+    monkeypatch.setattr(watch.time, 'sleep', resume_or_finish)
+    watch.monitor(tmp_path, trainer)
+    decisions, _ = watch.read_new(tmp_path/'native_return_pauses.jsonl', 0)
+    assert [d['through_episode'] for d in decisions] == [8,16]
+    assert [d['cohorts'][-1]['tick'] for d in decisions] == [64,128]
