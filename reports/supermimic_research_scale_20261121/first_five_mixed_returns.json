@@ -1,0 +1,179 @@
+{
+  "scope": "First five completed TRAIN128 episodes ordered by native termination time, after R16+A8. The online episodes span behavior versions. The initial actor was scored separately on the same case IDs. Incomplete episodes are excluded; this is an early-terminating subset, not a fixed-policy comparison or a held-out score.",
+  "initial_actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+  "records": [
+    {
+      "case_id": "B-720402-061",
+      "lane": 125,
+      "episode": 0,
+      "initial": {
+        "native_episode_return": -27.226879391868522,
+        "native_episode_length_steps": 800,
+        "qualified_airborne_string_contact": true,
+        "ball_side_complete_except_recovery": false,
+        "physical_recovery_success": false,
+        "complete5": false,
+        "body_ground_seen": true,
+        "numerical_failures": 0,
+        "rejection_reasons": [
+          "same_flight_stable_recovery",
+          "speed_threshold"
+        ]
+      },
+      "mixed": {
+        "native_episode_return": -22.626607970130607,
+        "native_episode_length_steps": 433,
+        "qualified_airborne_string_contact": true,
+        "ball_side_complete_except_recovery": false,
+        "physical_recovery_success": false,
+        "complete5": false,
+        "body_ground_seen": true,
+        "numerical_failures": 0,
+        "rejection_reasons": [
+          "same_flight_stable_recovery",
+          "speed_threshold"
+        ]
+      },
+      "return_delta": 4.600271421737915
+    },
+    {
+      "case_id": "A-720401-009",
+      "lane": 9,
+      "episode": 0,
+      "initial": {
+        "native_episode_return": -2.599108395701876,
+        "native_episode_length_steps": 430,
+        "qualified_airborne_string_contact": true,
+        "ball_side_complete_except_recovery": true,
+        "physical_recovery_success": false,
+        "complete5": false,
+        "body_ground_seen": true,
+        "numerical_failures": 0,
+        "rejection_reasons": [
+          "same_flight_stable_recovery"
+        ]
+      },
+      "mixed": {
+        "native_episode_return": -22.654395755227597,
+        "native_episode_length_steps": 434,
+        "qualified_airborne_string_contact": true,
+        "ball_side_complete_except_recovery": false,
+        "physical_recovery_success": false,
+        "complete5": false,
+        "body_ground_seen": true,
+        "numerical_failures": 0,
+        "rejection_reasons": [
+          "same_flight_stable_recovery",
+          "actual_net_and_target",
+          "speed_threshold"
+        ]
+      },
+      "return_delta": -20.05528735952572
+    },
+    {
+      "case_id": "A-720401-030",
+      "lane": 30,
+      "episode": 0,
+      "initial": {
+        "native_episode_return": -7.4134585472857,
+        "native_episode_length_steps": 800,
+        "qualified_airborne_string_contact": true,
+        "ball_side_complete_except_recovery": true,
+        "physical_recovery_success": false,
+        "complete5": false,
+        "body_ground_seen": true,
+        "numerical_failures": 0,
+        "rejection_reasons": [
+          "same_flight_stable_recovery"
+        ]
+      },
+      "mixed": {
+        "native_episode_return": -2.727639436458958,
+        "native_episode_length_steps": 435,
+        "qualified_airborne_string_contact": true,
+        "ball_side_complete_except_recovery": true,
+        "physical_recovery_success": false,
+        "complete5": false,
+        "body_ground_seen": true,
+        "numerical_failures": 0,
+        "rejection_reasons": [
+          "same_flight_stable_recovery"
+        ]
+      },
+      "return_delta": 4.685819110826742
+    },
+    {
+      "case_id": "A-720401-040",
+      "lane": 40,
+      "episode": 0,
+      "initial": {
+        "native_episode_return": -2.733913734121188,
+        "native_episode_length_steps": 438,
+        "qualified_airborne_string_contact": true,
+        "ball_side_complete_except_recovery": true,
+        "physical_recovery_success": false,
+        "complete5": false,
+        "body_ground_seen": true,
+        "numerical_failures": 0,
+        "rejection_reasons": [
+          "same_flight_stable_recovery"
+        ]
+      },
+      "mixed": {
+        "native_episode_return": -2.701111597054023,
+        "native_episode_length_steps": 436,
+        "qualified_airborne_string_contact": true,
+        "ball_side_complete_except_recovery": true,
+        "physical_recovery_success": false,
+        "complete5": false,
+        "body_ground_seen": true,
+        "numerical_failures": 0,
+        "rejection_reasons": [
+          "same_flight_stable_recovery"
+        ]
+      },
+      "return_delta": 0.03280213706716495
+    },
+    {
+      "case_id": "A-720401-029",
+      "lane": 29,
+      "episode": 0,
+      "initial": {
+        "native_episode_return": -53.03826251066096,
+        "native_episode_length_steps": 433,
+        "qualified_airborne_string_contact": false,
+        "ball_side_complete_except_recovery": false,
+        "physical_recovery_success": false,
+        "complete5": false,
+        "body_ground_seen": true,
+        "numerical_failures": 0,
+        "rejection_reasons": [
+          "legal_airborne_strings",
+          "same_flight_stable_recovery",
+          "released_downward_forward",
+          "actual_net_and_target"
+        ]
+      },
+      "mixed": {
+        "native_episode_return": -55.65147236472217,
+        "native_episode_length_steps": 471,
+        "qualified_airborne_string_contact": false,
+        "ball_side_complete_except_recovery": false,
+        "physical_recovery_success": false,
+        "complete5": false,
+        "body_ground_seen": true,
+        "numerical_failures": 0,
+        "rejection_reasons": [
+          "legal_airborne_strings",
+          "same_flight_stable_recovery",
+          "released_downward_forward",
+          "actual_net_and_target"
+        ]
+      },
+      "return_delta": -2.6132098540612105
+    }
+  ],
+  "first_four_mean": -12.677438689717796,
+  "first_five_mean": -21.27224542471867,
+  "same_case_initial_mean": -18.60232451592765
+}
