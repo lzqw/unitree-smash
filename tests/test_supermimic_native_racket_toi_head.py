@@ -18,3 +18,15 @@ def test_zero_v13_matches_analytic_and_cannot_change_a_free_flight():
         model.impulse_residual_head.net[-1].bias.fill_(10.)
     predicted=predicted_state(model,prior,data)
     torch.testing.assert_close(predicted,torch.cat((data['analytic_position'],data['analytic']),1),rtol=0,atol=0)
+
+
+def test_toi_slip_opposes_surface_slip_with_coulomb_bound_on_racket_only():
+    from scripts.calibrate_supermimic_toi_slip import TOISlip
+    normal = torch.tensor([[0., 0., 1.]]).expand(5, -1)
+    row = dict(normal=normal, relative_velocity=torch.tensor([[2., 0., -3.]]).expand(5, -1),
+               impulse_dv=normal * 2., object_id=torch.tensor([0, 1, 2, 0, 0]),
+               active=torch.tensor([True, True, True, False, True]))
+    present = torch.tensor([True, True, True, True, False])
+    impulse = TOISlip(.1, .25).toi_response(row, present)['impulse_residual_dv']
+    torch.testing.assert_close(impulse[0], torch.tensor([-.2, 0., 0.]))
+    assert torch.count_nonzero(impulse[1:]) == 0

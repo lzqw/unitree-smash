@@ -2,6 +2,7 @@
 """Attribute policy changes using complete native runs at identical initial states."""
 import argparse
 import json
+from statistics import median
 from pathlib import Path
 
 from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
@@ -57,6 +58,48 @@ def load_training_baseline(path, actor_hash, execution, task):
     return rows
 
 
+def discordant_landing_evidence(before, after, paired):
+    """Join first-episode native flight measurements to the officially scored recovery flips."""
+    paths = [folder / 'episodes.jsonl' for folder in (before, after)]
+    if not all(path.is_file() for path in paths):
+        return dict(available=False, reason='Missing per-episode native flight records')
+    stages = []
+    for path in paths:
+        records = {}
+        for line in path.read_text().splitlines():
+            episode = json.loads(line)
+            if episode.get('episode_index') != 0:
+                continue
+            key = episode['case_id']
+            if key in records:
+                raise ValueError('Duplicate first episode in native landing diagnostics')
+            records[key] = episode
+        stages.append(records)
+    if any(set(rows) != set(paired['case_ids']) for rows in stages):
+        raise ValueError('Raw landing measurements and official evaluation have different cases')
+    result = dict(available=True, raw_sha256=[digest(p) for p in paths])
+    fields = ('body_landing', 'stable_recovery', 'qualified_contact_landing', 'recovery_s',
+              'terminal_root_height_m', 'maximum_body_ground_force_n', 'contact_flight_landing_s', 'rally_contact_time_s')
+    for category in ('improved_cases', 'regressed_cases'):
+        cases = []
+        for key in paired['paired_recovery'][category]:
+            rows = [stage[key].get('contact_flight_recovery', {}) for stage in stages]
+            if not all(r.get('bound') and all(r.get(k) is not None for k in fields) for r in rows):
+                cases.append(dict(case_id=key, available=False))
+                continue
+            cases.append(dict(case_id=key, available=True,
+                              before={k: rows[0][k] for k in fields}, after={k: rows[1][k] for k in fields}))
+        known = [r for r in cases if r['available']]
+        summary = {}
+        if known:
+            summary = dict(new_body_landings=sum(r['after']['body_landing'] and not r['before']['body_landing'] for r in known),
+                           avoided_body_landings=sum(r['before']['body_landing'] and not r['after']['body_landing'] for r in known),
+                           max_touchdown_time_change_s=max(abs(r['after']['contact_flight_landing_s']-r['before']['contact_flight_landing_s']) for r in known),
+                           stable_time_median_s={stage:median(r[stage]['recovery_s'] for r in known) for stage in ('before','after')})
+        result[category] = dict(cases=cases, observed=len(known), **summary)
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for key in ('before', 'after', 'output'):
@@ -71,6 +114,7 @@ def main():
     if mismatched or (old,new) != (a.expected_before,a.expected_after):
         raise ValueError(f'Incompatible frozen comparisons: {mismatched}, actual actors {old} and {new}')
     result = paired_evaluation(pre,post,stage=a.stage)
+    result['landing_diagnostics'] = discordant_landing_evidence(a.before, a.after, result)
     result.update(native_sources=[dict(actor_sha256=h, seed=first['seed'], path=str(folder),
                                        metrics_sha256=digest(folder/'metrics.json'),
                                        episodes_sha256=digest(folder/'episodes_summary.json'))
