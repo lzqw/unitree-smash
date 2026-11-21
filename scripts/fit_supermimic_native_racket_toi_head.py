@@ -105,7 +105,9 @@ def g07(root,prior):
         raise ValueError('No lane received different executed joint targets')
     # Preserve saturated lanes and report them alongside the physical response.
     execution=dict(lanes=lanes,max_joint_target_difference_rad=command_delta.tolist(),
-                   unchanged_lanes=[lane for lane,value in zip(lanes,command_delta.tolist()) if value==0])
+                   unchanged_lanes=[lane for lane,value in zip(lanes,command_delta.tolist()) if value==0],
+                   first_native_loaded_interval={name:[row[3][0] if row[2] else None for row in rows]
+                                                 for name,rows in signatures_by_branch.items()})
     return data,groups*len(traces),nominal['nominal_b']-nominal['nominal_a'],groups,sequences,execution
 
 
@@ -122,20 +124,47 @@ def prediction(model,prior,row):
 
 
 @torch.no_grad()
-def free_rollout(model,prior,sequences,groups,repeat):
+def free_rollout(model,prior,sequences,groups,repeat,execution):
     targets={}
     outputs={key:{} for key in ('baseline','candidate')}
+    timings={name:{} for name in outputs}
     for b,seq in sequences.items():
         for name in outputs:
             state=seq[0][0]
-            for _,target,stream in seq:
+            first_times=state.new_full((len(state),),float('inf'))
+            for tick_index,(_,target,stream) in enumerate(seq):
                 row=prepare(prior,state,target,stream)
+                loaded=row['active'] & (row['object_id']==0)
+                first_times=torch.where(loaded & first_times.isinf(),tick_index*prior.dt+row['time'],first_times)
                 state=(predicted_state(model,prior,row) if name=='candidate' else
                        torch.cat((row['analytic_position'],row['analytic']),1))
             outputs[name][b]=state[:,3:]
+            timings[name][b]=first_times
         targets[b]={'target':seq[-1][1]}
     noise=repeat[-len(groups):]
-    return {k:metrics((targets,groups,noise),v) for k,v in outputs.items()}
+    report={name:metrics((targets,groups,noise),value) for name,value in outputs.items()}
+    cases=[]
+    native_delta=targets['plus']['target']-targets['minus']['target']
+    for i,lane in enumerate(execution['lanes']):
+        native=native_delta[i]
+        case=dict(lane=lane,mode=groups[i],native_delta_mps=native.tolist(),repeat_noise_mps=float(noise[i].norm()),
+                  executed_target_change_rad=execution['max_joint_target_difference_rad'][i])
+        for name,v in outputs.items():
+            delta=v['plus'][i]-v['minus'][i]
+            event={}
+            for branch in ('minus','plus'):
+                idx=execution['first_native_loaded_interval'][branch][i]
+                predicted=float(timings[name][branch][i])
+                # Native contact loads are sampled at the end of each substep.
+                event[branch]=dict(native_interval_s=None if idx is None else [idx*prior.sub_dt,(idx+1)*prior.sub_dt],
+                                   predicted_toi_s=predicted if torch.isfinite(timings[name][branch][i]) else None)
+            supported=native.norm()>max(1e-8,3*case['repeat_noise_mps'])
+            case[name]=dict(delta_mps=delta.tolist(),error_norm_mps=float((delta-native).norm()),
+                            cosine=float(F.cosine_similarity(delta,native,dim=0)) if supported else None,
+                            gain=float(delta.norm()/native.norm()) if supported else None,first_racket_impact=event)
+        cases.append(case)
+    report['cases']=cases
+    return report
 
 
 def metrics(native,output):
@@ -234,7 +263,7 @@ def main():
             report[label]=dict(baseline=metrics(native,{b:v['analytic'] for b,v in row.items()}),
                                candidate=metrics(native,{b:prediction(model,prior,v) for b,v in row.items()}))
     for k,seq in sequences.items():
-        report[k+'_free_rollout']=free_rollout(model,prior,seq,unique[k],stages[k][2])
+        report[k+'_free_rollout']=free_rollout(model,prior,seq,unique[k],stages[k][2],execution[k])
     validations=[report['development']]
     if a.g07_development:
         validations.extend([report['g07_development'],report['g07_development_free_rollout']])
