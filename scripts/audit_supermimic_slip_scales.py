@@ -34,6 +34,7 @@ def main():
     scores = {}
     stable_ids = []
     reference = None
+    original_start = None
     for divisor, name in ((1, 'wide'), (2, 'half'), (4, 'quarter')):
         root = args.development/name
         if sha(root/'status.json') != digests[name]:
@@ -41,12 +42,18 @@ def main():
         startup = read(root/'startup.json')
         spec = dict(startup['specs'][0]['spec'])
         epsilon = spec.pop('epsilon_request')
-        identity = (startup['source_sha256'], spec, epsilon*divisor)
+        identity = (startup['source_sha256'], startup['seed'], spec, epsilon*divisor)
         if reference is None:
             reference = identity
         if identity != reference or set(spec['lanes']) & training_lanes:
             raise ValueError('Expected the same held lanes, directions, timing and source policy at all scales')
         _, _, noise, groups, seq, cmds = g07(root, prior)
+        for branch in ('minus', 'plus'):
+            ball, _, racket = seq[branch][0]
+            start = torch.cat([ball, *(channel[0] for channel in racket)], dim=-1)
+            if original_start is None:
+                original_start = start
+            torch.testing.assert_close(original_start, start, atol=0, rtol=0)
         oracle = free_rollout(model, prior, seq, groups, noise, cmds)
         body = body_transfer(root, args.body, prior, model, groups, noise, seq, cmds, args.online_body, args.source_stage)
         if body['replay_world_sha256'] != fit['online_body_racket']['replay_world_sha256']:
