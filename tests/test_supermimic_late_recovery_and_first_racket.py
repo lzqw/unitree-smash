@@ -80,3 +80,16 @@ def test_native_support_loss_samples_the_transition_even_before_any_unloaded_sta
     actual = post_landing_unload_windows(d,schema,2,valid)
     assert actual[0].tolist() == [True,False,False,False,False,False]
     assert actual[1].tolist() == [True,False,False,False,False,True]
+
+
+def test_rollout_landing_activates_on_first_post_release_support_and_persists():
+    from quadsmash.rl.supermimic_recovery_batches import update_recovery_landing
+    task = dict(rally=dict(had_contact=torch.tensor([1,1,0,1]), released=torch.tensor([1,0,1,1])),
+                auxiliary=dict(jump=dict(flight_candidate=torch.tensor([1,1,1,0]))))
+    landed = torch.zeros(4, dtype=torch.bool)
+    feet = torch.zeros(4,4)
+    assert not update_recovery_landing(landed, task, feet).any()
+    feet[:,2] = .8
+    landed = update_recovery_landing(landed, task, feet)
+    assert landed.tolist() == [True,False,False,False]
+    assert torch.equal(update_recovery_landing(landed, task, torch.zeros_like(feet)), landed)

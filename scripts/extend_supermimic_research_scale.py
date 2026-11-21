@@ -42,6 +42,8 @@ def extension_registration(parent, output, tensorboard, total):
         cmd.append('--diagnostic-critic-loss')
     if '--wm-latest-policy-windows' not in cmd:
         cmd.extend(['--wm-latest-policy-windows', '6'])
+    if '--landing-and-first-contact-objectives' in cmd and '--recovery-rollout-landing' not in cmd:
+        cmd.append('--recovery-rollout-landing')
     if '--wm-stage-quota' in cmd:
         index = cmd.index('--wm-stage-quota') + 1
         quota = dict(item.split('=') for item in cmd[index].split(','))

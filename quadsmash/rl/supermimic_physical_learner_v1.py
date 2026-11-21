@@ -249,10 +249,10 @@ class PhysicalHorizonTrainer:
             return self.toi_racket_weight
         return self.tracking_weight
 
-    def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None, tracking_parameters=()):
+    def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None, baseline_landing_weights=None, tracking_parameters=()):
         if isinstance(initial_state,tuple):
             from .supermimic_recovery_batches import pooled_objective
-            return pooled_objective(self,initial_state,effective_weights,baseline_toi_weights)
+            return pooled_objective(self,initial_state,effective_weights,baseline_toi_weights,baseline_landing_weights)
         from .supermimic_approach_data_v1 import masked_lane_mean
         cfg=self.timebase; state=initial_state.branch()
         states=[]; rewards=[]; dones=[]; valid=[]; anchors=[]; gates=[]; tracks=[]; track_weights=[]; track_states=[]
@@ -268,6 +268,8 @@ class PhysicalHorizonTrainer:
             first_string = torch.zeros_like(selected)
             first_cost = state.physical.new_ones(len(selected))
             first_margin = state.physical.new_zeros(len(selected))
+        dynamic_landing = revised and self.block_name == 'recovery' and getattr(self, 'recovery_rollout_landing', False)
+        landing_weights = []
         if revised and self.block_name == 'recovery':
             recovery_costs = []
             aux = state.task_memory['auxiliary']
@@ -275,6 +277,9 @@ class PhysicalHorizonTrainer:
             contact = state.task_memory['rally']['contact_time'].reshape(-1)
             landed = ((aux['contact_recovery']['qualified_landing'].reshape(-1) > .5)
                       | ((landing > 0) & (landing >= contact))).detach()
+            if dynamic_landing:
+                from .supermimic_recovery_batches import update_recovery_landing
+                initial_landing = landed
         if contact_weight or first_geometry:
             outgoing=state.physical.new_zeros((len(selected),6))
             impacted=torch.zeros_like(selected)
@@ -330,7 +335,16 @@ class PhysicalHorizonTrainer:
                 support = state.clock_goal_context['foot_contact'].clamp(0, 1).sum(-1)
                 height_deficit = (.18 - state.physical[:, 2]).relu()
                 cost = tilt + (tilt - old_tilt).relu() + .05 * roll_pitch_rate + height_deficit + (.5 - support).relu()
-                recovery_costs.append(cost * landed * track_mask * survival.detach() * cfg.control_dt_s)
+                if dynamic_landing:
+                    landed = update_recovery_landing(landed, previous.task_memory, state.clock_goal_context['foot_contact'])
+                    weight = landed * track_mask * survival.detach()
+                    if baseline_landing_weights is not None:
+                        # A later predicted landing must not erase costs paid by the reference proposal.
+                        weight = torch.maximum(weight, baseline_landing_weights[tick])
+                    landing_weights.append(weight)
+                    recovery_costs.append(cost * weight * cfg.control_dt_s)
+                else:
+                    recovery_costs.append(cost * landed * track_mask * survival.detach() * cfg.control_dt_s)
             if contact_weight or first_geometry:
                 impact=transition['impulse_info']
                 candidate = (usable & (survival.detach() > 0)) if first_geometry else track_mask
@@ -434,7 +448,11 @@ class PhysicalHorizonTrainer:
             coverage.update(predicted_first_margin_sum_m=float((first_margin * impacted * weights).sum()),
                             predicted_first_string_lanes=int((first_string & weights).sum()),
                             predicted_first_frame_lanes=int((impacted & ~first_string & weights).sum()))
-        return dict(**aux_stats,tracking_derivatives=tracking_derivatives,toi_weights=all_track_weights.detach() if toi_only and tracks else None,
+        landing_trace = torch.stack(landing_weights) if landing_weights else None
+        if landing_trace is not None and baseline_landing_weights is None:
+            added = (landing_trace > 0) & ~initial_landing
+            coverage.update(newly_landed_lanes=int(added.any(0).sum()), newly_landed_lane_steps=int(added.sum()))
+        return dict(**aux_stats,landing_weights=landing_trace,tracking_derivatives=tracking_derivatives,toi_weights=all_track_weights.detach() if toi_only and tracks else None,
                     toi_coverage_preserved=toi_coverage_preserved,reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
                     gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
                     critic_data=(torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid)),
@@ -500,7 +518,9 @@ class PhysicalHorizonTrainer:
                                     effect=self._budget_deltas(candidate_budget,before_budget)['final_joint_target_delta_rad']
                                     restore_rng()
                                     evaluation=self._rollout_objective(initial_state,effective_weights=rollout['effective_weights'],
-                                                                      baseline_toi_weights=rollout['toi_weights'])
+                                                                      baseline_toi_weights=rollout['toi_weights'],
+                                                                      **({'baseline_landing_weights': rollout['landing_weights']}
+                                                                         if rollout.get('landing_weights') is not None else {}))
                                     candidate_loss=float(evaluation['loss'])
                                     coverage_ok=evaluation['toi_coverage_preserved']
                                 trials.append(dict(alpha=candidate_alpha,loss=candidate_loss,budget_ok=bool(bounded),

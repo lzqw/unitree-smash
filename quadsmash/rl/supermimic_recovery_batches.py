@@ -140,20 +140,31 @@ def _gradient_value(term, params, derivatives=None):
     return term.detach()+sum(((p-p.detach())*g.detach()).sum() for p,g in zip(params,derivatives) if g is not None)
 
 
-def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weights=None):
+def update_recovery_landing(landed, previous_task, next_feet):
+    """Carry native post-contact landing into the rollout via the same support event."""
+    rally = previous_task['rally']
+    eligible = (rally['had_contact'].reshape(-1) > .5) & (rally['released'].reshape(-1) > .5)
+    in_flight = previous_task['auxiliary']['jump']['flight_candidate'].reshape(-1) > .5
+    return landed | (eligible & in_flight & (next_feet > .5).any(-1))
+
+
+def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weights=None, baseline_landing_weights=None):
     toi = trainer.block_name=='approach' and getattr(trainer,'approach_objective','task')=='toi_racket_only'
     if not starts or not (toi or trainer.block_name=='recovery'):
         raise ValueError('Pooled starts require Recovery or TOI racket supervision')
-    for group in (effective_weights,baseline_toi_weights):
+    for group in (effective_weights,baseline_toi_weights,baseline_landing_weights):
         if group is not None and len(group)!=len(starts):
             raise ValueError('Backtracking weights must cover the same start records')
     toi_weights=[]
+    landing_weights=[]
     preserved=True
     params=[p for p in trainer.actor.parameters() if p.requires_grad]
     terms={k:[] for k in ('task','tracking','anchor')}
     counts={};covered={};weights=[];returns=[];data=[];usage={};by_record=[]
     for i,state in enumerate(starts):
         kwargs=dict(effective_weights=None if effective_weights is None else effective_weights[i])
+        if baseline_landing_weights is not None:
+            kwargs['baseline_landing_weights'] = baseline_landing_weights[i]
         if toi:
             kwargs['baseline_toi_weights']=None if baseline_toi_weights is None else baseline_toi_weights[i]
         if torch.is_grad_enabled():
@@ -162,6 +173,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         if toi:
             toi_weights.append(row['toi_weights'])
             preserved=preserved and row['toi_coverage_preserved']
+        if row.get('landing_weights') is not None:
+            landing_weights.append(row['landing_weights'])
         n=row['gate_lanes']; w=row['tracking_effective_weight_sum']
         for key in terms:
             derivatives = row.get('tracking_derivatives') if key == 'tracking' else None
@@ -176,7 +189,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         if torch.is_grad_enabled():
             from .supermimic_approach_data_v1 import gradient_parts
             by_record[-1].update(gradient_parts({k:terms[k][-1][0] for k in terms},params))
-        for key in ('predicted_first_string_lanes','predicted_first_frame_lanes','predicted_first_margin_sum_m'):
+        for key in ('predicted_first_string_lanes','predicted_first_frame_lanes','predicted_first_margin_sum_m',
+                    'newly_landed_lanes','newly_landed_lane_steps'):
             if key in report:
                 covered[key]=covered.get(key,0)+report[key]
         for key in ('selected_start_lanes','gate_active_selected_start_lanes'):
@@ -209,5 +223,5 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
                     tracking_applied=bool(counts['tracking_active_lane_steps']),reference_usage_by_sha256=usage,per_record=by_record)
     ret=torch.cat(returns)
     return dict(**scalars,**counts, loss=loss,ret=ret if ret.numel() else loss.detach().reshape(1),
-                effective_weights=weights,toi_weights=toi_weights if toi else None,toi_coverage_preserved=preserved,reference_coverage=coverage,
+                effective_weights=weights,landing_weights=landing_weights or None,toi_weights=toi_weights if toi else None,toi_coverage_preserved=preserved,reference_coverage=coverage,
                 critic_data=tuple(join(k) for k in range(5)),tracking_objective='toi_racket_only' if toi else 'recovery_reference')
