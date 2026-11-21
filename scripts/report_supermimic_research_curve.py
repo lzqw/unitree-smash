@@ -39,6 +39,10 @@ def scalars(row):
     for family, count in sampling.get('actual_by_family', {}).items():
         metrics[f'{head}/start_lanes/{family}'] = count
     coverage = row.get('reference_coverage', {})
+    if head == 'recovery':
+        for key in ('newly_landed_lanes', 'newly_landed_lane_steps'):
+            if key in coverage:
+                metrics['recovery/'+key] = coverage[key]
     if 'predicted_first_margin_sum_m' in coverage:
         n = sum(coverage[k] for k in ('predicted_first_string_lanes', 'predicted_first_frame_lanes'))
         if n:
