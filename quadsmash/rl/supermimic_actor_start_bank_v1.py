@@ -105,6 +105,18 @@ class ActorStartBank:
             report['records_checked_for_objective']=len(checks)
         self.sampling_history.append(report)
         return None,report
+    def candidate_lanes_by_start(self):
+        """Union of selectable categories for each current-state record."""
+        candidates = {}
+        for entry in self.entries:
+            key = id(entry['start'])
+            mask = torch.stack([entry['masks'][name] for name in CATEGORIES]).any(0)
+            if key in candidates:
+                candidates[key] |= mask
+            else:
+                candidates[key] = mask
+        return candidates
+
     def same_category_starts(self, category, attempt):
         entries=self.entries
         if category not in CATEGORIES or not entries:

@@ -262,3 +262,16 @@ def test_compact_preview_maps_sparse_results_to_original_lanes(monkeypatch):
     result=objective.compact_intercept_preview(row,allowed,launch,None,trainer,'cpu')
     assert torch.where(result)[0].tolist()==[81]
     assert not objective.compact_intercept_preview(row,torch.zeros_like(allowed),launch,None,None,'cpu').any()
+
+
+def test_bank_preview_union_preserves_each_category_and_shared_record():
+    bank = ActorStartBank(seed=1)
+    row = {}
+    first = {name:torch.zeros(5,dtype=torch.bool) for name in CATEGORIES}
+    second = {name:mask.clone() for name,mask in first.items()}
+    first['gate_onset'][1] = True
+    second['failure_pre'][3] = True
+    bank.entries = [dict(start=row,masks=first),dict(start=row,masks=second)]
+    mask=bank.candidate_lanes_by_start()[id(row)]
+    assert mask.tolist() == [False,True,False,True,False]
+    assert first['gate_onset'].tolist() == [False,True,False,False,False]

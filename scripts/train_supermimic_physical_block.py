@@ -870,9 +870,11 @@ def run(args, *, alternating=None):
                 state.clock_goal_context['actor_lane_mask']=training_start_mask(row,wm_holdout_lanes).to(state.physical.device)
             return state
         @torch.no_grad()
-        def toi_start_lanes(row):
+        def toi_start_lanes(row, candidate_mask=None):
             from quadsmash.rl.supermimic_toi_racket_objective import bind_intercept_reference, compact_intercept_preview, preview_intercept_lanes
             allowed=training_start_mask(row,wm_holdout_lanes).reshape(-1).cpu()
+            if candidate_mask is not None:
+                allowed &= candidate_mask
             if research:
                 return compact_intercept_preview(row, allowed, select_launch_for_start(row,launch), template, trainer, 'cuda:0')
             state=training_state(row)
@@ -1463,15 +1465,18 @@ def run(args, *, alternating=None):
                 else:
                     row=pool[(attempts-1)%len(pool)]
                 if block_name=='approach':
-                    precheck=None
+                    precheck=bank_precheck=None
                     if args.approach_objective=='toi_racket_only':
                         previews={}
-                        def precheck(start):
-                            key=id(start)
+                        bank_masks=replay.actor_start_bank.candidate_lanes_by_start() if research else {}
+                        def precheck(start, *, bank_only=False):
+                            candidates=bank_masks.get(id(start)) if bank_only else None
+                            key=(id(start),candidates is not None)
                             if key not in previews:
-                                previews[key]=toi_start_lanes(start)
+                                previews[key]=toi_start_lanes(start,candidates)
                             return previews[key]
-                    sampled,start_sampling=replay.actor_start_bank.sample(attempts,eligible_lanes=precheck)
+                        bank_precheck=partial(precheck,bank_only=True)
+                    sampled,start_sampling=replay.actor_start_bank.sample(attempts,eligible_lanes=bank_precheck)
                     if sampled is not None and training_lane_available(sampled):
                         row=sampled
                     else:
@@ -1493,7 +1498,8 @@ def run(args, *, alternating=None):
                             alternatives=((alt,None) for alt in pool[offset:]+pool[:offset])
                         else:
                             alternatives=replay.actor_start_bank.same_category_starts(start_sampling['actual'],attempts)
-                        proposal_rows,layout=pool_toi_starts(row,alternatives,precheck,args.toi_effective_start_lanes,attempts)
+                        check_alternative=precheck if start_sampling.get('fallback') else bank_precheck
+                        proposal_rows,layout=pool_toi_starts(row,alternatives,check_alternative,args.toi_effective_start_lanes,attempts)
                         row=proposal_rows[0]
                         actual=sum(len(r['lane_episode_tick']) for r in layout)
                         start_sampling.update(requested_lanes=args.toi_effective_start_lanes,effective_lanes=actual,
