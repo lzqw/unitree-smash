@@ -35,6 +35,10 @@ def check_panel(panel, protocol_path, root, checkpoints):
     if (set(launches) & reserved or len(set(launches)) != len(launches)
             or len(set(c['case_id'] for c in panel['cases'])) != len(launches)):
         raise ValueError('Repeated or previously reserved launch')
+    for directory, artifacts in panel.get('online_world_comparison',{}).items():
+        names={str(Path(directory)/name) for name in ('fit.json','online_world.pt')}
+        if set(artifacts)!=names or any(digest(path)!=value for path,value in artifacts.items()):
+            raise ValueError('Prospective online WM artifacts changed')
     prospective = panel.get('prospective_body_comparison')
     if prospective is not None:
         if not prospective['bodies']:

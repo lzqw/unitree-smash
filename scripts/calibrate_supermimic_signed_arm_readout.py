@@ -62,11 +62,53 @@ def solve(natural, signed, ridge):
                         for w, n, s in zip(b, natural.cross.T, signed.cross.T, strict=True)], dim=1)
 
 
+def integrated_arm_observations(model, data, ticks, columns, launches):
+    features,error,actual=arm_rows(model,data,ticks,columns,launches)
+    rows=[*range(25,31),*range(43,49)]
+    mean,scale=model.delta_mean[rows],model.delta_scale[rows]
+    prediction=(actual-error)*scale+mean
+    observed=actual*scale+mean
+    return torch.stack((prediction[:,:6],prediction[:,6:],observed[:,:6],observed[:,6:]),dim=1).double()
+
+
+def fit_arm_integration(natural,signed,dt):
+    """Calibrate a bounded within-tick quadrature and blend using native training rows."""
+    def project(x,y,w,default):
+        denom=(w*x.square()).sum(0)
+        numer=(w*x*y).sum(0)
+        return torch.where(denom>1e-12,numer/denom.clamp_min(1e-12),default).clamp(0.,1.)
+    # Normalize each joint's signed error by training response power. Retain
+    # the same 1% RMS floor and 75/25 natural/excitation balance as the arm fit.
+    yn=natural[:,2].square().mean(0).clamp_min(1e-12)
+    ys=signed[:,2].square().mean(0).clamp_min(yn*1e-4)
+    weights=torch.cat((torch.ones_like(natural[:,2])*.75/(yn*len(natural)),
+                       torch.ones_like(signed[:,2])*.25/(ys*len(signed))))
+    predicted_q,predicted_dv,actual_q,actual_dv=torch.cat((natural,signed)).unbind(1)
+    fraction=project(dt*actual_dv,actual_q,weights,.5)
+    difference=dt*fraction*predicted_dv-predicted_q
+    blend=project(difference,actual_q-predicted_q,weights,0.)
+    return fraction,blend
+
+
+@torch.no_grad()
+def fold_arm_integration(model,fraction,blend):
+    """Fold physical-unit position quadrature into the six existing normalized readout rows."""
+    q=slice(25,31)
+    v=slice(43,49)
+    layer=model.body.net[-1]
+    fraction,blend=fraction.to(layer.weight),blend.to(layer.weight)
+    multiplier=blend*model.dt*fraction*model.delta_scale[v]/model.delta_scale[q]
+    bias_shift=blend*(model.dt*fraction*model.delta_mean[v]-model.delta_mean[q])/model.delta_scale[q]
+    layer.weight[q].mul_(1-blend[:,None]).add_(multiplier[:,None]*layer.weight[v])
+    layer.bias[q].mul_(1-blend).add_(multiplier*layer.bias[v]+bias_shift)
+
+
 @torch.no_grad()
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for k in ('body', 'packed', 'training-collection', 'output'):
         parser.add_argument('--' + k, type=Path, required=True)
+    parser.add_argument('--position-quadrature',action='store_true',help='Calibrate the physical relation between arm acceleration and displacement')
     args = parser.parse_args()
     torch.set_num_threads(4)
     ck = torch.load(args.body, map_location='cpu', weights_only=True)
@@ -90,34 +132,55 @@ def main():
     model.load_state_dict(ck['model'])
     layer = model.body.net[-1]
     rows = list(range(25, 31)) + list(range(43, 49))
+    position_data={'natural':[],'signed':[]}
     natural, signed = [Moments(layer.in_features + 1, len(rows)) for _ in range(2)]
     data = packed['tensors']
     eligible = torch.zeros(len(launch), dtype=torch.bool)
     eligible[sorted(lanes)] = True
     ticks, cols = torch.where(eligible & ~(data['terminated'] | data['timeout']))
     for t, c in zip(ticks.split(512), cols.split(512), strict=True):
-        natural.add(*arm_rows(model, data, t, c, launch[c]))
+        if args.position_quadrature:
+            position_data['natural'].append(integrated_arm_observations(model,data,t,c,launch[c]))
+        else:
+            natural.add(*arm_rows(model, data, t, c, launch[c]))
     for ids, branches in windows:
         minus, plus = (branches[key] for key in ('minus', 'plus'))
         t, c = torch.where(torch.ones_like(minus['terminated'], dtype=torch.bool))
         for times, columns in zip(t.split(512), c.split(512), strict=True):
             launches = launch[torch.tensor(ids)[columns]]
+            if args.position_quadrature:
+                m,p=(integrated_arm_observations(model,d,times,columns,launches) for d in (minus,plus))
+                position_data['signed'].append(p-m)
+                continue
             m, p = (arm_rows(model, d, times, columns, launches) for d in (minus, plus))
             signed.add(*(y - x for y, x in zip(p, m, strict=True)))
-    ridge = .1
-    step = solve(natural, signed, ridge)
-    if not torch.isfinite(step).all():
-        raise ValueError('Nonfinite readout')
-    # Integer-list indexing returns a copy; assign explicitly and verify after serialization.
-    layer.weight[rows] += step[:-1].T.to(layer.weight)
-    layer.bias[rows] += step[-1].to(layer.bias)
-    info = dict(parent_sha256=digest(args.body), natural_rows=natural.n, paired_rows=signed.n,
-                paired_weight=.25, ridge=ridge, readout_rows=rows, training_collection=receipt,
-                physical_units=['rad']*6+['rad/s']*6, actor_updates=0)
-    for key, stats in [('natural', natural), ('paired', signed)]:
-        scale = model.delta_scale[rows]
-        info[key + '_rmse_before'] = (stats.rmse(torch.zeros_like(step)) * scale).tolist()
-        info[key + '_rmse_after'] = (stats.rmse(step) * scale).tolist()
+    if args.position_quadrature:
+        data={k:torch.cat(v) for k,v in position_data.items()}
+        fraction,blend=fit_arm_integration(data['natural'],data['signed'],model.dt)
+        fold_arm_integration(model,fraction,blend)
+        info=dict(parent_sha256=digest(args.body),calibration='arm-position-quadrature',
+                  fraction=fraction.tolist(),blend=blend.tolist(),dt_s=model.dt,paired_weight=.25,
+                  training_collection=receipt,actor_updates=0,critic_updates=0)
+        for dataset,obs in data.items():
+            raw,dv,actual,_=obs.unbind(1)
+            revised=raw+blend*(model.dt*fraction*dv-raw)
+            info[dataset]=dict(rows=len(raw),before_rmse_rad=(raw-actual).square().mean(0).sqrt().tolist(),
+                               after_rmse_rad=(revised-actual).square().mean(0).sqrt().tolist())
+    else:
+        ridge = .1
+        step = solve(natural, signed, ridge)
+        if not torch.isfinite(step).all():
+            raise ValueError('Nonfinite readout')
+        # Integer-list indexing returns a copy; assign explicitly and verify after serialization.
+        layer.weight[rows] += step[:-1].T.to(layer.weight)
+        layer.bias[rows] += step[-1].to(layer.bias)
+        info = dict(parent_sha256=digest(args.body), natural_rows=natural.n, paired_rows=signed.n,
+                    paired_weight=.25, ridge=ridge, readout_rows=rows, training_collection=receipt,
+                    physical_units=['rad']*6+['rad/s']*6, actor_updates=0)
+        for key, stats in [('natural', natural), ('paired', signed)]:
+            scale = model.delta_scale[rows]
+            info[key + '_rmse_before'] = (stats.rmse(torch.zeros_like(step)) * scale).tolist()
+            info[key + '_rmse_after'] = (stats.rmse(step) * scale).tolist()
     output = args.output
     output.mkdir(exist_ok=False, parents=True)
     ck.update(model=model.state_dict(), calibration=dict(meta, signed_arm_readout=info), policy_training_admitted=False)

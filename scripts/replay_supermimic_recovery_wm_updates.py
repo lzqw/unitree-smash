@@ -31,18 +31,45 @@ def fit_readout_rows(module, layer, rows):
         parameter.register_hook(lambda grad, active=mask: grad*active)
 
 
+def frozen_recovery_stage(run, pre, post, prefix, receipt):
+    """Bind the first frozen WM refresh to its behavior policy and adjacent checkpoints."""
+    actor_sha=tensor_digest(pre['actor'].items())
+    if (tensor_digest(post['actor'].items())!=actor_sha or receipt['actor_sha256']!=actor_sha
+            or receipt['policy_execution']!=pre['metadata']['policy_execution']
+            or post['metadata']['policy_execution']!=receipt['policy_execution']
+            or receipt['head']!='recovery' or receipt['consumer_heads']!=['recovery']
+            or not receipt['actor_unchanged'] or receipt['complete_episodes']!=128
+            or receipt['shared_data_policy_id']!=receipt['policy_id']
+            or receipt['start_tick']!=pre['native_ticks'] or receipt['end_tick']!=post['native_ticks']
+            or pre['actor_updates']!=post['actor_updates']
+            or post['config']['wm_holdout_lanes']!=pre['config']['wm_holdout_lanes']
+            or run['wm_holdout_lanes']!=pre['config']['wm_holdout_lanes']):
+        raise ValueError('Frozen Recovery data or policy does not match both checkpoints')
+    updates=receipt['wm_refresh_by_head']['recovery']['world_update_reports']
+    expected=list(range(pre['world_updates']+1,post['world_updates']+1))
+    if not expected or [u['world_updates'] for u in updates]!=expected or receipt['world_updates']!=len(expected):
+        raise ValueError('Nonconsecutive frozen Recovery WM updates')
+    return dict(native_ticks=receipt['end_tick'],attempt_id=prefix['attempt_id'],world_update_reports=updates,
+                policy_id=receipt['policy_id'],policy_version=prefix['actor_updates'])
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('run','checkpoint','output'):
         parser.add_argument('--'+name, type=Path, required=True)
+    parser.add_argument('--refresh-manifest',type=Path,help='Include the first complete frozen Recovery episodes after this block')
+    parser.add_argument('--post-refresh-checkpoint',type=Path)
     parser.add_argument('--learning-rate',type=float,required=True)
     parser.add_argument('--separate-supervision', action='store_true')
+    parser.add_argument('--natural-flight-loss',choices=('huber','mse'),default='huber')
     parser.add_argument('--natural-flight-batch',type=int,default=0,help='Auxiliary 64-step native training windows per WM update')
     parser.add_argument('--adaptation',choices=('full','joint-and-racket-readouts'),default='full')
     parser.add_argument('--device',choices=('cpu','cuda:0'),default='cpu')
     parser.add_argument('--cuda-memory-gib',type=float,help='Limit allocator usage when sharing the GPU with a native rollout')
     parser.add_argument('--cpu-threads',type=int,default=5)
     args = parser.parse_args()
+    if bool(args.refresh_manifest)!=bool(args.post_refresh_checkpoint):
+        parser.error('Supply the refresh manifest and its post-refresh checkpoint together')
     if args.natural_flight_batch<0:
         parser.error('Natural flight batch must be nonnegative')
     if not 0 < args.learning_rate < 1 or args.cpu_threads <= 0:
@@ -91,9 +118,13 @@ def main():
     packed=torch.load(packed_path,map_location='cpu',weights_only=True,mmap=True)
     if packed['source_manifest']['task_contract']!=manifest['task_contract']:
         raise ValueError('Training data task mismatch')
+    final_checkpoint=ck
+    if args.refresh_manifest is not None:
+        final_checkpoint=torch.load(args.post_refresh_checkpoint,map_location='cpu',weights_only=False,mmap=True)
+        stages.append(frozen_recovery_stage(cfg,ck,final_checkpoint,stages[-1],read(args.refresh_manifest)))
     n_ticks=stages[-1]['native_ticks']
     replay=PhysicalLoopReplay(packed,adapter.task_model.memory_schema,
-        capacity_ticks=len(packed['tensors']['state'])+n_ticks+1)
+        capacity_ticks=min(cfg['replay_capacity_ticks'],len(packed['tensors']['state'])+n_ticks+1))
     imports=[]
     held=cfg['wm_holdout_lanes']
     natural=NaturalFlightWindows(packed['tensors'],held) if args.natural_flight_batch else None
@@ -107,6 +138,7 @@ def main():
     trainer=PhysicalHorizonTrainer(actor,adapter,state,timebase,world_lr=args.learning_rate)
     trainer.ball_loss_weight=number('wm-ball-loss-weight',4.)
     trainer.contact_ball_loss_weight=number('wm-contact-ball-loss-weight',8.)
+    trainer.natural_flight_loss=args.natural_flight_loss
     trainer.racket_loss_weight=number('racket-loss-weight',1.)
     initial=identity(adapter.state_dict())
     if args.adaptation=='joint-and-racket-readouts':
@@ -142,9 +174,15 @@ def main():
     try:
         with (args.output/'progress.jsonl').open('x') as f:
             for stage in stages:
+                frozen='policy_id' in stage
+                if frozen:
+                    replay.generator.set_state(ck['replay_rng'].cpu())
+                    replay.new_stream(source='online',policy_version=stage['policy_version'])
+                expected_mode='frozen_combination' if frozen else 'mixed_training'
                 while tick<stage['native_ticks']:
                     row=next(rows)
-                    if (row['native_tick']!=tick or row['collection_mode']!='mixed_training'
+                    if (row['native_tick']!=tick or row['collection_mode']!=expected_mode
+                            or (frozen and (row['policy_id']!=stage['policy_id'] or row['policy_version']!=stage['policy_version']))
                             or row['source_id']!='online' or row['stream_id']!=replay.current_stream):
                         raise ValueError(f'Different native source or stream at tick {tick}')
                     replay.append(row,retain_start=False,policy_version=row['policy_version'],native_tick=tick)
@@ -183,15 +221,18 @@ def main():
             raise RuntimeError('Unexpected update in a protected output row')
     revised=adapter.state_dict()
     identity_after=identity(revised)
-    if identity_after==initial or trainer.world_updates!=ck['world_updates']:
+    if identity_after==initial or trainer.world_updates!=final_checkpoint['world_updates']:
         raise RuntimeError('No complete online update was produced')
     out=args.output/'online_world.pt'
     torch.save(revised,out.with_suffix('.pending'))
     out.with_suffix('.pending').replace(out)
     info=dict(device=str(device),peak_cuda_bytes=torch.cuda.max_memory_allocated(device) if device.type=='cuda' else None,
-              updates=trainer.world_updates,policy_updates=0,critic_updates=0,natural_flight_batch=args.natural_flight_batch,
+              updates=trainer.world_updates,policy_updates=0,critic_updates=0,natural_flight_batch=args.natural_flight_batch,natural_flight_loss=args.natural_flight_loss,
               original_learning_rate=cfg['world_lr'],learning_rate=args.learning_rate,adaptation=args.adaptation,separate_supervision=args.separate_supervision,
-              stage_checkpoint_sha256=digest(args.checkpoint),original_online_world_sha256=identity(ck['world']),
+              stage_checkpoint_sha256=digest(args.post_refresh_checkpoint or args.checkpoint),
+              pre_refresh_sha256=digest(args.checkpoint) if args.refresh_manifest else None,
+              refresh_manifest_sha256=digest(args.refresh_manifest) if args.refresh_manifest else None,
+              original_online_world_sha256=identity(final_checkpoint['world']),
               initial_world_sha256=initial,online_world_sha256=identity_after,
               chunks=hashes,packed_sha256=packed_sha,training_collection_receipts=imports,excluded_lanes=held,
               scope='Offline replay from the original component weights; development candidate only.')

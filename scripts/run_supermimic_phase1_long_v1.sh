@@ -95,6 +95,7 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     --wm-bootstrap-max-ticks "${SM_WM_BOOTSTRAP_MAX_TICKS:-0}"
     --replay-capacity-ticks 16384 --refresh-ticks 800
     --refresh-world-updates 32 --refresh-critic-updates 20
+    --wm-natural-flight-loss "${SM_WM_NATURAL_FLIGHT_LOSS:-huber}"
     --wm-natural-flight-batch "${SM_WM_NATURAL_FLIGHT_BATCH:-0}"
     --world-updates-per-actor-update 4 --wm-batch-size "${SM_WM_BATCH_SIZE:-512}"
     --wm-stage-quota uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8

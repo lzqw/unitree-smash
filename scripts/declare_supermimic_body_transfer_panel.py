@@ -15,6 +15,7 @@ def main():
     for flag in ('body', 'previous-panel'):
         parser.add_argument('--'+flag, action='append', type=Path, required=True)
     parser.add_argument('--ball-candidate',action='append',type=Path,default=[])
+    parser.add_argument('--online-candidate',action='append',type=Path,default=[],help='Bind an offline WM replay directory before observing any new launches')
     parser.add_argument('--seed', type=int, required=True)
     parser.add_argument('--cases-per-panel', type=int, default=16)
     args = parser.parse_args()
@@ -34,6 +35,10 @@ def main():
                      transitions=['calibrated_analytic','initial_components'],
                      uniform_no_regression=['body_rmse','root_angular_mae'],
                      contact_gate='supermimic-wm-candidate-gate-v1'))
+    if args.online_candidate:
+        panel['online_world_comparison']={
+            str(directory.resolve()):weights([directory/'fit.json',directory/'online_world.pt'])
+            for directory in args.online_candidate}
     check_panel(panel,protocol,root,[args.anchor,args.actor])
     with args.output.open('x') as stream:
         json.dump(panel,stream,indent=2,allow_nan=False)

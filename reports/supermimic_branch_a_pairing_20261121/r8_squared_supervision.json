@@ -1,0 +1,242 @@
+{
+  "fits": {
+    "r8_online_wm_cuda_long_squared": {
+      "updates": 32,
+      "learning_rate": 2e-06,
+      "online_world_sha256": "11dc57fd65ed02fde034f49f55b94df6a8f2fcea08c31984051e0a20a45cbaf1",
+      "initial_world_sha256": "f850c9a3fdc8ddea14ba3285bf5b34ce1edabc8694b85b070ba2f2d13876ebd5",
+      "natural_flight_batch": 16,
+      "stage_checkpoint_sha256": "b874282ce3f9304e0cb08ea7c6542c6dd66a53aa03257ead7852e8a2d313baca",
+      "policy_updates": 0,
+      "critic_updates": 0,
+      "runtime_guard": {
+        "body": true,
+        "flight": false,
+        "contact": true
+      },
+      "runtime_guard_passed": false,
+      "development": {
+        "panel_sha": "543a168af3f5d5c94e566764a8972dbff3eb6066beb63083c91bb0ff78e82d8f",
+        "uniform_h64_ball_velocity_rmse": 1.0728340148925781,
+        "contact_h1_ball_velocity_rmse": 2.7687630653381348
+      },
+      "monitoring": {
+        "panel_sha": "864d72e638b3b7ae871c0fcde2f54d710445da3eb293e97fa0504f1ba17aa8cf",
+        "uniform_h64_ball_velocity_rmse": 1.0980842113494873,
+        "contact_h1_ball_velocity_rmse": 2.069765090942383
+      }
+    },
+    "r8_online_wm_squared_conservative": {
+      "updates": 32,
+      "learning_rate": 2.5e-07,
+      "online_world_sha256": "e2c908d2dabca8d6d5b9280641bb70c848da93eae6f8b639aed088abdd0845e5",
+      "initial_world_sha256": "f850c9a3fdc8ddea14ba3285bf5b34ce1edabc8694b85b070ba2f2d13876ebd5",
+      "natural_flight_batch": 16,
+      "stage_checkpoint_sha256": "b874282ce3f9304e0cb08ea7c6542c6dd66a53aa03257ead7852e8a2d313baca",
+      "policy_updates": 0,
+      "critic_updates": 0,
+      "runtime_guard": {
+        "body": true,
+        "flight": true,
+        "contact": true
+      },
+      "runtime_guard_passed": true,
+      "development": {
+        "panel_sha": "543a168af3f5d5c94e566764a8972dbff3eb6066beb63083c91bb0ff78e82d8f",
+        "uniform_h64_ball_velocity_rmse": 1.1748284101486206,
+        "contact_h1_ball_velocity_rmse": 2.8454272747039795
+      },
+      "monitoring": {
+        "panel_sha": "864d72e638b3b7ae871c0fcde2f54d710445da3eb293e97fa0504f1ba17aa8cf",
+        "uniform_h64_ball_velocity_rmse": 1.0505787134170532,
+        "contact_h1_ball_velocity_rmse": 2.16162109375
+      }
+    }
+  },
+  "preregistered_fresh_comparison": {
+    "primary_fit": "21a316e9d6b788b7e3bdcaed8cd94ca61ebf740d652b478b4f77a38d13e8b47a",
+    "secondary_fit": "1503e77128eac8a0582590b359ebf9dc04bc5039c0123277f4c1c23d820f684b",
+    "panel": "c49f474fd3ed9f0376a059a9eb4b432b96f71477d901b88eb666efab4e41034b",
+    "comparison": "Original formal physical reference, seven body and root angular checks, event-relative ball criteria and H64 uniform ball velocity RMSE",
+    "behavior": "frozen post-Recovery R8",
+    "stage_sha": "b874282ce3f9304e0cb08ea7c6542c6dd66a53aa03257ead7852e8a2d313baca",
+    "actor_updates": 0,
+    "contact_gradients_admitted": false
+  },
+  "historical_critic_reconstruction": {
+    "rows": 2889,
+    "subgroup": [
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127
+    ],
+    "source_sha256": "d6cc4364be0b1a74aef5dc174b163e261971387cbe0dbeb5a58c663b1ea35831",
+    "actor": "2c84da909c60fd0d6816a665bf3929fb5d33bab80b078e46c8609bfea5f5a794",
+    "values": {
+      "before": {
+        "recovery": {
+          "samples": 329,
+          "unique_lanes": 23,
+          "native_rtg_mae": 8.702143669128418,
+          "native_rtg_rmse": 11.946776390075684
+        },
+        "approach": {
+          "samples": 37,
+          "unique_lanes": 27,
+          "native_rtg_mae": 18.517988204956055,
+          "native_rtg_rmse": 22.83598518371582
+        },
+        "td": {
+          "sample_count": 0,
+          "available": false
+        }
+      },
+      "after": {
+        "recovery": {
+          "samples": 329,
+          "unique_lanes": 23,
+          "native_rtg_mae": 8.678297996520996,
+          "native_rtg_rmse": 11.904947280883789
+        },
+        "approach": {
+          "samples": 37,
+          "unique_lanes": 27,
+          "native_rtg_mae": 18.525314331054688,
+          "native_rtg_rmse": 22.84202003479004
+        },
+        "td": {
+          "sample_count": 0,
+          "available": false
+        }
+      }
+    },
+    "qualification": false,
+    "scope": "Historical fixture for validating the audit. The collection used no fit-time WM lane exclusions."
+  },
+  "reserved_training_probe": {
+    "seed": 882073,
+    "actor_checkpoint_sha256": "b874282ce3f9304e0cb08ea7c6542c6dd66a53aa03257ead7852e8a2d313baca",
+    "source_spec_sha256": "62c88dc576187852e7863b112c2ae5d683fab09df8fb57bc450ddc429602675d",
+    "fit_lane_config": "e70f9b88fabf1f45c754b03962b011490ec49cb94f59aa29e675a2e155288d0b",
+    "spec_sha256": "e4d9d3f451971f4fdb7b72b53039d5642d0596483039b2c9b352e938bb579699",
+    "role": "training_action_identification",
+    "held_out_lanes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      11,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      21,
+      30,
+      32,
+      34,
+      37,
+      38,
+      39,
+      40,
+      41,
+      44,
+      46,
+      48,
+      49,
+      50,
+      51,
+      53,
+      57,
+      59,
+      60,
+      61,
+      62,
+      65,
+      70,
+      73,
+      74,
+      76,
+      77,
+      81,
+      84,
+      85,
+      86,
+      87,
+      89,
+      90,
+      94,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127
+    ],
+    "full_step_targets": true,
+    "requested_control_count": 16,
+    "native_substeps_per_control": 160,
+    "contact_gradients_admitted": false
+  }
+}

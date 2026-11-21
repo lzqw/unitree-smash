@@ -16,8 +16,12 @@ from .supermimic_physical_dataset_v1 import valid_windows
 from .supermimic_racket_dynamics_v1 import racket_loss_components, racket_state, robot_loss
 
 
-def native_flight_rollout_loss(adapter,window,launch):
+def native_flight_rollout_loss(adapter,window,launch,loss_kind="huber"):
     """Supervise free-running predictions at multiple horizons using archived commands."""
+    losses={"huber": torch.nn.functional.smooth_l1_loss, "mse": torch.nn.functional.mse_loss}
+    if loss_kind not in losses:
+        raise ValueError('Unknown native flight loss')
+    velocity_loss=losses[loss_kind]
     state=window['state'][0]
     feet=window['feet'][0].float()
     present=window['present'][0]
@@ -28,7 +32,7 @@ def native_flight_rollout_loss(adapter,window,launch):
             action_model=adapter.action_ball_model)
         if i+1 in (4,16,32,64):
             truth=window['next_state'][i]
-            error=torch.nn.functional.smooth_l1_loss(state[:,52:55],truth[:,52:55],reduction='none').mean(-1)
+            error=velocity_loss(state[:,52:55],truth[:,52:55],reduction='none').mean(-1)
             mask=window['present'][i].reshape(-1).to(error.dtype)
             errors.append((error*mask).sum()/mask.sum().clamp_min(1.))
     return torch.stack(errors).mean()
@@ -60,6 +64,7 @@ class PhysicalHorizonTrainer:
         self.toi_racket_weight=float(toi_racket_weight)
         if self.toi_racket_weight < 0:
             raise ValueError('toi_racket_weight must be nonnegative')
+        self.natural_flight_loss="huber"
         self.ball_loss_weight=4.0
         self.contact_ball_loss_weight=8.0
         self.racket_loss_weight=float(racket_loss_weight)
@@ -487,7 +492,7 @@ class PhysicalHorizonTrainer:
         loss=loss/cfg.world_steps
         long_flight=state.new_zeros(())
         if long_native is not None:
-            long_flight=native_flight_rollout_loss(self.adapter,*long_native)
+            long_flight=native_flight_rollout_loss(self.adapter,*long_native,loss_kind=self.natural_flight_loss)
             loss=loss+long_flight
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical multistep model loss')
         self.world_opt.zero_grad(set_to_none=True)

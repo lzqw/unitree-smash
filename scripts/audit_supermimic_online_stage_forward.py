@@ -64,6 +64,12 @@ def main():
     trained = stage['world']
     replay_fit = None
     if a.replayed_world:
+        registered=panel.get('online_world_comparison')
+        if registered is not None:
+            key=str(a.replayed_world.resolve())
+            artifacts={str(a.replayed_world.resolve()/name):digest(a.replayed_world/name) for name in ('fit.json','online_world.pt')}
+            if registered.get(key)!=artifacts:
+                raise ValueError('Requested WM replay was not registered before native capture')
         replay_fit = read(a.replayed_world/'fit.json')
         trained = torch.load(a.replayed_world/'online_world.pt',weights_only=True,map_location='cpu',mmap=True)
         if (replay_fit['stage_checkpoint_sha256']!=stage_sha or replay_fit['updates']!=stage['world_updates'] or

@@ -99,6 +99,12 @@ def test_long_native_supervision_uses_recorded_flight_commands_and_targets(monke
     loss.backward()
     assert loss.item()==pytest.approx((4+16+32+64)/4-.5)
     assert gain.grad.item()==pytest.approx((4+16+32+64)/4)
+    gain.grad=None
+    squared=learner.native_flight_rollout_loss(adapter,window,None,loss_kind='mse')
+    expected=(4**2+16**2+32**2+64**2)/4
+    assert squared.item()==pytest.approx(expected)
+    squared.backward()
+    assert gain.grad.item()==pytest.approx(2*expected)
 
 
 @pytest.mark.parametrize('override,expected',[(None,1.e-6),(2.e-6,2.e-6)])
@@ -154,3 +160,42 @@ def test_frozen_refresh_validation_excludes_padding_and_other_lanes():
     data['terminated'][300,3]=True
     with pytest.raises(ValueError,match='terminal tick'):
         held_episode_data(data,receipt,[3,7])
+
+
+def test_frozen_wm_replay_rejects_a_different_policy_and_missing_optimizer_step():
+    from scripts.replay_supermimic_recovery_wm_updates import frozen_recovery_stage
+    from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+    actor={'weight':torch.tensor([.25])}
+    cfg={'wm_holdout_lanes':[1,3]}
+    pre=dict(actor=actor,metadata={'policy_execution':'latch'},config=cfg,
+             actor_updates=8,native_ticks=128,world_updates=32)
+    post=dict(pre,native_ticks=1600,world_updates=34)
+    fits=[{'world_updates':33},{'world_updates':34}]
+    receipt=dict(actor_sha256=tensor_digest(actor.items()),policy_execution='latch',head='recovery',
+                 consumer_heads=['recovery'],actor_unchanged=True,complete_episodes=128,shared_data_policy_id='r8',
+                 policy_id='r8',start_tick=128,end_tick=1600,wm_refresh_by_head={'recovery':{'world_update_reports':fits}},
+                 world_updates=2)
+    prior=dict(attempt_id=9,actor_updates=8)
+    stage=frozen_recovery_stage(cfg,pre,post,prior,receipt)
+    assert stage['attempt_id']==9 and stage['policy_version']==8 and stage['world_update_reports']==fits
+    with pytest.raises(ValueError,match='policy'):
+        frozen_recovery_stage(cfg,pre,dict(post,actor={'weight':torch.tensor([.75])}),prior,receipt)
+    with pytest.raises(ValueError,match='Nonconsecutive'):
+        frozen_recovery_stage(cfg,pre,dict(post,world_updates=35),prior,receipt)
+
+
+def test_folded_arm_position_preserves_physical_quadrature_and_velocity():
+    from scripts.calibrate_supermimic_signed_arm_readout import fold_arm_integration
+    from types import SimpleNamespace
+    layer=torch.nn.Linear(9,59)
+    model=SimpleNamespace(body=SimpleNamespace(net=[layer]),dt=.01,delta_mean=torch.linspace(-.1,.1,55),
+                          delta_scale=torch.linspace(.02,2,55))
+    hidden=torch.randn(11,9)
+    physical=lambda: model.delta_mean+model.delta_scale*layer(hidden)[:,:55]
+    before=physical().detach()
+    fraction=torch.linspace(.1,.9,6)
+    blend=torch.linspace(0,1,6)
+    fold_arm_integration(model,fraction,blend)
+    expected=before.clone()
+    expected[:,25:31]=torch.lerp(before[:,25:31],model.dt*fraction*before[:,43:49],blend)
+    torch.testing.assert_close(physical(),expected)

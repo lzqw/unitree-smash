@@ -153,6 +153,7 @@ def main():
     parser.add_argument('--wm-separate-supervision',action='store_true',help='Fit robot, ball and task parameters to their respective native targets')
     parser.add_argument('--wm-forward-guard',type=Path,help='Fixed native launch panel and verified block-initial WM score for every online refresh')
     parser.add_argument('--world-learning-rate',type=float,help='Defaults to the restored optimizer rate, or 0.0002 for a new run')
+    parser.add_argument('--wm-natural-flight-loss',choices=('huber','mse'),default='huber')
     parser.add_argument('--wm-natural-flight-batch',type=int,default=0,help='Additional immutable training-lane 64-step native windows per shared WM update')
     parser.add_argument('--wm-calibration-updates',type=int,default=256,
                         help='GPU world-model updates for wm_calibrate stage')
@@ -474,6 +475,7 @@ def run(args, *, alternating=None):
             toi_racket_weight=args.toi_racket_weight)
         trainer.ball_loss_weight=float(args.wm_ball_loss_weight)
         trainer.contact_ball_loss_weight=float(args.wm_contact_ball_loss_weight)
+        trainer.natural_flight_loss=args.wm_natural_flight_loss
         trainer.racket_loss_weight=float(args.racket_loss_weight)
         lifecycle_stage(args.output, 'TRAINER_READY')
         trainer.set_budget_state_library([as_state(row) for row in starts+critic_starts[:4]])
@@ -824,7 +826,7 @@ def run(args, *, alternating=None):
         config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=args.world_learning_rate,critic_lr=2e-4,
             wm_forward_guard_sha256=forward_guard.spec_sha256 if forward_guard else None,
-            wm_separate_supervision=args.wm_separate_supervision,wm_natural_flight_batch=args.wm_natural_flight_batch,
+            wm_separate_supervision=args.wm_separate_supervision,wm_natural_flight_batch=args.wm_natural_flight_batch,wm_natural_flight_loss=args.wm_natural_flight_loss,
             wm_action_collections=action_collections,wm_sampling_mode=args.wm_sampling_mode,
             native_return_monitor=frozen_return_monitor.config,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,

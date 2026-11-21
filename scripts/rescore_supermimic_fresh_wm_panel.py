@@ -85,7 +85,14 @@ def main():
     if a.ball_candidate:
         new_ball=torch.load(a.ball_candidate,map_location='cpu',weights_only=True)
         from quadsmash.rl.supermimic_ball_residual_v2 import load_ball_residual, verify_event_calibration
-        verify_event_calibration(new_ball,meta['checkpoint_sha256']['ball'],digest(a.body_candidate),candidate)
+        parent_sha=meta['checkpoint_sha256']['ball']
+        if digest(a.ball_candidate)==parent_sha:
+            # load_physical_loop already verified this calibrated ball's original
+            # parent, body binding and lane partition using the deployed checkpoint.
+            if digest(a.body_candidate)!=meta['checkpoint_sha256']['physical']:
+                raise ValueError('Deployed calibrated ball requires its bound body')
+        else:
+            verify_event_calibration(new_ball,parent_sha,digest(a.body_candidate),candidate)
         adapter.ball_model=load_ball_residual(new_ball).to(a.device).eval()
     data=torch.load(path,map_location='cpu',weights_only=True,mmap=True)
     if a.teacher_racket and not a.contact_calibration:
