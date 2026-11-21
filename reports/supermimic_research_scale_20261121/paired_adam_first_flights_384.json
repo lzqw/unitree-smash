@@ -1,0 +1,794 @@
+{
+  "scope": "First flight leaving play after launch, including faults before ground contact. Compare native latches to first-episode frozen terminal records on the same resolved cases. The online prefix spans behavior versions. Episode recovery, official ball-side outcome and final Return require complete scoring.",
+  "reference_scope": "scored_resume",
+  "first_contact_policy_by_case": {
+    "A-720401-001": 109,
+    "A-720401-002": 109,
+    "A-720401-003": 109,
+    "A-720401-005": 109,
+    "A-720401-006": 109,
+    "A-720401-007": 109,
+    "A-720401-008": 109,
+    "A-720401-009": 109,
+    "A-720401-010": 109,
+    "A-720401-011": 109,
+    "A-720401-012": 109,
+    "A-720401-013": 109,
+    "A-720401-015": 109,
+    "A-720401-016": 109,
+    "A-720401-017": 109,
+    "A-720401-018": 109,
+    "A-720401-020": 109,
+    "A-720401-021": 109,
+    "A-720401-022": 109,
+    "A-720401-023": 109,
+    "A-720401-024": 109,
+    "A-720401-025": 109,
+    "A-720401-026": 109,
+    "A-720401-027": 109,
+    "A-720401-028": 109,
+    "A-720401-029": 109,
+    "A-720401-030": 109,
+    "A-720401-031": 109,
+    "A-720401-032": 109,
+    "A-720401-033": 109,
+    "A-720401-034": 109,
+    "A-720401-035": 109,
+    "A-720401-036": 109,
+    "A-720401-037": 109,
+    "A-720401-038": 109,
+    "A-720401-039": 109,
+    "A-720401-040": 109,
+    "A-720401-041": 109,
+    "A-720401-042": 109,
+    "A-720401-043": 109,
+    "A-720401-045": 109,
+    "A-720401-046": 109,
+    "A-720401-047": 109,
+    "A-720401-048": 109,
+    "A-720401-049": 109,
+    "A-720401-050": 109,
+    "A-720401-051": 109,
+    "A-720401-053": 109,
+    "A-720401-054": 109,
+    "A-720401-056": 109,
+    "A-720401-057": 109,
+    "A-720401-058": 109,
+    "A-720401-059": 109,
+    "A-720401-060": 109,
+    "A-720401-061": 109,
+    "A-720401-062": 109,
+    "A-720401-063": 109,
+    "B-720402-000": 109,
+    "B-720402-001": 109,
+    "B-720402-003": 109,
+    "B-720402-004": 109,
+    "B-720402-005": 109,
+    "B-720402-006": 109,
+    "B-720402-007": 109,
+    "B-720402-008": 109,
+    "B-720402-010": 109,
+    "B-720402-011": 109,
+    "B-720402-012": 109,
+    "B-720402-013": 109,
+    "B-720402-014": 109,
+    "B-720402-015": 109,
+    "B-720402-016": 109,
+    "B-720402-017": 109,
+    "B-720402-018": 109,
+    "B-720402-019": 109,
+    "B-720402-020": 109,
+    "B-720402-021": 109,
+    "B-720402-022": 109,
+    "B-720402-023": 109,
+    "B-720402-025": 109,
+    "B-720402-027": 109,
+    "B-720402-030": 109,
+    "B-720402-031": 109,
+    "B-720402-032": 109,
+    "B-720402-033": 109,
+    "B-720402-034": 109,
+    "B-720402-035": 109,
+    "B-720402-036": 109,
+    "B-720402-037": 109,
+    "B-720402-038": 109,
+    "B-720402-039": 109,
+    "B-720402-041": 109,
+    "B-720402-042": 109,
+    "B-720402-043": 109,
+    "B-720402-045": 109,
+    "B-720402-047": 109,
+    "B-720402-050": 109,
+    "B-720402-051": 109,
+    "B-720402-054": 109,
+    "B-720402-055": 109,
+    "B-720402-056": 109,
+    "B-720402-057": 109,
+    "B-720402-061": 109,
+    "B-720402-062": 109,
+    "B-720402-063": 109
+  },
+  "initial_actor_sha256": "3f3d4e17a47de7ed2874a801db97dca2cf061f82a29aba952d218e13ebfc246a",
+  "seed": 882072,
+  "suite_sha256": "2f9bf380d938a87418c4fa7da087e86d0da43f27a2ee6492bff7d7f1c3ff7c30",
+  "manifest_env_steps": 49152,
+  "cases": 128,
+  "online_resolved": 123,
+  "paired_resolved_cases": 123,
+  "unresolved_online_cases": [
+    "A-720401-055",
+    "B-720402-009",
+    "B-720402-026",
+    "B-720402-029",
+    "B-720402-040"
+  ],
+  "unresolved_baseline_cases": [],
+  "release_policy_versions": {
+    "109": 105
+  },
+  "metrics": {
+    "had_contact": {
+      "initial": 103,
+      "online": 105,
+      "false_to_true": [
+        "B-720402-005",
+        "B-720402-036",
+        "B-720402-056"
+      ],
+      "true_to_false": [
+        "A-720401-052"
+      ]
+    },
+    "frame_hit": {
+      "initial": 38,
+      "online": 37,
+      "false_to_true": [
+        "A-720401-018",
+        "A-720401-058",
+        "B-720402-003",
+        "B-720402-005",
+        "B-720402-030",
+        "B-720402-035",
+        "B-720402-036",
+        "B-720402-056"
+      ],
+      "true_to_false": [
+        "A-720401-017",
+        "A-720401-020",
+        "A-720401-023",
+        "A-720401-037",
+        "A-720401-046",
+        "A-720401-052",
+        "B-720402-013",
+        "B-720402-039",
+        "B-720402-043"
+      ]
+    },
+    "qualified_contact": {
+      "initial": 65,
+      "online": 68,
+      "false_to_true": [
+        "A-720401-017",
+        "A-720401-020",
+        "A-720401-023",
+        "A-720401-037",
+        "A-720401-046",
+        "B-720402-013",
+        "B-720402-039",
+        "B-720402-043"
+      ],
+      "true_to_false": [
+        "A-720401-018",
+        "A-720401-058",
+        "B-720402-003",
+        "B-720402-030",
+        "B-720402-035"
+      ]
+    },
+    "scoring_cross": {
+      "initial": 44,
+      "online": 43,
+      "false_to_true": [
+        "A-720401-009",
+        "A-720401-011",
+        "A-720401-017",
+        "A-720401-020",
+        "A-720401-023",
+        "A-720401-037",
+        "A-720401-046",
+        "B-720402-013"
+      ],
+      "true_to_false": [
+        "A-720401-007",
+        "A-720401-018",
+        "A-720401-025",
+        "A-720401-039",
+        "A-720401-043",
+        "A-720401-058",
+        "B-720402-003",
+        "B-720402-030",
+        "B-720402-035"
+      ]
+    },
+    "scoring_target": {
+      "initial": 37,
+      "online": 37,
+      "false_to_true": [
+        "A-720401-009",
+        "A-720401-011",
+        "A-720401-012",
+        "A-720401-020",
+        "A-720401-023",
+        "A-720401-037",
+        "A-720401-046",
+        "B-720402-013",
+        "B-720402-051"
+      ],
+      "true_to_false": [
+        "A-720401-007",
+        "A-720401-018",
+        "A-720401-025",
+        "A-720401-033",
+        "A-720401-039",
+        "A-720401-043",
+        "A-720401-058",
+        "B-720402-003",
+        "B-720402-030"
+      ]
+    },
+    "ground_seen": {
+      "initial": 117,
+      "online": 110,
+      "false_to_true": [
+        "A-720401-046",
+        "B-720402-039"
+      ],
+      "true_to_false": [
+        "A-720401-022",
+        "A-720401-049",
+        "B-720402-005",
+        "B-720402-010",
+        "B-720402-012",
+        "B-720402-042",
+        "B-720402-054",
+        "B-720402-055",
+        "B-720402-056"
+      ]
+    },
+    "airborne_string_hit": {
+      "initial": 65,
+      "online": 68,
+      "false_to_true": [
+        "A-720401-017",
+        "A-720401-020",
+        "A-720401-023",
+        "A-720401-037",
+        "A-720401-046",
+        "B-720402-013",
+        "B-720402-039",
+        "B-720402-043"
+      ],
+      "true_to_false": [
+        "A-720401-018",
+        "A-720401-058",
+        "B-720402-003",
+        "B-720402-030",
+        "B-720402-035"
+      ]
+    },
+    "crossed_net": {
+      "initial": 65,
+      "online": 68,
+      "false_to_true": [
+        "A-720401-017",
+        "A-720401-020",
+        "A-720401-023",
+        "A-720401-037",
+        "A-720401-046",
+        "B-720402-013",
+        "B-720402-039",
+        "B-720402-043"
+      ],
+      "true_to_false": [
+        "A-720401-018",
+        "A-720401-058",
+        "B-720402-003",
+        "B-720402-030",
+        "B-720402-035"
+      ]
+    },
+    "shuttle_net_contact": {
+      "initial": 9,
+      "online": 9,
+      "false_to_true": [
+        "A-720401-022",
+        "A-720401-049",
+        "A-720401-053",
+        "B-720402-010",
+        "B-720402-017",
+        "B-720402-042",
+        "B-720402-054"
+      ],
+      "true_to_false": [
+        "A-720401-010",
+        "A-720401-011",
+        "A-720401-020",
+        "A-720401-037",
+        "A-720401-046",
+        "B-720402-004",
+        "B-720402-039"
+      ]
+    },
+    "landed_target": {
+      "initial": 54,
+      "online": 58,
+      "false_to_true": [
+        "A-720401-011",
+        "A-720401-012",
+        "A-720401-020",
+        "A-720401-023",
+        "A-720401-037",
+        "A-720401-046",
+        "B-720402-004",
+        "B-720402-013",
+        "B-720402-039",
+        "B-720402-043",
+        "B-720402-051"
+      ],
+      "true_to_false": [
+        "A-720401-018",
+        "A-720401-033",
+        "A-720401-053",
+        "A-720401-058",
+        "B-720402-003",
+        "B-720402-017",
+        "B-720402-030"
+      ]
+    },
+    "released_at_least_5_mps": {
+      "initial": 75,
+      "online": 76,
+      "false_to_true": [
+        "A-720401-009",
+        "A-720401-010",
+        "A-720401-011",
+        "B-720402-005",
+        "B-720402-036",
+        "B-720402-056"
+      ],
+      "true_to_false": [
+        "A-720401-007",
+        "A-720401-025",
+        "A-720401-039",
+        "A-720401-043",
+        "B-720402-039"
+      ]
+    }
+  },
+  "first_contact_changes": {
+    "paired_cases": 123,
+    "unknown_initial_frame_order": [],
+    "unknown_online_frame_order": [],
+    "qualified_to_frame_first": [
+      "A-720401-018",
+      "A-720401-058",
+      "B-720402-003",
+      "B-720402-030",
+      "B-720402-035"
+    ],
+    "frame_first_to_qualified": [
+      "A-720401-017",
+      "A-720401-020",
+      "A-720401-023",
+      "A-720401-037",
+      "A-720401-046",
+      "B-720402-013",
+      "B-720402-039",
+      "B-720402-043"
+    ]
+  },
+  "target_score_flips": [
+    {
+      "case": "A-720401-007",
+      "lane": 7,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.08232695885192,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 4.886219628971043,
+        "failed_conditions": [
+          "release_speed"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-009",
+      "lane": 9,
+      "gained": true,
+      "baseline": {
+        "release_speed_mps": 4.6416764368161685,
+        "failed_conditions": [
+          "release_speed"
+        ]
+      },
+      "online": {
+        "release_speed_mps": 5.168229424272845,
+        "failed_conditions": []
+      },
+      "online_target_reward": 15.0
+    },
+    {
+      "case": "A-720401-011",
+      "lane": 11,
+      "gained": true,
+      "baseline": {
+        "release_speed_mps": 4.825428562626342,
+        "failed_conditions": [
+          "release_speed",
+          "landed_target"
+        ]
+      },
+      "online": {
+        "release_speed_mps": 5.088727398332582,
+        "failed_conditions": []
+      },
+      "online_target_reward": 15.0
+    },
+    {
+      "case": "A-720401-012",
+      "lane": 12,
+      "gained": true,
+      "baseline": {
+        "release_speed_mps": 6.163351321323888,
+        "failed_conditions": [
+          "landed_target"
+        ]
+      },
+      "online": {
+        "release_speed_mps": 6.198347195249148,
+        "failed_conditions": []
+      },
+      "online_target_reward": 15.0
+    },
+    {
+      "case": "A-720401-018",
+      "lane": 18,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.654660810056289,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 5.392664132133126,
+        "failed_conditions": [
+          "qualified_contact",
+          "crossed_net",
+          "landed_target"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-020",
+      "lane": 20,
+      "gained": true,
+      "baseline": {
+        "release_speed_mps": 5.936585259922186,
+        "failed_conditions": [
+          "qualified_contact",
+          "crossed_net",
+          "landed_target"
+        ]
+      },
+      "online": {
+        "release_speed_mps": 5.445227099406426,
+        "failed_conditions": []
+      },
+      "online_target_reward": 15.0
+    },
+    {
+      "case": "A-720401-023",
+      "lane": 23,
+      "gained": true,
+      "baseline": {
+        "release_speed_mps": 6.932998282153945,
+        "failed_conditions": [
+          "qualified_contact",
+          "crossed_net",
+          "landed_target"
+        ]
+      },
+      "online": {
+        "release_speed_mps": 6.08792202901316,
+        "failed_conditions": []
+      },
+      "online_target_reward": 15.0
+    },
+    {
+      "case": "A-720401-025",
+      "lane": 25,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.060047818705376,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 4.79295463869722,
+        "failed_conditions": [
+          "release_speed"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-033",
+      "lane": 33,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.789347844086166,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 5.851465024844233,
+        "failed_conditions": [
+          "landed_target"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-037",
+      "lane": 37,
+      "gained": true,
+      "baseline": {
+        "release_speed_mps": 5.692131810072979,
+        "failed_conditions": [
+          "qualified_contact",
+          "crossed_net",
+          "landed_target"
+        ]
+      },
+      "online": {
+        "release_speed_mps": 5.272604883291817,
+        "failed_conditions": []
+      },
+      "online_target_reward": 15.0
+    },
+    {
+      "case": "A-720401-039",
+      "lane": 39,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.13323950155831,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 4.923100469939194,
+        "failed_conditions": [
+          "release_speed"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-043",
+      "lane": 43,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.32059302345705,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 4.574666801919711,
+        "failed_conditions": [
+          "release_speed"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-046",
+      "lane": 46,
+      "gained": true,
+      "baseline": {
+        "release_speed_mps": 6.478354700519633,
+        "failed_conditions": [
+          "qualified_contact",
+          "crossed_net",
+          "landed_target"
+        ]
+      },
+      "online": {
+        "release_speed_mps": 6.137379101759527,
+        "failed_conditions": []
+      },
+      "online_target_reward": 15.0
+    },
+    {
+      "case": "A-720401-058",
+      "lane": 58,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.54354188487593,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 5.941979140258235,
+        "failed_conditions": [
+          "qualified_contact",
+          "crossed_net",
+          "landed_target"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "B-720402-003",
+      "lane": 67,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.8442937642625665,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 6.338061216973088,
+        "failed_conditions": [
+          "qualified_contact",
+          "crossed_net",
+          "landed_target"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "B-720402-013",
+      "lane": 77,
+      "gained": true,
+      "baseline": {
+        "release_speed_mps": 6.660007717403254,
+        "failed_conditions": [
+          "qualified_contact",
+          "crossed_net",
+          "landed_target"
+        ]
+      },
+      "online": {
+        "release_speed_mps": 5.353518174898801,
+        "failed_conditions": []
+      },
+      "online_target_reward": 15.0
+    },
+    {
+      "case": "B-720402-030",
+      "lane": 94,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.458734391839061,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 5.565137311201121,
+        "failed_conditions": [
+          "qualified_contact",
+          "crossed_net",
+          "landed_target"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "B-720402-051",
+      "lane": 115,
+      "gained": true,
+      "baseline": {
+        "release_speed_mps": 5.613970842493976,
+        "failed_conditions": [
+          "landed_target"
+        ]
+      },
+      "online": {
+        "release_speed_mps": 5.365221802765411,
+        "failed_conditions": []
+      },
+      "online_target_reward": 15.0
+    }
+  ],
+  "landing_by_airborne_string_hit": {
+    "1_to_1": {
+      "cases": 60,
+      "initial_landed_target": 50,
+      "online_landed_target": 51,
+      "online_frame_hit": 0,
+      "online_no_contact": 0
+    },
+    "1_to_0": {
+      "cases": 5,
+      "initial_landed_target": 4,
+      "online_landed_target": 0,
+      "online_frame_hit": 5,
+      "online_no_contact": 0
+    },
+    "0_to_1": {
+      "cases": 8,
+      "initial_landed_target": 0,
+      "online_landed_target": 7,
+      "online_frame_hit": 0,
+      "online_no_contact": 0
+    },
+    "0_to_0": {
+      "cases": 50,
+      "initial_landed_target": 0,
+      "online_landed_target": 0,
+      "online_frame_hit": 32,
+      "online_no_contact": 18
+    }
+  },
+  "shot_reward_totals": {
+    "qualified_contact": {
+      "initial_from_native_latches": 1300.0,
+      "online_from_native_latches": 1360.0,
+      "online_recorded": 1360.0
+    },
+    "scoring_cross": {
+      "initial_from_native_latches": 220.0,
+      "online_from_native_latches": 215.0,
+      "online_recorded": 215.0
+    },
+    "scoring_target": {
+      "initial_from_native_latches": 555.0,
+      "online_from_native_latches": 555.0,
+      "online_recorded": 555.0
+    }
+  },
+  "source_chunk_sha256": [
+    "230f161b8d199fab7ff79be91bd50c99d1bcbad0dfae8b2bb1d90b72ac2b0869",
+    "2fc5362bc3eb4f45a16894e7231e8685e534d59b05d036de224842d03aa521b0",
+    "5973de6641980689ce5702dfb45f7e3530dbb3012561b66bc9954c881b916f46",
+    "75b81f38e434ca0ca550958a3a196ea72f8a341fbe5f58a6b2470a87dd54f72c",
+    "8289271697e4c49074663a1e7471e3e5747fbb46b991987b18ffe9c5bf0a4984",
+    "1f06e9db902914947d1a125c11a6b78db9cb7bbb89615457b51db398b63efd3a",
+    "762ec5594349f15c7e71430772a0a70134925bf31a8357dd0f60cc2fc975bd9d",
+    "8c9dd2a0fe14f09504dacc8878ab840c2a6ac98311c47a5602e7a2c290f867dd",
+    "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494",
+    "dac25f5e611a8e6c7eb58ced3e324c0d8b2faef6a15230dd8bceda9dd97f077f",
+    "4512dd06824b0762bd1b74cad3e68f36809e7f946c370f088b6b3ccb76c153cd",
+    "e81ebbc1fcf981fe49a00512ae264bcd3fc3692ffa707df86d78b9d66ff08cdf"
+  ],
+  "writer_manifest_chunks_at_analysis": 8,
+  "native_collection": {
+    "native_ticks": 6782,
+    "accepted_id": 109,
+    "completed_native_episodes": 0,
+    "first_episode_body_cases": 15
+  },
+  "comparison_checkpoint_sha256": "5149e7f8ead491c45725dd80dc2a478ebca104dc9d70faca78921078d0893e66",
+  "body_ground_prefix_vs_frozen_terminal": {
+    "observed_ever_by_tick_384": 15,
+    "observed_case_ids": [
+      "A-720401-009",
+      "A-720401-041",
+      "A-720401-042",
+      "A-720401-048",
+      "A-720401-062",
+      "B-720402-009",
+      "B-720402-014",
+      "B-720402-015",
+      "B-720402-023",
+      "B-720402-024",
+      "B-720402-041",
+      "B-720402-046",
+      "B-720402-047",
+      "B-720402-053",
+      "B-720402-060"
+    ],
+    "same_cases_grounded_in_frozen_episode": 14,
+    "confirmed_new_vs_frozen_full_episode": [
+      "A-720401-009"
+    ],
+    "frozen_total": 49,
+    "pending_cases": 113
+  }
+}
