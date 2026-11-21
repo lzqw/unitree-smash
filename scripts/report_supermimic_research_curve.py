@@ -99,6 +99,12 @@ def main():
                 attempts += 1
                 if sum(heads.values()) != pos['retained_updates']:
                     raise ValueError('Recorded proposals do not account for every retained step')
+                if row['update_accepted'] and pos['retained_updates'] == 16:
+                    from scripts.report_supermimic_first_pair_budget import write_budget
+                    budget = write_budget(arm)
+                    if budget is not None:
+                        metrics['timing/first_pair_wall_seconds'] = budget['first_pair_wall_seconds']
+                        metrics['timing/estimated_remaining_hours_after_first_pair'] = budget['estimated_remaining_hours_after_first_pair']
                 for axis, step in pos.items():
                     values = [Summary.Value(tag=axis+'/'+k, simple_value=v) for k,v in metrics.items()]
                     writer.add_event(Event(wall_time=time.time(), step=step, summary=Summary(value=values)))

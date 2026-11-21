@@ -26,3 +26,22 @@ def test_supervision_batches_are_distinct_from_optimizer_steps():
     assert result['world/contact_supervision_batches'] == 2
     assert result['world/contact_optimizer_steps'] == 1
     assert result['world/sampled_contact_events'] == 3
+
+
+def test_first_pair_budget_waits_for_both_heads_and_counts_rejections():
+    from scripts.report_supermimic_first_pair_budget import first_pair_budget
+    from quadsmash.rl.supermimic_alternating_schedule_v1 import make_plan
+    plan = make_plan(128,128,256,256,refresh_every_pairs=8)
+    rows = []
+    for head in ('recovery','approach'):
+        for attempt in range(9):
+            rows.append(dict(block_key='cycle000_pair000',block=head,update_accepted=attempt>0,
+                             block_accepted_updates=attempt,research_elapsed_s=10*(len(rows)+1),
+                             bptt_seconds=5.))
+    historical = dict(frozen_collection=dict(proposal_record_to_episodes_file_seconds=100.),
+                      evaluation=dict(elapsed_s=60.))
+    assert first_pair_budget(plan,rows[:-1],historical) is None
+    result = first_pair_budget(plan,rows,historical)
+    assert result['first_pair']['recovery']['bptt_seconds'] == 45.
+    assert result['first_pair_wall_seconds'] == 180.
+    assert result['estimated_remaining_hours_after_first_pair'] == (180*15+320)/3600

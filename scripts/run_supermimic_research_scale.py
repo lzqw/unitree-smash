@@ -52,13 +52,18 @@ def main():
     repo = Path(__file__).resolve().parents[1]
     with (a.output/'train.log').open('w') as log:
         with subprocess.Popen([sys.executable,*cmd],cwd=repo,env=env,stdout=log,stderr=subprocess.STDOUT) as trainer:
-            with (a.output/'curve_export.log').open('w') as curve_log:
+            with (a.output/'curve_export.log').open('w') as curve_log, (a.output/'resources.log').open('w') as resource_log:
                 monitor = subprocess.Popen([sys.executable,'scripts/report_supermimic_research_curve.py',
                     '--arm-dir',str(a.output.resolve()),'--tensorboard',str((a.tensorboard/(a.arm+'_learning')).resolve()),
                     '--follow-pid',str(trainer.pid)],cwd=repo,env=env,stdout=curve_log,stderr=subprocess.STDOUT)
+                resources = subprocess.Popen([sys.executable,'scripts/monitor_supermimic_research_gpu.py',
+                    '--pid',str(trainer.pid),'--output',str((a.tensorboard/(a.arm+'_resources')).resolve())],
+                    cwd=repo,env=env,stdout=resource_log,stderr=subprocess.STDOUT)
                 result = trainer.wait()
+                resource_result = resources.wait()
                 monitor_result = monitor.wait()
     (a.output/'exit.json').write_text(json.dumps(dict(returncode=result,curve_export_returncode=monitor_result,
+        resource_monitor_returncode=resource_result,
         wall_seconds=time.time()-started))+'\n')
     return result
 
