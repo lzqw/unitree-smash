@@ -60,11 +60,12 @@ def recovery_batch(pools, target, attempt):
     return batches,metadata
 
 
-def _gradient_value(term, params):
+def _gradient_value(term, params, derivatives=None):
     """Save a scalar and its first derivative while releasing the per-record BPTT graph."""
     if not torch.is_grad_enabled() or not term.requires_grad:
         return term.detach()
-    derivatives=torch.autograd.grad(term,params,allow_unused=True,retain_graph=True)
+    if derivatives is None:
+        derivatives=torch.autograd.grad(term,params,allow_unused=True,retain_graph=True)
     return term.detach()+sum(((p-p.detach())*g.detach()).sum() for p,g in zip(params,derivatives) if g is not None)
 
 
@@ -84,13 +85,16 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         kwargs=dict(effective_weights=None if effective_weights is None else effective_weights[i])
         if toi:
             kwargs['baseline_toi_weights']=None if baseline_toi_weights is None else baseline_toi_weights[i]
+        if torch.is_grad_enabled():
+            kwargs['tracking_parameters'] = params
         row=trainer._rollout_objective(state,**kwargs)
         if toi:
             toi_weights.append(row['toi_weights'])
             preserved=preserved and row['toi_coverage_preserved']
         n=row['gate_lanes']; w=row['tracking_effective_weight_sum']
         for key in terms:
-            terms[key].append((_gradient_value(row[key],params), w if key=='tracking' else n))
+            derivatives = row.get('tracking_derivatives') if key == 'tracking' else None
+            terms[key].append((_gradient_value(row[key],params,derivatives), w if key=='tracking' else n))
         for key in ('gate_steps','gate_lanes','tracking_steps','tracking_active_lane_steps','tracking_effective_weight_sum',
                     'tracking_nonzero_gradient_lanes','matched_references'):
             counts[key]=counts.get(key,0)+row[key]

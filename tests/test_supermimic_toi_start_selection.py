@@ -137,7 +137,7 @@ def test_pooled_toi_backtracking_preserves_each_arrival_and_global_weight():
     actor=torch.nn.Linear(1,1,bias=False)
     trainer=SimpleNamespace(block_name='approach',approach_objective='toi_racket_only',actor=actor,
                             anchor_coeff=0.,tracking_coefficient=lambda head:1.)
-    def objective(n,effective_weights=None,baseline_toi_weights=None):
+    def objective(n,effective_weights=None,baseline_toi_weights=None,tracking_parameters=()):
         w=torch.full((1,n),float(n))
         valid=torch.ones(1,n,dtype=torch.bool)
         return dict(gate_lanes=n,gate_steps=n,tracking_steps=1,tracking_active_lane_steps=n,

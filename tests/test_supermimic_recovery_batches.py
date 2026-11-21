@@ -26,7 +26,7 @@ def test_pooled_gradient_uses_lane_and_reference_denominators_and_true_bootstrap
         anchor_coeff=.5
         def tracking_coefficient(self,_):
             return 2.
-        def _rollout_objective(self,state,effective_weights=None):
+        def _rollout_objective(self,state,effective_weights=None,tracking_parameters=()):
             n,h,w=state
             theta=self.actor.weight.squeeze()
             valid=torch.ones(h,n,dtype=torch.bool)
@@ -69,3 +69,19 @@ def test_loaded_contacts_match_force_vectors_by_geometry_before_measuring_cancel
     assert row['next_assignment_total_distance_margin_m']>.019
     assert row['net_delta_norm_mps']==0 and row['retained_net_error_mps']<1e-7
     assert abs(row['sum_anchor_delta_norm_mps']-.4)<1e-6
+
+
+def test_cached_tracking_vjp_preserves_value_and_does_not_traverse_rollout_again():
+    from quadsmash.rl.supermimic_recovery_batches import _gradient_value
+
+    param = torch.tensor(2., requires_grad=True)
+    unused = torch.tensor(7., requires_grad=True)
+    middle = param.square()
+    tracking = middle * 3.
+    # Compute the lane diagnostic and the parameter derivative in the same traversal.
+    state_grad, *derivatives = torch.autograd.grad(tracking, (middle, param, unused), allow_unused=True)
+    assert state_grad == 3.
+    reconstructed = _gradient_value(tracking, (param, unused), derivatives)
+    assert reconstructed.item() == tracking.item()
+    reconstructed.backward()
+    assert param.grad == 12. and unused.grad is None

@@ -243,7 +243,7 @@ class PhysicalHorizonTrainer:
             return self.toi_racket_weight
         return self.tracking_weight
 
-    def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None):
+    def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None, tracking_parameters=()):
         if isinstance(initial_state,tuple):
             from .supermimic_recovery_batches import pooled_objective
             return pooled_objective(self,initial_state,effective_weights,baseline_toi_weights)
@@ -343,11 +343,18 @@ class PhysicalHorizonTrainer:
         track_weight_sum=all_track_weights.sum() if tracks else ret.new_zeros(())
         tracking_loss=torch.stack(tracks).sum()/track_weight_sum.clamp_min(1e-8) if tracks else ret.sum()*0.
         nonzero_lanes=0
+        tracking_derivatives=None
         if tracks and torch.is_grad_enabled() and tracking_loss.requires_grad:
             differentiable=[i for i,x in enumerate(track_states) if x.requires_grad]
-            gradients=torch.autograd.grad(tracking_loss,[track_states[i] for i in differentiable],retain_graph=True,allow_unused=True) if differentiable else []
+            inputs = [track_states[i] for i in differentiable]
+            # Pooled records need the same VJP at both the physical states and the Actor.
+            inputs.extend(tracking_parameters)
+            gradients = torch.autograd.grad(tracking_loss,inputs,retain_graph=True,allow_unused=True) if inputs else ()
+            if tracking_parameters:
+                tracking_derivatives = gradients[len(differentiable):]
             responding=torch.zeros(len(state.physical),dtype=torch.bool,device=state.physical.device)
-            for g,w in zip(gradients,[track_weights[i] for i in differentiable]):
+            for g,i in zip(gradients[:len(differentiable)],differentiable,strict=True):
+                w = track_weights[i]
                 if g is not None:responding|=(g.detach().abs().sum(-1)>0)&(w>0)
             nonzero_lanes=int(responding.sum())
         loss=tracking_coeff*tracking_loss+self.anchor_coeff*anchor_loss
@@ -367,7 +374,7 @@ class PhysicalHorizonTrainer:
         coverage.update(matched_lanes=int(reference['matched'].sum()) if reference else 0,
             effective_weight_sum=float(track_weight_sum.detach()),tracking_applied=bool(tracks and float(track_weight_sum.detach())>0))
         aux_stats={'outgoing_impact_lanes': int(impact_lanes.sum())} if contact_weight and torch.is_grad_enabled() else {}
-        return dict(**aux_stats,toi_weights=all_track_weights.detach() if toi_only and tracks else None,
+        return dict(**aux_stats,tracking_derivatives=tracking_derivatives,toi_weights=all_track_weights.detach() if toi_only and tracks else None,
                     toi_coverage_preserved=toi_coverage_preserved,reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
                     gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
                     critic_data=(torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid)),

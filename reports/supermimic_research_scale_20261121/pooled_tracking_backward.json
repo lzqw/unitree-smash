@@ -1,0 +1,124 @@
+{
+  "scope": "Frozen R16+A8 checkpoint. Two matched native archive lanes for each head. Full H64 pooled objective and Actor derivatives. Compared loss, component derivatives, return, Critic input/reward/done/bootstrap/mask, matched gradient lane counts and per-record gradient diagnostics. CPU before/after repeated twice; GPU one paired Recovery timing sharing the RTX 5080 with G1. Optimizer updates in benchmark: 0.",
+  "approach": {
+    "head": "approach",
+    "device": "cpu",
+    "horizon": 64,
+    "retained": 24,
+    "actor_sha256": "282a17b7acf78bb0883709f0b4775b9faba5b7a4ac85acec2868f2fa3b88a9d8",
+    "world_sha256": "d2881ec1414adaecedaeb0c848cb76a2e930eb73ff8a51423a3b5a6a00025644",
+    "reference_commit": "662124c",
+    "tick": 272,
+    "lanes": [
+      10,
+      12
+    ],
+    "runs": [
+      {
+        "version": "before",
+        "seconds": 7.236220388993388,
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "after",
+        "seconds": 7.105073151004035,
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "after",
+        "seconds": 7.190842915006215,
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "before",
+        "seconds": 7.43153857201105,
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      }
+    ],
+    "median_seconds": {
+      "before": 7.333879480502219,
+      "after": 7.147958033005125
+    }
+  },
+  "recovery": {
+    "head": "recovery",
+    "device": "cpu",
+    "horizon": 64,
+    "retained": 24,
+    "actor_sha256": "282a17b7acf78bb0883709f0b4775b9faba5b7a4ac85acec2868f2fa3b88a9d8",
+    "world_sha256": "d2881ec1414adaecedaeb0c848cb76a2e930eb73ff8a51423a3b5a6a00025644",
+    "reference_commit": "662124c",
+    "tick": 448,
+    "lanes": [
+      10,
+      12
+    ],
+    "runs": [
+      {
+        "version": "before",
+        "seconds": 12.419911951001268,
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "after",
+        "seconds": 11.10356583702378,
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "after",
+        "seconds": 11.39781813902664,
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "before",
+        "seconds": 13.530523251014529,
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      }
+    ],
+    "median_seconds": {
+      "before": 12.975217601007898,
+      "after": 11.25069198802521
+    }
+  },
+  "gpu_recovery": {
+    "head": "recovery",
+    "device": "cuda:0",
+    "horizon": 64,
+    "retained": 24,
+    "actor_sha256": "282a17b7acf78bb0883709f0b4775b9faba5b7a4ac85acec2868f2fa3b88a9d8",
+    "world_sha256": "d2881ec1414adaecedaeb0c848cb76a2e930eb73ff8a51423a3b5a6a00025644",
+    "reference_commit": "662124c",
+    "tick": 448,
+    "lanes": [
+      10,
+      12
+    ],
+    "runs": [
+      {
+        "version": "before",
+        "seconds": 22.368731281982036,
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "after",
+        "seconds": 18.664512157003628,
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      }
+    ],
+    "peak_allocated_bytes": 124870656,
+    "median_seconds": {
+      "before": 22.368731281982036,
+      "after": 18.664512157003628
+    }
+  }
+}
