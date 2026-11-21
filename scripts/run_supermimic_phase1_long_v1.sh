@@ -97,6 +97,7 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     --refresh-world-updates 32 --refresh-critic-updates 20
     --wm-natural-flight-loss "${SM_WM_NATURAL_FLIGHT_LOSS:-huber}"
     --wm-natural-flight-batch "${SM_WM_NATURAL_FLIGHT_BATCH:-0}"
+    --wm-active-flight-batch "${SM_WM_ACTIVE_FLIGHT_BATCH:-0}"
     --world-updates-per-actor-update 4 --wm-batch-size "${SM_WM_BATCH_SIZE:-512}"
     --wm-stage-quota uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8
     --wm-approach-stage-quota uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8
@@ -113,6 +114,9 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
   fi
   if [[ "${SM_WM_SEPARATE_SUPERVISION:-0}" == 1 ]]; then
     TRAIN_ARGS+=(--wm-separate-supervision)
+  fi
+  if [[ "${SM_WM_DIRECT_LONG_BODY_SUPERVISION:-0}" == 1 ]]; then
+    TRAIN_ARGS+=(--wm-direct-long-body-supervision)
   fi
   if [[ -n "${SM_WM_FORWARD_GUARD:-}" ]]; then
     TRAIN_ARGS+=(--wm-forward-guard "$SM_WM_FORWARD_GUARD")
