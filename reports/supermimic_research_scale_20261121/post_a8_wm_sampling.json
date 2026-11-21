@@ -1,0 +1,245 @@
+{
+  "blocks": [
+    {
+      "block": "cycle000_pair001",
+      "head": "recovery",
+      "behavior_version": 33,
+      "first_native_tick": 5246,
+      "next_native_tick": 5374,
+      "batches": [
+        {
+          "world_update": 113,
+          "window_start_max": 5296,
+          "max_start_policy": 33,
+          "scope": "contains_current_block_start",
+          "measured_racket_fit": {
+            "updated": true,
+            "measured_events": 38,
+            "loss": null
+          },
+          "drawn": {
+            "initial_archive": 32,
+            "recent_online": 24,
+            "older_online": 8,
+            "action_identification": 26,
+            "contact_event": 38
+          }
+        },
+        {
+          "world_update": 114,
+          "window_start_max": 5296,
+          "max_start_policy": 33,
+          "scope": "contains_current_block_start",
+          "measured_racket_fit": null,
+          "drawn": {
+            "initial_archive": 32,
+            "recent_online": 24,
+            "older_online": 8,
+            "action_identification": 26,
+            "contact_event": 38
+          }
+        },
+        {
+          "world_update": 115,
+          "window_start_max": 5296,
+          "max_start_policy": 33,
+          "scope": "contains_current_block_start",
+          "measured_racket_fit": {
+            "updated": true,
+            "measured_events": 37,
+            "loss": null
+          },
+          "drawn": {
+            "initial_archive": 32,
+            "recent_online": 24,
+            "older_online": 8,
+            "action_identification": 26,
+            "contact_event": 38
+          }
+        },
+        {
+          "world_update": 116,
+          "window_start_max": 5296,
+          "max_start_policy": 33,
+          "scope": "contains_current_block_start",
+          "measured_racket_fit": null,
+          "drawn": {
+            "initial_archive": 32,
+            "recent_online": 24,
+            "older_online": 8,
+            "action_identification": 26,
+            "contact_event": 38
+          }
+        },
+        {
+          "world_update": 117,
+          "window_start_max": 5296,
+          "max_start_policy": 33,
+          "scope": "contains_current_block_start",
+          "measured_racket_fit": {
+            "updated": true,
+            "measured_events": 42,
+            "loss": null
+          },
+          "drawn": {
+            "initial_archive": 32,
+            "recent_online": 24,
+            "older_online": 8,
+            "action_identification": 26,
+            "contact_event": 38
+          }
+        },
+        {
+          "world_update": 118,
+          "window_start_max": 5296,
+          "max_start_policy": 33,
+          "scope": "contains_current_block_start",
+          "measured_racket_fit": null,
+          "drawn": {
+            "initial_archive": 32,
+            "recent_online": 24,
+            "older_online": 8,
+            "action_identification": 26,
+            "contact_event": 38
+          }
+        },
+        {
+          "world_update": 119,
+          "window_start_max": 5296,
+          "max_start_policy": 33,
+          "scope": "contains_current_block_start",
+          "measured_racket_fit": {
+            "updated": true,
+            "measured_events": 34,
+            "loss": null
+          },
+          "drawn": {
+            "initial_archive": 32,
+            "recent_online": 24,
+            "older_online": 8,
+            "action_identification": 26,
+            "contact_event": 38
+          }
+        },
+        {
+          "world_update": 120,
+          "window_start_max": 5296,
+          "max_start_policy": 33,
+          "scope": "contains_current_block_start",
+          "measured_racket_fit": null,
+          "drawn": {
+            "initial_archive": 32,
+            "recent_online": 24,
+            "older_online": 8,
+            "action_identification": 26,
+            "contact_event": 38
+          }
+        }
+      ]
+    }
+  ],
+  "forward_panel": {
+    "passed": true,
+    "groups": {
+      "body": [
+        {
+          "horizon": 64,
+          "metric": "body_rmse",
+          "anchor": 0.6821431517601013,
+          "candidate": 0.5519620180130005,
+          "passed": true
+        },
+        {
+          "horizon": 64,
+          "metric": "root_angular_mae",
+          "anchor": 0.265298992395401,
+          "candidate": 0.16892144083976746,
+          "passed": true
+        }
+      ],
+      "flight": [
+        {
+          "horizon": 64,
+          "metric": "ball_velocity_rmse",
+          "anchor": 1.2001900672912598,
+          "candidate": 1.0066137313842773,
+          "passed": true
+        }
+      ],
+      "contact": [
+        {
+          "metric": "event_aligned/0/1/ball_velocity_rmse",
+          "candidate": 0.3125883936882019,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/0/1/ball_forward_sign_error",
+          "candidate": 0.0,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/-1/1/ball_velocity_rmse",
+          "candidate": 3.5344376101420494e-06,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/1/1/ball_velocity_rmse",
+          "candidate": 5.441134831585259e-08,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/-1/4/ball_velocity_rmse",
+          "candidate": 0.3306809961795807,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/0/4/ball_velocity_rmse",
+          "candidate": 0.310281902551651,
+          "status": "improved"
+        }
+      ]
+    }
+  },
+  "first_recovery_proposal": {
+    "update_accepted": true,
+    "block_attempts": 1,
+    "accepted_id": 34,
+    "backtrack_alpha": 1.0,
+    "effective_gate_lanes": 16,
+    "objective_before": -1.7862136363983154,
+    "objective_after": -1.8511404991149902,
+    "model_unchanged_during_actor": true,
+    "rejection_reason": null
+  },
+  "scope": "The original running sampler reports the highest starting tick and behavior version in each 16-step window batch. Contact-fit counts include repeated draws from every source. These extrema identify presence in the batch, not the multiplicity or source of its racket edges.",
+  "net_broadphase_after_a8": [
+    {
+      "file": "chunk_00008.pt.zst",
+      "hist": {
+        "0": 5120
+      },
+      "sha256": "75a143804d9e0b333ecf0224418eed89739f83a2415fee4989cd9365af241224"
+    },
+    {
+      "file": "chunk_00009.pt.zst",
+      "hist": {
+        "0": 5120
+      },
+      "sha256": "676e42ac58209e80fd1e07768b9d9d078c737504f734b1c3ceb9a7afe9705df8"
+    },
+    {
+      "file": "chunk_00010.pt.zst",
+      "hist": {
+        "0": 5120
+      },
+      "sha256": "2c14078d7eb06091dd2c46e5d271d22d7a276d01e38b0721630fddd3140be4f6"
+    },
+    {
+      "file": "chunk_00011.pt.zst",
+      "hist": {
+        "0": 5120
+      },
+      "sha256": "b35b68f3b720a1716e0bd0db42ae032e11b7198dc94ba89adaed2040b37ff215"
+    }
+  ]
+}
