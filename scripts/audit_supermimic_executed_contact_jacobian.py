@@ -8,7 +8,7 @@ import torch
 from audit_supermimic_paired_body_transfer import response_metrics
 from calibrate_supermimic_toi_slip import TOISlip, body_transfer
 from evaluate_supermimic_contact_rollout import racket, sha
-from fit_supermimic_native_racket_toi_head import g07, predicted_state, racket_transition_inputs
+from fit_supermimic_native_racket_toi_head import free_rollout, g07, metrics, predicted_state, racket_transition_inputs
 from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branch
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_ball_impulse_prior_v1 import BallImpulsePriorV1
@@ -155,6 +155,18 @@ def main():
                 native=plus-minus
                 forward=dict(final_ball_velocity_rmse_mps=float(torch.cat((upper-plus,lower-minus)).square().mean().sqrt()))
             noise=repeat[-len(lanes):]
+            comparison=None
+            if adapter is not None:
+                # Keep the exact deployed Body weights, four native prefixes, and metric reduction fixed.
+                native_labels=({'minus':{'target':minus},'plus':{'target':plus}},groups,noise)
+                hybrid={b:command_rollout(adapter.physical_model,prior,slip,initial,launches[lanes],traces,lanes,x)
+                        for b,x in [('minus',torch.zeros_like(alpha)),('plus',torch.ones_like(alpha))]}
+                native_racket=free_rollout(slip,prior,seq,groups,repeat,commands)
+                comparison=dict(deployed=metrics(native_labels,{'minus':lower,'plus':upper}),
+                                same_body_calibrated_contact=metrics(native_labels,hybrid),
+                                measured_racket_calibrated_contact=native_racket['candidate'],
+                                calibrated_body_signed=(hybrid['plus']-hybrid['minus']).tolist(),
+                                native_racket_cases=native_racket['cases'])
             stable=torch.tensor([g=='racket_stable' for g in groups])
             signals=dict(autograd=derivative,central_difference=near,model_signed=secant)
             stats={k:derivative_summary(native,noise,signals,m) for k,m in (
@@ -164,6 +176,8 @@ def main():
             cases=[dict(lane=lane,mode=groups[i],native=vector(native[i]),noise=vector(noise[i]),
                         **{k:vector(v[i]) for k,v in signals.items()}) for i,lane in enumerate(lanes)]
             scales[name]=dict(stats=stats,cases=cases,expected_forward=forward)
+            if comparison is not None:
+                scales[name]['matched_contact_inputs']=comparison
     with a.output.open('x') as f:
         json.dump(dict(scales=scales,world_sha256=runtime['world_sha256'] if runtime else replay['online_world_sha256'],
                        transition='checkpoint_full' if runtime else 'body_plus_calibrated_toi',runtime=runtime,
