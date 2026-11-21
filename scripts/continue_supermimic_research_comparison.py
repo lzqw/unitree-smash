@@ -8,7 +8,7 @@ import psutil
 import subprocess
 import sys
 
-from run_supermimic_research_scale import digest
+from run_supermimic_research_scale import digest, run_registered_arm
 
 
 def read(path):
@@ -28,6 +28,21 @@ def wait_for_arm(directory, pid):
     summary=read(directory/'train/training_completed.json')
     if (summary['recovery_accepted'],summary['approach_accepted'])!=(128,128):
         raise RuntimeError('Training endpoint lacks the requested retained update counts')
+
+
+def control_registration(primary, output, tensorboard):
+    cmd = list(primary['command'])
+    if primary['arm'] != 'G1' or cmd[cmd.index('--research-contact-gradient')+1] != 'G1':
+        raise ValueError('Control requires the registered gradient-on arm')
+    source = Path(cmd[cmd.index('--resume-training')+1])
+    contact = Path(cmd[cmd.index('--action-ball-checkpoint')+1])
+    expected = primary.get('revision', primary['initial'])['checkpoint_sha256']
+    if digest(source) != expected or digest(contact) != primary['initial']['contact_checkpoint_sha256']:
+        raise ValueError('Matched control input checkpoint changed')
+    for key, value in (('--research-contact-gradient', 'G0'), ('--output', output/'train'),
+                       ('--tensorboard-dir', tensorboard/'G0')):
+        cmd[cmd.index(key)+1] = str(value)
+    return dict(primary, arm='G0', command=cmd)
 
 
 def main():
@@ -52,13 +67,10 @@ def main():
         cmd=reg['command']
         control=root/'control_G0'
         if not control.exists():
-            run('run_supermimic_research_scale.py','--arm','G0','--source-registration',source_registration,
-                '--composition',cmd[cmd.index('--resume-training')+1],'--contact',cmd[cmd.index('--action-ball-checkpoint')+1],
-                '--output',control,'--tensorboard',root/'tensorboard',
-                *(['--diagnostic-critic-loss'] if '--diagnostic-critic-loss' in cmd else []),
-                *(['--recovery-prefix-and-string-margin'] if '--recovery-prefix-and-string-margin' in cmd else []),
-                *(['--continuous-approach-starts'] if '--continuous-approach-starts' in cmd else []),
-                *(['--training-seed', reg['research_training_seed']] if reg.get('research_training_seed') is not None else []))
+            control_reg=control_registration(reg,control,root/'tensorboard')
+            rc=run_registered_arm(control,root/'tensorboard',control_reg)
+            if rc:
+                raise SystemExit(rc)
         if not (control/'exit.json').is_file():
             raise RuntimeError('Existing control arm lacks a terminal receipt')
         wait_for_arm(control,None)

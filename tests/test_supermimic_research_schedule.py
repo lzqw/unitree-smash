@@ -53,11 +53,11 @@ def test_research_replicate_forks_sampler_streams_and_resume_keeps_cursors():
     import pytest
     from scripts.train_supermimic_physical_block import research_learner_rng
 
-    replay = SimpleNamespace(generator=torch.Generator())
+    replay = SimpleNamespace(generator=torch.Generator(), actor_start_bank=SimpleNamespace(generator=torch.Generator()))
     flight = SimpleNamespace(generator=torch.Generator())
 
     def sample():
-        return [torch.randperm(32, generator=g).tolist() for g in (None, replay.generator, flight.generator)]
+        return [torch.randperm(32, generator=g).tolist() for g in (None, replay.generator, flight.generator, replay.actor_start_bank.generator)]
 
     def start(seed):
         assert research_learner_rng(seed, {}, fresh=True, replay=replay, natural_flight=flight) == seed
@@ -142,3 +142,24 @@ def test_approach_draws_span_short_blocks_rejections_and_resume():
             assert draw == len(requested)+1
             requested.append(bank.sample(draw)[1]['requested'])
     assert Counter(requested) == {'gate_onset':5, 'pre_contact':7, 'failure_pre':5, 'success_near':3}
+
+
+def test_matched_control_copies_revised_flags_seed_and_handoff_identity(tmp_path):
+    from scripts.continue_supermimic_research_comparison import control_registration
+    from scripts.run_supermimic_research_scale import digest
+    import pytest
+    handoff,contact=tmp_path/'handoff.pt',tmp_path/'contact.pt'
+    handoff.write_bytes(b'scored');contact.write_bytes(b'calibrated')
+    cmd=['train.py','--research-contact-gradient','G1','--resume-training',str(handoff),
+         '--action-ball-checkpoint',str(contact),'--output','original/train','--tensorboard-dir','original/tb',
+         '--research-training-seed','2718','--interleaved-approach-starts','--restart-uphill-approach-momentum']
+    reg=dict(arm='G1',initial=dict(checkpoint_sha256='experiment origin',contact_checkpoint_sha256=digest(contact)),
+             revision=dict(checkpoint_sha256=digest(handoff)),command=cmd,research_training_seed=2718)
+    control=control_registration(reg,tmp_path/'control',tmp_path/'tb')
+    for key in ('initial','revision','research_training_seed'):
+        assert control[key]==reg[key]
+    assert control['command'][1:3]==['--research-contact-gradient','G0'] and cmd[2]=='G1'
+    assert control['command'][-4:]==cmd[-4:]
+    handoff.write_bytes(b'changed')
+    with pytest.raises(ValueError,match='checkpoint changed'):
+        control_registration(reg,tmp_path/'control',tmp_path/'tb')

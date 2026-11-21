@@ -90,12 +90,14 @@ def research_learner_rng(requested_seed, saved_config, *, fresh, replay, natural
             raise ValueError('Cannot change the training seed of an ongoing schedule')
         return inherited
     import torch
-    # torch.manual_seed seeds both CPU and CUDA. Replay and the long-flight
-    # sampler own separate CPU generators whose state also lives in the checkpoint.
+    # The Actor start bank samples independently of WM replay. Keep the first
+    # two derived seeds compatible with earlier explicit-seed runs.
     torch.manual_seed(requested_seed)
     streams = torch.Generator().manual_seed(requested_seed)
     replay_seed, flight_seed = torch.empty(2, dtype=torch.int64).random_(generator=streams).tolist()
+    start_seed = torch.empty((), dtype=torch.int64).random_(generator=streams).item()
     replay.generator.manual_seed(replay_seed)
+    replay.actor_start_bank.generator.manual_seed(start_seed)
     if natural_flight is not None:
         natural_flight.generator.manual_seed(flight_seed)
     return requested_seed
