@@ -438,7 +438,8 @@ class PhysicalHorizonTrainer:
                                                                       baseline_toi_weights=rollout['toi_weights'])
                                     candidate_loss=float(evaluation['loss'])
                                     coverage_ok=evaluation['toi_coverage_preserved']
-                                trials.append(dict(alpha=candidate_alpha,loss=candidate_loss,budget_ok=bool(bounded),toi_coverage_preserved=coverage_ok,final_command_change=effect))
+                                trials.append(dict(alpha=candidate_alpha,loss=candidate_loss,budget_ok=bool(bounded),
+                                                   budget_report=report,toi_coverage_preserved=coverage_ok,final_command_change=effect))
                                 if bounded and coverage_ok and effect>0 and candidate_loss<=baseline_loss:
                                     committed_budget=candidate_budget
                                     alpha=candidate_alpha;accepted=True;break
@@ -482,7 +483,6 @@ class PhysicalHorizonTrainer:
         if update_actor:
             if accepted:
                 self.actor_updates+=1; self.backtracked_actor_updates+=int(alpha<1);self.accept_snapshot()
-                budget_references['relative_last_accepted']=committed_budget
             else:
                 self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
                 self.rejected_actor_updates+=1

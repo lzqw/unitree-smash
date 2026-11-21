@@ -1,0 +1,157 @@
+{
+  "approach": {
+    "retained": 16,
+    "proposals": 16,
+    "trials": 23,
+    "failed_trial_reasons": {
+      "lost_toi_lane": 5,
+      "objective_increase": 2
+    },
+    "reduced_steps": [
+      {
+        "arm_update": 13,
+        "baseline_loss": 0.5897541046142578,
+        "trials": [
+          {
+            "alpha": 1.0,
+            "loss": 0.5836108326911926,
+            "budget_ok": true,
+            "toi_coverage_preserved": false,
+            "final_command_change": 0.002245664596557617
+          },
+          {
+            "alpha": 0.5,
+            "loss": 0.5794700384140015,
+            "budget_ok": true,
+            "toi_coverage_preserved": false,
+            "final_command_change": 0.0010859966278076172
+          },
+          {
+            "alpha": 0.25,
+            "loss": 0.5877150297164917,
+            "budget_ok": true,
+            "toi_coverage_preserved": true,
+            "final_command_change": 0.0005335807800292969
+          }
+        ]
+      },
+      {
+        "arm_update": 16,
+        "baseline_loss": 0.6842493414878845,
+        "trials": [
+          {
+            "alpha": 1.0,
+            "loss": 0.6733312606811523,
+            "budget_ok": true,
+            "toi_coverage_preserved": false,
+            "final_command_change": 0.0032453536987304688
+          },
+          {
+            "alpha": 0.5,
+            "loss": 0.6775236129760742,
+            "budget_ok": true,
+            "toi_coverage_preserved": false,
+            "final_command_change": 0.0015783309936523438
+          },
+          {
+            "alpha": 0.25,
+            "loss": 0.6816537976264954,
+            "budget_ok": true,
+            "toi_coverage_preserved": true,
+            "final_command_change": 0.0007779598236083984
+          }
+        ]
+      },
+      {
+        "arm_update": 25,
+        "baseline_loss": 0.4306478500366211,
+        "trials": [
+          {
+            "alpha": 1.0,
+            "loss": 0.4404376745223999,
+            "budget_ok": true,
+            "toi_coverage_preserved": true,
+            "final_command_change": 0.003118753433227539
+          },
+          {
+            "alpha": 0.5,
+            "loss": 0.4221201539039612,
+            "budget_ok": true,
+            "toi_coverage_preserved": true,
+            "final_command_change": 0.001517653465270996
+          }
+        ]
+      },
+      {
+        "arm_update": 31,
+        "baseline_loss": 0.7310537695884705,
+        "trials": [
+          {
+            "alpha": 1.0,
+            "loss": 0.7323439717292786,
+            "budget_ok": true,
+            "toi_coverage_preserved": true,
+            "final_command_change": 0.005347132682800293
+          },
+          {
+            "alpha": 0.5,
+            "loss": 0.726050853729248,
+            "budget_ok": true,
+            "toi_coverage_preserved": true,
+            "final_command_change": 0.0026268959045410156
+          }
+        ]
+      },
+      {
+        "arm_update": 32,
+        "baseline_loss": 0.6850652098655701,
+        "trials": [
+          {
+            "alpha": 1.0,
+            "loss": 0.6699468493461609,
+            "budget_ok": true,
+            "toi_coverage_preserved": false,
+            "final_command_change": 0.005597472190856934
+          },
+          {
+            "alpha": 0.5,
+            "loss": 0.6657927632331848,
+            "budget_ok": true,
+            "toi_coverage_preserved": true,
+            "final_command_change": 0.0027506351470947266
+          }
+        ]
+      }
+    ]
+  },
+  "recovery": {
+    "retained": 17,
+    "proposals": 17,
+    "trials": 18,
+    "failed_trial_reasons": {
+      "objective_increase": 1
+    },
+    "reduced_steps": [
+      {
+        "arm_update": 1,
+        "baseline_loss": 4.112380504608154,
+        "trials": [
+          {
+            "alpha": 1.0,
+            "loss": 4.1133646965026855,
+            "budget_ok": true,
+            "toi_coverage_preserved": true,
+            "final_command_change": 0.0016164183616638184
+          },
+          {
+            "alpha": 0.5,
+            "loss": 4.1123127937316895,
+            "budget_ok": true,
+            "toi_coverage_preserved": true,
+            "final_command_change": 0.0007925629615783691
+          }
+        ]
+      }
+    ]
+  }
+}

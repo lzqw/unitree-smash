@@ -48,11 +48,16 @@ def learner():
 
 def test_real_learner_proposal_has_command_response_and_fixed_objective():
     t=learner();before=tensor_digest(t.adapter.state_dict().items())
-    stats=t.imagine_update(t.budget_states[0])
-    assert stats['update_accepted'] and stats['final_command_max_change']>0
-    assert stats['objective_after']<=stats['objective_before']
-    assert stats['task_gradient_norm']>0
-    assert before==tensor_digest(t.adapter.state_dict().items())
+    for _ in range(2):
+        stats=t.imagine_update(t.budget_states[0])
+        assert stats['update_accepted'] and stats['final_command_max_change']>0
+        assert stats['objective_after']<=stats['objective_before']
+        assert stats['task_gradient_norm']>0
+        assert before==tensor_digest(t.adapter.state_dict().items())
+        budget=stats['budget_report']
+        assert budget==stats['backtrack_trials'][-1]['budget_report']
+        assert budget['relative_last_accepted']['final_joint_target_delta_rad']==stats['final_command_max_change']
+    assert budget['relative_block_start']['final_joint_target_delta_rad']>stats['final_command_max_change']
 
 def test_zero_task_gradient_does_not_move_adam_momentum():
     t=learner();t.actor.approach.weight.grad=torch.ones_like(t.actor.approach.weight);t.actor_opt.step()
