@@ -44,10 +44,15 @@ def intercept_loss(before, after, start, end, reference, mask, survival, geometr
         return after[:, :1].sum() * 0, weights
     alpha = ((arrival - start) / (end - start).clamp_min(1e-8)).clamp(0, 1)
     kinematics = torch.lerp(racket_features(before, geometry), racket_features(after, geometry), alpha[:, None])
-    native = reference['toi_racket']
-    target_position = reference['intercept']['position'] + native[:, :3]
+    terms = intercept_terms(kinematics, reference['intercept']['position'], reference['toi_racket'])
+    position, linear, normal, angular = terms.unbind(-1)
+    return ((position+linear+normal+angular)*weights).sum(), weights
+
+
+def intercept_terms(kinematics, intercept_position, native):
+    target_position = intercept_position + native[:, :3]
     position = F.smooth_l1_loss((kinematics[:, :3]-target_position)/.05, torch.zeros_like(target_position), reduction='none').mean(-1)
     linear = F.smooth_l1_loss(kinematics[:, 3:6], native[:, 3:6], reduction='none').mean(-1)
     normal = 1-F.cosine_similarity(kinematics[:, 6:9], native[:, 6:9], dim=-1)
     angular = F.smooth_l1_loss(kinematics[:, 9:12]/3, native[:, 9:12]/3, reduction='none').mean(-1)
-    return ((position+linear+normal+angular)*weights).sum(), weights
+    return torch.stack((position, linear, normal, angular), dim=-1)

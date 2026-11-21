@@ -136,7 +136,7 @@ def prediction(model,prior,row):
 
 
 @torch.no_grad()
-def free_rollout(model,prior,sequences,groups,repeat,execution,baseline_model=None):
+def free_rollout(model,prior,sequences,groups,repeat,execution,baseline_model=None,*,diagnostic_model_at_tick=None):
     targets={}
     outputs={key:{} for key in ('baseline','candidate')}
     timings={name:{} for name in outputs}
@@ -149,6 +149,8 @@ def free_rollout(model,prior,sequences,groups,repeat,execution,baseline_model=No
                 loaded=row['active'] & (row['object_id']==0)
                 first_times=torch.where(loaded & first_times.isinf(),tick_index*prior.dt+row['time'],first_times)
                 response = model if name == 'candidate' else baseline_model
+                if name == 'candidate' and diagnostic_model_at_tick is not None:
+                    response = diagnostic_model_at_tick(b, tick_index)
                 state = (predicted_state(response, prior, row) if response is not None else
                          torch.cat((row['analytic_position'], row['analytic']), 1))
             outputs[name][b]=state[:,3:]

@@ -12,11 +12,11 @@ from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES
 from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop, tensor_digest
 from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
-from quadsmash.rl.supermimic_toi_racket_objective import flight_intercept, intercept_loss
+from quadsmash.rl.supermimic_toi_racket_objective import flight_intercept, intercept_terms, racket_features
 from scripts.evaluate_supermimic_fresh_wm_panel import digest
 
 
-def score(folder, expected, adapter, template, launch, bank, task, execution, held):
+def score(folder, expected, adapter, template, launch, bank, task, execution, held, *, training=False):
     read=lambda p: json.loads(p.read_text())
     status=read(folder/'status.json')
     if digest(folder/'status.json')!=expected or status['status']!='COLLECTION_FINISHED':
@@ -33,10 +33,13 @@ def score(folder, expected, adapter, template, launch, bank, task, execution, he
     base=runs['nominal_a']
     spec=base['spec']
     ids=spec['lanes']
-    if (spec['data_role']!='development_action_response' or not set(ids)<=held or
+    role='training_action_identification' if training else 'development_action_response'
+    valid_lanes=(set(range(128))-held) if training else held
+    if (spec['data_role']!=role or not set(ids)<=valid_lanes or
             base['task_contract']!=task or base['policy_execution']!=execution):
         raise ValueError('Unexpected training or execution source')
-    bank.assert_excludes(ids)
+    if not training:
+        bank.assert_excludes(ids)
     state=PhysicalImaginationStateV1.from_record(base['raw']['start'],executor_template=template,launch=launch,device='cpu')
     dt=task['control_dt_s']
     ge=adapter.physical_model.geometry
@@ -74,37 +77,50 @@ def score(folder, expected, adapter, template, launch, bank, task, execution, he
             if hit[l] and elapsed[l]+j*dt < time[l] <= elapsed[l]+(j+1)*dt:
                 selections.append((i,l,j))
                 break
-    def loss_seq(xs):
-        losses=[]
-        for i,l,j in selections:
-            reference=dict(matched=ref['matched'][l:l+1],toi_racket=ref['toi_racket'][l:l+1],
-                intercept={k:t[l:l+1] for k,t in intercept.items()})
-            ones=elapsed.new_ones(1)
-            value,w=intercept_loss(xs[j,i:i+1],xs[j+1,i:i+1],elapsed[l:l+1]+j*dt,
-                elapsed[l:l+1]+(j+1)*dt,reference,ones.bool(),ones,ge)
-            if w.item()!=1:
-                raise ValueError('Wrong TOI interpolation window')
-            losses.append(value)
-        return torch.stack(losses)
     if not selections:
         return dict(lanes=len(ids),matched_and_inside=0,cases=[])
+    indices, selected_lanes, steps = torch.tensor(selections).T
+    start = elapsed[selected_lanes] + steps*dt
+    end = elapsed[selected_lanes] + (steps+1)*dt
+    alpha_time = (time[selected_lanes]-start)/(end-start)
+    def kinematics(xs):
+        return torch.lerp(racket_features(xs[steps,indices],ge),racket_features(xs[steps+1,indices],ge),
+                          alpha_time[:,None])
+    def terms(features):
+        return intercept_terms(features,intercept['position'][selected_lanes],ref['toi_racket'][selected_lanes])
+    def total(components):
+        a,b,c,d=components.unbind(-1)
+        return a+b+c+d
     with torch.no_grad():
-        native_loss={b:loss_seq(v) for b,v in native.items()}
-        finite=loss_seq(predicted(torch.tensor(1.)))-loss_seq(predicted(torch.tensor(0.)))
-    # One scalar displacement per independent lane, across all recorded commands.
+        native_features={b:kinematics(v) for b,v in native.items()}
+        native_loss={b:total(terms(v)) for b,v in native_features.items()}
+        m,p=(kinematics(predicted(torch.tensor(v))) for v in (0.,1.))
+        native_m,native_p=(native_features[b] for b in ('minus','plus'))
+        finite=total(terms(p))-total(terms(m))
+        def exchanged(midpoint, delta):
+            return total(terms(midpoint+.5*delta))-total(terms(midpoint-.5*delta))
+        at_native_center=exchanged(.5*(native_m+native_p),p-m)
+        with_native_delta=exchanged(.5*(m+p),native_p-native_m)
+        observed_terms=terms(native_p)-terms(native_m)
+    # The four components share a command sequence but each lane has its own scalar displacement.
     alpha=torch.full((1,len(ids),1),.5,requires_grad=True)
-    grad,=torch.autograd.grad(loss_seq(predicted(alpha)).sum(),alpha)
+    components=terms(kinematics(predicted(alpha)))
+    component_jvp=torch.stack([torch.autograd.grad(components[:,c].sum(),alpha,retain_graph=c<3)[0][0,:,0]
+                               for c in range(4)],-1)
+    grad=total(component_jvp)
     rows=[]
     for k,(i,l,j) in enumerate(selections):
         dv=float(native_loss['plus'][k]-native_loss['minus'][k])
         noise=abs(float(native_loss['nominal_a'][k]-native_loss['nominal_b'][k]))
-        delta=float(finite[k]); jac=float(grad[0,i,0])
+        delta=float(finite[k]); jac=float(grad[i])
         target_change=float((cmds['plus'][0][:j+1,i]-cmds['minus'][0][:j+1,i]).abs().max())
         rows.append(dict(lane=l,tick=j+1,measured=dv,nominal_repeat=noise,model_difference=delta,model_derivative=jac,
+                         at_native_midpoint=float(at_native_center[k]),with_native_difference=float(with_native_delta[k]),
+                         measured_terms=observed_terms[k].tolist(),derivative_terms=component_jvp[i].tolist(),
                          target_change_rad=target_change,supported=target_change>0 and abs(dv)>max(1.e-7,3*noise)))
     supported=[r for r in rows if r['supported']]
     counts={}
-    for key in ('model_difference','model_derivative'):
+    for key in ('model_difference','model_derivative','at_native_midpoint','with_native_difference'):
         counts[key]=dict(same_direction=sum(r[key]*r['measured']>0 for r in supported),
                          gain_median=statistics.median(abs(r[key]/r['measured']) for r in supported) if supported else None)
     return dict(lanes=len(ids),matched_and_inside=len(rows),above_noise=len(supported),scores=counts,cases=rows,
@@ -115,6 +131,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('decision','development','shadow','bank','output'):
         p.add_argument('--'+k,required=True,type=Path)
+    p.add_argument('--training',type=Path,help='Registered training-only response panel for component calibration')
     args=p.parse_args();torch.set_num_threads(2)
     read=lambda f:json.loads(f.read_text())
     decision,shadow=read(args.decision),read(args.shadow)
@@ -136,6 +153,17 @@ def main():
     src=read(args.development/'completed.json')
     result={s:score(args.development/s,src[s],adapter,template,launch,bank,manifest['task_contract'],
             ck['metadata']['policy_execution'],set(ck['config']['wm_holdout_lanes'])) for s in ('wide','half','quarter')}
+    if args.training:
+        status=digest(args.training/'status.json')
+        reg=read(args.training.parent/'preregistration.json')
+        startup=read(args.training/'startup.json')
+        if (startup['source_sha256']!=reg['actor_checkpoint_sha256']
+                or startup['specs'][0]['sha256']!=reg['spec_sha256']
+                or set(reg['held_out_lanes'])!=set(ck['config']['wm_holdout_lanes'])):
+            raise ValueError('Signed training case registration changed')
+        result['training']=score(args.training,status,adapter,template,launch,bank,manifest['task_contract'],
+            ck['metadata']['policy_execution'],set(ck['config']['wm_holdout_lanes']),training=True)
+        result['training_status_sha256']=status
     result.update(shadow_sha256=digest(args.shadow),decision_sha256=digest(args.decision),actor_updates=0,
           scope='Fixed causal reference at the common prefix. Measured and modeled racket objectives along recorded command histories. Three scales share launch cases. This is not an Actor parameter gradient or a contact receipt.')
     with args.output.open('x') as stream:
