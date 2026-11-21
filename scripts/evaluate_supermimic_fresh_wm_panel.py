@@ -96,7 +96,7 @@ class TransitionRecorder:
 
 
 @torch.no_grad()
-def assess(data, cases, anchor, adapter, horizons, device, *, contact_step=None, predictors=('anchor','candidate')):
+def assess(data, cases, anchor, adapter, horizons, device, *, contact_step=None, predictors=('anchor','candidate'), flight_attribution=False):
     from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
     from quadsmash.rl.supermimic_toi_racket_objective import racket_features
 
@@ -124,6 +124,20 @@ def assess(data, cases, anchor, adapter, horizons, device, *, contact_step=None,
     buffer={k:v[ticks[None]+torch.arange(horizon)[:,None],lanes].to(device)
             for k,v in data.items() if k in ('state','next_state','targets','previous_action','feet','present','elapsed')}
     metrics={}
+    attribution={}
+    window_errors={}
+    if flight_attribution:
+        contact=data['contact'].bool()
+        same_episode=data['episode']==data['episode'][0]
+        earlier=(contact&same_episode).long().cumsum(0)-(contact&same_episode).long()
+        indices=ticks[None]+torch.arange(horizon)[:,None]
+        hit=contact[indices,lanes].any(0)
+        launched=data['present'][ticks,lanes].bool()
+        ends_present=data['next_present'][indices[-1],lanes].bool()
+        seen=earlier[ticks,lanes]>0
+        strata=[('qualified_contact_in_window' if h else 'previously_qualified' if s else
+                 'launch_in_window' if not b and e else 'before_launch' if not b else 'present_without_qualified_contact')
+                for h,s,b,e in zip(hit.tolist(),seen.tolist(),launched.tolist(),ends_present.tolist(),strict=True)]
     if not predictors or set(predictors)-{'anchor','candidate'}:
         raise ValueError('Unknown WM predictor')
     for name in predictors:
@@ -155,8 +169,25 @@ def assess(data, cases, anchor, adapter, horizons, device, *, contact_step=None,
                     ball_position_p95=float(err[ix,49:52].norm(dim=-1).quantile(.95)),
                     racket_position_mae=float(fk[ix,:3].abs().mean()),racket_velocity_mae=float(fk[ix,3:6].abs().mean()),
                     racket_angular_mae=float(fk[ix,9:12].abs().mean()))
+            if flight_attribution and i+1==horizon:
+                energy=err[:,52:].square().sum(-1).detach().cpu()
+                window_errors[name]=[dict(tick=int(ticks[j]),lane=int(lanes[j]),history=strata[j],squared_error=float(energy[j]))
+                                     for j in range(len(groups)) if groups[j]=='uniform']
+                by_group={}
+                for j,kind in enumerate(strata):
+                    if groups[j]!='uniform':continue
+                    row=by_group.setdefault(kind,dict(windows=0,squared_error_sum=0.))
+                    row['windows']+=1
+                    row['squared_error_sum']+=float(energy[j])
+                total=sum(x['squared_error_sum'] for x in by_group.values())
+                for row in by_group.values():
+                    row['share_of_squared_error']=row['squared_error_sum']/total if total>0 else None
+                    row['component_rmse']=(row['squared_error_sum']/(3*row['windows']))**.5
+                attribution[name]=by_group
             metrics[name][i+1]=result
-    return dict(metrics=metrics,windows=[dict(tick=t,lane=l,group=g) for (t,l),g in zip(pairs,groups)])
+    report=dict(metrics=metrics,windows=[dict(tick=t,lane=l,group=g) for (t,l),g in zip(pairs,groups)])
+    if flight_attribution:report.update(uniform_horizon_attribution=attribution,uniform_window_errors=window_errors)
+    return report
 
 
 def run(args):

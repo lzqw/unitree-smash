@@ -1,0 +1,210 @@
+{
+  "groups": {
+    "g07_development": {
+      "manifold_switch": 3,
+      "no_contact": 12,
+      "racket_stable": 4,
+      "toi_switch": 13
+    }
+  },
+  "scores": {
+    "train": {
+      "baseline": {
+        "all_signed": {
+          "rows": 896,
+          "supported": 734,
+          "absolute_rmse": 0.6094001531600952,
+          "gain_median": 0.509304404258728,
+          "gain_p10": 0.05246675759553909,
+          "cosine_median": 0.5821040868759155,
+          "cosine_p10": -0.4662502706050873
+        },
+        "stable_signed": {
+          "rows": 176,
+          "supported": 176,
+          "absolute_rmse": 0.20538166165351868,
+          "gain_median": 0.858119010925293,
+          "gain_p10": 0.10592901706695557,
+          "cosine_median": 0.7549303770065308,
+          "cosine_p10": -0.22179704904556274
+        },
+        "no_contact_signed_rmse": 0.0,
+        "absolute_rmse": 1.3616878986358643
+      },
+      "candidate": {
+        "all_signed": {
+          "rows": 896,
+          "supported": 734,
+          "absolute_rmse": 0.6031648516654968,
+          "gain_median": 0.5115275979042053,
+          "gain_p10": 0.055548638105392456,
+          "cosine_median": 0.572516143321991,
+          "cosine_p10": -0.4864971935749054
+        },
+        "stable_signed": {
+          "rows": 176,
+          "supported": 176,
+          "absolute_rmse": 0.205356627702713,
+          "gain_median": 0.8576056361198425,
+          "gain_p10": 0.10563559830188751,
+          "cosine_median": 0.7505404949188232,
+          "cosine_p10": -0.23719394207000732
+        },
+        "no_contact_signed_rmse": 0.00010917511099250987,
+        "absolute_rmse": 1.277398943901062
+      }
+    },
+    "development": {
+      "baseline": {
+        "all_signed": {
+          "rows": 256,
+          "supported": 209,
+          "absolute_rmse": 0.33196964859962463,
+          "gain_median": 0.5584858655929565,
+          "gain_p10": 0.08904893696308136,
+          "cosine_median": 0.6673256754875183,
+          "cosine_p10": -0.37395620346069336
+        },
+        "stable_signed": {
+          "rows": 46,
+          "supported": 46,
+          "absolute_rmse": 0.21627646684646606,
+          "gain_median": 0.9628151655197144,
+          "gain_p10": 0.11585451662540436,
+          "cosine_median": 0.8533594608306885,
+          "cosine_p10": 0.07800127565860748
+        },
+        "no_contact_signed_rmse": 0.0,
+        "absolute_rmse": 1.3184314966201782
+      },
+      "candidate": {
+        "all_signed": {
+          "rows": 256,
+          "supported": 209,
+          "absolute_rmse": 0.3331407606601715,
+          "gain_median": 0.5432198643684387,
+          "gain_p10": 0.09097082912921906,
+          "cosine_median": 0.6605512499809265,
+          "cosine_p10": -0.3911203145980835
+        },
+        "stable_signed": {
+          "rows": 46,
+          "supported": 46,
+          "absolute_rmse": 0.21621127426624298,
+          "gain_median": 0.9592806696891785,
+          "gain_p10": 0.14115919172763824,
+          "cosine_median": 0.8614664673805237,
+          "cosine_p10": 0.06981441378593445
+        },
+        "no_contact_signed_rmse": 0.0,
+        "absolute_rmse": 1.2482627630233765
+      }
+    },
+    "g07_development": {
+      "baseline": {
+        "all_signed": {
+          "rows": 512,
+          "supported": 170,
+          "absolute_rmse": 0.05055076256394386,
+          "gain_median": 1.0,
+          "gain_p10": 0.9999986290931702,
+          "cosine_median": 1.0,
+          "cosine_p10": 0.9968159198760986
+        },
+        "stable_signed": {
+          "rows": 64,
+          "supported": 33,
+          "absolute_rmse": 0.042320121079683304,
+          "gain_median": 1.0,
+          "gain_p10": 0.9999997615814209,
+          "cosine_median": 0.9999999403953552,
+          "cosine_p10": 0.9961073398590088
+        },
+        "no_contact_signed_rmse": 0.0,
+        "absolute_rmse": 0.16905485093593597
+      },
+      "candidate": {
+        "all_signed": {
+          "rows": 512,
+          "supported": 170,
+          "absolute_rmse": 0.05527183413505554,
+          "gain_median": 1.0,
+          "gain_p10": 0.9999987483024597,
+          "cosine_median": 1.0,
+          "cosine_p10": 0.9985547661781311
+        },
+        "stable_signed": {
+          "rows": 64,
+          "supported": 33,
+          "absolute_rmse": 0.04228789359331131,
+          "gain_median": 1.0,
+          "gain_p10": 0.9999997615814209,
+          "cosine_median": 0.9999999403953552,
+          "cosine_p10": 0.9963710308074951
+        },
+        "no_contact_signed_rmse": 0.0,
+        "absolute_rmse": 0.15810485184192657
+      }
+    },
+    "g07_development_free_rollout": {
+      "baseline": {
+        "all_signed": {
+          "rows": 32,
+          "supported": 20,
+          "absolute_rmse": 0.8338082432746887,
+          "gain_median": 1.012465476989746,
+          "gain_p10": 0.18528258800506592,
+          "cosine_median": 0.9232617020606995,
+          "cosine_p10": -0.4870113432407379
+        },
+        "stable_signed": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.16342391073703766,
+          "gain_median": 0.8671003580093384,
+          "gain_p10": 0.32524868845939636,
+          "cosine_median": 0.9232617020606995,
+          "cosine_p10": -0.0020249804947525263
+        },
+        "no_contact_signed_rmse": 0.0,
+        "absolute_rmse": 1.294946312904358
+      },
+      "candidate": {
+        "all_signed": {
+          "rows": 32,
+          "supported": 20,
+          "absolute_rmse": 0.6780444979667664,
+          "gain_median": 1.0604090690612793,
+          "gain_p10": 0.23206135630607605,
+          "cosine_median": 0.9146605134010315,
+          "cosine_p10": -0.49751684069633484
+        },
+        "stable_signed": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.16331228613853455,
+          "gain_median": 0.8392432332038879,
+          "gain_p10": 0.315438836812973,
+          "cosine_median": 0.9165003895759583,
+          "cosine_p10": -0.012535770423710346
+        },
+        "no_contact_signed_rmse": 0.0,
+        "absolute_rmse": 1.4026436805725098
+      }
+    }
+  },
+  "source_sha256": {
+    "train": "ebb122737239aaa013c57b7bb65830c3025b632e1eea9a5258d687863dce95db",
+    "development": "3c588202dfdd297b95d4a41f3e54a0b807befbfa4d580d678c4d7fdae0d95256",
+    "g07_development": "b8eff681b1b99d9f808c47ce70be5fd79936d59fbe7c3f1e4beece6331459907"
+  },
+  "design_sha256": "5ef1a8c735362550c13e8aeea62c6be13d3cce787a413dee7a1650357697fb6c",
+  "calibration_sha256": "f6bdf30799906e1f51ca00d9084dd752c7f214c14ae1113f6cbd205f31561bcd",
+  "heldout_opened": false,
+  "actor_updates": 0,
+  "wm_updates": 0,
+  "development_passed": false,
+  "policy_training_admitted": false,
+  "scope": "V13 TOI-head supervised calibration with measured racket endpoints. G07 intervals use recorded incoming shuttle states.",
+  "checkpoint_sha256": "7f9e942c5143ae3bfbc5e899d96542248498af59be8d5d3361038c3c6f5a32c8"
+}

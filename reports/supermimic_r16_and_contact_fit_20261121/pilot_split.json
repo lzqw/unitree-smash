@@ -1,0 +1,85 @@
+{
+  "pilot_status": "READY",
+  "selected_contacts": 2000,
+  "selected_negatives": 1000,
+  "split": {
+    "row_counts": {
+      "train": 2069,
+      "validation": 447,
+      "test": 484
+    },
+    "group_counts": {
+      "train": 12,
+      "validation": 2,
+      "test": 2
+    },
+    "source_overlap": {
+      "train:validation": [],
+      "train:test": [],
+      "validation:test": []
+    },
+    "source_overlap_free": true,
+    "group_overlap": {
+      "spec_id": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      },
+      "episode_id": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      },
+      "capture_id": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      },
+      "split_group": {
+        "train:validation": [],
+        "train:test": [],
+        "validation:test": []
+      }
+    },
+    "group_overlap_free": true,
+    "spec_lane_family_overlap": {
+      "train:validation": [],
+      "train:test": [],
+      "validation:test": []
+    },
+    "specs": {
+      "train": [
+        "fixture_family_0",
+        "fixture_family_1",
+        "fixture_family_10",
+        "fixture_family_12",
+        "fixture_family_14",
+        "fixture_family_15",
+        "fixture_family_2",
+        "fixture_family_5",
+        "fixture_family_6",
+        "fixture_family_7",
+        "fixture_family_8",
+        "fixture_family_9"
+      ],
+      "validation": [
+        "fixture_family_13",
+        "fixture_family_3"
+      ],
+      "test": [
+        "fixture_family_11",
+        "fixture_family_4"
+      ]
+    },
+    "unseen_test_specs": [
+      "fixture_family_11",
+      "fixture_family_4"
+    ],
+    "unseen_spec_holdout": true
+  },
+  "admission": {
+    "policy_training_admitted": false,
+    "contact_bptt": "detached",
+    "v13_residual_gradient": "detached"
+  }
+}

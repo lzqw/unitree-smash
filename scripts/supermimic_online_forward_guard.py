@@ -96,7 +96,7 @@ class OnlineForwardGuard:
                 or self.initial_world_sha256!=fit['initial_world_sha256']
                 or fit['updates']!=checkpoint['world_updates'] or set(fit['excluded_lanes'])!=set(held_lanes)
                 or fit['adaptation']!='full' or fit['policy_updates']!=0 or fit['critic_updates']!=0
-                or any(fit.get(k)!=v for k,v in recipe.items())):
+                or any(fit.get(k,0 if k in ('active_flight_batch','direct_long_body_supervision') else None)!=v for k,v in recipe.items())):
             raise ValueError('WM replay policy, checkpoint, sampling split or optimizer recipe changed')
         optimizer_path=directory/'online_world_optimizer.pt'
         if not fit.get('optimizer_file_sha256') or digest(optimizer_path)!=fit['optimizer_file_sha256']:

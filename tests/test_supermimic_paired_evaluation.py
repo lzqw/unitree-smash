@@ -21,6 +21,10 @@ def test_paired_evaluation_requires_same_case_identity_and_reports_deltas():
     report=paired_evaluation(before,after,stage='post-Approach',
         actor_before={'head':torch.zeros(2)},actor_after={'head':torch.ones(2)})
     assert report['paired_case_identity_verified']
+    conditional=report['paired_recovery']
+    assert conditional['common_contacts']==64 and conditional['improved_cases']==['32','33']
+    assert conditional['regressed_cases']==[] and conditional['gained_contacts']==['64','65']
+    assert conditional['paired_two_sided_p']==.5
     assert report['after']['complete5']==26
     assert report['deltas']['complete5_rate'] == .015625
     assert report['actor_parameter_delta']['changed_elements']==2

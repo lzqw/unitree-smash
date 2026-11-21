@@ -107,11 +107,22 @@ def paired_evaluation(pre, post, *, stage, actor_before=None, actor_after=None,
             return_delta=float(b['native_episode_return'])-float(a['native_episode_return']),
             contact_before=bool(a.get('qualified_airborne_string_contact',False)),
             contact_after=bool(b.get('qualified_airborne_string_contact',False)),
+            recovered_before=bool(a['recovery_success']),recovered_after=bool(b['recovery_success']),
             ball_side_before=bool(a.get('ball_side_complete_except_recovery',False)),
             ball_side_after=bool(b.get('ball_side_complete_except_recovery',False)),
             complete5_before=bool(a.get('complete5',False)),complete5_after=bool(b.get('complete5',False)),
             failure_before=failure_taxonomy(a),failure_after=failure_taxonomy(b)))
-    result=dict(schema='supermimic-paired-fixed-case-evaluation-v1',stage=stage,
+    common=[row for row in case_deltas if row['contact_before'] and row['contact_after']]
+    improved=[row['case_id'] for row in common if row['recovered_after'] and not row['recovered_before']]
+    regressed=[row['case_id'] for row in common if row['recovered_before'] and not row['recovered_after']]
+    n=len(improved)+len(regressed)
+    exact_p=min(1.,2*sum(math.comb(n,i) for i in range(min(len(improved),len(regressed))+1))/2**n)
+    conditional=dict(common_contacts=len(common),improved_cases=improved,regressed_cases=regressed,
+                     recovered_before=sum(row['recovered_before'] for row in common),
+                     recovered_after=sum(row['recovered_after'] for row in common),paired_two_sided_p=exact_p,
+                     gained_contacts=[r['case_id'] for r in case_deltas if r['contact_after'] and not r['contact_before']],
+                     lost_contacts=[r['case_id'] for r in case_deltas if r['contact_before'] and not r['contact_after']])
+    result=dict(paired_recovery=conditional,schema='supermimic-paired-fixed-case-evaluation-v1',stage=stage,
         case_count=128,case_ids=sorted(pre_map),before=before_metrics,after=after_metrics,
         deltas=deltas,failure_taxonomy_before=_taxonomy(before),failure_taxonomy_after=_taxonomy(after),
         case_deltas=case_deltas,actor_parameter_delta=parameter_delta(actor_before,actor_after),

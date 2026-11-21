@@ -24,6 +24,8 @@ def main():
     for name in ('panel','capture','initial-score','checkpoint','archive','safety-mapping','output'):
         p.add_argument('--'+name,required=True,type=Path)
     p.add_argument('--replayed-world',type=Path,help='Offline optimizer replay directory, bound to the same original run checkpoint')
+    p.add_argument('--flight-oracle',type=Path,help='Attribute native 64-step errors to incoming ball, impact transition and robot motion using measured windows')
+    p.add_argument('--attribute-flight',action='store_true',help='Partition uniform longest-horizon velocity error by observed launch/contact history')
     p.add_argument('--compare-components',action='store_true',help='Replay the panel with only body or ball weights from the online stage')
     a = p.parse_args()
     torch.set_num_threads(3)
@@ -82,7 +84,7 @@ def main():
     anchor = PhysicalWorldV1().eval()
     anchor.load_state_dict(torch.load(anchor_path,weights_only=True,map_location='cpu')['model'])
     data = torch.load(native,weights_only=True,map_location='cpu',mmap=True)
-    score = assess(data,panel['cases'],anchor,adapter,panel['horizons'],'cpu')
+    score = assess(data,panel['cases'],anchor,adapter,panel['horizons'],'cpu',flight_attribution=a.attribute_flight)
     if score['windows']!=measured['windows'] or score['windows']!=initial['windows']:
         raise ValueError('Different native windows')
     baseline = score['metrics']['anchor']
@@ -107,12 +109,53 @@ def main():
         contact_vs_block_initial=compare_candidate_to_anchor(event_metrics(before),event_metrics(current)),
         metrics=current,scope='Offline monitoring on the same native launch panel with recorded executed targets. The online weights were generated after the initial panel declaration.',
         formal_promotion=False)
+    if a.attribute_flight: report.update(uniform_horizon_attribution=score['uniform_horizon_attribution'],uniform_window_errors=score['uniform_window_errors'])
     if replay_fit is not None:
         report.update(replayed_world_sha256=report.pop('stage_world_sha256'),
                       stage_world_sha256=replay_fit['original_online_world_sha256'],
                       replay_fit_sha256=digest(a.replayed_world/'fit.json'),
                       learning_rate=replay_fit['learning_rate'],
                       scope='Offline training replay candidate evaluated on identical native launches and recorded targets.')
+    if a.flight_oracle:
+        from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
+        attribution=read(a.flight_oracle)
+        if attribution['source_sha256']!=measured['data_sha256']:raise ValueError('Different native innovation data')
+        records={(r['start'],r['lane']):r for r in attribution['windows']}
+        uniform={(w['tick'],w['lane']) for w in score['windows'] if w['group']=='uniform'}
+        if set(records)!=uniform:raise ValueError('Incomplete uniform innovation windows')
+        peaks=[]
+        for w in score['windows']:
+            r=records.get((w['tick'],w['lane'])) if w['group']=='uniform' else None
+            peaks.append(r['peak_tick']-r['start'] if r and r['peak_mps']>=.1 else -1000)
+        peaks=torch.tensor(peaks)
+        def summarize(rows):
+            sums={}
+            for r in rows:
+                label=records[(r['tick'],r['lane'])]
+                group=sums.setdefault(label['history'],{}).setdefault(label['closest_geometry'],dict(count=0,squared_error=0.))
+                group['count']+=1;group['squared_error']+=r['squared_error']
+            return sums
+        report['flight_oracle']={}
+        for mode in ('predicted','native_robot','native_ball_before_peak','native_ball_after_peak','native_robot_and_ball_before_peak'):
+            step=0
+            def transition(inputs,truth,patch):
+                nonlocal step
+                state,feet,present=ball_transition(adapter.physical_model,adapter.ball_model,*inputs,action_model=adapter.action_ball_model)
+                if mode in ('native_robot','native_robot_and_ball_before_peak'):
+                    state=torch.cat((truth[:,:49],state[:,49:]),-1)
+                if 'ball_' in mode:
+                    after='after' in mode
+                    mask=peaks==step+(0 if after else 1)
+                    state=torch.cat((state[:,:49],torch.where(mask[:,None],truth[:,49:],state[:,49:])),dim=-1)
+                step+=1
+                return state,feet,present,patch
+            run=assess(data,panel['cases'],None,adapter,panel['horizons'],'cpu',predictors=('candidate',),
+                       contact_step=transition,flight_attribution=True)
+            values=run['metrics']['candidate'][64]['uniform']
+            if mode=='predicted' and values!=current[64]['uniform']:raise ValueError('Flight attribution changed the reference rollout')
+            report['flight_oracle'][mode]=dict(uniform=values,groups=summarize(run['uniform_window_errors']['candidate']))
+        report['flight_oracle_source_sha256']=digest(a.flight_oracle)
+        report['flight_oracle_scope']='Privileged interventions on recorded trajectories for error attribution only. Control-boundary resets include all six native ball coordinates.'
     if a.compare_components:
         report['component_comparisons'] = {}
         for group, restored in [('online_body_only',('ball_model','action_ball_model')),

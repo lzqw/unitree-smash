@@ -31,7 +31,7 @@ def make_replay(packed_path, collection, lanes, reserved, trainer, task, executi
     return replay, dict(initial_sha256=receipt['sha256'], probes=probes)
 
 
-def learn(args, *, budget_states, env, wrapper, observation, trainer, state, launch, lanes, bank, ck, task, protocol):
+def learn(args, *, budget_states, env, wrapper, observation, trainer, state, launch, lanes, bank, ck, task, protocol,forward_guard=None,full_launch=None):
     import torch
     from quadsmash.rl.supermimic_action_identification_dataset_v1 import _sha256
     from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
@@ -57,6 +57,25 @@ def learn(args, *, budget_states, env, wrapper, observation, trainer, state, lau
     trainer.racket_loss_weight = float(cfg.get('racket_loss_weight', trainer.racket_loss_weight))
     trainer.ball_loss_weight = float(cfg.get('wm_ball_loss_weight', trainer.ball_loss_weight))
     trainer.contact_ball_loss_weight = float(cfg.get('wm_contact_ball_loss_weight', trainer.contact_ball_loss_weight))
+    trainer.direct_long_body_supervision=cfg.get('wm_direct_long_body_supervision',False)
+    trainer.natural_flight_loss=cfg.get('wm_natural_flight_loss','huber')
+    natural_count=cfg.get('wm_natural_flight_batch',0)
+    natural=None
+    active=None
+    active_count=cfg.get('wm_active_flight_batch',0)
+    active_launch=full_launch
+    if natural_count:
+        from quadsmash.rl.supermimic_physical_loop_replay_v1 import ActiveFlightWindows,NaturalFlightWindows
+        packed=torch.load(args.packed_data,map_location='cpu',weights_only=True,mmap=True)
+        natural=NaturalFlightWindows(packed['tensors'],cfg['wm_holdout_lanes'])
+        if ck.get('natural_flight_rng') is None or full_launch is None or len(full_launch)!=128:
+            raise ValueError('Missing native anchor sampling state or launch identities')
+        natural.generator.set_state(ck['natural_flight_rng'].cpu())
+        if active_count:
+            source=ck['runtime_validation_archive']
+            if _sha256(Path(source['path']))!=source['sha256']:raise ValueError('Frozen flight archive changed')
+            saved=torch.load(source['path'],map_location='cpu',weights_only=True,mmap=True)
+            active=ActiveFlightWindows(saved['tensors'],cfg['wm_holdout_lanes'],natural.generator)
     if 'native' in ck.get('actor_references', {}):
         trainer.native_accepted_snapshot = ck['actor_references']['native']
     if 'approach' in ck['actor_optimizers']:
@@ -121,8 +140,23 @@ def learn(args, *, budget_states, env, wrapper, observation, trainer, state, lau
             window, ids, stats = replay.window(trainer.timebase.world_steps, batch_size, trainer.world_updates, args.device,
                                                 source_quota=sources, stage_quota=events, head='approach',report_loss_groups=True)
             stats['sampling_gate'] = sampling_promotion_gate(stats, 'diagnostic')
-            fit = trainer.fit_world_window(window, launch[ids], loss_groups=stats.pop('loss_groups'))
+            long_native=None
+            if natural is not None:
+                extra,extra_lanes=natural.sample(natural_count,ck['world_updates']+trainer.world_updates,args.device)
+                starts=full_launch[extra_lanes]
+                if active_count:
+                    flight,flight_lanes=active.sample(active_count,ck['world_updates']+trainer.world_updates,args.device)
+                    extra={k:torch.cat((v,flight[k]),1) for k,v in extra.items()}
+                    starts=torch.cat((starts,active_launch[flight_lanes]))
+                long_native=(extra,starts)
+            fit = trainer.fit_world_window(window, launch[ids], loss_groups=stats.pop('loss_groups'),
+                                           separate_supervision=cfg.get('wm_separate_supervision',False),long_native=long_native)
             record('wm_batches.jsonl', dict(fit=fit, sampling=stats))
+
+            if forward_guard is not None:
+                check=forward_guard.check(adapter)
+                record('online_forward_guard.jsonl',dict(check,canary_world_updates=trainer.world_updates))
+                if not check['passed']:raise RuntimeError('Canary online WM failed its native forward guard')
 
     stage(args.output, 'CANARY_TRAINING', original_lanes=lanes, source=provenance, parent_sha256=parent_id)
     root = Path(__file__).resolve().parents[1]
@@ -183,6 +217,10 @@ def learn(args, *, budget_states, env, wrapper, observation, trainer, state, lau
             raise RuntimeError('Frozen native scoring lost or repeated an episode')
         if any(row['case_id'] != env.cases[int(row['env_id'])]['case_id'] for row in records):
             raise RuntimeError('Frozen episode was scored against another native case')
+        if active_count:
+            if set(lanes)&set(cfg['wm_holdout_lanes']):raise ValueError('Canary includes a reserved flight training lane')
+            active=ActiveFlightWindows(collector.packed_complete(),[],natural.generator)
+            active_launch=launch
         update_world()
         xs, ys = [], []
         for tick, row, mask in collector.calibration_rows():

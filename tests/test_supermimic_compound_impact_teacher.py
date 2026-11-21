@@ -447,3 +447,13 @@ def test_native_surface_direction_follows_the_local_bed_without_changing_random_
     verify_direction(trial,{'surface_direction':'racket_face_normal'})
     with pytest.raises(ValueError):
         verify_direction(trial,{'surface_direction':'random'})
+
+
+def test_signed_friction_fit_recovers_two_physical_load_fractions():
+    from scripts.fit_supermimic_racket_friction_strength import fit_strength
+    rng=torch.Generator().manual_seed(121)
+    samples=torch.randn(2,8,3,2,generator=rng)
+    expected=torch.tensor([.35,.85])
+    values=samples@expected
+    actual=fit_strength(samples,values,torch.arange(8)%2==0)
+    torch.testing.assert_close(torch.tensor(actual),expected)

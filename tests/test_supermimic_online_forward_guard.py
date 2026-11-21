@@ -285,3 +285,49 @@ def test_preregistered_replay_resume_binds_behavior_weights_optimizer_and_sampli
     with optimizer_path.open('ab') as out:out.write(b'x')
     with pytest.raises(ValueError,match='optimizer binding'):
         guard.replay_for_resume(tmp_path,checkpoint,parent,[5],recipe)
+
+
+def test_active_flight_sources_exclude_padded_tails_held_lanes_and_contact_edges():
+    from quadsmash.rl.supermimic_physical_loop_replay_v1 import ActiveFlightWindows,NaturalFlightWindows,sample_long_native
+    ticks,lanes=100,4
+    data={k:torch.zeros(ticks,lanes) for k in NaturalFlightWindows.keys}
+    data.update(episode=torch.ones(ticks,lanes,dtype=torch.long),terminated=torch.zeros(ticks,lanes,dtype=torch.bool),
+        timeout=torch.zeros(ticks,lanes,dtype=torch.bool),event_state=torch.zeros(ticks,lanes,8),
+        next_event_state=torch.zeros(ticks,lanes,8),valid_lengths=torch.tensor([84,70,100,40]))
+    data['present'][10:]=1
+    data['next_event_state'][50,0,1]=1
+    data['event_state'][51:,0,1]=1
+    data['state']=torch.arange(ticks)[:,None].expand(-1,lanes)
+    natural=NaturalFlightWindows(data,[1])
+    fresh=ActiveFlightWindows(data,[1],natural.generator)
+    t,l=fresh.pools['uniform'].T
+    assert set(l.tolist())=={0,2} and (t>=10).all() and (t+64<=data['valid_lengths'][l]).all()
+    assert set(fresh.pools['without_qualified_contact'][:,1].tolist())=={2}
+    rng=natural.generator.get_state()
+    first,ids=sample_long_native(natural,6,fresh,8,7,'cpu')
+    natural.generator.set_state(rng)
+    second,again=sample_long_native(natural,6,fresh,8,7,'cpu')
+    assert first['state'].shape==(64,14) and torch.equal(first['state'],second['state']) and torch.equal(ids,again)
+
+
+def test_long_body_objective_uses_robot_truth_in_parked_and_active_lanes(monkeypatch):
+    from types import SimpleNamespace
+    from quadsmash.rl import supermimic_physical_learner_v1 as learner
+    body=torch.tensor(1.,requires_grad=True)
+    ball=torch.tensor(1.,requires_grad=True)
+    def transition(world,shuttle,state,cmd,prev,feet,present,elapsed,launch,action_model):
+        result=state.clone()
+        result[:,10:13]=state[:,10:13]+body*cmd
+        result[:,52:55]=state[:,52:55]+ball*cmd
+        return result,feet,present
+    monkeypatch.setattr(learner,'ball_transition',transition)
+    monkeypatch.setattr(learner,'racket_state',lambda s,g:s[:,:18])
+    x=torch.zeros(64,2,55)
+    cmd=torch.tensor([0.,1.]).reshape(1,2,1).expand(64,2,1)
+    window=dict(state=x,next_state=x,present=torch.tensor([True,False]).expand(64,2),
+                targets=cmd,elapsed=cmd,feet=cmd,previous_action=cmd)
+    adapter=SimpleNamespace(physical_model=SimpleNamespace(geometry=None),ball_model=None,action_ball_model=None)
+    flight,robot=learner.native_flight_rollout_loss(adapter,window,None,supervise_body=True)
+    grad_body,grad_ball=torch.autograd.grad(robot,(body,ball),allow_unused=True)
+    assert flight.item()==0 and robot.item()>0 and grad_body.item()>0
+    assert grad_ball is None or grad_ball.item()==0

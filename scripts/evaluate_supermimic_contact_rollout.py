@@ -95,6 +95,7 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
     if compound_racket and event_trace is not None:
         if trace_normal_impulse:
             event_trace['normal_impulse_dv'] = p.new_zeros((*dims,3))
+            event_trace['tangent_impulse_dv'] = p.new_zeros((*dims,3))
         event_trace['near_shape_count'] = torch.zeros(dims,dtype=torch.int32,device=p.device)
         event_trace['shape_regime'] = torch.zeros((*dims,n_shapes),dtype=torch.uint8,device=p.device)
     if measured_path is not None:
@@ -133,11 +134,12 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
                 local_mobility=local_mobility[lane] if local_mobility is not None else None,shuttle_mass=shuttle_mass,
                 temporal_solver=fitted.get('temporal_solver'),patch_inertia=fitted.get('patch_inertia'),
                 articulation_friction_floor=fitted.get('articulation_friction_floor',False),
-                friction_duration_exponent=fitted.get('friction_duration_exponent',0.))
+                friction_duration_exponent=fitted.get('friction_duration_exponent',0.),friction_strength=fitted.get('friction_strength'))
             if event_trace is not None:
                 regime = load_trace['regime']
                 if trace_normal_impulse:
                     event_trace['normal_impulse_dv'][i,lane] = normal
+                    event_trace['tangent_impulse_dv'][i,lane] = tangent
                 event_trace['shape_regime'][i,lane] = regime
                 event_trace['near_shape_count'][i,lane] = load_trace['near_shape_count'].int()
                 event_trace['racket'][i,lane] = (regime>0).sum(-1)-1

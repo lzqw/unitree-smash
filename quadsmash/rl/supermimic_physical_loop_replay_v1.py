@@ -155,6 +155,34 @@ class NaturalFlightWindows:
         return window,lanes.to(device)
 
 
+class ActiveFlightWindows(NaturalFlightWindows):
+    """Long native windows beginning in flight, including launches that never qualified."""
+    def __init__(self,data,excluded_lanes,generator):
+        self.data=data
+        self.generator=generator
+        valid=valid_windows(data['episode'],data['terminated'],data['timeout'],64)
+        valid &= data['present'][:len(valid)].reshape_as(valid).bool()
+        if 'valid_lengths' in data:
+            valid &= torch.arange(len(valid))[:,None]+64<=data['valid_lengths'][None,:]
+        if excluded_lanes:valid[:,list(excluded_lanes)]=False
+        # Contact labels only select training windows. The rollout receives causal inputs.
+        delta=data['next_event_state'][...,1]>data['event_state'][...,1]
+        before=data['event_state'][:len(valid),:,1]<.5
+        unqualified=valid&before&~delta.unfold(0,64,1).any(-1)
+        self.pools={'uniform':valid.nonzero()}
+        if not len(self.pools['uniform']):raise ValueError('No complete in-flight training windows')
+        if unqualified.any():self.pools['without_qualified_contact']=unqualified.nonzero()
+
+
+def sample_long_native(anchor,anchor_count,active,active_count,iteration,device):
+    window,lanes=anchor.sample(anchor_count,iteration,device)
+    if active_count:
+        extra,extra_lanes=active.sample(active_count,iteration,device)
+        window={k:torch.cat((v,extra[k]),1) for k,v in window.items()}
+        lanes=torch.cat((lanes,extra_lanes))
+    return window,lanes
+
+
 class PhysicalLoopReplay:
     """CPU replay with chronological ring storage and reset-safe windows."""
     def __init__(self, package, schema, *, capacity_ticks=16384, approach_labeler=None):

@@ -1,0 +1,6477 @@
+{
+  "critic_scores": {
+    "before": {
+      "recovery": {
+        "samples": 1852,
+        "unique_lanes": 67,
+        "native_rtg_mae": 9.485710144042969,
+        "native_rtg_rmse": 12.58625316619873
+      },
+      "approach": {
+        "samples": 167,
+        "unique_lanes": 72,
+        "native_rtg_mae": 23.08226776123047,
+        "native_rtg_rmse": 27.531705856323242
+      },
+      "td": {
+        "sample_count": 1856,
+        "available": true,
+        "gamma": 0.99498743710662,
+        "mae": 0.255133173718275,
+        "rmse": 1.5483153942474157,
+        "bias": -0.02103998029120313,
+        "scope": "adjacent observed frozen states; reward recovered from native RTG"
+      }
+    },
+    "after": {
+      "recovery": {
+        "samples": 1852,
+        "unique_lanes": 67,
+        "native_rtg_mae": 9.432241439819336,
+        "native_rtg_rmse": 12.626646995544434
+      },
+      "approach": {
+        "samples": 167,
+        "unique_lanes": 72,
+        "native_rtg_mae": 23.041343688964844,
+        "native_rtg_rmse": 27.351289749145508
+      },
+      "td": {
+        "sample_count": 1856,
+        "available": true,
+        "gamma": 0.99498743710662,
+        "mae": 0.26984356468210163,
+        "rmse": 1.5652989333461282,
+        "bias": -0.04023238889727311,
+        "scope": "adjacent observed frozen states; reward recovered from native RTG"
+      }
+    }
+  },
+  "critic_updates": 2,
+  "world_updates": 4,
+  "rtg_rows_reproduced": 5679,
+  "verified_behavior_policy": "0c3ca08275fade74893ea5df7603210cbde2c1e7b9c2934bed756685774b1038",
+  "actor_sha256": "0c3ca08275fade74893ea5df7603210cbde2c1e7b9c2934bed756685774b1038",
+  "source_sha256": "b9b551efcfc988138ba3c0a049fbbb2546f68caa66e1eabe1f423c5483c573ae",
+  "policy_id": "recovery_frozen_v8_refresh1",
+  "pre_sha256": "b874282ce3f9304e0cb08ea7c6542c6dd66a53aa03257ead7852e8a2d313baca",
+  "post_sha256": "9510d0916cef299ec3663ddaef308b6ad3b6021ea6d6a02355d707b5e1eb4e59",
+  "fit_sha256": "9a07d77005676e0310c489e77d645e0be31388373238f0af94e97dcb3655b6c7",
+  "lanes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    11,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    21,
+    30,
+    32,
+    34,
+    37,
+    38,
+    39,
+    40,
+    41,
+    44,
+    46,
+    48,
+    49,
+    50,
+    51,
+    53,
+    57,
+    59,
+    60,
+    61,
+    62,
+    65,
+    70,
+    73,
+    74,
+    76,
+    77,
+    81,
+    84,
+    85,
+    86,
+    87,
+    89,
+    90,
+    94,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127
+  ],
+  "windows": [
+    {
+      "tick": 0,
+      "lane": 0,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 0,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 0,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 0,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 0,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 0,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 0,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 0,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 0,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 0,
+      "group": "uniform"
+    },
+    {
+      "tick": 276,
+      "lane": 0,
+      "group": "contact-1"
+    },
+    {
+      "tick": 277,
+      "lane": 0,
+      "group": "contact+0"
+    },
+    {
+      "tick": 278,
+      "lane": 0,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 1,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 1,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 1,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 1,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 1,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 1,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 1,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 1,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 1,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 1,
+      "group": "uniform"
+    },
+    {
+      "tick": 271,
+      "lane": 1,
+      "group": "contact-1"
+    },
+    {
+      "tick": 272,
+      "lane": 1,
+      "group": "contact+0"
+    },
+    {
+      "tick": 273,
+      "lane": 1,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 2,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 2,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 2,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 2,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 2,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 2,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 2,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 2,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 2,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 2,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 3,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 3,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 3,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 3,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 3,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 3,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 3,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 3,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 3,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 3,
+      "group": "uniform"
+    },
+    {
+      "tick": 275,
+      "lane": 3,
+      "group": "contact-1"
+    },
+    {
+      "tick": 276,
+      "lane": 3,
+      "group": "contact+0"
+    },
+    {
+      "tick": 277,
+      "lane": 3,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 4,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 4,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 4,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 4,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 4,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 4,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 4,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 4,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 4,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 4,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 5,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 5,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 5,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 5,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 5,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 5,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 5,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 5,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 5,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 5,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 6,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 6,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 6,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 6,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 6,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 6,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 6,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 6,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 6,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 6,
+      "group": "uniform"
+    },
+    {
+      "tick": 268,
+      "lane": 6,
+      "group": "contact-1"
+    },
+    {
+      "tick": 269,
+      "lane": 6,
+      "group": "contact+0"
+    },
+    {
+      "tick": 270,
+      "lane": 6,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 7,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 7,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 7,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 7,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 7,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 7,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 7,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 7,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 7,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 7,
+      "group": "uniform"
+    },
+    {
+      "tick": 271,
+      "lane": 7,
+      "group": "contact-1"
+    },
+    {
+      "tick": 272,
+      "lane": 7,
+      "group": "contact+0"
+    },
+    {
+      "tick": 273,
+      "lane": 7,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 8,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 8,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 8,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 8,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 8,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 8,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 8,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 8,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 8,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 8,
+      "group": "uniform"
+    },
+    {
+      "tick": 270,
+      "lane": 8,
+      "group": "contact-1"
+    },
+    {
+      "tick": 271,
+      "lane": 8,
+      "group": "contact+0"
+    },
+    {
+      "tick": 272,
+      "lane": 8,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 11,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 11,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 11,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 11,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 11,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 11,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 11,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 11,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 11,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 11,
+      "group": "uniform"
+    },
+    {
+      "tick": 272,
+      "lane": 11,
+      "group": "contact-1"
+    },
+    {
+      "tick": 273,
+      "lane": 11,
+      "group": "contact+0"
+    },
+    {
+      "tick": 274,
+      "lane": 11,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 13,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 13,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 13,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 13,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 13,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 13,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 13,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 13,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 13,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 13,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 14,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 14,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 14,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 14,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 14,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 14,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 14,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 14,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 14,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 14,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 15,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 15,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 15,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 15,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 15,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 15,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 15,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 15,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 15,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 15,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 16,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 16,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 16,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 16,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 16,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 16,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 16,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 16,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 16,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 16,
+      "group": "uniform"
+    },
+    {
+      "tick": 270,
+      "lane": 16,
+      "group": "contact-1"
+    },
+    {
+      "tick": 271,
+      "lane": 16,
+      "group": "contact+0"
+    },
+    {
+      "tick": 272,
+      "lane": 16,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 17,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 17,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 17,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 17,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 17,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 17,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 17,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 17,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 17,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 17,
+      "group": "uniform"
+    },
+    {
+      "tick": 271,
+      "lane": 17,
+      "group": "contact-1"
+    },
+    {
+      "tick": 272,
+      "lane": 17,
+      "group": "contact+0"
+    },
+    {
+      "tick": 273,
+      "lane": 17,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 18,
+      "group": "uniform"
+    },
+    {
+      "tick": 40,
+      "lane": 18,
+      "group": "uniform"
+    },
+    {
+      "tick": 80,
+      "lane": 18,
+      "group": "uniform"
+    },
+    {
+      "tick": 121,
+      "lane": 18,
+      "group": "uniform"
+    },
+    {
+      "tick": 161,
+      "lane": 18,
+      "group": "uniform"
+    },
+    {
+      "tick": 202,
+      "lane": 18,
+      "group": "uniform"
+    },
+    {
+      "tick": 242,
+      "lane": 18,
+      "group": "uniform"
+    },
+    {
+      "tick": 283,
+      "lane": 18,
+      "group": "uniform"
+    },
+    {
+      "tick": 323,
+      "lane": 18,
+      "group": "uniform"
+    },
+    {
+      "tick": 364,
+      "lane": 18,
+      "group": "uniform"
+    },
+    {
+      "tick": 272,
+      "lane": 18,
+      "group": "contact-1"
+    },
+    {
+      "tick": 273,
+      "lane": 18,
+      "group": "contact+0"
+    },
+    {
+      "tick": 274,
+      "lane": 18,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 21,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 21,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 21,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 21,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 21,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 21,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 21,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 21,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 21,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 21,
+      "group": "uniform"
+    },
+    {
+      "tick": 270,
+      "lane": 21,
+      "group": "contact-1"
+    },
+    {
+      "tick": 271,
+      "lane": 21,
+      "group": "contact+0"
+    },
+    {
+      "tick": 272,
+      "lane": 21,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 30,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 30,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 30,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 30,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 30,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 30,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 30,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 30,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 30,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 30,
+      "group": "uniform"
+    },
+    {
+      "tick": 276,
+      "lane": 30,
+      "group": "contact-1"
+    },
+    {
+      "tick": 277,
+      "lane": 30,
+      "group": "contact+0"
+    },
+    {
+      "tick": 278,
+      "lane": 30,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 32,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 32,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 32,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 32,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 32,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 32,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 32,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 32,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 32,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 32,
+      "group": "uniform"
+    },
+    {
+      "tick": 277,
+      "lane": 32,
+      "group": "contact-1"
+    },
+    {
+      "tick": 278,
+      "lane": 32,
+      "group": "contact+0"
+    },
+    {
+      "tick": 279,
+      "lane": 32,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 34,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 34,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 34,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 34,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 34,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 34,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 34,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 34,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 34,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 34,
+      "group": "uniform"
+    },
+    {
+      "tick": 270,
+      "lane": 34,
+      "group": "contact-1"
+    },
+    {
+      "tick": 271,
+      "lane": 34,
+      "group": "contact+0"
+    },
+    {
+      "tick": 272,
+      "lane": 34,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 37,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 37,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 37,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 37,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 37,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 37,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 37,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 37,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 37,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 37,
+      "group": "uniform"
+    },
+    {
+      "tick": 270,
+      "lane": 37,
+      "group": "contact-1"
+    },
+    {
+      "tick": 271,
+      "lane": 37,
+      "group": "contact+0"
+    },
+    {
+      "tick": 272,
+      "lane": 37,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 38,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 38,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 38,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 38,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 38,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 38,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 38,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 38,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 38,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 38,
+      "group": "uniform"
+    },
+    {
+      "tick": 276,
+      "lane": 38,
+      "group": "contact-1"
+    },
+    {
+      "tick": 277,
+      "lane": 38,
+      "group": "contact+0"
+    },
+    {
+      "tick": 278,
+      "lane": 38,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 39,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 39,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 39,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 39,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 39,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 39,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 39,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 39,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 39,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 39,
+      "group": "uniform"
+    },
+    {
+      "tick": 274,
+      "lane": 39,
+      "group": "contact-1"
+    },
+    {
+      "tick": 275,
+      "lane": 39,
+      "group": "contact+0"
+    },
+    {
+      "tick": 276,
+      "lane": 39,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 40,
+      "group": "uniform"
+    },
+    {
+      "tick": 35,
+      "lane": 40,
+      "group": "uniform"
+    },
+    {
+      "tick": 71,
+      "lane": 40,
+      "group": "uniform"
+    },
+    {
+      "tick": 107,
+      "lane": 40,
+      "group": "uniform"
+    },
+    {
+      "tick": 143,
+      "lane": 40,
+      "group": "uniform"
+    },
+    {
+      "tick": 178,
+      "lane": 40,
+      "group": "uniform"
+    },
+    {
+      "tick": 214,
+      "lane": 40,
+      "group": "uniform"
+    },
+    {
+      "tick": 250,
+      "lane": 40,
+      "group": "uniform"
+    },
+    {
+      "tick": 286,
+      "lane": 40,
+      "group": "uniform"
+    },
+    {
+      "tick": 322,
+      "lane": 40,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 41,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 41,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 41,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 41,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 41,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 41,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 41,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 41,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 41,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 41,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 44,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 44,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 44,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 44,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 44,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 44,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 44,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 44,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 44,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 44,
+      "group": "uniform"
+    },
+    {
+      "tick": 280,
+      "lane": 44,
+      "group": "contact-1"
+    },
+    {
+      "tick": 281,
+      "lane": 44,
+      "group": "contact+0"
+    },
+    {
+      "tick": 282,
+      "lane": 44,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 46,
+      "group": "uniform"
+    },
+    {
+      "tick": 56,
+      "lane": 46,
+      "group": "uniform"
+    },
+    {
+      "tick": 112,
+      "lane": 46,
+      "group": "uniform"
+    },
+    {
+      "tick": 168,
+      "lane": 46,
+      "group": "uniform"
+    },
+    {
+      "tick": 224,
+      "lane": 46,
+      "group": "uniform"
+    },
+    {
+      "tick": 280,
+      "lane": 46,
+      "group": "uniform"
+    },
+    {
+      "tick": 336,
+      "lane": 46,
+      "group": "uniform"
+    },
+    {
+      "tick": 392,
+      "lane": 46,
+      "group": "uniform"
+    },
+    {
+      "tick": 448,
+      "lane": 46,
+      "group": "uniform"
+    },
+    {
+      "tick": 504,
+      "lane": 46,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 48,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 48,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 48,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 48,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 48,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 48,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 48,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 48,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 48,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 48,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 49,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 49,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 49,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 49,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 49,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 49,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 49,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 49,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 49,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 49,
+      "group": "uniform"
+    },
+    {
+      "tick": 273,
+      "lane": 49,
+      "group": "contact-1"
+    },
+    {
+      "tick": 274,
+      "lane": 49,
+      "group": "contact+0"
+    },
+    {
+      "tick": 275,
+      "lane": 49,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 50,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 50,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 50,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 50,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 50,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 50,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 50,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 50,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 50,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 50,
+      "group": "uniform"
+    },
+    {
+      "tick": 273,
+      "lane": 50,
+      "group": "contact-1"
+    },
+    {
+      "tick": 274,
+      "lane": 50,
+      "group": "contact+0"
+    },
+    {
+      "tick": 275,
+      "lane": 50,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 51,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 51,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 51,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 51,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 51,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 51,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 51,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 51,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 51,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 51,
+      "group": "uniform"
+    },
+    {
+      "tick": 269,
+      "lane": 51,
+      "group": "contact-1"
+    },
+    {
+      "tick": 270,
+      "lane": 51,
+      "group": "contact+0"
+    },
+    {
+      "tick": 271,
+      "lane": 51,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 53,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 53,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 53,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 53,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 53,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 53,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 53,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 53,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 53,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 53,
+      "group": "uniform"
+    },
+    {
+      "tick": 274,
+      "lane": 53,
+      "group": "contact-1"
+    },
+    {
+      "tick": 275,
+      "lane": 53,
+      "group": "contact+0"
+    },
+    {
+      "tick": 276,
+      "lane": 53,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 57,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 57,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 57,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 57,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 57,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 57,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 57,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 57,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 57,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 57,
+      "group": "uniform"
+    },
+    {
+      "tick": 267,
+      "lane": 57,
+      "group": "contact-1"
+    },
+    {
+      "tick": 268,
+      "lane": 57,
+      "group": "contact+0"
+    },
+    {
+      "tick": 269,
+      "lane": 57,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 59,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 59,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 59,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 59,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 59,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 59,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 59,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 59,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 59,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 59,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 60,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 60,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 60,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 60,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 60,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 60,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 60,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 60,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 60,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 60,
+      "group": "uniform"
+    },
+    {
+      "tick": 277,
+      "lane": 60,
+      "group": "contact-1"
+    },
+    {
+      "tick": 278,
+      "lane": 60,
+      "group": "contact+0"
+    },
+    {
+      "tick": 279,
+      "lane": 60,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 61,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 61,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 61,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 61,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 61,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 61,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 61,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 61,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 61,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 61,
+      "group": "uniform"
+    },
+    {
+      "tick": 273,
+      "lane": 61,
+      "group": "contact-1"
+    },
+    {
+      "tick": 274,
+      "lane": 61,
+      "group": "contact+0"
+    },
+    {
+      "tick": 275,
+      "lane": 61,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 62,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 62,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 62,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 62,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 62,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 62,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 62,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 62,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 62,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 62,
+      "group": "uniform"
+    },
+    {
+      "tick": 276,
+      "lane": 62,
+      "group": "contact-1"
+    },
+    {
+      "tick": 277,
+      "lane": 62,
+      "group": "contact+0"
+    },
+    {
+      "tick": 278,
+      "lane": 62,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 65,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 65,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 65,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 65,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 65,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 65,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 65,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 65,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 65,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 65,
+      "group": "uniform"
+    },
+    {
+      "tick": 273,
+      "lane": 65,
+      "group": "contact-1"
+    },
+    {
+      "tick": 274,
+      "lane": 65,
+      "group": "contact+0"
+    },
+    {
+      "tick": 275,
+      "lane": 65,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 70,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 70,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 70,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 70,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 70,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 70,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 70,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 70,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 70,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 70,
+      "group": "uniform"
+    },
+    {
+      "tick": 261,
+      "lane": 70,
+      "group": "contact-1"
+    },
+    {
+      "tick": 262,
+      "lane": 70,
+      "group": "contact+0"
+    },
+    {
+      "tick": 263,
+      "lane": 70,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 73,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 73,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 73,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 73,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 73,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 73,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 73,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 73,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 73,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 73,
+      "group": "uniform"
+    },
+    {
+      "tick": 283,
+      "lane": 73,
+      "group": "contact-1"
+    },
+    {
+      "tick": 284,
+      "lane": 73,
+      "group": "contact+0"
+    },
+    {
+      "tick": 285,
+      "lane": 73,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 74,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 74,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 74,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 74,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 74,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 74,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 74,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 74,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 74,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 74,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 76,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 76,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 76,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 76,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 76,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 76,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 76,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 76,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 76,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 76,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 77,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 77,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 77,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 77,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 77,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 77,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 77,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 77,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 77,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 77,
+      "group": "uniform"
+    },
+    {
+      "tick": 264,
+      "lane": 77,
+      "group": "contact-1"
+    },
+    {
+      "tick": 265,
+      "lane": 77,
+      "group": "contact+0"
+    },
+    {
+      "tick": 266,
+      "lane": 77,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 81,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 81,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 81,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 81,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 81,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 81,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 81,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 81,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 81,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 81,
+      "group": "uniform"
+    },
+    {
+      "tick": 272,
+      "lane": 81,
+      "group": "contact-1"
+    },
+    {
+      "tick": 273,
+      "lane": 81,
+      "group": "contact+0"
+    },
+    {
+      "tick": 274,
+      "lane": 81,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 84,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 84,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 84,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 84,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 84,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 84,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 84,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 84,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 84,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 84,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 85,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 85,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 85,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 85,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 85,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 85,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 85,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 85,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 85,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 85,
+      "group": "uniform"
+    },
+    {
+      "tick": 266,
+      "lane": 85,
+      "group": "contact-1"
+    },
+    {
+      "tick": 267,
+      "lane": 85,
+      "group": "contact+0"
+    },
+    {
+      "tick": 268,
+      "lane": 85,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 86,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 86,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 86,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 86,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 86,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 86,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 86,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 86,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 86,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 86,
+      "group": "uniform"
+    },
+    {
+      "tick": 284,
+      "lane": 86,
+      "group": "contact-1"
+    },
+    {
+      "tick": 285,
+      "lane": 86,
+      "group": "contact+0"
+    },
+    {
+      "tick": 286,
+      "lane": 86,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 87,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 87,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 87,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 87,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 87,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 87,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 87,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 87,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 87,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 87,
+      "group": "uniform"
+    },
+    {
+      "tick": 270,
+      "lane": 87,
+      "group": "contact-1"
+    },
+    {
+      "tick": 271,
+      "lane": 87,
+      "group": "contact+0"
+    },
+    {
+      "tick": 272,
+      "lane": 87,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 89,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 89,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 89,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 89,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 89,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 89,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 89,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 89,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 89,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 89,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 90,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 90,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 90,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 90,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 90,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 90,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 90,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 90,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 90,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 90,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 94,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 94,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 94,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 94,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 94,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 94,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 94,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 94,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 94,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 94,
+      "group": "uniform"
+    },
+    {
+      "tick": 276,
+      "lane": 94,
+      "group": "contact-1"
+    },
+    {
+      "tick": 277,
+      "lane": 94,
+      "group": "contact+0"
+    },
+    {
+      "tick": 278,
+      "lane": 94,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 96,
+      "group": "uniform"
+    },
+    {
+      "tick": 41,
+      "lane": 96,
+      "group": "uniform"
+    },
+    {
+      "tick": 82,
+      "lane": 96,
+      "group": "uniform"
+    },
+    {
+      "tick": 123,
+      "lane": 96,
+      "group": "uniform"
+    },
+    {
+      "tick": 164,
+      "lane": 96,
+      "group": "uniform"
+    },
+    {
+      "tick": 205,
+      "lane": 96,
+      "group": "uniform"
+    },
+    {
+      "tick": 246,
+      "lane": 96,
+      "group": "uniform"
+    },
+    {
+      "tick": 287,
+      "lane": 96,
+      "group": "uniform"
+    },
+    {
+      "tick": 328,
+      "lane": 96,
+      "group": "uniform"
+    },
+    {
+      "tick": 369,
+      "lane": 96,
+      "group": "uniform"
+    },
+    {
+      "tick": 265,
+      "lane": 96,
+      "group": "contact-1"
+    },
+    {
+      "tick": 266,
+      "lane": 96,
+      "group": "contact+0"
+    },
+    {
+      "tick": 267,
+      "lane": 96,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 97,
+      "group": "uniform"
+    },
+    {
+      "tick": 56,
+      "lane": 97,
+      "group": "uniform"
+    },
+    {
+      "tick": 113,
+      "lane": 97,
+      "group": "uniform"
+    },
+    {
+      "tick": 170,
+      "lane": 97,
+      "group": "uniform"
+    },
+    {
+      "tick": 226,
+      "lane": 97,
+      "group": "uniform"
+    },
+    {
+      "tick": 283,
+      "lane": 97,
+      "group": "uniform"
+    },
+    {
+      "tick": 340,
+      "lane": 97,
+      "group": "uniform"
+    },
+    {
+      "tick": 396,
+      "lane": 97,
+      "group": "uniform"
+    },
+    {
+      "tick": 453,
+      "lane": 97,
+      "group": "uniform"
+    },
+    {
+      "tick": 510,
+      "lane": 97,
+      "group": "uniform"
+    },
+    {
+      "tick": 274,
+      "lane": 97,
+      "group": "contact-1"
+    },
+    {
+      "tick": 275,
+      "lane": 97,
+      "group": "contact+0"
+    },
+    {
+      "tick": 276,
+      "lane": 97,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 98,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 98,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 98,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 98,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 98,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 98,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 98,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 98,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 98,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 98,
+      "group": "uniform"
+    },
+    {
+      "tick": 266,
+      "lane": 98,
+      "group": "contact-1"
+    },
+    {
+      "tick": 267,
+      "lane": 98,
+      "group": "contact+0"
+    },
+    {
+      "tick": 268,
+      "lane": 98,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 99,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 99,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 99,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 99,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 99,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 99,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 99,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 99,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 99,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 99,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 100,
+      "group": "uniform"
+    },
+    {
+      "tick": 60,
+      "lane": 100,
+      "group": "uniform"
+    },
+    {
+      "tick": 120,
+      "lane": 100,
+      "group": "uniform"
+    },
+    {
+      "tick": 180,
+      "lane": 100,
+      "group": "uniform"
+    },
+    {
+      "tick": 240,
+      "lane": 100,
+      "group": "uniform"
+    },
+    {
+      "tick": 300,
+      "lane": 100,
+      "group": "uniform"
+    },
+    {
+      "tick": 360,
+      "lane": 100,
+      "group": "uniform"
+    },
+    {
+      "tick": 420,
+      "lane": 100,
+      "group": "uniform"
+    },
+    {
+      "tick": 480,
+      "lane": 100,
+      "group": "uniform"
+    },
+    {
+      "tick": 541,
+      "lane": 100,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 101,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 101,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 101,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 101,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 101,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 101,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 101,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 101,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 101,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 101,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 102,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 102,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 102,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 102,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 102,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 102,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 102,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 102,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 102,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 102,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 103,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 103,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 103,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 103,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 103,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 103,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 103,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 103,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 103,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 103,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 104,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 104,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 104,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 104,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 104,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 104,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 104,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 104,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 104,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 104,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 105,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 105,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 105,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 105,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 105,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 105,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 105,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 105,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 105,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 105,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 106,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 106,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 106,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 106,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 106,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 106,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 106,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 106,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 106,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 106,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 107,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 107,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 107,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 107,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 107,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 107,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 107,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 107,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 107,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 107,
+      "group": "uniform"
+    },
+    {
+      "tick": 275,
+      "lane": 107,
+      "group": "contact-1"
+    },
+    {
+      "tick": 276,
+      "lane": 107,
+      "group": "contact+0"
+    },
+    {
+      "tick": 277,
+      "lane": 107,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 108,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 108,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 108,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 108,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 108,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 108,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 108,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 108,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 108,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 108,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 109,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 109,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 109,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 109,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 109,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 109,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 109,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 109,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 109,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 109,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 110,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 110,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 110,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 110,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 110,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 110,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 110,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 110,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 110,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 110,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 111,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 111,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 111,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 111,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 111,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 111,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 111,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 111,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 111,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 111,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 112,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 112,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 112,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 112,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 112,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 112,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 112,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 112,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 112,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 112,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 113,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 113,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 113,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 113,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 113,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 113,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 113,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 113,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 113,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 113,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 114,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 114,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 114,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 114,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 114,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 114,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 114,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 114,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 114,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 114,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 115,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 115,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 115,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 115,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 115,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 115,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 115,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 115,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 115,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 115,
+      "group": "uniform"
+    },
+    {
+      "tick": 266,
+      "lane": 115,
+      "group": "contact-1"
+    },
+    {
+      "tick": 267,
+      "lane": 115,
+      "group": "contact+0"
+    },
+    {
+      "tick": 268,
+      "lane": 115,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 116,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 116,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 116,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 116,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 116,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 116,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 116,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 116,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 116,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 116,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 117,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 117,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 117,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 117,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 117,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 117,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 117,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 117,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 117,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 117,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 118,
+      "group": "uniform"
+    },
+    {
+      "tick": 54,
+      "lane": 118,
+      "group": "uniform"
+    },
+    {
+      "tick": 109,
+      "lane": 118,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 118,
+      "group": "uniform"
+    },
+    {
+      "tick": 218,
+      "lane": 118,
+      "group": "uniform"
+    },
+    {
+      "tick": 272,
+      "lane": 118,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 118,
+      "group": "uniform"
+    },
+    {
+      "tick": 381,
+      "lane": 118,
+      "group": "uniform"
+    },
+    {
+      "tick": 436,
+      "lane": 118,
+      "group": "uniform"
+    },
+    {
+      "tick": 491,
+      "lane": 118,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 119,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 119,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 119,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 119,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 119,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 119,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 119,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 119,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 119,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 119,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 120,
+      "group": "uniform"
+    },
+    {
+      "tick": 52,
+      "lane": 120,
+      "group": "uniform"
+    },
+    {
+      "tick": 104,
+      "lane": 120,
+      "group": "uniform"
+    },
+    {
+      "tick": 156,
+      "lane": 120,
+      "group": "uniform"
+    },
+    {
+      "tick": 208,
+      "lane": 120,
+      "group": "uniform"
+    },
+    {
+      "tick": 261,
+      "lane": 120,
+      "group": "uniform"
+    },
+    {
+      "tick": 313,
+      "lane": 120,
+      "group": "uniform"
+    },
+    {
+      "tick": 365,
+      "lane": 120,
+      "group": "uniform"
+    },
+    {
+      "tick": 417,
+      "lane": 120,
+      "group": "uniform"
+    },
+    {
+      "tick": 470,
+      "lane": 120,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 121,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 121,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 121,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 121,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 121,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 121,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 121,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 121,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 121,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 121,
+      "group": "uniform"
+    },
+    {
+      "tick": 270,
+      "lane": 121,
+      "group": "contact-1"
+    },
+    {
+      "tick": 271,
+      "lane": 121,
+      "group": "contact+0"
+    },
+    {
+      "tick": 272,
+      "lane": 121,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 122,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 122,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 122,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 122,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 122,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 122,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 122,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 122,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 122,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 122,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 123,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 123,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 123,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 123,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 123,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 123,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 123,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 123,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 123,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 123,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 124,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 124,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 124,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 124,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 124,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 124,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 124,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 124,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 124,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 124,
+      "group": "uniform"
+    },
+    {
+      "tick": 0,
+      "lane": 125,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 125,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 125,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 125,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 125,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 125,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 125,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 125,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 125,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 125,
+      "group": "uniform"
+    },
+    {
+      "tick": 269,
+      "lane": 125,
+      "group": "contact-1"
+    },
+    {
+      "tick": 270,
+      "lane": 125,
+      "group": "contact+0"
+    },
+    {
+      "tick": 271,
+      "lane": 125,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 126,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 126,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 126,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 126,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 126,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 126,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 126,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 126,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 126,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 126,
+      "group": "uniform"
+    },
+    {
+      "tick": 269,
+      "lane": 126,
+      "group": "contact-1"
+    },
+    {
+      "tick": 270,
+      "lane": 126,
+      "group": "contact+0"
+    },
+    {
+      "tick": 271,
+      "lane": 126,
+      "group": "contact+1"
+    },
+    {
+      "tick": 0,
+      "lane": 127,
+      "group": "uniform"
+    },
+    {
+      "tick": 81,
+      "lane": 127,
+      "group": "uniform"
+    },
+    {
+      "tick": 163,
+      "lane": 127,
+      "group": "uniform"
+    },
+    {
+      "tick": 245,
+      "lane": 127,
+      "group": "uniform"
+    },
+    {
+      "tick": 327,
+      "lane": 127,
+      "group": "uniform"
+    },
+    {
+      "tick": 408,
+      "lane": 127,
+      "group": "uniform"
+    },
+    {
+      "tick": 490,
+      "lane": 127,
+      "group": "uniform"
+    },
+    {
+      "tick": 572,
+      "lane": 127,
+      "group": "uniform"
+    },
+    {
+      "tick": 654,
+      "lane": 127,
+      "group": "uniform"
+    },
+    {
+      "tick": 736,
+      "lane": 127,
+      "group": "uniform"
+    }
+  ],
+  "scores": {
+    "deployed": {
+      "world_sha256": "f850c9a3fdc8ddea14ba3285bf5b34ce1edabc8694b85b070ba2f2d13876ebd5",
+      "metrics": {
+        "1": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.2341066300868988,
+            "joint_position_mae": 0.0016181435203179717,
+            "root_angular_mae": 0.04544232040643692,
+            "ball_velocity_mae": 1.5438377857208252,
+            "ball_velocity_rmse": 3.076023817062378,
+            "ball_forward_sign_error": 0.1627907007932663,
+            "ball_position_p95": 0.0501919761300087,
+            "racket_position_mae": 0.0009984808275476098,
+            "racket_velocity_mae": 0.16528409719467163,
+            "racket_angular_mae": 0.4499421715736389
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.3331057131290436,
+            "joint_position_mae": 0.0022674205247312784,
+            "root_angular_mae": 0.05597061663866043,
+            "ball_velocity_mae": 7.580532646045413e-09,
+            "ball_velocity_rmse": 5.144194403783331e-08,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.0,
+            "racket_position_mae": 0.0006953983684070408,
+            "racket_velocity_mae": 0.08452877402305603,
+            "racket_angular_mae": 0.422475129365921
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.1955963522195816,
+            "joint_position_mae": 0.001385576673783362,
+            "root_angular_mae": 0.039100032299757004,
+            "ball_velocity_mae": 6.467704952228814e-05,
+            "ball_velocity_rmse": 0.0006889263750053942,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 2.2659065734842443e-07,
+            "racket_position_mae": 0.0005014492198824883,
+            "racket_velocity_mae": 0.06968539208173752,
+            "racket_angular_mae": 0.24083788692951202
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.5793552994728088,
+            "joint_position_mae": 0.003051361069083214,
+            "root_angular_mae": 0.05093478783965111,
+            "ball_velocity_mae": 0.05770373344421387,
+            "ball_velocity_rmse": 0.5293623208999634,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.0022224176209419966,
+            "racket_position_mae": 0.0008753977599553764,
+            "racket_velocity_mae": 0.08021758496761322,
+            "racket_angular_mae": 0.1643386036157608
+          }
+        },
+        "2": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.3450718820095062,
+            "joint_position_mae": 0.003032074309885502,
+            "root_angular_mae": 0.09531613439321518,
+            "ball_velocity_mae": 1.1609089374542236,
+            "ball_velocity_rmse": 2.07279372215271,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 0.13297034800052643,
+            "racket_position_mae": 0.0015251357108354568,
+            "racket_velocity_mae": 0.10252393782138824,
+            "racket_angular_mae": 0.311980664730072
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.31280237436294556,
+            "joint_position_mae": 0.003946554847061634,
+            "root_angular_mae": 0.06727948784828186,
+            "ball_velocity_mae": 3.515201285608782e-08,
+            "ball_velocity_rmse": 1.2997560361327487e-07,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.0,
+            "racket_position_mae": 0.0010863735806196928,
+            "racket_velocity_mae": 0.08402451872825623,
+            "racket_angular_mae": 0.2438880205154419
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.23087286949157715,
+            "joint_position_mae": 0.0026972275227308273,
+            "root_angular_mae": 0.07281878590583801,
+            "ball_velocity_mae": 1.3708416223526,
+            "ball_velocity_rmse": 2.7033965587615967,
+            "ball_forward_sign_error": 0.11627907305955887,
+            "ball_position_p95": 0.04534231498837471,
+            "racket_position_mae": 0.001300324103794992,
+            "racket_velocity_mae": 0.1754245012998581,
+            "racket_angular_mae": 0.37762874364852905
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.5990254878997803,
+            "joint_position_mae": 0.006479105446487665,
+            "root_angular_mae": 0.06853299587965012,
+            "ball_velocity_mae": 0.06877381354570389,
+            "ball_velocity_rmse": 0.5026471614837646,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.007765176706016064,
+            "racket_position_mae": 0.001563297351822257,
+            "racket_velocity_mae": 0.08570956438779831,
+            "racket_angular_mae": 0.17112506926059723
+          }
+        },
+        "4": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.31777051091194153,
+            "joint_position_mae": 0.005205681547522545,
+            "root_angular_mae": 0.07713475078344345,
+            "ball_velocity_mae": 1.1569987535476685,
+            "ball_velocity_rmse": 2.0657451152801514,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 0.28576451539993286,
+            "racket_position_mae": 0.0021240715868771076,
+            "racket_velocity_mae": 0.10924655199050903,
+            "racket_angular_mae": 0.35417047142982483
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.3122008442878723,
+            "joint_position_mae": 0.006013090722262859,
+            "root_angular_mae": 0.08338964730501175,
+            "ball_velocity_mae": 2.62084284941011e-07,
+            "ball_velocity_rmse": 6.306093496277754e-07,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 1.1920928955078125e-07,
+            "racket_position_mae": 0.0025505959056317806,
+            "racket_velocity_mae": 0.1176803931593895,
+            "racket_angular_mae": 0.3469083309173584
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.3100132942199707,
+            "joint_position_mae": 0.005033187102526426,
+            "root_angular_mae": 0.08376211673021317,
+            "ball_velocity_mae": 1.0607789754867554,
+            "ball_velocity_rmse": 1.723480463027954,
+            "ball_forward_sign_error": 0.04651162773370743,
+            "ball_position_p95": 0.18884049355983734,
+            "racket_position_mae": 0.0024373934138566256,
+            "racket_velocity_mae": 0.09912483394145966,
+            "racket_angular_mae": 0.2909983694553375
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.5698371529579163,
+            "joint_position_mae": 0.011620130389928818,
+            "root_angular_mae": 0.10090035945177078,
+            "ball_velocity_mae": 0.08696325868368149,
+            "ball_velocity_rmse": 0.4763910174369812,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.022661814466118813,
+            "racket_position_mae": 0.003206493565812707,
+            "racket_velocity_mae": 0.12131615728139877,
+            "racket_angular_mae": 0.22804327309131622
+          }
+        },
+        "8": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.3781101405620575,
+            "joint_position_mae": 0.008497298695147038,
+            "root_angular_mae": 0.09350752085447311,
+            "ball_velocity_mae": 1.1487399339675903,
+            "ball_velocity_rmse": 2.0524160861968994,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 0.590790867805481,
+            "racket_position_mae": 0.0056705232709646225,
+            "racket_velocity_mae": 0.16402730345726013,
+            "racket_angular_mae": 0.3239600658416748
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.36654582619667053,
+            "joint_position_mae": 0.008096115663647652,
+            "root_angular_mae": 0.09060199558734894,
+            "ball_velocity_mae": 6.488762664957903e-06,
+            "ball_velocity_rmse": 1.3208210475568194e-05,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 5.33890101905854e-07,
+            "racket_position_mae": 0.007232770323753357,
+            "racket_velocity_mae": 0.1539226621389389,
+            "racket_angular_mae": 0.2561943531036377
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.3989817500114441,
+            "joint_position_mae": 0.008409575559198856,
+            "root_angular_mae": 0.10786008834838867,
+            "ball_velocity_mae": 1.053386926651001,
+            "ball_velocity_rmse": 1.711913824081421,
+            "ball_forward_sign_error": 0.04651162773370743,
+            "ball_position_p95": 0.4338187575340271,
+            "racket_position_mae": 0.0045753479935228825,
+            "racket_velocity_mae": 0.16170597076416016,
+            "racket_angular_mae": 0.3506658971309662
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.6021820902824402,
+            "joint_position_mae": 0.015418276190757751,
+            "root_angular_mae": 0.12952472269535065,
+            "ball_velocity_mae": 0.1122690960764885,
+            "ball_velocity_rmse": 0.48098117113113403,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.06395350396633148,
+            "racket_position_mae": 0.007180267013609409,
+            "racket_velocity_mae": 0.13657553493976593,
+            "racket_angular_mae": 0.2604219317436218
+          }
+        },
+        "16": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.31727588176727295,
+            "joint_position_mae": 0.01198526844382286,
+            "root_angular_mae": 0.08337244391441345,
+            "ball_velocity_mae": 1.1651114225387573,
+            "ball_velocity_rmse": 2.0647101402282715,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 1.1994142532348633,
+            "racket_position_mae": 0.011826795525848866,
+            "racket_velocity_mae": 0.12619957327842712,
+            "racket_angular_mae": 0.26739227771759033
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.36208030581474304,
+            "joint_position_mae": 0.012309468351304531,
+            "root_angular_mae": 0.10413514822721481,
+            "ball_velocity_mae": 0.03900229558348656,
+            "ball_velocity_rmse": 0.3313503563404083,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 4.960426304023713e-05,
+            "racket_position_mae": 0.011839360930025578,
+            "racket_velocity_mae": 0.13301189243793488,
+            "racket_angular_mae": 0.2928984761238098
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.29143548011779785,
+            "joint_position_mae": 0.010955913923680782,
+            "root_angular_mae": 0.0892847329378128,
+            "ball_velocity_mae": 1.072691798210144,
+            "ball_velocity_rmse": 1.73081636428833,
+            "ball_forward_sign_error": 0.04651162773370743,
+            "ball_position_p95": 0.9196508526802063,
+            "racket_position_mae": 0.011452036909759045,
+            "racket_velocity_mae": 0.13029448688030243,
+            "racket_angular_mae": 0.2854377031326294
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.526418149471283,
+            "joint_position_mae": 0.020820263773202896,
+            "root_angular_mae": 0.13915596902370453,
+            "ball_velocity_mae": 0.12512028217315674,
+            "ball_velocity_rmse": 0.48030343651771545,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.15530817210674286,
+            "racket_position_mae": 0.014994430355727673,
+            "racket_velocity_mae": 0.16247554123401642,
+            "racket_angular_mae": 0.2539239823818207
+          }
+        },
+        "32": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 1.4795128107070923,
+            "joint_position_mae": 0.03266428783535957,
+            "root_angular_mae": 0.23695389926433563,
+            "ball_velocity_mae": 1.0692185163497925,
+            "ball_velocity_rmse": 1.9730671644210815,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 2.3950822353363037,
+            "racket_position_mae": 0.017815934494137764,
+            "racket_velocity_mae": 0.24798908829689026,
+            "racket_angular_mae": 0.5231833457946777
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 1.1774953603744507,
+            "joint_position_mae": 0.03345969691872597,
+            "root_angular_mae": 0.2636246979236603,
+            "ball_velocity_mae": 0.038360122591257095,
+            "ball_velocity_rmse": 0.32340553402900696,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.00036641675978899,
+            "racket_position_mae": 0.018431250005960464,
+            "racket_velocity_mae": 0.2156164050102234,
+            "racket_angular_mae": 0.5243033766746521
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 1.6860458850860596,
+            "joint_position_mae": 0.03149185702204704,
+            "root_angular_mae": 0.20942997932434082,
+            "ball_velocity_mae": 0.9998249411582947,
+            "ball_velocity_rmse": 1.6562789678573608,
+            "ball_forward_sign_error": 0.04651162773370743,
+            "ball_position_p95": 1.8719193935394287,
+            "racket_position_mae": 0.017870871350169182,
+            "racket_velocity_mae": 0.24514204263687134,
+            "racket_angular_mae": 0.4963582456111908
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.39412790536880493,
+            "joint_position_mae": 0.024823002517223358,
+            "root_angular_mae": 0.15652985870838165,
+            "ball_velocity_mae": 0.24513763189315796,
+            "ball_velocity_rmse": 0.9133219122886658,
+            "ball_forward_sign_error": 0.01927710883319378,
+            "ball_position_p95": 0.48527854681015015,
+            "racket_position_mae": 0.02783774584531784,
+            "racket_velocity_mae": 0.16740070283412933,
+            "racket_angular_mae": 0.2570387125015259
+          }
+        },
+        "64": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.6722880601882935,
+            "joint_position_mae": 0.042141739279031754,
+            "root_angular_mae": 0.313691645860672,
+            "ball_velocity_mae": 1.9345893859863281,
+            "ball_velocity_rmse": 2.5396761894226074,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 4.506853103637695,
+            "racket_position_mae": 0.03904931992292404,
+            "racket_velocity_mae": 0.3188123404979706,
+            "racket_angular_mae": 0.5839152932167053
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.6711779236793518,
+            "joint_position_mae": 0.042787566781044006,
+            "root_angular_mae": 0.31538859009742737,
+            "ball_velocity_mae": 1.4772891998291016,
+            "ball_velocity_rmse": 2.0063512325286865,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.9930046200752258,
+            "racket_position_mae": 0.043084077537059784,
+            "racket_velocity_mae": 0.3065882921218872,
+            "racket_angular_mae": 0.5609102845191956
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.6781076192855835,
+            "joint_position_mae": 0.04138012230396271,
+            "root_angular_mae": 0.3154396712779999,
+            "ball_velocity_mae": 1.961524248123169,
+            "ball_velocity_rmse": 2.5793263912200928,
+            "ball_forward_sign_error": 0.11627907305955887,
+            "ball_position_p95": 3.677168846130371,
+            "racket_position_mae": 0.03714786842465401,
+            "racket_velocity_mae": 0.31809577345848083,
+            "racket_angular_mae": 0.623974084854126
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.5461313128471375,
+            "joint_position_mae": 0.03250543400645256,
+            "root_angular_mae": 0.18315674364566803,
+            "ball_velocity_mae": 0.4257102608680725,
+            "ball_velocity_rmse": 1.3100005388259888,
+            "ball_forward_sign_error": 0.04337349534034729,
+            "ball_position_p95": 1.2520802021026611,
+            "racket_position_mae": 0.04877297952771187,
+            "racket_velocity_mae": 0.19029782712459564,
+            "racket_angular_mae": 0.3003540337085724
+          }
+        }
+      }
+    },
+    "online_pre_refresh": {
+      "world_sha256": "082dbf1ff9886316f4983ce3f191873ef849b06e3561df1dc40677d40b082dfd",
+      "metrics": {
+        "1": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.8868903517723083,
+            "joint_position_mae": 0.007380741648375988,
+            "root_angular_mae": 0.3888157606124878,
+            "ball_velocity_mae": 1.5735641717910767,
+            "ball_velocity_rmse": 2.608509063720703,
+            "ball_forward_sign_error": 0.20930232107639313,
+            "ball_position_p95": 0.08859182149171829,
+            "racket_position_mae": 0.010875076055526733,
+            "racket_velocity_mae": 0.8510759472846985,
+            "racket_angular_mae": 1.7003439664840698
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.6325134038925171,
+            "joint_position_mae": 0.005598090589046478,
+            "root_angular_mae": 0.31478452682495117,
+            "ball_velocity_mae": 1.9888429392267426e-07,
+            "ball_velocity_rmse": 4.437873712959117e-07,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 2.0954704638143085e-10,
+            "racket_position_mae": 0.005819765385240316,
+            "racket_velocity_mae": 0.5518056154251099,
+            "racket_angular_mae": 1.1075721979141235
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.7897429466247559,
+            "joint_position_mae": 0.006760408170521259,
+            "root_angular_mae": 0.3955242335796356,
+            "ball_velocity_mae": 4.1731858800631016e-05,
+            "ball_velocity_rmse": 0.00023652719391975552,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 1.684128960732778e-06,
+            "racket_position_mae": 0.010059774853289127,
+            "racket_velocity_mae": 0.7465874552726746,
+            "racket_angular_mae": 1.367370367050171
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.5890927314758301,
+            "joint_position_mae": 0.0033175379503518343,
+            "root_angular_mae": 0.07602968066930771,
+            "ball_velocity_mae": 0.06137440353631973,
+            "ball_velocity_rmse": 0.5148398280143738,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.004126072395592928,
+            "racket_position_mae": 0.0012929128715768456,
+            "racket_velocity_mae": 0.1150333359837532,
+            "racket_angular_mae": 0.22880594432353973
+          }
+        },
+        "2": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 1.0113379955291748,
+            "joint_position_mae": 0.01253607589751482,
+            "root_angular_mae": 0.2845158874988556,
+            "ball_velocity_mae": 1.35060715675354,
+            "ball_velocity_rmse": 2.0175623893737793,
+            "ball_forward_sign_error": 0.13953489065170288,
+            "ball_position_p95": 0.0773889496922493,
+            "racket_position_mae": 0.017703521996736526,
+            "racket_velocity_mae": 0.38366997241973877,
+            "racket_angular_mae": 0.7994609475135803
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.9424002170562744,
+            "joint_position_mae": 0.010444601997733116,
+            "root_angular_mae": 0.13349752128124237,
+            "ball_velocity_mae": 3.5362895687285345e-06,
+            "ball_velocity_rmse": 7.295306204468943e-06,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 1.212866607147589e-07,
+            "racket_position_mae": 0.008487767539918423,
+            "racket_velocity_mae": 0.19833095371723175,
+            "racket_angular_mae": 0.6320465803146362
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 1.3180488348007202,
+            "joint_position_mae": 0.014693879522383213,
+            "root_angular_mae": 0.3450213670730591,
+            "ball_velocity_mae": 1.0794765949249268,
+            "ball_velocity_rmse": 1.4206019639968872,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.09758928418159485,
+            "racket_position_mae": 0.020838875323534012,
+            "racket_velocity_mae": 0.6092463731765747,
+            "racket_angular_mae": 1.2059377431869507
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.6368293166160583,
+            "joint_position_mae": 0.007130014710128307,
+            "root_angular_mae": 0.11420077085494995,
+            "ball_velocity_mae": 0.07236078381538391,
+            "ball_velocity_rmse": 0.48338404297828674,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.011293102987110615,
+            "racket_position_mae": 0.0024859891273081303,
+            "racket_velocity_mae": 0.14561247825622559,
+            "racket_angular_mae": 0.24682290852069855
+          }
+        },
+        "4": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.86988365650177,
+            "joint_position_mae": 0.017115868628025055,
+            "root_angular_mae": 0.22697298228740692,
+            "ball_velocity_mae": 1.3463404178619385,
+            "ball_velocity_rmse": 2.0108847618103027,
+            "ball_forward_sign_error": 0.13953489065170288,
+            "ball_position_p95": 0.14577536284923553,
+            "racket_position_mae": 0.01661073789000511,
+            "racket_velocity_mae": 0.3404143452644348,
+            "racket_angular_mae": 1.2480014562606812
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.7593457698822021,
+            "joint_position_mae": 0.015455490909516811,
+            "root_angular_mae": 0.25278303027153015,
+            "ball_velocity_mae": 5.690611942554824e-06,
+            "ball_velocity_rmse": 1.1198783795407508e-05,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 8.631531613900734e-07,
+            "racket_position_mae": 0.00787243153899908,
+            "racket_velocity_mae": 0.3928520977497101,
+            "racket_angular_mae": 0.9233547449111938
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.9713125228881836,
+            "joint_position_mae": 0.01757526956498623,
+            "root_angular_mae": 0.2612922489643097,
+            "ball_velocity_mae": 1.0758962631225586,
+            "ball_velocity_rmse": 1.4154267311096191,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.09934525191783905,
+            "racket_position_mae": 0.021693766117095947,
+            "racket_velocity_mae": 0.35870540142059326,
+            "racket_angular_mae": 1.1589704751968384
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.6421817541122437,
+            "joint_position_mae": 0.0137838926166296,
+            "root_angular_mae": 0.15417613089084625,
+            "ball_velocity_mae": 0.08720199763774872,
+            "ball_velocity_rmse": 0.42821618914604187,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.028056861832737923,
+            "racket_position_mae": 0.0053741177543997765,
+            "racket_velocity_mae": 0.18542836606502533,
+            "racket_angular_mae": 0.3027535080909729
+          }
+        },
+        "8": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.6175121068954468,
+            "joint_position_mae": 0.024685434997081757,
+            "root_angular_mae": 0.17954161763191223,
+            "ball_velocity_mae": 1.337923526763916,
+            "ball_velocity_rmse": 1.9977115392684937,
+            "ball_forward_sign_error": 0.13953489065170288,
+            "ball_position_p95": 0.35291993618011475,
+            "racket_position_mae": 0.02737177535891533,
+            "racket_velocity_mae": 0.24182318150997162,
+            "racket_angular_mae": 0.45447906851768494
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.582101583480835,
+            "joint_position_mae": 0.024966834113001823,
+            "root_angular_mae": 0.1738041490316391,
+            "ball_velocity_mae": 3.596170063246973e-05,
+            "ball_velocity_rmse": 6.819361442467198e-05,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 6.928824859642191e-06,
+            "racket_position_mae": 0.0142331188544631,
+            "racket_velocity_mae": 0.19592909514904022,
+            "racket_angular_mae": 0.47162574529647827
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.6901282072067261,
+            "joint_position_mae": 0.02210484817624092,
+            "root_angular_mae": 0.22360190749168396,
+            "ball_velocity_mae": 1.0687742233276367,
+            "ball_velocity_rmse": 1.4052494764328003,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.20584021508693695,
+            "racket_position_mae": 0.03179590404033661,
+            "racket_velocity_mae": 0.330390989780426,
+            "racket_angular_mae": 0.6682367920875549
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.7092648148536682,
+            "joint_position_mae": 0.021296003833413124,
+            "root_angular_mae": 0.17806217074394226,
+            "ball_velocity_mae": 0.10643864423036575,
+            "ball_velocity_rmse": 0.4335535764694214,
+            "ball_forward_sign_error": 0.0036144577898085117,
+            "ball_position_p95": 0.06620220094919205,
+            "racket_position_mae": 0.011437559500336647,
+            "racket_velocity_mae": 0.2196294516324997,
+            "racket_angular_mae": 0.33718162775039673
+          }
+        },
+        "16": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.5925609469413757,
+            "joint_position_mae": 0.030663201585412025,
+            "root_angular_mae": 0.15900863707065582,
+            "ball_velocity_mae": 1.3611198663711548,
+            "ball_velocity_rmse": 2.0254769325256348,
+            "ball_forward_sign_error": 0.13953489065170288,
+            "ball_position_p95": 0.7717623114585876,
+            "racket_position_mae": 0.031168412417173386,
+            "racket_velocity_mae": 0.36980900168418884,
+            "racket_angular_mae": 0.6013304591178894
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.5901041030883789,
+            "joint_position_mae": 0.033068280667066574,
+            "root_angular_mae": 0.15368744730949402,
+            "ball_velocity_mae": 0.039091240614652634,
+            "ball_velocity_rmse": 0.3313441574573517,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 9.955624409485608e-05,
+            "racket_position_mae": 0.02221350558102131,
+            "racket_velocity_mae": 0.41295287013053894,
+            "racket_angular_mae": 0.639064610004425
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.6043579578399658,
+            "joint_position_mae": 0.03024374507367611,
+            "root_angular_mae": 0.2065506875514984,
+            "ball_velocity_mae": 1.0935136079788208,
+            "ball_velocity_rmse": 1.4613823890686035,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.5009753108024597,
+            "racket_position_mae": 0.03417908400297165,
+            "racket_velocity_mae": 0.37421491742134094,
+            "racket_angular_mae": 0.5433821082115173
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.6624540686607361,
+            "joint_position_mae": 0.031178876757621765,
+            "root_angular_mae": 0.2006983608007431,
+            "ball_velocity_mae": 0.12086480855941772,
+            "ball_velocity_rmse": 0.4709830582141876,
+            "ball_forward_sign_error": 0.0072289155796170235,
+            "ball_position_p95": 0.1344127655029297,
+            "racket_position_mae": 0.02243100479245186,
+            "racket_velocity_mae": 0.2654545307159424,
+            "racket_angular_mae": 0.3502282500267029
+          }
+        },
+        "32": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 1.7167437076568604,
+            "joint_position_mae": 0.05262775719165802,
+            "root_angular_mae": 0.3429459035396576,
+            "ball_velocity_mae": 1.3124337196350098,
+            "ball_velocity_rmse": 1.967212200164795,
+            "ball_forward_sign_error": 0.13953489065170288,
+            "ball_position_p95": 1.6687804460525513,
+            "racket_position_mae": 0.06251117587089539,
+            "racket_velocity_mae": 0.6834346055984497,
+            "racket_angular_mae": 1.149141788482666
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 1.5880272388458252,
+            "joint_position_mae": 0.05316174775362015,
+            "root_angular_mae": 0.45358288288116455,
+            "ball_velocity_mae": 0.04058642312884331,
+            "ball_velocity_rmse": 0.32348084449768066,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.001380565227009356,
+            "racket_position_mae": 0.049013517796993256,
+            "racket_velocity_mae": 0.7155914306640625,
+            "racket_angular_mae": 1.3460897207260132
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 1.8122562170028687,
+            "joint_position_mae": 0.05415591970086098,
+            "root_angular_mae": 0.30755728483200073,
+            "ball_velocity_mae": 1.044933795928955,
+            "ball_velocity_rmse": 1.41293466091156,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 1.1331640481948853,
+            "racket_position_mae": 0.07045254111289978,
+            "racket_velocity_mae": 0.6528932452201843,
+            "racket_angular_mae": 1.0425724983215332
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.48267510533332825,
+            "joint_position_mae": 0.038580525666475296,
+            "root_angular_mae": 0.22752244770526886,
+            "ball_velocity_mae": 0.39339953660964966,
+            "ball_velocity_rmse": 1.560100793838501,
+            "ball_forward_sign_error": 0.053012046962976456,
+            "ball_position_p95": 0.5305259227752686,
+            "racket_position_mae": 0.045612119138240814,
+            "racket_velocity_mae": 0.29043257236480713,
+            "racket_angular_mae": 0.37235593795776367
+          }
+        },
+        "64": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.7897084951400757,
+            "joint_position_mae": 0.061377592384815216,
+            "root_angular_mae": 0.4370284676551819,
+            "ball_velocity_mae": 1.8514673709869385,
+            "ball_velocity_rmse": 2.282860517501831,
+            "ball_forward_sign_error": 0.20930232107639313,
+            "ball_position_p95": 3.0980618000030518,
+            "racket_position_mae": 0.06372617185115814,
+            "racket_velocity_mae": 0.5429108142852783,
+            "racket_angular_mae": 0.7975466251373291
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.7903927564620972,
+            "joint_position_mae": 0.06108415499329567,
+            "root_angular_mae": 0.43175074458122253,
+            "ball_velocity_mae": 1.6069525480270386,
+            "ball_velocity_rmse": 2.044570207595825,
+            "ball_forward_sign_error": 0.11627907305955887,
+            "ball_position_p95": 0.9750373959541321,
+            "racket_position_mae": 0.05515291541814804,
+            "racket_velocity_mae": 0.5295159220695496,
+            "racket_angular_mae": 0.7305561900138855
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.8139826059341431,
+            "joint_position_mae": 0.061921246349811554,
+            "root_angular_mae": 0.43928709626197815,
+            "ball_velocity_mae": 1.8549443483352661,
+            "ball_velocity_rmse": 2.298713445663452,
+            "ball_forward_sign_error": 0.13953489065170288,
+            "ball_position_p95": 2.138277292251587,
+            "racket_position_mae": 0.062438447028398514,
+            "racket_velocity_mae": 0.5872431397438049,
+            "racket_angular_mae": 0.8441449403762817
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.638765811920166,
+            "joint_position_mae": 0.05077681690454483,
+            "root_angular_mae": 0.25426098704338074,
+            "ball_velocity_mae": 0.5856024622917175,
+            "ball_velocity_rmse": 1.8301254510879517,
+            "ball_forward_sign_error": 0.08192770928144455,
+            "ball_position_p95": 3.1258599758148193,
+            "racket_position_mae": 0.0866701751947403,
+            "racket_velocity_mae": 0.3459280729293823,
+            "racket_angular_mae": 0.46091917157173157
+          }
+        }
+      }
+    },
+    "online_post_refresh": {
+      "world_sha256": "acdbeae5dc48febfb2cf5964262bbdb585498c53ccd72b5b591f905897cf93f6",
+      "metrics": {
+        "1": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.8602036833763123,
+            "joint_position_mae": 0.0077551379799842834,
+            "root_angular_mae": 0.42671215534210205,
+            "ball_velocity_mae": 1.3310093879699707,
+            "ball_velocity_rmse": 2.313755989074707,
+            "ball_forward_sign_error": 0.09302325546741486,
+            "ball_position_p95": 0.08322318643331528,
+            "racket_position_mae": 0.009392584674060345,
+            "racket_velocity_mae": 0.7561861872673035,
+            "racket_angular_mae": 1.679988980293274
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.6140176653862,
+            "joint_position_mae": 0.005650212522596121,
+            "root_angular_mae": 0.24436169862747192,
+            "ball_velocity_mae": 1.7584092120159767e-06,
+            "ball_velocity_rmse": 3.947343884647125e-06,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 1.088592611608874e-07,
+            "racket_position_mae": 0.004177838563919067,
+            "racket_velocity_mae": 0.5177538394927979,
+            "racket_angular_mae": 1.018571376800537
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.7973954081535339,
+            "joint_position_mae": 0.007182885427027941,
+            "root_angular_mae": 0.4286271035671234,
+            "ball_velocity_mae": 3.807021494139917e-05,
+            "ball_velocity_rmse": 0.00021467660553753376,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 1.3580075801655767e-06,
+            "racket_position_mae": 0.009009389206767082,
+            "racket_velocity_mae": 0.6999484300613403,
+            "racket_angular_mae": 1.3876383304595947
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.595702588558197,
+            "joint_position_mae": 0.0033760445658117533,
+            "root_angular_mae": 0.08029761165380478,
+            "ball_velocity_mae": 0.06506772339344025,
+            "ball_velocity_rmse": 0.5251992344856262,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.004816829692572355,
+            "racket_position_mae": 0.0012540273601189256,
+            "racket_velocity_mae": 0.12484997510910034,
+            "racket_angular_mae": 0.2547372579574585
+          }
+        },
+        "2": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.873319149017334,
+            "joint_position_mae": 0.013841698877513409,
+            "root_angular_mae": 0.1333150714635849,
+            "ball_velocity_mae": 1.158408522605896,
+            "ball_velocity_rmse": 1.782706379890442,
+            "ball_forward_sign_error": 0.04651162773370743,
+            "ball_position_p95": 0.09102277457714081,
+            "racket_position_mae": 0.01271942537277937,
+            "racket_velocity_mae": 0.3043786883354187,
+            "racket_angular_mae": 0.7979534864425659
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.8195504546165466,
+            "joint_position_mae": 0.011347919702529907,
+            "root_angular_mae": 0.17285268008708954,
+            "ball_velocity_mae": 2.3804483134881593e-05,
+            "ball_velocity_rmse": 5.435913408291526e-05,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 1.227388679581054e-06,
+            "racket_position_mae": 0.004437650088220835,
+            "racket_velocity_mae": 0.34222981333732605,
+            "racket_angular_mae": 0.7890375256538391
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 1.1647248268127441,
+            "joint_position_mae": 0.015683939680457115,
+            "root_angular_mae": 0.40839260816574097,
+            "ball_velocity_mae": 0.9518958330154419,
+            "ball_velocity_rmse": 1.2782145738601685,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.08700926601886749,
+            "racket_position_mae": 0.016470372676849365,
+            "racket_velocity_mae": 0.39131149649620056,
+            "racket_angular_mae": 1.0716156959533691
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.6367859244346619,
+            "joint_position_mae": 0.00716804014518857,
+            "root_angular_mae": 0.1230834499001503,
+            "ball_velocity_mae": 0.07225450873374939,
+            "ball_velocity_rmse": 0.46331197023391724,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.012429389171302319,
+            "racket_position_mae": 0.00243183271959424,
+            "racket_velocity_mae": 0.15961579978466034,
+            "racket_angular_mae": 0.279306024312973
+          }
+        },
+        "4": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.7588463425636292,
+            "joint_position_mae": 0.016265667974948883,
+            "root_angular_mae": 0.15879006683826447,
+            "ball_velocity_mae": 1.1144863367080688,
+            "ball_velocity_rmse": 1.664732575416565,
+            "ball_forward_sign_error": 0.023255813866853714,
+            "ball_position_p95": 0.16361236572265625,
+            "racket_position_mae": 0.0068933069705963135,
+            "racket_velocity_mae": 0.37080562114715576,
+            "racket_angular_mae": 0.9549444913864136
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.669707179069519,
+            "joint_position_mae": 0.0168063472956419,
+            "root_angular_mae": 0.19763240218162537,
+            "ball_velocity_mae": 3.4909233363578096e-05,
+            "ball_velocity_rmse": 7.793826080160215e-05,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 7.112552793842042e-06,
+            "racket_position_mae": 0.00818423368036747,
+            "racket_velocity_mae": 0.26251792907714844,
+            "racket_angular_mae": 0.6024872064590454
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.8358241319656372,
+            "joint_position_mae": 0.016746126115322113,
+            "root_angular_mae": 0.1598631888628006,
+            "ball_velocity_mae": 0.9485177397727966,
+            "ball_velocity_rmse": 1.2730351686477661,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.11137853562831879,
+            "racket_position_mae": 0.00988350436091423,
+            "racket_velocity_mae": 0.5026823282241821,
+            "racket_angular_mae": 0.98739093542099
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.6442003846168518,
+            "joint_position_mae": 0.013519706204533577,
+            "root_angular_mae": 0.1724948137998581,
+            "ball_velocity_mae": 0.08514481782913208,
+            "ball_velocity_rmse": 0.39368289709091187,
+            "ball_forward_sign_error": 0.0024096386041492224,
+            "ball_position_p95": 0.03016027621924877,
+            "racket_position_mae": 0.005420145113021135,
+            "racket_velocity_mae": 0.21242226660251617,
+            "racket_angular_mae": 0.3468706011772156
+          }
+        },
+        "8": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.6528547406196594,
+            "joint_position_mae": 0.026842599734663963,
+            "root_angular_mae": 0.21230894327163696,
+            "ball_velocity_mae": 1.1056134700775146,
+            "ball_velocity_rmse": 1.6511893272399902,
+            "ball_forward_sign_error": 0.023255813866853714,
+            "ball_position_p95": 0.32170015573501587,
+            "racket_position_mae": 0.017734402790665627,
+            "racket_velocity_mae": 0.3299638032913208,
+            "racket_angular_mae": 0.5080352425575256
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.5714181661605835,
+            "joint_position_mae": 0.02825871855020523,
+            "root_angular_mae": 0.20766063034534454,
+            "ball_velocity_mae": 0.00014580122660845518,
+            "ball_velocity_rmse": 0.00032547267619520426,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 3.7055357097415254e-05,
+            "racket_position_mae": 0.023460451513528824,
+            "racket_velocity_mae": 0.31208381056785583,
+            "racket_angular_mae": 0.4699196517467499
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.6713804006576538,
+            "joint_position_mae": 0.02474363148212433,
+            "root_angular_mae": 0.2223345786333084,
+            "ball_velocity_mae": 0.9424787163734436,
+            "ball_velocity_rmse": 1.2636781930923462,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.22732117772102356,
+            "racket_position_mae": 0.014354863204061985,
+            "racket_velocity_mae": 0.2856827676296234,
+            "racket_angular_mae": 0.5586548447608948
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.6928090453147888,
+            "joint_position_mae": 0.021137548610568047,
+            "root_angular_mae": 0.2126779854297638,
+            "ball_velocity_mae": 0.10889947414398193,
+            "ball_velocity_rmse": 0.4326470196247101,
+            "ball_forward_sign_error": 0.004819277208298445,
+            "ball_position_p95": 0.06612320989370346,
+            "racket_position_mae": 0.012408195994794369,
+            "racket_velocity_mae": 0.2598782181739807,
+            "racket_angular_mae": 0.39151763916015625
+          }
+        },
+        "16": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.5350993275642395,
+            "joint_position_mae": 0.029251474887132645,
+            "root_angular_mae": 0.17063820362091064,
+            "ball_velocity_mae": 1.127318263053894,
+            "ball_velocity_rmse": 1.6912590265274048,
+            "ball_forward_sign_error": 0.023255813866853714,
+            "ball_position_p95": 0.7172878980636597,
+            "racket_position_mae": 0.03755713254213333,
+            "racket_velocity_mae": 0.24289092421531677,
+            "racket_angular_mae": 0.44883331656455994
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.5548788905143738,
+            "joint_position_mae": 0.02965054288506508,
+            "root_angular_mae": 0.1717880368232727,
+            "ball_velocity_mae": 0.03975740075111389,
+            "ball_velocity_rmse": 0.33132749795913696,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.0005095278611406684,
+            "racket_position_mae": 0.03965598717331886,
+            "racket_velocity_mae": 0.2588561475276947,
+            "racket_angular_mae": 0.4790170192718506
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.555787980556488,
+            "joint_position_mae": 0.028916364535689354,
+            "root_angular_mae": 0.17700888216495514,
+            "ball_velocity_mae": 0.9709591269493103,
+            "ball_velocity_rmse": 1.3391607999801636,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.46410074830055237,
+            "racket_position_mae": 0.03493616729974747,
+            "racket_velocity_mae": 0.2706959843635559,
+            "racket_angular_mae": 0.5018696188926697
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.6501009464263916,
+            "joint_position_mae": 0.031209250912070274,
+            "root_angular_mae": 0.2530337870121002,
+            "ball_velocity_mae": 0.12745465338230133,
+            "ball_velocity_rmse": 0.4627890884876251,
+            "ball_forward_sign_error": 0.0060240961611270905,
+            "ball_position_p95": 0.1332126408815384,
+            "racket_position_mae": 0.028618333861231804,
+            "racket_velocity_mae": 0.2884442210197449,
+            "racket_angular_mae": 0.3754144310951233
+          }
+        },
+        "32": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 1.6612532138824463,
+            "joint_position_mae": 0.04738280922174454,
+            "root_angular_mae": 0.37802645564079285,
+            "ball_velocity_mae": 1.0727481842041016,
+            "ball_velocity_rmse": 1.6273726224899292,
+            "ball_forward_sign_error": 0.023255813866853714,
+            "ball_position_p95": 1.501455545425415,
+            "racket_position_mae": 0.04356418922543526,
+            "racket_velocity_mae": 0.3971192538738251,
+            "racket_angular_mae": 0.9673914909362793
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 1.437982201576233,
+            "joint_position_mae": 0.048591021448373795,
+            "root_angular_mae": 0.38107985258102417,
+            "ball_velocity_mae": 0.04458555951714516,
+            "ball_velocity_rmse": 0.3237214684486389,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.003442317945882678,
+            "racket_position_mae": 0.044218529015779495,
+            "racket_velocity_mae": 0.4483579099178314,
+            "racket_angular_mae": 1.1705423593521118
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 1.76096510887146,
+            "joint_position_mae": 0.04591715708374977,
+            "root_angular_mae": 0.3520236909389496,
+            "ball_velocity_mae": 0.9276633858680725,
+            "ball_velocity_rmse": 1.3028985261917114,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 1.0269185304641724,
+            "racket_position_mae": 0.044031303375959396,
+            "racket_velocity_mae": 0.33714425563812256,
+            "racket_angular_mae": 0.7234206199645996
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.4794793426990509,
+            "joint_position_mae": 0.041251733899116516,
+            "root_angular_mae": 0.2508319318294525,
+            "ball_velocity_mae": 0.45639678835868835,
+            "ball_velocity_rmse": 1.8301990032196045,
+            "ball_forward_sign_error": 0.06385542452335358,
+            "ball_position_p95": 0.6528138518333435,
+            "racket_position_mae": 0.060279086232185364,
+            "racket_velocity_mae": 0.29322752356529236,
+            "racket_angular_mae": 0.3766786456108093
+          }
+        },
+        "64": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.7748925089836121,
+            "joint_position_mae": 0.06251952052116394,
+            "root_angular_mae": 0.4085084795951843,
+            "ball_velocity_mae": 1.8078988790512085,
+            "ball_velocity_rmse": 2.221776008605957,
+            "ball_forward_sign_error": 0.11627907305955887,
+            "ball_position_p95": 2.962477922439575,
+            "racket_position_mae": 0.09062954038381577,
+            "racket_velocity_mae": 0.5335291624069214,
+            "racket_angular_mae": 0.6456722021102905
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.7759069204330444,
+            "joint_position_mae": 0.06299051642417908,
+            "root_angular_mae": 0.41186586022377014,
+            "ball_velocity_mae": 1.5053234100341797,
+            "ball_velocity_rmse": 1.979254961013794,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 0.9657361507415771,
+            "racket_position_mae": 0.0921400710940361,
+            "racket_velocity_mae": 0.512790858745575,
+            "racket_angular_mae": 0.6534660458564758
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.7873731255531311,
+            "joint_position_mae": 0.061026811599731445,
+            "root_angular_mae": 0.39939117431640625,
+            "ball_velocity_mae": 1.868452548980713,
+            "ball_velocity_rmse": 2.2966437339782715,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 2.1193349361419678,
+            "racket_position_mae": 0.08757084608078003,
+            "racket_velocity_mae": 0.5520791411399841,
+            "racket_angular_mae": 0.6382694840431213
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.6885472536087036,
+            "joint_position_mae": 0.05275215208530426,
+            "root_angular_mae": 0.27713829278945923,
+            "ball_velocity_mae": 0.6589734554290771,
+            "ball_velocity_rmse": 2.0446345806121826,
+            "ball_forward_sign_error": 0.09879518300294876,
+            "ball_position_p95": 3.8665387630462646,
+            "racket_position_mae": 0.10017169266939163,
+            "racket_velocity_mae": 0.3324611186981201,
+            "racket_angular_mae": 0.4672801196575165
+          }
+        }
+      }
+    },
+    "long_native_post_refresh": {
+      "world_sha256": "cb672d2fa92ab505f85141638cf487408ab51bfa24f176885e25aecb537c1e05",
+      "metrics": {
+        "1": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.23265407979488373,
+            "joint_position_mae": 0.001602955162525177,
+            "root_angular_mae": 0.044463448226451874,
+            "ball_velocity_mae": 1.5312201976776123,
+            "ball_velocity_rmse": 3.049198865890503,
+            "ball_forward_sign_error": 0.1627907007932663,
+            "ball_position_p95": 0.05026661232113838,
+            "racket_position_mae": 0.0009892876259982586,
+            "racket_velocity_mae": 0.15767966210842133,
+            "racket_angular_mae": 0.4303976893424988
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.33183109760284424,
+            "joint_position_mae": 0.00225326931104064,
+            "root_angular_mae": 0.05564136803150177,
+            "ball_velocity_mae": 7.580532646045413e-09,
+            "ball_velocity_rmse": 5.144194403783331e-08,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.0,
+            "racket_position_mae": 0.0006879940046928823,
+            "racket_velocity_mae": 0.08267924189567566,
+            "racket_angular_mae": 0.41080835461616516
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.194691464304924,
+            "joint_position_mae": 0.0013755063991993666,
+            "root_angular_mae": 0.0386456698179245,
+            "ball_velocity_mae": 6.745443533873186e-05,
+            "ball_velocity_rmse": 0.0007189166499301791,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 1.194317178487836e-07,
+            "racket_position_mae": 0.0005032049375586212,
+            "racket_velocity_mae": 0.0645981952548027,
+            "racket_angular_mae": 0.2283419370651245
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.5796819925308228,
+            "joint_position_mae": 0.0030487296171486378,
+            "root_angular_mae": 0.05131211504340172,
+            "ball_velocity_mae": 0.05774447321891785,
+            "ball_velocity_rmse": 0.5299627780914307,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.002215127693489194,
+            "racket_position_mae": 0.0008746378589421511,
+            "racket_velocity_mae": 0.07923400402069092,
+            "racket_angular_mae": 0.16251394152641296
+          }
+        },
+        "2": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.3453327715396881,
+            "joint_position_mae": 0.002996551338583231,
+            "root_angular_mae": 0.09259054064750671,
+            "ball_velocity_mae": 1.1515446901321411,
+            "ball_velocity_rmse": 2.0419743061065674,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 0.13069666922092438,
+            "racket_position_mae": 0.0014553049113601446,
+            "racket_velocity_mae": 0.09994851797819138,
+            "racket_angular_mae": 0.30596673488616943
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.31163689494132996,
+            "joint_position_mae": 0.003928631078451872,
+            "root_angular_mae": 0.06801163405179977,
+            "ball_velocity_mae": 3.515201285608782e-08,
+            "ball_velocity_rmse": 1.2997560361327487e-07,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.0,
+            "racket_position_mae": 0.001099395682103932,
+            "racket_velocity_mae": 0.0858343169093132,
+            "racket_angular_mae": 0.244461789727211
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.2301868349313736,
+            "joint_position_mae": 0.0026645620819181204,
+            "root_angular_mae": 0.06989435851573944,
+            "ball_velocity_mae": 1.3428242206573486,
+            "ball_velocity_rmse": 2.6816887855529785,
+            "ball_forward_sign_error": 0.09302325546741486,
+            "ball_position_p95": 0.04934627562761307,
+            "racket_position_mae": 0.001232519163750112,
+            "racket_velocity_mae": 0.16587936878204346,
+            "racket_angular_mae": 0.3677448034286499
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.5993542671203613,
+            "joint_position_mae": 0.006472080945968628,
+            "root_angular_mae": 0.06913775205612183,
+            "ball_velocity_mae": 0.06869947910308838,
+            "ball_velocity_rmse": 0.5021519660949707,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.007760269567370415,
+            "racket_position_mae": 0.0015530864475294948,
+            "racket_velocity_mae": 0.08314857631921768,
+            "racket_angular_mae": 0.16798487305641174
+          }
+        },
+        "4": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.3155711591243744,
+            "joint_position_mae": 0.005189782939851284,
+            "root_angular_mae": 0.07673477381467819,
+            "ball_velocity_mae": 1.1476123332977295,
+            "ball_velocity_rmse": 2.034952402114868,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 0.2774600386619568,
+            "racket_position_mae": 0.0020722909830510616,
+            "racket_velocity_mae": 0.1108444556593895,
+            "racket_angular_mae": 0.349293977022171
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.3114088475704193,
+            "joint_position_mae": 0.0059706345200538635,
+            "root_angular_mae": 0.08425044268369675,
+            "ball_velocity_mae": 2.5740601472534763e-07,
+            "ball_velocity_rmse": 6.24552399131062e-07,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 1.1920928955078125e-07,
+            "racket_position_mae": 0.002596749458462,
+            "racket_velocity_mae": 0.11515093594789505,
+            "racket_angular_mae": 0.3402436673641205
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.3102135956287384,
+            "joint_position_mae": 0.004991781432181597,
+            "root_angular_mae": 0.08375347405672073,
+            "ball_velocity_mae": 1.0383288860321045,
+            "ball_velocity_rmse": 1.7049286365509033,
+            "ball_forward_sign_error": 0.023255813866853714,
+            "ball_position_p95": 0.18218810856342316,
+            "racket_position_mae": 0.0022584020625799894,
+            "racket_velocity_mae": 0.10046594589948654,
+            "racket_angular_mae": 0.28997132182121277
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.569334864616394,
+            "joint_position_mae": 0.011621659621596336,
+            "root_angular_mae": 0.1012207493185997,
+            "ball_velocity_mae": 0.08676426857709885,
+            "ball_velocity_rmse": 0.47389495372772217,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.022731957957148552,
+            "racket_position_mae": 0.0031421880703419447,
+            "racket_velocity_mae": 0.11645416915416718,
+            "racket_angular_mae": 0.22306647896766663
+          }
+        },
+        "8": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.3754896819591522,
+            "joint_position_mae": 0.008395722135901451,
+            "root_angular_mae": 0.09368108958005905,
+            "ball_velocity_mae": 1.1393170356750488,
+            "ball_velocity_rmse": 2.021749258041382,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 0.5702735781669617,
+            "racket_position_mae": 0.0053003220818936825,
+            "racket_velocity_mae": 0.15552957355976105,
+            "racket_angular_mae": 0.3142816126346588
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.36584487557411194,
+            "joint_position_mae": 0.007989305071532726,
+            "root_angular_mae": 0.09079497307538986,
+            "ball_velocity_mae": 6.425288120226469e-06,
+            "ball_velocity_rmse": 1.3102988305035979e-05,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 5.33890101905854e-07,
+            "racket_position_mae": 0.006710082292556763,
+            "racket_velocity_mae": 0.14510811865329742,
+            "racket_angular_mae": 0.2449081391096115
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.39563411474227905,
+            "joint_position_mae": 0.008378362283110619,
+            "root_angular_mae": 0.10798396170139313,
+            "ball_velocity_mae": 1.0310450792312622,
+            "ball_velocity_rmse": 1.6933759450912476,
+            "ball_forward_sign_error": 0.023255813866853714,
+            "ball_position_p95": 0.41669246554374695,
+            "racket_position_mae": 0.004311361350119114,
+            "racket_velocity_mae": 0.15572059154510498,
+            "racket_angular_mae": 0.341846227645874
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.6012397408485413,
+            "joint_position_mae": 0.015408511273562908,
+            "root_angular_mae": 0.12757328152656555,
+            "ball_velocity_mae": 0.11140574514865875,
+            "ball_velocity_rmse": 0.4741937518119812,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.06397219747304916,
+            "racket_position_mae": 0.0069002253003418446,
+            "racket_velocity_mae": 0.1306786984205246,
+            "racket_angular_mae": 0.25518447160720825
+          }
+        },
+        "16": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.31559890508651733,
+            "joint_position_mae": 0.011800984852015972,
+            "root_angular_mae": 0.08595365285873413,
+            "ball_velocity_mae": 1.1566554307937622,
+            "ball_velocity_rmse": 2.0349485874176025,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 1.1505591869354248,
+            "racket_position_mae": 0.010773700661957264,
+            "racket_velocity_mae": 0.12958364188671112,
+            "racket_angular_mae": 0.2689279615879059
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.3618932366371155,
+            "joint_position_mae": 0.012258772738277912,
+            "root_angular_mae": 0.10869790613651276,
+            "ball_velocity_mae": 0.03900151327252388,
+            "ball_velocity_rmse": 0.3313505947589874,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 4.894094308838248e-05,
+            "racket_position_mae": 0.010586393997073174,
+            "racket_velocity_mae": 0.13976627588272095,
+            "racket_angular_mae": 0.29857954382896423
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.2906248867511749,
+            "joint_position_mae": 0.010765260085463524,
+            "root_angular_mae": 0.090057373046875,
+            "ball_velocity_mae": 1.0520504713058472,
+            "ball_velocity_rmse": 1.7136884927749634,
+            "ball_forward_sign_error": 0.023255813866853714,
+            "ball_position_p95": 0.8818039894104004,
+            "racket_position_mae": 0.010465234518051147,
+            "racket_velocity_mae": 0.12942901253700256,
+            "racket_angular_mae": 0.2860810458660126
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.5252785682678223,
+            "joint_position_mae": 0.020682046189904213,
+            "root_angular_mae": 0.13466019928455353,
+            "ball_velocity_mae": 0.12490954995155334,
+            "ball_velocity_rmse": 0.4833945035934448,
+            "ball_forward_sign_error": 0.0012048193020746112,
+            "ball_position_p95": 0.15446648001670837,
+            "racket_position_mae": 0.014013677835464478,
+            "racket_velocity_mae": 0.15547937154769897,
+            "racket_angular_mae": 0.2470729649066925
+          }
+        },
+        "32": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 1.474420189857483,
+            "joint_position_mae": 0.03240496292710304,
+            "root_angular_mae": 0.23314636945724487,
+            "ball_velocity_mae": 1.060202956199646,
+            "ball_velocity_rmse": 1.9454623460769653,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 2.2877132892608643,
+            "racket_position_mae": 0.016019387170672417,
+            "racket_velocity_mae": 0.25127434730529785,
+            "racket_angular_mae": 0.5206064581871033
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 1.176863670349121,
+            "joint_position_mae": 0.033438924700021744,
+            "root_angular_mae": 0.25374436378479004,
+            "ball_velocity_mae": 0.03837211802601814,
+            "ball_velocity_rmse": 0.3234046399593353,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.0003711307072080672,
+            "racket_position_mae": 0.01694304123520851,
+            "racket_velocity_mae": 0.22248272597789764,
+            "racket_angular_mae": 0.5176584124565125
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 1.6897097826004028,
+            "joint_position_mae": 0.03130347654223442,
+            "root_angular_mae": 0.20710645616054535,
+            "ball_velocity_mae": 0.9831284880638123,
+            "ball_velocity_rmse": 1.6378728151321411,
+            "ball_forward_sign_error": 0.023255813866853714,
+            "ball_position_p95": 1.7933812141418457,
+            "racket_position_mae": 0.015730811282992363,
+            "racket_velocity_mae": 0.23248577117919922,
+            "racket_angular_mae": 0.4954492747783661
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.3936350345611572,
+            "joint_position_mae": 0.02449253387749195,
+            "root_angular_mae": 0.15563072264194489,
+            "ball_velocity_mae": 0.24371781945228577,
+            "ball_velocity_rmse": 0.9240046143531799,
+            "ball_forward_sign_error": 0.01927710883319378,
+            "ball_position_p95": 0.4784623980522156,
+            "racket_position_mae": 0.02540004439651966,
+            "racket_velocity_mae": 0.16125823557376862,
+            "racket_angular_mae": 0.25305235385894775
+          }
+        },
+        "64": {
+          "contact+0": {
+            "windows": 43,
+            "body_rmse": 0.6640603542327881,
+            "joint_position_mae": 0.041940197348594666,
+            "root_angular_mae": 0.30336225032806396,
+            "ball_velocity_mae": 1.9402559995651245,
+            "ball_velocity_rmse": 2.5476346015930176,
+            "ball_forward_sign_error": 0.11627907305955887,
+            "ball_position_p95": 4.315745830535889,
+            "racket_position_mae": 0.03471961244940758,
+            "racket_velocity_mae": 0.3057466745376587,
+            "racket_angular_mae": 0.5434703826904297
+          },
+          "contact+1": {
+            "windows": 43,
+            "body_rmse": 0.6668200492858887,
+            "joint_position_mae": 0.042226120829582214,
+            "root_angular_mae": 0.3016894459724426,
+            "ball_velocity_mae": 1.4738938808441162,
+            "ball_velocity_rmse": 1.9940643310546875,
+            "ball_forward_sign_error": 0.0,
+            "ball_position_p95": 0.9902193546295166,
+            "racket_position_mae": 0.037806782871484756,
+            "racket_velocity_mae": 0.2936057448387146,
+            "racket_angular_mae": 0.5269495844841003
+          },
+          "contact-1": {
+            "windows": 43,
+            "body_rmse": 0.6717884540557861,
+            "joint_position_mae": 0.04139230027794838,
+            "root_angular_mae": 0.30886027216911316,
+            "ball_velocity_mae": 1.9708895683288574,
+            "ball_velocity_rmse": 2.564251661300659,
+            "ball_forward_sign_error": 0.06976744532585144,
+            "ball_position_p95": 3.493865966796875,
+            "racket_position_mae": 0.03306180238723755,
+            "racket_velocity_mae": 0.30833572149276733,
+            "racket_angular_mae": 0.5832569003105164
+          },
+          "uniform": {
+            "windows": 830,
+            "body_rmse": 0.5472599267959595,
+            "joint_position_mae": 0.03174491971731186,
+            "root_angular_mae": 0.178423210978508,
+            "ball_velocity_mae": 0.4253009557723999,
+            "ball_velocity_rmse": 1.3238807916641235,
+            "ball_forward_sign_error": 0.040963854640722275,
+            "ball_position_p95": 1.2834081649780273,
+            "racket_position_mae": 0.04470496624708176,
+            "racket_velocity_mae": 0.18525993824005127,
+            "racket_angular_mae": 0.29691749811172485
+          }
+        }
+      }
+    }
+  },
+  "scope": "First complete frozen R8 episodes on excluded lane IDs. Fixed task launches can recur across policy versions."
+}

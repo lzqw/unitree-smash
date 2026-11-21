@@ -1,0 +1,261 @@
+{
+  "checkpoint_sha256": "6c69f6d4a6788ae88271880e8e7835cfa1a6889debacda28b5fdf1751f1abc2d",
+  "actor_sha256": "d93b80b584aa8103f577c65e7ded69bf5e9ede2372ac4a9ec70bd37ce04681e3",
+  "world_sha256": "f853d4d8c86123d6ef854d163ba7dd8e0e3b96e758837b8a472739797350a463",
+  "optimizer_updates": 0,
+  "pools": {
+    "touchdown": {
+      "starts": 16,
+      "valid_starts": 6,
+      "selected_lanes_by_start": [
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "first_verified_start": 0,
+      "coverage": {
+        "head": "recovery",
+        "reference_count": 24,
+        "verified_reference_count": 24,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 1,
+        "gate_active_selected_start_lanes": 1,
+        "reference_usage_by_sha256": {
+          "0034b6ba60e67e55d82f53d5992bebad0bd61e89dd919609526085d8548a0a7f": 1
+        },
+        "matched_lanes": 1,
+        "effective_weight_sum": 63.947811126708984,
+        "tracking_applied": true
+      },
+      "gradients": {
+        "task_gradient_norm": 0.37622523307800293,
+        "anchor_gradient_norm": 0.24679388105869293,
+        "tracking_gradient_norm": 0.3951372504234314,
+        "task_tracking_cosine": 0.4287644326686859
+      },
+      "lane_steps": 64,
+      "nonzero_lanes": 1
+    },
+    "post_touchdown": {
+      "starts": 16,
+      "valid_starts": 16,
+      "selected_lanes_by_start": [
+        5,
+        5,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "first_verified_start": 0,
+      "coverage": {
+        "head": "recovery",
+        "reference_count": 24,
+        "verified_reference_count": 24,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 5,
+        "gate_active_selected_start_lanes": 5,
+        "reference_usage_by_sha256": {
+          "935976e43c6724c91079fb68aaa5c05da774b758604c82638056a8c0ec7e48e7": 1,
+          "2cb919cd74af44589c53b705075612cae7046afda44929b77765aa216f47a44e": 1,
+          "18d8a303b127b6290217a7ff2b7a97b1df698c39d4e9376be51409e5a8d6cf98": 1,
+          "a578ad1237f74cde9f860da7e66257d6807d48257253aec3ad223e0a4e66feb8": 2
+        },
+        "matched_lanes": 5,
+        "effective_weight_sum": 319.4645080566406,
+        "tracking_applied": true
+      },
+      "gradients": {
+        "task_gradient_norm": 3.0487661361694336,
+        "anchor_gradient_norm": 0.1617801934480667,
+        "tracking_gradient_norm": 0.08973313868045807,
+        "task_tracking_cosine": 0.5275911688804626
+      },
+      "lane_steps": 320,
+      "nonzero_lanes": 5
+    },
+    "recovery_failure": {
+      "starts": 16,
+      "valid_starts": 8,
+      "selected_lanes_by_start": [
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1
+      ],
+      "first_verified_start": 1,
+      "coverage": {
+        "head": "recovery",
+        "reference_count": 24,
+        "verified_reference_count": 24,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 1,
+        "gate_active_selected_start_lanes": 1,
+        "reference_usage_by_sha256": {
+          "2cb919cd74af44589c53b705075612cae7046afda44929b77765aa216f47a44e": 1
+        },
+        "matched_lanes": 1,
+        "effective_weight_sum": 63.77790069580078,
+        "tracking_applied": true
+      },
+      "gradients": {
+        "task_gradient_norm": 5.842984676361084,
+        "anchor_gradient_norm": 0.26416173577308655,
+        "tracking_gradient_norm": 0.24576078355312347,
+        "task_tracking_cosine": 0.20122380554676056
+      },
+      "lane_steps": 64,
+      "nonzero_lanes": 1
+    },
+    "stable_recovery": {
+      "starts": 16,
+      "valid_starts": 5,
+      "selected_lanes_by_start": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        2,
+        0,
+        0,
+        3
+      ],
+      "first_verified_start": 0,
+      "coverage": {
+        "head": "recovery",
+        "reference_count": 24,
+        "verified_reference_count": 24,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 1,
+        "gate_active_selected_start_lanes": 1,
+        "reference_usage_by_sha256": {
+          "dd8eddff1b0c0c8f59619d2b33e964af925fd7eb17e417800ca650a8ce1c4bcf": 1
+        },
+        "matched_lanes": 1,
+        "effective_weight_sum": 63.99861145019531,
+        "tracking_applied": true
+      },
+      "gradients": {
+        "task_gradient_norm": 6.3605055809021,
+        "anchor_gradient_norm": 0.08356225490570068,
+        "tracking_gradient_norm": 0.014707791619002819,
+        "task_tracking_cosine": -0.1924068033695221
+      },
+      "lane_steps": 64,
+      "nonzero_lanes": 1
+    },
+    "initial_archive": {
+      "starts": 7,
+      "valid_starts": 7,
+      "selected_lanes_by_start": [
+        41,
+        40,
+        40,
+        39,
+        39,
+        39,
+        38
+      ],
+      "first_verified_start": 0,
+      "coverage": {
+        "head": "recovery",
+        "reference_count": 24,
+        "verified_reference_count": 24,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 41,
+        "gate_active_selected_start_lanes": 41,
+        "reference_usage_by_sha256": {
+          "aa58f87b7ceaaeef23ce54632e06ba1dee35c1cd4d9fed378df3bb73acb8ecda": 1,
+          "b286c0dd02bcc48412d1f884cda6eda951e198347c083bc274fc655d0edfa177": 2,
+          "5c8105eb14e0210af8afd05327cb7e1022a1e71cbdee8006e499362bbd15164b": 1,
+          "935976e43c6724c91079fb68aaa5c05da774b758604c82638056a8c0ec7e48e7": 2,
+          "78dd19bf37d48e0772d76dba6fac3713e9b3307f62cc5880d2080ed80790918a": 1,
+          "2b31588b6bf0f3e248ed4939808c3967b498f284868890ac1720344ad1547dc5": 3,
+          "1e7b5b063db69f70ead63af5d0234dfa14314e9958bb728fd64b5b76af890c44": 1,
+          "be03b8b2b8f4f32423e86c6c57d857ece0818787600aa8e0c1212ccc1bb2f81b": 2,
+          "7cdeb162531103fb9252e27240c61b2fc0d71d779dee712a9b9e5732d669b418": 11,
+          "f72ad0663a107d3942d8655268210c0c08b733f5eeeaa5fd02c0a84fcc236832": 1,
+          "eac30f803a40eabc93e979153b67fbe1d11cb13aebbe3198b399574162436567": 1,
+          "921767d7aff4d3d52c940dbc39bce20ee00f790e8b7974eeda8847ef62ea1887": 3,
+          "2cb919cd74af44589c53b705075612cae7046afda44929b77765aa216f47a44e": 3,
+          "fb1ec1278df72a7038fa85f4fdf79f0881a7167dc366b5eccfce53b9ea1a555c": 1,
+          "09b1278a02a57c1f84ab2bc505c7010533282d1e16eec9eba879d463e871194e": 1,
+          "a578ad1237f74cde9f860da7e66257d6807d48257253aec3ad223e0a4e66feb8": 6,
+          "d1d50956bf0abcc88ee09955a7f09fb1d9f958d3c79f38311d2a5d1fa7a416e5": 1
+        },
+        "matched_lanes": 41,
+        "effective_weight_sum": 2620.718994140625,
+        "tracking_applied": true
+      },
+      "gradients": {
+        "task_gradient_norm": 15.458330154418945,
+        "anchor_gradient_norm": 0.13756102323532104,
+        "tracking_gradient_norm": 0.05078601464629173,
+        "task_tracking_cosine": 0.366405725479126
+      },
+      "lane_steps": 2624,
+      "nonzero_lanes": 41
+    }
+  },
+  "wm_handoff": null,
+  "forward_check": null,
+  "scope": "Offline gradient diagnostic at first eligible recorded start per pool"
+}

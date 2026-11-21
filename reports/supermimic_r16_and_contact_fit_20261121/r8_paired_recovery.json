@@ -1,0 +1,85 @@
+{
+  "stage": "initial_to_r8",
+  "paired_recovery": {
+    "common_contacts": 74,
+    "improved_cases": [
+      "A-720401-001",
+      "A-720401-017",
+      "A-720401-035",
+      "A-720401-037",
+      "B-720402-017",
+      "B-720402-031"
+    ],
+    "regressed_cases": [
+      "A-720401-023",
+      "A-720401-063",
+      "B-720402-003",
+      "B-720402-013",
+      "B-720402-022",
+      "B-720402-035"
+    ],
+    "recovered_before": 36,
+    "recovered_after": 36,
+    "paired_two_sided_p": 1.0,
+    "gained_contacts": [],
+    "lost_contacts": []
+  },
+  "before": {
+    "completed_episodes": 128,
+    "qualified_airborne_string_contact": 74,
+    "qualified_airborne_string_contact_rate": 0.578125,
+    "ball_side_complete_except_recovery": 54,
+    "ball_side_complete_except_recovery_rate": 0.421875,
+    "conditional_recovery_count": 36,
+    "conditional_recovery_denominator": 74,
+    "recovery_given_airborne_string_contact": 0.4864864864864865,
+    "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+    "complete5": 26,
+    "complete5_rate": 0.203125,
+    "native_episode_return_observed_count": 128,
+    "native_episode_return_missing_count": 0,
+    "native_episode_return_mean": -10.874005721576468,
+    "native_episode_return_std": 50.15741076553481,
+    "native_episode_return_min": -91.65631435364321,
+    "native_episode_return_max": 64.98194240025805,
+    "native_episode_return_last": -35.70089594152614,
+    "native_return_definition": "undiscounted_sum_of_native_control_step_rewards_v1"
+  },
+  "after": {
+    "completed_episodes": 128,
+    "qualified_airborne_string_contact": 74,
+    "qualified_airborne_string_contact_rate": 0.578125,
+    "ball_side_complete_except_recovery": 56,
+    "ball_side_complete_except_recovery_rate": 0.4375,
+    "conditional_recovery_count": 36,
+    "conditional_recovery_denominator": 74,
+    "recovery_given_airborne_string_contact": 0.4864864864864865,
+    "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+    "complete5": 28,
+    "complete5_rate": 0.21875,
+    "native_episode_return_observed_count": 128,
+    "native_episode_return_missing_count": 0,
+    "native_episode_return_mean": -9.428616360067867,
+    "native_episode_return_std": 50.70340958734038,
+    "native_episode_return_min": -91.62223675241012,
+    "native_episode_return_max": 65.01157379423421,
+    "native_episode_return_last": -35.70010114346587,
+    "native_return_definition": "undiscounted_sum_of_native_control_step_rewards_v1"
+  },
+  "native_sources": [
+    {
+      "actor_sha256": "73a3194ea2e44122df13663bcad9e9b0b543b7c6429bf3b06b133bfb1244646a",
+      "seed": 882072,
+      "path": "/home/autodrive/LZQW/experiments/supermimic_frozen_closure_20261117_223243/run",
+      "metrics_sha256": "3c57153902da99d6f9d79b3cb5408355c101e8ab5955570a869ead8f05653f77",
+      "episodes_sha256": "3612e13826b2f578719202c3f98d0b1a199aa00c09a5dd7a7db94712a5277d91"
+    },
+    {
+      "actor_sha256": "0c3ca08275fade74893ea5df7603210cbde2c1e7b9c2934bed756685774b1038",
+      "seed": 882072,
+      "path": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/sweep_r32_run_queue/native_r08",
+      "metrics_sha256": "88c6f4d0b088378be7ca711d8ee1261af6e2b73f60a6ee72401be82fdf712db5",
+      "episodes_sha256": "ae068fd212234a3062155e218ba309e3996921d8f13413ca286a97d9fd58b3b0"
+    }
+  ]
+}

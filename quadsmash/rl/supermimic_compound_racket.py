@@ -62,7 +62,7 @@ def friction_duration_factor(gap, normal_velocity, dt, exponent):
 
 
 def compound_step(prior, position, velocity, spin, center, rotation, linear, angular,
-                  material, offset, normal_scale, *, compound=True, separation_gain=0., impact_geometry_fraction=0., return_impact_time=False, load_trace=None, local_mobility=None, shuttle_mass=None, temporal_solver=None, patch_inertia=None, articulation_friction_floor=False, friction_duration_exponent=0.):
+                  material, offset, normal_scale, *, compound=True, separation_gain=0., impact_geometry_fraction=0., return_impact_time=False, load_trace=None, local_mobility=None, shuttle_mass=None, temporal_solver=None, patch_inertia=None, articulation_friction_floor=False, friction_duration_exponent=0., friction_strength=None):
     """Predict one native-length substep from the incoming shuttle and current racket state."""
     geometry = prior.preview
     local = _quat_rotate_inverse(rotation, position - center)
@@ -131,6 +131,7 @@ def compound_step(prior, position, velocity, spin, center, rotation, linear, ang
         bounce = torch.where((vn < -.05) & (-vn*prior.sub_dt > gap), -vn*material[ids,2], 0.)
         estimate = (bounce-vn-gap/prior.sub_dt).clamp_min(0)
         friction_floor = torch.where(active, .25*estimate, 0.)
+    incoming_spin=spin
     if temporal_solver is not None:
         if local_mobility is not None or impact_geometry_fraction or separation_gain:
             raise ValueError('Temporal solve supplies its own separation dynamics on prescribed surfaces')
@@ -152,5 +153,14 @@ def compound_step(prior, position, velocity, spin, center, rotation, linear, ang
             lever,geometry.radius,active,normal_scale,4 if compound else 1,spatial,shuttle_mass,separation,patch_trace)
     if load_trace is not None:
         load_trace['regime'].scatter_(1, ids, patch_trace['regime'])
+    if friction_strength is not None:
+        weak,strong=friction_strength
+        if not (0 <= weak <= 1 and 0 <= strong <= 1):
+            raise ValueError('Friction strength fractions must be within [0,1]')
+        load=normal.norm(dim=-1,keepdim=True)
+        # Normal impulse per unit shuttle mass, referenced to a 1 m/s velocity change.
+        strength=(weak+strong*load)/(1.+load)
+        tangent=tangent*strength
+        spin=incoming_spin+strength*(spin-incoming_spin)
     result = normal, tangent, spin, active.sum(-1)
     return (*result, time) if return_impact_time else result

@@ -703,6 +703,44 @@ class TemporalCausalRacketModeImpulseResidualBallV13(
         tangent_2 = torch.linalg.cross(normal, tangent_1)
         return normal, tangent_1, tangent_2
 
+    def toi_response(self, impact_info, present):
+        """Predict the bounded racket impulse in the shared inference and supervised-fit frame."""
+        normal = impact_info['normal']
+        impact_time = impact_info.get('time', normal.new_zeros(len(normal)))
+        relative_velocity = impact_info.get('relative_velocity')
+        if relative_velocity is None:
+            relative_velocity = impact_info['pre_velocity'] - impact_info.get(
+                'surface_velocity', torch.zeros_like(impact_info['pre_velocity']))
+        local = impact_info.get('local', torch.zeros_like(relative_velocity))
+        surface_velocity = impact_info.get('surface_velocity', torch.zeros_like(relative_velocity))
+        local_features = torch.cat((
+            impact_time.reshape(-1, 1) / self.impulse_residual_dt,
+            impact_info['normal'],
+            impact_info.get('normal_speed', normal.new_zeros(len(normal))).reshape(-1, 1) / self.impulse_residual_speed,
+            relative_velocity / self.impulse_residual_speed,
+            local / self.impulse_residual_length,
+            surface_velocity.norm(dim=-1, keepdim=True) / self.impulse_residual_speed,
+        ), -1)
+        if local_features.shape[-1] != 12:
+            raise RuntimeError('V13 TOI feature contract must have 12 channels')
+        coefficients = torch.tanh(self.impulse_residual_head(local_features))
+        coefficients = coefficients * self.impulse_residual_scale
+        normal, tangent_1, tangent_2 = self._contact_basis(
+            impact_info['normal'], impact_info.get('racket_axis'))
+        residual_dv = (coefficients[:, 0:1] * normal
+                       + coefficients[:, 1:2] * tangent_1
+                       + coefficients[:, 2:3] * tangent_2)
+        object_id = impact_info.get('object_id', torch.zeros(
+            len(normal), device=normal.device, dtype=torch.long))
+        active = (impact_info['active'].bool()
+                  & (object_id == 0)
+                  & present.reshape(-1).bool())
+        residual_dv = residual_dv * active[:, None].to(residual_dv.dtype)
+        if not torch.isfinite(residual_dv).all():
+            raise FloatingPointError('Nonfinite V13 impulse residual')
+        return dict(impulse_residual_coefficients=coefficients, impulse_residual_dv=residual_dv,
+                    impulse_residual_active=active, contact_basis=(normal, tangent_1, tangent_2))
+
     def forward(self, state, predicted_robot, free_ball, geometry, present, *,
                 racket_probability, previous_action, current_target,
                 impact_info=None, details=False):
@@ -733,46 +771,10 @@ class TemporalCausalRacketModeImpulseResidualBallV13(
                 current_racket_probability=racket_probability,
             )
             legacy_result = torch.zeros_like(free_ball)
-        impact_time = impact_info.get('time', state.new_zeros(len(state)))
-        relative_velocity = impact_info.get('relative_velocity')
-        if relative_velocity is None:
-            relative_velocity = impact_info['pre_velocity'] - impact_info.get(
-                'surface_velocity', torch.zeros_like(impact_info['pre_velocity']))
-        local = impact_info.get('local', torch.zeros_like(relative_velocity))
-        surface_velocity = impact_info.get('surface_velocity', torch.zeros_like(relative_velocity))
-        local_features = torch.cat((
-            impact_time.reshape(-1, 1) / self.impulse_residual_dt,
-            impact_info['normal'],
-            impact_info.get('normal_speed', state.new_zeros(len(state))).reshape(-1, 1) / self.impulse_residual_speed,
-            relative_velocity / self.impulse_residual_speed,
-            local / self.impulse_residual_length,
-            surface_velocity.norm(dim=-1, keepdim=True) / self.impulse_residual_speed,
-        ), -1)
-        if local_features.shape[-1] != 12:
-            raise RuntimeError('V13 TOI feature contract must have 12 channels')
-        coefficients = torch.tanh(self.impulse_residual_head(local_features))
-        coefficients = coefficients * self.impulse_residual_scale
-        normal, tangent_1, tangent_2 = self._contact_basis(
-            impact_info['normal'], impact_info.get('racket_axis'))
-        residual_dv = (coefficients[:, 0:1] * normal
-                       + coefficients[:, 1:2] * tangent_1
-                       + coefficients[:, 2:3] * tangent_2)
-        object_id = impact_info.get('object_id', torch.zeros(
-            len(state), device=state.device, dtype=torch.long))
-        active = (impact_info['active'].bool()
-                  & (object_id == 0)
-                  & present.reshape(-1).bool())
-        residual_dv = residual_dv * active[:, None].to(residual_dv.dtype)
-        if not torch.isfinite(residual_dv).all():
-            raise FloatingPointError('Nonfinite V13 impulse residual')
+        impulse = self.toi_response(impact_info, present)
         result = legacy_result if self.legacy_v10_residual else torch.zeros_like(legacy_result)
-        metadata = dict(info,
-                        v13_semantics_version=self.V13_SEMANTICS_VERSION,
-                        legacy_v10_residual_enabled=self.legacy_v10_residual,
-                        impulse_residual_coefficients=coefficients,
-                        impulse_residual_dv=residual_dv,
-                        impulse_residual_active=active,
-                        contact_basis=(normal, tangent_1, tangent_2))
+        metadata = dict(info, v13_semantics_version=self.V13_SEMANTICS_VERSION,
+                        legacy_v10_residual_enabled=self.legacy_v10_residual, **impulse)
         if details:
             return result, metadata
         return result

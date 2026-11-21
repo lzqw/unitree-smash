@@ -11,7 +11,7 @@ from quadsmash.rl.supermimic_archive_storage_v1 import read_archive_rows
 from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
 from quadsmash.rl.supermimic_physical_learner_v1 import PhysicalHorizonTrainer
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop, tensor_digest
-from quadsmash.rl.supermimic_physical_loop_replay_v1 import NaturalFlightWindows, PhysicalLoopReplay
+from quadsmash.rl.supermimic_physical_loop_replay_v1 import ActiveFlightWindows, NaturalFlightWindows, PhysicalLoopReplay, sample_long_native
 from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache, APPROACH_TICKS
 from quadsmash.rl.supermimic_timebase_v2 import Timebase
 from quadsmash.rl.supermimic_training_probe_replay import import_training_collection
@@ -86,6 +86,8 @@ def main():
     parser.add_argument('--save-optimizer',action='store_true',help='Persist candidate Adam state for continuous WM fitting')
     parser.add_argument('--learning-rate',type=float,required=True)
     parser.add_argument('--separate-supervision', action='store_true')
+    parser.add_argument('--direct-long-body-supervision',action='store_true',help='Use measured 4/16/32/64-step robot, root angular velocity and racket FK targets for the robot gradient')
+    parser.add_argument('--active-flight-batch',type=int,default=0,help='Additional in-flight windows from the latest complete native training lanes')
     parser.add_argument('--natural-flight-loss',choices=('huber','mse'),default='huber')
     parser.add_argument('--natural-flight-batch',type=int,default=0,help='Auxiliary 64-step native training windows per WM update')
     parser.add_argument('--adaptation',choices=('full','joint-and-racket-readouts'),default='full')
@@ -95,6 +97,8 @@ def main():
     args = parser.parse_args()
     if bool(args.refresh_manifest)!=bool(args.post_refresh_checkpoint):
         parser.error('Supply the refresh manifest and its post-refresh checkpoint together')
+    if args.direct_long_body_supervision and not (args.separate_supervision and args.natural_flight_batch>0):parser.error('Direct long body supervision requires separate supervision and native anchors')
+    if args.active_flight_batch<0 or (args.active_flight_batch and not args.natural_flight_batch):parser.error('Active flight windows require natural anchors')
     if args.natural_flight_batch<0:
         parser.error('Natural flight batch must be nonnegative')
     if not 0 < args.learning_rate < 1 or args.cpu_threads <= 0:
@@ -162,6 +166,11 @@ def main():
         refresh=frozen_recovery_stage(cfg,pre,post,prefix,read(manifest_path))
         refresh['pre_rng']=pre['replay_rng'].clone()
         refresh['post_rng']=post['replay_rng'].clone()
+        if args.active_flight_batch:
+            source=manifest_path.parent/'complete_episodes.pt'
+            if digest(source)!=post['runtime_validation_archive']['sha256']:
+                raise ValueError('Frozen long-flight source differs from the original native refresh')
+            refresh['frozen_flight_source']=source
         refreshes[tick]=refresh
         refresh_sources.append(dict(policy_id=refresh['policy_id'],start_tick=tick,end_tick=refresh['native_ticks'],
                                     manifest_sha256=digest(manifest_path),pre_sha256=digest(pre_path),post_sha256=digest(post_path)))
@@ -175,6 +184,7 @@ def main():
     imports=[]
     held=cfg['wm_holdout_lanes']
     natural=NaturalFlightWindows(packed['tensors'],held) if args.natural_flight_batch else None
+    active=ActiveFlightWindows(packed['tensors'],held,natural.generator) if args.active_flight_batch else None
     for i,flag in enumerate(argv):
         if flag=='--wm-action-collection':
             imports.append(import_training_collection(replay,Path(argv[i+1]),manifest['task_contract'],manifest['policy_execution'],held))
@@ -185,6 +195,7 @@ def main():
     trainer=PhysicalHorizonTrainer(actor,adapter,state,timebase,world_lr=args.learning_rate)
     trainer.ball_loss_weight=number('wm-ball-loss-weight',4.)
     trainer.contact_ball_loss_weight=number('wm-contact-ball-loss-weight',8.)
+    trainer.direct_long_body_supervision=args.direct_long_body_supervision
     trainer.natural_flight_loss=args.natural_flight_loss
     trainer.racket_loss_weight=number('racket-loss-weight',1.)
     initial=identity(adapter.state_dict())
@@ -223,6 +234,10 @@ def main():
             for stage in stages:
                 frozen='policy_id' in stage
                 if frozen:
+                    if args.active_flight_batch:
+                        frozen_data=torch.load(stage['frozen_flight_source'],map_location='cpu',weights_only=True,mmap=True)
+                        if frozen_data['policy_id']!=stage['policy_id']:raise ValueError('Frozen long-flight label policy mismatch')
+                        active=ActiveFlightWindows(frozen_data['tensors'],held,natural.generator)
                     replay.generator.set_state(stage['pre_rng'])
                     replay.new_stream(source='online',policy_version=stage['policy_version'])
                 expected_mode='frozen_combination' if frozen else 'mixed_training'
@@ -247,7 +262,7 @@ def main():
                     long_native=None
                     long_sha=None
                     if natural is not None:
-                        extra,extra_lanes=natural.sample(args.natural_flight_batch,trainer.world_updates,device)
+                        extra,extra_lanes=sample_long_native(natural,args.natural_flight_batch,active,args.active_flight_batch,trainer.world_updates,device)
                         long_native=(extra,launch[extra_lanes])
                         long_sha=identity(extra)
                     metrics=trainer.fit_world_window(window,launch[lanes],separate_supervision=args.separate_supervision,long_native=long_native)
@@ -255,7 +270,7 @@ def main():
                     if trainer.world_updates==1 and long_native is None and not args.separate_supervision and abs(loss-observed_step['world_loss'])>0.001*max(1,abs(loss)):
                         raise ValueError(f'First objective does not reproduce native update: {loss} vs {observed_step["world_loss"]}')
                     info=dict(update=trainer.world_updates,loss=loss,original_loss=observed_step['world_loss'],
-                              window_sha256=identity(window),natural_window_sha256=long_sha,flight_loss=metrics['long_native_flight_loss'],fallback=hist['fallback_count'])
+                              window_sha256=identity(window),natural_window_sha256=long_sha,flight_loss=metrics['long_native_flight_loss'],body_loss=metrics['long_native_body_loss'],fallback=hist['fallback_count'])
                     f.write(json.dumps(info)+'\n')
                     f.flush()
                 if frozen:
@@ -283,7 +298,7 @@ def main():
                         world_sha256=identity_after,updates=trainer.world_updates),optimizer_path.with_suffix('.pending'))
         optimizer_path.with_suffix('.pending').replace(optimizer_path)
         optimizer_sha=digest(optimizer_path)
-    info=dict(optimizer_file_sha256=optimizer_sha,refresh_sources=refresh_sources,device=str(device),peak_cuda_bytes=torch.cuda.max_memory_allocated(device) if device.type=='cuda' else None,
+    info=dict(direct_long_body_supervision=args.direct_long_body_supervision,active_flight_batch=args.active_flight_batch,optimizer_file_sha256=optimizer_sha,refresh_sources=refresh_sources,device=str(device),peak_cuda_bytes=torch.cuda.max_memory_allocated(device) if device.type=='cuda' else None,
               updates=trainer.world_updates,policy_updates=0,critic_updates=0,natural_flight_batch=args.natural_flight_batch,natural_flight_loss=args.natural_flight_loss,
               original_learning_rate=cfg['world_lr'],learning_rate=args.learning_rate,adaptation=args.adaptation,separate_supervision=args.separate_supervision,
               stage_checkpoint_sha256=digest(args.post_refresh_checkpoint or args.checkpoint),

@@ -189,7 +189,7 @@ class TaskSpaceReferenceBankV1:
         anchor_index=(time_table[chosen]-anchor_time[:,None]).abs().argmin(-1)
         anchor_features=feature_table[chosen,anchor_index]
         toi_data = {'toi_racket':torch.stack([e['toi_racket'].to(current) for e in candidates])[chosen]} if require_toi else {}
-        return dict(**toi_data,indices=chosen,matched=torch.isfinite(best)&(best<=self.match_distance_threshold),
+        return dict(**toi_data,reference_digests=[e['digest'] for e in candidates],indices=chosen,matched=torch.isfinite(best)&(best<=self.match_distance_threshold),
                     times=time_table[chosen],features=feature_table[chosen],lengths=sizes[chosen],
                     distance=best,offset=aligned-elapsed.detach().reshape(-1),
                     anchor_time=anchor_time,anchor_features=anchor_features)

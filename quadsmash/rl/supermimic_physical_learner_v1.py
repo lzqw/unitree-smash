@@ -16,7 +16,7 @@ from .supermimic_physical_dataset_v1 import valid_windows
 from .supermimic_racket_dynamics_v1 import racket_loss_components, racket_state, robot_loss
 
 
-def native_flight_rollout_loss(adapter,window,launch,loss_kind="huber"):
+def native_flight_rollout_loss(adapter,window,launch,loss_kind="huber", *, supervise_body=False):
     """Supervise free-running predictions at multiple horizons using archived commands."""
     losses={"huber": torch.nn.functional.smooth_l1_loss, "mse": torch.nn.functional.mse_loss}
     if loss_kind not in losses:
@@ -26,6 +26,7 @@ def native_flight_rollout_loss(adapter,window,launch,loss_kind="huber"):
     feet=window['feet'][0].float()
     present=window['present'][0]
     errors=[]
+    body_errors=[]
     for i in range(64):
         state,feet,present=ball_transition(adapter.physical_model,adapter.ball_model,state,window['targets'][i],
             window['previous_action'][i],feet,present,window['elapsed'][i],launch,
@@ -35,7 +36,13 @@ def native_flight_rollout_loss(adapter,window,launch,loss_kind="huber"):
             error=velocity_loss(state[:,52:55],truth[:,52:55],reduction='none').mean(-1)
             mask=window['present'][i].reshape(-1).to(error.dtype)
             errors.append((error*mask).sum()/mask.sum().clamp_min(1.))
-    return torch.stack(errors).mean()
+            if supervise_body:
+                geometry=adapter.physical_model.geometry
+                racket=racket_loss_components(racket_state(state,geometry),racket_state(truth,geometry))
+                gyro=torch.nn.functional.smooth_l1_loss(state[:,10:13],truth[:,10:13],beta=.1)
+                body_errors.append(robot_loss(state,truth)+gyro+sum(racket.values())/len(racket))
+    flight=torch.stack(errors).mean()
+    return (flight,torch.stack(body_errors).mean()) if supervise_body else flight
 
 
 class PhysicalHorizonTrainer:
@@ -65,6 +72,7 @@ class PhysicalHorizonTrainer:
         if self.toi_racket_weight < 0:
             raise ValueError('toi_racket_weight must be nonnegative')
         self.natural_flight_loss="huber"
+        self.direct_long_body_supervision=False
         self.ball_loss_weight=4.0
         self.contact_ball_loss_weight=8.0
         self.racket_loss_weight=float(racket_loss_weight)
@@ -235,10 +243,11 @@ class PhysicalHorizonTrainer:
                 event_time=intercept['time']
             reference=self.reference_bank.bind(state.physical,self.block_name,geometry=self.adapter.physical_model.geometry,
                 elapsed=state.clock_goal_context['elapsed'],event_time=event_time,**({'require_toi':True} if toi_only else {}))
-            reference['matched'] = reference['matched'] & selected
-            if toi_only:
-                reference['intercept']=intercept
-                reference['matched']=reference['matched'] & intercept['valid']
+            if reference is not None:
+                reference['matched'] = reference['matched'] & selected
+                if toi_only:
+                    reference['intercept']=intercept
+                    reference['matched']=reference['matched'] & intercept['valid']
         toi_coverage_preserved=True
         for tick in range(cfg.imagination_steps):
             active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7
@@ -298,6 +307,12 @@ class PhysicalHorizonTrainer:
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical BPTT objective')
         from .supermimic_dual_head_quality_v1 import reference_coverage
         coverage=reference_coverage(self.reference_bank,self.block_name,tracking_coeff)
+        coverage['selected_start_lanes']=int(selected.sum())
+        coverage['gate_active_selected_start_lanes']=int((gates[0]>.25).sum())
+        if reference and 'reference_digests' in reference and tracks:
+            used=torch.stack(track_weights).detach().gt(0).any(0)
+            ids,counts=reference['indices'][used].unique(return_counts=True)
+            coverage['reference_usage_by_sha256']={reference['reference_digests'][i]:n for i,n in zip(ids.tolist(),counts.tolist())}
         coverage.update(matched_lanes=int(reference['matched'].sum()) if reference else 0,
             effective_weight_sum=float(track_weight_sum.detach()),tracking_applied=bool(tracks and float(track_weight_sum.detach())>0))
         return dict(toi_weights=torch.stack(track_weights).detach() if toi_only and tracks else None,
@@ -491,7 +506,14 @@ class PhysicalHorizonTrainer:
             values,validity=task.memory_schema.feedback_values(out['numeric'],out['valid_logits'].sigmoid())
         loss=loss/cfg.world_steps
         long_flight=state.new_zeros(())
-        if long_native is not None:
+        long_body=state.new_zeros(())
+        direct_body=getattr(self,'direct_long_body_supervision',False)
+        if direct_body and (not separate_supervision or long_native is None):
+            raise ValueError('Direct multistep body supervision requires separate losses and long native windows')
+        if direct_body:
+            long_flight,long_body=native_flight_rollout_loss(self.adapter,*long_native,loss_kind=self.natural_flight_loss,supervise_body=True)
+            loss=loss+long_flight+long_body
+        elif long_native is not None:
             long_flight=native_flight_rollout_loss(self.adapter,*long_native,loss_kind=self.natural_flight_loss)
             loss=loss+long_flight
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical multistep model loss')
@@ -502,7 +524,10 @@ class PhysicalHorizonTrainer:
             # change the racket pose simply to fit an outgoing ball velocity.
             ball_modules=[ball]+([self.adapter.action_ball_model] if self.adapter.action_ball_model is not None else [])
             body_objective=physical_loss+contact_loss+self.racket_loss_weight*racket_loss_value
-            objectives=[(body_objective+cfg.world_steps*long_flight,[world]),
+            # In direct mode the long robot objective uses actual robot/FK
+            # measurements. Only the ball parameters fit long flight error.
+            long_robot_objective=long_body if direct_body else long_flight
+            objectives=[(body_objective+cfg.world_steps*long_robot_objective,[world]),
                         (action_ball_loss+cfg.world_steps*long_flight,ball_modules),(task_loss,[task])]
             active=[(value,[p for module in modules for p in module.parameters() if p.requires_grad])
                     for value,modules in objectives]
@@ -534,7 +559,7 @@ class PhysicalHorizonTrainer:
         if loss_groups is not None:
             from .supermimic_training_audit_v1 import grouped_world_loss
             diagnostics['loss_by_group'] = grouped_world_loss(row_loss_sum.detach().cpu(),cfg.world_steps,loss_groups)
-        return dict(**diagnostics,long_native_flight_loss=float(long_flight.detach()) if long_native is not None else None,world_supervision='separate' if separate_supervision else 'joint',world_loss=float(loss.detach()),world_gradient=float(norm),world_updates=self.world_updates,
+        return dict(**diagnostics,long_native_body_loss=float(long_body.detach()) if direct_body else None,long_native_flight_loss=float(long_flight.detach()) if long_native is not None else None,world_supervision='separate' if separate_supervision else 'joint',world_loss=float(loss.detach()),world_gradient=float(norm),world_updates=self.world_updates,
                     world_physical_loss=float(physical_loss.detach()),
                     world_contact_loss=float(contact_loss.detach()),
                     world_ball_loss=float(ball_loss_value.detach()),

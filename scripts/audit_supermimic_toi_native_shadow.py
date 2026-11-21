@@ -39,7 +39,23 @@ def run(args):
         raise ValueError('Shadow checkpoint components differ from native training')
     if meta['policy_execution']!=execution_contract():
         raise ValueError('Shadow requires the training causal policy execution')
-    actor.load_state_dict(ck['actor'],strict=True);adapter.load_state_dict(ck['world'],strict=True)
+    guard=None
+    world=ck['world']
+    handoff=None
+    expected_guard=ck['config'].get('wm_forward_guard_sha256')
+    if args.wm_forward_guard:
+        from scripts.supermimic_online_forward_guard import OnlineForwardGuard
+        guard=OnlineForwardGuard(args.wm_forward_guard,adapter,manifest['task_contract'])
+    if expected_guard is not None and (guard is None or guard.spec_sha256!=expected_guard):
+        raise ValueError('TOI validation must retain the checkpoint-bound forward panel')
+    if args.resume_wm_replay:
+        world,_,handoff=guard.replay_for_resume(args.resume_wm_replay,args.checkpoint,ck,ck['config']['wm_holdout_lanes'],{})
+    actor.load_state_dict(ck['actor'],strict=True)
+    adapter.load_state_dict(world,strict=True)
+    if guard is not None:
+        check=guard.check(adapter)
+        (args.output/'initial_forward_check.json').write_text(json.dumps(check,indent=2,allow_nan=False))
+        if not check['passed']:raise ValueError('TOI shadow WM failed native forward validation')
     actor.eval();adapter.eval();adapter.set_contact_bptt_mode('detached')
     actor_sha=tensor_digest(actor.state_dict().items());world_sha=tensor_digest(adapter.state_dict().items())
     timebase=Timebase(**json.loads((root/'configs/supermimic_task_horizon_v2.json').read_text()))
@@ -114,7 +130,7 @@ def run(args):
         passed=bool(unchanged and rollout['tracking_effective_weight_sum']>0 and 0<norm<float('inf') and command_error<=2e-6)
         result=dict(passed=passed,num_envs=env.num_envs,case_ids=[cases[i]['case_id'] for i in lanes],seed=args.seed,
                     native_prefix_ticks=args.tick,imagination_steps=timebase.imagination_steps,actor_sha256=actor_sha,
-                    world_sha256=world_sha,critic_sha256=critic_sha,checkpoint=str(args.checkpoint),
+                    world_sha256=world_sha,critic_sha256=critic_sha,wm_replay_handoff=handoff,checkpoint=str(args.checkpoint),
                     reference_bank_sha256=hashlib.sha256(args.reference_bank.read_bytes()).hexdigest(),
                     matched_references=rollout['matched_references'],effective_gate_lanes=rollout['gate_lanes'],
                     tracking_active_lane_steps=rollout['tracking_active_lane_steps'],
@@ -130,7 +146,8 @@ def run(args):
             budget_states = [PhysicalImaginationStateV1.from_record(item, executor_template=env._sm_residual_controller,
                              launch=launch[lanes], device=args.device) for item in budget_rows]
             learn(args, budget_states=budget_states, env=env, wrapper=wrapper, observation=obs, trainer=trainer, state=state,
-                  launch=launch[lanes], lanes=lanes, bank=bank, ck=ck, task=task, protocol=protocol)
+                  launch=launch[lanes], lanes=lanes, bank=bank, ck=ck, task=task, protocol=protocol,
+                  forward_guard=guard,full_launch=launch)
         failed=False
     finally:
         close_resource(args.output,'ENV',env,primary_failed=failed)
@@ -143,6 +160,11 @@ def main(*, canary=False):
     AppLauncher.add_app_launcher_args(p)
     for arg in ('checkpoint','archive','reference-bank','safety-mapping','output'):
         p.add_argument('--'+arg,type=Path,required=True)
+    p.add_argument('--wm-forward-guard',type=Path)
+    if not canary:
+        p.add_argument('--resume-wm-replay',type=Path)
+    else:
+        p.set_defaults(resume_wm_replay=None)
     if canary:
         p.description='32 native training cases, supervised WM refresh, bounded TOI Approach updates and frozen RTG.'
         p.set_defaults(canary_updates=8)
@@ -153,6 +175,7 @@ def main(*, canary=False):
     p.add_argument('--tick',type=int,default=256)
     p.add_argument('--seed',type=int,default=882072)
     a=p.parse_args()
+    if a.resume_wm_replay and not a.wm_forward_guard:p.error('A replay candidate requires its native forward guard')
     if not 0<a.tick<800:p.error('Select a control tick within the episode')
     a.output.mkdir(parents=True,exist_ok=False)
     app=AppLauncher(a,fast_shutdown=False).app
