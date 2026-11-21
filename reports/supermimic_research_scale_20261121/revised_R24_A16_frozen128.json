@@ -1,0 +1,328 @@
+{
+  "native_sources": [
+    {
+      "actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+      "seed": 882072,
+      "path": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/post_r16_toi_one_start_fix_fixed128",
+      "metrics_sha256": "2953935f7aaed2d5389a2a1e79bee0fdbf08ec404c69e2072c9b1c6aad2850de",
+      "episodes_sha256": "ca896da027ace7f940261c7b04b41ca8f10a4269acbb15be44a901aa727173e3"
+    },
+    {
+      "actor_sha256": "3f3d4e17a47de7ed2874a801db97dca2cf061f82a29aba952d218e13ebfc246a",
+      "seed": 882072,
+      "path": "/home/autodrive/LZQW/experiments/supermimic_research_scale_20261121/revised_0036/G1/pause_fixed128_R24_A16",
+      "metrics_sha256": "53d407662f910d8f175948eb57ca322f351004eac0b669f9c581b678c7f694c0",
+      "episodes_sha256": "124b2253a9c1c5a676fa83fe3fefd0bedd7110188856a0c0a564961d8d840108"
+    }
+  ],
+  "case_count": 128,
+  "identical_initial_states": true,
+  "paired_case_identity_verified": true,
+  "before": {
+    "completed_episodes": 128,
+    "qualified_airborne_string_contact": 74,
+    "qualified_airborne_string_contact_rate": 0.578125,
+    "ball_side_complete_except_recovery": 51,
+    "ball_side_complete_except_recovery_rate": 0.3984375,
+    "conditional_recovery_count": 35,
+    "conditional_recovery_denominator": 74,
+    "recovery_given_airborne_string_contact": 0.47297297297297297,
+    "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+    "complete5": 22,
+    "complete5_rate": 0.171875,
+    "native_episode_return_observed_count": 128,
+    "native_episode_return_missing_count": 0,
+    "native_episode_return_mean": -12.088589213086447,
+    "native_episode_return_std": 50.18253241769828,
+    "native_episode_return_min": -91.66403951213579,
+    "native_episode_return_max": 65.00940990327854,
+    "native_episode_return_last": -35.700096647979535,
+    "native_return_definition": "undiscounted_sum_of_native_control_step_rewards_v1"
+  },
+  "after": {
+    "completed_episodes": 128,
+    "qualified_airborne_string_contact": 65,
+    "qualified_airborne_string_contact_rate": 0.5078125,
+    "ball_side_complete_except_recovery": 36,
+    "ball_side_complete_except_recovery_rate": 0.28125,
+    "conditional_recovery_count": 24,
+    "conditional_recovery_denominator": 65,
+    "recovery_given_airborne_string_contact": 0.36923076923076925,
+    "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+    "complete5": 16,
+    "complete5_rate": 0.125,
+    "native_episode_return_observed_count": 128,
+    "native_episode_return_missing_count": 0,
+    "native_episode_return_mean": -14.88721890533002,
+    "native_episode_return_std": 43.96635959794253,
+    "native_episode_return_min": -91.71172818111717,
+    "native_episode_return_max": 64.89140117558225,
+    "native_episode_return_last": -76.31703425621299,
+    "native_return_definition": "undiscounted_sum_of_native_control_step_rewards_v1"
+  },
+  "paired_recovery": {
+    "common_contacts": 58,
+    "improved_cases": [
+      "A-720401-001",
+      "A-720401-026",
+      "A-720401-027",
+      "A-720401-054",
+      "A-720401-061",
+      "B-720402-003",
+      "B-720402-007",
+      "B-720402-035"
+    ],
+    "regressed_cases": [
+      "A-720401-006",
+      "A-720401-016",
+      "A-720401-021",
+      "A-720401-034",
+      "A-720401-035",
+      "A-720401-051",
+      "A-720401-053",
+      "B-720402-008",
+      "B-720402-016",
+      "B-720402-022",
+      "B-720402-030",
+      "B-720402-033"
+    ],
+    "paired_two_sided_p": 0.5034446716308594,
+    "recovered_before": 25,
+    "recovered_after": 21,
+    "gained_contacts": [
+      "A-720401-002",
+      "A-720401-031",
+      "A-720401-056",
+      "A-720401-059",
+      "A-720401-062",
+      "B-720402-011",
+      "B-720402-045"
+    ],
+    "lost_contacts": [
+      "A-720401-010",
+      "A-720401-017",
+      "A-720401-020",
+      "A-720401-022",
+      "A-720401-023",
+      "A-720401-028",
+      "A-720401-037",
+      "A-720401-042",
+      "A-720401-049",
+      "A-720401-052",
+      "A-720401-055",
+      "A-720401-063",
+      "B-720402-013",
+      "B-720402-026",
+      "B-720402-057",
+      "B-720402-062"
+    ]
+  },
+  "paired_task_outcomes": {
+    "binary": {
+      "contact": {
+        "improved_cases": [
+          "A-720401-002",
+          "A-720401-031",
+          "A-720401-056",
+          "A-720401-059",
+          "A-720401-062",
+          "B-720402-011",
+          "B-720402-045"
+        ],
+        "regressed_cases": [
+          "A-720401-010",
+          "A-720401-017",
+          "A-720401-020",
+          "A-720401-022",
+          "A-720401-023",
+          "A-720401-028",
+          "A-720401-037",
+          "A-720401-042",
+          "A-720401-049",
+          "A-720401-052",
+          "A-720401-055",
+          "A-720401-063",
+          "B-720402-013",
+          "B-720402-026",
+          "B-720402-057",
+          "B-720402-062"
+        ],
+        "paired_two_sided_p": 0.0931396484375
+      },
+      "ball_side": {
+        "improved_cases": [
+          "A-720401-007",
+          "A-720401-031",
+          "A-720401-056",
+          "A-720401-059",
+          "B-720402-011"
+        ],
+        "regressed_cases": [
+          "A-720401-009",
+          "A-720401-010",
+          "A-720401-012",
+          "A-720401-020",
+          "A-720401-023",
+          "A-720401-026",
+          "A-720401-028",
+          "A-720401-035",
+          "A-720401-037",
+          "A-720401-040",
+          "A-720401-042",
+          "A-720401-049",
+          "A-720401-052",
+          "A-720401-054",
+          "A-720401-055",
+          "A-720401-063",
+          "B-720402-013",
+          "B-720402-026",
+          "B-720402-051",
+          "B-720402-057"
+        ],
+        "paired_two_sided_p": 0.004077315330505371
+      },
+      "complete5": {
+        "improved_cases": [
+          "A-720401-001",
+          "A-720401-027",
+          "A-720401-059",
+          "A-720401-061",
+          "B-720402-003",
+          "B-720402-007",
+          "B-720402-011"
+        ],
+        "regressed_cases": [
+          "A-720401-010",
+          "A-720401-016",
+          "A-720401-028",
+          "A-720401-034",
+          "A-720401-035",
+          "A-720401-037",
+          "A-720401-049",
+          "A-720401-051",
+          "A-720401-052",
+          "A-720401-063",
+          "B-720402-013",
+          "B-720402-030",
+          "B-720402-057"
+        ],
+        "paired_two_sided_p": 0.26317596435546875
+      }
+    },
+    "native_return": {
+      "mean": -2.7986296922435727,
+      "median": 0.008827852115352641,
+      "descriptive_paired_case_bootstrap_95": [
+        -10.79545585998813,
+        5.241280903489423
+      ],
+      "seed": 882072,
+      "resamples": 20000
+    }
+  },
+  "failure_taxonomy_before": {
+    "ball_side_failure": 23,
+    "body_ground": 60,
+    "complete5_failure": 106,
+    "no_qualified_contact": 54,
+    "rally_fault": 16,
+    "recovery_failure": 29,
+    "success": 22
+  },
+  "failure_taxonomy_after": {
+    "ball_side_failure": 29,
+    "body_ground": 49,
+    "complete5_failure": 112,
+    "no_qualified_contact": 63,
+    "rally_fault": 6,
+    "recovery_failure": 20,
+    "success": 16
+  },
+  "failure_flips": {
+    "new_body_ground": [
+      "A-720401-002",
+      "A-720401-010",
+      "A-720401-022",
+      "A-720401-035",
+      "A-720401-037",
+      "A-720401-051",
+      "A-720401-053",
+      "A-720401-063",
+      "B-720402-006",
+      "B-720402-016",
+      "B-720402-022",
+      "B-720402-033",
+      "B-720402-049",
+      "B-720402-051",
+      "B-720402-059",
+      "B-720402-063"
+    ],
+    "avoided_body_ground": [
+      "A-720401-009",
+      "A-720401-023",
+      "A-720401-054",
+      "A-720401-044",
+      "A-720401-027",
+      "B-720402-026",
+      "A-720401-001",
+      "A-720401-004",
+      "A-720401-007",
+      "A-720401-014",
+      "A-720401-015",
+      "A-720401-017",
+      "A-720401-019",
+      "A-720401-031",
+      "A-720401-032",
+      "A-720401-046",
+      "B-720402-003",
+      "B-720402-004",
+      "B-720402-012",
+      "B-720402-021",
+      "B-720402-025",
+      "B-720402-031",
+      "B-720402-036",
+      "B-720402-037",
+      "B-720402-040",
+      "B-720402-055",
+      "B-720402-056"
+    ],
+    "qualified_to_frame_first": [
+      "A-720401-042",
+      "A-720401-023",
+      "B-720402-026",
+      "A-720401-010",
+      "A-720401-017",
+      "A-720401-020",
+      "A-720401-022",
+      "A-720401-028",
+      "A-720401-037",
+      "A-720401-049",
+      "A-720401-052",
+      "A-720401-055",
+      "A-720401-063",
+      "B-720402-013",
+      "B-720402-057",
+      "B-720402-062"
+    ],
+    "frame_first_to_qualified": [
+      "A-720401-002",
+      "A-720401-031",
+      "A-720401-056",
+      "A-720401-059",
+      "A-720401-062",
+      "B-720402-011",
+      "B-720402-045"
+    ]
+  },
+  "failure_flip_counts": {
+    "new_body_ground": 16,
+    "avoided_body_ground": 27,
+    "qualified_to_frame_first": 16,
+    "frame_first_to_qualified": 7
+  },
+  "retained": {
+    "approach": 16,
+    "recovery": 24
+  },
+  "contact_aux_updates": 0
+}

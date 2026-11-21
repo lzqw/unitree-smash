@@ -38,3 +38,14 @@ def outgoing_cost(ball, prior, court, *, dt=.02, steps=100, scoring_margins=Fals
     clearance=torch.where(crossed,(top-net[:,2]).relu(),(net_x-max_x).relu())
     return (extra+clearance+(xmin-landing[:,0]).relu()+(landing[:,0]-xmax).relu()
             +(landing[:,1].abs()-width).relu())
+
+
+def first_string_flight_loss(ball, selected, first_string, prior, court):
+    """Score flight only after a legal first racket impact, on a fixed lane denominator."""
+    selected = selected.reshape(-1).bool()
+    legal = selected & first_string.reshape(-1)
+    if not legal.any():
+        return ball.sum() * 0. + selected.any().to(ball.dtype)
+    cost = outgoing_cost(ball[legal], prior, court, scoring_margins=True)
+    bounded_cost = -torch.expm1(-cost)
+    return (bounded_cost.sum() + (selected & ~legal).sum()) / selected.sum()

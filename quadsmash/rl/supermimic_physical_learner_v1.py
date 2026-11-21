@@ -356,7 +356,8 @@ class PhysicalHorizonTrainer:
                             self.adapter.physical_model.geometry, self.adapter.action_ball_model.impulse_prior.preview,
                             self.string_strips, self.string_boundary, cfg.control_dt_s)
                     first_cost = first_cost.masked_scatter(first, cost)
-                    first_string |= first & (impact['racket_part'] < self.string_strips)
+                    part = impact['racket_part'].reshape(-1)
+                    first_string |= first & (part >= 0) & (part < self.string_strips)
                     inward, offset = self.string_boundary
                     margins = (details['local'].detach()[:, 1:] @ inward.T - offset).amin(-1)
                     first_margin = first_margin.masked_scatter(first, margins)
@@ -389,19 +390,16 @@ class PhysicalHorizonTrainer:
         if toi_only:
             task_loss=task_loss.detach()
             if contact_weight:
-                from .supermimic_outgoing_flight import outgoing_cost
-                impact_lanes=impacted&weights.bool().reshape(-1)
-                if impact_lanes.any():
-                    cost=outgoing_cost(outgoing[impact_lanes],self.adapter.action_ball_model.impulse_prior,self.research_court,
-                                       scoring_margins=revised)
-                    if revised:
-                        # Missing a previously found impact cannot reduce the bounded flight cost.
-                        cost = 1 - torch.exp(-cost)
-                        task_loss = (cost.sum() + (weights.bool() & ~impacted).sum()) / weights.sum().clamp_min(1.)
-                    else:
-                        task_loss=cost.sum()/weights.sum().clamp_min(1.)
+                from .supermimic_outgoing_flight import first_string_flight_loss, outgoing_cost
+                impact_lanes = impacted & weights.bool().reshape(-1)
+                prior = self.adapter.action_ball_model.impulse_prior
+                if revised:
+                    task_loss = first_string_flight_loss(outgoing, weights, first_string, prior, self.research_court)
+                elif impact_lanes.any():
+                    cost = outgoing_cost(outgoing[impact_lanes], prior, self.research_court)
+                    task_loss = cost.sum() / weights.sum().clamp_min(1.)
                 else:
-                    task_loss=outgoing.sum()*0. + float(revised)
+                    task_loss = outgoing.sum() * 0.
         anchor_loss=masked_lane_mean(torch.stack(anchors).sum(0),weights)
         all_track_weights=torch.stack(track_weights) if tracks else None
         if toi_only and baseline_toi_weights is not None and tracks:

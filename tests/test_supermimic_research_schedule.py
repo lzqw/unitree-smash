@@ -31,6 +31,24 @@ def test_outgoing_cost_weak_return_has_forward_descent_direction():
     assert g[0,3]<0
 
 
+def test_only_first_string_flight_can_earn_outgoing_credit():
+    from quadsmash.rl.supermimic_outgoing_flight import first_string_flight_loss
+    prior = SimpleNamespace(gravity=torch.tensor([0., 0., -9.81]), wind=torch.zeros(3),
+                            drag=.02, preview=SimpleNamespace(radius=.02))
+    court = dict(net_plane_x_m=1.5, target_x_limits_m=[2., 4.], target_y_half_width_m=1.,
+                 net_side_top_m=1.55, net_center_top_m=1.524, post_y_center_abs_m=3.075)
+    ball = torch.tensor([[0., 0., 2., 3.5, 0., 1.]] * 4, requires_grad=True)
+    selected = torch.tensor([True, True, True, False])
+    first_string = torch.tensor([True, False, False, True])
+    loss = first_string_flight_loss(ball, selected, first_string, prior, court)
+    legal_cost = -torch.expm1(-outgoing_cost(ball[:1], prior, court, scoring_margins=True))
+    torch.testing.assert_close(loss, (legal_cost.sum() + 2.) / 3.)
+    grad, = torch.autograd.grad(loss, ball)
+    assert grad[0].norm() > 0 and grad[1:].count_nonzero() == 0
+    no_strings = first_string_flight_loss(ball, selected, torch.zeros_like(selected), prior, court)
+    assert no_strings.item() == 1. and torch.autograd.grad(no_strings, ball)[0].count_nonzero() == 0
+
+
 def test_research_replicate_forks_sampler_streams_and_resume_keeps_cursors():
     import pytest
     from scripts.train_supermimic_physical_block import research_learner_rng
