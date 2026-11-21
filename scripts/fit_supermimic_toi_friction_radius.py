@@ -41,6 +41,8 @@ def fresh_training(collection, receipt, fit_hash, prior, physics):
     if (not support['training_only'] or support['policy_training_admitted'] or support['contact_receipt']
             or support['physics_fit_sha256']!=fit_hash or support['status_sha256']!=sha(collection/'status.json')):
         raise ValueError('Training source registration or score changed')
+    if support['counts'].get('nominal_mismatch',0):
+        raise ValueError('Repeated nominal contact branches differ on this native training panel')
     if not support['independent_stable_with_response']:
         raise ValueError('No repeatable signed response from stable racket cases in the new training source')
     data,groups,noise,_,_,commands=g07(collection,prior)

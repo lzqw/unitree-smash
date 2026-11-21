@@ -32,3 +32,25 @@ def test_radius_calibration_and_native_oracles_respect_contact_scope(slope):
         torch.testing.assert_close(new,base.toi_response(row,present)['impulse_residual_dv'],rtol=0,atol=0)
     oracle = MeasuredFriction(base,torch.ones(5,3),'both').toi_response(row,present)
     torch.testing.assert_close(oracle['impulse_residual_dv'][2:],torch.zeros(3,3))
+
+
+def test_count_native_support_independent_of_candidate_output():
+    from scripts.score_supermimic_training_contact_panel import supported_native
+    case = dict(mode='racket_stable', executed_target_change_rad=.002,
+                native_delta_mps=[.03, 0., 0.], repeat_noise_mps=.005)
+    assert supported_native(case)
+    assert not supported_native(dict(case, repeat_noise_mps=.02))
+    assert not supported_native(dict(case, executed_target_change_rad=0.))
+    assert not supported_native(dict(case, mode='toi_switch'))
+
+
+def test_normal_oracle_subtracts_existing_impulse_before_the_single_integration():
+    row=dict(active=torch.tensor([True,False]),object_id=torch.zeros(2,dtype=torch.long),
+             normal=torch.tensor([[1.,0,0]]).expand(2,3),relative_velocity=torch.zeros(2,3),
+             impulse_dv=torch.tensor([[5.,0,0],[0.,0,0]]))
+    normal=torch.tensor([[4.,1,0],[0.,0,0]])
+    friction=torch.tensor([[0.,0,2],[0.,0,0]])
+    active=torch.ones(2,dtype=torch.bool)
+    oracle=MeasuredFriction(TOISlip(.32,2/7),friction,'all_loads',normal)
+    result=row['impulse_dv']+oracle.toi_response(row,active)['impulse_residual_dv']
+    torch.testing.assert_close(result, normal+friction)

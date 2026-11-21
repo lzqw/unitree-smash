@@ -232,8 +232,7 @@ class PhysicalHorizonTrainer:
         reference=None
         toi_only = self.block_name=='approach' and getattr(self,'approach_objective','task')=='toi_racket_only'
         if toi_only:
-            from .supermimic_toi_racket_objective import flight_intercept, intercept_loss
-            intercept=flight_intercept(state,cfg.imagination_steps*cfg.control_dt_s)
+            from .supermimic_toi_racket_objective import bind_intercept_reference, intercept_loss
         tracking_coeff=self.tracking_coefficient(self.block_name)
         if self.reference_bank is not None and tracking_coeff>0 and self.block_name in ('approach','recovery'):
             # G07's causal current plan is available without consulting archived
@@ -243,14 +242,13 @@ class PhysicalHorizonTrainer:
             if event_time is not None and hasattr(base,'planned'):
                 event_time=torch.where(base.planned,event_time,torch.full_like(event_time,float('nan')))
             if toi_only:
-                event_time=intercept['time']
-            reference=self.reference_bank.bind(state.physical,self.block_name,geometry=self.adapter.physical_model.geometry,
-                elapsed=state.clock_goal_context['elapsed'],event_time=event_time,**({'require_toi':True} if toi_only else {}))
+                reference=bind_intercept_reference(state,self.reference_bank,self.adapter.physical_model.geometry,
+                                                   cfg.imagination_steps*cfg.control_dt_s)
+            else:
+                reference=self.reference_bank.bind(state.physical,self.block_name,geometry=self.adapter.physical_model.geometry,
+                    elapsed=state.clock_goal_context['elapsed'],event_time=event_time)
             if reference is not None:
                 reference['matched'] = reference['matched'] & selected
-                if toi_only:
-                    reference['intercept']=intercept
-                    reference['matched']=reference['matched'] & intercept['valid']
         toi_coverage_preserved=True
         for tick in range(cfg.imagination_steps):
             active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7

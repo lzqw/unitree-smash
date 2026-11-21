@@ -28,6 +28,17 @@ def flight_intercept(state, horizon):
                 position=torch.where(valid[:, None], position, torch.zeros_like(position)), valid=valid)
 
 
+def bind_intercept_reference(state, bank, geometry, horizon):
+    forecast = flight_intercept(state, horizon)
+    elapsed = state.clock_goal_context['elapsed'].reshape(-1)
+    reference = bank.bind(state.physical, 'approach', geometry=geometry, elapsed=elapsed,
+                          event_time=forecast['time'], require_toi=True)
+    if reference is not None:
+        reference['intercept'] = forecast
+        reference['matched'] = reference['matched'] & forecast['valid'] & (forecast['time'] > elapsed)
+    return reference
+
+
 def racket_features(physical, geometry):
     body = racket_state(physical, geometry)
     normal = body[:, 3:12].reshape(-1, 3, 3)[:, :, 0]

@@ -790,6 +790,17 @@ def run(args, *, alternating=None):
             if wm_holdout_lanes:
                 state.clock_goal_context['actor_lane_mask']=training_start_mask(row,wm_holdout_lanes).to(state.physical.device)
             return state
+        @torch.no_grad()
+        def toi_start_lanes(row):
+            from quadsmash.rl.supermimic_toi_racket_objective import bind_intercept_reference
+            state=training_state(row)
+            allowed=training_start_mask(row,wm_holdout_lanes).reshape(-1).cpu()
+            reference=bind_intercept_reference(state,trainer.reference_bank,adapter.physical_model.geometry,
+                                               timebase.imagination_steps*timebase.control_dt_s)
+            if reference is None:
+                return torch.zeros_like(allowed)
+            return allowed & reference['matched'].detach().reshape(-1).cpu()
+
         from quadsmash.rl.supermimic_frozen_refresh_v1 import FrozenRefresh
         from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
         from quadsmash.rl.supermimic_frozen_return_monitor_v1 import FrozenReturnMonitor
@@ -1335,9 +1346,23 @@ def run(args, *, alternating=None):
                 else:
                     row=pool[(attempts-1)%len(pool)]
                 if block_name=='approach':
-                    sampled,start_sampling=replay.actor_start_bank.sample(attempts)
-                    if sampled is not None and training_lane_available(sampled):row=sampled
-                    else:start_sampling['fallback']='verified_initial_archive_or_event_pool';start_sampling['excluded_holdout_only_start']=sampled is not None
+                    precheck=toi_start_lanes if args.approach_objective=='toi_racket_only' else None
+                    sampled,start_sampling=replay.actor_start_bank.sample(attempts,eligible_lanes=precheck)
+                    if sampled is not None and training_lane_available(sampled):
+                        row=sampled
+                    else:
+                        start_sampling['fallback']='verified_initial_archive_or_event_pool'
+                        start_sampling['excluded_holdout_only_start']=sampled is not None
+                        if precheck is not None:
+                            offset=(attempts-1)%len(pool)
+                            for alternative in pool[offset:]+pool[:offset]:
+                                mask=precheck(alternative)
+                                if mask.any():
+                                    row=dict(alternative,_actor_lane_mask=mask)
+                                    start_sampling['effective_lanes']=int(mask.sum())
+                                    break
+                            else:
+                                raise RuntimeError('No training lane with a causal TOI and a matched successful racket reference within the rollout')
                 state=training_state(row);check_stop();trainer.actor_attempts=attempts-1
                 actor_start=(tuple([state]+[training_state(r) for r in recovery_rows[1:]]) if recovery_rows else state)
                 stats=trainer.imagine_update(actor_start)

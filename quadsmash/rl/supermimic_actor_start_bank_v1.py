@@ -67,21 +67,44 @@ class ActorStartBank:
                     mutable.copy_(target)
                 entry['masks'][name]=target=mutable
             target[lane]=bool(eligible)
-    def sample(self,attempt):
+    def sample(self, attempt, *, eligible_lanes=None):
         requested=SCHEDULE[(attempt-1)%len(SCHEDULE)]
-        pools={name:[e for e in self.entries if e['masks'][name].any()] for name in CATEGORIES}
-        actual=requested if pools[requested] else next((n for n in ('pre_contact','gate_onset','failure_pre','success_near') if pools[n]),None)
-        if actual is None:
-            report=dict(requested=requested,actual=None,shortfall=1)
-            self.sampling_history.append(report)
-            return None,report
-        eligible=pools[actual];entry=eligible[int(torch.randint(len(eligible),(1,),generator=self.generator))]
-        row=dict(entry['start'],_actor_lane_mask=entry['masks'][actual].clone())
-        report=dict(requested=requested,actual=actual,shortfall=int(actual!=requested),
-                        effective_lanes=int(row['_actor_lane_mask'].sum()),policy_version=entry['policy_version'],
-                        native_tick=entry['native_tick'],stream_id=entry['stream'],outcomes_are_sampling_only=True)
+        checks={}
+        categories=dict.fromkeys((requested,'pre_contact','gate_onset','failure_pre','success_near'))
+        for actual in categories:
+            entries=[entry for entry in self.entries if entry['masks'][actual].any()]
+            if not entries:
+                continue
+            if eligible_lanes is None:
+                order=[int(torch.randint(len(entries),(1,),generator=self.generator))]
+            else:
+                order=torch.randperm(len(entries),generator=self.generator).tolist()
+            for index in order:
+                entry=entries[index]
+                mask=entry['masks'][actual]
+                if eligible_lanes is not None:
+                    key=id(entry)
+                    if key not in checks:
+                        checks[key]=eligible_lanes(entry['start']).detach().reshape(-1).cpu()
+                    valid=checks[key]
+                    if valid.dtype!=torch.bool or valid.shape!=mask.shape:
+                        raise ValueError('Start eligibility must identify each original lane')
+                    mask=mask & valid
+                    if not mask.any():
+                        continue
+                row=dict(entry['start'],_actor_lane_mask=mask.clone())
+                report=dict(requested=requested,actual=actual,shortfall=int(actual!=requested),
+                            effective_lanes=int(mask.sum()),policy_version=entry['policy_version'],
+                            native_tick=entry['native_tick'],stream_id=entry['stream'],outcomes_are_sampling_only=True)
+                if eligible_lanes is not None:
+                    report['records_checked_for_objective']=len(checks)
+                self.sampling_history.append(report)
+                return row,report
+        report=dict(requested=requested,actual=None,shortfall=1)
+        if eligible_lanes is not None:
+            report['records_checked_for_objective']=len(checks)
         self.sampling_history.append(report)
-        return row,report
+        return None,report
     def sampling_report(self, since=0):
         rows=self.sampling_history[since:]
         return dict(samples=len(rows),actual_counts={c:sum(r['actual']==c for r in rows) for c in CATEGORIES},

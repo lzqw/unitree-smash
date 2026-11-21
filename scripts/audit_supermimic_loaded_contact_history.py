@@ -100,9 +100,16 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('root','fit','output'):p.add_argument('--'+k,type=Path,required=True)
     p.add_argument('--role',choices=('training','development'),required=True)
+    p.add_argument('--new-training-support',type=Path,help='Signed native support report for a separately registered training panel')
     a=p.parse_args();torch.set_num_threads(2)
     fit=json.loads(a.fit.read_text());status=json.loads((a.root/'status.json').read_text())
     expected=fit['g07_training']['status_sha256'] if a.role=='training' else fit['g07_sha256']
+    if a.new_training_support:
+        support=json.loads(a.new_training_support.read_text())
+        if (a.role!='training' or not support['training_only'] or support['contact_receipt']
+                or support['policy_training_admitted'] or support['physics_fit_sha256']!=sha(a.fit)):
+            raise ValueError('Expected a training-only collection scored with this physics fit')
+        expected=support['status_sha256']
     if a.role=='development' and a.root.name in ('half','quarter'):
         panel=a.root.parent
         scales=json.loads((panel/'completed.json').read_text())
@@ -138,8 +145,32 @@ def main():
         mode=classify([kinds[b][col] for b in BRANCHES])
         raw={b:records[b][col] for b in BRANCHES}
         cases.append(dict(lane=lane,mode=mode,branches=raw,geometry=compare(raw['minus'],raw['plus'])))
+    summary={}
+    if a.new_training_support:
+        from scripts.audit_supermimic_friction_reversal_support import compare as reversal_summary, single_load
+        native={r['lane']:r for r in support['native_racket']['cases']}
+        if set(native)!=set(lanes):
+            raise ValueError('Signed support and native history cover different lanes')
+        rows=[]
+        seed=runs['plus']['spec']['contact_training_panel']['seed']
+        for rec in cases:
+            row=native[rec['lane']]
+            if row['mode']!=rec['mode']:
+                raise ValueError('Native contact classification changed')
+            rec['case_id']=row['case_id']
+            branches=rec['branches']
+            rec['loaded_frames_by_branch']={k:len(v) for k,v in branches.items()}
+            rec['friction_without_reported_normal']=any(
+                t['normal_points']==0 and t['friction_points']>0 for branch in branches.values() for t in branch)
+            rows.append(dict(seed=seed,lane=rec['lane'],kind=rec['mode'],
+                         above_repeat_noise=(row['executed_target_change_rad']>0 and
+                         torch.tensor(row['native_delta_mps']).norm().item()>max(1e-8,3*row['repeat_noise_mps'])),
+                         **{k:single_load(v) for k,v in branches.items()}))
+        summary=dict(signed_slip=reversal_summary(rows),support_sha256=sha(a.new_training_support),
+                     friction_without_reported_normal=sum(r['friction_without_reported_normal'] for r in cases),
+                     multiple_loaded_frames=sum(max(r['loaded_frames_by_branch'].values())>1 for r in cases))
     with a.output.open('x') as f:
-        json.dump(dict(role=a.role,source_sha256=expected,cases=cases,
+        json.dump(dict(role=a.role,source_sha256=expected,cases=cases,**summary,
             scope='Raw sensor loads, pre/post twists and geometry. Anchor matching estimates continuity; contact IDs and solver stick/slip state are not observed.'),f,indent=2,allow_nan=False)
 
 
