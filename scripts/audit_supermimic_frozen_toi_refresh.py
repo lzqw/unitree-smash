@@ -26,6 +26,8 @@ def main():
                         help='Preregistered paired probe directory with specifications/ and raw/ on other held lanes')
     parser.add_argument('--native-arrival-substeps',action='store_true',
                         help='Compare the original differentiable objective against adjacent measured native frames at arrival')
+    parser.add_argument('--intercept-plane-calibration',type=Path,
+                        help='Evaluate the fixed contact-plane offset from native training launches')
     args = parser.parse_args()
     if args.disjoint_collection and not args.rebuilt_references:
         parser.error('The prospective comparison must name the registered candidate references')
@@ -112,6 +114,13 @@ def main():
                 raise ValueError('Previous development lanes changed')
         panels = {'disjoint': (raw, digest(raw/'status.json'))}
         expected_actor = manifest['actor_sha256']
+    offset = 0.
+    if args.intercept_plane_calibration:
+        calibration = read(args.intercept_plane_calibration)
+        if not args.rebuilt_references or not args.native_arrival_substeps:
+            raise ValueError('Arrival calibration requires the measured racket comparison')
+        from quadsmash.rl.supermimic_toi_racket_objective import calibrated_plane_offset
+        offset=calibrated_plane_offset(calibration,held,identities['after']['checkpoint_sha256'])
     for world_name, world_stage in worlds.items():
         adapter.load_state_dict(world_stage['world'], strict=True)
         results[world_name] = {}
@@ -120,7 +129,7 @@ def main():
             bank.assert_excludes(held)
             results[world_name][bank_name] = {
                 scale: score(folder, status_sha, adapter, template, launch, bank,
-                             contract['task_contract'], after['metadata']['policy_execution'], held, native_arrival_substeps=args.native_arrival_substeps)
+                             contract['task_contract'], after['metadata']['policy_execution'], held, native_arrival_substeps=args.native_arrival_substeps, plane_offset_m=offset)
                 for scale, (folder,status_sha) in panels.items()}
             if expected_actor and any(x.get('probe_actor_sha256', expected_actor) != expected_actor
                                       for x in results[world_name][bank_name].values()):
@@ -128,6 +137,8 @@ def main():
     result = dict(actor_sha256=manifest['actor_sha256'], stages=identities, development=development,
                   native_panels={k:v[1] for k,v in panels.items()}, world_then_reference=results, native_arrival_substeps=args.native_arrival_substeps, actor_updates=0, contact_receipt=False,
                   scope='Frozen models and references evaluated against signed native command sequences. No policy updates or promotion.')
+    if args.intercept_plane_calibration:
+        result.update(intercept_plane_calibration_sha256=digest(args.intercept_plane_calibration), plane_offset_m=offset)
     with args.output.open('x') as stream:
         json.dump(result, stream, indent=2, allow_nan=False)
 

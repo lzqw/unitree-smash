@@ -67,6 +67,7 @@ def summarize_trace(tr, tick, mass, rows, geometry):
         cum=[x+torch.tensor(bucket[-1]['cumulative_dv_mps'][j]) if bucket else x for j,x in enumerate(impulses)]
         bucket.append(dict(frame=tick*len(normal)+i, normal_points=len(points), friction_points=len(anchors),
              signed_post_slip_along_incident_mps=along_incident,separation_m=nf['separation_m'][select].tolist(),
+             anchor_friction_dv_mps=(ff['force_w_n'][fs]*scale).tolist(),
              anchors_local_m=local,inferred_anchor_shape=inferred,normal_w=normals.tolist(),relative_velocity_w_mps=rels,tangent_speed_pre_post_mps=tangent,
              spin_pre_post_rad_s=shuttle[:,10:13].tolist(),normal_dv_mps=impulses[0].tolist(),
              tangent_dv_mps=impulses[1].tolist(),cumulative_dv_mps=[v.tolist() for v in cum]))
@@ -87,6 +88,25 @@ def compare(minus,plus):
             dist=torch.cdist(x,y)
             i,j=linear_sum_assignment(dist.numpy())
             row['matched_anchor_motion_m']=dist[i,j].tolist()
+            if 'anchor_friction_dv_mps' in a and 'anchor_friction_dv_mps' in b:
+                lo=torch.tensor(a['anchor_friction_dv_mps'],dtype=torch.float64)[i]
+                hi=torch.tensor(b['anchor_friction_dv_mps'],dtype=torch.float64)[j]
+                net=torch.tensor(b['tangent_dv_mps'],dtype=torch.float64)-torch.tensor(a['tangent_dv_mps'],dtype=torch.float64)
+                signed=hi-lo
+                row.update(matched_indices=[i.tolist(),j.tolist()],anchor_delta_mps=signed.tolist(),
+                           retained_net_error_mps=float((signed.sum(0)-net).norm()),
+                           sum_anchor_delta_norm_mps=float(signed.norm(dim=1).sum()),
+                           net_delta_norm_mps=float(net.norm()))
+                if len(i)>1:
+                    # A small margin means that individual anchor assignments may exchange identity.
+                    margins=[]
+                    for ia,ib in zip(i,j,strict=True):
+                        other=dist.clone()
+                        other[ia,ib]=torch.inf
+                        ii,jj=linear_sum_assignment(other.numpy())
+                        margins.append(float(other[ii,jj].sum()-dist[i,j].sum()))
+                    row['next_assignment_total_distance_margin_m']=min(margins)
+
             if a['inferred_anchor_shape'] and b['inferred_anchor_shape']:
                 row['inferred_same_shape']=[a['inferred_anchor_shape'][u]==b['inferred_anchor_shape'][v] for u,v in zip(i,j)]
         if a['normal_points']==b['normal_points'] and a['normal_points']:

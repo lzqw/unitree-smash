@@ -192,6 +192,8 @@ def main():
     parser.add_argument('--tracking-weight',type=float,default=0.0)
     parser.add_argument('--use-substep-toi-references', action='store_true',
                         help='Use measured first-string substep targets for newly admitted Approach references')
+    parser.add_argument('--intercept-plane-calibration',type=Path,
+                        help='Use a training-fitted contact target plane in bounded TOI-only imagination')
     parser.add_argument('--toi-racket-weight',type=float,default=1.0,
                         help='Approach TOI-racket-only auxiliary loss weight')
     parser.add_argument('--approach-objective',choices=('task','toi_racket_only'),default='task',
@@ -246,6 +248,9 @@ def main():
     if args.tracking_weight < 0 or args.toi_racket_weight < 0 or (args.tracking_weight > 0 and args.task_reference_bank is None): parser.error('Tracking weights and reference-bank settings are invalid')
     if args.approach_objective=='toi_racket_only' and (args.toi_racket_weight<=0 or args.training_stage=='full_contact'):
         parser.error('TOI-only Approach requires positive racket weight and a detached-contact diagnostic stage')
+    if args.intercept_plane_calibration and (not args.resume_training or args.approach_objective!='toi_racket_only'
+                                             or args.training_profile!='bounded'):
+        parser.error('A fitted contact plane requires the corresponding bounded TOI-only resume checkpoint')
     if args.approach_objective=='toi_racket_only' and args.task_reference_bank is None:
         parser.error('toi_racket_only requires a validated event-aligned task reference bank')
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
@@ -558,8 +563,29 @@ def run(args, *, alternating=None):
         replay_archives=[];replay_receipts=[];critic_coverage_blocks=0
         refresh_world_updates=0;refresh_critic_updates=0
         replay_handoff=None
+        plane_calibration = None
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
+            saved_plane = resumed['config'].get('intercept_plane_calibration')
+            if args.approach_objective=='toi_racket_only' and args.training_profile=='bounded':
+                plane_calibration = saved_plane
+            if args.intercept_plane_calibration:
+                from quadsmash.rl.supermimic_long_run_contract_v1 import sha256 as file_sha
+                from quadsmash.rl.supermimic_toi_racket_objective import calibrated_plane_offset
+                identity = file_sha(args.intercept_plane_calibration)
+                if saved_plane is None or saved_plane['sha256'] != identity:
+                    if not (args.resume_reset_schedule or args.resume_next_cycle):
+                        raise ValueError('A changed contact target plane requires a fresh schedule')
+                    source = file_sha(args.resume_training)
+                else:
+                    source = saved_plane['source_checkpoint_sha256']
+                offset = calibrated_plane_offset(json.loads(args.intercept_plane_calibration.read_text()),
+                                                 wm_holdout_lanes, source)
+                plane_calibration = dict(sha256=identity,source_checkpoint_sha256=source,offset_m=offset)
+            if saved_plane and not plane_calibration and not (args.resume_reset_schedule or args.resume_next_cycle):
+                raise ValueError('An ongoing schedule must retain its fitted TOI target plane')
+            if plane_calibration:
+                trainer.toi_plane_offset_m = plane_calibration['offset_m']
             previous_guard=resumed.get('config',{}).get('wm_forward_guard_sha256')
             if previous_guard is not None and (forward_guard is None or forward_guard.spec_sha256!=previous_guard):
                 raise ValueError('Cannot drop or replace a checkpoint-bound native forward panel')
@@ -802,7 +828,7 @@ def run(args, *, alternating=None):
             state=training_state(row)
             allowed=training_start_mask(row,wm_holdout_lanes).reshape(-1).cpu()
             reference=bind_intercept_reference(state,trainer.reference_bank,adapter.physical_model.geometry,
-                                               timebase.imagination_steps*timebase.control_dt_s)
+                                               timebase.imagination_steps*timebase.control_dt_s,plane_offset_m=trainer.toi_plane_offset_m)
             if reference is None:
                 return torch.zeros_like(allowed)
             return preview_intercept_lanes(state,reference,allowed.to(state.physical.device),trainer).cpu()
@@ -890,7 +916,7 @@ def run(args, *, alternating=None):
             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
             action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()) if args.action_ball_checkpoint else None,
             tracking_weight=args.tracking_weight,approach_objective=args.approach_objective,toi_racket_weight=args.toi_racket_weight,
-            use_substep_toi_references=args.use_substep_toi_references,
+            use_substep_toi_references=args.use_substep_toi_references,intercept_plane_calibration=plane_calibration,
             paired_evaluation_baseline=str(args.paired_evaluation_baseline.resolve()) if args.paired_evaluation_baseline else None,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         write(args.output/'config.json',config)

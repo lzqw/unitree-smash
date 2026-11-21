@@ -55,3 +55,17 @@ def test_loaded_history_retains_unmatched_native_substeps():
     audit=compare([event(2),event(4)],[event(3),event(4)])
     assert [(x['frame_minus'],x['frame_plus']) for x in audit]==[(2,None),(None,3),(4,4)]
     assert audit[-1]['inferred_same_shape']==[True]
+
+
+def test_loaded_contacts_match_force_vectors_by_geometry_before_measuring_cancellation():
+    from scripts.audit_supermimic_loaded_contact_history import compare
+    common=dict(frame=4,friction_points=2,normal_points=1,inferred_anchor_shape=[7,7],normal_w=[[1.,0.,0.]])
+    minus=dict(common,anchors_local_m=[[0.,0.,0.],[0.,.01,0.]],
+               anchor_friction_dv_mps=[[0.,.4,0.],[0.,.6,0.]],tangent_dv_mps=[0.,1.,0.])
+    plus=dict(common,anchors_local_m=[[0.,.01,0.],[0.,0.,0.]],
+              anchor_friction_dv_mps=[[0.,.8,0.],[0.,.2,0.]],tangent_dv_mps=[0.,1.,0.])
+    row,=compare([minus],[plus])
+    assert row['matched_indices']==[[0,1],[1,0]]
+    assert row['next_assignment_total_distance_margin_m']>.019
+    assert row['net_delta_norm_mps']==0 and row['retained_net_error_mps']<1e-7
+    assert abs(row['sum_anchor_delta_norm_mps']-.4)<1e-6

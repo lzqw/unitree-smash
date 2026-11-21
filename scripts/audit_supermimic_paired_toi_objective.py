@@ -16,7 +16,7 @@ from quadsmash.rl.supermimic_toi_racket_objective import flight_intercept, inter
 from scripts.evaluate_supermimic_fresh_wm_panel import digest
 
 
-def score(folder, expected, adapter, template, launch, bank, task, execution, held, *, training=False, native_arrival_substeps=False):
+def score(folder, expected, adapter, template, launch, bank, task, execution, held, *, training=False, native_arrival_substeps=False, plane_offset_m=0.):
     read=lambda p: json.loads(p.read_text())
     status=read(folder/'status.json')
     if digest(folder/'status.json')!=expected or status['status']!='COLLECTION_FINISHED':
@@ -44,7 +44,7 @@ def score(folder, expected, adapter, template, launch, bank, task, execution, he
     dt=task['control_dt_s']
     ge=adapter.physical_model.geometry
     T=len(base['raw']['step_sequence'])
-    intercept=flight_intercept(state,64*dt)
+    intercept=flight_intercept(state,64*dt,plane_offset_m=plane_offset_m)
     elapsed=state.clock_goal_context['elapsed'].flatten()
     ref=bank.bind(state.physical,'approach',geometry=ge,elapsed=elapsed,event_time=intercept['time'],require_toi=True)
     time=intercept['time']
@@ -98,14 +98,16 @@ def score(folder, expected, adapter, template, launch, bank, task, execution, he
         if native_arrival_substeps:
             from scripts.supermimic_native_arrival_readout import measured_at_arrival
             native_features = {}
+            precontact = {name: [] for name in runs}
             for name, run in runs.items():
                 native_features[name], branch_frames = measured_at_arrival(
-                    run['raw'], run['spec'], selections, alpha_time, dt)
+                    run['raw'], run['spec'], selections, alpha_time, dt, precontact=precontact[name])
                 if frames is not None and branch_frames != frames:
                     raise ValueError('Paired native branches used different arrival clocks')
                 frames = branch_frames
         if frames is not None:
             control_delta = total(terms(native_control_features['plus'])) - total(terms(native_control_features['minus']))
+            nominal_terms = terms(native_features['nominal_a'])
         native_loss={b:total(terms(v)) for b,v in native_features.items()}
         m,p=(kinematics(predicted(torch.tensor(v))) for v in (0.,1.))
         native_m,native_p=(native_features[b] for b in ('minus','plus'))
@@ -133,7 +135,9 @@ def score(folder, expected, adapter, template, launch, bank, task, execution, he
                          measured_terms=observed_terms[k].tolist(),derivative_terms=component_jvp[i].tolist(),
                          target_change_rad=target_change,supported=target_change>0 and abs(dv)>max(1.e-7,3*noise)))
         if frames is not None:
-            rows[-1].update(native_frame_pair=frames[k],
+            rows[-1].update(native_frame_pair=frames[k], arrival_time_s=float(time[l]),
+                interval_start_s=float(start[k]), native_precontact_by_branch={b:flags[k] for b,flags in precontact.items()},
+                nominal_native_terms=nominal_terms[k].tolist(),
                 measured_control_interpolated=float(control_delta[k]),
                 nominal_kinematic_control_minus_substep=(native_control_features['nominal_a'][k]-native_features['nominal_a'][k]).tolist(),
                 measured_kinematic_delta=(native_features['plus'][k]-native_features['minus'][k]).tolist(),

@@ -4,7 +4,7 @@ from scripts.audit_supermimic_native_window_response import complete_window
 from quadsmash.control.reactive_landing_v1 import quat_matrix
 
 
-def measured_at_arrival(raw, spec, selections, fraction, control_dt):
+def measured_at_arrival(raw, spec, selections, fraction, control_dt, *, precontact=None):
     """Interpolate only adjacent native substeps; keep every selected lane in order."""
     count = raw['substep_trace']['count']-1
     traces = complete_window(raw, spec, count)
@@ -16,6 +16,16 @@ def measured_at_arrival(raw, spec, selections, fraction, control_dt):
                 or not 0. <= alpha <= 1.):
             raise ValueError('Arrival lane or substep clock differs from recorded execution')
         tensors = trace['tensors']
+        if precontact is not None:
+            task = raw['task_after']
+            prior = bool(raw['start']['before']['task']['had_contact'][lane])
+            occurs = bool(task['had_contact'][lane])
+            clock = float(tensors['ball_clock'][0,row])
+            stamp = float(task['contact_time'][lane])
+            if occurs and not torch.isfinite(task['contact_time'][lane]):
+                raise ValueError('Contact latch has no native substep timestamp')
+            precontact.append(not prior and (not occurs or clock < stamp))
+
         at = float(alpha)*count
         start = int(at)
         end = min(start+1, count)

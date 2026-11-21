@@ -20,6 +20,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for key in ('checkpoint','guard','archive','safety-mapping','output'):
         parser.add_argument('--'+key,type=Path,required=True)
+    parser.add_argument('--intercept-plane-calibration',type=Path)
     parser.add_argument('--episodes',type=int,default=4)
     parser.add_argument('--attempt',type=int,required=True)
     parser.add_argument('--device',default='cuda:0')
@@ -49,14 +50,22 @@ def main():
     def state(row):
         return PhysicalImaginationStateV1.from_record(dict(row,_actor_lane_mask=training_start_mask(row,held)),
                 executor_template=template,launch=select_launch_for_start(row,launch),device=args.device)
+    saved_plane=ck['config'].get('intercept_plane_calibration') or {}
+    offset=saved_plane.get('offset_m',0.)
+    if args.intercept_plane_calibration:
+        from quadsmash.rl.supermimic_toi_racket_objective import calibrated_plane_offset
+        from scripts.evaluate_supermimic_fresh_wm_panel import digest
+        source=(saved_plane['source_checkpoint_sha256'] if digest(args.intercept_plane_calibration)==saved_plane.get('sha256')
+                else digest(args.checkpoint))
+        offset=calibrated_plane_offset(json.loads(args.intercept_plane_calibration.read_text()),held,source)
     trainer=PhysicalHorizonTrainer(actor,adapter,state(bank.entries[0]['start']),cfg,block_name='approach',
-            reference_bank=ref,approach_objective='toi_racket_only',toi_racket_weight=ck['config']['toi_racket_weight'])
+            reference_bank=ref,approach_objective='toi_racket_only',toi_racket_weight=ck['config']['toi_racket_weight'],toi_plane_offset_m=offset)
     trainer.critic.load_state_dict(ck['critic'])
     @torch.no_grad()
     def eligible(row):
         s=state(row)
         allowed=s.clock_goal_context['actor_lane_mask']
-        match=bind_intercept_reference(s,ref,adapter.physical_model.geometry,cfg.imagination_steps*cfg.control_dt_s)
+        match=bind_intercept_reference(s,ref,adapter.physical_model.geometry,cfg.imagination_steps*cfg.control_dt_s,plane_offset_m=offset)
         if match is None:
             return torch.zeros_like(allowed,device='cpu')
         return preview_intercept_lanes(s,match,allowed,trainer).cpu()
@@ -77,7 +86,7 @@ def main():
         raise RuntimeError('Training starts overlap or contain held lanes')
     repeats=out['tracking_nonzero_gradient_lanes']
     passed=bool(len(keys)==args.episodes and repeats==args.episodes and norm.isfinite() and norm>0 and check['toi_coverage_preserved'])
-    result=dict(passed=passed,selected=report['actual'],requested=report['requested'],requested_episodes=args.episodes,
+    result=dict(passed=passed,toi_plane_offset_m=offset,selected=report['actual'],requested=report['requested'],requested_episodes=args.episodes,
         layout=layout,independent_lanes_with_gradient=repeats,nonzero_approach_gradient_norm=float(norm),
         checked_objective=float(check['loss']),toi_coverage_preserved=check['toi_coverage_preserved'],
         actor_sha256=tensor_digest(actor.state_dict().items()),world_sha256=world_hash,world_updates=ck['world_updates'],

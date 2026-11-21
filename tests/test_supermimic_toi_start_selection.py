@@ -29,7 +29,7 @@ def test_toi_start_rejects_expired_arrival_and_unmatched_reference(monkeypatch):
     from quadsmash.rl import supermimic_toi_racket_objective as toi
     state=SimpleNamespace(physical=torch.zeros(4,55),clock_goal_context={'elapsed':torch.ones(4)})
     forecast=dict(valid=torch.tensor([True,True,False,True]),time=torch.tensor([1.1,1.,1.2,1.1]))
-    monkeypatch.setattr(toi,'flight_intercept',lambda state,horizon:forecast)
+    monkeypatch.setattr(toi,'flight_intercept',lambda state,horizon,*,plane_offset_m=0.:forecast)
     def bind(*args,**kwargs):
         assert kwargs['require_toi'] and torch.equal(kwargs['event_time'],forecast['time'])
         return dict(matched=torch.tensor([True,True,True,False]))
@@ -203,3 +203,35 @@ def test_alternative_arm_probe_rejects_repeated_direction_or_changed_prefix():
     for change in (dict(request_directions=[first]), dict(tick=277), dict(source_direction_seed=84)):
         with pytest.raises(ValueError):
             verify_alternate_directions(old, dict(alternate, **change))
+
+def test_contact_plane_is_fitted_only_to_selected_training_lanes():
+    import pytest
+    from quadsmash.rl.supermimic_toi_racket_objective import calibrated_plane_offset
+    cases=[dict(lane=i,qualified=True,valid=True,native_minus_plane_m=x) for i,x in [(0,.04),(3,.06)]]
+    fit=dict(schema='training-native-contact-target-plane-v1',checkpoint_sha256='weights',fit_samples=2,plane_offset_m=.05,
+             training=[dict(seed=7,lanes=[0,3],cases=cases)])
+    assert calibrated_plane_offset(fit,[2],'weights')==.05
+    for held,key in [([3],'weights'),([2],'new weights')]:
+        with pytest.raises(ValueError):
+            calibrated_plane_offset(fit,held,key)
+    with pytest.raises(ValueError):
+        calibrated_plane_offset(dict(fit,plane_offset_m=.07),[2],'weights')
+
+
+def test_advanced_intercept_recomputes_both_position_and_time_for_original_valid_lanes(monkeypatch):
+    import numpy as np
+    from types import SimpleNamespace
+    from quadsmash.rl import supermimic_toi_racket_objective as toi
+    controller=SimpleNamespace(parameters=torch.ones(2,25),physics={},height_intercept={})
+    state=SimpleNamespace(observation=torch.zeros(2,794),executor_memory=SimpleNamespace(reference_controller=controller),
+        clock_goal_context=dict(elapsed=torch.tensor([2.,2.]),ball_present=torch.ones(2,dtype=torch.bool)))
+    monkeypatch.setattr(toi,'predict_height_intercept',lambda *args,**kw:dict(valid=np.array([True,False]),
+        position_m=np.array([[1.,2.,3.],[1.,2.,3.]]),arrival_time_s=np.array([.2,.2])))
+    def shifted(obs,position,normal,plane,physics,**kw):
+        np.testing.assert_allclose(plane,1.05)
+        return dict(valid=np.array([True,True]),position_m=np.array([[1.05,1.9,3.1],[1.05,1.9,3.1]]),
+                    arrival_time_s=np.array([.19,.19]))
+    monkeypatch.setattr(toi,'predict_initial_intercept',shifted)
+    result=toi.flight_intercept(state,.64,plane_offset_m=.05)
+    torch.testing.assert_close(result['position'],torch.tensor([[1.05,1.9,3.1],[0.,0.,0.]]))
+    torch.testing.assert_close(result['time'],torch.tensor([2.19,torch.inf]))

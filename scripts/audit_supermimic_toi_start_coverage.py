@@ -45,6 +45,7 @@ def main():
     saved=ck['actor_start_bank']
     bank=ActorStartBank(capacity=saved['capacity'])
     bank.load_state_dict(saved)
+    offset=(ck['config'].get('intercept_plane_calibration') or {}).get('offset_m',0.)
     held=ck['config']['wm_holdout_lanes']
     original.assert_excludes(held)
     trainer=None
@@ -65,7 +66,7 @@ def main():
         timebase=Timebase(**json.loads((Path(__file__).resolve().parents[1]/'configs/supermimic_task_horizon_v2.json').read_text()))
         if timebase.imagination_steps!=shadow['imagination_steps']:
             raise ValueError('Mismatched native shadow horizon')
-        trainer=PhysicalHorizonTrainer(actor,ad,initial,timebase,block_name='approach',reference_bank=original,approach_objective='toi_racket_only')
+        trainer=PhysicalHorizonTrainer(actor,ad,initial,timebase,block_name='approach',reference_bank=original,approach_objective='toi_racket_only',toi_plane_offset_m=offset)
         trainer.critic.load_state_dict(ck['critic'])
     masks={}
     cases=[]
@@ -73,7 +74,7 @@ def main():
         row=entry['start']
         state=PhysicalImaginationStateV1.from_record(row,executor_template=template,launch=select_launch_for_start(row,launch),device='cpu')
         ok=training_start_mask(row,held)
-        ref=bind_intercept_reference(state,original,ad.physical_model.geometry,shadow['imagination_steps']*manifest['task_contract']['control_dt_s'])
+        ref=bind_intercept_reference(state,original,ad.physical_model.geometry,shadow['imagination_steps']*manifest['task_contract']['control_dt_s'],plane_offset_m=offset)
         valid=ok & ref['matched'].cpu().reshape(-1) if ref is not None else torch.zeros_like(ok)
         if trainer is not None:
             state.clock_goal_context['actor_lane_mask']=ok

@@ -1,0 +1,2224 @@
+{
+  "actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+  "stages": {
+    "before": {
+      "checkpoint_sha256": "3e4bdab14b8dcea7fea2235b47b5afb5c4c95071c989e315bed7331c9dc2418c",
+      "world_sha256": "98c431af72201e1671b88859f3a8ce08dd3ee973da08b2316cc7d678bae35656",
+      "world_updates": 92,
+      "reference_sha256": "35f7f1af5ad15b11c6d1307a47a6caf4487c93994f4874aba16de51ca647cf12"
+    },
+    "after": {
+      "checkpoint_sha256": "eda03405864b3c4bc1264741a09c957926e5dd3cd6479860428a37dbe65a3d77",
+      "world_sha256": "22d948b88d0885f967e8310199a77880b24484ba4497f1084e569fdacbde114a",
+      "world_updates": 96,
+      "reference_sha256": "b9cccbb9379ec571ea19a73a5c5c5edf414a1abc62df4fd02c5239f36fc8a107"
+    },
+    "substep_reference_sha256": "73ff43d2e84db1c4021633567311d1127c20406ddc1707d84e66368e2ede3bd7"
+  },
+  "development": {
+    "wide": "b8eff681b1b99d9f808c47ce70be5fd79936d59fbe7c3f1e4beece6331459907",
+    "half": "9b6f8e3df1fedf660703547a4d7d892c46a7b7ba10b29bca4c6b42deab982570",
+    "quarter": "ace175faccb1986e37fb81f351611cdd8ae5b592a1a9c1da8995070921bde8cf"
+  },
+  "native_panels": {
+    "disjoint": "8dc272ffea4683c5b3afa2cfa2fa69a9be68424f8d6158bf8169e595135177d8"
+  },
+  "world_then_reference": {
+    "after": {
+      "control_boundary": {
+        "disjoint": {
+          "native_arrival_substeps": false,
+          "lanes": 51,
+          "matched_and_inside": 41,
+          "above_noise": 41,
+          "scores": {
+            "model_difference": {
+              "same_direction": 35,
+              "gain_median": 0.945694692945376
+            },
+            "model_derivative": {
+              "same_direction": 36,
+              "gain_median": 0.9464832887327836
+            },
+            "at_native_midpoint": {
+              "same_direction": 31,
+              "gain_median": 0.968268972899265
+            },
+            "with_native_difference": {
+              "same_direction": 38,
+              "gain_median": 0.9776377425830917
+            }
+          },
+          "cases": [
+            {
+              "lane": 0,
+              "tick": 15,
+              "reference_digest": "e26584297d3e21e1137e6d0c41e28fb825fc6944bfa73afc5edb7a2534c04b64",
+              "reference_distance": 0.0043925028294324875,
+              "measured": 0.21686092019081116,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.10501199960708618,
+              "model_derivative": 0.10946810990571976,
+              "at_native_midpoint": 0.09514912962913513,
+              "with_native_difference": 0.21163645386695862,
+              "measured_terms": [
+                0.2133760303258896,
+                0.002462435979396105,
+                -0.01656627655029297,
+                0.01758873462677002
+              ],
+              "derivative_terms": [
+                0.07114702463150024,
+                0.020511705428361893,
+                -0.005166313610970974,
+                0.022975699976086617
+              ],
+              "target_change_rad": 0.11593186855316162,
+              "supported": true
+            },
+            {
+              "lane": 1,
+              "tick": 12,
+              "reference_digest": "4622e32394a55b00f2f0262d900077d3299a4a4f7e796c2c5b120b494bd9a432",
+              "reference_distance": 0.00480969063937664,
+              "measured": 0.007696628570556641,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0034748315811157227,
+              "model_derivative": 0.003555353032425046,
+              "at_native_midpoint": 0.004922389984130859,
+              "with_native_difference": 0.006055235862731934,
+              "measured_terms": [
+                0.000677943229675293,
+                0.005276128649711609,
+                -3.641843795776367e-05,
+                0.0017790943384170532
+              ],
+              "derivative_terms": [
+                -0.0018673223676159978,
+                0.003909858409315348,
+                -6.881168246763991e-06,
+                0.0015196979511529207
+              ],
+              "target_change_rad": 0.006572365760803223,
+              "supported": true
+            },
+            {
+              "lane": 2,
+              "tick": 10,
+              "reference_digest": "01acb0c8f5f728a14636531da507ce84102c990f75e47e22488ab89f35771f60",
+              "reference_distance": 0.006369177717715502,
+              "measured": -0.0010901093482971191,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0020829439163208008,
+              "model_derivative": 0.002045831410214305,
+              "at_native_midpoint": 0.006117880344390869,
+              "with_native_difference": -0.0037374496459960938,
+              "measured_terms": [
+                0.004459261894226074,
+                -0.005093038082122803,
+                1.424551010131836e-05,
+                -0.0004705749452114105
+              ],
+              "derivative_terms": [
+                0.008928278461098671,
+                -0.005571814253926277,
+                -2.6822506697499193e-05,
+                -0.0012838102411478758
+              ],
+              "target_change_rad": 0.0049599409103393555,
+              "supported": true
+            },
+            {
+              "lane": 3,
+              "tick": 15,
+              "reference_digest": "fdba947d7b7b37696d0934e108a31952a89793d731348ea0a3681d2c739be40a",
+              "reference_distance": 0.006165741942822933,
+              "measured": 0.007946252822875977,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.003344297409057617,
+              "model_derivative": 0.00338261341676116,
+              "at_native_midpoint": 0.0022429227828979492,
+              "with_native_difference": 0.009440779685974121,
+              "measured_terms": [
+                0.005381345748901367,
+                0.002009660005569458,
+                0.00013947486877441406,
+                0.0004158914089202881
+              ],
+              "derivative_terms": [
+                0.00046566780656576157,
+                0.0017288377275690436,
+                -9.587105159880593e-05,
+                0.0012839786941185594
+              ],
+              "target_change_rad": 0.007158994674682617,
+              "supported": true
+            },
+            {
+              "lane": 5,
+              "tick": 12,
+              "reference_digest": "dcba932d5639cb3a00ac626b287548729cf7cba1e0b24ee3d8ba4e36ca7dbcf1",
+              "reference_distance": 0.003382284427061677,
+              "measured": 0.004815220832824707,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0028105974197387695,
+              "model_derivative": 0.0008029482560232282,
+              "at_native_midpoint": 0.005003213882446289,
+              "with_native_difference": 0.003172636032104492,
+              "measured_terms": [
+                -0.00019919872283935547,
+                0.0020015351474285126,
+                -1.8835067749023438e-05,
+                0.003031603991985321
+              ],
+              "derivative_terms": [
+                -0.002128673018887639,
+                0.0008648379589430988,
+                -5.50715958524961e-05,
+                0.002121854806318879
+              ],
+              "target_change_rad": 0.007775545120239258,
+              "supported": true
+            },
+            {
+              "lane": 6,
+              "tick": 7,
+              "reference_digest": "01acb0c8f5f728a14636531da507ce84102c990f75e47e22488ab89f35771f60",
+              "reference_distance": 0.006518041715025902,
+              "measured": -0.016921162605285645,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.003313720226287842,
+              "model_derivative": -0.0033126105554401875,
+              "at_native_midpoint": -0.00512772798538208,
+              "with_native_difference": -0.015184938907623291,
+              "measured_terms": [
+                -0.0015378594398498535,
+                -0.009967580437660217,
+                -0.00012743473052978516,
+                -0.00528823584318161
+              ],
+              "derivative_terms": [
+                -0.0003400122805032879,
+                -0.0025665743742138147,
+                -0.00026904232800006866,
+                -0.00013698142720386386
+              ],
+              "target_change_rad": 0.005669236183166504,
+              "supported": true
+            },
+            {
+              "lane": 7,
+              "tick": 11,
+              "reference_digest": "e09d7bcb5a3b323418b40b3771f77dd24ed80dd45ab218366aaa38932f9c8179",
+              "reference_distance": 0.004027281887829304,
+              "measured": -0.006160914897918701,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.01012730598449707,
+              "model_derivative": -0.0012088007060810924,
+              "at_native_midpoint": 0.008368849754333496,
+              "with_native_difference": -0.005009651184082031,
+              "measured_terms": [
+                -0.008064866065979004,
+                0.0014232099056243896,
+                1.5497207641601562e-06,
+                0.00047918036580085754
+              ],
+              "derivative_terms": [
+                -0.007649731356650591,
+                0.004841608926653862,
+                -2.964161103591323e-05,
+                0.0016289633931592107
+              ],
+              "target_change_rad": 0.005282044410705566,
+              "supported": true
+            },
+            {
+              "lane": 8,
+              "tick": 11,
+              "reference_digest": "0a344de2d10bb90a8358a7ac0b6eb700d1d4a1216350e86dd6ad64668d68943e",
+              "reference_distance": 0.0036067648325115442,
+              "measured": -0.0014907121658325195,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.0009124279022216797,
+              "model_derivative": -0.0009491625241935253,
+              "at_native_midpoint": 2.3603439331054688e-05,
+              "with_native_difference": -0.0030994415283203125,
+              "measured_terms": [
+                0.001625657081604004,
+                -0.002778574824333191,
+                1.8477439880371094e-06,
+                -0.0003395788371562958
+              ],
+              "derivative_terms": [
+                0.0008042682893574238,
+                -0.0013296736869961023,
+                2.10781490750378e-05,
+                -0.0004448352847248316
+              ],
+              "target_change_rad": 0.005962252616882324,
+              "supported": true
+            },
+            {
+              "lane": 11,
+              "tick": 11,
+              "reference_digest": "bec13c274f1f8223bb074b155443a3261e9e698ffddec6bedd00e4e350f3ba91",
+              "reference_distance": 0.004925515037029982,
+              "measured": 0.00042831897735595703,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0045423805713653564,
+              "model_derivative": 0.00453974399715662,
+              "at_native_midpoint": 0.0058383941650390625,
+              "with_native_difference": 0.0013113021850585938,
+              "measured_terms": [
+                0.002919316291809082,
+                -0.0012170672416687012,
+                -9.930133819580078e-05,
+                -0.001174628734588623
+              ],
+              "derivative_terms": [
+                0.0024666772224009037,
+                0.0009109753300435841,
+                -0.0001398987660650164,
+                0.0013019905891269445
+              ],
+              "target_change_rad": 0.00921785831451416,
+              "supported": true
+            },
+            {
+              "lane": 13,
+              "tick": 13,
+              "reference_digest": "ad68dddac1ee934c30095b5d9cb828fc7f196042815217a1bbf8bd5ba5c0eb3a",
+              "reference_distance": 0.004756867419928312,
+              "measured": 0.0025559663772583008,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0027780532836914062,
+              "model_derivative": 0.0028438582085072994,
+              "at_native_midpoint": 0.0013766288757324219,
+              "with_native_difference": 0.003546416759490967,
+              "measured_terms": [
+                0.0034278035163879395,
+                -0.0011302381753921509,
+                2.6881694793701172e-05,
+                0.00023145601153373718
+              ],
+              "derivative_terms": [
+                0.004035706166177988,
+                -0.0003284827107563615,
+                3.619965355028398e-05,
+                -0.0008995648240670562
+              ],
+              "target_change_rad": 0.0072023868560791016,
+              "supported": true
+            },
+            {
+              "lane": 14,
+              "tick": 7,
+              "reference_digest": "ad68dddac1ee934c30095b5d9cb828fc7f196042815217a1bbf8bd5ba5c0eb3a",
+              "reference_distance": 0.013232100754976273,
+              "measured": -0.0018996000289916992,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.00267183780670166,
+              "model_derivative": -0.002672986127436161,
+              "at_native_midpoint": -0.002260565757751465,
+              "with_native_difference": -0.0019470453262329102,
+              "measured_terms": [
+                -0.002782106399536133,
+                0.0006784908473491669,
+                -2.086162567138672e-06,
+                0.0002059582620859146
+              ],
+              "derivative_terms": [
+                2.4816254153847694e-05,
+                -0.0025533982552587986,
+                1.2376501217659097e-05,
+                -0.00015678070485591888
+              ],
+              "target_change_rad": 0.005159735679626465,
+              "supported": true
+            },
+            {
+              "lane": 15,
+              "tick": 10,
+              "reference_digest": "a70ca5b9be6e2e6f6d5f2bdbdb9b93e4126bbd8cafc042976dbe936984bef5e7",
+              "reference_distance": 0.00758014852181077,
+              "measured": -0.11854052543640137,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.1123080849647522,
+              "model_derivative": -0.1136394590139389,
+              "at_native_midpoint": -0.12383675575256348,
+              "with_native_difference": -0.10717815160751343,
+              "measured_terms": [
+                -0.05133986473083496,
+                -0.05206967517733574,
+                0.0001322627067565918,
+                -0.01526324450969696
+              ],
+              "derivative_terms": [
+                -0.0516965277493,
+                -0.049238793551921844,
+                0.00018892895604949445,
+                -0.012893063016235828
+              ],
+              "target_change_rad": 0.062143564224243164,
+              "supported": true
+            },
+            {
+              "lane": 16,
+              "tick": 10,
+              "reference_digest": "c5e4c6da9386980c6701735ea9a577dc392aa193560ae5985ef5eaa8ab456d18",
+              "reference_distance": 0.0006457065464928746,
+              "measured": 0.015332460403442383,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0075953006744384766,
+              "model_derivative": 0.007926447317004204,
+              "at_native_midpoint": 0.00991666316986084,
+              "with_native_difference": 0.012761592864990234,
+              "measured_terms": [
+                -0.00039190053939819336,
+                0.009537771344184875,
+                4.172325134277344e-06,
+                0.006182320415973663
+              ],
+              "derivative_terms": [
+                -0.00012614188017323613,
+                0.004781968891620636,
+                -5.1671035180334e-05,
+                0.0033222916536033154
+              ],
+              "target_change_rad": 0.0063059329986572266,
+              "supported": true
+            },
+            {
+              "lane": 17,
+              "tick": 11,
+              "reference_digest": "6ce449537b0336bc050f954e27486825204287648ac488efaffcd9df59182621",
+              "reference_distance": 0.0020734320860356092,
+              "measured": -0.0039253830909729,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.003494739532470703,
+              "model_derivative": -0.0034704532008618116,
+              "at_native_midpoint": -0.005774021148681641,
+              "with_native_difference": -0.0006148815155029297,
+              "measured_terms": [
+                0.00011309981346130371,
+                -0.002957325428724289,
+                7.05718994140625e-05,
+                -0.0011517442762851715
+              ],
+              "derivative_terms": [
+                -0.003051952226087451,
+                0.00013289705384522676,
+                0.00015636147873010486,
+                -0.0007077595801092684
+              ],
+              "target_change_rad": 0.007882833480834961,
+              "supported": true
+            },
+            {
+              "lane": 18,
+              "tick": 11,
+              "reference_digest": "01acb0c8f5f728a14636531da507ce84102c990f75e47e22488ab89f35771f60",
+              "reference_distance": 0.005592143163084984,
+              "measured": 0.07623249292373657,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.05920517444610596,
+              "model_derivative": 0.05637088045477867,
+              "at_native_midpoint": 0.0738135576248169,
+              "with_native_difference": 0.07034337520599365,
+              "measured_terms": [
+                0.15698683261871338,
+                -0.03215605765581131,
+                -6.788969039916992e-05,
+                -0.04853035509586334
+              ],
+              "derivative_terms": [
+                0.09109458327293396,
+                -0.008225093595683575,
+                0.0012493167305365205,
+                -0.027747925370931625
+              ],
+              "target_change_rad": 0.09797000885009766,
+              "supported": true
+            },
+            {
+              "lane": 21,
+              "tick": 9,
+              "reference_digest": "fdba947d7b7b37696d0934e108a31952a89793d731348ea0a3681d2c739be40a",
+              "reference_distance": 0.004209126345813274,
+              "measured": 0.003946065902709961,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.011391639709472656,
+              "model_derivative": 0.011393110267817974,
+              "at_native_midpoint": 0.009972631931304932,
+              "with_native_difference": 0.0032669901847839355,
+              "measured_terms": [
+                0.0015714168548583984,
+                0.002177290618419647,
+                -6.699562072753906e-05,
+                0.0002643316984176636
+              ],
+              "derivative_terms": [
+                0.006655371282249689,
+                0.003949570469558239,
+                -0.00012219708878546953,
+                0.0009103653719648719
+              ],
+              "target_change_rad": 0.004655241966247559,
+              "supported": true
+            },
+            {
+              "lane": 30,
+              "tick": 16,
+              "reference_digest": "ad68dddac1ee934c30095b5d9cb828fc7f196042815217a1bbf8bd5ba5c0eb3a",
+              "reference_distance": 0.003717915853485465,
+              "measured": 0.004275321960449219,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0023474693298339844,
+              "model_derivative": 0.002428764011710882,
+              "at_native_midpoint": 0.002615213394165039,
+              "with_native_difference": 0.004179716110229492,
+              "measured_terms": [
+                0.003180980682373047,
+                -0.0002882145345211029,
+                7.867813110351562e-06,
+                0.0013747811317443848
+              ],
+              "derivative_terms": [
+                0.0014109769836068153,
+                0.0007053647423163056,
+                1.7779204426915385e-05,
+                0.000294643163215369
+              ],
+              "target_change_rad": 0.00575566291809082,
+              "supported": true
+            },
+            {
+              "lane": 34,
+              "tick": 10,
+              "reference_digest": "e6ba7379072e53dc163ff1ad6da23b35dd4e0501894ab16546d2e5a0801cbd01",
+              "reference_distance": 0.005225749686360359,
+              "measured": 0.005265951156616211,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0068089962005615234,
+              "model_derivative": 0.0069169094786047935,
+              "at_native_midpoint": 0.004423201084136963,
+              "with_native_difference": 0.005478918552398682,
+              "measured_terms": [
+                -0.00015246868133544922,
+                0.0037731528282165527,
+                0.00012129545211791992,
+                0.0015239566564559937
+              ],
+              "derivative_terms": [
+                0.004305984824895859,
+                0.00118681276217103,
+                0.00019475890439935029,
+                0.0012293525505810976
+              ],
+              "target_change_rad": 0.00532686710357666,
+              "supported": true
+            },
+            {
+              "lane": 37,
+              "tick": 11,
+              "reference_digest": "e09d7bcb5a3b323418b40b3771f77dd24ed80dd45ab218366aaa38932f9c8179",
+              "reference_distance": 0.006764098070561886,
+              "measured": -0.005788564682006836,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.00048291683197021484,
+              "model_derivative": -0.0008705250220373273,
+              "at_native_midpoint": -0.0003733634948730469,
+              "with_native_difference": -0.005777955055236816,
+              "measured_terms": [
+                -0.011089086532592773,
+                0.0036468505859375,
+                -3.5703182220458984e-05,
+                0.0016892626881599426
+              ],
+              "derivative_terms": [
+                -0.008390046656131744,
+                0.005791316740214825,
+                1.4977817045291886e-05,
+                0.0017132271314039826
+              ],
+              "target_change_rad": 0.006093263626098633,
+              "supported": true
+            },
+            {
+              "lane": 38,
+              "tick": 16,
+              "reference_digest": "fdba947d7b7b37696d0934e108a31952a89793d731348ea0a3681d2c739be40a",
+              "reference_distance": 0.0035409729462116957,
+              "measured": 0.0016300082206726074,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.004854142665863037,
+              "model_derivative": 0.004932059906423092,
+              "at_native_midpoint": 0.003995299339294434,
+              "with_native_difference": 0.0019078850746154785,
+              "measured_terms": [
+                -0.0009806156158447266,
+                0.002016723155975342,
+                -0.00028067827224731445,
+                0.000874541699886322
+              ],
+              "derivative_terms": [
+                0.0011214297264814377,
+                0.0027970527298748493,
+                -9.718946239445359e-05,
+                0.0011107667814940214
+              ],
+              "target_change_rad": 0.005684494972229004,
+              "supported": true
+            },
+            {
+              "lane": 39,
+              "tick": 14,
+              "reference_digest": "e5f3ea0db641dd09bb77ff4b21660824e89ce8d1e6670da97541c75aba7cebb2",
+              "reference_distance": 0.002175964880734682,
+              "measured": -0.0019060969352722168,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.01913374662399292,
+              "model_derivative": -0.01381523348391056,
+              "at_native_midpoint": 0.011655151844024658,
+              "with_native_difference": -0.02758556604385376,
+              "measured_terms": [
+                0.014261007308959961,
+                0.0026350468397140503,
+                -0.0004798769950866699,
+                -0.01832234114408493
+              ],
+              "derivative_terms": [
+                -0.005790543742477894,
+                0.0028683990240097046,
+                -0.00031943287467584014,
+                -0.010573655366897583
+              ],
+              "target_change_rad": 0.039989590644836426,
+              "supported": true
+            },
+            {
+              "lane": 41,
+              "tick": 12,
+              "reference_digest": "e5f3ea0db641dd09bb77ff4b21660824e89ce8d1e6670da97541c75aba7cebb2",
+              "reference_distance": 0.0030494527891278267,
+              "measured": 0.029116511344909668,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.0226743221282959,
+              "model_derivative": -0.02152271382510662,
+              "at_native_midpoint": -0.027315616607666016,
+              "with_native_difference": 0.031621694564819336,
+              "measured_terms": [
+                0.02866685390472412,
+                -0.00608908012509346,
+                0.0014429688453674316,
+                0.005095764994621277
+              ],
+              "derivative_terms": [
+                -0.020836737006902695,
+                -0.0030628435779362917,
+                0.00029133041971363127,
+                0.002085536252707243
+              ],
+              "target_change_rad": 0.029002666473388672,
+              "supported": true
+            },
+            {
+              "lane": 46,
+              "tick": 7,
+              "reference_digest": "4622e32394a55b00f2f0262d900077d3299a4a4f7e796c2c5b120b494bd9a432",
+              "reference_distance": 0.007810584269464016,
+              "measured": -0.0005055665969848633,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0030847787857055664,
+              "model_derivative": 0.0026418748311698437,
+              "at_native_midpoint": 0.001056671142578125,
+              "with_native_difference": 0.00042998790740966797,
+              "measured_terms": [
+                0.0018870234489440918,
+                -0.001481860876083374,
+                6.854534149169922e-05,
+                -0.0009793713688850403
+              ],
+              "derivative_terms": [
+                -0.0004202279669698328,
+                0.0021153283305466175,
+                -1.7678288713796064e-05,
+                0.0009644526289775968
+              ],
+              "target_change_rad": 0.006586432456970215,
+              "supported": true
+            },
+            {
+              "lane": 48,
+              "tick": 10,
+              "reference_digest": "c501f9b6aa875d351795c6f395741710e127a6a47136902ef7ded7b81c58103a",
+              "reference_distance": 0.015601848252117634,
+              "measured": -0.008691787719726562,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.003357827663421631,
+              "model_derivative": -0.003211849369108677,
+              "at_native_midpoint": -0.0017131567001342773,
+              "with_native_difference": -0.009871065616607666,
+              "measured_terms": [
+                -0.012170076370239258,
+                0.0023836903274059296,
+                7.748603820800781e-07,
+                0.0010939612984657288
+              ],
+              "derivative_terms": [
+                -0.0037371069192886353,
+                0.0010221709962934256,
+                -3.5628429486678215e-06,
+                -0.0004933506716042757
+              ],
+              "target_change_rad": 0.00887608528137207,
+              "supported": true
+            },
+            {
+              "lane": 49,
+              "tick": 13,
+              "reference_digest": "c501f9b6aa875d351795c6f395741710e127a6a47136902ef7ded7b81c58103a",
+              "reference_distance": 0.004843195900321007,
+              "measured": -0.24908465147018433,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.23555803298950195,
+              "model_derivative": -0.23575446009635925,
+              "at_native_midpoint": -0.29726946353912354,
+              "with_native_difference": -0.2020450234413147,
+              "measured_terms": [
+                -0.09904307126998901,
+                -0.1047741025686264,
+                -0.0007218718528747559,
+                -0.0445454902946949
+              ],
+              "derivative_terms": [
+                -0.10194714367389679,
+                -0.09442266821861267,
+                0.001147251226939261,
+                -0.04053189605474472
+              ],
+              "target_change_rad": 0.13205647468566895,
+              "supported": true
+            },
+            {
+              "lane": 50,
+              "tick": 13,
+              "reference_digest": "c5e4c6da9386980c6701735ea9a577dc392aa193560ae5985ef5eaa8ab456d18",
+              "reference_distance": 0.0038921476807445288,
+              "measured": 0.0009006857872009277,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.002082526683807373,
+              "model_derivative": 0.0020812354050576687,
+              "at_native_midpoint": 0.0020250678062438965,
+              "with_native_difference": 0.000849604606628418,
+              "measured_terms": [
+                0.001346290111541748,
+                -0.00038981856778264046,
+                -1.615285873413086e-05,
+                -3.968924283981323e-05
+              ],
+              "derivative_terms": [
+                0.0022417178843170404,
+                -0.0003059631562791765,
+                1.5395471564261243e-07,
+                0.00014532686327584088
+              ],
+              "target_change_rad": 0.006065011024475098,
+              "supported": true
+            },
+            {
+              "lane": 51,
+              "tick": 9,
+              "reference_digest": "c5e4c6da9386980c6701735ea9a577dc392aa193560ae5985ef5eaa8ab456d18",
+              "reference_distance": 0.0035140030086040497,
+              "measured": -0.00041729211807250977,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.006084084510803223,
+              "model_derivative": -0.006109726149588823,
+              "at_native_midpoint": -0.0029563307762145996,
+              "with_native_difference": -0.0026244521141052246,
+              "measured_terms": [
+                -0.0006045103073120117,
+                -0.00054129958152771,
+                -1.7881393432617188e-06,
+                0.000730268657207489
+              ],
+              "derivative_terms": [
+                -0.003081900766119361,
+                -0.0020894177723675966,
+                -1.1993215593975037e-06,
+                -0.0009372082422487438
+              ],
+              "target_change_rad": 0.006989836692810059,
+              "supported": true
+            },
+            {
+              "lane": 53,
+              "tick": 14,
+              "reference_digest": "e6ba7379072e53dc163ff1ad6da23b35dd4e0501894ab16546d2e5a0801cbd01",
+              "reference_distance": 0.0051216366700828075,
+              "measured": 0.0016522407531738281,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0007068514823913574,
+              "model_derivative": 0.0006582529749721289,
+              "at_native_midpoint": -2.7358531951904297e-05,
+              "with_native_difference": 0.0025700926780700684,
+              "measured_terms": [
+                -0.0004886388778686523,
+                0.0016723871231079102,
+                0.00011807680130004883,
+                0.00035040825605392456
+              ],
+              "derivative_terms": [
+                -0.0018075875705108047,
+                0.0022503433283418417,
+                8.454649105260614e-06,
+                0.00020704258349724114
+              ],
+              "target_change_rad": 0.005843162536621094,
+              "supported": true
+            },
+            {
+              "lane": 57,
+              "tick": 8,
+              "reference_digest": "9242cab5ab1cfbcf3bb6caed9d011ed231867cad8020157c55c644f01723428f",
+              "reference_distance": 0.0032816759776324034,
+              "measured": -0.0015137195587158203,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0016067028045654297,
+              "model_derivative": 0.0016594638582319021,
+              "at_native_midpoint": 0.00016415119171142578,
+              "with_native_difference": -0.000910639762878418,
+              "measured_terms": [
+                -0.0014847517013549805,
+                8.884232374839485e-05,
+                0.00011098384857177734,
+                -0.0002286834642291069
+              ],
+              "derivative_terms": [
+                0.0005639876471832395,
+                0.0003270567976869643,
+                0.00018210979760624468,
+                0.0005863096448592842
+              ],
+              "target_change_rad": 0.005843758583068848,
+              "supported": true
+            },
+            {
+              "lane": 59,
+              "tick": 10,
+              "reference_digest": "a70ca5b9be6e2e6f6d5f2bdbdb9b93e4126bbd8cafc042976dbe936984bef5e7",
+              "reference_distance": 0.006132822949439287,
+              "measured": 0.0067452192306518555,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.009030759334564209,
+              "model_derivative": 0.009311458095908165,
+              "at_native_midpoint": 0.010767102241516113,
+              "with_native_difference": 0.00540614128112793,
+              "measured_terms": [
+                0.006337463855743408,
+                0.0002569202333688736,
+                -4.380941390991211e-05,
+                0.00019460543990135193
+              ],
+              "derivative_terms": [
+                0.01100856065750122,
+                -0.0013677600072696805,
+                -7.726950570940971e-06,
+                -0.0003216154291294515
+              ],
+              "target_change_rad": 0.006803750991821289,
+              "supported": true
+            },
+            {
+              "lane": 61,
+              "tick": 14,
+              "reference_digest": "a70ca5b9be6e2e6f6d5f2bdbdb9b93e4126bbd8cafc042976dbe936984bef5e7",
+              "reference_distance": 0.008564706891775131,
+              "measured": 0.0005323886871337891,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0030901432037353516,
+              "model_derivative": 0.0031065731309354305,
+              "at_native_midpoint": 0.0018501877784729004,
+              "with_native_difference": 0.0019908547401428223,
+              "measured_terms": [
+                0.001064300537109375,
+                6.005913019180298e-05,
+                1.7940998077392578e-05,
+                -0.0006098411977291107
+              ],
+              "derivative_terms": [
+                0.004280099179595709,
+                -0.0006846695905551314,
+                0.00011242147593293339,
+                -0.000601277919486165
+              ],
+              "target_change_rad": 0.009903311729431152,
+              "supported": true
+            },
+            {
+              "lane": 62,
+              "tick": 16,
+              "reference_digest": "a70ca5b9be6e2e6f6d5f2bdbdb9b93e4126bbd8cafc042976dbe936984bef5e7",
+              "reference_distance": 0.010778401046991348,
+              "measured": -0.00010836124420166016,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.006256699562072754,
+              "model_derivative": 0.006088331341743469,
+              "at_native_midpoint": 0.006661891937255859,
+              "with_native_difference": 0.0002390146255493164,
+              "measured_terms": [
+                0.003914237022399902,
+                -0.003054210916161537,
+                -0.0002499818801879883,
+                -0.0007182694971561432
+              ],
+              "derivative_terms": [
+                0.006986695341765881,
+                -0.0007449313998222351,
+                -0.00015796258230693638,
+                4.530185833573341e-06
+              ],
+              "target_change_rad": 0.005650639533996582,
+              "supported": true
+            },
+            {
+              "lane": 65,
+              "tick": 12,
+              "reference_digest": "0a344de2d10bb90a8358a7ac0b6eb700d1d4a1216350e86dd6ad64668d68943e",
+              "reference_distance": 0.002195865148678422,
+              "measured": 0.0009673237800598145,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0001531839370727539,
+              "model_derivative": 0.00015246501425281167,
+              "at_native_midpoint": -0.00010508298873901367,
+              "with_native_difference": 0.0009714365005493164,
+              "measured_terms": [
+                5.048513412475586e-05,
+                -0.0004458148032426834,
+                -0.0001697540283203125,
+                0.0015324018895626068
+              ],
+              "derivative_terms": [
+                -0.00068621028913185,
+                0.00025800507864914834,
+                2.4806169676594436e-05,
+                0.0005558640696108341
+              ],
+              "target_change_rad": 0.004812717437744141,
+              "supported": true
+            },
+            {
+              "lane": 76,
+              "tick": 5,
+              "reference_digest": "bbf2fcb1d1d4d2934de44a749640ae1eadbbc128b54f44bd1f3488ff5434fb2b",
+              "reference_distance": 0.015909796580672264,
+              "measured": 0.0011078119277954102,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.000812530517578125,
+              "model_derivative": 0.0008141164435073733,
+              "at_native_midpoint": 0.0019388198852539062,
+              "with_native_difference": -0.00014662742614746094,
+              "measured_terms": [
+                0.00164031982421875,
+                6.477534770965576e-05,
+                -8.636713027954102e-05,
+                -0.0005109012126922607
+              ],
+              "derivative_terms": [
+                0.002611353527754545,
+                -0.0010115648619830608,
+                -2.576801307441201e-05,
+                -0.0007599041564390063
+              ],
+              "target_change_rad": 0.006693482398986816,
+              "supported": true
+            },
+            {
+              "lane": 77,
+              "tick": 4,
+              "reference_digest": "c5e4c6da9386980c6701735ea9a577dc392aa193560ae5985ef5eaa8ab456d18",
+              "reference_distance": 0.002697109943255782,
+              "measured": -0.008680999279022217,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.00866013765335083,
+              "model_derivative": -0.008988844230771065,
+              "at_native_midpoint": -0.005455493927001953,
+              "with_native_difference": -0.014734625816345215,
+              "measured_terms": [
+                -0.005223512649536133,
+                -0.0019420748576521873,
+                -2.586841583251953e-05,
+                -0.001489618793129921
+              ],
+              "derivative_terms": [
+                -0.002250043209642172,
+                -0.005035656038671732,
+                7.788115908624604e-06,
+                -0.0017109329346567392
+              ],
+              "target_change_rad": 0.006405353546142578,
+              "supported": true
+            },
+            {
+              "lane": 81,
+              "tick": 12,
+              "reference_digest": "a70ca5b9be6e2e6f6d5f2bdbdb9b93e4126bbd8cafc042976dbe936984bef5e7",
+              "reference_distance": 0.022003691643476486,
+              "measured": 0.10127133131027222,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0008652806282043457,
+              "model_derivative": 0.003423484042286873,
+              "at_native_midpoint": 0.011725842952728271,
+              "with_native_difference": 0.09497660398483276,
+              "measured_terms": [
+                0.09484827518463135,
+                -0.010776415467262268,
+                -0.004553735256195068,
+                0.02175312303006649
+              ],
+              "derivative_terms": [
+                -0.02526872232556343,
+                -0.0021489402279257774,
+                0.00250955019146204,
+                0.02833159826695919
+              ],
+              "target_change_rad": 0.09984338283538818,
+              "supported": true
+            },
+            {
+              "lane": 84,
+              "tick": 11,
+              "reference_digest": "dcba932d5639cb3a00ac626b287548729cf7cba1e0b24ee3d8ba4e36ca7dbcf1",
+              "reference_distance": 0.008387780748307705,
+              "measured": -0.0012273192405700684,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.007903814315795898,
+              "model_derivative": -0.007908179424703121,
+              "at_native_midpoint": -0.009516537189483643,
+              "with_native_difference": -0.0011208057403564453,
+              "measured_terms": [
+                -0.0014479458332061768,
+                0.00026328861713409424,
+                0.00011938810348510742,
+                -0.00016197189688682556
+              ],
+              "derivative_terms": [
+                -0.004635256715118885,
+                -0.0023427645210176706,
+                3.5165317967766896e-05,
+                -0.0009653241140767932
+              ],
+              "target_change_rad": 0.006344795227050781,
+              "supported": true
+            },
+            {
+              "lane": 85,
+              "tick": 6,
+              "reference_digest": "aad870a7d927b11c060ace046fba34f2663fe497bf34ceb63a38e85a6878ce0b",
+              "reference_distance": 0.006559750065207481,
+              "measured": 0.00747305154800415,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.007745504379272461,
+              "model_derivative": 0.007592212408781052,
+              "at_native_midpoint": 0.007012128829956055,
+              "with_native_difference": 0.00944817066192627,
+              "measured_terms": [
+                0.010012924671173096,
+                -0.001151062548160553,
+                3.516674041748047e-06,
+                -0.0013923943042755127
+              ],
+              "derivative_terms": [
+                0.0066343205980956554,
+                0.0012443482410162687,
+                -3.514104901114479e-05,
+                -0.00025131533038802445
+              ],
+              "target_change_rad": 0.006662607192993164,
+              "supported": true
+            },
+            {
+              "lane": 87,
+              "tick": 11,
+              "reference_digest": "01acb0c8f5f728a14636531da507ce84102c990f75e47e22488ab89f35771f60",
+              "reference_distance": 0.00437078857794404,
+              "measured": -0.06714248657226562,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.05608367919921875,
+              "model_derivative": -0.06374800205230713,
+              "at_native_midpoint": -0.08140349388122559,
+              "with_native_difference": -0.045139312744140625,
+              "measured_terms": [
+                -0.033211469650268555,
+                -0.02516452968120575,
+                -6.616115570068359e-06,
+                -0.00875987857580185
+              ],
+              "derivative_terms": [
+                -0.026187848299741745,
+                -0.028411366045475006,
+                -2.5865738280117512e-05,
+                -0.009122926741838455
+              ],
+              "target_change_rad": 0.06791996955871582,
+              "supported": true
+            },
+            {
+              "lane": 89,
+              "tick": 4,
+              "reference_digest": "bbf2fcb1d1d4d2934de44a749640ae1eadbbc128b54f44bd1f3488ff5434fb2b",
+              "reference_distance": 0.012211102992296219,
+              "measured": -0.017875492572784424,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.013600528240203857,
+              "model_derivative": -0.013603491708636284,
+              "at_native_midpoint": -0.0135841965675354,
+              "with_native_difference": -0.01925361156463623,
+              "measured_terms": [
+                -0.012573421001434326,
+                -0.003945920616388321,
+                9.626150131225586e-05,
+                -0.0014523956924676895
+              ],
+              "derivative_terms": [
+                -0.00964480359107256,
+                -0.0029433032032102346,
+                9.2393733211793e-05,
+                -0.0011077788658440113
+              ],
+              "target_change_rad": 0.0056304931640625,
+              "supported": true
+            },
+            {
+              "lane": 94,
+              "tick": 15,
+              "reference_digest": "6ce449537b0336bc050f954e27486825204287648ac488efaffcd9df59182621",
+              "reference_distance": 0.006234990432858467,
+              "measured": 0.16043376922607422,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.11257705092430115,
+              "model_derivative": 0.11364378780126572,
+              "at_native_midpoint": 0.11939740180969238,
+              "with_native_difference": 0.10724470019340515,
+              "measured_terms": [
+                0.03654065728187561,
+                0.08696798980236053,
+                -0.00031185150146484375,
+                0.037237003445625305
+              ],
+              "derivative_terms": [
+                -0.05102682486176491,
+                0.12452802807092667,
+                -0.00012740603415295482,
+                0.040269993245601654
+              ],
+              "target_change_rad": 0.07818102836608887,
+              "supported": true
+            }
+          ],
+          "probe_actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90"
+        }
+      },
+      "substep": {
+        "disjoint": {
+          "native_arrival_substeps": false,
+          "lanes": 51,
+          "matched_and_inside": 41,
+          "above_noise": 41,
+          "scores": {
+            "model_difference": {
+              "same_direction": 31,
+              "gain_median": 0.8902926036715915
+            },
+            "model_derivative": {
+              "same_direction": 32,
+              "gain_median": 0.8279056556722388
+            },
+            "at_native_midpoint": {
+              "same_direction": 26,
+              "gain_median": 0.9488178403395635
+            },
+            "with_native_difference": {
+              "same_direction": 36,
+              "gain_median": 0.9369244551353446
+            }
+          },
+          "cases": [
+            {
+              "lane": 0,
+              "tick": 15,
+              "reference_digest": "e26584297d3e21e1137e6d0c41e28fb825fc6944bfa73afc5edb7a2534c04b64",
+              "reference_distance": 0.0043925028294324875,
+              "measured": 0.21686092019081116,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.10501199960708618,
+              "model_derivative": 0.10946810990571976,
+              "at_native_midpoint": 0.09514912962913513,
+              "with_native_difference": 0.21163645386695862,
+              "measured_terms": [
+                0.2133760303258896,
+                0.002462435979396105,
+                -0.01656627655029297,
+                0.01758873462677002
+              ],
+              "derivative_terms": [
+                0.07114702463150024,
+                0.020511705428361893,
+                -0.005166313610970974,
+                0.022975699976086617
+              ],
+              "target_change_rad": 0.11593186855316162,
+              "supported": true
+            },
+            {
+              "lane": 1,
+              "tick": 12,
+              "reference_digest": "4622e32394a55b00f2f0262d900077d3299a4a4f7e796c2c5b120b494bd9a432",
+              "reference_distance": 0.00480969063937664,
+              "measured": 0.007696628570556641,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0034748315811157227,
+              "model_derivative": 0.003555353032425046,
+              "at_native_midpoint": 0.004922389984130859,
+              "with_native_difference": 0.006055235862731934,
+              "measured_terms": [
+                0.000677943229675293,
+                0.005276128649711609,
+                -3.641843795776367e-05,
+                0.0017790943384170532
+              ],
+              "derivative_terms": [
+                -0.0018673223676159978,
+                0.003909858409315348,
+                -6.881168246763991e-06,
+                0.0015196979511529207
+              ],
+              "target_change_rad": 0.006572365760803223,
+              "supported": true
+            },
+            {
+              "lane": 2,
+              "tick": 10,
+              "reference_digest": "01acb0c8f5f728a14636531da507ce84102c990f75e47e22488ab89f35771f60",
+              "reference_distance": 0.006369177717715502,
+              "measured": -0.0010901093482971191,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0020829439163208008,
+              "model_derivative": 0.002045831410214305,
+              "at_native_midpoint": 0.006117880344390869,
+              "with_native_difference": -0.0037374496459960938,
+              "measured_terms": [
+                0.004459261894226074,
+                -0.005093038082122803,
+                1.424551010131836e-05,
+                -0.0004705749452114105
+              ],
+              "derivative_terms": [
+                0.008928278461098671,
+                -0.005571814253926277,
+                -2.6822506697499193e-05,
+                -0.0012838102411478758
+              ],
+              "target_change_rad": 0.0049599409103393555,
+              "supported": true
+            },
+            {
+              "lane": 3,
+              "tick": 15,
+              "reference_digest": "fdba947d7b7b37696d0934e108a31952a89793d731348ea0a3681d2c739be40a",
+              "reference_distance": 0.006165741942822933,
+              "measured": 0.007946252822875977,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.003344297409057617,
+              "model_derivative": 0.00338261341676116,
+              "at_native_midpoint": 0.0022429227828979492,
+              "with_native_difference": 0.009440779685974121,
+              "measured_terms": [
+                0.005381345748901367,
+                0.002009660005569458,
+                0.00013947486877441406,
+                0.0004158914089202881
+              ],
+              "derivative_terms": [
+                0.00046566780656576157,
+                0.0017288377275690436,
+                -9.587105159880593e-05,
+                0.0012839786941185594
+              ],
+              "target_change_rad": 0.007158994674682617,
+              "supported": true
+            },
+            {
+              "lane": 5,
+              "tick": 12,
+              "reference_digest": "dcba932d5639cb3a00ac626b287548729cf7cba1e0b24ee3d8ba4e36ca7dbcf1",
+              "reference_distance": 0.003382284427061677,
+              "measured": 0.004815220832824707,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0028105974197387695,
+              "model_derivative": 0.0008029482560232282,
+              "at_native_midpoint": 0.005003213882446289,
+              "with_native_difference": 0.003172636032104492,
+              "measured_terms": [
+                -0.00019919872283935547,
+                0.0020015351474285126,
+                -1.8835067749023438e-05,
+                0.003031603991985321
+              ],
+              "derivative_terms": [
+                -0.002128673018887639,
+                0.0008648379589430988,
+                -5.50715958524961e-05,
+                0.002121854806318879
+              ],
+              "target_change_rad": 0.007775545120239258,
+              "supported": true
+            },
+            {
+              "lane": 6,
+              "tick": 7,
+              "reference_digest": "01acb0c8f5f728a14636531da507ce84102c990f75e47e22488ab89f35771f60",
+              "reference_distance": 0.006518041715025902,
+              "measured": -0.016921162605285645,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.003313720226287842,
+              "model_derivative": -0.0033126105554401875,
+              "at_native_midpoint": -0.00512772798538208,
+              "with_native_difference": -0.015184938907623291,
+              "measured_terms": [
+                -0.0015378594398498535,
+                -0.009967580437660217,
+                -0.00012743473052978516,
+                -0.00528823584318161
+              ],
+              "derivative_terms": [
+                -0.0003400122805032879,
+                -0.0025665743742138147,
+                -0.00026904232800006866,
+                -0.00013698142720386386
+              ],
+              "target_change_rad": 0.005669236183166504,
+              "supported": true
+            },
+            {
+              "lane": 7,
+              "tick": 11,
+              "reference_digest": "fefa5c07ab76d05c9c52c48ebe5100754cc386916fb5150f33f9970d46267c16",
+              "reference_distance": 0.004027281887829304,
+              "measured": -0.005273878574371338,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.013345956802368164,
+              "model_derivative": -6.549153476953506e-05,
+              "at_native_midpoint": 0.013177692890167236,
+              "with_native_difference": -0.004498958587646484,
+              "measured_terms": [
+                -0.008027732372283936,
+                0.002272963523864746,
+                1.7285346984863281e-06,
+                0.0004791729152202606
+              ],
+              "derivative_terms": [
+                -0.007604577578604221,
+                0.0059392135590314865,
+                -2.9086131689837202e-05,
+                0.0016289586201310158
+              ],
+              "target_change_rad": 0.005282044410705566,
+              "supported": true
+            },
+            {
+              "lane": 8,
+              "tick": 11,
+              "reference_digest": "0a344de2d10bb90a8358a7ac0b6eb700d1d4a1216350e86dd6ad64668d68943e",
+              "reference_distance": 0.0036067648325115442,
+              "measured": -0.0014907121658325195,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.0009124279022216797,
+              "model_derivative": -0.0009491625241935253,
+              "at_native_midpoint": 2.3603439331054688e-05,
+              "with_native_difference": -0.0030994415283203125,
+              "measured_terms": [
+                0.001625657081604004,
+                -0.002778574824333191,
+                1.8477439880371094e-06,
+                -0.0003395788371562958
+              ],
+              "derivative_terms": [
+                0.0008042682893574238,
+                -0.0013296736869961023,
+                2.10781490750378e-05,
+                -0.0004448352847248316
+              ],
+              "target_change_rad": 0.005962252616882324,
+              "supported": true
+            },
+            {
+              "lane": 11,
+              "tick": 11,
+              "reference_digest": "0e5ca0e22cd2393909f7a96fe629d309ee09e0d5dea0550ef550cb33e394b485",
+              "reference_distance": 0.004925515037029982,
+              "measured": 0.0009232759475708008,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.004088878631591797,
+              "model_derivative": 0.004085722379386425,
+              "at_native_midpoint": 0.005385160446166992,
+              "with_native_difference": 0.001806497573852539,
+              "measured_terms": [
+                0.0032626986503601074,
+                -0.0010651201009750366,
+                -9.965896606445312e-05,
+                -0.001174628734588623
+              ],
+              "derivative_terms": [
+                0.0024456337559968233,
+                0.00047775826533325016,
+                -0.00013966098777018487,
+                0.0013019910547882318
+              ],
+              "target_change_rad": 0.00921785831451416,
+              "supported": true
+            },
+            {
+              "lane": 13,
+              "tick": 13,
+              "reference_digest": "60d37a4e6763e52fbe6f43b59ac08c2738cff8f9f9693399ec4604c715989f0f",
+              "reference_distance": 0.004756867419928312,
+              "measured": 6.085634231567383e-05,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0010401010513305664,
+              "model_derivative": 0.0011637471616268158,
+              "at_native_midpoint": -0.0003612041473388672,
+              "with_native_difference": 0.0010517239570617676,
+              "measured_terms": [
+                -3.719329833984375e-05,
+                -0.00016276538372039795,
+                2.9325485229492188e-05,
+                0.00023145601153373718
+              ],
+              "derivative_terms": [
+                0.002251504920423031,
+                -0.00022798043210059404,
+                3.978676977567375e-05,
+                -0.000899564300198108
+              ],
+              "target_change_rad": 0.0072023868560791016,
+              "supported": true
+            },
+            {
+              "lane": 14,
+              "tick": 7,
+              "reference_digest": "60d37a4e6763e52fbe6f43b59ac08c2738cff8f9f9693399ec4604c715989f0f",
+              "reference_distance": 0.013232100754976273,
+              "measured": -0.0017666816711425781,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.001618504524230957,
+              "model_derivative": -0.0016199462115764618,
+              "at_native_midpoint": -0.001201033592224121,
+              "with_native_difference": -0.0018213987350463867,
+              "measured_terms": [
+                -0.002213001251220703,
+                0.0002444535493850708,
+                -4.172325134277344e-06,
+                0.00020596012473106384
+              ],
+              "derivative_terms": [
+                0.0003843578742817044,
+                -0.0018564166966825724,
+                8.893408448784612e-06,
+                -0.0001567808212712407
+              ],
+              "target_change_rad": 0.005159735679626465,
+              "supported": true
+            },
+            {
+              "lane": 15,
+              "tick": 10,
+              "reference_digest": "aa208af43f448409296e261cd74b7c800082df0835ff4d797bb2fd9e99082ca3",
+              "reference_distance": 0.00758014852181077,
+              "measured": -0.1728581190109253,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.17426514625549316,
+              "model_derivative": -0.17646127939224243,
+              "at_native_midpoint": -0.18515777587890625,
+              "with_native_difference": -0.16195499897003174,
+              "measured_terms": [
+                -0.061855435371398926,
+                -0.09586566686630249,
+                0.00012630224227905273,
+                -0.015263181179761887
+              ],
+              "derivative_terms": [
+                -0.06176162511110306,
+                -0.10198981314897537,
+                0.0001831555418903008,
+                -0.012892995029687881
+              ],
+              "target_change_rad": 0.062143564224243164,
+              "supported": true
+            },
+            {
+              "lane": 16,
+              "tick": 10,
+              "reference_digest": "4ddc66b46d64d98564c8d8c489e917ecaa5d86710cb9f58022b44c9216cd34b0",
+              "reference_distance": 0.0006457065464928746,
+              "measured": 0.010033965110778809,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0026459693908691406,
+              "model_derivative": 0.0027559599839150906,
+              "at_native_midpoint": 0.004438340663909912,
+              "with_native_difference": 0.007667183876037598,
+              "measured_terms": [
+                -0.0003158450126647949,
+                0.0041624754667282104,
+                5.0067901611328125e-06,
+                0.006182324141263962
+              ],
+              "derivative_terms": [
+                -0.00010410149116069078,
+                -0.000411320012062788,
+                -5.090921331429854e-05,
+                0.0033222907222807407
+              ],
+              "target_change_rad": 0.0063059329986572266,
+              "supported": true
+            },
+            {
+              "lane": 17,
+              "tick": 11,
+              "reference_digest": "6ce449537b0336bc050f954e27486825204287648ac488efaffcd9df59182621",
+              "reference_distance": 0.0020734320860356092,
+              "measured": -0.0039253830909729,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.003494739532470703,
+              "model_derivative": -0.0034704532008618116,
+              "at_native_midpoint": -0.005774021148681641,
+              "with_native_difference": -0.0006148815155029297,
+              "measured_terms": [
+                0.00011309981346130371,
+                -0.002957325428724289,
+                7.05718994140625e-05,
+                -0.0011517442762851715
+              ],
+              "derivative_terms": [
+                -0.003051952226087451,
+                0.00013289705384522676,
+                0.00015636147873010486,
+                -0.0007077595801092684
+              ],
+              "target_change_rad": 0.007882833480834961,
+              "supported": true
+            },
+            {
+              "lane": 18,
+              "tick": 11,
+              "reference_digest": "01acb0c8f5f728a14636531da507ce84102c990f75e47e22488ab89f35771f60",
+              "reference_distance": 0.005592143163084984,
+              "measured": 0.07623249292373657,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.05920517444610596,
+              "model_derivative": 0.05637088045477867,
+              "at_native_midpoint": 0.0738135576248169,
+              "with_native_difference": 0.07034337520599365,
+              "measured_terms": [
+                0.15698683261871338,
+                -0.03215605765581131,
+                -6.788969039916992e-05,
+                -0.04853035509586334
+              ],
+              "derivative_terms": [
+                0.09109458327293396,
+                -0.008225093595683575,
+                0.0012493167305365205,
+                -0.027747925370931625
+              ],
+              "target_change_rad": 0.09797000885009766,
+              "supported": true
+            },
+            {
+              "lane": 21,
+              "tick": 9,
+              "reference_digest": "fdba947d7b7b37696d0934e108a31952a89793d731348ea0a3681d2c739be40a",
+              "reference_distance": 0.004209126345813274,
+              "measured": 0.003946065902709961,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.011391639709472656,
+              "model_derivative": 0.011393110267817974,
+              "at_native_midpoint": 0.009972631931304932,
+              "with_native_difference": 0.0032669901847839355,
+              "measured_terms": [
+                0.0015714168548583984,
+                0.002177290618419647,
+                -6.699562072753906e-05,
+                0.0002643316984176636
+              ],
+              "derivative_terms": [
+                0.006655371282249689,
+                0.003949570469558239,
+                -0.00012219708878546953,
+                0.0009103653719648719
+              ],
+              "target_change_rad": 0.004655241966247559,
+              "supported": true
+            },
+            {
+              "lane": 30,
+              "tick": 16,
+              "reference_digest": "60d37a4e6763e52fbe6f43b59ac08c2738cff8f9f9693399ec4604c715989f0f",
+              "reference_distance": 0.003717915853485465,
+              "measured": 0.0035102367401123047,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0024161338806152344,
+              "model_derivative": 0.002711316104978323,
+              "at_native_midpoint": 0.0026772022247314453,
+              "with_native_difference": 0.0034068822860717773,
+              "measured_terms": [
+                0.004362285137176514,
+                -0.002244725823402405,
+                1.800060272216797e-05,
+                0.0013747811317443848
+              ],
+              "derivative_terms": [
+                0.002850923454388976,
+                -0.00047185609582811594,
+                3.7605663237627596e-05,
+                0.00029464319231919944
+              ],
+              "target_change_rad": 0.00575566291809082,
+              "supported": true
+            },
+            {
+              "lane": 34,
+              "tick": 10,
+              "reference_digest": "cf2ab6c45e1585f8ee7c4022d09171b9ad946457c9a1aa570158c9582d229c81",
+              "reference_distance": 0.005225749686360359,
+              "measured": 0.0025817155838012695,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0016396045684814453,
+              "model_derivative": 0.0018416395178064704,
+              "at_native_midpoint": -0.0018110275268554688,
+              "with_native_difference": 0.0038318634033203125,
+              "measured_terms": [
+                -0.0011255741119384766,
+                0.002066969871520996,
+                0.00011628866195678711,
+                0.0015239492058753967
+              ],
+              "derivative_terms": [
+                0.0022757602855563164,
+                -0.0018511377274990082,
+                0.00018766199355013669,
+                0.001229354995302856
+              ],
+              "target_change_rad": 0.00532686710357666,
+              "supported": true
+            },
+            {
+              "lane": 37,
+              "tick": 11,
+              "reference_digest": "fefa5c07ab76d05c9c52c48ebe5100754cc386916fb5150f33f9970d46267c16",
+              "reference_distance": 0.006764098070561886,
+              "measured": -0.004856109619140625,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0006189346313476562,
+              "model_derivative": 0.0001895985333248973,
+              "at_native_midpoint": 0.0010040998458862305,
+              "with_native_difference": -0.005004286766052246,
+              "measured_terms": [
+                -0.010995447635650635,
+                0.004483312368392944,
+                -3.30805778503418e-05,
+                0.0016892403364181519
+              ],
+              "derivative_terms": [
+                -0.008319195359945297,
+                0.006779215764254332,
+                1.635696753510274e-05,
+                0.0017132211942225695
+              ],
+              "target_change_rad": 0.006093263626098633,
+              "supported": true
+            },
+            {
+              "lane": 38,
+              "tick": 16,
+              "reference_digest": "fdba947d7b7b37696d0934e108a31952a89793d731348ea0a3681d2c739be40a",
+              "reference_distance": 0.0035409729462116957,
+              "measured": 0.0016300082206726074,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.004854142665863037,
+              "model_derivative": 0.004932059906423092,
+              "at_native_midpoint": 0.003995299339294434,
+              "with_native_difference": 0.0019078850746154785,
+              "measured_terms": [
+                -0.0009806156158447266,
+                0.002016723155975342,
+                -0.00028067827224731445,
+                0.000874541699886322
+              ],
+              "derivative_terms": [
+                0.0011214297264814377,
+                0.0027970527298748493,
+                -9.718946239445359e-05,
+                0.0011107667814940214
+              ],
+              "target_change_rad": 0.005684494972229004,
+              "supported": true
+            },
+            {
+              "lane": 39,
+              "tick": 14,
+              "reference_digest": "89c08198b13cbdad0f45c9bdfb732304310253c1481c5a02719d35b1877231b6",
+              "reference_distance": 0.002175964880734682,
+              "measured": -0.01074439287185669,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.02643764019012451,
+              "model_derivative": -0.022811591625213623,
+              "at_native_midpoint": 0.004471778869628906,
+              "with_native_difference": -0.03648144006729126,
+              "measured_terms": [
+                0.009419918060302734,
+                -0.001482248306274414,
+                -0.0003597736358642578,
+                -0.01832234114408493
+              ],
+              "derivative_terms": [
+                -0.011472866870462894,
+                -0.0004891669377684593,
+                -0.00027592465630732477,
+                -0.010573632083833218
+              ],
+              "target_change_rad": 0.039989590644836426,
+              "supported": true
+            },
+            {
+              "lane": 41,
+              "tick": 12,
+              "reference_digest": "89c08198b13cbdad0f45c9bdfb732304310253c1481c5a02719d35b1877231b6",
+              "reference_distance": 0.0030494527891278267,
+              "measured": 0.03417980670928955,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.030037403106689453,
+              "model_derivative": -0.028297655284404755,
+              "at_native_midpoint": -0.032430410385131836,
+              "with_native_difference": 0.03763389587402344,
+              "measured_terms": [
+                0.025529861450195312,
+                0.002298206090927124,
+                0.0012559890747070312,
+                0.005095750093460083
+              ],
+              "derivative_terms": [
+                -0.021074973046779633,
+                -0.009571944363415241,
+                0.00026371897547505796,
+                0.002085541607812047
+              ],
+              "target_change_rad": 0.029002666473388672,
+              "supported": true
+            },
+            {
+              "lane": 46,
+              "tick": 7,
+              "reference_digest": "4622e32394a55b00f2f0262d900077d3299a4a4f7e796c2c5b120b494bd9a432",
+              "reference_distance": 0.007810584269464016,
+              "measured": -0.0005055665969848633,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0030847787857055664,
+              "model_derivative": 0.0026418748311698437,
+              "at_native_midpoint": 0.001056671142578125,
+              "with_native_difference": 0.00042998790740966797,
+              "measured_terms": [
+                0.0018870234489440918,
+                -0.001481860876083374,
+                6.854534149169922e-05,
+                -0.0009793713688850403
+              ],
+              "derivative_terms": [
+                -0.0004202279669698328,
+                0.0021153283305466175,
+                -1.7678288713796064e-05,
+                0.0009644526289775968
+              ],
+              "target_change_rad": 0.006586432456970215,
+              "supported": true
+            },
+            {
+              "lane": 48,
+              "tick": 10,
+              "reference_digest": "cf2ab6c45e1585f8ee7c4022d09171b9ad946457c9a1aa570158c9582d229c81",
+              "reference_distance": 0.01716412417590618,
+              "measured": -0.009135961532592773,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.0032682418823242188,
+              "model_derivative": -0.003053699852898717,
+              "at_native_midpoint": -0.001623392105102539,
+              "with_native_difference": -0.01031559705734253,
+              "measured_terms": [
+                -0.012642741203308105,
+                0.0022767484188079834,
+                -5.352497100830078e-05,
+                0.0012833364307880402
+              ],
+              "derivative_terms": [
+                -0.004009027499705553,
+                0.0009664790122769773,
+                -1.6787042113719508e-05,
+                5.63568391953595e-06
+              ],
+              "target_change_rad": 0.00887608528137207,
+              "supported": true
+            },
+            {
+              "lane": 49,
+              "tick": 13,
+              "reference_digest": "0235dd54a781ef915c0077fc97ad9d1c07633a2fd26760135eec5e8c2edc25c3",
+              "reference_distance": 0.004843195900321007,
+              "measured": -0.3302590847015381,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.31565284729003906,
+              "model_derivative": -0.3207515478134155,
+              "at_native_midpoint": -0.36270713806152344,
+              "with_native_difference": -0.29417210817337036,
+              "measured_terms": [
+                -0.125684916973114,
+                -0.15955770015716553,
+                -0.00047093629837036133,
+                -0.044545408338308334
+              ],
+              "derivative_terms": [
+                -0.13215939700603485,
+                -0.14942480623722076,
+                0.0013644903665408492,
+                -0.040531836450099945
+              ],
+              "target_change_rad": 0.13205647468566895,
+              "supported": true
+            },
+            {
+              "lane": 50,
+              "tick": 13,
+              "reference_digest": "4ddc66b46d64d98564c8d8c489e917ecaa5d86710cb9f58022b44c9216cd34b0",
+              "reference_distance": 0.0038921476807445288,
+              "measured": 0.0005177855491638184,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.0006663799285888672,
+              "model_derivative": -0.0006683443789370358,
+              "at_native_midpoint": -0.0008133649826049805,
+              "with_native_difference": 0.000572502613067627,
+              "measured_terms": [
+                -0.00045031309127807617,
+                0.0010216310620307922,
+                -1.3828277587890625e-05,
+                -3.968924283981323e-05
+              ],
+              "derivative_terms": [
+                0.000387137639336288,
+                -0.0012038054410368204,
+                2.995520844706334e-06,
+                0.00014532788190990686
+              ],
+              "target_change_rad": 0.006065011024475098,
+              "supported": true
+            },
+            {
+              "lane": 51,
+              "tick": 9,
+              "reference_digest": "4ddc66b46d64d98564c8d8c489e917ecaa5d86710cb9f58022b44c9216cd34b0",
+              "reference_distance": 0.0035140030086040497,
+              "measured": 0.0016377568244934082,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.0024166107177734375,
+              "model_derivative": -0.002443027915433049,
+              "at_native_midpoint": 0.0005161762237548828,
+              "with_native_difference": -0.00041288137435913086,
+              "measured_terms": [
+                0.0018809139728546143,
+                -0.0009727030992507935,
+                -7.152557373046875e-07,
+                0.0007302612066268921
+              ],
+              "derivative_terms": [
+                0.00042382298852317035,
+                -0.0019287173636257648,
+                -9.257455531042069e-07,
+                -0.0009372077765874565
+              ],
+              "target_change_rad": 0.006989836692810059,
+              "supported": true
+            },
+            {
+              "lane": 53,
+              "tick": 14,
+              "reference_digest": "7f2b95576761e3cff53418d3ef56f435b42c97e690d288295ad7e23cfbb4503d",
+              "reference_distance": 0.008310065604746342,
+              "measured": -0.0006921887397766113,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.0034629106521606445,
+              "model_derivative": -0.003389376914128661,
+              "at_native_midpoint": -0.004202604293823242,
+              "with_native_difference": 0.0002523064613342285,
+              "measured_terms": [
+                -0.0022002458572387695,
+                0.0009221732616424561,
+                0.0002053380012512207,
+                0.0003804825246334076
+              ],
+              "derivative_terms": [
+                -0.00469968281686306,
+                0.0010330833029001951,
+                -1.907713885884732e-05,
+                0.0002962997823487967
+              ],
+              "target_change_rad": 0.005843162536621094,
+              "supported": true
+            },
+            {
+              "lane": 57,
+              "tick": 8,
+              "reference_digest": "9242cab5ab1cfbcf3bb6caed9d011ed231867cad8020157c55c644f01723428f",
+              "reference_distance": 0.0032816759776324034,
+              "measured": -0.0015137195587158203,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0016067028045654297,
+              "model_derivative": 0.0016594638582319021,
+              "at_native_midpoint": 0.00016415119171142578,
+              "with_native_difference": -0.000910639762878418,
+              "measured_terms": [
+                -0.0014847517013549805,
+                8.884232374839485e-05,
+                0.00011098384857177734,
+                -0.0002286834642291069
+              ],
+              "derivative_terms": [
+                0.0005639876471832395,
+                0.0003270567976869643,
+                0.00018210979760624468,
+                0.0005863096448592842
+              ],
+              "target_change_rad": 0.005843758583068848,
+              "supported": true
+            },
+            {
+              "lane": 59,
+              "tick": 10,
+              "reference_digest": "aa208af43f448409296e261cd74b7c800082df0835ff4d797bb2fd9e99082ca3",
+              "reference_distance": 0.006132822949439287,
+              "measured": 0.00464475154876709,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.006915450096130371,
+              "model_derivative": 0.008339133113622665,
+              "at_native_midpoint": 0.0072214603424072266,
+              "with_native_difference": 0.0041664838790893555,
+              "measured_terms": [
+                0.006390094757080078,
+                -0.0019002556800842285,
+                -3.9637088775634766e-05,
+                0.00019460637122392654
+              ],
+              "derivative_terms": [
+                0.011696765199303627,
+                -0.003031846834346652,
+                -4.171632554061944e-06,
+                -0.00032161339186131954
+              ],
+              "target_change_rad": 0.006803750991821289,
+              "supported": true
+            },
+            {
+              "lane": 61,
+              "tick": 14,
+              "reference_digest": "aa208af43f448409296e261cd74b7c800082df0835ff4d797bb2fd9e99082ca3",
+              "reference_distance": 0.008564706891775131,
+              "measured": -0.0014125704765319824,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0036295652389526367,
+              "model_derivative": 0.0038329698145389557,
+              "at_native_midpoint": 0.002389371395111084,
+              "with_native_difference": 4.595518112182617e-05,
+              "measured_terms": [
+                0.0024954676628112793,
+                -0.0033188611268997192,
+                2.0623207092285156e-05,
+                -0.0006098393350839615
+              ],
+              "derivative_terms": [
+                0.0047330791130661964,
+                -0.00041331889224238694,
+                0.00011448868463048711,
+                -0.0006012792000547051
+              ],
+              "target_change_rad": 0.009903311729431152,
+              "supported": true
+            },
+            {
+              "lane": 62,
+              "tick": 16,
+              "reference_digest": "aa208af43f448409296e261cd74b7c800082df0835ff4d797bb2fd9e99082ca3",
+              "reference_distance": 0.010778401046991348,
+              "measured": -0.0045337677001953125,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.004098415374755859,
+              "model_derivative": 0.003699817694723606,
+              "at_native_midpoint": 0.004503488540649414,
+              "with_native_difference": -0.0041866302490234375,
+              "measured_terms": [
+                0.0040471553802490234,
+                -0.007616683840751648,
+                -0.0002459883689880371,
+                -0.0007182620465755463
+              ],
+              "derivative_terms": [
+                0.007057393901050091,
+                -0.0032053454779088497,
+                -0.00015676509065087885,
+                4.534405888989568e-06
+              ],
+              "target_change_rad": 0.005650639533996582,
+              "supported": true
+            },
+            {
+              "lane": 65,
+              "tick": 12,
+              "reference_digest": "0a344de2d10bb90a8358a7ac0b6eb700d1d4a1216350e86dd6ad64668d68943e",
+              "reference_distance": 0.002195865148678422,
+              "measured": 0.0009673237800598145,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.0001531839370727539,
+              "model_derivative": 0.00015246501425281167,
+              "at_native_midpoint": -0.00010508298873901367,
+              "with_native_difference": 0.0009714365005493164,
+              "measured_terms": [
+                5.048513412475586e-05,
+                -0.0004458148032426834,
+                -0.0001697540283203125,
+                0.0015324018895626068
+              ],
+              "derivative_terms": [
+                -0.00068621028913185,
+                0.00025800507864914834,
+                2.4806169676594436e-05,
+                0.0005558640696108341
+              ],
+              "target_change_rad": 0.004812717437744141,
+              "supported": true
+            },
+            {
+              "lane": 76,
+              "tick": 5,
+              "reference_digest": "bbf2fcb1d1d4d2934de44a749640ae1eadbbc128b54f44bd1f3488ff5434fb2b",
+              "reference_distance": 0.015909796580672264,
+              "measured": 0.0011078119277954102,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.000812530517578125,
+              "model_derivative": 0.0008141164435073733,
+              "at_native_midpoint": 0.0019388198852539062,
+              "with_native_difference": -0.00014662742614746094,
+              "measured_terms": [
+                0.00164031982421875,
+                6.477534770965576e-05,
+                -8.636713027954102e-05,
+                -0.0005109012126922607
+              ],
+              "derivative_terms": [
+                0.002611353527754545,
+                -0.0010115648619830608,
+                -2.576801307441201e-05,
+                -0.0007599041564390063
+              ],
+              "target_change_rad": 0.006693482398986816,
+              "supported": true
+            },
+            {
+              "lane": 77,
+              "tick": 4,
+              "reference_digest": "4ddc66b46d64d98564c8d8c489e917ecaa5d86710cb9f58022b44c9216cd34b0",
+              "reference_distance": 0.002697109943255782,
+              "measured": -0.00465923547744751,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.0027770400047302246,
+              "model_derivative": -0.002880602842196822,
+              "at_native_midpoint": 0.00042742490768432617,
+              "with_native_difference": -0.010712981224060059,
+              "measured_terms": [
+                -0.0010807514190673828,
+                -0.0020666494965553284,
+                -2.2172927856445312e-05,
+                -0.0014896159991621971
+              ],
+              "derivative_terms": [
+                0.00036787334829568863,
+                -0.0015460122376680374,
+                8.472193258057814e-06,
+                -0.0017109361942857504
+              ],
+              "target_change_rad": 0.006405353546142578,
+              "supported": true
+            },
+            {
+              "lane": 81,
+              "tick": 12,
+              "reference_digest": "aa208af43f448409296e261cd74b7c800082df0835ff4d797bb2fd9e99082ca3",
+              "reference_distance": 0.022003691643476486,
+              "measured": 0.13187897205352783,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.043669164180755615,
+              "model_derivative": 0.04231246933341026,
+              "at_native_midpoint": 0.054529547691345215,
+              "with_native_difference": 0.12428450584411621,
+              "measured_terms": [
+                0.0565946102142334,
+                0.05817106366157532,
+                -0.004639685153961182,
+                0.02175300382077694
+              ],
+              "derivative_terms": [
+                -0.025673067197203636,
+                0.03723745793104172,
+                0.002416557865217328,
+                0.028331520035862923
+              ],
+              "target_change_rad": 0.09984338283538818,
+              "supported": true
+            },
+            {
+              "lane": 84,
+              "tick": 11,
+              "reference_digest": "dcba932d5639cb3a00ac626b287548729cf7cba1e0b24ee3d8ba4e36ca7dbcf1",
+              "reference_distance": 0.008387780748307705,
+              "measured": -0.0012273192405700684,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.007903814315795898,
+              "model_derivative": -0.007908179424703121,
+              "at_native_midpoint": -0.009516537189483643,
+              "with_native_difference": -0.0011208057403564453,
+              "measured_terms": [
+                -0.0014479458332061768,
+                0.00026328861713409424,
+                0.00011938810348510742,
+                -0.00016197189688682556
+              ],
+              "derivative_terms": [
+                -0.004635256715118885,
+                -0.0023427645210176706,
+                3.5165317967766896e-05,
+                -0.0009653241140767932
+              ],
+              "target_change_rad": 0.006344795227050781,
+              "supported": true
+            },
+            {
+              "lane": 85,
+              "tick": 6,
+              "reference_digest": "aad870a7d927b11c060ace046fba34f2663fe497bf34ceb63a38e85a6878ce0b",
+              "reference_distance": 0.006559750065207481,
+              "measured": 0.00747305154800415,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.007745504379272461,
+              "model_derivative": 0.007592212408781052,
+              "at_native_midpoint": 0.007012128829956055,
+              "with_native_difference": 0.00944817066192627,
+              "measured_terms": [
+                0.010012924671173096,
+                -0.001151062548160553,
+                3.516674041748047e-06,
+                -0.0013923943042755127
+              ],
+              "derivative_terms": [
+                0.0066343205980956554,
+                0.0012443482410162687,
+                -3.514104901114479e-05,
+                -0.00025131533038802445
+              ],
+              "target_change_rad": 0.006662607192993164,
+              "supported": true
+            },
+            {
+              "lane": 87,
+              "tick": 11,
+              "reference_digest": "01acb0c8f5f728a14636531da507ce84102c990f75e47e22488ab89f35771f60",
+              "reference_distance": 0.00437078857794404,
+              "measured": -0.06714248657226562,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.05608367919921875,
+              "model_derivative": -0.06374800205230713,
+              "at_native_midpoint": -0.08140349388122559,
+              "with_native_difference": -0.045139312744140625,
+              "measured_terms": [
+                -0.033211469650268555,
+                -0.02516452968120575,
+                -6.616115570068359e-06,
+                -0.00875987857580185
+              ],
+              "derivative_terms": [
+                -0.026187848299741745,
+                -0.028411366045475006,
+                -2.5865738280117512e-05,
+                -0.009122926741838455
+              ],
+              "target_change_rad": 0.06791996955871582,
+              "supported": true
+            },
+            {
+              "lane": 89,
+              "tick": 4,
+              "reference_digest": "bbf2fcb1d1d4d2934de44a749640ae1eadbbc128b54f44bd1f3488ff5434fb2b",
+              "reference_distance": 0.012211102992296219,
+              "measured": -0.017875492572784424,
+              "nominal_repeat": 0.0,
+              "model_difference": -0.013600528240203857,
+              "model_derivative": -0.013603491708636284,
+              "at_native_midpoint": -0.0135841965675354,
+              "with_native_difference": -0.01925361156463623,
+              "measured_terms": [
+                -0.012573421001434326,
+                -0.003945920616388321,
+                9.626150131225586e-05,
+                -0.0014523956924676895
+              ],
+              "derivative_terms": [
+                -0.00964480359107256,
+                -0.0029433032032102346,
+                9.2393733211793e-05,
+                -0.0011077788658440113
+              ],
+              "target_change_rad": 0.0056304931640625,
+              "supported": true
+            },
+            {
+              "lane": 94,
+              "tick": 15,
+              "reference_digest": "6ce449537b0336bc050f954e27486825204287648ac488efaffcd9df59182621",
+              "reference_distance": 0.006234990432858467,
+              "measured": 0.16043376922607422,
+              "nominal_repeat": 0.0,
+              "model_difference": 0.11257705092430115,
+              "model_derivative": 0.11364378780126572,
+              "at_native_midpoint": 0.11939740180969238,
+              "with_native_difference": 0.10724470019340515,
+              "measured_terms": [
+                0.03654065728187561,
+                0.08696798980236053,
+                -0.00031185150146484375,
+                0.037237003445625305
+              ],
+              "derivative_terms": [
+                -0.05102682486176491,
+                0.12452802807092667,
+                -0.00012740603415295482,
+                0.040269993245601654
+              ],
+              "target_change_rad": 0.07818102836608887,
+              "supported": true
+            }
+          ],
+          "probe_actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90"
+        }
+      }
+    }
+  },
+  "native_arrival_substeps": false,
+  "actor_updates": 0,
+  "contact_receipt": false,
+  "scope": "Frozen models and references evaluated against signed native command sequences. No policy updates or promotion."
+}

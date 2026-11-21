@@ -51,7 +51,7 @@ class PhysicalHorizonTrainer:
                  native_reference_target_budget_rad=None,trainable_names=None,
                  block_name='approach',actor_lr=5e-5,reference_bank=None,
                  tracking_weight=0.0,world_lr=2e-4,racket_loss_weight=1.0,
-                 approach_objective='task',toi_racket_weight=1.0):
+                 approach_objective='task',toi_racket_weight=1.0,toi_plane_offset_m=0.):
         self.actor,self.adapter,self.timebase=actor,adapter,timebase
         width=adapter.critic_input(initial_state).shape[-1]
         self.critic=MLP(width,(512,256,128),1).to(initial_state.physical.device)
@@ -69,6 +69,7 @@ class PhysicalHorizonTrainer:
             raise ValueError('Unknown Approach objective')
         self.approach_objective=approach_objective
         self.toi_racket_weight=float(toi_racket_weight)
+        self.toi_plane_offset_m=float(toi_plane_offset_m)
         if self.toi_racket_weight < 0:
             raise ValueError('toi_racket_weight must be nonnegative')
         self.natural_flight_loss="huber"
@@ -243,7 +244,7 @@ class PhysicalHorizonTrainer:
                 event_time=torch.where(base.planned,event_time,torch.full_like(event_time,float('nan')))
             if toi_only:
                 reference=bind_intercept_reference(state,self.reference_bank,self.adapter.physical_model.geometry,
-                                                   cfg.imagination_steps*cfg.control_dt_s)
+                                                   cfg.imagination_steps*cfg.control_dt_s,plane_offset_m=self.toi_plane_offset_m)
             else:
                 reference=self.reference_bank.bind(state.physical,self.block_name,geometry=self.adapter.physical_model.geometry,
                     elapsed=state.clock_goal_context['elapsed'],event_time=event_time)

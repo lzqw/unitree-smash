@@ -1,4 +1,7 @@
 """Causal flight intercept and successful native racket targets for Approach."""
+import math
+import statistics
+
 import torch
 from torch.nn import functional as F
 
@@ -7,8 +10,30 @@ from quadsmash.control.initial_intercept import predict_initial_intercept
 from .supermimic_racket_dynamics_v1 import racket_state
 
 
+def calibrated_plane_offset(calibration, held, checkpoint_sha256):
+    if (calibration['schema'] != 'training-native-contact-target-plane-v1'
+            or calibration['checkpoint_sha256'] != checkpoint_sha256):
+        raise ValueError('Arrival-plane calibration has a different checkpoint identity')
+    training = calibration['training']
+    if (not training or len({p['seed'] for p in training}) != len(training)
+            or any(set(p['lanes']) & set(held) for p in training)):
+        raise ValueError('Invalid training lanes or repeated prefixes for arrival-plane fit')
+    values = []
+    for panel in training:
+        ids = [r['lane'] for r in panel['cases']]
+        if len(ids) != len(set(ids)) or not set(ids) <= set(panel['lanes']):
+            raise ValueError('Invalid arrival-plane case identity')
+        values.extend(r['native_minus_plane_m'] for r in panel['cases'] if r['qualified'] and r['valid'])
+    if not values or not all(map(math.isfinite, values)) or len(values) != calibration['fit_samples']:
+        raise ValueError('Invalid native contact observations for plane offset')
+    offset = statistics.median(values)
+    if offset != calibration['plane_offset_m']:
+        raise ValueError('Stored offset differs from the fitted native contact locations')
+    return offset
+
+
 @torch.no_grad()
-def flight_intercept(state, horizon):
+def flight_intercept(state, horizon, *, plane_offset_m=0.):
     """Recompute the intercept from the current public observation and fixed G07 plan."""
     controller = state.executor_memory.reference_controller
     observation = state.observation.detach().cpu().numpy()
@@ -19,6 +44,14 @@ def flight_intercept(state, horizon):
         forecast = predict_initial_intercept(*inputs, dt=.001, max_seconds=horizon)
     else:
         forecast = predict_height_intercept(*inputs, controller.height_intercept, dt=.001, max_seconds=horizon)
+    if plane_offset_m:
+        # Forecast the earlier incoming ball center on the same public free-flight path.
+        # The execution controller keeps its original plan.
+        adjusted_plane = forecast['position_m'][:, 0] + plane_offset_m
+        shifted = predict_initial_intercept(observation, inputs[1], inputs[2], adjusted_plane,
+                                            controller.physics, dt=.001, max_seconds=horizon)
+        shifted['valid'] &= forecast['valid']
+        forecast = shifted
     elapsed = state.clock_goal_context['elapsed'].reshape(-1)
     valid = torch.as_tensor(forecast['valid'], device=elapsed.device) & state.clock_goal_context['ball_present'].reshape(-1).bool()
     duration = torch.as_tensor(forecast['arrival_time_s']).to(elapsed)
@@ -28,8 +61,8 @@ def flight_intercept(state, horizon):
                 position=torch.where(valid[:, None], position, torch.zeros_like(position)), valid=valid)
 
 
-def bind_intercept_reference(state, bank, geometry, horizon):
-    forecast = flight_intercept(state, horizon)
+def bind_intercept_reference(state, bank, geometry, horizon, *, plane_offset_m=0.):
+    forecast = flight_intercept(state, horizon, plane_offset_m=plane_offset_m)
     elapsed = state.clock_goal_context['elapsed'].reshape(-1)
     reference = bank.bind(state.physical, 'approach', geometry=geometry, elapsed=elapsed,
                           event_time=forecast['time'], require_toi=True)

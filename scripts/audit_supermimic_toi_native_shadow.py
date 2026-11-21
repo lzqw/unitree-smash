@@ -125,7 +125,8 @@ def run(args):
                                       target_delta_budget_rad=ck['config'].get('target_delta_budget_rad',.04),
                                       native_reference_command_budget=ck['config'].get('native_reference_command_budget'),
                                       native_reference_target_budget_rad=ck['config'].get('native_reference_target_budget_rad'),
-                                      reference_bank=bank,approach_objective='toi_racket_only',toi_racket_weight=1.)
+                                      reference_bank=bank,approach_objective='toi_racket_only',toi_racket_weight=1.,
+                                      toi_plane_offset_m=(ck['config'].get('intercept_plane_calibration') or {}).get('offset_m',0.))
         trainer.critic.load_state_dict(ck['critic'],strict=True)
         critic_sha=tensor_digest(trainer.critic.state_dict().items())
         with frozen(adapter,trainer.critic):
