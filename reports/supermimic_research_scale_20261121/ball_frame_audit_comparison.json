@@ -1,0 +1,46 @@
+{
+  "cpu": {
+    "equal_frames": 18,
+    "lanes": 128,
+    "frames_per_timing": 96,
+    "old_s": [
+      0.09146999201038852,
+      0.09100662099081092,
+      0.09077971999067813
+    ],
+    "new_s": [
+      0.08135581098031253,
+      0.08099733098060824,
+      0.08040405399515294
+    ],
+    "median_old_s": 0.09100662099081092,
+    "median_new_s": 0.08099733098060824,
+    "sweep_misses": 11,
+    "unresolved": 459,
+    "confirmed": 328
+  },
+  "cuda:0": {
+    "equal_frames": 18,
+    "lanes": 128,
+    "frames_per_timing": 96,
+    "old_s": [
+      0.4062419419933576,
+      0.48455342699890025,
+      0.48448957299115136
+    ],
+    "new_s": [
+      0.2096763539884705,
+      0.20928527100477368,
+      0.21366628698888235
+    ],
+    "median_old_s": 0.48448957299115136,
+    "median_new_s": 0.2096763539884705,
+    "sweep_misses": 11,
+    "unresolved": 459,
+    "confirmed": 328
+  },
+  "baseline_commit": "fae8cb6",
+  "scope": "BallEnv._consume_physics_frame on synthetic sensor tensors and the real r3 string geometry. No Isaac stepping. Shared GPU with G1.",
+  "parity": "Compared every mutable tensor on the frame fixture and ContactEpisodes after each of 18 frames, with zero absolute and relative tolerance and matching NaNs.",
+  "timing": "96 mixed frames, timing includes synthetic input updates; synchronize CUDA before/after; 3 repetitions per version. Near-lane counts cycle 0,9,38,128,17,2. Four conservative sweep iterations deliberately exercise unresolved paths in this fixture only."
+}

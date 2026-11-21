@@ -266,19 +266,23 @@ class BallEnv(JumpEnv):
         tool_position = data.body_pos_w[:, self.racket_body_id]
         tool_quaternion = data.body_quat_w[:, self.racket_body_id]
         near_tool = (position - tool_position).square().sum(dim=-1) <= 0.45 ** 2
-        swept = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
-        unresolved = torch.zeros_like(swept)
-        if bool(near_tool.any()):
-            # Avoid invoking conservative advancement for
-            # the overwhelmingly common far-away shuttle frames.  The
-            # query itself remains unchanged for every near-tool frame.
-            hit, _, unresolved_near = self._tool_sweep(self.previous_ball_position[near_tool], position[near_tool],
-                self.previous_tool_position[near_tool], tool_position[near_tool], self.previous_tool_quaternion[near_tool],
-                tool_quaternion[near_tool])
-            swept[near_tool] = hit
-            unresolved[near_tool] = unresolved_near
+        near_ids = torch.where(near_tool)[0]
+        candidate = torch.zeros_like(near_tool)
+        unresolved = torch.zeros_like(near_tool)
+        if near_ids.numel():
+            previous_ball = self.previous_ball_position[near_ids]
+            previous_tool = self.previous_tool_position[near_ids]
+            previous_rotation = self.previous_tool_quaternion[near_ids]
+            hit, _, unresolved_near = self._tool_sweep(
+                previous_ball, position[near_ids], previous_tool, tool_position[near_ids],
+                previous_rotation, tool_quaternion[near_ids])
+            # Only swept lanes can start the missing-force timer.
+            previous_gap = self._tool_gap(previous_ball, previous_tool, previous_rotation)
+            ready = self.sweep_ready[near_ids]
+            candidate[near_ids] = hit & ready & (previous_gap > 1e-5) & ~touching[near_ids]
+            unresolved[near_ids] = unresolved_near & ready
             if getattr(self, 'capture_sweep_failures', False):
-                failed_ids = torch.where(near_tool)[0][unresolved_near & self.sweep_ready[near_tool]]
+                failed_ids = near_ids[unresolved_near & ready]
                 for i in failed_ids.cpu().tolist():
                     self.sweep_failure_records.append(dict(
                         kind='unresolved conservative sweep; counted as numerical failure', env_id=i,
@@ -289,23 +293,20 @@ class BallEnv(JumpEnv):
                         quat_start=self.previous_tool_quaternion[i].cpu().tolist(), quat_end=tool_quaternion[i].cpu().tolist(),
                         **self._sweep_geometry_spec(), radius=self.cfg.shuttle_radius_m,
                         iterations=self.cfg.sweep_audit_iterations, tolerance=1e-6, dtype=str(position.dtype)))
-        previous_gap = self._tool_gap(self.previous_ball_position, self.previous_tool_position,
-            self.previous_tool_quaternion)
-        candidate = swept & self.sweep_ready & (previous_gap > 1e-5) & (~touching)
         pending = self.pending_sweep_age >= 0
-        self.pending_sweep_age[pending] += 1
-        self.pending_sweep_age[candidate & (~pending)] = 0
-        self.pending_sweep_age[touching] = -1
+        self.pending_sweep_age.add_(pending)
+        self.pending_sweep_age.masked_fill_(candidate & ~pending, 0)
+        self.pending_sweep_age.masked_fill_(touching, -1)
         expired = self.pending_sweep_age >= 2
         self.sweep_misses += expired.long()
-        self.pending_sweep_age[expired] = -1
-        self.sweep_unresolved += (unresolved & self.sweep_ready).long()
+        self.pending_sweep_age.masked_fill_(expired, -1)
+        self.sweep_unresolved += unresolved.long()
         self.previous_tool_position.copy_(tool_position)
         self.previous_tool_quaternion.copy_(tool_quaternion)
         self.sweep_ready[:] = True
         self.ball_clock += self.physics_dt
         first = new & (~self.contact_seen)
-        self.contact_time[first] = self.ball_clock[first]
+        torch.where(first, self.ball_clock, self.contact_time, out=self.contact_time)
         self._contact_bonus += first.float()
         self.contact_seen |= new
         feet_air = self.observed_airborne
@@ -313,8 +314,8 @@ class BallEnv(JumpEnv):
         gravity = torch.tensor(self.cfg.sim.gravity, device=self.device)
         impulse = self.cfg.shuttle_mass_kg * (velocity - self.previous_ball_velocity - gravity*self.physics_dt) - self.previous_drag*self.physics_dt
         self.contact_impulse += torch.where(touching, impulse.norm(dim=-1), 0.0)
-        self.outgoing_speed[touching] = velocity[touching].norm(dim=-1)
-        self.outgoing_vz[touching] = velocity[touching, 2]
+        torch.where(touching, velocity.norm(dim=-1), self.outgoing_speed, out=self.outgoing_speed)
+        torch.where(touching, velocity[:, 2], self.outgoing_vz, out=self.outgoing_vz)
         other_force = self.shuttle_contact.data.net_forces_w[:, 0] - racket_force - ground_force
         self.body_contact_seen |= other_force.norm(dim=-1) > PHYSICS["contact_force_threshold_n"]
         old_local, local = self.previous_ball_position - self.scene.env_origins, position - self.scene.env_origins
@@ -330,9 +331,10 @@ class BallEnv(JumpEnv):
         distance = (position - data.body_pos_w[:, self.racket_body_id]).norm(dim=-1)
         closer = distance < self.ball_min_distance
         self.ball_min_distance.copy_(torch.minimum(self.ball_min_distance, distance))
-        self.ball_min_distance_time[closer] = self.ball_clock[closer]
-        self.ball_min_distance_ball[closer] = position[closer] - self.scene.env_origins[closer]
-        self.ball_min_distance_tool[closer] = data.body_pos_w[closer, self.racket_body_id] - self.scene.env_origins[closer]
+        torch.where(closer, self.ball_clock, self.ball_min_distance_time, out=self.ball_min_distance_time)
+        torch.where(closer[:, None], local, self.ball_min_distance_ball, out=self.ball_min_distance_ball)
+        torch.where(closer[:, None], tool_position - self.scene.env_origins, self.ball_min_distance_tool,
+                    out=self.ball_min_distance_tool)
         self.previous_ball_position.copy_(position)
         self.previous_ball_velocity.copy_(velocity)
 
