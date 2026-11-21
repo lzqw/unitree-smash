@@ -1,0 +1,2630 @@
+{
+  "schema": "supermimic-paired-fixed-case-evaluation-v1",
+  "stage": "recovery8",
+  "case_count": 128,
+  "case_ids": [
+    "A-720401-000",
+    "A-720401-001",
+    "A-720401-002",
+    "A-720401-003",
+    "A-720401-004",
+    "A-720401-005",
+    "A-720401-006",
+    "A-720401-007",
+    "A-720401-008",
+    "A-720401-009",
+    "A-720401-010",
+    "A-720401-011",
+    "A-720401-012",
+    "A-720401-013",
+    "A-720401-014",
+    "A-720401-015",
+    "A-720401-016",
+    "A-720401-017",
+    "A-720401-018",
+    "A-720401-019",
+    "A-720401-020",
+    "A-720401-021",
+    "A-720401-022",
+    "A-720401-023",
+    "A-720401-024",
+    "A-720401-025",
+    "A-720401-026",
+    "A-720401-027",
+    "A-720401-028",
+    "A-720401-029",
+    "A-720401-030",
+    "A-720401-031",
+    "A-720401-032",
+    "A-720401-033",
+    "A-720401-034",
+    "A-720401-035",
+    "A-720401-036",
+    "A-720401-037",
+    "A-720401-038",
+    "A-720401-039",
+    "A-720401-040",
+    "A-720401-041",
+    "A-720401-042",
+    "A-720401-043",
+    "A-720401-044",
+    "A-720401-045",
+    "A-720401-046",
+    "A-720401-047",
+    "A-720401-048",
+    "A-720401-049",
+    "A-720401-050",
+    "A-720401-051",
+    "A-720401-052",
+    "A-720401-053",
+    "A-720401-054",
+    "A-720401-055",
+    "A-720401-056",
+    "A-720401-057",
+    "A-720401-058",
+    "A-720401-059",
+    "A-720401-060",
+    "A-720401-061",
+    "A-720401-062",
+    "A-720401-063",
+    "B-720402-000",
+    "B-720402-001",
+    "B-720402-002",
+    "B-720402-003",
+    "B-720402-004",
+    "B-720402-005",
+    "B-720402-006",
+    "B-720402-007",
+    "B-720402-008",
+    "B-720402-009",
+    "B-720402-010",
+    "B-720402-011",
+    "B-720402-012",
+    "B-720402-013",
+    "B-720402-014",
+    "B-720402-015",
+    "B-720402-016",
+    "B-720402-017",
+    "B-720402-018",
+    "B-720402-019",
+    "B-720402-020",
+    "B-720402-021",
+    "B-720402-022",
+    "B-720402-023",
+    "B-720402-024",
+    "B-720402-025",
+    "B-720402-026",
+    "B-720402-027",
+    "B-720402-028",
+    "B-720402-029",
+    "B-720402-030",
+    "B-720402-031",
+    "B-720402-032",
+    "B-720402-033",
+    "B-720402-034",
+    "B-720402-035",
+    "B-720402-036",
+    "B-720402-037",
+    "B-720402-038",
+    "B-720402-039",
+    "B-720402-040",
+    "B-720402-041",
+    "B-720402-042",
+    "B-720402-043",
+    "B-720402-044",
+    "B-720402-045",
+    "B-720402-046",
+    "B-720402-047",
+    "B-720402-048",
+    "B-720402-049",
+    "B-720402-050",
+    "B-720402-051",
+    "B-720402-052",
+    "B-720402-053",
+    "B-720402-054",
+    "B-720402-055",
+    "B-720402-056",
+    "B-720402-057",
+    "B-720402-058",
+    "B-720402-059",
+    "B-720402-060",
+    "B-720402-061",
+    "B-720402-062",
+    "B-720402-063"
+  ],
+  "before": {
+    "completed_episodes": 128,
+    "qualified_airborne_string_contact": 74,
+    "qualified_airborne_string_contact_rate": 0.578125,
+    "ball_side_complete_except_recovery": 54,
+    "ball_side_complete_except_recovery_rate": 0.421875,
+    "conditional_recovery_count": 36,
+    "conditional_recovery_denominator": 74,
+    "recovery_given_airborne_string_contact": 0.4864864864864865,
+    "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+    "complete5": 26,
+    "complete5_rate": 0.203125,
+    "native_episode_return_observed_count": 128,
+    "native_episode_return_missing_count": 0,
+    "native_episode_return_mean": -10.874005721576468,
+    "native_episode_return_std": 50.15741076553481,
+    "native_episode_return_min": -91.65631435364321,
+    "native_episode_return_max": 64.98194240025805,
+    "native_episode_return_last": -35.70089594152614,
+    "native_return_definition": "undiscounted_sum_of_native_control_step_rewards_v1"
+  },
+  "after": {
+    "completed_episodes": 128,
+    "qualified_airborne_string_contact": 74,
+    "qualified_airborne_string_contact_rate": 0.578125,
+    "ball_side_complete_except_recovery": 56,
+    "ball_side_complete_except_recovery_rate": 0.4375,
+    "conditional_recovery_count": 36,
+    "conditional_recovery_denominator": 74,
+    "recovery_given_airborne_string_contact": 0.4864864864864865,
+    "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+    "complete5": 28,
+    "complete5_rate": 0.21875,
+    "native_episode_return_observed_count": 128,
+    "native_episode_return_missing_count": 0,
+    "native_episode_return_mean": -9.428616360067867,
+    "native_episode_return_std": 50.70340958734038,
+    "native_episode_return_min": -91.62223675241012,
+    "native_episode_return_max": 65.01157379423421,
+    "native_episode_return_last": -35.70010114346587,
+    "native_return_definition": "undiscounted_sum_of_native_control_step_rewards_v1"
+  },
+  "deltas": {
+    "qualified_airborne_string_contact_rate": 0.0,
+    "ball_side_complete_except_recovery_rate": 0.015625,
+    "recovery_given_airborne_string_contact": 0.0,
+    "complete5_rate": 0.015625,
+    "native_episode_return_mean": 1.4453893615086013
+  },
+  "failure_taxonomy_before": {
+    "ball_side_failure": 20,
+    "body_ground": 60,
+    "complete5_failure": 102,
+    "no_qualified_contact": 54,
+    "rally_fault": 16,
+    "recovery_failure": 28,
+    "success": 26
+  },
+  "failure_taxonomy_after": {
+    "ball_side_failure": 18,
+    "body_ground": 57,
+    "complete5_failure": 100,
+    "no_qualified_contact": 54,
+    "rally_fault": 16,
+    "recovery_failure": 28,
+    "success": 28
+  },
+  "case_deltas": [
+    {
+      "case_id": "A-720401-000",
+      "return_delta": 0.004582272933475906,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-001",
+      "return_delta": 71.97823162636905,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": true,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-002",
+      "return_delta": 0.00019737872389669064,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-003",
+      "return_delta": 0.07260297844095476,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-004",
+      "return_delta": 0.0007398724555969238,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-005",
+      "return_delta": 40.40819546788725,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-006",
+      "return_delta": 0.038167965235061274,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-007",
+      "return_delta": -1.861914336935115,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-008",
+      "return_delta": 0.26230347083492234,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-009",
+      "return_delta": -4.343486640760602,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-010",
+      "return_delta": -0.0020486640842136694,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-011",
+      "return_delta": -0.0015833838060643757,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "ball_side_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-012",
+      "return_delta": 3.122761609117333,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-013",
+      "return_delta": 0.04354498603515822,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-014",
+      "return_delta": 0.002133682370185852,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-015",
+      "return_delta": -0.029100818751885527,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-016",
+      "return_delta": -0.42092026060345233,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-017",
+      "return_delta": 69.27862231135896,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": true,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-018",
+      "return_delta": 40.39898378563521,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-019",
+      "return_delta": 0.2668196075301239,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-020",
+      "return_delta": -0.29959656615574204,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-021",
+      "return_delta": -0.24149778697210422,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-022",
+      "return_delta": 0.04724880467438197,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-023",
+      "return_delta": -72.22586441075418,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": false,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-024",
+      "return_delta": -0.02301477172113664,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-025",
+      "return_delta": -0.0013980756230012048,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-026",
+      "return_delta": -0.004917369595204946,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-027",
+      "return_delta": 0.24311318449872488,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-028",
+      "return_delta": -0.006050012877494737,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-029",
+      "return_delta": -0.08440335430213963,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-030",
+      "return_delta": -2.8222085284387504,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-031",
+      "return_delta": 0.0017531561079522362,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-032",
+      "return_delta": 40.27889780973783,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": true,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-033",
+      "return_delta": 0.5692783550639433,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-034",
+      "return_delta": 0.08586145780918741,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-035",
+      "return_delta": 31.12377146941708,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": true,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-036",
+      "return_delta": -0.02394273192703622,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-037",
+      "return_delta": 71.52988959897311,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": true,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-038",
+      "return_delta": -0.23633133673683915,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-039",
+      "return_delta": 0.025209308374996908,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-040",
+      "return_delta": 4.579739812973912,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-041",
+      "return_delta": 0.04631736103237927,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-042",
+      "return_delta": 3.1075638215875188,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-043",
+      "return_delta": -0.009107830268476391,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-044",
+      "return_delta": 15.168835867196321,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-045",
+      "return_delta": -0.0006479765615949873,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-046",
+      "return_delta": -0.023617842177827697,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-047",
+      "return_delta": 0.006860017341296043,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-048",
+      "return_delta": -0.2664721848541376,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-049",
+      "return_delta": -0.08692656467246707,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-050",
+      "return_delta": 4.250369724189568,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-051",
+      "return_delta": 0.03381803305546782,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-052",
+      "return_delta": -0.024758493795161485,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-053",
+      "return_delta": -0.5685445073413575,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-054",
+      "return_delta": 40.384992518743275,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-055",
+      "return_delta": -0.002533933909944608,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-056",
+      "return_delta": 0.01965260348697484,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-057",
+      "return_delta": -0.07812214509795012,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-058",
+      "return_delta": -0.18546019156747207,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-059",
+      "return_delta": -0.026781734369251353,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-060",
+      "return_delta": 0.030484581902783248,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "A-720401-061",
+      "return_delta": 40.18679614585926,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "A-720401-062",
+      "return_delta": 0.23139234525433494,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "A-720401-063",
+      "return_delta": -67.57080937641967,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": false,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-000",
+      "return_delta": -0.00024609549291199073,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-001",
+      "return_delta": -0.0023870178970355482,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-002",
+      "return_delta": -0.0008690394461154938,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-003",
+      "return_delta": -71.69236839073437,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": false,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-004",
+      "return_delta": 12.346837925191721,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-005",
+      "return_delta": -0.017309422755715786,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-006",
+      "return_delta": -40.25241628276581,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-007",
+      "return_delta": 39.880998812934195,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-008",
+      "return_delta": -0.7782553656052187,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-009",
+      "return_delta": 0.07290185769488744,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-010",
+      "return_delta": -15.494395455845734,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-011",
+      "return_delta": -0.12428186959914456,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-012",
+      "return_delta": 0.3211631588637829,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-013",
+      "return_delta": -69.69360080536876,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": false,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-014",
+      "return_delta": 0.31989584118127823,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-015",
+      "return_delta": -25.666516404739014,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-016",
+      "return_delta": -0.0010450079944348545,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-017",
+      "return_delta": 48.91167525515448,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-018",
+      "return_delta": 0.578616101807711,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-019",
+      "return_delta": -0.004131134876843134,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-020",
+      "return_delta": -0.0010281173099428997,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "B-720402-021",
+      "return_delta": 0.017592673832041328,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-022",
+      "return_delta": -49.1966788348318,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-023",
+      "return_delta": 0.6098914794965822,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-024",
+      "return_delta": 0.5737731456756592,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-025",
+      "return_delta": 0.007067929953336716,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-026",
+      "return_delta": -0.001784146155387134,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-027",
+      "return_delta": 0.4370150802878925,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-028",
+      "return_delta": 0.018953386694192886,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-029",
+      "return_delta": 40.63605958864582,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-030",
+      "return_delta": -0.004007007738437096,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "B-720402-031",
+      "return_delta": 71.29807513390915,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": true,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "B-720402-032",
+      "return_delta": 0.21516748086105508,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-033",
+      "return_delta": 0.6548998184775883,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-034",
+      "return_delta": 0.026347010178142227,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-035",
+      "return_delta": -51.9721882327558,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-036",
+      "return_delta": -0.001296003563766135,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-037",
+      "return_delta": -0.07942278256541613,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-038",
+      "return_delta": 0.0025388861022292986,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-039",
+      "return_delta": 0.004840109907490842,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-040",
+      "return_delta": 0.0032676607370376587,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-041",
+      "return_delta": -0.017279982566833496,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-042",
+      "return_delta": 0.002605977790153702,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-043",
+      "return_delta": -0.02232959651701094,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-044",
+      "return_delta": -0.000136498361825943,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-045",
+      "return_delta": -39.98505067939368,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-046",
+      "return_delta": -0.02448888123035431,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-047",
+      "return_delta": 5.279769464992114,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-048",
+      "return_delta": -0.0030970646139394375,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-049",
+      "return_delta": 1.3013875856995583,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-050",
+      "return_delta": 40.67216341401809,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-051",
+      "return_delta": -40.58212629014679,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "recovery_failure",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "recovery_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-052",
+      "return_delta": 0.000437222421169281,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-053",
+      "return_delta": 0.0016388781368732452,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-054",
+      "return_delta": 0.005848759999480535,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-055",
+      "return_delta": 0.026333435858759913,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-056",
+      "return_delta": 0.6202954557065823,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-057",
+      "return_delta": 0.00011723150328180054,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "B-720402-058",
+      "return_delta": -0.0007067136466503143,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-059",
+      "return_delta": 0.0038772446282564488,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "rally_fault",
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    },
+    {
+      "case_id": "B-720402-060",
+      "return_delta": 0.015598863363265991,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-061",
+      "return_delta": -0.589278351269968,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ],
+      "failure_after": [
+        "ball_side_failure",
+        "complete5_failure",
+        "body_ground"
+      ]
+    },
+    {
+      "case_id": "B-720402-062",
+      "return_delta": -0.007558082001196453,
+      "contact_before": true,
+      "contact_after": true,
+      "ball_side_before": true,
+      "ball_side_after": true,
+      "complete5_before": true,
+      "complete5_after": true,
+      "failure_before": [
+        "success"
+      ],
+      "failure_after": [
+        "success"
+      ]
+    },
+    {
+      "case_id": "B-720402-063",
+      "return_delta": 0.000794798060269386,
+      "contact_before": false,
+      "contact_after": false,
+      "ball_side_before": false,
+      "ball_side_after": false,
+      "complete5_before": false,
+      "complete5_after": false,
+      "failure_before": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ],
+      "failure_after": [
+        "no_qualified_contact",
+        "complete5_failure"
+      ]
+    }
+  ],
+  "actor_parameter_delta": {
+    "available": false
+  },
+  "actor_kl": null,
+  "action_rms": null,
+  "critic_td": null,
+  "wm_holdout": null,
+  "action_metrics_available": false,
+  "paired_case_identity_verified": true,
+  "actor_kl_available": false,
+  "native_sources": [
+    {
+      "actor_sha256": "73a3194ea2e44122df13663bcad9e9b0b543b7c6429bf3b06b133bfb1244646a",
+      "seed": 882072,
+      "path": "/home/autodrive/LZQW/experiments/supermimic_frozen_closure_20261117_223243/run",
+      "metrics_sha256": "3c57153902da99d6f9d79b3cb5408355c101e8ab5955570a869ead8f05653f77",
+      "episodes_sha256": "3612e13826b2f578719202c3f98d0b1a199aa00c09a5dd7a7db94712a5277d91"
+    },
+    {
+      "actor_sha256": "0c3ca08275fade74893ea5df7603210cbde2c1e7b9c2934bed756685774b1038",
+      "seed": 882072,
+      "path": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/sweep_r32_run_queue/native_r08",
+      "metrics_sha256": "88c6f4d0b088378be7ca711d8ee1261af6e2b73f60a6ee72401be82fdf712db5",
+      "episodes_sha256": "ae068fd212234a3062155e218ba309e3996921d8f13413ca286a97d9fd58b3b0"
+    }
+  ],
+  "identical_initial_states": true
+}
