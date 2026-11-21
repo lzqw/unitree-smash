@@ -10,6 +10,38 @@ from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branc
 from quadsmash.rl.supermimic_native_pair_capture_v1 import tree_digest
 
 
+def window_force_balance(traces, physics):
+    """Close linear momentum independently on each isolated racket-loaded lane/tick."""
+    rows = []
+    for trace in traces:
+        t = trace['tensors']
+        dt = trace['physics_dt_s']
+        if dt != physics['native_physics_dt_s'] or trace['contact_metadata']['friction_source'] != 'physx_filtered_racket_pair':
+            raise ValueError('Native trace clock or filtered contact sensor differs')
+        vel = t['shuttle_state_w'][:, :, 7:10].double()
+        rel = vel[:-1] - vel.new_tensor(physics['wind_m_s'])
+        free = dt * (vel.new_tensor([0., 0., -9.81]) - physics['quadratic_drag_k_per_m'] * rel.norm(dim=-1, keepdim=True) * rel)
+        normal, friction = (t[key][1:].double() for key in ('racket_force_w', 'racket_friction_force_w'))
+        loaded = torch.maximum(normal.norm(dim=-1), friction.norm(dim=-1)).amax(0) > physics['contact_force_threshold_n']
+        other = torch.maximum(t['ground_force_w'][1:].norm(dim=-1).amax(0),
+                              t['net_force_matrix_w'][1:].reshape(len(free), len(loaded), -1, 3).norm(dim=-1).amax((0, 2)))
+        isolated = loaded & (other <= physics['contact_force_threshold_n'])
+        observed = vel[-1] - vel[0] - free.sum(0)
+        normal_dv = normal.sum(0) * (dt / physics['mass_kg'])
+        friction_dv = friction.sum(0) * (dt / physics['mass_kg'])
+        rows.append(torch.stack((observed, normal_dv, friction_dv), 1)[isolated])
+    values = torch.cat(rows)
+    if not torch.isfinite(values).all():
+        raise ValueError('Nonfinite native momentum measurements')
+    if not len(values):
+        return dict(isolated_loaded_lane_ticks=0)
+    observed, normal, friction = values.unbind(1)
+    error = (observed - normal - friction).norm(dim=-1)
+    return dict(isolated_loaded_lane_ticks=len(values), normal_only_rmse_mps=float((observed-normal).square().mean().sqrt()),
+                normal_and_friction_rmse_mps=float((observed-normal-friction).square().mean().sqrt()),
+                residual_norm_p95_mps=float(error.quantile(.95)), measured_impact_norm_median_mps=float(observed.norm(dim=-1).median()))
+
+
 def compare(folder):
     status = json.loads((folder.parent/'status.json').read_text())
     receipts = {row['branch']: row for row in status['completed'] if row['spec'] == folder.name}

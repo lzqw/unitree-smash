@@ -72,7 +72,8 @@ def evaluate(prior, model, dataset):
     return metrics(dataset, outputs)
 
 
-def signed_training_capture(root, development_root, prior, mass):
+def signed_training_capture(root, development_root, prior, physics):
+    from audit_supermimic_nominal_contact_repeat import window_force_balance
     from audit_supermimic_native_window_response import complete_window
     from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branch
 
@@ -102,17 +103,19 @@ def signed_training_capture(root, development_root, prior, mass):
     stable_lanes = [lane for lane, ok in zip(lane_ids, (usable & stable).any(0).tolist()) if ok]
     labels = {}
     status = json.loads((root / 'status.json').read_text())
+    balances = {}
     for b in rows:
         run = _load_branch(root / status['completed'][0]['spec'], b)
         ts = complete_window(run['raw'], run['spec'], prior.steps)
-        labels[b] = torch.cat([tr['tensors']['racket_friction_force_w'][1:].sum(0) * (prior.sub_dt/mass) for tr in ts])
+        balances[b] = window_force_balance(ts, physics)
+        labels[b] = torch.cat([tr['tensors']['racket_friction_force_w'][1:].sum(0) * (prior.sub_dt/physics['mass_kg']) for tr in ts])
         if labels[b].shape != rows[b]['target'].shape or not torch.isfinite(labels[b]).all():
             raise ValueError('G07 friction labels do not match native transitions')
     return (rows, groups, repeats), labels, dict(status_sha256=sha(root/'status.json'), commands=commands,
         lane_counts={k:by_lane.count(k) for k in sorted(set(by_lane))},
         control_interval_counts={k:groups.count(k) for k in sorted(set(groups))},
         supported_racket_lane_ticks=int(usable.sum()), supported_racket_lane_ids=supported_lanes,
-        supported_stable_contact_lane_ids=stable_lanes)
+        supported_stable_contact_lane_ids=stable_lanes, measured_momentum_balance=balances)
 
 
 def body_transfer(root, checkpoint, prior, model, groups, repeats, sequences, commands, replay=None, source_stage=None, measured=None, racket_outputs=None, body_anchor_interval=None):
@@ -224,7 +227,7 @@ def main():
     panels = [(train,labels,reference)]
     training_g07 = None
     if a.g07_training:
-        gtrain, glabels, training_g07 = signed_training_capture(a.g07_training,a.g07_development,prior,physics['mass_kg'])
+        gtrain, glabels, training_g07 = signed_training_capture(a.g07_training,a.g07_development,prior,physics)
         panels.append((gtrain,glabels,friction_errors(initial,gtrain,glabels)))
     if any(ref['absolute'] <= 0 or ref['signed'] <= 0 for _,_,ref in panels):
         raise ValueError('No measurable signed friction in a requested calibration source')

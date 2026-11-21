@@ -66,3 +66,26 @@ def test_zero_residual_reproduces_calibrated_slip_and_gradient_only_on_racket():
     torch.testing.assert_close(result, base.toi_response(row, present)['impulse_residual_dv'], rtol=0, atol=0)
     result.sum().backward()
     torch.testing.assert_close(head.coefficients.grad, torch.tensor([[1., 1., 1.], [0., 0., 0.], [0., 0., 0.]]))
+
+
+def test_window_force_balance_uses_filtered_friction_and_excludes_ground():
+    from scripts.audit_supermimic_nominal_contact_repeat import window_force_balance
+
+    dt = .01
+    physics = dict(native_physics_dt_s=dt, mass_kg=.01, wind_m_s=[0, 0, 0],
+                   quadratic_drag_k_per_m=0., contact_force_threshold_n=.001)
+    state = torch.zeros(2, 2, 13, dtype=torch.float64)
+    state[1, 0, 7:10] = torch.tensor([1., -.2, -9.81*dt], dtype=state.dtype)
+    state[1, 1, 7:10] = 100.
+    normal = torch.zeros(2, 2, 3, dtype=state.dtype)
+    normal[1, :, 0] = 1.
+    friction = torch.zeros_like(normal)
+    friction[1, :, 1] = -.2
+    ground = torch.zeros_like(normal)
+    ground[1, 1, 2] = 1.
+    trace = dict(physics_dt_s=dt, contact_metadata=dict(friction_source='physx_filtered_racket_pair'),
+                 tensors=dict(shuttle_state_w=state, racket_force_w=normal, racket_friction_force_w=friction,
+                              ground_force_w=ground, net_force_matrix_w=torch.zeros(2, 2, 1, 3)))
+    result = window_force_balance([trace], physics)
+    assert result['isolated_loaded_lane_ticks'] == 1
+    assert result['normal_and_friction_rmse_mps'] < 1e-12 < result['normal_only_rmse_mps']
