@@ -1,0 +1,16 @@
+........................................................................ [ 11%]
+........................................................................ [ 23%]
+........................................................................ [ 35%]
+........................................................................ [ 46%]
+........................................................................ [ 58%]
+........................................................................ [ 70%]
+........................................................................ [ 81%]
+........................................................................ [ 93%]
+.......................................                                  [100%]
+=============================== warnings summary ===============================
+tests/test_supermimic_retained_exception_audit.py::test_audit_finds_retained_exception_without_clearing_trace_or_dumping_values
+  /home/autodrive/supermimic_work_20261118/quadsmash/rl/supermimic_retained_exception_audit.py:44: FutureWarning: `torch.distributed.reduce_op` is deprecated, please use `torch.distributed.ReduceOp` instead
+    if isinstance(item, BaseException) and item.__traceback__ is not None]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+615 passed, 1 warning in 4.50s
