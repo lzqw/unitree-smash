@@ -1,0 +1,110 @@
+{
+  "paired_refresh": {
+    "baseline_world_updates": 152,
+    "baseline_world_sha256": "34c66416b6d191b5292750b18ce649df54c7148f45ae6002841f26f00adbae79",
+    "all": {
+      "cases": 111,
+      "released": 111,
+      "matched_hits": 110,
+      "before": {
+        "predicted_hits": 110,
+        "common_hit_mae_mps": 0.3417003761638295,
+        "common_hit_bias_mps": 0.13687676949934527,
+        "common_hit_false_above": 11,
+        "common_hit_false_below": 0
+      },
+      "after": {
+        "predicted_hits": 110,
+        "common_hit_mae_mps": 0.3415123332630504,
+        "common_hit_bias_mps": 0.13961966254494407,
+        "common_hit_false_above": 11,
+        "common_hit_false_below": 0
+      }
+    },
+    "excluded_lanes": {
+      "cases": 70,
+      "released": 70,
+      "matched_hits": 69,
+      "before": {
+        "predicted_hits": 69,
+        "common_hit_mae_mps": 0.35190146902333136,
+        "common_hit_bias_mps": 0.12836294588835342,
+        "common_hit_false_above": 6,
+        "common_hit_false_below": 0
+      },
+      "after": {
+        "predicted_hits": 69,
+        "common_hit_mae_mps": 0.3510592640310094,
+        "common_hit_bias_mps": 0.1314489254053088,
+        "common_hit_false_above": 6,
+        "common_hit_false_below": 0
+      }
+    },
+    "training_lanes": {
+      "cases": 41,
+      "released": 41,
+      "matched_hits": 41,
+      "before": {
+        "predicted_hits": 41,
+        "common_hit_mae_mps": 0.3245326833027165,
+        "common_hit_bias_mps": 0.15120491167394126,
+        "common_hit_false_above": 5,
+        "common_hit_false_below": 0
+      },
+      "after": {
+        "predicted_hits": 41,
+        "common_hit_mae_mps": 0.32544554733648534,
+        "common_hit_bias_mps": 0.1533704152921351,
+        "common_hit_false_above": 5,
+        "common_hit_false_below": 0
+      }
+    },
+    "sole_speed_losses": {
+      "cases": 6,
+      "released": 6,
+      "matched_hits": 6,
+      "before": {
+        "predicted_hits": 6,
+        "common_hit_mae_mps": 0.357319434483846,
+        "common_hit_bias_mps": 0.204878568649292,
+        "common_hit_false_above": 3,
+        "common_hit_false_below": 0
+      },
+      "after": {
+        "predicted_hits": 6,
+        "common_hit_mae_mps": 0.3422176043192546,
+        "common_hit_bias_mps": 0.22373787562052408,
+        "common_hit_false_above": 3,
+        "common_hit_false_below": 0
+      }
+    }
+  },
+  "after_world_sha256": "aea2a1fd32b9318a989e118a2d1d5e98761619d961e3d4db234b8744ddd1bc8b",
+  "after_world_updates": 160,
+  "checkpoint_actor_sha256": "0dd50008ce58ec90a91eb747cf5d3fd2f9165374e3eabb77744b0ea86fb5295e",
+  "behavior_actor_sha256": "4f2ef434d001647c84686dd47c5b42252e04fe4b0bcbc5151d32b9a55cb07c09",
+  "source_chunks": [
+    {
+      "file": "chunk_00008.pt.zst",
+      "sha256": "0173a6221302dca1267b88e61d2a237711f48c849661f08026689846c2b03796",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00009.pt.zst",
+      "sha256": "d52c3082aa259d61995ec596b084cbf056e46d7c3e17d2e6d30d4997634d8a81",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00010.pt.zst",
+      "sha256": "ca4134086d0ac3144a4aa9e3762ffdbf4230d290184f8696a99566f565436926",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00011.pt.zst",
+      "sha256": "6e9de896c9dc253f56a1a9f3fa5f3702b2c7bdda09cccf7dbbf3fdd8d7dd8eb8",
+      "ticks": 32
+    }
+  ],
+  "excluded_lanes_definition": "Excluded from online fitting in this arm, according to train/config.json",
+  "scope": "Three recorded commands starting one tick before native first contact. Predicted body, ball and feet roll freely. Native scoring latches the last touch velocity. Common-boundary numbers use one step from the native first-contact start."
+}
