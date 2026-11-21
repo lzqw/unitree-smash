@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from quadsmash.rl.supermimic_independent_panel import load_panel, panel_batch
+from quadsmash.rl.supermimic_independent_panel import fixed128_cases, load_panel, panel_batch
 from quadsmash.rl.supermimic_native_metrics import RETURN_DEFINITION
 from scripts.evaluate_supermimic_independent512 import collect_scores
 
@@ -23,9 +23,14 @@ def test_frozen_research_panel_is_disjoint_from_original_suites():
     def launches(rows):
         return {tuple(r['launch']['position_m']+r['launch']['velocity_mps']) for r in rows}
     assert len(launches(cases)) == len({r['case_id'] for r in cases}) == 512
+    fixed, marker = fixed128_cases(digest,882072)
+    assert len(launches(fixed)) == len({r['case_id'] for r in fixed}) == marker['case_count'] == 128
+    assert sum(r['panel']=='A' for r in fixed) == 64
+    assert launches(fixed).isdisjoint(launches(cases))
     for suite in [protocol['training_suite'],*protocol['formal_suites'].values()]:
         old = json.loads((root/suite['path']).read_text())['cases']
         assert launches(cases).isdisjoint(launches(old))
+        assert launches(fixed).isdisjoint(launches(old))
     with pytest.raises(ValueError):
         panel_batch(0,digest,0)
 
@@ -56,3 +61,30 @@ def test_combined_metrics_use_all_contacts_and_reject_wrong_checkpoint(tmp_path)
     assert summary['metrics']['native_episode_return_mean']==pytest.approx(1.5)
     with pytest.raises(ValueError):
         collect_scores(tmp_path,'other',panel)
+
+
+def test_research_fixed128_reuses_matching_zero_and_rejects_training_suite(tmp_path):
+    from scripts.evaluate_supermimic_research_arm import score_fixed128
+    folder = tmp_path/'zero'
+    folder.mkdir()
+    protocol = load_panel()['protocol_sha256']
+    cases, marker = fixed128_cases(protocol,882072)
+    task = dict(protocol_sha256=protocol, research_evaluation=marker)
+    rows = [dict(case_id=c['case_id'],env_id=i) for i,c in enumerate(cases)]
+    metrics = dict(num_envs=128, actor_parameters_unchanged=True, optimizer_updates=dict(actor=0),
+                   policy_execution={}, task_contract=task, actor_state_sha256='actor',
+                   evaluated_checkpoint_sha256='checkpoint', scoring_schema='historical-independent-complete5-v1')
+    files = dict(startup=dict(argv=['--seed','882072']), completed=dict(control_ticks=800,episodes=128),
+                 metrics=metrics, episodes_summary=rows, task_contract=task,policy_execution=dict(contract={}),
+                 physics={},initial_states=[])
+    for name, value in files.items():
+        (folder/(name+'.json')).write_text(json.dumps(value))
+    def cached(actor):
+        return score_fixed128(folder, tmp_path/'weights', 'checkpoint', actor, tmp_path, 882072)
+    assert cached('actor') == metrics
+    with pytest.raises(ValueError):
+        cached('different')
+    rows[0]['case_id'] = 'training-case'
+    (folder/'episodes_summary.json').write_text(json.dumps(rows))
+    with pytest.raises(ValueError):
+        cached('actor')

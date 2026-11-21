@@ -40,3 +40,5 @@ TensorBoard 中 G1_learning 与后续 G0_learning 使用本组新增交互量、
 首个 Recovery 块的四个在线数据块已逐一校验 SHA256 并解压核对。原生 tick 4990–5117 连续，16,384 条 transition 全部标为 stream 8、mixed_v17、Recovery。原进程的归档顶层继承了初始冻结采集的策略名、Actor 哈希和旧提交，实际采集行为由当前训练登记和各行的策略版本标识。新进程把源归档身份单独保存，每行记录行为 Actor 权重哈希，顶层保存采集进程的启动提交和脚本哈希。成功轨迹索引与单策略价值校准按这一规则识别新旧在线归档。[首块逐行核验](first_block_replay_identity.json)
 
 1024／2048 阶段末的独立评价已提前固定 512 个新球路。原协议生成器的 A、B 分布各取 256 个，种子为 97124701、97124702；全部球路的初始位置与速度组合都与 TRAIN128、正式 A200 和 B200 分离。单 GPU 按四批 128 环境、每批 800 tick 评价同一 checkpoint；按全部合格触球数汇总条件恢复率。运行入口为 `scripts/evaluate_supermimic_independent512.py --checkpoint <checkpoint> --g07-execution-root <root> --output <directory>`。面板在 G1 首个 Recovery 块期间登记，目前尚未执行该评价。[固定案例](independent512.json.gz)
+
+在首个 R8 完成前，为 G1/G0 预先固定了开发评价专用的 128 条球路。训练和冻结数据采集继续使用 TRAIN128。研究评价使用同一生成器、相同 A/B 各半的构成及相同的 800 tick 评分，A/B 球路种子改为 97124801、97124802。G1/G0 在 128、256 更新的 checkpoint 上使用这一面板，共用初始组合的一次零更新原生评价，由监督程序在主训练后串行执行。历史 TRAIN128 零更新成绩单独保留，两套球路不跨面板做差。新面板与 TRAIN128、A200、B200 及阶段末 512 条球路均无重合。基线额外消耗一次 128×800 评价，两个策略组共用。[开发评价案例](fixed128.json.gz)

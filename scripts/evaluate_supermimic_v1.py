@@ -47,12 +47,15 @@ def main():
     AppLauncher.add_app_launcher_args(parser)
     parser.add_argument('--shutdown-diagnostic-ticks', type=int, default=None,
                         help='Lifecycle-only partial run on original 128 lanes; never writes scores/completed.json')
-    parser.add_argument('--independent-panel-batch', type=int, choices=range(4),
+    panels = parser.add_mutually_exclusive_group()
+    panels.add_argument('--research-fixed128', action='store_true',
+                        help='Score the predeclared research cases held out from native training')
+    panels.add_argument('--independent-panel-batch', type=int, choices=range(4),
                         help='Evaluate one stage-end batch of the declared independent 512 cases')
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus'),default=None)
     args = parser.parse_args()
-    if args.independent_panel_batch is not None and (args.native_action_probe_spec or args.record_physical_transitions
+    if (args.independent_panel_batch is not None or args.research_fixed128) and (args.native_action_probe_spec or args.record_physical_transitions
             or args.shutdown_diagnostic_ticks is not None):
         parser.error('Independent panel evaluation requires a complete score-only rollout')
     if bool(args.native_action_probe_spec)!=bool(args.native_action_probe_branch):
@@ -150,7 +153,8 @@ def _run_native(args, stop_request):
             source_path, execution_root = args.init_policy_checkpoint, args.g07_execution_root
         source = torch.load(source_path, map_location='cpu', weights_only=False)
         contract, protocol, cases, receipt = resolve_task_contract(
-            source, source_path, execution_root=execution_root, precision_receipt=args.precision_receipt)
+            source, source_path, execution_root=execution_root,
+            precision_receipt=args.precision_receipt)
         scoring_protocol = dict(protocol, _root=str(ROOT))
         if trained is not None:
             require_resume_contract(trained, contract)
@@ -159,6 +163,10 @@ def _run_native(args, stop_request):
             from quadsmash.rl.supermimic_independent_panel import panel_batch
             cases, panel_identity = panel_batch(args.independent_panel_batch, contract['protocol_sha256'], args.seed)
             capture_contract = dict(contract, independent_evaluation=panel_identity)
+        if args.research_fixed128:
+            from quadsmash.rl.supermimic_independent_panel import fixed128_cases
+            cases, panel_identity = fixed128_cases(contract['protocol_sha256'], args.seed)
+            capture_contract = dict(contract, research_evaluation=panel_identity)
         if args.native_action_probe_spec:
             from scripts.declare_supermimic_contact_training_cases import resolve_probe_cases
             spec = json.loads(args.native_action_probe_spec.read_text())
@@ -318,6 +326,9 @@ def _run_native(args, stop_request):
             return
         if len(first)!=128:
             raise RuntimeError(f'Only {len(first)}/128 pre-reset records; no live-state backfill permitted')
+        if args.research_fixed128 or args.independent_panel_batch is not None:
+            if any(first[i]['case_id'] != cases[i]['case_id'] for i in range(128)):
+                raise ValueError('Terminal case differs from the declared lane assignment')
         rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(128)]
         from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
         native_summary = summarize_native_episodes(rows)
@@ -350,6 +361,8 @@ def _run_native(args, stop_request):
             evaluated_checkpoint_sha256=checkpoint_sha256)
         if args.independent_panel_batch is not None:
             metrics.update(task_contract=capture_contract, evaluation_scope='independent512 stage-end research evaluation')
+        if args.research_fixed128:
+            metrics.update(task_contract=capture_contract, evaluation_scope='fixed128 held-out research development')
         actor_state_after=tensor_digest(actor.state_dict().items())
         if actor_state_after!=actor_state_before:raise RuntimeError('Frozen evaluation mutated actor weights')
         head_active_lane_steps = dict(zip(("recovery", "approach"), head_counts.tolist()))
