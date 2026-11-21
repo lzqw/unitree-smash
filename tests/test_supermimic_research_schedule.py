@@ -49,6 +49,20 @@ def test_only_first_string_flight_can_earn_outgoing_credit():
     assert no_strings.item() == 1. and torch.autograd.grad(no_strings, ball)[0].count_nonzero() == 0
 
 
+def test_flight_cost_keeps_airborne_lanes_after_other_lanes_land():
+    prior = SimpleNamespace(gravity=torch.tensor([0., 0., -9.81]), wind=torch.zeros(3), drag=.02)
+    court = dict(net_plane_x_m=1.5, target_x_limits_m=[2., 4.], target_y_half_width_m=1.,
+                 net_side_top_m=1.55, net_center_top_m=1.524, post_y_center_abs_m=3.075)
+    ball = torch.tensor([[0., 0., .05, 1., 0., -2.], [0., 0., 2., 1., 0., .5]], requires_grad=True)
+    full = outgoing_cost(ball, prior, court)
+    short = outgoing_cost(ball, prior, court, steps=16)
+    assert full[1] != short[1]
+    separate = torch.cat([outgoing_cost(ball[:1], prior, court, steps=16),
+                          outgoing_cost(ball[1:], prior, court)])
+    torch.testing.assert_close(full, separate)
+    torch.testing.assert_close(torch.autograd.grad(full.sum(), ball)[0], torch.autograd.grad(separate.sum(), ball)[0])
+
+
 def test_research_replicate_forks_sampler_streams_and_resume_keeps_cursors():
     import pytest
     from scripts.train_supermimic_physical_block import research_learner_rng

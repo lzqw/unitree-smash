@@ -1579,6 +1579,10 @@ def run(args, *, alternating=None):
                                 writer.add_scalar('native/episode_return',float(record['native_episode_return']),step)
                                 writer.add_scalar('native/return_ema',sum(completed_returns[-16:])/len(completed_returns[-16:]),step)
                         if writer is not None and cursor < len(env.rally_records):
+                            # Publish one rolling observation after all simultaneous lane completions.
+                            completed_window = completed_returns[-128:]
+                            writer.add_scalar('native/return_mean_128', sum(completed_window)/len(completed_window), tick*128)
+                            writer.add_scalar('native/return_mean_128_cases', len(completed_window), tick*128)
                             writer.flush()
                         cursor=len(env.rally_records)
                 if research and collect_block:
@@ -1751,10 +1755,6 @@ def run(args, *, alternating=None):
                     step=int(tick*128)
                     writer.add_scalar('native/step_reward_mean',block_reward_mean,step)
                     writer.add_scalar('native/completed_episodes',len(completed_returns),step)
-                    if completed_returns:
-                        completed_window = completed_returns[-128:]
-                        writer.add_scalar('native/return_mean_128', sum(completed_window)/len(completed_window), step)
-                        writer.add_scalar('native/return_mean_128_cases', len(completed_window), step)
                     if block_name=='recovery' and args.recovery_prefix_and_string_margin:
                         prefix_lanes = sum(len(group['lane_episode_tick']) for group in start_sampling.get('records', [])
                                            if group['stage']=='pre_body_ground')

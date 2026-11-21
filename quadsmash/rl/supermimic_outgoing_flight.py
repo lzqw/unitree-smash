@@ -13,7 +13,7 @@ def outgoing_cost(ball, prior, court, *, dt=.02, steps=100, scoring_margins=Fals
     landing=p
     net=p
     max_x=p[:,0]
-    for _ in range(steps):
+    for step in range(steps):
         rel=v-prior.wind
         v=v+dt*(prior.gravity-prior.drag*rel.norm(dim=-1,keepdim=True)*rel)
         q=p+dt*v
@@ -28,6 +28,10 @@ def outgoing_cost(ball, prior, court, *, dt=.02, steps=100, scoring_margins=Fals
         landed=landed|hit
         crossed=crossed|cross
         p=q
+        # Landing freezes every scored quantity. Check in groups to avoid a
+        # host synchronization at every flight step during GPU imagination.
+        if (step + 1) % 16 == 0 and step + 1 < steps and landed.all():
+            break
     top=court['net_center_top_m']+(court['net_side_top_m']-court['net_center_top_m'])*(net[:,1]/court['post_y_center_abs_m']).square().clamp_max(1.)
     extra = 0.
     width = court['target_y_half_width_m']
