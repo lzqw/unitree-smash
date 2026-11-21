@@ -35,6 +35,15 @@ def scalars(row):
         'objective_before', 'objective_after', 'final_command_max_change', 'task_gradient_norm',
         'tracking_gradient_norm', 'effective_gate_lanes', 'critic_loss', 'critic_loss_before_proposal', 'contact_aux_weight',
         'native_collect_seconds', 'bptt_seconds', 'world_update_seconds') if key in row}
+    sampling = row.get('actor_start_sampling', {})
+    for family, count in sampling.get('actual_by_family', {}).items():
+        metrics[f'{head}/start_lanes/{family}'] = count
+    coverage = row.get('reference_coverage', {})
+    if 'predicted_first_margin_sum_m' in coverage:
+        n = sum(coverage[k] for k in ('predicted_first_string_lanes', 'predicted_first_frame_lanes'))
+        if n:
+            metrics['approach/predicted_first_margin_mm'] = 1000 * coverage['predicted_first_margin_sum_m'] / n
+            metrics['approach/predicted_first_frame_fraction'] = coverage['predicted_first_frame_lanes'] / n
     if head == 'approach' and row.get('contact_aux_weight', 0) > 0:
         for key in ('outgoing_impact_lanes', 'task_tracking_cosine'):
             if key in row:

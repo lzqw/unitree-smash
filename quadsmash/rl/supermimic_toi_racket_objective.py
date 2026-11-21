@@ -102,6 +102,7 @@ def preview_intercept_lanes(initial, reference, allowed, trainer):
     selected = allowed & reference['matched']
     covered = torch.zeros_like(selected)
     survival = state.physical.new_ones(len(selected))
+    swing_started = torch.zeros_like(selected)
     for _ in range(trainer.timebase.imagination_steps):
         start = state.clock_goal_context['elapsed'].reshape(-1)
         pending = selected & (start < reference['intercept']['time']) & (survival > 0)
@@ -109,6 +110,9 @@ def preview_intercept_lanes(initial, reference, allowed, trainer):
         if not pending.any():
             break
         mask = precontact_mask(state, pending, trainer._head_gate(state), trainer.timebase.episode_s)
+        if getattr(trainer, 'landing_and_first_contact_objectives', False):
+            swing_started |= mask
+            mask = swing_started & pending
         action = trainer._actor_action(state, sample=False)[0]
         state, _, done, _ = trainer.adapter(state, action, detach_ball=True)
         end = state.clock_goal_context['elapsed'].reshape(-1)
@@ -152,6 +156,28 @@ def string_margin_cost(local_yz, boundary):
     # Same 5 cm position scale as the TOI loss. No penalty beyond 5 mm inside.
     return F.smooth_l1_loss((.005 - margin).clamp_min(0) / .05,
                             torch.zeros_like(margin), reduction='none')
+
+
+def first_racket_cost(before, after, impact, geometry, preview, strips, boundary, dt):
+    """First native-shape preview, with a body-only pose derivative at frozen TOI."""
+    from .supermimic_ball_geometry_preview_v1 import box_gap, round_gap
+    from .supermimic_ball_impulse_prior_v1 import BallImpulsePriorV1
+    a, b = racket_state(before, geometry), racket_state(after, geometry)
+    fraction = (impact['time'].detach() / dt).clamp(0, 1)[:, None]
+    rotation = BallImpulsePriorV1._interpolate_rotation(a[:, 3:12].reshape(-1, 3, 3),
+                                                       b[:, 3:12].reshape(-1, 3, 3), fraction)
+    offset = impact['pre_position'].detach() - torch.lerp(a[:, :3], b[:, :3], fraction)
+    local_pose = (rotation.transpose(1, 2) @ offset.unsqueeze(-1)).squeeze(-1)
+    local = impact['local'].detach() + (local_pose - local_pose.detach())
+    boxes = box_gap(local, preview.racket_box_centers, preview.racket_box_halves)
+    strings = boxes[:, :strips].amin(-1)
+    frame = round_gap(local, preview.racket_round_centers, preview.racket_round_axes,
+                      preview.racket_round_halves, preview.racket_round_radii, preview.racket_round_capsule).amin(-1)
+    if boxes.shape[1] > strips:
+        frame = torch.minimum(frame, boxes[:, strips:].amin(-1))
+    competition = torch.nn.functional.softplus((strings - frame + .005) / .005)
+    error = competition + string_margin_cost(local[:, 1:], boundary)
+    return 1 - torch.exp(-error)
 
 
 def intercept_loss(before, after, start, end, reference, mask, survival, geometry, *, fixed_weights=None, detach_empty=False, boundary=None):

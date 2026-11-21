@@ -229,6 +229,8 @@ def main():
                         help='Approach TOI-racket-only auxiliary loss weight')
     parser.add_argument('--diagnostic-critic-loss',action='store_true',
                         help='Research only: monitor the minibatch critic MSE after warmup; retain finite-value and update checks')
+    parser.add_argument('--landing-and-first-contact-objectives', action='store_true',
+                        help='Revised post-landing and first-racket research objectives and sampling')
     parser.add_argument('--recovery-prefix-and-string-margin', action='store_true',
                         help='Sample causal pre-fall starts and train a 5 mm TOI string-bed margin')
     parser.add_argument('--continuous-approach-starts',action='store_true',
@@ -318,6 +320,11 @@ def main():
         parser.error('Large training requires wm-sampling-mode=promotion')
     if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
     if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
+    if args.landing_and_first_contact_objectives:
+        if args.training_profile != 'research_scale':
+            parser.error('Revised objectives require the research training profile')
+        args.continuous_approach_starts = args.shuffle_wm_quota_groups = True
+        args.recovery_prefix_and_string_margin = True
     if args.resume_reset_schedule and (args.resume_training is None or args.resume_next_cycle or
                                        args.training_profile not in ('bounded','research_scale') or args.training_stage=='full_contact'):
         parser.error('Fresh schedule requires a bounded non-promotable checkpoint continuation')
@@ -346,7 +353,7 @@ def main():
         args.wm_approach_stage_quota=parse_quota(args.wm_approach_stage_quota,allowed={'uniform','approach_active','hit_prepare','contact_release','approach_failure','post_hit'},name='wm-approach-stage-quota')
         args.wm_contact_stage_quota=parse_quota(args.wm_contact_stage_quota,allowed={'uniform','hit_prepare','contact_release','post_hit'},name='wm-contact-stage-quota')
         args.wm_source_quota=parse_quota(args.wm_source_quota,allowed={'recent_online','older_online','initial_archive','action_identification','contact_event'},name='wm-source-quota')
-        args.wm_stage_quota=parse_quota(args.wm_stage_quota,allowed={'uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery'},name='wm-stage-quota')
+        args.wm_stage_quota=parse_quota(args.wm_stage_quota,allowed={'uniform','pre_touchdown','touchdown','post_touchdown','pre_body_ground','post_landing_support_loss','recovery_failure','stable_recovery'},name='wm-stage-quota')
         for field in ('wm_source_quota','wm_stage_quota','wm_approach_stage_quota','wm_contact_stage_quota'):
             setattr(args,field,scale_wm_quotas(getattr(args,field),args.wm_batch_size))
     except ValueError as error:
@@ -394,7 +401,7 @@ def run(args, *, alternating=None):
     lifecycle_stage(args.output, 'IMPORT_LOADING')
     from quadsmash.rl.supermimic_physical_learner_v1 import PhysicalHorizonTrainer
     lifecycle_stage(args.output, 'IMPORT_LEARNER')
-    from quadsmash.rl.supermimic_physical_loop_replay_v1 import PhysicalLoopReplay,current_start
+    from quadsmash.rl.supermimic_physical_loop_replay_v1 import PhysicalLoopReplay,current_start,STAGE_NAMES
     from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
     from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive,tensor_tree_copy
     from quadsmash.rl.supermimic_physical_run_guard_v1 import critic_ready,atomic_torch_save
@@ -741,6 +748,12 @@ def run(args, *, alternating=None):
             resumed_global=dict(resumed.get('global_counters',{}))
             critic_coverage_blocks=int(resumed.get('critic_coverage_blocks',0))
             if trainer.frozen_hash()!=trainer.frozen_actor_hash:raise ValueError('Resume changed frozen actor parameters')
+            if resumed['config'].get('landing_and_first_contact_objectives') and not args.landing_and_first_contact_objectives:
+                raise ValueError('Resume must preserve the revised research objective')
+            if args.landing_and_first_contact_objectives:
+                replay.recovery_failure_prefixes = True
+                replay.recovery_training_mask = torch.ones(replay.lanes, dtype=torch.bool)
+                replay.recovery_training_mask[list(wm_holdout_lanes)] = False
             replay_archives=[] if args.resume_without_replay else resumed['replay_archives']
             # A direct Approach resume must retain the Recovery-generated
             # online transitions; skipping them breaks the native-data→WM
@@ -762,7 +775,17 @@ def run(args, *, alternating=None):
                 replay.actor_start_bank.load_state_dict(tensor_tree_copy(resumed['actor_start_bank'],cpu=True))
             elif args.resume_start_block=='approach':
                 raise ValueError('Approach continuation lacks persisted dynamic actor starts; rebuild audited starts from native archives first')
-            if 'dynamic_stage_starts' in resumed:replay.stage_starts=tensor_tree_copy(resumed['dynamic_stage_starts'],cpu=True)
+            if 'dynamic_stage_starts' in resumed:
+                rebuilt = {}
+                if args.landing_and_first_contact_objectives:
+                    for name in ('post_touchdown','touchdown','recovery_failure','stable_recovery','post_landing_support_loss'):
+                        rebuilt[name] = [dict(record, _actor_lane_mask=mask, _source_lanes=replay.lanes)
+                                         for record,mask in replay.restore_stages.get(name, ())]
+                    rebuilt['pre_body_ground'] = replay.stage_starts.get('pre_body_ground', [])
+                replay.restore_stages.clear()
+                replay.stage_starts=tensor_tree_copy(resumed['dynamic_stage_starts'],cpu=True)
+                replay.stage_starts.update(rebuilt)
+            replay.restore_prefix.clear()
             replay.generator.set_state(resumed['replay_rng'].cpu())
             replay_state=resumed.get('replay_state',{})
             saved_meta=resumed.get('replay_metadata')
@@ -778,6 +801,8 @@ def run(args, *, alternating=None):
                     if value.shape!=replay.approach_metadata[key].shape:raise ValueError('Replay Approach metadata shape mismatch')
                     replay.approach_metadata[key].copy_(value.cpu())
                 for name in ('streams','stage_ids','source_ids','policy_versions','native_ticks'):
+                    if name == 'stage_ids' and args.landing_and_first_contact_objectives:
+                        continue  # Reclassified from the committed replay's causal landing history.
                     value=saved_meta.get(name)
                     target=getattr(replay,name,None)
                     if value is not None and target is not None and tuple(value.shape)==tuple(target.shape):
@@ -806,13 +831,24 @@ def run(args, *, alternating=None):
         schedule=SequentialProgress.for_run(resumed.get('sequential_progress') if args.resume_training else None,
                                             fresh=args.resume_reset_schedule or args.resume_next_cycle)
         if args.resume_training and not args.resume_next_cycle and not args.resume_reset_schedule:
-            if not args.extend_completed_research and args.continuous_approach_starts != resumed['config'].get('continuous_approach_starts',False):
+            if not (args.extend_completed_research or args.landing_and_first_contact_objectives) and args.continuous_approach_starts != resumed['config'].get('continuous_approach_starts',False):
                 raise ValueError('Resume changes the Approach start quota schedule')
             if alternating is None and schedule.complete():raise ValueError('Completed schedule requires explicit resume-next-cycle and native acceptance')
         if args.resume_training and not args.resume_next_cycle:
             saved_alternating=resumed.get('alternating_schedule')
             if alternating is not None and not args.resume_reset_schedule:
                 if saved_alternating is None:raise ValueError('Legacy checkpoint has no alternating cursor; no silent schedule migration')
+                if (args.landing_and_first_contact_objectives and args.research_contact_gradient == 'G0'
+                        and saved_alternating['execution_config'].get('contact_gradient') == 'G1'):
+                    # Fork the control only from a prefix that has never executed an auxiliary update.
+                    retained = resumed['global_counters']['accepted'] - resumed['config']['research_origin']
+                    handoff = resumed['metadata'].get('research_revision_handoff', {})
+                    if (retained > 40 or handoff.get('common_prefix_aux_updates') != 0
+                            or handoff.get('starting_actor') != tensor_digest(resumed['actor'].items())
+                            or resumed['config'].get('landing_and_first_contact_objectives')):
+                        raise ValueError('Control fork requires the common pre-auxiliary G1 prefix')
+                    saved_alternating = dict(saved_alternating, execution_config=dict(
+                        saved_alternating['execution_config'], contact_gradient='G0'))
                 alternating.load_state_dict(saved_alternating, extend_completed=args.extend_completed_research)
                 if alternating.complete:raise ValueError('Completed alternating cycle requires explicit native acceptance and resume-next-cycle')
             elif saved_alternating is not None and alternating is None and not args.resume_reset_schedule:
@@ -839,6 +875,10 @@ def run(args, *, alternating=None):
             execution_root = Path(recorded_root)
         execution_root = Path(execution_root).resolve()
         replay.recovery_failure_prefixes = args.recovery_prefix_and_string_margin
+        trainer.landing_and_first_contact_objectives = args.landing_and_first_contact_objectives
+        if args.landing_and_first_contact_objectives:
+            from quadsmash.physics.full_racket_v4 import load_racket, string_strips
+            trainer.string_strips = len(string_strips(load_racket(execution_root/'configs/full_racket_v4_r3.json')))
         if args.recovery_prefix_and_string_margin:
             from quadsmash.rl.supermimic_toi_racket_objective import string_boundary
             trainer.string_boundary = string_boundary(execution_root/'configs/full_racket_v4_r3.json',
@@ -1022,7 +1062,7 @@ def run(args, *, alternating=None):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(recovery_prefix_and_string_margin=args.recovery_prefix_and_string_margin,continuous_approach_starts=args.continuous_approach_starts,toi_effective_start_lanes=args.toi_effective_start_lanes,recovery_effective_start_lanes=args.recovery_effective_start_lanes,sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
+        config=dict(landing_and_first_contact_objectives=args.landing_and_first_contact_objectives,recovery_prefix_and_string_margin=args.recovery_prefix_and_string_margin,continuous_approach_starts=args.continuous_approach_starts,toi_effective_start_lanes=args.toi_effective_start_lanes,recovery_effective_start_lanes=args.recovery_effective_start_lanes,sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=trainer.actor_lr,actor_anchor=trainer.anchor_coeff,world_lr=args.world_learning_rate,critic_lr=2e-4,
             wm_forward_guard_sha256=forward_guard.spec_sha256 if forward_guard else None,wm_replay_handoff=replay_handoff,
             wm_separate_supervision=args.wm_separate_supervision,wm_direct_long_body_supervision=args.wm_direct_long_body_supervision,wm_active_flight_batch=args.wm_active_flight_batch,wm_natural_flight_batch=args.wm_natural_flight_batch,wm_natural_flight_loss=args.wm_natural_flight_loss,
@@ -1106,7 +1146,7 @@ def run(args, *, alternating=None):
                                   current_policy_version=int(replay.current_policy_version),
                                   native_tick_counter=int(replay._native_tick_counter),
                                   source_names=['initial_archive','online'],
-                                  stage_names=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery']),
+                                  stage_names=list(STAGE_NAMES)),
                 runtime_validation_archive=dict(path=runtime_validation_path,sha256=file_sha(runtime_validation_path)),
                 wm_fit_provenance=dict(verified=loaded_fit['verified'],world_state_sha256=tensor_digest(adapter.state_dict().items()),
                     excluded_lanes=wm_holdout_lanes,initial_manifest_sha256=initial_fit_provenance.get('manifest_sha256')),
@@ -1136,7 +1176,8 @@ def run(args, *, alternating=None):
                 stats=trainer.imagine_update(state,update_actor=False)
                 print('PHYSICAL_CRITIC='+json.dumps(stats),flush=True)
                 with (args.output/'critic_history.jsonl').open('a') as f:f.write(json.dumps(stats)+'\n')
-                save('latest.pt')
+                if not args.landing_and_first_contact_objectives:
+                    save('latest.pt')
             if not critic_ready(trainer.critic_updates,trainer.last_critic_loss,maximum=maximum):
                 raise RuntimeError('Contextual critic quality gate did not pass within finite32-block budget')
         stage_ticks=list(CRITIC_TICKS)
@@ -1244,7 +1285,8 @@ def run(args, *, alternating=None):
             stats.update(coverage_blocks=critic_coverage_blocks,source_tick=CRITIC_TICKS[selected])
             with (args.output/'critic_coverage.jsonl').open('a') as f:f.write(json.dumps(stats)+'\n')
             print('PHYSICAL_CRITIC_COVERAGE='+json.dumps(stats),flush=True)
-            save('latest.pt')
+            if not args.landing_and_first_contact_objectives:
+                save('latest.pt')
         phase='CRITIC'
         # WM calibration is an actor-blocked model-fitting stage.  It should
         # consume native windows directly instead of spending a full critic
@@ -1437,7 +1479,7 @@ def run(args, *, alternating=None):
                 for group in trainer.actor_opt.param_groups:
                     group['lr']=trainer.actor_lr
             progress['status']='training'
-            dynamic_names=('touchdown','post_touchdown','recovery_failure','stable_recovery') if block_name=='recovery' else ('approach_active',)
+            dynamic_names=('touchdown','post_touchdown','post_landing_support_loss','recovery_failure','stable_recovery') if block_name=='recovery' else ('approach_active',)
             if block_name=='recovery' and args.recovery_prefix_and_string_margin:
                 dynamic_names=('pre_body_ground', *dynamic_names)
             dynamic_pool=[item for name in dynamic_names for item in replay.stage_starts.get(name,[]) if training_lane_available(item)]
@@ -1456,6 +1498,7 @@ def run(args, *, alternating=None):
                 schedule.finish_approach_refresh(progress,refresh_frozen_policy(block_name))
                 save('latest.pt')
             while accepted<budget and attempts<max_attempts:
+                check_stop()
                 collect_block = not research or attempts == 0
                 proposal_checkpoint=args.output/('pre_block.pt' if research else f'pre_proposal_{cycle_index}_{block_name}.pt')
                 if collect_block:
@@ -1466,7 +1509,10 @@ def run(args, *, alternating=None):
                 progress['attempts']=attempts;progress['proposal_in_flight']=True
                 trainer.actor_updates=accepted
                 trainer.actor_attempts=attempts
-                check_stop();cover_critic();ensure_critic()
+                check_stop()
+                if not args.landing_and_first_contact_objectives or collect_block:
+                    cover_critic()
+                ensure_critic()
                 critic_loss_before_proposal=trainer.last_critic_loss
                 if shutil.disk_usage(args.output).free<8*1024**3:raise RuntimeError('Disk guard: less than8GiB free')
                 started=time.perf_counter()
@@ -1535,15 +1581,28 @@ def run(args, *, alternating=None):
                                         else 'verified_initial_archive',pool_size=len(pool),eligible_starts=len(eligible),
                                         effective_start_lanes=int(lane_mask.sum()))
                     if args.recovery_effective_start_lanes>1:
-                        from quadsmash.rl.supermimic_recovery_batches import recovery_batch
+                        from quadsmash.rl.supermimic_recovery_batches import recovery_batch, late_recovery_batch
                         categories={name:{id(v) for v in replay.stage_starts.get(name,[])}
                                     for name in dynamic_names}
                         families={name:[] for name in (*categories,'initial_archive')}
                         for item,mask in eligible:
                             family=next((k for k,ids in categories.items() if id(item) in ids),'initial_archive')
                             families[family].append((item,mask))
-                        proposal_rows,layout=recovery_batch(families,args.recovery_effective_start_lanes,attempts)
+                        batcher = late_recovery_batch if args.landing_and_first_contact_objectives else recovery_batch
+                        proposal_rows,layout=batcher(families,args.recovery_effective_start_lanes,attempts)
                         row=proposal_rows[0]
+                        if args.landing_and_first_contact_objectives:
+                            count=args.recovery_effective_start_lanes
+                            requested={'risk':count//2,'landing':count//4,'stable':count-count//2-count//4}
+                            actual=dict(risk=0,landing=0,stable=0,initial_archive=0)
+                            for record in layout:
+                                stage=record['stage']
+                                family=('landing' if stage in ('touchdown','post_touchdown') else
+                                        'stable' if stage=='stable_recovery' else
+                                        'initial_archive' if stage=='initial_archive' else 'risk')
+                                actual[family]+=len(record['lane_episode_tick'])
+                            start_sampling.update(requested_by_family=requested, actual_by_family=actual,
+                                shortfall_by_family={k:max(0,n-actual[k]) for k,n in requested.items()})
                         start_sampling.update(source='pooled_recovery_episodes',records=layout,
                             requested_lanes=args.recovery_effective_start_lanes,
                             effective_start_lanes=sum(len(r['lane_episode_tick']) for r in layout))
@@ -1660,7 +1719,7 @@ def run(args, *, alternating=None):
                               'wall_seconds':int(stats['research_elapsed_s'])}
                         for axis,position in axes.items():
                             for metric in ('objective_before','objective_after','final_command_max_change',
-                                           'tracking_loss','task_gradient_norm','tracking_gradient_norm','contact_aux_weight'):
+                                           'tracking_loss','task_gradient_norm','tracking_gradient_norm','contact_aux_weight','contact_aux_to_toi_gradient_ratio'):
                                 if metric in stats:writer.add_scalar(f'research/{axis}/{block_name}/{metric}',stats[metric],position)
                     writer.add_scalar('actor/accepted_updates',global_accepted_id,step)
                     writer.add_scalar('actor/rejected_updates',global_rejected,step)

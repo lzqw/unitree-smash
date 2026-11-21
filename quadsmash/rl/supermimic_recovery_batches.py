@@ -60,6 +60,77 @@ def recovery_batch(pools, target, attempt):
     return batches,metadata
 
 
+def late_recovery_batch(pools, target, attempt):
+    # Quotas operate on unique native lane/episodes across all families.
+    groups = (('risk', ('pre_body_ground', 'post_landing_support_loss', 'recovery_failure'), target//2),
+              ('landing', ('touchdown', 'post_touchdown'), target//4),
+              ('stable', ('stable_recovery',), target-target//2-target//4))
+    pools = dict(pools)
+    # A failure can contribute three lead times but only one start per proposal.
+    # Rotate the chosen lead across episodes and draws rather than always taking 20.
+    prefixes = pools.get('pre_body_ground', [])
+    preferred = {}
+    for idx, (record, mask) in enumerate(prefixes):
+        for lane in torch.where(mask)[0].tolist():
+            key = (int(record.get('_lane_id', lane)), int(record['before']['episode_index'][lane]))
+            desired = 20 * (1 + (key[0] + key[1] + attempt - 1) % 3)
+            candidate = (abs(record.get('_failure_lead_ticks', 20) - desired), idx, lane)
+            if key not in preferred or candidate < preferred[key]:
+                preferred[key] = candidate
+    masks = [torch.zeros_like(mask) for _, mask in prefixes]
+    for _, idx, lane in preferred.values():
+        masks[idx][lane] = True
+    pools['pre_body_ground'] = [(record, mask) for (record, _), mask in zip(prefixes, masks) if mask.any()]
+    seen, rows, layout = set(), [], []
+
+    def draw(names, count):
+        available = {}
+        for name in names:
+            for record, mask in pools.get(name, []):
+                mask = mask.clone()
+                for lane in torch.where(mask)[0].tolist():
+                    if (int(record.get('_lane_id', lane)), int(record['before']['episode_index'][lane])) in seen:
+                        mask[lane] = False
+                if mask.any():
+                    available.setdefault(name, []).append((record, mask))
+        if not available or count <= 0:
+            return
+        selected, details = recovery_batch(available, count, attempt)
+        rows.extend(selected)
+        layout.extend(details)
+        for record, group in zip(selected, details, strict=True):
+            before = record['before']
+            group['samples'] = []
+            for lane, ep, tick in group['lane_episode_tick']:
+                seen.add((lane, ep))
+                i = 0 if '_lane_id' in record else lane
+                jump = before['auxiliary']['jump']
+                landing = float(before['auxiliary']['contact_recovery']['landing_time'][i])
+                source = 'first_qualified_landing'
+                if landing <= 0:
+                    source = 'latest_observed_jump_landing'
+                    landing = float(jump['landing_time'][i])
+                    task = before.get('task', {})
+                    if 'contact_time' in task and not landing >= float(task['contact_time'][i]):
+                        landing = 0.
+                phys = before['physical']
+                q = phys['root_quaternion_w'][i]
+                group['samples'].append(dict(lane=lane, episode=ep, tick=tick,
+                    since_landing_s=float(phys['elapsed_s'][i])-landing if landing > 0 else None,
+                    landing_clock_source=source if landing > 0 else None,
+                    support_feet=int(phys['foot_contact'][i].sum()),
+                    tilt_rad=float(torch.acos((1-2*q[1:3].square().sum()).clamp(-1,1))),
+                    failure_window_ticks=record.get('_failure_lead_ticks')))
+
+    for _, names, quota in groups:
+        draw(names, quota)
+    if len(seen) < target:
+        draw(pools.keys(), target-len(seen))
+    if not rows:
+        raise ValueError('No eligible Recovery episode')
+    return rows, layout
+
+
 def _gradient_value(term, params, derivatives=None):
     """Save a scalar and its first derivative while releasing the per-record BPTT graph."""
     if not torch.is_grad_enabled() or not term.requires_grad:
@@ -105,6 +176,9 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         if torch.is_grad_enabled():
             from .supermimic_approach_data_v1 import gradient_parts
             by_record[-1].update(gradient_parts({k:terms[k][-1][0] for k in terms},params))
+        for key in ('predicted_first_string_lanes','predicted_first_frame_lanes','predicted_first_margin_sum_m'):
+            if key in report:
+                covered[key]=covered.get(key,0)+report[key]
         for key in ('selected_start_lanes','gate_active_selected_start_lanes'):
             covered[key]=covered.get(key,0)+report[key]
         for digest,count in report.get('reference_usage_by_sha256',{}).items():

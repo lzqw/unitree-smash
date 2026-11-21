@@ -261,7 +261,21 @@ class PhysicalHorizonTrainer:
         reference=None
         toi_only = self.block_name=='approach' and getattr(self,'approach_objective','task')=='toi_racket_only'
         contact_weight=getattr(self,'contact_aux_weight',0.) if toi_only else 0.
-        if contact_weight:
+        revised = getattr(self, 'landing_and_first_contact_objectives', False)
+        first_geometry = revised and toi_only
+        if first_geometry:
+            swing_started = torch.zeros_like(selected)
+            first_string = torch.zeros_like(selected)
+            first_cost = state.physical.new_ones(len(selected))
+            first_margin = state.physical.new_zeros(len(selected))
+        if revised and self.block_name == 'recovery':
+            recovery_costs = []
+            aux = state.task_memory['auxiliary']
+            landing = aux['jump']['landing_time'].reshape(-1)
+            contact = state.task_memory['rally']['contact_time'].reshape(-1)
+            landed = ((aux['contact_recovery']['qualified_landing'].reshape(-1) > .5)
+                      | ((landing > 0) & (landing >= contact))).detach()
+        if contact_weight or first_geometry:
             outgoing=state.physical.new_zeros((len(selected),6))
             impacted=torch.zeros_like(selected)
         if toi_only:
@@ -297,6 +311,9 @@ class PhysicalHorizonTrainer:
             rally=state.task_memory.get('rally',{})
             if toi_only:
                 track_mask=precontact_mask(state,selected,gate,cfg.episode_s)
+                if first_geometry:
+                    swing_started = swing_started | track_mask
+                    track_mask = swing_started & usable
             elif self.block_name=='approach':
                 if 'had_contact' not in rally:track_mask=torch.zeros_like(track_mask)
                 else:track_mask=track_mask&(rally['had_contact'].reshape(-1)<.5)
@@ -305,10 +322,32 @@ class PhysicalHorizonTrainer:
             if hasattr(self, 'research_court'):
                 gradient_options = dict(detach_ball=True, ball_input_grad=bool(contact_weight))
             state,reward,done,transition=self.adapter(state,action,**gradient_options)
-            if contact_weight:
+            if revised and self.block_name == 'recovery':
+                # Train on post-landing correction while the Critic keeps its original return target.
+                old_tilt = 2 * previous.physical[:, 4:6].square().sum(-1)
+                tilt = 2 * state.physical[:, 4:6].square().sum(-1)
+                roll_pitch_rate = state.physical[:, 10:12].square().sum(-1)
+                support = state.clock_goal_context['foot_contact'].clamp(0, 1).sum(-1)
+                height_deficit = (.18 - state.physical[:, 2]).relu()
+                cost = tilt + (tilt - old_tilt).relu() + .05 * roll_pitch_rate + height_deficit + (.5 - support).relu()
+                recovery_costs.append(cost * landed * track_mask * survival.detach() * cfg.control_dt_s)
+            if contact_weight or first_geometry:
                 impact=transition['impulse_info']
-                first=track_mask & impact['active'].reshape(-1) & (impact['object_id'].reshape(-1)==0) & ~impacted
-                outgoing=torch.where(first[:,None],transition['outgoing_ball'],outgoing)
+                candidate = (usable & (survival.detach() > 0)) if first_geometry else track_mask
+                first=candidate & impact['active'].reshape(-1) & (impact['object_id'].reshape(-1)==0) & ~impacted
+                if first_geometry and first.any():
+                    from .supermimic_toi_racket_objective import first_racket_cost
+                    details = {key: impact[key][first] for key in ('time', 'pre_position', 'local')}
+                    cost = first_racket_cost(previous.physical[first], state.physical[first], details,
+                            self.adapter.physical_model.geometry, self.adapter.action_ball_model.impulse_prior.preview,
+                            self.string_strips, self.string_boundary, cfg.control_dt_s)
+                    first_cost = first_cost.masked_scatter(first, cost)
+                    first_string |= first & (impact['racket_part'] < self.string_strips)
+                    inward, offset = self.string_boundary
+                    margins = (details['local'].detach()[:, 1:] @ inward.T - offset).amin(-1)
+                    first_margin = first_margin.masked_scatter(first, margins)
+                if contact_weight:
+                    outgoing=torch.where(first[:,None],transition['outgoing_ball'],outgoing)
                 impacted=impacted|first
             if reference is not None:
                 if toi_only:
@@ -331,16 +370,24 @@ class PhysicalHorizonTrainer:
         # that were selected by the original proposal's gate/survival trace.
         if effective_weights is not None:weights=effective_weights.detach()
         task_loss=-masked_lane_mean(ret,weights)
+        if revised and self.block_name == 'recovery':
+            task_loss = task_loss + masked_lane_mean(torch.stack(recovery_costs).sum(0), weights)
         if toi_only:
             task_loss=task_loss.detach()
             if contact_weight:
                 from .supermimic_outgoing_flight import outgoing_cost
                 impact_lanes=impacted&weights.bool().reshape(-1)
                 if impact_lanes.any():
-                    cost=outgoing_cost(outgoing[impact_lanes],self.adapter.action_ball_model.impulse_prior,self.research_court)
-                    task_loss=cost.sum()/weights.sum().clamp_min(1.)
+                    cost=outgoing_cost(outgoing[impact_lanes],self.adapter.action_ball_model.impulse_prior,self.research_court,
+                                       scoring_margins=revised)
+                    if revised:
+                        # Missing a previously found impact cannot reduce the bounded flight cost.
+                        cost = 1 - torch.exp(-cost)
+                        task_loss = (cost.sum() + (weights.bool() & ~impacted).sum()) / weights.sum().clamp_min(1.)
+                    else:
+                        task_loss=cost.sum()/weights.sum().clamp_min(1.)
                 else:
-                    task_loss=outgoing.sum()*0.
+                    task_loss=outgoing.sum()*0. + float(revised)
         anchor_loss=masked_lane_mean(torch.stack(anchors).sum(0),weights)
         all_track_weights=torch.stack(track_weights) if tracks else None
         if toi_only and baseline_toi_weights is not None and tracks:
@@ -348,6 +395,9 @@ class PhysicalHorizonTrainer:
             toi_coverage_preserved=bool(((baseline<=0) | (all_track_weights>0)).all())
         track_weight_sum=all_track_weights.sum() if tracks else ret.new_zeros(())
         tracking_loss=torch.stack(tracks).sum()/track_weight_sum.clamp_min(1e-8) if tracks else ret.sum()*0.
+        if first_geometry and tracks:
+            supervised = all_track_weights.detach().sum(0)
+            tracking_loss = tracking_loss + (first_cost * supervised).sum() / supervised.sum().clamp_min(1e-8)
         nonzero_lanes=0
         tracking_derivatives=None
         if tracks and torch.is_grad_enabled() and tracking_loss.requires_grad:
@@ -380,6 +430,10 @@ class PhysicalHorizonTrainer:
         coverage.update(matched_lanes=int(reference['matched'].sum()) if reference else 0,
             effective_weight_sum=float(track_weight_sum.detach()),tracking_applied=bool(tracks and float(track_weight_sum.detach())>0))
         aux_stats={'outgoing_impact_lanes': int(impact_lanes.sum())} if contact_weight and torch.is_grad_enabled() else {}
+        if first_geometry:
+            coverage.update(predicted_first_margin_sum_m=float((first_margin * impacted * weights).sum()),
+                            predicted_first_string_lanes=int((first_string & weights).sum()),
+                            predicted_first_frame_lanes=int((impacted & ~first_string & weights).sum()))
         return dict(**aux_stats,tracking_derivatives=tracking_derivatives,toi_weights=all_track_weights.detach() if toi_only and tracks else None,
                     toi_coverage_preserved=toi_coverage_preserved,reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
                     gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
@@ -413,6 +467,17 @@ class PhysicalHorizonTrainer:
                     grad_stats=gradient_parts({k:rollout[k] for k in ('task','tracking','anchor')},parameters)
                     # Anchor-only momentum is not an effective task update.
                     tracking_coeff=self.tracking_coefficient(self.block_name)
+                    if (getattr(self, 'landing_and_first_contact_objectives', False)
+                            and getattr(self, 'contact_aux_weight', 0.) > 0 and self.block_name == 'approach'):
+                        requested = self.contact_aux_weight
+                        main = tracking_coeff * grad_stats['tracking_gradient_norm']
+                        aux = grad_stats['task_gradient_norm']
+                        self.contact_aux_weight = min(requested, .20 * main / max(aux, 1e-12))
+                        rollout['loss'] = (tracking_coeff * rollout['tracking'] + self.anchor_coeff * rollout['anchor']
+                                           + self.contact_aux_weight * rollout['task'])
+                        baseline_loss = float(rollout['loss'].detach())
+                        grad_stats.update(contact_aux_requested=requested,
+                                          contact_aux_to_toi_gradient_ratio=self.contact_aux_weight*aux/max(main, 1e-12))
                     if grad_stats['task_gradient_norm']+tracking_coeff*grad_stats['tracking_gradient_norm']>1e-12:
                         rollout['loss'].backward()
                         norm=torch.sqrt(sum((p.grad.detach().square().sum() for p in parameters if p.grad is not None),rollout['loss'].new_zeros(())))
