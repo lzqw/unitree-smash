@@ -1,0 +1,641 @@
+{
+  "native512_prefall_start_coverage": {
+    "scope": "First native body-ground latch through local tick 512. These cases never incurred body contact in the matched full frozen resume episodes. Snapshots are indexed from the pre-transition state of the first latch. Clocks and Recovery gate use native causal fields.",
+    "observed_latches_by_behavior": {
+      "109": 15,
+      "117": 11
+    },
+    "source_chunk_sha256": [
+      "762ec5594349f15c7e71430772a0a70134925bf31a8357dd0f60cc2fc975bd9d",
+      "8c9dd2a0fe14f09504dacc8878ab840c2a6ac98311c47a5602e7a2c290f867dd",
+      "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494",
+      "dac25f5e611a8e6c7eb58ced3e324c0d8b2faef6a15230dd8bceda9dd97f077f",
+      "4512dd06824b0762bd1b74cad3e68f36809e7f946c370f088b6b3ccb76c153cd",
+      "e81ebbc1fcf981fe49a00512ae264bcd3fc3692ffa707df86d78b9d66ff08cdf",
+      "6822731657212a22aa3b55786bd9f3d8144d09453c2800b093d8baabe79a4b12",
+      "1352ec849e1fc8823fba0d7cafacfcba188257434cf49358f4891cbdc1d079c8",
+      "656cc498dfafb26a042c07d09f824c87bbee20f9d5fee3072df1100c7085e9e6",
+      "8bc82068965d2fb588a53d977212ded436d9591138c984ef992fb2a48b57e301"
+    ],
+    "excluded_lane_count": 83,
+    "cases": [
+      {
+        "case": "A-720401-009",
+        "lane": 9,
+        "training_lane": true,
+        "body_penalty": -40.0,
+        "event_tick": 378,
+        "behavior_at_event": 109,
+        "before": {
+          "60": {
+            "tick": 317,
+            "behavior": 109,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 1,
+            "tilt_deg": 29.92,
+            "height_m": 0.2312,
+            "angular_rad_s": 2.0264,
+            "qualified_landing_time_s": 3.0089643001556396,
+            "last_jump_landing_time_s": 3.0579607486724854,
+            "elapsed_s": 3.169999837875366
+          },
+          "40": {
+            "tick": 337,
+            "behavior": 109,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 3,
+            "tilt_deg": 11.42,
+            "height_m": 0.1627,
+            "angular_rad_s": 0.9653,
+            "qualified_landing_time_s": 3.0089643001556396,
+            "last_jump_landing_time_s": 3.0579607486724854,
+            "elapsed_s": 3.369999885559082
+          },
+          "20": {
+            "tick": 357,
+            "behavior": 109,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 1,
+            "tilt_deg": 29.44,
+            "height_m": 0.197,
+            "angular_rad_s": 2.0464,
+            "qualified_landing_time_s": 3.0089643001556396,
+            "last_jump_landing_time_s": 3.0579607486724854,
+            "elapsed_s": 3.569999933242798
+          },
+          "0": {
+            "tick": 377,
+            "behavior": 109,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 2,
+            "tilt_deg": 38.63,
+            "height_m": 0.1659,
+            "angular_rad_s": 1.3132,
+            "qualified_landing_time_s": 3.0089643001556396,
+            "last_jump_landing_time_s": 3.619920015335083,
+            "elapsed_s": 3.7699999809265137
+          }
+        }
+      },
+      {
+        "case": "B-720402-002",
+        "lane": 66,
+        "training_lane": true,
+        "body_penalty": -40.0,
+        "event_tick": 396,
+        "behavior_at_event": 117,
+        "before": {
+          "60": {
+            "tick": 335,
+            "behavior": 109,
+            "gate": false,
+            "had_contact": false,
+            "released": false,
+            "feet": 3,
+            "tilt_deg": 10.53,
+            "height_m": 0.1786,
+            "angular_rad_s": 3.3074,
+            "qualified_landing_time_s": null,
+            "last_jump_landing_time_s": 3.005964517593384,
+            "elapsed_s": 3.3499999046325684
+          },
+          "40": {
+            "tick": 355,
+            "behavior": 109,
+            "gate": false,
+            "had_contact": false,
+            "released": false,
+            "feet": 4,
+            "tilt_deg": 3.27,
+            "height_m": 0.18,
+            "angular_rad_s": 0.5817,
+            "qualified_landing_time_s": null,
+            "last_jump_landing_time_s": 3.005964517593384,
+            "elapsed_s": 3.549999952316284
+          },
+          "20": {
+            "tick": 375,
+            "behavior": 109,
+            "gate": false,
+            "had_contact": false,
+            "released": false,
+            "feet": 4,
+            "tilt_deg": 5.13,
+            "height_m": 0.186,
+            "angular_rad_s": 1.0201,
+            "qualified_landing_time_s": null,
+            "last_jump_landing_time_s": 3.005964517593384,
+            "elapsed_s": 3.75
+          },
+          "0": {
+            "tick": 395,
+            "behavior": 117,
+            "gate": false,
+            "had_contact": false,
+            "released": false,
+            "feet": 4,
+            "tilt_deg": 8.85,
+            "height_m": 0.1557,
+            "angular_rad_s": 0.2888,
+            "qualified_landing_time_s": null,
+            "last_jump_landing_time_s": 3.005964517593384,
+            "elapsed_s": 3.9499998092651367
+          }
+        }
+      },
+      {
+        "case": "B-720402-034",
+        "lane": 98,
+        "training_lane": false,
+        "body_penalty": -40.0,
+        "event_tick": 413,
+        "behavior_at_event": 117,
+        "before": {
+          "60": {
+            "tick": 352,
+            "behavior": 109,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 3,
+            "tilt_deg": 13.26,
+            "height_m": 0.1842,
+            "angular_rad_s": 1.631,
+            "qualified_landing_time_s": 2.978966474533081,
+            "last_jump_landing_time_s": 3.1159565448760986,
+            "elapsed_s": 3.5199999809265137
+          },
+          "40": {
+            "tick": 372,
+            "behavior": 109,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 2,
+            "tilt_deg": 27.33,
+            "height_m": 0.1676,
+            "angular_rad_s": 0.532,
+            "qualified_landing_time_s": 2.978966474533081,
+            "last_jump_landing_time_s": 3.6569173336029053,
+            "elapsed_s": 3.7200000286102295
+          },
+          "20": {
+            "tick": 392,
+            "behavior": 117,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 2,
+            "tilt_deg": 28.42,
+            "height_m": 0.1582,
+            "angular_rad_s": 0.4372,
+            "qualified_landing_time_s": 2.978966474533081,
+            "last_jump_landing_time_s": 3.6569173336029053,
+            "elapsed_s": 3.919999837875366
+          },
+          "0": {
+            "tick": 412,
+            "behavior": 117,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 2,
+            "tilt_deg": 36.34,
+            "height_m": 0.1541,
+            "angular_rad_s": 1.0659,
+            "qualified_landing_time_s": 2.978966474533081,
+            "last_jump_landing_time_s": 3.6569173336029053,
+            "elapsed_s": 4.119999885559082
+          }
+        }
+      },
+      {
+        "case": "A-720401-046",
+        "lane": 46,
+        "training_lane": false,
+        "body_penalty": -40.0,
+        "event_tick": 414,
+        "behavior_at_event": 117,
+        "before": {
+          "60": {
+            "tick": 353,
+            "behavior": 109,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 2,
+            "tilt_deg": 17.53,
+            "height_m": 0.1692,
+            "angular_rad_s": 1.9478,
+            "qualified_landing_time_s": 2.99896502494812,
+            "last_jump_landing_time_s": 3.1649529933929443,
+            "elapsed_s": 3.5299999713897705
+          },
+          "40": {
+            "tick": 373,
+            "behavior": 109,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 2,
+            "tilt_deg": 27.53,
+            "height_m": 0.1573,
+            "angular_rad_s": 0.4567,
+            "qualified_landing_time_s": 2.99896502494812,
+            "last_jump_landing_time_s": 3.601921319961548,
+            "elapsed_s": 3.7300000190734863
+          },
+          "20": {
+            "tick": 393,
+            "behavior": 117,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 2,
+            "tilt_deg": 29.53,
+            "height_m": 0.1536,
+            "angular_rad_s": 0.5482,
+            "qualified_landing_time_s": 2.99896502494812,
+            "last_jump_landing_time_s": 3.601921319961548,
+            "elapsed_s": 3.929999828338623
+          },
+          "0": {
+            "tick": 413,
+            "behavior": 117,
+            "gate": true,
+            "had_contact": true,
+            "released": true,
+            "feet": 2,
+            "tilt_deg": 37.31,
+            "height_m": 0.1495,
+            "angular_rad_s": 0.9814,
+            "qualified_landing_time_s": 2.99896502494812,
+            "last_jump_landing_time_s": 3.601921319961548,
+            "elapsed_s": 4.130000114440918
+          }
+        }
+      },
+      {
+        "case": "A-720401-044",
+        "lane": 44,
+        "training_lane": false,
+        "body_penalty": -40.0,
+        "event_tick": 479,
+        "behavior_at_event": 117,
+        "before": {
+          "60": {
+            "tick": 418,
+            "behavior": 117,
+            "gate": false,
+            "had_contact": false,
+            "released": false,
+            "feet": 3,
+            "tilt_deg": 13.29,
+            "height_m": 0.1624,
+            "angular_rad_s": 0.7033,
+            "qualified_landing_time_s": null,
+            "last_jump_landing_time_s": 3.067960023880005,
+            "elapsed_s": 4.179999828338623
+          },
+          "40": {
+            "tick": 438,
+            "behavior": 117,
+            "gate": false,
+            "had_contact": false,
+            "released": false,
+            "feet": 3,
+            "tilt_deg": 20.67,
+            "height_m": 0.1686,
+            "angular_rad_s": 0.863,
+            "qualified_landing_time_s": null,
+            "last_jump_landing_time_s": 3.067960023880005,
+            "elapsed_s": 4.380000114440918
+          },
+          "20": {
+            "tick": 458,
+            "behavior": 117,
+            "gate": false,
+            "had_contact": false,
+            "released": false,
+            "feet": 2,
+            "tilt_deg": 29.37,
+            "height_m": 0.1707,
+            "angular_rad_s": 0.8708,
+            "qualified_landing_time_s": null,
+            "last_jump_landing_time_s": 3.067960023880005,
+            "elapsed_s": 4.579999923706055
+          },
+          "0": {
+            "tick": 478,
+            "behavior": 117,
+            "gate": false,
+            "had_contact": false,
+            "released": false,
+            "feet": 2,
+            "tilt_deg": 40.02,
+            "height_m": 0.1701,
+            "angular_rad_s": 1.4255,
+            "qualified_landing_time_s": null,
+            "last_jump_landing_time_s": 3.067960023880005,
+            "elapsed_s": 4.779999732971191
+          }
+        }
+      }
+    ]
+  },
+  "r33_online_start_sampling": {
+    "scope": "First Recovery proposal after the 512-tick native collection. Fingerprints compare lane, episode, elapsed tick, foot support count, tilt and landing clock against ticks 256–511. Agreement is evidence of matching state; older or duplicate stream provenance cannot be resolved from the Actor log alone.",
+    "actor_accepted": true,
+    "global_accepted": 118,
+    "backtrack_alpha": 1.0,
+    "world_updates": 208,
+    "window_count": 1024,
+    "wm_batches": 8,
+    "window_stage_counts": {
+      "uniform": 1024,
+      "pre_touchdown": 605,
+      "touchdown": 308,
+      "post_touchdown": 368,
+      "post_landing_support_loss": 311,
+      "post_landing_unload": 49,
+      "pre_body_ground": 139,
+      "recovery_failure": 295,
+      "stable_recovery": 78
+    },
+    "event_coverage": {
+      "post_landing_support_loss": 311,
+      "pre_touchdown": 605,
+      "touchdown": 308,
+      "post_touchdown": 368,
+      "recovery_failure": 295,
+      "stable_recovery": 78,
+      "post_landing_unload": 49,
+      "pre_body_ground": 139,
+      "uniform": 1024
+    },
+    "online_transition_uses_by_policy": {
+      "8": 1040,
+      "16": 1424,
+      "17": 976,
+      "33": 192,
+      "69": 1184,
+      "85": 693,
+      "93": 315,
+      "109": 2098,
+      "117": 286,
+      "49": 48
+    },
+    "actor_family_counts": {
+      "risk": 8,
+      "landing": 4,
+      "stable": 4,
+      "initial_archive": 0
+    },
+    "actor_samples": [
+      {
+        "lane": 58,
+        "episode": 0,
+        "tick": 468,
+        "since_landing_s": 1.593041181564331,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 3,
+        "tilt_rad": 0.47892892360687256,
+        "failure_window_ticks": 40,
+        "stage": "pre_body_ground"
+      },
+      {
+        "lane": 56,
+        "episode": 0,
+        "tick": 400,
+        "since_landing_s": 0.9390394687652588,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 1,
+        "tilt_rad": 0.5703962445259094,
+        "failure_window_ticks": null,
+        "stage": "post_landing_support_loss"
+      },
+      {
+        "lane": 68,
+        "episode": 0,
+        "tick": 516,
+        "since_landing_s": 2.063041925430298,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 2,
+        "tilt_rad": 0.6310142278671265,
+        "failure_window_ticks": 20,
+        "stage": "pre_body_ground"
+      },
+      {
+        "lane": 35,
+        "episode": 0,
+        "tick": 523,
+        "since_landing_s": 2.2290351390838623,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 2,
+        "tilt_rad": 0.6922115087509155,
+        "failure_window_ticks": null,
+        "stage": "recovery_failure"
+      },
+      {
+        "lane": 82,
+        "episode": 0,
+        "tick": 522,
+        "since_landing_s": 2.1280415058135986,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 2,
+        "tilt_rad": 0.5408241748809814,
+        "failure_window_ticks": 20,
+        "stage": "pre_body_ground"
+      },
+      {
+        "lane": 67,
+        "episode": 0,
+        "tick": 528,
+        "since_landing_s": 2.2920339107513428,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 2,
+        "tilt_rad": 0.6844415664672852,
+        "failure_window_ticks": null,
+        "stage": "recovery_failure"
+      },
+      {
+        "lane": 95,
+        "episode": 0,
+        "tick": 528,
+        "since_landing_s": 2.3000333309173584,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 3,
+        "tilt_rad": 0.4240962862968445,
+        "failure_window_ticks": 40,
+        "stage": "pre_body_ground"
+      },
+      {
+        "lane": 31,
+        "episode": 0,
+        "tick": 580,
+        "since_landing_s": 2.777036428451538,
+        "landing_clock_source": "latest_observed_jump_landing",
+        "support_feet": 3,
+        "tilt_rad": 0.4584271013736725,
+        "failure_window_ticks": 40,
+        "stage": "pre_body_ground"
+      },
+      {
+        "lane": 20,
+        "episode": 1,
+        "tick": 308,
+        "since_landing_s": null,
+        "landing_clock_source": null,
+        "support_feet": 0,
+        "tilt_rad": 0.5590618848800659,
+        "failure_window_ticks": null,
+        "stage": "touchdown"
+      },
+      {
+        "lane": 10,
+        "episode": 0,
+        "tick": 496,
+        "since_landing_s": 1.88804030418396,
+        "landing_clock_source": "latest_observed_jump_landing",
+        "support_feet": 3,
+        "tilt_rad": 0.26992279291152954,
+        "failure_window_ticks": null,
+        "stage": "post_touchdown"
+      },
+      {
+        "lane": 12,
+        "episode": 0,
+        "tick": 496,
+        "since_landing_s": 1.8750412464141846,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 4,
+        "tilt_rad": 0.1726384460926056,
+        "failure_window_ticks": null,
+        "stage": "post_touchdown"
+      },
+      {
+        "lane": 71,
+        "episode": 0,
+        "tick": 294,
+        "since_landing_s": null,
+        "landing_clock_source": null,
+        "support_feet": 0,
+        "tilt_rad": 0.7405586242675781,
+        "failure_window_ticks": null,
+        "stage": "touchdown"
+      },
+      {
+        "lane": 43,
+        "episode": 0,
+        "tick": 473,
+        "since_landing_s": 1.6830384731292725,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 4,
+        "tilt_rad": 0.07526299357414246,
+        "failure_window_ticks": null,
+        "stage": "stable_recovery"
+      },
+      {
+        "lane": 80,
+        "episode": 0,
+        "tick": 474,
+        "since_landing_s": 1.6720397472381592,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 4,
+        "tilt_rad": 0.08651687949895859,
+        "failure_window_ticks": null,
+        "stage": "stable_recovery"
+      },
+      {
+        "lane": 23,
+        "episode": 0,
+        "tick": 475,
+        "since_landing_s": 1.707038164138794,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 4,
+        "tilt_rad": 0.053705181926488876,
+        "failure_window_ticks": null,
+        "stage": "stable_recovery"
+      },
+      {
+        "lane": 24,
+        "episode": 0,
+        "tick": 477,
+        "since_landing_s": 1.7140390872955322,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 4,
+        "tilt_rad": 0.06845378130674362,
+        "failure_window_ticks": null,
+        "stage": "stable_recovery"
+      }
+    ],
+    "online_state_matches": [
+      {
+        "lane": 56,
+        "episode": 0,
+        "tick": 400,
+        "since_landing_s": 0.9390394687652588,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 1,
+        "tilt_rad": 0.5703962445259094,
+        "failure_window_ticks": null,
+        "stage": "post_landing_support_loss",
+        "native_behavior": 117
+      },
+      {
+        "lane": 10,
+        "episode": 0,
+        "tick": 496,
+        "since_landing_s": 1.88804030418396,
+        "landing_clock_source": "latest_observed_jump_landing",
+        "support_feet": 3,
+        "tilt_rad": 0.26992279291152954,
+        "failure_window_ticks": null,
+        "stage": "post_touchdown",
+        "native_behavior": 117
+      },
+      {
+        "lane": 12,
+        "episode": 0,
+        "tick": 496,
+        "since_landing_s": 1.8750412464141846,
+        "landing_clock_source": "first_qualified_landing",
+        "support_feet": 4,
+        "tilt_rad": 0.1726384460926056,
+        "failure_window_ticks": null,
+        "stage": "post_touchdown",
+        "native_behavior": 117
+      },
+      {
+        "lane": 71,
+        "episode": 0,
+        "tick": 294,
+        "since_landing_s": null,
+        "landing_clock_source": null,
+        "support_feet": 0,
+        "tilt_rad": 0.7405586242675781,
+        "failure_window_ticks": null,
+        "stage": "touchdown",
+        "native_behavior": 109
+      }
+    ],
+    "source_chunk_sha256": [
+      "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494",
+      "dac25f5e611a8e6c7eb58ced3e324c0d8b2faef6a15230dd8bceda9dd97f077f",
+      "4512dd06824b0762bd1b74cad3e68f36809e7f946c370f088b6b3ccb76c153cd",
+      "e81ebbc1fcf981fe49a00512ae264bcd3fc3692ffa707df86d78b9d66ff08cdf",
+      "6822731657212a22aa3b55786bd9f3d8144d09453c2800b093d8baabe79a4b12",
+      "1352ec849e1fc8823fba0d7cafacfcba188257434cf49358f4891cbdc1d079c8",
+      "656cc498dfafb26a042c07d09f824c87bbee20f9d5fee3072df1100c7085e9e6",
+      "8bc82068965d2fb588a53d977212ded436d9591138c984ef992fb2a48b57e301"
+    ]
+  }
+}
