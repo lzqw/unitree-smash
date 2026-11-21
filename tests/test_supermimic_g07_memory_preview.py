@@ -1,5 +1,6 @@
 """Ownership/gradient tests, not native policy performance evidence."""
 from types import SimpleNamespace, MethodType
+import pytest
 import torch
 
 from quadsmash.control.full_racket_arm_target_rate_v4 import ArmTargetRateV4
@@ -92,3 +93,37 @@ def test_fixed_budget_command_uses_each_records_post_base_mixer_memory():
             torch.testing.assert_close(actual.final_normalized,preview.final_normalized,atol=0,rtol=0)
             torch.testing.assert_close(actual.final_joint_targets,preview.final_joint_targets,atol=0,rtol=0)
         assert not memory.mixer.arm_rate.initialized.any()
+
+
+def test_candidate_scores_advance_independent_controller_histories():
+    from quadsmash.control.full_racket_residual_v4 import ResidualActionMixerV4
+    from quadsmash.rl.supermimic_g07_memory_preview_v1 import G07MemoryPreviewV1
+
+    mixer = ResidualActionMixerV4(2, 'cpu', [.2] * 18)
+    base = SimpleNamespace(history=[])
+
+    def action(self, observation, default, limits):
+        self.history.append(len(self.history) + 1)
+        return default.expand(2, -1) + .03 * self.history[-1]
+
+    base.action = MethodType(action, base)
+    original = SimpleNamespace(base=base, mixer=mixer)
+    executor = G07MemoryPreviewV1(original)
+    default = torch.zeros(18)
+    limits = torch.tensor([[-2., 2.]] * 18)
+    obs = torch.zeros(2, 794)
+    for value in (.1, -.2, .1):
+        step = executor.private_scoring_step(original)
+        reference = original
+        request = torch.full((2, 18), value)
+        with pytest.raises(RuntimeError, match='disabled gradients'):
+            step(obs, request, default, limits)
+        with torch.no_grad():
+            for tick in range(4):
+                obs[:, 775] = .3 + tick * .01
+                expected, reference, _ = executor.forward(obs, request, default, limits, reference)
+                result, branch, _ = step(obs, request, default, limits)
+                torch.testing.assert_close(result.final_joint_targets, expected.final_joint_targets, rtol=0, atol=0)
+                assert branch.base.history == reference.base.history
+        assert original.base.history == []
+        assert not original.mixer.arm_rate.initialized.any()

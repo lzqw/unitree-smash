@@ -190,21 +190,33 @@ class G07MemoryPreviewV1:
         self.mixer = ResidualExecutionPreviewV1(mixer.scale.tolist(), mixer.arm_rate.rate,
                                                max(mixer.scale.tolist()), mixer.arm_rate.control_dt)
 
-    def _base_step(self, observation, default, limits, memory):
-        branch = clone_execution_graph(memory, learning=True)
+    def _base_step(self, observation, default, limits, branch):
         base = branch.base.action({'policy': observation}, default, limits)
         state = MixerMemory(branch.mixer.arm_rate.target, branch.mixer.arm_rate.clock,
                             branch.mixer.arm_rate.initialized, branch.mixer.nonzero_seen)
-        return branch, base, state
+        return base, state
 
     @torch.no_grad()
     def prepare_fixed_command(self, observation, default, limits, memory):
         """Fixed native start only. The actor request enters after the G07 base step."""
-        _, base, state = self._base_step(observation, default, limits, memory)
-        return base, state
+        return self._base_step(observation, default, limits, clone_execution_graph(memory, learning=True))
 
     def forward(self, observation, residual, default, limits, memory):
-        branch, base, state = self._base_step(observation, default, limits, memory)
+        return self._advance(observation, residual, default, limits, clone_execution_graph(memory, learning=True))
+
+    def private_scoring_step(self, memory):
+        """Advance one candidate's private controller until the end of its score."""
+        branch = clone_execution_graph(memory, learning=True)
+
+        def step(observation, residual, default, limits):
+            if torch.is_grad_enabled():
+                raise RuntimeError('Private candidate scoring requires disabled gradients')
+            return self._advance(observation, residual, default, limits, branch)
+
+        return step
+
+    def _advance(self, observation, residual, default, limits, branch):
+        base, state = self._base_step(observation, default, limits, branch)
         preview = self.mixer(base, residual, observation, default, limits, state)
         branch.mixer.arm_rate.target = preview.next_memory.arm_target
         branch.mixer.arm_rate.clock = preview.next_memory.arm_clock

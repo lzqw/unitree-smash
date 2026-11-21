@@ -256,6 +256,11 @@ class PhysicalHorizonTrainer:
                                     collect_critic_data=collect_critic_data)
         from .supermimic_approach_data_v1 import masked_lane_mean
         cfg=self.timebase; state=initial_state.branch()
+        scoring_step = None
+        if not collect_critic_data and not torch.is_grad_enabled():
+            factory = getattr(getattr(self.adapter, 'executor', None), 'private_scoring_step', None)
+            if factory is not None:
+                scoring_step = factory(state.executor_memory)
         states=[]; rewards=[]; dones=[]; valid=[]; anchors=[]; gates=[]; tracks=[]; track_weights=[]; track_states=[]
         selected=state.clock_goal_context.get('actor_lane_mask',torch.ones(len(state.physical),dtype=torch.bool,device=state.physical.device))
         survival=state.physical.new_ones(len(state.physical))
@@ -329,6 +334,8 @@ class PhysicalHorizonTrainer:
             gradient_options = {'detach_ball': True} if toi_only else {}
             if hasattr(self, 'research_court'):
                 gradient_options = dict(detach_ball=True, ball_input_grad=bool(contact_weight))
+            if scoring_step is not None:
+                gradient_options['scoring_step'] = scoring_step
             state,reward,done,transition=self.adapter(state,action,**gradient_options)
             if revised and self.block_name == 'recovery':
                 # Train on post-landing correction while the Critic keeps its original return target.

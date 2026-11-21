@@ -1,0 +1,45 @@
+{
+  "scope": "CPU H64 candidate scoring with frozen weights, single Torch thread, alternating old and new execution; active GPU training ran independently. Each repetition checks task, tracking, anchor, total loss, lane returns and every final joint target against the original with zero tolerance.",
+  "approach": {
+    "checkpoint": "paired_pause_0040_strings_retry/G1/train/pre_block.pt",
+    "gate": "success_near",
+    "controller_starts": 2,
+    "lanes": 7,
+    "command_components_per_score": 8064,
+    "original_seconds": [
+      8.593401985999662,
+      8.607164974033367,
+      8.603974412952084
+    ],
+    "private_seconds": [
+      7.593634432996623,
+      7.947494387975894,
+      7.618469066976104
+    ]
+  },
+  "recovery": {
+    "checkpoint": "paired_adam_direction_0040/G1/train/pre_block.pt",
+    "source": "20 ticks before native body ground",
+    "lane_and_episode_tick": [
+      [
+        26,
+        721
+      ],
+      [
+        31,
+        600
+      ]
+    ],
+    "controller_starts": 2,
+    "lanes": 2,
+    "command_components_per_score": 2304,
+    "original_seconds": [
+      6.720359369996004,
+      6.637101150001399
+    ],
+    "private_seconds": [
+      6.082634578982834,
+      6.035155829042196
+    ]
+  }
+}

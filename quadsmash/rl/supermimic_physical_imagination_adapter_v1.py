@@ -69,12 +69,16 @@ class PhysicalImaginationAdapter(nn.Module):
         self.contact_bptt_mode=validate_contact_bptt_mode(mode)
         self.manifest['contact_bptt_mode']=self.contact_bptt_mode
 
-    def forward(self,state:PhysicalImaginationStateV1,actor_action,*,detach_ball=False,ball_input_grad=True):
+    def forward(self,state:PhysicalImaginationStateV1,actor_action,*,detach_ball=False,ball_input_grad=True,
+                scoring_step=None):
         if int(self.task_model.fit_updates)==0:
             raise RuntimeError('Physical loop requires fitted task memory/event model')
         c=state.clock_goal_context
-        preview,executor,base=self.executor.forward(state.observation,actor_action,
-            c['joint_default'][0],c['limits'],state.executor_memory)
+        command_args = (state.observation, actor_action, c['joint_default'][0], c['limits'])
+        if scoring_step is None:
+            preview,executor,base=self.executor.forward(*command_args, state.executor_memory)
+        else:
+            preview,executor,base=scoring_step(*command_args)
         predicted,feet,present,ball_details=ball_transition(self.physical_model,self.ball_model,
             state.physical,preview.final_joint_targets,c['final_action'],c['foot_contact'],
             c['ball_present'],c['elapsed'],c['launch'],action_model=self.action_ball_model,
