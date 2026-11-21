@@ -457,3 +457,19 @@ def test_signed_friction_fit_recovers_two_physical_load_fractions():
     values=samples@expected
     actual=fit_strength(samples,values,torch.arange(8)%2==0)
     torch.testing.assert_close(torch.tensor(actual),expected)
+
+
+def test_endpoint_twist_matches_the_position_derivative_inside_the_control_step():
+    from scripts.evaluate_supermimic_contact_rollout import racket_motion_at_fraction
+    dt = .01
+    origin = torch.zeros(1, 3, dtype=torch.double)
+    endpoint = torch.tensor([[.01, 0., 0.]], dtype=torch.double)
+    quat = torch.tensor([[1., 0., 0., 0.]], dtype=torch.double)
+    start = (origin, quat, origin, origin)
+    end = (endpoint, quat, origin, origin)
+    fraction = torch.tensor([[.5]], dtype=torch.double, requires_grad=True)
+    center, _, linear, angular = racket_motion_at_fraction(start, end, fraction, dt, rotation_hermite=True)
+    derivative, = torch.autograd.grad(center.sum(), fraction)
+    torch.testing.assert_close(linear[:, :1], derivative / dt)
+    torch.testing.assert_close(linear, 1.5 * endpoint / dt)
+    torch.testing.assert_close(angular, origin)

@@ -21,6 +21,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for key in ('fit', 'physics-calibration', 'development', 'body', 'online-body', 'source-stage', 'output'):
         parser.add_argument('--' + key, type=Path, required=True)
+    parser.add_argument('--compare-endpoint-twist', action='store_true', help='Compare the derivative of the interpolated pose with the calibrated surface velocity')
     args = parser.parse_args()
     torch.set_num_threads(2)
     fit = read(args.fit)
@@ -66,6 +67,14 @@ def main():
         scores[name] = dict(epsilon_request=epsilon, stable_observable_lanes=sorted(observable),
                             groups={k:groups.count(k) for k in sorted(set(groups))},
                             native_racket=oracle['candidate'], body_racket=body['metrics'])
+        if args.compare_endpoint_twist:
+            from audit_supermimic_impact_twist import EndpointTwistPrior
+            alternative = EndpointTwistPrior(normal_impulse_scale=prior.normal_impulse_scale).eval()
+            tested = free_rollout(model, alternative, seq, groups, noise, cmds)
+            predicted = body_transfer(root, args.body, alternative, model, groups, noise, seq, cmds,
+                                      args.online_body, args.source_stage)
+            scores[name]['endpoint_twist'] = dict(native_racket=tested['candidate'], body_racket=predicted['metrics'],
+                                                  native_cases=tested['cases'])
     result = dict(scope='Previously registered development cases at different amplitudes of the same requested direction',
                   calibration_sha256=sha(args.fit), source_status_sha256=digests, scales=scores,
                   unique_observable_stable_lanes=sorted(set.union(*stable_ids)),

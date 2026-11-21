@@ -52,20 +52,25 @@ def hermite_racket_rotation(q0, q1, omega0, omega1, u, dt):
     return q,omega
 
 
-def predicted_racket_path(prior, start, end, *, rotation_hermite=False):
-    """Reconstruct the Body WM racket pose and twist at the start of each physics substep."""
+def racket_motion_at_fraction(start, end, u, dt, *, rotation_hermite=False):
+    """Evaluate an endpoint-constrained racket path and its twist at the supplied control fractions."""
     c0, q0, v0, w0 = start
     c1, q1, v1, w1 = end
-    u = torch.arange(prior.steps, dtype=c0.dtype, device=c0.device)[:, None, None] / prior.steps
-    center = c0 + (3*u.square()-2*u**3)*(c1-c0) + prior.dt*((u**3-2*u.square()+u)*v0 + (u**3-u.square())*v1)
-    linear = (6*u-6*u.square())*(c1-c0)/prior.dt + (3*u.square()-4*u+1)*v0 + (3*u.square()-2*u)*v1
+    center = c0 + (3*u.square()-2*u**3)*(c1-c0) + dt*((u**3-2*u.square()+u)*v0 + (u**3-u.square())*v1)
+    linear = (6*u-6*u.square())*(c1-c0)/dt + (3*u.square()-4*u+1)*v0 + (3*u.square()-2*u)*v1
     if rotation_hermite:
-        q,omega=hermite_racket_rotation(q0,q1,w0,w1,u,prior.dt)
+        q,omega=hermite_racket_rotation(q0,q1,w0,w1,u,dt)
     else:
         q1 = torch.where((q0*q1).sum(-1, keepdim=True) < 0, -q1, q1)
         q = F.normalize(q0 + u*(q1-q0), dim=-1)
         omega = w0 + u*(w1-w0)
     return center, q, linear, omega
+
+
+def predicted_racket_path(prior, start, end, *, rotation_hermite=False):
+    """Reconstruct the Body WM racket pose and twist at the start of each physics substep."""
+    u = torch.arange(prior.steps, dtype=start[0].dtype, device=start[0].device)[:, None, None] / prior.steps
+    return racket_motion_at_fraction(start, end, u, prior.dt, rotation_hermite=rotation_hermite)
 
 
 def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measured_path=None,
