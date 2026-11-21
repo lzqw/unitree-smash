@@ -79,25 +79,26 @@ def sample_joint(stage_pools,source_labels,batch,generator,*,source_quota=None,s
     if not sq:sq={int(s):batch for s in sources.unique()}
     # Free source quota remainder is an explicit wildcard, not a false source.
     pattern=(memberships.long()*(2**torch.arange(len(names)))).sum(1)
-    grouped=torch.stack((sources,pattern),1);unique,inverse=torch.unique(grouped,dim=0,return_inverse=True)
-    flow=Flow();S=('root',);T=('sink',);links=[]
-    for source,count in sq.items():flow.add(S,('source',source),count)
-    if source_quota and sum(sq.values())<batch:
-        flow.add(S,('free',),batch-sum(sq.values()))
-        for source in sources.unique().tolist():flow.add(('free',),('source',source),batch)
-    group_rows=[]
-    for gi,(source,signature) in enumerate(unique.tolist()):
-        ids=torch.where(inverse==gi)[0];group_rows.append(ids)
-        flow.add(('source',source),('group',gi),len(ids))
-        for j,name in enumerate(names):
-            if signature&(1<<j):links.append((gi,name,flow.add(('group',gi),('stage',name),len(ids))))
-    for stage,count in tq.items():flow.add(('stage',stage),T,count)
-    allocated=flow.solve(S,T)
     selected=[];allocated_stage=Counter();used=set();ep_counts=Counter()
     identities=episode_keys[pairs[:,0],pairs[:,1]].tolist() if episode_keys is not None else codes.tolist()
-    assignments=[(gi,stage,edge[3]-edge[1]) for gi,stage,edge in links]
     if episode_keys is not None:
         group_rows,assignments,allocated=capped_allocation(sources,pattern,identities,names,sq,tq,batch,max_per_episode,source_quota)
+    else:
+        grouped=torch.stack((sources,pattern),1);unique,inverse=torch.unique(grouped,dim=0,return_inverse=True)
+        flow=Flow();S=('root',);T=('sink',);links=[]
+        for source,count in sq.items():flow.add(S,('source',source),count)
+        if source_quota and sum(sq.values())<batch:
+            flow.add(S,('free',),batch-sum(sq.values()))
+            for source in sources.unique().tolist():flow.add(('free',),('source',source),batch)
+        group_rows=[]
+        for gi,(source,signature) in enumerate(unique.tolist()):
+            ids=torch.where(inverse==gi)[0];group_rows.append(ids)
+            flow.add(('source',source),('group',gi),len(ids))
+            for j,name in enumerate(names):
+                if signature&(1<<j):links.append((gi,name,flow.add(('group',gi),('stage',name),len(ids))))
+        for stage,count in tq.items():flow.add(('stage',stage),T,count)
+        allocated=flow.solve(S,T)
+        assignments=[(gi,stage,edge[3]-edge[1]) for gi,stage,edge in links]
     def draw(ids,want):
         order=ids[torch.randperm(len(ids),generator=generator)].tolist();chosen=[]
         # First favor less represented episodes, using shuffle for seeded ties.

@@ -83,6 +83,17 @@ def _sample_rows(pool, count, generator):
     return torch.cat((pool[order],pool[torch.randint(len(pool),(count-len(pool),),generator=generator)]))
 
 
+def replay_episode_keys(streams, episodes):
+    """Identify (stream, lane, episode) without sorting a matrix of triples."""
+    unique_streams, stream_index = torch.unique(streams, return_inverse=True)
+    unique_episodes, episode_index = torch.unique(episodes, return_inverse=True)
+    lanes = episodes.shape[1]
+    if len(unique_streams) * lanes * len(unique_episodes) > torch.iinfo(torch.int64).max:
+        raise OverflowError('Replay episode identifiers exceed int64')
+    lane = torch.arange(lanes, device=episodes.device)
+    return (stream_index[:, None] * lanes + lane) * len(unique_episodes) + episode_index
+
+
 def sample_stratified_windows(stage_pools,source_labels,batch,generator,*,source_quota=None,stage_quota=None,episode_keys=None,max_per_episode=8):
     from .supermimic_joint_sampling_v1 import sample_joint
     return sample_joint(stage_pools,source_labels,batch,generator,source_quota=source_quota,
@@ -409,12 +420,6 @@ class PhysicalLoopReplay:
                     torch.where(recent, torch.ones_like(source_ids),
                                 torch.full_like(source_ids, 2)))))
         if excluded_lanes:valid[:,list(excluded_lanes)]=False
-        pools = {'uniform': valid.nonzero()}
-        for i in range(8):
-            event = ((d['next_event_state'][..., i] > d['event_state'][..., i])
-                     .unfold(0, steps, 1).any(-1) & valid)
-            if event.any():
-                pools[str(i)] = event.nonzero()
         if source_quota or stage_quota:
             if head == 'contact':
                 contact = ((d['next_event_state'][..., 1] > d['event_state'][..., 1]) |
@@ -476,9 +481,7 @@ class PhysicalLoopReplay:
                 if name in ('initial_archive', 'recent_online', 'older_online',
                             'action_identification', 'contact_event')
             }
-            identity=torch.stack((streams[:,None].expand_as(d['episode']),torch.arange(self.lanes)[None].expand_as(d['episode']),d['episode']),-1)
-            _,episode_keys=torch.unique(identity.reshape(-1,3),dim=0,return_inverse=True)
-            episode_keys=episode_keys.reshape_as(d['episode'])
+            episode_keys = replay_episode_keys(streams, d['episode'])
             chosen, counts = sample_stratified_windows(
                 pairs, source_codes, batch, self.generator,
                 source_quota=numeric_source_quota,
@@ -495,6 +498,12 @@ class PhysicalLoopReplay:
                     for name, value in counts['effective_weight']['source'].items()
                 }
         else:
+            pools = {'uniform': valid.nonzero()}
+            for i in range(8):
+                event = ((d['next_event_state'][..., i] > d['event_state'][..., i])
+                         .unfold(0, steps, 1).any(-1) & valid)
+                if event.any():
+                    pools[str(i)] = event.nonzero()
             chosen, counts = sample_event_windows(pools, batch, self.generator, iteration)
         t, lanes = chosen.unbind(1)
         at = t[None] + torch.arange(steps)[:, None]

@@ -166,3 +166,16 @@ def test_sequential_counts_include_approach_refreshes_across_resume():
     old=SequentialProgress()
     old.block(0,'approach',16,32).update(attempts=8,accepted=8,refresh_at=8)
     assert old.cycle_refresh_counts(0,3,1)['refresh_world_updates'] is None
+
+
+def test_replay_episode_keys_preserve_stream_lane_episode_partitions():
+    from quadsmash.rl.supermimic_physical_loop_replay_v1 import replay_episode_keys
+
+    # Signed probe streams and sparse episode numbers may repeat across lanes.
+    streams = torch.tensor([3, -2, 3, -2])
+    episodes = torch.tensor([[42, 42], [42, 0], [42, 43], [42, 0]])
+    keys = replay_episode_keys(streams, episodes).flatten()
+    expected = [(stream, lane, int(episodes[t, lane]))
+                for t, stream in enumerate(streams.tolist()) for lane in range(2)]
+    for i, lhs in enumerate(expected):
+        assert (keys == keys[i]).tolist() == [lhs == rhs for rhs in expected]
