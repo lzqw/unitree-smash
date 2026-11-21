@@ -23,8 +23,12 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     for key in ('source-registration','composition','contact','output','tensorboard'):
         ap.add_argument('--'+key,type=Path,required=True)
+    ap.add_argument('--training-seed', type=int,
+                    help='Use an independent learner and replay seed with the same starting weights and native cases')
     ap.add_argument('--arm',choices=('G0','G1'),required=True)
     a=ap.parse_args()
+    if a.training_seed is not None and not 0 <= a.training_seed < 2**63:
+        ap.error('training-seed must be a nonnegative signed 64-bit integer')
     src=json.loads(a.source_registration.read_text())
     composition=json.loads(a.composition.with_suffix('.json').read_text())
     if (digest(a.composition)!=composition['checkpoint_sha256'] or digest(a.contact)!=composition['contact_checkpoint_sha256']
@@ -46,11 +50,15 @@ def main():
         flag='--'+flag.replace('_','-')
         if flag in cmd:cmd[cmd.index(flag)+1]=str(v)
         else:cmd.extend([flag,str(v)])
+    if a.training_seed is not None:
+        cmd.extend(['--research-training-seed',str(a.training_seed)])
     a.output.mkdir(parents=True,exist_ok=False)
     env=dict(os.environ,PYTHONPATH='.:scripts',OMP_NUM_THREADS='2',QUADSMASH_ZSTD_ARCHIVE='1')
     registration=dict(command=cmd,arm=a.arm,initial=composition,expected_retained_updates=256,
                       max_proposals=512,train_case_seed=NATIVE_TRAIN128_SEED,learner_initial_seed=LEARNER_SEED,
-                      learner_rng_at_start='restored from composition checkpoint',compression='zstd',
+                      research_training_seed=a.training_seed,
+                      learner_rng_at_start=('restored from composition checkpoint' if a.training_seed is None
+                                            else 'forked after native reset from the registered training seed'),compression='zstd',
                       previous_registration_sha256=digest(a.source_registration),
                       baseline_path=cmd[cmd.index('--paired-evaluation-baseline')+1])
     (a.output/'registration.json').write_text(json.dumps(registration,indent=2)+'\n')

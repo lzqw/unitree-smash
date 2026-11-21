@@ -80,6 +80,27 @@ def select_launch_for_start(row, launch):
     return launch[lane_id:lane_id+1]
 
 
+def research_learner_rng(requested_seed, saved_config, *, fresh, replay, natural_flight):
+    """Fork training randomness once; an ordinary continuation keeps the restored RNG cursors."""
+    inherited = saved_config.get('research_training_seed')
+    if requested_seed is None:
+        return inherited
+    if not fresh:
+        if requested_seed != inherited:
+            raise ValueError('Cannot change the training seed of an ongoing schedule')
+        return inherited
+    import torch
+    # torch.manual_seed seeds both CPU and CUDA. Replay and the long-flight
+    # sampler own separate CPU generators whose state also lives in the checkpoint.
+    torch.manual_seed(requested_seed)
+    streams = torch.Generator().manual_seed(requested_seed)
+    replay_seed, flight_seed = torch.empty(2, dtype=torch.int64).random_(generator=streams).tolist()
+    replay.generator.manual_seed(replay_seed)
+    if natural_flight is not None:
+        natural_flight.generator.manual_seed(flight_seed)
+    return requested_seed
+
+
 def restore_world_optimizer(optimizer,state,requested_lr):
     optimizer.load_state_dict(state)
     if requested_lr is not None:
@@ -106,6 +127,8 @@ def main():
     parser.add_argument('--native-acceptance-receipt',type=Path)
     parser.add_argument('--training-profile',choices=('bounded','large','research_scale'),default='bounded')
     parser.add_argument('--research-contact-gradient',choices=('G0','G1'),default='G1')
+    parser.add_argument('--research-training-seed', type=int,
+                        help='Fork learner and sampler RNGs for an independent research training replicate')
     parser.add_argument('--research-contact-weight',type=float,default=.10)
     parser.add_argument('--training-stage',choices=('wm_calibrate','shadow_policy','precontact_only','contact_detached','research_contact','full_contact'),default='full_contact')
     parser.add_argument('--contact-bptt-mode',choices=('blocked','detached','precontact','enabled'))
@@ -211,6 +234,8 @@ def main():
     # only fail later on a hard-coded cuda:0 tensor allocation.
     import torch
     research = args.training_profile == 'research_scale'
+    if args.research_training_seed is not None and (not research or not 0 <= args.research_training_seed < 2**63):
+        parser.error('research-training-seed requires research_scale and a nonnegative signed 64-bit seed')
     if research != (args.training_stage == 'research_contact'):
         parser.error('research_scale uses the non-promotable research_contact stage')
     if research and (args.sequential_layout!='short-alternating' or args.update_mode!='sequential' or
@@ -803,6 +828,11 @@ def run(args, *, alternating=None):
         if args.resume_training:
             # Environment seeding must not overwrite the resumed learner RNG.
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
+        training_seed = None
+        if research:
+            training_seed = research_learner_rng(args.research_training_seed,
+                resumed['config'] if args.resume_training else {},
+                fresh=not args.resume_training or args.resume_reset_schedule, replay=replay, natural_flight=natural_flight)
         stage(args.output,'AFTER_RESET')
         from quadsmash.rl.supermimic_policy_execution_v1 import policy_forward,resolve_contract
         if args.resume_training and resolve_contract(resumed)[0]!=policy_execution:
@@ -997,6 +1027,7 @@ def run(args, *, alternating=None):
             global_rejected=int(resumed_global.get('rejected',0));global_backtracked=int(resumed_global.get('backtracked',0))
         research_origin=(global_accepted_id if args.resume_reset_schedule else resumed.get('config',{}).get('research_origin',global_accepted_id)) if research and args.resume_training else 0
         config['research_origin']=research_origin
+        if research: config['research_training_seed']=training_seed
         research_started=time.monotonic()
         from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability
         loaded_identity=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,global_accepted_id)

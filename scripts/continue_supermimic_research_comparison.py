@@ -54,7 +54,8 @@ def main():
         if not control.exists():
             run('run_supermimic_research_scale.py','--arm','G0','--source-registration',source_registration,
                 '--composition',cmd[cmd.index('--resume-training')+1],'--contact',cmd[cmd.index('--action-ball-checkpoint')+1],
-                '--output',control,'--tensorboard',root/'tensorboard')
+                '--output',control,'--tensorboard',root/'tensorboard',
+                *(['--training-seed', reg['research_training_seed']] if reg.get('research_training_seed') is not None else []))
         if not (control/'exit.json').is_file():
             raise RuntimeError('Existing control arm lacks a terminal receipt')
         wait_for_arm(control,None)

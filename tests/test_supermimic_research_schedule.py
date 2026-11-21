@@ -29,3 +29,30 @@ def test_outgoing_cost_weak_return_has_forward_descent_direction():
     plus[:,3]+=.001
     torch.testing.assert_close(g[:,3],(outgoing_cost(plus,prior,court)-cost.detach())/.001,atol=.002,rtol=.003)
     assert g[0,3]<0
+
+
+def test_research_replicate_forks_sampler_streams_and_resume_keeps_cursors():
+    import pytest
+    from scripts.train_supermimic_physical_block import research_learner_rng
+
+    replay = SimpleNamespace(generator=torch.Generator())
+    flight = SimpleNamespace(generator=torch.Generator())
+
+    def sample():
+        return [torch.randperm(32, generator=g).tolist() for g in (None, replay.generator, flight.generator)]
+
+    def start(seed):
+        assert research_learner_rng(seed, {}, fresh=True, replay=replay, natural_flight=flight) == seed
+        return sample()
+
+    with torch.random.fork_rng(devices=[]):
+        first = start(321)
+        second = sample()
+        assert all(a != b for a, b in zip(first, start(322)))
+        assert first == start(321)
+        config = {'research_training_seed': 321}
+        assert research_learner_rng(321, config, fresh=False, replay=replay, natural_flight=flight) == 321
+        assert research_learner_rng(None, config, fresh=False, replay=replay, natural_flight=flight) == 321
+        assert sample() == second
+        with pytest.raises(ValueError, match='ongoing schedule'):
+            research_learner_rng(322, config, fresh=False, replay=replay, natural_flight=flight)
