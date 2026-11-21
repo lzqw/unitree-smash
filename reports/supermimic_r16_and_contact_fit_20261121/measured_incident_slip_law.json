@@ -1,0 +1,1989 @@
+{
+  "fit_sha256": "8b7a2cda3ba5d36561a18373769efb69171cca2de6bfe7e3aa373da4db4085fd",
+  "parameters": {
+    "friction": 0.32,
+    "sticking": 0.2857142857142857,
+    "score": 0.5570075918550396,
+    "source_errors": [
+      {
+        "absolute": 0.44679415225982666,
+        "signed": 0.21147635579109192,
+        "stable_signed": 0.14667142927646637
+      },
+      {
+        "absolute": 0.017777161672711372,
+        "signed": 0.01913606747984886,
+        "stable_signed": 0.033342454582452774
+      }
+    ]
+  },
+  "panels": {
+    "surface_history_training": {
+      "stable_total": 5,
+      "evaluated": 5,
+      "formula_branches": {
+        "sticking": 5
+      },
+      "signed_magnitude_rmse_mps": 0.05509033554045771,
+      "zero_signed_magnitude_rmse_mps": 0.14601076879224292,
+      "above_repeat_noise": 5,
+      "sign_agreements": 3,
+      "cases": [
+        {
+          "lane": 9,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.0776278632027763,
+              "cap_limited": false,
+              "observed": 1.053528702637938,
+              "incident_speed_range_mps": [
+                3.67341947555542,
+                3.8699755668640137
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 1.0776278632027763,
+              "cap_limited": false,
+              "observed": 1.053528702637938,
+              "incident_speed_range_mps": [
+                3.67341947555542,
+                3.8699755668640137
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 1.0820006643022808,
+              "cap_limited": false,
+              "observed": 1.121941741652439,
+              "incident_speed_range_mps": [
+                3.6881351470947266,
+                3.8858695030212402
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 1.0734141213553292,
+              "cap_limited": false,
+              "observed": 1.1176511123948982,
+              "incident_speed_range_mps": [
+                3.6605875492095947,
+                3.85331130027771
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.004290629257540868,
+          "predicted_signed_magnitude_mps": -0.008586542946951603,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 19,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.9338964734758648,
+              "cap_limited": false,
+              "observed": 2.0364561743520757,
+              "incident_speed_range_mps": [
+                6.768637657165527,
+                6.768637657165527
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.9338964734758648,
+              "cap_limited": false,
+              "observed": 2.0364561743520757,
+              "incident_speed_range_mps": [
+                6.768637657165527,
+                6.768637657165527
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.931833675929478,
+              "cap_limited": false,
+              "observed": 2.0371982240876956,
+              "incident_speed_range_mps": [
+                6.761417865753174,
+                6.761417865753174
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.9264428274972096,
+              "cap_limited": false,
+              "observed": 2.060401722411577,
+              "incident_speed_range_mps": [
+                6.742549896240234,
+                6.742549896240234
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.023203498323881355,
+          "predicted_signed_magnitude_mps": -0.005390848432268447,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 54,
+          "branches": {
+            "nominal_a": {
+              "predicted": 0.9135833808353968,
+              "cap_limited": false,
+              "observed": 1.1460761084513302,
+              "incident_speed_range_mps": [
+                3.1649351119995117,
+                3.2301485538482666
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 0.9135833808353968,
+              "cap_limited": false,
+              "observed": 1.1460761084513302,
+              "incident_speed_range_mps": [
+                3.1649351119995117,
+                3.2301485538482666
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 0.9116102286747523,
+              "cap_limited": false,
+              "observed": 1.0224570787910097,
+              "incident_speed_range_mps": [
+                3.1522135734558105,
+                3.229058027267456
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 0.9157806124005998,
+              "cap_limited": false,
+              "observed": 1.1370525106060947,
+              "incident_speed_range_mps": [
+                3.179197072982788,
+                3.231267213821411
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.11459543181508502,
+          "predicted_signed_magnitude_mps": 0.0041703837258475485,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 69,
+          "branches": {
+            "nominal_a": {
+              "predicted": 0.8883684703281947,
+              "cap_limited": false,
+              "observed": 0.9339507136551736,
+              "incident_speed_range_mps": [
+                3.1092896461486816,
+                3.1092896461486816
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 0.8883684703281947,
+              "cap_limited": false,
+              "observed": 0.9339507136551736,
+              "incident_speed_range_mps": [
+                3.1092896461486816,
+                3.1092896461486816
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.194204875401088,
+              "cap_limited": false,
+              "observed": 1.2389037257351565,
+              "incident_speed_range_mps": [
+                4.179717063903809,
+                4.179717063903809
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 0.8926704951695033,
+              "cap_limited": false,
+              "observed": 0.9370626157986479,
+              "incident_speed_range_mps": [
+                3.1243467330932617,
+                3.1243467330932617
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.3018411099365086,
+          "predicted_signed_magnitude_mps": -0.30153438023158485,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 91,
+          "branches": {
+            "nominal_a": {
+              "predicted": 0.0884638386113303,
+              "cap_limited": false,
+              "observed": 0.24134024767770454,
+              "incident_speed_range_mps": [
+                0.30961376428604126,
+                0.3096331059932709
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 0.0884638386113303,
+              "cap_limited": false,
+              "observed": 0.24134024767770454,
+              "incident_speed_range_mps": [
+                0.30961376428604126,
+                0.3096331059932709
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 0.08839679615838186,
+              "cap_limited": false,
+              "observed": 0.2560906891693805,
+              "incident_speed_range_mps": [
+                0.3093647360801697,
+                0.3094128370285034
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 0.09229772005762372,
+              "cap_limited": false,
+              "observed": 0.21367910417155442,
+              "incident_speed_range_mps": [
+                0.3229716420173645,
+                0.3231123983860016
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.042411584997826074,
+          "predicted_signed_magnitude_mps": 0.003900923899241862,
+          "above_repeat_noise": true
+        }
+      ],
+      "scope": "Magnitude of the net measured friction impulse divided by mass, compared with the scalar law at mean incident anchor speed and measured net normal load. Multiple anchor vectors can cancel.",
+      "source_sha256": "d05cc9098ba2dde24a694c2693048a1113f989c8fa1eedce3a74c3c70104ca42",
+      "history_sha256": "3c5a4e536de0c810156fb446ffdad2428e334d85d4248c0a157264724aa3ddf3",
+      "role": "training"
+    },
+    "new_training_history_883201": {
+      "stable_total": 5,
+      "evaluated": 5,
+      "formula_branches": {
+        "sticking": 5
+      },
+      "signed_magnitude_rmse_mps": 0.08250362186860292,
+      "zero_signed_magnitude_rmse_mps": 0.08041302138192993,
+      "above_repeat_noise": 5,
+      "sign_agreements": 2,
+      "cases": [
+        {
+          "lane": 19,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.0638048989432198,
+              "cap_limited": false,
+              "observed": 1.0603794652455858,
+              "incident_speed_range_mps": [
+                3.7233171463012695,
+                3.7233171463012695
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.0638048989432198,
+              "cap_limited": false,
+              "observed": 1.0603794652455858,
+              "incident_speed_range_mps": [
+                3.7233171463012695,
+                3.7233171463012695
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.0706822531563895,
+              "cap_limited": false,
+              "observed": 1.0677460481058,
+              "incident_speed_range_mps": [
+                3.7473878860473633,
+                3.7473878860473633
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.0663305691310336,
+              "cap_limited": false,
+              "observed": 1.0134122748974306,
+              "incident_speed_range_mps": [
+                3.732156991958618,
+                3.732156991958618
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.05433377320836952,
+          "predicted_signed_magnitude_mps": -0.004351684025355906,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 31,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.3172836303710938,
+              "cap_limited": false,
+              "observed": 1.2029688117661441,
+              "incident_speed_range_mps": [
+                4.610492706298828,
+                4.610492706298828
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.3172836303710938,
+              "cap_limited": false,
+              "observed": 1.2029688117661441,
+              "incident_speed_range_mps": [
+                4.610492706298828,
+                4.610492706298828
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.3137510844639368,
+              "cap_limited": false,
+              "observed": 1.1980107074738995,
+              "incident_speed_range_mps": [
+                4.598128795623779,
+                4.598128795623779
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.3293993813650948,
+              "cap_limited": false,
+              "observed": 1.1055735529727346,
+              "incident_speed_range_mps": [
+                4.652897834777832,
+                4.652897834777832
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.09243715450116485,
+          "predicted_signed_magnitude_mps": 0.015648296901157988,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 68,
+          "branches": {
+            "nominal_a": {
+              "predicted": 0.9114789962768555,
+              "cap_limited": false,
+              "observed": 0.9477450487871046,
+              "incident_speed_range_mps": [
+                3.189720392227173,
+                3.190768241882324
+              ],
+              "friction_anchors": 3
+            },
+            "nominal_b": {
+              "predicted": 0.9114789962768555,
+              "cap_limited": false,
+              "observed": 0.9477450487871046,
+              "incident_speed_range_mps": [
+                3.189720392227173,
+                3.190768241882324
+              ],
+              "friction_anchors": 3
+            },
+            "minus": {
+              "predicted": 0.9104376066298712,
+              "cap_limited": false,
+              "observed": 1.0573092069377754,
+              "incident_speed_range_mps": [
+                3.18607234954834,
+                3.1871230602264404
+              ],
+              "friction_anchors": 3
+            },
+            "plus": {
+              "predicted": 0.9124604406810941,
+              "cap_limited": false,
+              "observed": 0.9197482645238992,
+              "incident_speed_range_mps": [
+                3.19315767288208,
+                3.1942028999328613
+              ],
+              "friction_anchors": 3
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.13756094241387617,
+          "predicted_signed_magnitude_mps": 0.0020228340512229437,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 80,
+          "branches": {
+            "nominal_a": {
+              "predicted": 0.8365276200430733,
+              "cap_limited": false,
+              "observed": 0.904761482462082,
+              "incident_speed_range_mps": [
+                2.9265480041503906,
+                2.929145336151123
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 0.8365276200430733,
+              "cap_limited": false,
+              "observed": 0.904761482462082,
+              "incident_speed_range_mps": [
+                2.9265480041503906,
+                2.929145336151123
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 0.8063377652849469,
+              "cap_limited": false,
+              "observed": 0.8850248615404313,
+              "incident_speed_range_mps": [
+                2.8208534717559814,
+                2.8235108852386475
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 0.8667506831032888,
+              "cap_limited": false,
+              "observed": 0.9282749604224246,
+              "incident_speed_range_mps": [
+                3.0323922634124756,
+                3.034862518310547
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.04325009888199338,
+          "predicted_signed_magnitude_mps": 0.060412917818341905,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 83,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.8416084562029156,
+              "cap_limited": false,
+              "observed": 2.381339909516684,
+              "incident_speed_range_mps": [
+                6.445629596710205,
+                6.445629596710205
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.8416084562029156,
+              "cap_limited": false,
+              "observed": 2.381339909516684,
+              "incident_speed_range_mps": [
+                6.445629596710205,
+                6.445629596710205
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.8412090029035295,
+              "cap_limited": false,
+              "observed": 2.3826670004861343,
+              "incident_speed_range_mps": [
+                6.4442315101623535,
+                6.4442315101623535
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.8434953689575195,
+              "cap_limited": false,
+              "observed": 2.3762717159399327,
+              "incident_speed_range_mps": [
+                6.452233791351318,
+                6.452233791351318
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.0063952845462016406,
+          "predicted_signed_magnitude_mps": 0.002286366053990019,
+          "above_repeat_noise": true
+        }
+      ],
+      "scope": "Magnitude of the net measured friction impulse divided by mass, compared with the scalar law at mean incident anchor speed and measured net normal load. Multiple anchor vectors can cancel.",
+      "source_sha256": "e170e156048e068bcce687fcbc7d1f8fbea22d32c3127c09a7deab8adbc43eba",
+      "history_sha256": "d445bfaf4709f0005f96aaa46ddcbb88991816685e0295382131f25a84d0e45e",
+      "role": "training"
+    },
+    "new_training_history_883211": {
+      "stable_total": 9,
+      "evaluated": 9,
+      "formula_branches": {
+        "sticking": 9
+      },
+      "signed_magnitude_rmse_mps": 0.10182651457431953,
+      "zero_signed_magnitude_rmse_mps": 0.10344297886741985,
+      "above_repeat_noise": 9,
+      "sign_agreements": 4,
+      "cases": [
+        {
+          "lane": 27,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.087856480053493,
+              "cap_limited": false,
+              "observed": 1.1464845239087131,
+              "incident_speed_range_mps": [
+                3.8074779510498047,
+                3.807518720626831
+              ],
+              "friction_anchors": 4
+            },
+            "nominal_b": {
+              "predicted": 1.087856480053493,
+              "cap_limited": false,
+              "observed": 1.1464845239087131,
+              "incident_speed_range_mps": [
+                3.8074779510498047,
+                3.807518720626831
+              ],
+              "friction_anchors": 4
+            },
+            "minus": {
+              "predicted": 1.0881544862474712,
+              "cap_limited": false,
+              "observed": 1.1951228091881079,
+              "incident_speed_range_mps": [
+                3.8085174560546875,
+                3.808565378189087
+              ],
+              "friction_anchors": 4
+            },
+            "plus": {
+              "predicted": 1.0878144672938754,
+              "cap_limited": false,
+              "observed": 1.2050989372652932,
+              "incident_speed_range_mps": [
+                3.8073341846466064,
+                3.807368278503418
+              ],
+              "friction_anchors": 4
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.009976128077185287,
+          "predicted_signed_magnitude_mps": -0.0003400189535958109,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 28,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.2104058946881975,
+              "cap_limited": false,
+              "observed": 1.184595846377003,
+              "incident_speed_range_mps": [
+                4.236420631408691,
+                4.236420631408691
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.2104058946881975,
+              "cap_limited": false,
+              "observed": 1.184595846377003,
+              "incident_speed_range_mps": [
+                4.236420631408691,
+                4.236420631408691
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.2175512313842773,
+              "cap_limited": false,
+              "observed": 1.220381372584711,
+              "incident_speed_range_mps": [
+                4.261429309844971,
+                4.261429309844971
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.2032929829188754,
+              "cap_limited": false,
+              "observed": 1.1502338369636438,
+              "incident_speed_range_mps": [
+                4.2115254402160645,
+                4.2115254402160645
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.07014753562106724,
+          "predicted_signed_magnitude_mps": -0.014258248465401913,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 29,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.147268840244838,
+              "cap_limited": false,
+              "observed": 1.2601833548493988,
+              "incident_speed_range_mps": [
+                4.015430450439453,
+                4.015451431274414
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 1.147268840244838,
+              "cap_limited": false,
+              "observed": 1.2601833548493988,
+              "incident_speed_range_mps": [
+                4.015430450439453,
+                4.015451431274414
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 1.1478542600359234,
+              "cap_limited": false,
+              "observed": 1.2530419615744957,
+              "incident_speed_range_mps": [
+                4.01747989654541,
+                4.017499923706055
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 1.1466757229396274,
+              "cap_limited": false,
+              "observed": 1.2619334227564882,
+              "incident_speed_range_mps": [
+                4.013354301452637,
+                4.013375759124756
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.008891461181992577,
+          "predicted_signed_magnitude_mps": -0.0011785370962960062,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 31,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.3734913894108363,
+              "cap_limited": false,
+              "observed": 1.4070132571435627,
+              "incident_speed_range_mps": [
+                4.79719352722168,
+                4.817272663116455
+              ],
+              "friction_anchors": 4
+            },
+            "nominal_b": {
+              "predicted": 1.3734913894108363,
+              "cap_limited": false,
+              "observed": 1.4070132571435627,
+              "incident_speed_range_mps": [
+                4.79719352722168,
+                4.817272663116455
+              ],
+              "friction_anchors": 4
+            },
+            "minus": {
+              "predicted": 1.374136175428118,
+              "cap_limited": false,
+              "observed": 1.376502911961558,
+              "incident_speed_range_mps": [
+                4.798722267150879,
+                4.820260524749756
+              ],
+              "friction_anchors": 4
+            },
+            "plus": {
+              "predicted": 1.372758422579084,
+              "cap_limited": false,
+              "observed": 1.5342112636778535,
+              "incident_speed_range_mps": [
+                4.795816421508789,
+                4.813514232635498
+              ],
+              "friction_anchors": 4
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.1577083517162956,
+          "predicted_signed_magnitude_mps": -0.0013777528490339641,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 35,
+          "branches": {
+            "nominal_a": {
+              "predicted": 0.9104383332388741,
+              "cap_limited": false,
+              "observed": 0.6660057834185369,
+              "incident_speed_range_mps": [
+                3.1865341663360596,
+                3.1865341663360596
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 0.9104383332388741,
+              "cap_limited": false,
+              "observed": 0.6660057834185369,
+              "incident_speed_range_mps": [
+                3.1865341663360596,
+                3.1865341663360596
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 0.9133716310773576,
+              "cap_limited": false,
+              "observed": 0.6632502792106825,
+              "incident_speed_range_mps": [
+                3.196800708770752,
+                3.196800708770752
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 0.9091134071350098,
+              "cap_limited": false,
+              "observed": 0.6702783567005157,
+              "incident_speed_range_mps": [
+                3.181896924972534,
+                3.181896924972534
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.007028077489833251,
+          "predicted_signed_magnitude_mps": -0.004258223942347872,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 36,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.0369791984558105,
+              "cap_limited": false,
+              "observed": 0.9354713155476378,
+              "incident_speed_range_mps": [
+                3.6293463706970215,
+                3.629499673843384
+              ],
+              "friction_anchors": 3
+            },
+            "nominal_b": {
+              "predicted": 1.0369791984558105,
+              "cap_limited": false,
+              "observed": 0.9354713155476378,
+              "incident_speed_range_mps": [
+                3.6293463706970215,
+                3.629499673843384
+              ],
+              "friction_anchors": 3
+            },
+            "minus": {
+              "predicted": 1.0387089138939267,
+              "cap_limited": false,
+              "observed": 0.943764286250402,
+              "incident_speed_range_mps": [
+                3.635418176651001,
+                3.635538101196289
+              ],
+              "friction_anchors": 3
+            },
+            "plus": {
+              "predicted": 1.0351945332118442,
+              "cap_limited": false,
+              "observed": 0.9557306169898513,
+              "incident_speed_range_mps": [
+                3.623082160949707,
+                3.6232686042785645
+              ],
+              "friction_anchors": 3
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.011966330739449305,
+          "predicted_signed_magnitude_mps": -0.0035143806820825407,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 64,
+          "branches": {
+            "nominal_a": {
+              "predicted": 0.8631074939455304,
+              "cap_limited": false,
+              "observed": 1.0068990702116654,
+              "incident_speed_range_mps": [
+                2.969986915588379,
+                3.0717074871063232
+              ],
+              "friction_anchors": 4
+            },
+            "nominal_b": {
+              "predicted": 0.8631074939455304,
+              "cap_limited": false,
+              "observed": 1.0068990702116654,
+              "incident_speed_range_mps": [
+                2.969986915588379,
+                3.0717074871063232
+              ],
+              "friction_anchors": 4
+            },
+            "minus": {
+              "predicted": 0.8648233413696289,
+              "cap_limited": false,
+              "observed": 1.1005068797931135,
+              "incident_speed_range_mps": [
+                2.9794816970825195,
+                3.074227809906006
+              ],
+              "friction_anchors": 4
+            },
+            "plus": {
+              "predicted": 0.8616690805980137,
+              "cap_limited": false,
+              "observed": 0.8865819189360112,
+              "incident_speed_range_mps": [
+                2.9625742435455322,
+                3.0690486431121826
+              ],
+              "friction_anchors": 4
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.21392496085710222,
+          "predicted_signed_magnitude_mps": -0.0031542607716151805,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 79,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.7008653368268694,
+              "cap_limited": false,
+              "observed": 1.4426601051359802,
+              "incident_speed_range_mps": [
+                5.9530205726623535,
+                5.953036785125732
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 1.7008653368268694,
+              "cap_limited": false,
+              "observed": 1.4426601051359802,
+              "incident_speed_range_mps": [
+                5.9530205726623535,
+                5.953036785125732
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 1.7055260794503346,
+              "cap_limited": false,
+              "observed": 1.448055694888546,
+              "incident_speed_range_mps": [
+                5.969341278076172,
+                5.969341278076172
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 1.6965687615530831,
+              "cap_limited": false,
+              "observed": 1.4376611905091286,
+              "incident_speed_range_mps": [
+                5.937990665435791,
+                5.937990665435791
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.010394504379417357,
+          "predicted_signed_magnitude_mps": -0.008957317897251516,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 92,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.0855779874892462,
+              "cap_limited": false,
+              "observed": 0.9706851976612091,
+              "incident_speed_range_mps": [
+                3.797767162322998,
+                3.8009843826293945
+              ],
+              "friction_anchors": 3
+            },
+            "nominal_b": {
+              "predicted": 1.0855779874892462,
+              "cap_limited": false,
+              "observed": 0.9706851976612091,
+              "incident_speed_range_mps": [
+                3.797767162322998,
+                3.8009843826293945
+              ],
+              "friction_anchors": 3
+            },
+            "minus": {
+              "predicted": 1.086192903064546,
+              "cap_limited": false,
+              "observed": 1.0580994789851816,
+              "incident_speed_range_mps": [
+                3.799909830093384,
+                3.8031392097473145
+              ],
+              "friction_anchors": 3
+            },
+            "plus": {
+              "predicted": 1.0848385038829984,
+              "cap_limited": false,
+              "observed": 0.9157325404742661,
+              "incident_speed_range_mps": [
+                3.79518461227417,
+                3.7983851432800293
+              ],
+              "friction_anchors": 3
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.14236693851091553,
+          "predicted_signed_magnitude_mps": -0.001354399181547672,
+          "above_repeat_noise": true
+        }
+      ],
+      "scope": "Magnitude of the net measured friction impulse divided by mass, compared with the scalar law at mean incident anchor speed and measured net normal load. Multiple anchor vectors can cancel.",
+      "source_sha256": "28706fb5886b428170965dd3cd59a79c49576d1f35bd6b2b3b752de386934095",
+      "history_sha256": "e3acd4f03dceb18e60b111b5d7c5f67d8825d6d256598b8c4e53d6a66840b084",
+      "role": "training"
+    },
+    "surface_history_wide": {
+      "stable_total": 4,
+      "evaluated": 4,
+      "formula_branches": {
+        "sticking": 4
+      },
+      "signed_magnitude_rmse_mps": 0.3000747777204112,
+      "zero_signed_magnitude_rmse_mps": 0.3014782831791928,
+      "above_repeat_noise": 4,
+      "sign_agreements": 2,
+      "cases": [
+        {
+          "lane": 101,
+          "branches": {
+            "nominal_a": {
+              "predicted": 2.2236363547188893,
+              "cap_limited": false,
+              "observed": 2.153717592726163,
+              "incident_speed_range_mps": [
+                7.7827253341674805,
+                7.782729148864746
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 2.2236363547188893,
+              "cap_limited": false,
+              "observed": 2.153717592726163,
+              "incident_speed_range_mps": [
+                7.7827253341674805,
+                7.782729148864746
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 2.2293261800493513,
+              "cap_limited": false,
+              "observed": 2.689973819004617,
+              "incident_speed_range_mps": [
+                7.80263090133667,
+                7.802652359008789
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 2.2179698944091797,
+              "cap_limited": false,
+              "observed": 2.1121239617464305,
+              "incident_speed_range_mps": [
+                7.762894153594971,
+                7.762895107269287
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.5778498572581867,
+          "predicted_signed_magnitude_mps": -0.01135628564017166,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 102,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.8227229799543108,
+              "cap_limited": false,
+              "observed": 1.6855511055127246,
+              "incident_speed_range_mps": [
+                6.379530429840088,
+                6.379530429840088
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.8227229799543108,
+              "cap_limited": false,
+              "observed": 1.6855511055127246,
+              "incident_speed_range_mps": [
+                6.379530429840088,
+                6.379530429840088
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.8344413212367465,
+              "cap_limited": false,
+              "observed": 1.5500513150169746,
+              "incident_speed_range_mps": [
+                6.420544624328613,
+                6.420544624328613
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.8121539524623325,
+              "cap_limited": false,
+              "observed": 1.7102469068810382,
+              "incident_speed_range_mps": [
+                6.342538833618164,
+                6.342538833618164
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.16019559186406362,
+          "predicted_signed_magnitude_mps": -0.022287368774414062,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 107,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.0458159446716309,
+              "cap_limited": false,
+              "observed": 1.0917948435713205,
+              "incident_speed_range_mps": [
+                3.660355806350708,
+                3.660355806350708
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.0458159446716309,
+              "cap_limited": false,
+              "observed": 1.0917948435713205,
+              "incident_speed_range_mps": [
+                3.660355806350708,
+                3.660355806350708
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.0391818455287387,
+              "cap_limited": false,
+              "observed": 1.1069677299777225,
+              "incident_speed_range_mps": [
+                3.637136459350586,
+                3.637136459350586
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.0541749681745256,
+              "cap_limited": false,
+              "observed": 1.0447309955497812,
+              "incident_speed_range_mps": [
+                3.68961238861084,
+                3.68961238861084
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.06223673442794131,
+          "predicted_signed_magnitude_mps": 0.014993122645786894,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 118,
+          "branches": {
+            "nominal_a": {
+              "predicted": 0.7160211290631975,
+              "cap_limited": false,
+              "observed": 0.7784073161633612,
+              "incident_speed_range_mps": [
+                2.5060739517211914,
+                2.5060739517211914
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 0.7160211290631975,
+              "cap_limited": false,
+              "observed": 0.7784073161633612,
+              "incident_speed_range_mps": [
+                2.5060739517211914,
+                2.5060739517211914
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 0.7098322595868791,
+              "cap_limited": false,
+              "observed": 0.7718257647150307,
+              "incident_speed_range_mps": [
+                2.484412908554077,
+                2.484412908554077
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 0.7205274445669991,
+              "cap_limited": false,
+              "observed": 0.7823197923715441,
+              "incident_speed_range_mps": [
+                2.521846055984497,
+                2.521846055984497
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.010494027656513416,
+          "predicted_signed_magnitude_mps": 0.01069518498012001,
+          "above_repeat_noise": true
+        }
+      ],
+      "scope": "Magnitude of the net measured friction impulse divided by mass, compared with the scalar law at mean incident anchor speed and measured net normal load. Multiple anchor vectors can cancel.",
+      "source_sha256": "b8eff681b1b99d9f808c47ce70be5fd79936d59fbe7c3f1e4beece6331459907",
+      "history_sha256": "ecba73e0b42ba74f8308abb5e1896ab59dd5168a42c91bde0a727a8d0ed7355e",
+      "role": "development"
+    },
+    "surface_history_half": {
+      "stable_total": 6,
+      "evaluated": 6,
+      "formula_branches": {
+        "sticking": 6
+      },
+      "signed_magnitude_rmse_mps": 0.10472149182247002,
+      "zero_signed_magnitude_rmse_mps": 0.097777908553485,
+      "above_repeat_noise": 6,
+      "sign_agreements": 3,
+      "cases": [
+        {
+          "lane": 101,
+          "branches": {
+            "nominal_a": {
+              "predicted": 2.2236363547188893,
+              "cap_limited": false,
+              "observed": 2.153717592726163,
+              "incident_speed_range_mps": [
+                7.7827253341674805,
+                7.782729148864746
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 2.2236363547188893,
+              "cap_limited": false,
+              "observed": 2.153717592726163,
+              "incident_speed_range_mps": [
+                7.7827253341674805,
+                7.782729148864746
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 2.226497105189732,
+              "cap_limited": false,
+              "observed": 2.2776802233486353,
+              "incident_speed_range_mps": [
+                7.7927398681640625,
+                7.7927398681640625
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 2.2209182466779436,
+              "cap_limited": false,
+              "observed": 2.1026689416983144,
+              "incident_speed_range_mps": [
+                7.773202896118164,
+                7.773224830627441
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.17501128165032087,
+          "predicted_signed_magnitude_mps": -0.005578858511788631,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 102,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.8227229799543108,
+              "cap_limited": false,
+              "observed": 1.6855511055127246,
+              "incident_speed_range_mps": [
+                6.379530429840088,
+                6.379530429840088
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.8227229799543108,
+              "cap_limited": false,
+              "observed": 1.6855511055127246,
+              "incident_speed_range_mps": [
+                6.379530429840088,
+                6.379530429840088
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.828508104596819,
+              "cap_limited": false,
+              "observed": 1.6205179900128701,
+              "incident_speed_range_mps": [
+                6.399778366088867,
+                6.399778366088867
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.818115234375,
+              "cap_limited": false,
+              "observed": 1.6946626978955408,
+              "incident_speed_range_mps": [
+                6.3634033203125,
+                6.3634033203125
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.07414470788267069,
+          "predicted_signed_magnitude_mps": -0.010392870221819006,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 107,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.0458159446716309,
+              "cap_limited": false,
+              "observed": 1.0917948435713205,
+              "incident_speed_range_mps": [
+                3.660355806350708,
+                3.660355806350708
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.0458159446716309,
+              "cap_limited": false,
+              "observed": 1.0917948435713205,
+              "incident_speed_range_mps": [
+                3.660355806350708,
+                3.660355806350708
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.0426291738237652,
+              "cap_limited": false,
+              "observed": 1.1101915945797336,
+              "incident_speed_range_mps": [
+                3.6492021083831787,
+                3.6492021083831787
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.0486518314906528,
+              "cap_limited": false,
+              "observed": 1.0862204493724392,
+              "incident_speed_range_mps": [
+                3.670281410217285,
+                3.670281410217285
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.023971145207294375,
+          "predicted_signed_magnitude_mps": 0.0060226576668875875,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 111,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.4290992191859653,
+              "cap_limited": false,
+              "observed": 1.2840751067918903,
+              "incident_speed_range_mps": [
+                5.001847267150879,
+                5.001847267150879
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.4290992191859653,
+              "cap_limited": false,
+              "observed": 1.2840751067918903,
+              "incident_speed_range_mps": [
+                5.001847267150879,
+                5.001847267150879
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.4436947958809987,
+              "cap_limited": false,
+              "observed": 1.1715703239666875,
+              "incident_speed_range_mps": [
+                5.052931785583496,
+                5.052931785583496
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.4161607197352817,
+              "cap_limited": false,
+              "observed": 1.3122278801817615,
+              "incident_speed_range_mps": [
+                4.956562519073486,
+                4.956562519073486
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.14065755621507403,
+          "predicted_signed_magnitude_mps": -0.027534076145717012,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 115,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.1068461281912667,
+              "cap_limited": false,
+              "observed": 1.2223472089191756,
+              "incident_speed_range_mps": [
+                3.873940944671631,
+                3.8739819526672363
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 1.1068461281912667,
+              "cap_limited": false,
+              "observed": 1.2223472089191756,
+              "incident_speed_range_mps": [
+                3.873940944671631,
+                3.8739819526672363
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 1.1057799543653215,
+              "cap_limited": false,
+              "observed": 1.2077928966744598,
+              "incident_speed_range_mps": [
+                3.870209217071533,
+                3.8702504634857178
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 1.1075305938720703,
+              "cap_limited": false,
+              "observed": 1.2370598668195143,
+              "incident_speed_range_mps": [
+                3.876335620880127,
+                3.8763785362243652
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.029266970145054527,
+          "predicted_signed_magnitude_mps": 0.0017506395067488079,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 118,
+          "branches": {
+            "nominal_a": {
+              "predicted": 0.7160211290631975,
+              "cap_limited": false,
+              "observed": 0.7784073161633612,
+              "incident_speed_range_mps": [
+                2.5060739517211914,
+                2.5060739517211914
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 0.7160211290631975,
+              "cap_limited": false,
+              "observed": 0.7784073161633612,
+              "incident_speed_range_mps": [
+                2.5060739517211914,
+                2.5060739517211914
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 0.7130100386483328,
+              "cap_limited": false,
+              "observed": 0.7757154874282834,
+              "incident_speed_range_mps": [
+                2.495535135269165,
+                2.495535135269165
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 0.7182223456246511,
+              "cap_limited": false,
+              "observed": 0.7802992119237265,
+              "incident_speed_range_mps": [
+                2.5137782096862793,
+                2.5137782096862793
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.004583724495443087,
+          "predicted_signed_magnitude_mps": 0.005212306976318359,
+          "above_repeat_noise": true
+        }
+      ],
+      "scope": "Magnitude of the net measured friction impulse divided by mass, compared with the scalar law at mean incident anchor speed and measured net normal load. Multiple anchor vectors can cancel.",
+      "source_sha256": "9b6f8e3df1fedf660703547a4d7d892c46a7b7ba10b29bca4c6b42deab982570",
+      "history_sha256": "5e908886b3d27c70ec688c8593ce231deedc488d6b03a26f4c49348ec3a39712",
+      "role": "development"
+    },
+    "surface_history_quarter": {
+      "stable_total": 9,
+      "evaluated": 9,
+      "formula_branches": {
+        "sticking": 9
+      },
+      "signed_magnitude_rmse_mps": 0.11932809933118983,
+      "zero_signed_magnitude_rmse_mps": 0.1223013839418029,
+      "above_repeat_noise": 9,
+      "sign_agreements": 6,
+      "cases": [
+        {
+          "lane": 101,
+          "branches": {
+            "nominal_a": {
+              "predicted": 2.2236363547188893,
+              "cap_limited": false,
+              "observed": 2.153717592726163,
+              "incident_speed_range_mps": [
+                7.7827253341674805,
+                7.782729148864746
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 2.2236363547188893,
+              "cap_limited": false,
+              "observed": 2.153717592726163,
+              "incident_speed_range_mps": [
+                7.7827253341674805,
+                7.782729148864746
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 2.22515869140625,
+              "cap_limited": false,
+              "observed": 2.178194273515913,
+              "incident_speed_range_mps": [
+                7.788055419921875,
+                7.788055419921875
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 2.22226619720459,
+              "cap_limited": false,
+              "observed": 2.127757931740252,
+              "incident_speed_range_mps": [
+                7.7779316902160645,
+                7.7779316902160645
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.05043634177566103,
+          "predicted_signed_magnitude_mps": -0.0028924942016601562,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 102,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.8227229799543108,
+              "cap_limited": false,
+              "observed": 1.6855511055127246,
+              "incident_speed_range_mps": [
+                6.379530429840088,
+                6.379530429840088
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.8227229799543108,
+              "cap_limited": false,
+              "observed": 1.6855511055127246,
+              "incident_speed_range_mps": [
+                6.379530429840088,
+                6.379530429840088
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.8257690157209123,
+              "cap_limited": false,
+              "observed": 1.6754895048712883,
+              "incident_speed_range_mps": [
+                6.390191555023193,
+                6.390191555023193
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.8207073211669922,
+              "cap_limited": false,
+              "observed": 1.6897590596449168,
+              "incident_speed_range_mps": [
+                6.372475624084473,
+                6.372475624084473
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.014269554773628457,
+          "predicted_signed_magnitude_mps": -0.0050616945539201375,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 107,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.0458159446716309,
+              "cap_limited": false,
+              "observed": 1.0917948435713205,
+              "incident_speed_range_mps": [
+                3.660355806350708,
+                3.660355806350708
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.0458159446716309,
+              "cap_limited": false,
+              "observed": 1.0917948435713205,
+              "incident_speed_range_mps": [
+                3.660355806350708,
+                3.660355806350708
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.0436724254063197,
+              "cap_limited": false,
+              "observed": 1.1093937264089342,
+              "incident_speed_range_mps": [
+                3.652853488922119,
+                3.652853488922119
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.047041416168213,
+              "cap_limited": false,
+              "observed": 1.0843808540672768,
+              "incident_speed_range_mps": [
+                3.664644956588745,
+                3.664644956588745
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.02501287234165739,
+          "predicted_signed_magnitude_mps": 0.0033689907618932313,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 109,
+          "branches": {
+            "nominal_a": {
+              "predicted": 0.8654001440320696,
+              "cap_limited": false,
+              "observed": 0.9599895658351643,
+              "incident_speed_range_mps": [
+                3.02846622467041,
+                3.029334783554077
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 0.8654001440320696,
+              "cap_limited": false,
+              "observed": 0.9599895658351643,
+              "incident_speed_range_mps": [
+                3.02846622467041,
+                3.029334783554077
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 0.8801643167223249,
+              "cap_limited": false,
+              "observed": 0.9373450221260091,
+              "incident_speed_range_mps": [
+                3.0801737308502197,
+                3.0809764862060547
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 0.8491181305476597,
+              "cap_limited": false,
+              "observed": 0.8613690521987306,
+              "incident_speed_range_mps": [
+                2.9714510440826416,
+                2.9723758697509766
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.07597596992727851,
+          "predicted_signed_magnitude_mps": -0.031046186174665147,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 111,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.4290992191859653,
+              "cap_limited": false,
+              "observed": 1.2840751067918903,
+              "incident_speed_range_mps": [
+                5.001847267150879,
+                5.001847267150879
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.4290992191859653,
+              "cap_limited": false,
+              "observed": 1.2840751067918903,
+              "incident_speed_range_mps": [
+                5.001847267150879,
+                5.001847267150879
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.4367389678955078,
+              "cap_limited": false,
+              "observed": 1.2158509781929745,
+              "incident_speed_range_mps": [
+                5.028586387634277,
+                5.028586387634277
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.42245728628976,
+              "cap_limited": false,
+              "observed": 1.318497809921143,
+              "incident_speed_range_mps": [
+                4.97860050201416,
+                4.97860050201416
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.10264683172816857,
+          "predicted_signed_magnitude_mps": -0.014281681605747831,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 112,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.5792019707815987,
+              "cap_limited": false,
+              "observed": 1.6268078123477963,
+              "incident_speed_range_mps": [
+                5.527206897735596,
+                5.527206897735596
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.5792019707815987,
+              "cap_limited": false,
+              "observed": 1.6268078123477963,
+              "incident_speed_range_mps": [
+                5.527206897735596,
+                5.527206897735596
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.5896685464041573,
+              "cap_limited": false,
+              "observed": 1.6422693474620438,
+              "incident_speed_range_mps": [
+                5.563839912414551,
+                5.563839912414551
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.5684127807617188,
+              "cap_limited": false,
+              "observed": 1.618644308451525,
+              "incident_speed_range_mps": [
+                5.489444732666016,
+                5.489444732666016
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": -0.023625039010518822,
+          "predicted_signed_magnitude_mps": -0.021255765642438584,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 115,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.1068461281912667,
+              "cap_limited": false,
+              "observed": 1.2223472089191756,
+              "incident_speed_range_mps": [
+                3.873940944671631,
+                3.8739819526672363
+              ],
+              "friction_anchors": 2
+            },
+            "nominal_b": {
+              "predicted": 1.1068461281912667,
+              "cap_limited": false,
+              "observed": 1.2223472089191756,
+              "incident_speed_range_mps": [
+                3.873940944671631,
+                3.8739819526672363
+              ],
+              "friction_anchors": 2
+            },
+            "minus": {
+              "predicted": 1.106308903012957,
+              "cap_limited": false,
+              "observed": 1.2148124019944815,
+              "incident_speed_range_mps": [
+                3.872060537338257,
+                3.8721017837524414
+              ],
+              "friction_anchors": 2
+            },
+            "plus": {
+              "predicted": 1.1073473181043352,
+              "cap_limited": false,
+              "observed": 1.230244288394014,
+              "incident_speed_range_mps": [
+                3.87569522857666,
+                3.8757359981536865
+              ],
+              "friction_anchors": 2
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.015431886399532413,
+          "predicted_signed_magnitude_mps": 0.001038415091378253,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 118,
+          "branches": {
+            "nominal_a": {
+              "predicted": 0.7160211290631975,
+              "cap_limited": false,
+              "observed": 0.7784073161633612,
+              "incident_speed_range_mps": [
+                2.5060739517211914,
+                2.5060739517211914
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 0.7160211290631975,
+              "cap_limited": false,
+              "observed": 0.7784073161633612,
+              "incident_speed_range_mps": [
+                2.5060739517211914,
+                2.5060739517211914
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 0.7145158903939383,
+              "cap_limited": false,
+              "observed": 0.7770375092173902,
+              "incident_speed_range_mps": [
+                2.500805616378784,
+                2.500805616378784
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 0.717066969190325,
+              "cap_limited": false,
+              "observed": 0.7793068735297095,
+              "incident_speed_range_mps": [
+                2.5097343921661377,
+                2.5097343921661377
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.0022693643123192775,
+          "predicted_signed_magnitude_mps": 0.0025510787963867188,
+          "above_repeat_noise": true
+        },
+        {
+          "lane": 127,
+          "branches": {
+            "nominal_a": {
+              "predicted": 1.397583280290876,
+              "cap_limited": false,
+              "observed": 1.3675579689121364,
+              "incident_speed_range_mps": [
+                4.891541481018066,
+                4.891541481018066
+              ],
+              "friction_anchors": 1
+            },
+            "nominal_b": {
+              "predicted": 1.397583280290876,
+              "cap_limited": false,
+              "observed": 1.3675579689121364,
+              "incident_speed_range_mps": [
+                4.891541481018066,
+                4.891541481018066
+              ],
+              "friction_anchors": 1
+            },
+            "minus": {
+              "predicted": 1.392768178667341,
+              "cap_limited": false,
+              "observed": 1.2298614275345348,
+              "incident_speed_range_mps": [
+                4.874688625335693,
+                4.874688625335693
+              ],
+              "friction_anchors": 1
+            },
+            "plus": {
+              "predicted": 1.4007449831281389,
+              "cap_limited": false,
+              "observed": 1.5677007568141397,
+              "incident_speed_range_mps": [
+                4.902607440948486,
+                4.902607440948486
+              ],
+              "friction_anchors": 1
+            }
+          },
+          "formula_branch": "sticking",
+          "native_signed_magnitude_mps": 0.3378393292796049,
+          "predicted_signed_magnitude_mps": 0.00797680446079796,
+          "above_repeat_noise": true
+        }
+      ],
+      "scope": "Magnitude of the net measured friction impulse divided by mass, compared with the scalar law at mean incident anchor speed and measured net normal load. Multiple anchor vectors can cancel.",
+      "source_sha256": "ace175faccb1986e37fb81f351611cdd8ae5b592a1a9c1da8995070921bde8cf",
+      "history_sha256": "c2e799644eaff08bd5d6c098a7781e621f7f59404df71b887e06a68b664027da",
+      "role": "development"
+    }
+  },
+  "v13_updates": 0,
+  "actor_updates": 0,
+  "contact_receipt": false
+}

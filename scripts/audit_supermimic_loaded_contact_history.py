@@ -1,6 +1,8 @@
 """Inspect native contact geometry, spin and signed accumulated load without redefining stable support."""
 import argparse
 import json
+import math
+import statistics
 from pathlib import Path
 
 import torch
@@ -96,6 +98,51 @@ def compare(minus,plus):
     return result
 
 
+def measured_slip_law(cases, friction, sticking):
+    """Evaluate the scalar sticking law at the observed contact. Forces are labels for diagnosis."""
+    rows = []
+    counts = {}
+    for case in cases:
+        if case['mode'] != 'racket_stable':
+            continue
+        values = {}
+        for branch, events in case['branches'].items():
+            if len(events) != 1:
+                break
+            event = events[0]
+            speeds = event['tangent_speed_pre_post_mps'][0]
+            if not speeds:
+                break
+            cap = friction * math.hypot(*event['normal_dv_mps'])
+            uncapped = sticking * statistics.mean(speeds)
+            values[branch] = dict(predicted=min(uncapped, cap), cap_limited=cap < uncapped,
+                                  observed=math.hypot(*event['tangent_dv_mps']),
+                                  incident_speed_range_mps=[min(speeds),max(speeds)],
+                                  friction_anchors=event['friction_points'])
+        if set(values) != set(BRANCHES):
+            continue
+        lo,hi = values['minus'],values['plus']
+        nominal = [values[b]['observed'] for b in ('nominal_a','nominal_b')]
+        native = hi['observed'] - lo['observed']
+        predicted = hi['predicted'] - lo['predicted']
+        mode = ('cap_switch' if lo['cap_limited'] != hi['cap_limited'] else
+                'cap' if lo['cap_limited'] else 'sticking')
+        counts[mode] = counts.get(mode,0)+1
+        rows.append(dict(lane=case['lane'], branches=values, formula_branch=mode,
+                         native_signed_magnitude_mps=native, predicted_signed_magnitude_mps=predicted,
+                         above_repeat_noise=abs(native) > max(1e-8,3*abs(nominal[1]-nominal[0]))))
+    def rms(numbers):
+        return math.sqrt(statistics.mean(x*x for x in numbers)) if numbers else None
+    observed = [r['native_signed_magnitude_mps'] for r in rows]
+    error = [r['predicted_signed_magnitude_mps']-v for r,v in zip(rows,observed,strict=True)]
+    supported = [r for r in rows if r['above_repeat_noise']]
+    return dict(stable_total=sum(c['mode']=='racket_stable' for c in cases), evaluated=len(rows),
+                formula_branches=counts, signed_magnitude_rmse_mps=rms(error),
+                zero_signed_magnitude_rmse_mps=rms(observed), above_repeat_noise=len(supported),
+                sign_agreements=sum(r['native_signed_magnitude_mps']*r['predicted_signed_magnitude_mps']>0 for r in supported),
+                cases=rows, scope='Magnitude of the net measured friction impulse divided by mass, compared with the scalar law at mean incident anchor speed and measured net normal load. Multiple anchor vectors can cancel.')
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('root','fit','output'):p.add_argument('--'+k,type=Path,required=True)
@@ -171,6 +218,7 @@ def main():
                      multiple_loaded_frames=sum(max(r['loaded_frames_by_branch'].values())>1 for r in cases))
     with a.output.open('x') as f:
         json.dump(dict(role=a.role,source_sha256=expected,cases=cases,**summary,
+            measured_slip_law=measured_slip_law(cases,fit['selected']['friction'],fit['selected']['sticking']),
             scope='Raw sensor loads, pre/post twists and geometry. Anchor matching estimates continuity; contact IDs and solver stick/slip state are not observed.'),f,indent=2,allow_nan=False)
 
 
