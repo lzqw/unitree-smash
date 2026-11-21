@@ -1,0 +1,193 @@
+{
+  "policy_id": "approach_frozen_v17_refresh3",
+  "actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+  "complete_lanes": 128,
+  "native_ticks": 1584,
+  "native_metrics": {
+    "completed_episodes": 128,
+    "qualified_airborne_string_contact": 76,
+    "qualified_airborne_string_contact_rate": 0.59375,
+    "ball_side_complete_except_recovery": 52,
+    "ball_side_complete_except_recovery_rate": 0.40625,
+    "conditional_recovery_count": 36,
+    "conditional_recovery_denominator": 76,
+    "recovery_given_airborne_string_contact": 0.47368421052631576,
+    "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+    "complete5": 24,
+    "complete5_rate": 0.1875,
+    "native_episode_return_observed_count": 128,
+    "native_episode_return_missing_count": 0,
+    "native_episode_return_mean": -9.813944199710471,
+    "native_episode_return_std": 48.92820687100964,
+    "native_episode_return_min": -91.47652323040575,
+    "native_episode_return_max": 64.97531772810885,
+    "native_episode_return_last": -31.729957132399903,
+    "native_return_definition": "undiscounted_sum_of_native_control_step_rewards_v1"
+  },
+  "actor_unchanged": true,
+  "world_updates": 4,
+  "critic_updates": 2,
+  "wm_quality": {
+    "recovery": {
+      "passed": null,
+      "reason": "no calibrated independent validation bounds"
+    },
+    "approach": {
+      "passed": null,
+      "reason": "no calibrated independent validation bounds"
+    }
+  },
+  "reference_coverage": {
+    "recovery": {
+      "head": "recovery",
+      "reference_count": 30,
+      "verified_reference_count": 30,
+      "tracking_weight": 1.0,
+      "success_guided_available": true,
+      "mode": "success-guided",
+      "reason": null
+    },
+    "approach": {
+      "head": "approach",
+      "reference_count": 42,
+      "verified_reference_count": 42,
+      "tracking_weight": 1.0,
+      "success_guided_available": true,
+      "mode": "success-guided",
+      "reason": null
+    }
+  },
+  "critic_holdout": {
+    "recovery": {
+      "head": "recovery",
+      "policy_id": "approach_frozen_v17_refresh3",
+      "label_actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+      "current_policy_matches_labels": true,
+      "label_policy_execution": {
+        "schema": "supermimic-policy-execution-v1",
+        "recovery_gate": "causal-contact-release-recovery-v1",
+        "request": "original-normalized-residual",
+        "final_transform": "unchanged-G07-mixer-and-native-limiter"
+      },
+      "label_execution_known": true,
+      "sample_count": 1918,
+      "scope": "frozen-label-policy value calibration; not updated-policy exact value",
+      "metrics": {
+        "mae": 11.360481262207031,
+        "rmse": 13.334303855895996,
+        "bias": -5.36633825302124,
+        "rtg_ordering_accuracy": 0.7517660401814646,
+        "rtg_ordering_pairs": 61720
+      },
+      "failures": {},
+      "label_policy_value_fit": null,
+      "current_policy_value_trust": {
+        "status": "same-frozen-policy",
+        "trusted": true,
+        "reason": null
+      },
+      "passed": false,
+      "protection_enabled": false
+    },
+    "approach": {
+      "head": "approach",
+      "policy_id": "approach_frozen_v17_refresh3",
+      "label_actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+      "current_policy_matches_labels": true,
+      "label_policy_execution": {
+        "schema": "supermimic-policy-execution-v1",
+        "recovery_gate": "causal-contact-release-recovery-v1",
+        "request": "original-normalized-residual",
+        "final_transform": "unchanged-G07-mixer-and-native-limiter"
+      },
+      "label_execution_known": true,
+      "sample_count": 165,
+      "scope": "frozen-label-policy value calibration; not updated-policy exact value",
+      "metrics": {
+        "mae": 22.010086059570312,
+        "rmse": 27.045928955078125,
+        "bias": -8.426502227783203,
+        "rtg_ordering_accuracy": 0.5452103849597135,
+        "rtg_ordering_pairs": 3351
+      },
+      "failures": {},
+      "label_policy_value_fit": null,
+      "current_policy_value_trust": {
+        "status": "same-frozen-policy",
+        "trusted": true,
+        "reason": null
+      },
+      "passed": false,
+      "protection_enabled": false
+    }
+  },
+  "online_guards": [
+    {
+      "world_updates": 89,
+      "world_sha256": "617d7baa40eaa8dc41ff0e6e4cc2fe8544471704452920f9e6c508bc78c0277a",
+      "passed": true
+    },
+    {
+      "world_updates": 90,
+      "world_sha256": "37461260ad84010c725f796186b5be6ebbb4bc3e688e41eb377738f44d35f0dd",
+      "passed": true
+    },
+    {
+      "world_updates": 91,
+      "world_sha256": "4674514e00ac93c99afad3e50fbe805bc13fe8bcd9c3561c3eb8e2747966d552",
+      "passed": true
+    },
+    {
+      "world_updates": 92,
+      "world_sha256": "98c431af72201e1671b88859f3a8ce08dd3ee973da08b2316cc7d678bae35656",
+      "passed": true
+    },
+    {
+      "world_updates": 93,
+      "world_sha256": "2a968ad47733724427ce0cf69b334b5ac46c6329a0620d633244624392bcbb34",
+      "passed": true
+    },
+    {
+      "world_updates": 94,
+      "world_sha256": "7665e2f4a2331e212899d84f2be785ccc0d5816b3e7899b04fc8b9f4a8407804",
+      "passed": true
+    },
+    {
+      "world_updates": 95,
+      "world_sha256": "ea2ac770a28ecb7593cd9c3783b4f7047410672c53f1748b7974fce4427ddaca",
+      "passed": true
+    },
+    {
+      "world_updates": 96,
+      "world_sha256": "22d948b88d0885f967e8310199a77880b24484ba4497f1084e569fdacbde114a",
+      "passed": true
+    }
+  ],
+  "invocation": {
+    "start": {
+      "actor_sha256": "d93b80b584aa8103f577c65e7ded69bf5e9ede2372ac4a9ec70bd37ce04681e3",
+      "accepted": 16,
+      "attempts": 20,
+      "world": 88,
+      "critic": 1226
+    },
+    "actor_end_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+    "actor_updates": 1,
+    "actor_attempts": 1,
+    "world_updates": 8,
+    "critic_updates": 42,
+    "heads": {
+      "recovery": {
+        "accepted": 0,
+        "attempts": 0
+      },
+      "approach": {
+        "accepted": 1,
+        "attempts": 1
+      }
+    },
+    "approach_objective": "toi_racket_only",
+    "scope": "updates executed in this process only"
+  },
+  "formal_evaluation": false
+}

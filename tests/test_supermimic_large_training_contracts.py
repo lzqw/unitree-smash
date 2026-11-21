@@ -148,3 +148,21 @@ def test_rollback_audit_distinguishes_alpha_backtrack_from_snapshot_restore():
         rejection_reason='zero_total_gradient', backtrack_trials=[]))
     assert rejected['rollback_mode'] == 'full_snapshot_restore'
     assert rejected['parameter_snapshot_restored']
+
+
+def test_sequential_counts_include_approach_refreshes_across_resume():
+    sched=SequentialProgress()
+    row=sched.block(0,'approach',16,32)
+    row.update(attempts=8,accepted=8,pending_refresh=True)
+    sched.finish_approach_refresh(row,(4,2))
+    resumed=SequentialProgress.for_run(sched.state_dict(),fresh=False)
+    row=resumed.block(0,'approach',16,32)
+    import pytest
+    with pytest.raises(ValueError,match='No new'):
+        resumed.finish_approach_refresh(row,(4,2))
+    row.update(attempts=16,accepted=16,pending_refresh=True)
+    resumed.finish_approach_refresh(row,(4,2))
+    assert resumed.cycle_refresh_counts(0,3,1)==dict(refresh_counts_complete=True,refresh_world_updates=11,refresh_critic_updates=5)
+    old=SequentialProgress()
+    old.block(0,'approach',16,32).update(attempts=8,accepted=8,refresh_at=8)
+    assert old.cycle_refresh_counts(0,3,1)['refresh_world_updates'] is None

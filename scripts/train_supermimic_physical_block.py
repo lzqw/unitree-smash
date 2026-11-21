@@ -1268,8 +1268,8 @@ def run(args, *, alternating=None):
             trainer.backtracked_actor_updates=progress.get('backtracked',0)
             if managed_refresh and progress['pending_refresh']:raise ValueError('Internal refresh found in externally managed short block')
             if progress['pending_refresh']:
-                refresh_frozen_policy(block_name)
-                progress['refresh_at']=accepted;progress['pending_refresh']=False;save('latest.pt')
+                schedule.finish_approach_refresh(progress,refresh_frozen_policy(block_name))
+                save('latest.pt')
             while accepted<budget and attempts<max_attempts:
                 proposal_checkpoint=args.output/f'pre_proposal_{cycle_index}_{block_name}.pt'
                 save(proposal_checkpoint.name)
@@ -1443,8 +1443,8 @@ def run(args, *, alternating=None):
                 if stats['update_accepted'] and accepted and accepted%16==0:save(f'{cycle_index}_{block_name}_checkpoint_{accepted:04d}.pt')
                 if not managed_refresh and block_name=='approach' and stats['update_accepted'] and accepted%args.approach_refresh_interval==0:
                     progress['pending_refresh']=True;save('latest.pt')
-                    refresh_frozen_policy('approach')
-                    progress['refresh_at']=accepted;progress['pending_refresh']=False;save('latest.pt')
+                    schedule.finish_approach_refresh(progress,refresh_frozen_policy('approach'))
+                    save('latest.pt')
             write(args.output/(str(cycle_index)+'_'+block_name+'_actor_start_sampling.json'),replay.actor_start_bank.sampling_report(sampling_history_start))
             if accepted<budget:
                 save(f'{cycle_index}_{block_name}_candidate_{accepted:04d}.pt')
@@ -1452,8 +1452,7 @@ def run(args, *, alternating=None):
                 raise RuntimeError(f'{block_name}: proposal budget exhausted ({accepted}/{budget} accepted); next block disabled')
             if not managed_refresh and block_name=='approach' and accepted>progress['refresh_at']:
                 progress['pending_refresh']=True;save('latest.pt')
-                refresh_frozen_policy('approach')
-                progress['refresh_at']=accepted;progress['pending_refresh']=False
+                schedule.finish_approach_refresh(progress,refresh_frozen_policy('approach'))
             save(f'{cycle_index}_{block_name}_candidate_{accepted:04d}.pt')
             progress['status']='done';save('latest.pt')
             return accepted
@@ -1644,7 +1643,7 @@ def run(args, *, alternating=None):
                 return dict(complete_episodes=128,actor_unchanged=True,consumer_heads=list(consumer_heads),policy_id=policy_id,
                     actor_sha256=actor_hash,manifest_path=str(refresh_dir/'manifest.json'),
                     world_updates=refresh_stats['world_updates'],critic_updates=len(fits),native_ticks=tick-start_tick)
-            save('latest.pt')
+            # Caller checkpoints the new optimizer state and completed refresh together.
             return refresh_stats['world_updates'],len(fits)
         if args.update_mode == 'joint':
             # One Adam update jointly covers both heads.  The old sequential blocks
@@ -1744,7 +1743,7 @@ def run(args, *, alternating=None):
                 archive.flush(); save('cycle_%02d_candidate_%04d.pt' % (cycle+1,total_accepted))
                 cycle_results.append(dict(cycle=cycle+1,recovery_accepted=recovery_accepted,approach_accepted=approach_accepted,
                     native_ticks=tick,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
-                    refresh_world_updates=refresh_world_updates,refresh_critic_updates=refresh_critic_updates))
+                    **schedule.cycle_refresh_counts(cycle,refresh_world_updates,refresh_critic_updates)))
                 write(args.output/('cycle_%02d.json' % (cycle+1)),cycle_results[-1])
             total_accepted=sum(x['recovery_accepted']+x['approach_accepted'] for x in cycle_results)
             write(args.output/'training_completed.json', dict(

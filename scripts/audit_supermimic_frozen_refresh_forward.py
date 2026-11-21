@@ -77,8 +77,9 @@ def score_native_critics(packed,bank,pre,post,actor,source_digest,lanes):
 @torch.no_grad()
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    for name in ('run','refresh','pre-checkpoint','post-checkpoint','candidate','output'):
+    for name in ('run','refresh','pre-checkpoint','post-checkpoint','output'):
         p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--candidate',type=Path,help='Include an independently replayed WM candidate')
     args=p.parse_args()
     torch.set_num_threads(4)
     pre=torch.load(args.pre_checkpoint,map_location='cpu',weights_only=False,mmap=True)
@@ -89,22 +90,29 @@ def main():
     hash_state=lambda state:tensor_digest(state.items())
     actor=hash_state(pre['actor'])
     expected=pre['metadata']['physical_imagination']
-    fit=json.loads((args.candidate/'fit.json').read_text())
-    candidate=torch.load(args.candidate/'online_world.pt',weights_only=True,map_location='cpu',mmap=True)
-    after_refresh=fit.get('refresh_manifest_sha256') is not None
-    fit_checkpoint=args.post_checkpoint if after_refresh else args.pre_checkpoint
-    if after_refresh and (fit['pre_refresh_sha256']!=digest(args.pre_checkpoint)
-            or fit['refresh_manifest_sha256']!=digest(args.refresh/'manifest.json')):
-        raise ValueError('Candidate was trained on different frozen episodes')
+    models=[('deployed',None),('online_pre_refresh',pre['world']),('online_post_refresh',post['world'])]
+    fit=None
+    if args.candidate is not None:
+        fit=json.loads((args.candidate/'fit.json').read_text())
+        candidate=torch.load(args.candidate/'online_world.pt',weights_only=True,map_location='cpu',mmap=True)
+        after_refresh=fit.get('refresh_manifest_sha256') is not None
+        fit_checkpoint=args.post_checkpoint if after_refresh else args.pre_checkpoint
+        if after_refresh and (fit['pre_refresh_sha256']!=digest(args.pre_checkpoint)
+                or fit['refresh_manifest_sha256']!=digest(args.refresh/'manifest.json')):
+            raise ValueError('Candidate was trained on different frozen episodes')
+        if (fit['excluded_lanes']!=pre['config']['wm_holdout_lanes'] or
+                fit['stage_checkpoint_sha256']!=digest(fit_checkpoint) or
+                fit['online_world_sha256']!=hash_state(candidate) or
+                fit['original_online_world_sha256']!=hash_state((post if after_refresh else pre)['world'])):
+            raise ValueError('Candidate does not match the source checkpoint and split')
+        models.append(('long_native_post_refresh' if after_refresh else 'long_native_candidate',candidate))
     lanes=pre['config']['wm_holdout_lanes']
     if (hash_state(post['actor'])!=actor or receipt['actor_sha256']!=actor or
             receipt['policy_id']!=packed['policy_id'] or receipt['policy_execution']!=pre['metadata']['policy_execution'] or
             receipt['start_tick']!=pre['native_ticks'] or receipt['end_tick']!=post['native_ticks'] or
             post['metadata']['physical_imagination']['checkpoint_sha256']!=expected['checkpoint_sha256'] or
             pre['metadata']['task_contract']!=post['metadata']['task_contract'] or
-            post['config']['wm_holdout_lanes']!=lanes or fit['excluded_lanes']!=lanes or
-            fit['stage_checkpoint_sha256']!=digest(fit_checkpoint) or
-            fit['online_world_sha256']!=hash_state(candidate) or fit['original_online_world_sha256']!=hash_state((post if after_refresh else pre)['world'])):
+            post['config']['wm_holdout_lanes']!=lanes):
         raise ValueError('Frozen episode, actor, candidate, or excluded lanes differ from the live block')
     argv=json.loads((args.run/'startup.json').read_text())['argv']
     option=lambda name:Path(argv[argv.index('--'+name)+1])
@@ -113,14 +121,15 @@ def main():
         ball_checkpoint=paths['ball'],task_checkpoint=paths['task'],safety_mapping=option('safety-mapping'),
         action_ball_checkpoint=paths.get('action_ball'),execution_root=expected['g07_execution_root'],device='cpu')
     if (manifest['task_contract']!=pre['metadata']['task_contract'] or
-            hash_state(adapter.state_dict())!=fit['initial_world_sha256']):
+            adapter.manifest['checkpoint_sha256']!=expected['checkpoint_sha256'] or
+            (fit is not None and hash_state(adapter.state_dict())!=fit['initial_world_sha256'])):
         raise ValueError('Initial WM or task contract changed')
     data=held_episode_data(packed['tensors'],receipt,lanes)
     cases=[dict(launch=dict(position_m=launch[i,:3].tolist(),velocity_mps=launch[i,3:].tolist())) for i in lanes]
     horizons=[1,2,4,8,16,32,64]
     scores={}; windows=None
     adapter.eval()
-    for name,state in [('deployed',None),('online_pre_refresh',pre['world']),('online_post_refresh',post['world']),('long_native_post_refresh' if after_refresh else 'long_native_candidate',candidate)]:
+    for name,state in models:
         if state is not None:
             adapter.load_state_dict(state,strict=True)
         report=assess(data,cases,None,adapter,horizons,'cpu',predictors=('candidate',))
@@ -135,9 +144,9 @@ def main():
                 world_updates=post['world_updates']-pre['world_updates'],rtg_rows_reproduced=label_count,
                 verified_behavior_policy=actor,actor_sha256=actor,source_sha256=source_digest,policy_id=packed['policy_id'],
                 pre_sha256=digest(args.pre_checkpoint),post_sha256=digest(args.post_checkpoint),
-                fit_sha256=digest(args.candidate/'fit.json'),lanes=lanes,
+                fit_sha256=digest(args.candidate/'fit.json') if fit is not None else None,lanes=lanes,
                 windows=[dict(w,lane=lanes[w['lane']]) for w in windows],scores=scores,
-                scope='First complete frozen R8 episodes on excluded lane IDs. Fixed task launches can recur across policy versions.')
+                scope='First complete frozen-policy episodes on excluded lane IDs. Fixed task launches can recur across policy versions.')
     with args.output.open('x') as stream:
         json.dump(result,stream,indent=2,allow_nan=False)
 

@@ -17,6 +17,22 @@ class SequentialProgress:
         row=self.cycles[key]
         if (row['target'],row['limit'])!=(target,limit):raise ValueError('Resume changes block budget')
         return row
+    @staticmethod
+    def finish_approach_refresh(row, updates):
+        if not row['pending_refresh'] or row['accepted']<=row['refresh_at']:
+            raise ValueError('No new Approach refresh to commit')
+        row.setdefault('refresh_counts_complete', row['refresh_at']==0)
+        for key, count in zip(('refresh_world_updates','refresh_critic_updates'), updates, strict=True):
+            row[key]=row.get(key,0)+count
+        row.update(refresh_at=row['accepted'],pending_refresh=False)
+
+    def cycle_refresh_counts(self, cycle, recovery_world, recovery_critic):
+        row=self.cycles.get(f'{cycle}/approach',{})
+        known=row.get('refresh_counts_complete',not row.get('refresh_at'))
+        return dict(refresh_counts_complete=known,
+                    refresh_world_updates=recovery_world+row.get('refresh_world_updates',0) if known else None,
+                    refresh_critic_updates=recovery_critic+row.get('refresh_critic_updates',0) if known else None)
+
     def state_dict(self):return dict(schema=self.schema,cycles=copy.deepcopy(self.cycles))
     def load_state_dict(self,state):
         if state['schema']!=self.schema:raise ValueError('Sequential progress schema mismatch')
