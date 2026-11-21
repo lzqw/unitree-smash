@@ -2,11 +2,12 @@
 """Attribute policy changes using complete native runs at identical initial states."""
 import argparse
 import json
+import numpy as np
 from statistics import median
 from pathlib import Path
 
 from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
-from quadsmash.rl.supermimic_paired_evaluation_v1 import paired_evaluation, verify_baseline
+from quadsmash.rl.supermimic_paired_evaluation_v1 import paired_evaluation, paired_flips, verify_baseline
 from scripts.evaluate_supermimic_fresh_wm_panel import digest
 
 
@@ -128,6 +129,22 @@ def training_comparison_context(snapshots, actors, baseline_sha256):
     return dict(baseline_sha256=baseline_sha256, baseline_actor=actors['pre-update'], previous=previous)
 
 
+def paired_task_outcomes(result):
+    """Use one matched before/after difference per case for every estimate."""
+    rows = result['case_deltas']
+    if len(rows) != 128 or len({row['case_id'] for row in rows}) != 128:
+        raise ValueError('Expected 128 independent matched case IDs')
+    changes = np.array([row['return_delta'] for row in rows], dtype=np.float64)
+    if not np.isfinite(changes).all():
+        raise ValueError('Nonfinite paired native return difference')
+    seed = 882072
+    means = np.random.default_rng(seed).choice(changes, size=(20000, len(rows))).mean(axis=1)
+    return dict(binary={key: paired_flips(rows, key) for key in ('contact', 'ball_side', 'complete5')},
+                native_return=dict(mean=float(changes.mean()), median=float(np.median(changes)),
+                                   descriptive_paired_case_bootstrap_95=np.quantile(means, [.025, .975]).tolist(),
+                                   seed=seed, resamples=len(means)))
+
+
 def discordant_landing_evidence(before, after, paired):
     """Join first-episode native flight measurements to the officially scored recovery flips."""
     paths = [folder / 'episodes.jsonl' for folder in (before, after)]
@@ -184,6 +201,7 @@ def main():
     if mismatched or (old,new) != (a.expected_before,a.expected_after):
         raise ValueError(f'Incompatible frozen comparisons: {mismatched}, actual actors {old} and {new}')
     result = paired_evaluation(pre,post,stage=a.stage)
+    result['paired_task_outcomes'] = paired_task_outcomes(result)
     result['landing_diagnostics'] = discordant_landing_evidence(a.before, a.after, result)
     result.update(native_sources=[dict(actor_sha256=h, seed=first['seed'], path=str(folder),
                                        metrics_sha256=digest(folder/'metrics.json'),

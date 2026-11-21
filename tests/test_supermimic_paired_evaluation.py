@@ -129,3 +129,23 @@ def test_mid_block_resume_keeps_baseline_and_previous_refresh_separate_from_live
     path.write_text(json.dumps(records(post)))
     with pytest.raises(ValueError,match='scores changed'):
         restore_training_comparison(path,current,execution,{},continuation=fresh)
+
+
+def test_native_panel_reports_flips_and_return_interval_on_their_own_denominators():
+    from scripts.compare_supermimic_fixed_stages import paired_task_outcomes
+    from scripts.evaluate_supermimic_research_arm import paired_scalars
+
+    before = [row(i, i < 2, i < 2, i == 0, i == 0, 2.) for i in range(128)]
+    after = [row(i, i in (1, 2), i in (1, 2), i in (1, 2), i in (1, 2), 2.5)
+             for i in reversed(range(128))]
+    result = paired_evaluation(before, after, stage='native')
+    outcomes = paired_task_outcomes(result)
+    assert outcomes['binary']['complete5']['regressed_cases'] == ['0']
+    assert outcomes['binary']['complete5']['improved_cases'] == ['1', '2']
+    assert outcomes['native_return']['descriptive_paired_case_bootstrap_95'] == [.5, .5]
+    cached = paired_scalars(dict(result, paired_task_outcomes=outcomes))
+    assert cached == paired_scalars(result)
+    assert cached['common_contact_recovery/common_contacts'] == 1
+    assert cached['common_contact_recovery/gained_cases'] == 1
+    assert cached['common_contact_recovery/lost_cases'] == 0
+    assert cached['contact/gained_cases'] == cached['contact/lost_cases'] == 1

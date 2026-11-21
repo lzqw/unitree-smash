@@ -85,6 +85,15 @@ def parameter_delta(before, after):
             'max_abs':float(vector.abs().max()),'changed_elements':int((vector!=0).sum())}
 
 
+def paired_flips(rows, field):
+    improved = [row['case_id'] for row in rows if row[field+'_after'] and not row[field+'_before']]
+    regressed = [row['case_id'] for row in rows if row[field+'_before'] and not row[field+'_after']]
+    discordant = len(improved) + len(regressed)
+    tail = sum(math.comb(discordant, i) for i in range(min(len(improved), len(regressed)) + 1))
+    return dict(improved_cases=improved, regressed_cases=regressed,
+                paired_two_sided_p=min(1., 2 * tail / 2**discordant))
+
+
 def paired_evaluation(pre, post, *, stage, actor_before=None, actor_after=None,
                       action_before=None, action_after=None, critic_td=None,
                       wm_holdout=None):
@@ -113,13 +122,9 @@ def paired_evaluation(pre, post, *, stage, actor_before=None, actor_after=None,
             complete5_before=bool(a.get('complete5',False)),complete5_after=bool(b.get('complete5',False)),
             failure_before=failure_taxonomy(a),failure_after=failure_taxonomy(b)))
     common=[row for row in case_deltas if row['contact_before'] and row['contact_after']]
-    improved=[row['case_id'] for row in common if row['recovered_after'] and not row['recovered_before']]
-    regressed=[row['case_id'] for row in common if row['recovered_before'] and not row['recovered_after']]
-    n=len(improved)+len(regressed)
-    exact_p=min(1.,2*sum(math.comb(n,i) for i in range(min(len(improved),len(regressed))+1))/2**n)
-    conditional=dict(common_contacts=len(common),improved_cases=improved,regressed_cases=regressed,
+    conditional=dict(common_contacts=len(common), **paired_flips(common,'recovered'),
                      recovered_before=sum(row['recovered_before'] for row in common),
-                     recovered_after=sum(row['recovered_after'] for row in common),paired_two_sided_p=exact_p,
+                     recovered_after=sum(row['recovered_after'] for row in common),
                      gained_contacts=[r['case_id'] for r in case_deltas if r['contact_after'] and not r['contact_before']],
                      lost_contacts=[r['case_id'] for r in case_deltas if r['contact_before'] and not r['contact_after']])
     result=dict(paired_recovery=conditional,schema='supermimic-paired-fixed-case-evaluation-v1',stage=stage,

@@ -11,7 +11,7 @@ import tempfile
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
-from compare_supermimic_fixed_stages import load_run
+from compare_supermimic_fixed_stages import load_run, paired_task_outcomes
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
 from quadsmash.rl.supermimic_independent_panel import fixed128_cases
 from run_supermimic_research_scale import digest
@@ -45,6 +45,22 @@ def score_fixed128(folder, checkpoint, checkpoint_sha, actor_sha, execution_root
             metrics = validate(run_dir)
             run_dir.rename(folder)
             return metrics
+
+
+def paired_scalars(result):
+    outcomes = result.get('paired_task_outcomes') or paired_task_outcomes(result)
+    recovery = result['paired_recovery']
+    metrics = {}
+    for name, comparison in {**outcomes['binary'], 'common_contact_recovery': recovery}.items():
+        metrics[name+'/gained_cases'] = len(comparison['improved_cases'])
+        metrics[name+'/lost_cases'] = len(comparison['regressed_cases'])
+    for field in ('common_contacts', 'recovered_before', 'recovered_after'):
+        metrics['common_contact_recovery/'+field] = recovery[field]
+    change = outcomes['native_return']
+    low, high = change['descriptive_paired_case_bootstrap_95']
+    metrics.update({'native_return/mean_delta': change['mean'], 'native_return/median_delta': change['median'],
+                    'native_return/mean_delta_ci_low': low, 'native_return/mean_delta_ci_high': high})
+    return metrics
 
 
 def evaluate(folder, step, writer):
@@ -89,6 +105,9 @@ def evaluate(folder, step, writer):
                 writer.add_scalar(tag,initial_metrics[k],0)
             if metrics.get(k) is not None:
                 writer.add_scalar(tag,metrics[k],pos)
+    for name, value in paired_scalars(result).items():
+        for axis, position in positions.items():
+            writer.add_scalar(f'fixed128_paired/{axis}/{name}', value, position)
     writer.flush()
 
 
