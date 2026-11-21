@@ -871,9 +871,11 @@ def run(args, *, alternating=None):
             return state
         @torch.no_grad()
         def toi_start_lanes(row):
-            from quadsmash.rl.supermimic_toi_racket_objective import bind_intercept_reference, preview_intercept_lanes
-            state=training_state(row)
+            from quadsmash.rl.supermimic_toi_racket_objective import bind_intercept_reference, compact_intercept_preview, preview_intercept_lanes
             allowed=training_start_mask(row,wm_holdout_lanes).reshape(-1).cpu()
+            if research:
+                return compact_intercept_preview(row, allowed, select_launch_for_start(row,launch), template, trainer, 'cuda:0')
+            state=training_state(row)
             reference=bind_intercept_reference(state,trainer.reference_bank,adapter.physical_model.geometry,
                                                timebase.imagination_steps*timebase.control_dt_s,plane_offset_m=trainer.toi_plane_offset_m)
             if reference is None:

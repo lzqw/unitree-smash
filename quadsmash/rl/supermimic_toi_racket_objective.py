@@ -114,6 +114,27 @@ def preview_intercept_lanes(initial, reference, allowed, trainer):
     return covered
 
 
+@torch.no_grad()
+def compact_intercept_preview(row, allowed, launch, template, trainer, device):
+    """Roll only admissible, already-launched lanes and return original lane indices."""
+    from .supermimic_compact_starts import compact_start
+    from .supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
+
+    present = row['before']['physical']['ball_present'].reshape(-1).to(allowed)
+    selected = allowed & present
+    result = torch.zeros_like(allowed)
+    if not selected.any():
+        return result
+    small, small_launch = compact_start(row, selected, launch)
+    state = PhysicalImaginationStateV1.from_record(small, executor_template=template, launch=small_launch, device=device)
+    cfg = trainer.timebase
+    reference = bind_intercept_reference(state, trainer.reference_bank, trainer.adapter.physical_model.geometry,
+                                         cfg.control_dt_s * cfg.imagination_steps, plane_offset_m=trainer.toi_plane_offset_m)
+    if reference is not None:
+        result[selected] = preview_intercept_lanes(state, reference, torch.ones_like(reference['matched']), trainer).to(result)
+    return result
+
+
 def intercept_loss(before, after, start, end, reference, mask, survival, geometry, *, fixed_weights=None):
     """Sample racket kinematics at the requested sub-tick arrival. Each lane contributes once."""
     arrival = reference['intercept']['time']

@@ -235,3 +235,30 @@ def test_advanced_intercept_recomputes_both_position_and_time_for_original_valid
     result=toi.flight_intercept(state,.64,plane_offset_m=.05)
     torch.testing.assert_close(result['position'],torch.tensor([[1.05,1.9,3.1],[0.,0.,0.]]))
     torch.testing.assert_close(result['time'],torch.tensor([2.19,torch.inf]))
+
+
+def test_compact_preview_maps_sparse_results_to_original_lanes(monkeypatch):
+    from types import SimpleNamespace
+    from quadsmash.rl import supermimic_toi_racket_objective as objective
+    from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
+
+    allowed=torch.zeros(128,dtype=torch.bool)
+    allowed[[8,69,81]]=True
+    present=allowed.clone()
+    present[69]=False
+    present[2]=True
+    row=dict(observation=torch.arange(128)[:,None], before=dict(physical=dict(ball_present=present)),
+             executor_before=dict(tensors={},values={}))
+    def state(record, *, executor_template, launch, device):
+        assert record['observation'].flatten().tolist()==[8,81]
+        assert launch[:,0].tolist()==[8,81]
+        return record['observation']
+    monkeypatch.setattr(PhysicalImaginationStateV1,'from_record',staticmethod(state))
+    monkeypatch.setattr(objective,'bind_intercept_reference',lambda *a,**k: {'matched':torch.tensor([True,True])})
+    monkeypatch.setattr(objective,'preview_intercept_lanes',lambda *a:torch.tensor([False,True]))
+    trainer=SimpleNamespace(timebase=SimpleNamespace(control_dt_s=.01,imagination_steps=64),
+        adapter=SimpleNamespace(physical_model=SimpleNamespace(geometry=None)),reference_bank=None,toi_plane_offset_m=0.)
+    launch=torch.arange(128)[:,None].expand(-1,6)
+    result=objective.compact_intercept_preview(row,allowed,launch,None,trainer,'cpu')
+    assert torch.where(result)[0].tolist()==[81]
+    assert not objective.compact_intercept_preview(row,torch.zeros_like(allowed),launch,None,None,'cpu').any()
