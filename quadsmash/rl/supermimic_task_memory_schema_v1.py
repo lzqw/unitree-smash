@@ -5,6 +5,7 @@ their validity masks come from a native start. Missing leaves are errors.
 Integer counters and boolean latches remain distinguishable from floats.
 """
 from dataclasses import dataclass, asdict
+from itertools import groupby
 import torch
 
 
@@ -47,16 +48,27 @@ class TaskMemorySchemaV1:
         return cls(fields)
 
     def encode(self,memory):
-        numeric=[];validity=[]
+        columns=[]
         count=None
         for f in self.fields:
             value=at_path(memory,f.path)
             if tuple(value.shape[1:])!=f.shape:raise ValueError('Task shape changed: '+f.path)
             count=len(value) if count is None else count
             if len(value)!=count:raise ValueError('Task lane count mismatch')
-            valid=torch.isfinite(value) if value.is_floating_point() else torch.ones_like(value,dtype=torch.bool)
-            numeric.append(torch.where(valid,value,torch.zeros_like(value)).reshape(count,-1).float())
-            validity.append(valid.reshape(count,-1).float())
+            columns.append(value.reshape(count,-1))
+        # Surrogate predictions have long runs of floating-point fields. Mask
+        # a whole run at once, preserving column order and native precision
+        # for validity checks before the float32 critic input conversion.
+        numeric,validity=[],[]
+        for _,group in groupby(columns,key=lambda tensor:tensor.dtype):
+            value=torch.cat(list(group),-1)
+            if value.is_floating_point():
+                valid=torch.isfinite(value)
+                numeric.append(torch.where(valid,value,0.).float())
+                validity.append(valid.float())
+            else:
+                numeric.append(value.float())
+                validity.append(torch.ones_like(value,dtype=torch.float32))
         return torch.cat(numeric,-1),torch.cat(validity,-1)
 
     def manifest(self):

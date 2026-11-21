@@ -1,0 +1,117 @@
+{
+  "previous_commit": "9f9a067",
+  "source_tick": 384,
+  "lanes": [
+    9,
+    10,
+    12,
+    19,
+    20,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    31,
+    45,
+    68
+  ],
+  "four_step_cpu_output_and_action_gradient_exact": true,
+  "gradient_norm": 0.39710837602615356,
+  "world_sha256": "6e0fcad70ddd443269451624bf39e522b199777f19d517a01f76e7057eafa09b",
+  "measurement": "Task memory encoder only. Six alternated pairs, 20 calls per timing. Single GPU shared with live G1.",
+  "measurements": [
+    {
+      "device": "cpu",
+      "memory": "native",
+      "fields": 101,
+      "columns": 141,
+      "dtype_runs": 45,
+      "median_ms": {
+        "before": 0.763158449990442,
+        "after": 0.3981132998887915
+      }
+    },
+    {
+      "device": "cuda:0",
+      "memory": "native",
+      "fields": 101,
+      "columns": 141,
+      "dtype_runs": 45,
+      "median_ms": {
+        "before": 2.0181772502837703,
+        "after": 0.8830150742141996
+      }
+    },
+    {
+      "device": "cpu",
+      "memory": "imagined",
+      "fields": 101,
+      "columns": 141,
+      "dtype_runs": 5,
+      "median_ms": {
+        "before": 0.8261885253887158,
+        "after": 0.1685405251919292
+      }
+    },
+    {
+      "device": "cuda:0",
+      "memory": "imagined",
+      "fields": 101,
+      "columns": 141,
+      "dtype_runs": 5,
+      "median_ms": {
+        "before": 2.2658904250420164,
+        "after": 0.2334522745513823
+      }
+    }
+  ],
+  "first_32_live_training_blocks": [
+    {
+      "head": "recovery",
+      "retained_through": 8,
+      "wall_seconds": 3832.2065047929937,
+      "bptt_seconds": 2917.466120309953,
+      "native_collect_seconds": 191.80277460007346,
+      "world_update_seconds": 197.93395233500632,
+      "critic_seconds": 80.88970713294111
+    },
+    {
+      "head": "approach",
+      "retained_through": 16,
+      "wall_seconds": 4174.351345147006,
+      "bptt_seconds": 2816.8618679070205,
+      "native_collect_seconds": 192.3631326169707,
+      "world_update_seconds": 203.48040331999073,
+      "critic_seconds": 40.72163968899986
+    },
+    {
+      "head": "recovery",
+      "retained_through": 24,
+      "wall_seconds": 4798.993707096,
+      "bptt_seconds": 3782.9359397460066,
+      "native_collect_seconds": 218.5756468649779,
+      "world_update_seconds": 206.9916029839951,
+      "critic_seconds": 82.7549279689847
+    },
+    {
+      "head": "approach",
+      "retained_through": 32,
+      "wall_seconds": 3621.422168204008,
+      "bptt_seconds": 2279.283623580006,
+      "native_collect_seconds": 228.24265851898235,
+      "world_update_seconds": 209.7981308780145,
+      "critic_seconds": 42.145154804049525
+    }
+  ],
+  "first_32_live_totals": {
+    "bptt_seconds": 11796.547551542986,
+    "native_collect_seconds": 830.9842126010044,
+    "world_update_seconds": 818.2040895170067,
+    "critic_seconds": 246.5114295949752,
+    "wall_seconds": 16426.97372524001
+  }
+}
