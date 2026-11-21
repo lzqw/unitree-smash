@@ -105,6 +105,16 @@ class ActorStartBank:
             report['records_checked_for_objective']=len(checks)
         self.sampling_history.append(report)
         return None,report
+    def same_category_starts(self, category, attempt):
+        entries=self.entries
+        if category not in CATEGORIES or not entries:
+            return
+        offset=(attempt-1)%len(entries)
+        for entry in entries[offset:]+entries[:offset]:
+            mask=entry['masks'][category]
+            if mask.any():
+                yield entry['start'],mask
+
     def sampling_report(self, since=0):
         rows=self.sampling_history[since:]
         return dict(samples=len(rows),actual_counts={c:sum(r['actual']==c for r in rows) for c in CATEGORIES},
@@ -120,3 +130,46 @@ class ActorStartBank:
         self.entries=state['entries'];self.seen=int(state['seen']);self.last_gate=state['last_gate'];self.last_tick=state['last_tick']
         self.sampling_history=list(state.get('sampling_history',[]))
         self.generator.set_state(state['rng'].cpu())
+
+
+def pool_toi_starts(first, alternatives, eligible_lanes, target, attempt):
+    """Retain independent lane episodes and each snapshot's native G07 execution state."""
+    seen=set()
+    starts=[]
+    layout=[]
+
+    def take(row, mask):
+        mask=mask.detach().cpu().bool().reshape(-1)
+        keep=torch.zeros_like(mask)
+        before=row['before']
+        lanes=mask.nonzero().flatten().tolist()
+        offset=(attempt-1)%max(1,len(lanes))
+        records=[]
+        for lane in lanes[offset:]+lanes[:offset]:
+            key=(int(row.get('_lane_id',lane)),int(before['episode_index'][lane]))
+            if key in seen:
+                continue
+            seen.add(key)
+            keep[lane]=True
+            records.append([*key,int(before['elapsed_tick'][lane])])
+            if len(seen)==target:
+                break
+        if records:
+            starts.append(dict(row,_actor_lane_mask=keep))
+            layout.append(dict(lane_episode_tick=records))
+
+    if target<1 or attempt<1:
+        raise ValueError('Positive TOI batch size and proposal index required')
+    take(first,first['_actor_lane_mask'])
+    for row,category_mask in alternatives:
+        if len(seen)==target:
+            break
+        if row['before'] is first['before']:
+            continue
+        valid=eligible_lanes(row).detach().cpu().reshape(-1)
+        if category_mask is not None:
+            valid=valid & category_mask
+        take(row,valid)
+    if not starts:
+        raise ValueError('TOI batch has no eligible episode')
+    return starts,layout

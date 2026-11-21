@@ -223,7 +223,7 @@ class PhysicalHorizonTrainer:
     def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None):
         if isinstance(initial_state,tuple):
             from .supermimic_recovery_batches import pooled_objective
-            return pooled_objective(self,initial_state,effective_weights)
+            return pooled_objective(self,initial_state,effective_weights,baseline_toi_weights)
         from .supermimic_approach_data_v1 import masked_lane_mean
         cfg=self.timebase; state=initial_state.branch()
         states=[]; rewards=[]; dones=[]; valid=[]; anchors=[]; gates=[]; tracks=[]; track_weights=[]; track_states=[]

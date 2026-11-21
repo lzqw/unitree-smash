@@ -68,14 +68,26 @@ def _gradient_value(term, params):
     return term.detach()+sum(((p-p.detach())*g.detach()).sum() for p,g in zip(params,derivatives) if g is not None)
 
 
-def pooled_objective(trainer, starts, effective_weights=None):
-    if not starts or trainer.block_name!='recovery':
-        raise ValueError('Pooled starts require Recovery')
+def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weights=None):
+    toi = trainer.block_name=='approach' and getattr(trainer,'approach_objective','task')=='toi_racket_only'
+    if not starts or not (toi or trainer.block_name=='recovery'):
+        raise ValueError('Pooled starts require Recovery or TOI racket supervision')
+    for group in (effective_weights,baseline_toi_weights):
+        if group is not None and len(group)!=len(starts):
+            raise ValueError('Backtracking weights must cover the same start records')
+    toi_weights=[]
+    preserved=True
     params=[p for p in trainer.actor.parameters() if p.requires_grad]
     terms={k:[] for k in ('task','tracking','anchor')}
     counts={};covered={};weights=[];returns=[];data=[];usage={};by_record=[]
     for i,state in enumerate(starts):
-        row=trainer._rollout_objective(state,effective_weights=None if effective_weights is None else effective_weights[i])
+        kwargs=dict(effective_weights=None if effective_weights is None else effective_weights[i])
+        if toi:
+            kwargs['baseline_toi_weights']=None if baseline_toi_weights is None else baseline_toi_weights[i]
+        row=trainer._rollout_objective(state,**kwargs)
+        if toi:
+            toi_weights.append(row['toi_weights'])
+            preserved=preserved and row['toi_coverage_preserved']
         n=row['gate_lanes']; w=row['tracking_effective_weight_sum']
         for key in terms:
             terms[key].append((_gradient_value(row[key],params), w if key=='tracking' else n))
@@ -107,11 +119,13 @@ def pooled_objective(trainer, starts, effective_weights=None):
             return torch.cat((prefix,a))
         return torch.cat([pad(v[k]) for v in data],dim=1)
     scalars={k:sum(x*n for x,n in items)/max(1.e-8,sum(n for _,n in items)) for k,items in terms.items()}
-    loss=scalars['task']+trainer.tracking_coefficient('recovery')*scalars['tracking']+trainer.anchor_coeff*scalars['anchor']
+    loss=trainer.tracking_coefficient(trainer.block_name)*scalars['tracking']+trainer.anchor_coeff*scalars['anchor']
+    if not toi:
+        loss=loss+scalars['task']
     coverage=dict(report,**covered)
     coverage.update(matched_lanes=counts['matched_references'],effective_weight_sum=counts['tracking_effective_weight_sum'],
                     tracking_applied=bool(counts['tracking_active_lane_steps']),reference_usage_by_sha256=usage,per_record=by_record)
     ret=torch.cat(returns)
     return dict(**scalars,**counts, loss=loss,ret=ret if ret.numel() else loss.detach().reshape(1),
-                effective_weights=weights,toi_weights=None,toi_coverage_preserved=True,reference_coverage=coverage,
-                critic_data=tuple(join(k) for k in range(5)),tracking_objective='recovery_reference')
+                effective_weights=weights,toi_weights=toi_weights if toi else None,toi_coverage_preserved=preserved,reference_coverage=coverage,
+                critic_data=tuple(join(k) for k in range(5)),tracking_objective='toi_racket_only' if toi else 'recovery_reference')

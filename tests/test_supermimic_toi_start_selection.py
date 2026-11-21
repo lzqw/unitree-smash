@@ -109,3 +109,47 @@ def test_signed_arm_loss_learns_opposing_commands_without_penalizing_common_offs
     assert scores[1]['arm_velocity_signed_rmse_rad_s'] == 0
     assert prediction.grad[2,rows[1]] < 0 and prediction.grad[0,rows[1]] > 0
     assert prediction.grad.count_nonzero() == 2
+
+
+def test_pool_toi_starts_validates_arrivals_and_deduplicates_same_lane_episode():
+    from quadsmash.rl.supermimic_actor_start_bank_v1 import pool_toi_starts
+
+    def row(t,episode,mask):
+        return dict(before=dict(elapsed_tick=torch.full((3,),t),episode_index=torch.tensor(episode)),
+                    _actor_lane_mask=torch.tensor(mask,dtype=torch.bool))
+    first=row(10,[1,1,1],[1,0,0])
+    duplicate=row(11,[1,1,1],[1,0,1])
+    later=row(20,[2,1,1],[1,1,1])
+    rows,layout=pool_toi_starts(first,[(duplicate,torch.tensor([True,True,False])),(later,None)],
+                                lambda r:r['_actor_lane_mask'],3,1)
+    assert [s['before'] is orig['before'] for s,orig in zip(rows,(first,later),strict=True)]==[True,True]
+    assert [r['lane_episode_tick'] for r in layout]==[[[0,1,10]],[[0,2,20],[1,1,20]]]
+    assert first['_actor_lane_mask'].tolist()==[True,False,False]
+
+
+def test_pooled_toi_backtracking_preserves_each_arrival_and_global_weight():
+    from types import SimpleNamespace
+    from quadsmash.rl.supermimic_recovery_batches import pooled_objective
+
+    actor=torch.nn.Linear(1,1,bias=False)
+    trainer=SimpleNamespace(block_name='approach',approach_objective='toi_racket_only',actor=actor,
+                            anchor_coeff=0.,tracking_coefficient=lambda head:1.)
+    def objective(n,effective_weights=None,baseline_toi_weights=None):
+        w=torch.full((1,n),float(n))
+        valid=torch.ones(1,n,dtype=torch.bool)
+        return dict(gate_lanes=n,gate_steps=n,tracking_steps=1,tracking_active_lane_steps=n,
+                    tracking_effective_weight_sum=float(w.sum()),tracking_nonzero_gradient_lanes=n,matched_references=n,
+                    task=actor.weight.sum()*7,tracking=actor.weight.sum()*n,anchor=actor.weight.sum()*0,
+                    reference_coverage=dict(selected_start_lanes=n,gate_active_selected_start_lanes=n),
+                    effective_weights=valid[0],ret=w.reshape(-1,1),toi_weights=w,
+                    toi_coverage_preserved=baseline_toi_weights is None or torch.equal(w,baseline_toi_weights),
+                    critic_data=(w[:,:,None],w[:,:,None],w[:,:,None]*0,w.T,valid))
+    trainer._rollout_objective=objective
+    a=pooled_objective(trainer,[1,2])
+    a['loss'].backward()
+    torch.testing.assert_close(actor.weight.grad,torch.full_like(actor.weight,1.8))
+    with torch.no_grad():
+        b=pooled_objective(trainer,[1,2],a['effective_weights'],a['toi_weights'])
+        assert b['toi_coverage_preserved']
+        a['toi_weights'][1][0,0]=0
+        assert not pooled_objective(trainer,[1,2],a['effective_weights'],a['toi_weights'])['toi_coverage_preserved']
