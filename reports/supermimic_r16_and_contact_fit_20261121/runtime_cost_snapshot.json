@@ -1,0 +1,82 @@
+{
+  "captured_at": "2026-11-21T15:20:34+08:00",
+  "actor_proposal": {
+    "bptt_seconds": 84.44460416800575,
+    "native_collect_seconds": 71.38335632198141,
+    "world_update_seconds": 44.93455828999868,
+    "critic_seconds": 5.168040315998951
+  },
+  "within_world_update": [
+    {
+      "sampling_seconds": 1.7573727629787754,
+      "fit_wall_seconds": 8.626255295996089
+    },
+    {
+      "sampling_seconds": 1.3481251919874921,
+      "fit_wall_seconds": 8.226987718022428
+    },
+    {
+      "sampling_seconds": 1.3202343950106297,
+      "fit_wall_seconds": 8.495913040998857
+    },
+    {
+      "sampling_seconds": 1.3418660970055498,
+      "fit_wall_seconds": 8.336485802021343
+    }
+  ],
+  "actor_history_sha256": "00f9da91a64bbec0a246822baf5f6b71a1a1701a755216b8a30ff056548c4dd5",
+  "frozen_collection": {
+    "ticks": 1584,
+    "complete_episodes": 128,
+    "proposal_record_to_episodes_file_seconds": 4839.800037622452,
+    "timing_scope": "Wall interval between two artifact mtimes, includes collection, telemetry and serialization"
+  },
+  "evaluation": {
+    "control_ticks": 800,
+    "first_episodes": 128,
+    "elapsed_s": 1788.1113435989828,
+    "first_episode_numerical_audit_count": 0,
+    "active_episode_sweep_unresolved": 0,
+    "active_episode_sweep_misses": 0,
+    "native_episode_return_mean": -12.088589213086449,
+    "native_episode_discounted_return_mean": -0.3216531485167586,
+    "native_return_gamma": 0.99498743710662
+  },
+  "probe": {
+    "seed": 883211,
+    "workers": 1,
+    "finished_seconds": {
+      "nominal_a": 917.815099477768,
+      "nominal_b": 400.5329763889313,
+      "minus": 407.70536732673645
+    },
+    "plus_progress": {
+      "control_ticks": 100,
+      "first_episodes": 0,
+      "elapsed_s": 142.2500116119918,
+      "first_episode_numerical_audit_count": 0,
+      "active_episode_sweep_unresolved": 0,
+      "active_episode_sweep_misses": 0,
+      "native_episode_return_mean": null,
+      "native_episode_discounted_return_mean": null,
+      "native_return_gamma": 0.99498743710662
+    }
+  },
+  "gpu_probe_sample": {
+    "gpu": "RTX 5080",
+    "period_s": 1,
+    "util_percent": [
+      48,
+      46,
+      41,
+      48,
+      47,
+      48,
+      49,
+      48
+    ],
+    "memory_mib": 4265,
+    "capacity_mib": 16303,
+    "scope": "Eight consecutive samples during native probe, not a BPTT peak measurement"
+  }
+}
