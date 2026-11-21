@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "num_envs": 8,
+  "case_ids": [
+    "A-720401-000",
+    "A-720401-001",
+    "A-720401-002",
+    "A-720401-003",
+    "A-720401-004",
+    "A-720401-005",
+    "A-720401-006",
+    "A-720401-007"
+  ],
+  "seed": 882072,
+  "native_prefix_ticks": 256,
+  "imagination_steps": 64,
+  "actor_sha256": "d93b80b584aa8103f577c65e7ded69bf5e9ede2372ac4a9ec70bd37ce04681e3",
+  "world_sha256": "db1538ae1f3a5d29a54cfeb87b55539ffc84d55fcb8a97b0315b4fc845ad88ae",
+  "critic_sha256": "e36ecc2f7148e3768f219222a8a86596b84c4396a984d0d3b4df7b06181c2d2a",
+  "wm_replay_handoff": {
+    "fit_sha256": "07e1c6c1215fd40b0d343ab40ccbd45da0756a4c7e04fc75613d81e05800545e",
+    "world_sha256": "db1538ae1f3a5d29a54cfeb87b55539ffc84d55fcb8a97b0315b4fc845ad88ae",
+    "optimizer_sha256": "fcacc31417e09e47ee5a385d2fa29eef39511c7baf30043a94f943d1a1e17017",
+    "panel_sha256": "6b6eb41966776eff5ed83cbf33cbec397d35e0ea98d5b3e5b0424c9526da8203",
+    "source_checkpoint_sha256": "c8e2507a5b5127421ede392d6554f57f6c54a36931d6d8b160ef9c350081df8b"
+  },
+  "checkpoint": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/sweep_bounded_recovery32/cycle_02_recovery_refresh_candidate_0008.pt",
+  "reference_bank_sha256": "8d16a9b3b80a2f9bd196c1fe4d96200186be5133b2d79aead2fbd2aeab86d5e0",
+  "matched_references": 8,
+  "effective_gate_lanes": 8,
+  "tracking_active_lane_steps": 6,
+  "tracking_weight_sum": 5.999851703643799,
+  "toi_actor_gradient_norm": 1.4334090266745922,
+  "max_native_command_error_rad": 0.0,
+  "weights_unchanged": true,
+  "actor_updates": 0,
+  "critic_updates": 0,
+  "world_updates": 0,
+  "contact_gradients": "detached",
+  "scope": "native prefix plus frozen-model BPTT; no paired native Jacobian or performance receipt"
+}
