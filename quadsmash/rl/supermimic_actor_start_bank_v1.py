@@ -3,6 +3,14 @@ import torch
 
 CATEGORIES=('gate_onset','pre_contact','failure_pre','success_near')
 SCHEDULE=('gate_onset',)*5+('pre_contact',)*7+('failure_pre',)*5+('success_near',)*3
+# Same 20-draw quotas, spread across the cycle so a rejected proposal
+# does not immediately replay the very same sparse family with unchanged Adam.
+INTERLEAVED_SCHEDULE = (
+    'pre_contact', 'gate_onset', 'failure_pre', 'pre_contact', 'success_near',
+    'pre_contact', 'gate_onset', 'failure_pre', 'pre_contact', 'gate_onset',
+    'success_near', 'pre_contact', 'failure_pre', 'gate_onset', 'pre_contact',
+    'failure_pre', 'success_near', 'pre_contact', 'gate_onset', 'failure_pre',
+)
 
 class ActorStartBank:
     schema='causal-full-executor-start-bank-v1'
@@ -67,8 +75,9 @@ class ActorStartBank:
                     mutable.copy_(target)
                 entry['masks'][name]=target=mutable
             target[lane]=bool(eligible)
-    def sample(self, attempt, *, eligible_lanes=None):
-        requested=SCHEDULE[(attempt-1)%len(SCHEDULE)]
+    def sample(self, attempt, *, eligible_lanes=None, interleaved=False):
+        schedule = INTERLEAVED_SCHEDULE if interleaved else SCHEDULE
+        requested = schedule[(attempt - 1) % len(schedule)]
         checks={}
         categories=dict.fromkeys((requested,'pre_contact','gate_onset','failure_pre','success_near'))
         for actual in categories:

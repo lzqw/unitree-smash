@@ -275,3 +275,14 @@ def test_bank_preview_union_preserves_each_category_and_shared_record():
     mask=bank.candidate_lanes_by_start()[id(row)]
     assert mask.tolist() == [False,True,False,True,False]
     assert first['gate_onset'].tolist() == [False,True,False,False,False]
+
+
+def test_extension_interleaves_same_quota_across_adjacent_blocks_and_resume():
+    from collections import Counter
+    from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank, SCHEDULE
+    bank = ActorStartBank()
+    requested = [bank.sample(draw, interleaved=True)[1]['requested'] for draw in range(129, 149)]
+    assert Counter(requested) == Counter(SCHEDULE)
+    assert all(a != b for a, b in zip(requested, requested[1:] + requested[:1]))
+    assert all(len(set(requested[i:i+8])) == 4 for i in range(13))
+    assert [bank.sample(i)[1]['requested'] for i in range(1, 21)] == list(SCHEDULE)
