@@ -1,0 +1,416 @@
+{
+  "groups": {
+    "approach": {
+      "ticks": [
+        224,
+        240,
+        256,
+        272
+      ],
+      "groups": {
+        "all": {
+          "rows": 512,
+          "gaussian_kl_per_dim": 0.0022218105021462663,
+          "request": {
+            "rms": 0.0033188304019142745,
+            "max_abs": 0.012006551027297974,
+            "changed_rows": 219
+          },
+          "final_normalized": {
+            "rms": 0.0009768982724605872,
+            "max_abs": 0.004417777061462402,
+            "changed_rows": 205
+          },
+          "final_target_rad": {
+            "rms": 0.0013155091500702512,
+            "max_abs": 0.004802703857421875,
+            "changed_rows": 205
+          }
+        },
+        "recovery_active": {
+          "rows": 39,
+          "gaussian_kl_per_dim": 0.008003611921530483,
+          "request": {
+            "rms": 0.006299042859305928,
+            "max_abs": 0.010777289047837257,
+            "changed_rows": 39
+          },
+          "final_normalized": {
+            "rms": 0.001826584894474866,
+            "max_abs": 0.004050076007843018,
+            "changed_rows": 39
+          },
+          "final_target_rad": {
+            "rms": 0.0024862775366125446,
+            "max_abs": 0.004310965538024902,
+            "changed_rows": 39
+          }
+        },
+        "recovery_inactive": {
+          "rows": 473,
+          "gaussian_kl_per_dim": 0.0017450869178841431,
+          "request": {
+            "rms": 0.002941305151179423,
+            "max_abs": 0.012006551027297974,
+            "changed_rows": 180
+          },
+          "final_normalized": {
+            "rms": 0.0008705870264356079,
+            "max_abs": 0.004417777061462402,
+            "changed_rows": 166
+          },
+          "final_target_rad": {
+            "rms": 0.001167718968942763,
+            "max_abs": 0.004802703857421875,
+            "changed_rows": 166
+          }
+        },
+        "approach_zero": {
+          "rows": 252,
+          "gaussian_kl_per_dim": 0.0,
+          "request": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_normalized": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_target_rad": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          }
+        },
+        "approach_up_to_quarter": {
+          "rows": 108,
+          "gaussian_kl_per_dim": 3.351868201944058e-05,
+          "request": {
+            "rms": 0.0004076383348378213,
+            "max_abs": 0.0026933476328849792,
+            "changed_rows": 67
+          },
+          "final_normalized": {
+            "rms": 0.00011881942793721784,
+            "max_abs": 0.0011430978775024414,
+            "changed_rows": 53
+          },
+          "final_target_rad": {
+            "rms": 0.000162054957127895,
+            "max_abs": 0.0010771751403808594,
+            "changed_rows": 53
+          }
+        },
+        "approach_above_quarter": {
+          "rows": 152,
+          "gaussian_kl_per_dim": 0.007460177364742032,
+          "request": {
+            "rms": 0.006081435830652397,
+            "max_abs": 0.012006551027297974,
+            "changed_rows": 152
+          },
+          "final_normalized": {
+            "rms": 0.0017901270354949345,
+            "max_abs": 0.004417777061462402,
+            "changed_rows": 152
+          },
+          "final_target_rad": {
+            "rms": 0.0024105206066602058,
+            "max_abs": 0.004802703857421875,
+            "changed_rows": 152
+          }
+        },
+        "recovery_only": {
+          "rows": 0
+        },
+        "approach_only": {
+          "rows": 221,
+          "gaussian_kl_per_dim": 0.00373495978352579,
+          "request": {
+            "rms": 0.004303031418238975,
+            "max_abs": 0.012006551027297974,
+            "changed_rows": 180
+          },
+          "final_normalized": {
+            "rms": 0.0012736398076756861,
+            "max_abs": 0.004417777061462402,
+            "changed_rows": 166
+          },
+          "final_target_rad": {
+            "rms": 0.0017083339377485134,
+            "max_abs": 0.004802703857421875,
+            "changed_rows": 166
+          }
+        },
+        "both_heads_active": {
+          "rows": 39,
+          "gaussian_kl_per_dim": 0.008003611921530483,
+          "request": {
+            "rms": 0.006299042859305928,
+            "max_abs": 0.010777289047837257,
+            "changed_rows": 39
+          },
+          "final_normalized": {
+            "rms": 0.001826584894474866,
+            "max_abs": 0.004050076007843018,
+            "changed_rows": 39
+          },
+          "final_target_rad": {
+            "rms": 0.0024862775366125446,
+            "max_abs": 0.004310965538024902,
+            "changed_rows": 39
+          }
+        },
+        "both_heads_inactive": {
+          "rows": 252,
+          "gaussian_kl_per_dim": 0.0,
+          "request": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_normalized": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_target_rad": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          }
+        }
+      }
+    },
+    "recovery": {
+      "ticks": [
+        384,
+        400,
+        416,
+        448,
+        480,
+        576,
+        672
+      ],
+      "groups": {
+        "all": {
+          "rows": 896,
+          "gaussian_kl_per_dim": 4.026047824281681e-06,
+          "request": {
+            "rms": 0.00014127685449358697,
+            "max_abs": 0.007239188998937607,
+            "changed_rows": 10
+          },
+          "final_normalized": {
+            "rms": 4.3112576920664145e-05,
+            "max_abs": 0.0030724406242370605,
+            "changed_rows": 9
+          },
+          "final_target_rad": {
+            "rms": 5.6508604795945186e-05,
+            "max_abs": 0.0028955936431884766,
+            "changed_rows": 9
+          }
+        },
+        "recovery_active": {
+          "rows": 748,
+          "gaussian_kl_per_dim": 5.986743064624457e-09,
+          "request": {
+            "rms": 5.44787158486323e-06,
+            "max_abs": 0.00018671154975891113,
+            "changed_rows": 9
+          },
+          "final_normalized": {
+            "rms": 1.712280047450621e-06,
+            "max_abs": 7.128715515136719e-05,
+            "changed_rows": 8
+          },
+          "final_target_rad": {
+            "rms": 2.1472713606343434e-06,
+            "max_abs": 7.468461990356445e-05,
+            "changed_rows": 8
+          }
+        },
+        "recovery_inactive": {
+          "rows": 148,
+          "gaussian_kl_per_dim": 2.434365382935167e-05,
+          "request": {
+            "rms": 0.00034739569633925456,
+            "max_abs": 0.007239188998937607,
+            "changed_rows": 1
+          },
+          "final_normalized": {
+            "rms": 0.00010600857370019182,
+            "max_abs": 0.0030724406242370605,
+            "changed_rows": 1
+          },
+          "final_target_rad": {
+            "rms": 0.00013895552529662902,
+            "max_abs": 0.0028955936431884766,
+            "changed_rows": 1
+          }
+        },
+        "approach_zero": {
+          "rows": 789,
+          "gaussian_kl_per_dim": 0.0,
+          "request": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_normalized": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_target_rad": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          }
+        },
+        "approach_up_to_quarter": {
+          "rows": 106,
+          "gaussian_kl_per_dim": 4.224607370131222e-08,
+          "request": {
+            "rms": 1.44718725217392e-05,
+            "max_abs": 0.00018671154975891113,
+            "changed_rows": 9
+          },
+          "final_normalized": {
+            "rms": 4.548546745681972e-06,
+            "max_abs": 7.128715515136719e-05,
+            "changed_rows": 8
+          },
+          "final_target_rad": {
+            "rms": 5.704069362982579e-06,
+            "max_abs": 7.468461990356445e-05,
+            "changed_rows": 8
+          }
+        },
+        "approach_above_quarter": {
+          "rows": 1,
+          "gaussian_kl_per_dim": 0.0036028607667440474,
+          "request": {
+            "rms": 0.004226251049758552,
+            "max_abs": 0.007239188998937607,
+            "changed_rows": 1
+          },
+          "final_normalized": {
+            "rms": 0.0012896499599877682,
+            "max_abs": 0.0030724406242370605,
+            "changed_rows": 1
+          },
+          "final_target_rad": {
+            "rms": 0.0016904669253044828,
+            "max_abs": 0.0028955936431884766,
+            "changed_rows": 1
+          }
+        },
+        "recovery_only": {
+          "rows": 668,
+          "gaussian_kl_per_dim": 0.0,
+          "request": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_normalized": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_target_rad": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          }
+        },
+        "approach_only": {
+          "rows": 27,
+          "gaussian_kl_per_dim": 0.00013343928765718692,
+          "request": {
+            "rms": 0.0008133423937470129,
+            "max_abs": 0.007239188998937607,
+            "changed_rows": 1
+          },
+          "final_normalized": {
+            "rms": 0.00024819325051977605,
+            "max_abs": 0.0030724406242370605,
+            "changed_rows": 1
+          },
+          "final_target_rad": {
+            "rms": 0.00032533051146023406,
+            "max_abs": 0.0028955936431884766,
+            "changed_rows": 1
+          }
+        },
+        "both_heads_active": {
+          "rows": 80,
+          "gaussian_kl_per_dim": 5.5976047654238676e-08,
+          "request": {
+            "rms": 1.6658376269260096e-05,
+            "max_abs": 0.00018671154975891113,
+            "changed_rows": 9
+          },
+          "final_normalized": {
+            "rms": 5.235770495771528e-06,
+            "max_abs": 7.128715515136719e-05,
+            "changed_rows": 8
+          },
+          "final_target_rad": {
+            "rms": 6.5658769154983666e-06,
+            "max_abs": 7.468461990356445e-05,
+            "changed_rows": 8
+          }
+        },
+        "both_heads_inactive": {
+          "rows": 121,
+          "gaussian_kl_per_dim": 0.0,
+          "request": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_normalized": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_target_rad": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          }
+        }
+      }
+    }
+  },
+  "parameter_delta": {
+    "available": true,
+    "l2": 0.06829850375652313,
+    "rms": 9.955855057341978e-05,
+    "max_abs": 0.00030127912759780884,
+    "changed_elements": 110930
+  },
+  "changed_tensors": [
+    "actor.approach.0.weight",
+    "actor.approach.0.bias",
+    "actor.approach.2.weight",
+    "actor.approach.2.bias",
+    "actor.approach.4.weight",
+    "actor.approach.4.bias"
+  ],
+  "before_actor_sha256": "282a17b7acf78bb0883709f0b4775b9faba5b7a4ac85acec2868f2fa3b88a9d8",
+  "after_actor_sha256": "b93eaa40fe36bd724e7193b6bd04df71db7a6bcd3f39f6c956190c311bdd30ef",
+  "before_checkpoint_sha256": "ebcb843940fe7cb9870c399cab51d33004d484cf8930537b9b26c21dff1ec3d3",
+  "after_checkpoint_sha256": "378dba8b93d88d789cfea7d6a7a366c79066c0e00a0ed9924e46ac49b4f5c69e",
+  "archive_manifest_sha256": "ee3d9b989a48f7b33ca6ed8273023af0de77cb4ec1bb24814105a6d7b1eb0012",
+  "scope": "Both policies and G07 previews use the same recorded state, command limits, latch and controller memory in each lane. Within the second Approach block. Native outcomes require a frozen rollout.",
+  "retained_updates": [
+    24,
+    26
+  ]
+}

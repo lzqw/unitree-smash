@@ -89,12 +89,56 @@ def read_new(path, offset):
     return rows, offset
 
 
+class FirstEpisodeReturns:
+    """Match the first completed online episode per initial lane to its frozen TRAIN128 case."""
+    def __init__(self, arm, registration, manifest):
+        from scripts.compare_supermimic_fixed_stages import load_run
+        path = Path(registration['baseline_path'])
+        rows, identity, actor = load_run(path.parent)
+        if (actor != registration['initial']['actor_sha256'] or identity['seed'] != manifest['seed']
+                or identity['task'] != manifest['task_contract'] or identity['execution'] != manifest['policy_execution']):
+            raise ValueError('Online return comparison has incompatible baseline identity')
+        self.baseline = {(row['case_id'], row['env_id']): row for row in rows}
+        self.path = arm/'train/native_episodes.jsonl'
+        self.offset = 0
+        self.seen = set()
+        self.online_total = self.initial_total = 0.
+        self.flips = dict(ball_side_complete_except_recovery=0, physical_recovery_success=0, complete5=0)
+
+    def update(self, writer):
+        rows, self.offset = read_new(self.path, self.offset)
+        for row in rows:
+            if row.get('episode_index') != 0 or row.get('scope') != 'mixed-policy monitoring, not frozen score':
+                continue
+            key = (row['case_id'], row['env_id'])
+            if key in self.seen:
+                continue
+            baseline = self.baseline[key]
+            if row['scoring_schema'] != baseline['scoring_schema']:
+                raise ValueError('Different native scoring rules for the same case')
+            self.seen.add(key)
+            n = len(self.seen)
+            self.online_total += row['native_episode_return']
+            self.initial_total += baseline['native_episode_return']
+            for metric in self.flips:
+                self.flips[metric] += int(row[metric]) - int(baseline[metric])
+            metrics = dict(online_mean=self.online_total/n, initial_same_cases_mean=self.initial_total/n,
+                           mean_difference=(self.online_total-self.initial_total)/n,
+                           latest_case_difference=row['native_episode_return']-baseline['native_episode_return'],
+                           **{name+'_net_cases': count for name,count in self.flips.items()})
+            values = [Summary.Value(tag='first_completed_mixed_cases/'+k,simple_value=v) for k,v in metrics.items()]
+            writer.add_event(Event(wall_time=time.time(),step=n,summary=Summary(value=values)))
+        if rows:
+            writer.flush()
+
+
 def main():
     import psutil
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--arm-dir', type=Path, required=True)
     parser.add_argument('--tensorboard', type=Path, required=True)
     parser.add_argument('--follow-pid', type=int)
+    parser.add_argument('--online-returns-only', action='store_true')
     args = parser.parse_args()
     owner = psutil.Process(args.follow_pid) if args.follow_pid else None
     arm = args.arm_dir.resolve()
@@ -104,19 +148,29 @@ def main():
         if not owner.is_running() or owner.status() == psutil.STATUS_ZOMBIE:
             return
         time.sleep(5)
-    origin = arm_origin(reg)
     manifest = json.loads(manifest_path.read_text())
-    writer = EventFileWriter(str(args.tensorboard))
+    reference_path = Path(reg['baseline_path']) if reg.get('baseline_path') else None
+    matched = (FirstEpisodeReturns(arm,reg,manifest) if reference_path is not None
+               and reference_path.name == 'episodes_summary.json' and (reference_path.parent/'completed.json').exists()
+               else None)
+    if args.online_returns_only and matched is None:
+        raise ValueError('A complete registered frozen baseline is required for online return comparison')
+    origin = None if args.online_returns_only else arm_origin(reg)
     from scripts.report_supermimic_native_contact_counts import NativeContactCounts
-    contacts = NativeContactCounts(arm)
+    contacts = None if args.online_returns_only else NativeContactCounts(arm)
+    writer = EventFileWriter(str(args.tensorboard))
     offset = 0
     heads = dict(reg.get('previous_heads', {'recovery': 0, 'approach': 0}))
     attempts = reg.get('previous_proposals', 0)
     try:
         while True:
             live = owner and owner.is_running() and owner.status() != psutil.STATUS_ZOMBIE
-            contacts.update(writer)
-            rows, offset = read_new(arm/'train/training_history.jsonl', offset)
+            if matched is not None:
+                matched.update(writer)
+            rows = []
+            if contacts is not None:
+                contacts.update(writer)
+                rows, offset = read_new(arm/'train/training_history.jsonl', offset)
             for row in rows:
                 pos = axes(row, origin, manifest['num_envs'])
                 metrics = scalars(row)

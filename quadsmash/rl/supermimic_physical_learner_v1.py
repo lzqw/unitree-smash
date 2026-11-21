@@ -210,17 +210,23 @@ class PhysicalHorizonTrainer:
     def _max_budget_delta(now,base):
         return tuple(float((n-b).abs().max()) for n,b in zip(now,base))
 
-    def _relative_budget_report(self):
-        current=self._budget_snapshot()
-        start=[];accepted=[]
-        for cur,st,ac in zip(current,self._snapshot_from(self.block_start_snapshot),self._snapshot_from(self.accepted_snapshot)):
-            start.append(self._max_budget_delta(cur,st)); accepted.append(self._max_budget_delta(cur,ac))
-        def agg(rows): return {k:max((x[i] for x in rows),default=0.) for i,k in enumerate(('residual_request_delta','final_normalized_command_delta','final_joint_target_delta_rad'))}
-        native=[]
-        for cur,ref in zip(current,self._snapshot_from(self.native_accepted_snapshot)):
-            native.append(self._max_budget_delta(cur,ref))
-        return {'relative_block_start':agg(start),'relative_last_accepted':agg(accepted),
-                'relative_native_accepted':agg(native)}
+    @staticmethod
+    def _budget_deltas(current, reference):
+        # Reduce on-device before reading back. Each tensor covers the same command field
+        # for one native state library entry, including entries of different batch sizes.
+        maxima = [torch.stack([(a-b).abs().amax() for a,b in zip(now,base,strict=True)])
+                  for now,base in zip(current,reference,strict=True)]
+        names = ('residual_request_delta','final_normalized_command_delta','final_joint_target_delta_rad')
+        return dict(zip(names,torch.stack(maxima).amax(0).tolist(),strict=True))
+
+    def _budget_references(self):
+        return {name: self._snapshot_from(snapshot) for name,snapshot in (
+            ('relative_block_start',self.block_start_snapshot),
+            ('relative_last_accepted',self.accepted_snapshot),
+            ('relative_native_accepted',self.native_accepted_snapshot))}
+
+    def _relative_budget_report(self, current, references):
+        return {name: self._budget_deltas(current,reference) for name,reference in references.items()}
 
     def _snapshot_from(self,state_dict):
         # Snapshots are parameter snapshots. Recompute command baselines by temporarily loading
@@ -391,6 +397,8 @@ class PhysicalHorizonTrainer:
         parameters=[p for p in self.actor.parameters() if p.requires_grad]
         self.actor_opt.zero_grad(set_to_none=True)
         before_budget=self._budget_snapshot()
+        budget_references=self._budget_references()
+        committed_budget=before_budget
         cpu_rng=torch.get_rng_state(); cuda_rng=torch.cuda.get_rng_state_all() if torch.cuda.is_available() else None
         def restore_rng():
             torch.set_rng_state(cpu_rng)
@@ -417,13 +425,14 @@ class PhysicalHorizonTrainer:
                                 candidate={k:(v+(proposed[k]-v)*candidate_alpha if k in self.trainable_names else v) for k,v in actor_before.items()}
                                 self.actor.load_state_dict(candidate,strict=True)
                                 with torch.no_grad():
-                                    report=self._relative_budget_report()
+                                    candidate_budget=self._budget_snapshot()
+                                    report=self._relative_budget_report(candidate_budget,budget_references)
                                     local=report['relative_last_accepted']; native=report['relative_native_accepted']
                                     bounded=(local['final_normalized_command_delta']<=self.command_delta_budget and local['final_joint_target_delta_rad']<=self.target_delta_budget_rad)
                                     if self.native_reference_command_budget is not None:
                                         bounded &= (native['final_normalized_command_delta']<=self.native_reference_command_budget and native['final_joint_target_delta_rad']<=self.native_reference_target_budget_rad)
                                     # Measure final executable commands on identical real states/memory.
-                                    effect=max(self._max_budget_delta(n,b)[2] for n,b in zip(self._budget_snapshot(),before_budget))
+                                    effect=self._budget_deltas(candidate_budget,before_budget)['final_joint_target_delta_rad']
                                     restore_rng()
                                     evaluation=self._rollout_objective(initial_state,effective_weights=rollout['effective_weights'],
                                                                       baseline_toi_weights=rollout['toi_weights'])
@@ -431,6 +440,7 @@ class PhysicalHorizonTrainer:
                                     coverage_ok=evaluation['toi_coverage_preserved']
                                 trials.append(dict(alpha=candidate_alpha,loss=candidate_loss,budget_ok=bool(bounded),toi_coverage_preserved=coverage_ok,final_command_change=effect))
                                 if bounded and coverage_ok and effect>0 and candidate_loss<=baseline_loss:
+                                    committed_budget=candidate_budget
                                     alpha=candidate_alpha;accepted=True;break
                             if accepted:
                                 # Adam moments correspond to the original same-gradient proposal;
@@ -472,12 +482,13 @@ class PhysicalHorizonTrainer:
         if update_actor:
             if accepted:
                 self.actor_updates+=1; self.backtracked_actor_updates+=int(alpha<1);self.accept_snapshot()
+                budget_references['relative_last_accepted']=committed_budget
             else:
                 self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
                 self.rejected_actor_updates+=1
         self.last_critic_loss=sum(losses)/len(losses)
         changes={k:float((p.detach()-actor_before[k]).abs().max()) for k,p in self.actor.named_parameters() if p.requires_grad}
-        command_delta=[self._max_budget_delta(n,b) for n,b in zip(self._budget_snapshot(),before_budget)]
+        command_delta=self._budget_deltas(committed_budget,before_budget)
         return dict(reference_coverage=coverage,actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,rejected_actor_updates=self.rejected_actor_updates,
             update_accepted=accepted if update_actor else False,block_name=self.block_name,trainable_names=sorted(self.trainable_names),
             block_attempts=self.block_attempts,backtracked_actor_updates=self.backtracked_actor_updates,backtrack_alpha=alpha,
@@ -488,8 +499,8 @@ class PhysicalHorizonTrainer:
             actor_gradient=gradient,parameter_max_changes=changes,tracking_loss=track_value,
             tracking_weight=self.tracking_weight,toi_racket_weight=getattr(self,'toi_racket_weight',1.0),
             tracking_steps=track_steps,matched_references=matched,**grad_stats,**track_stats,
-            final_command_max_change=max(x[2] for x in command_delta),request_max_change=max(x[0] for x in command_delta),
-            budget_report=self._relative_budget_report(),critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,
+            final_command_max_change=command_delta['final_joint_target_delta_rad'],request_max_change=command_delta['residual_request_delta'],
+            budget_report=self._relative_budget_report(committed_budget,budget_references),critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,
             critic_seconds=time.perf_counter()-started,model_runtime_state_sha256=model_hash,imagined_steps=len(rewards),
             effective_gate_steps=gate_steps,effective_gate_lanes=gate_lanes,no_effective_gate=gate_lanes==0,
             no_effective_gradient=reason in ('zero_total_gradient','no_task_or_tracking_gradient'),

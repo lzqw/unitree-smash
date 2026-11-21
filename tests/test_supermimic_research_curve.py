@@ -125,3 +125,29 @@ def test_contact_contribution_separates_weighted_gradient_from_coverage():
     legacy = scalars(dict(row, contact_aux_weight=.1, tracking_gradient_norm=0))
     assert 'approach/outgoing_impact_lanes' not in legacy
     assert 'approach/outgoing_to_tracking_gradient_ratio' not in legacy
+
+
+def test_mixed_case_returns_use_only_first_online_episode_and_matching_frozen_case(tmp_path, monkeypatch):
+    import json
+    from types import SimpleNamespace
+    from scripts import compare_supermimic_fixed_stages as fixed
+    from scripts.report_supermimic_research_curve import FirstEpisodeReturns
+    base = dict(case_id='a', env_id=2, scoring_schema='v1', native_episode_return=10.,
+                physical_recovery_success=False, complete5=False, ball_side_complete_except_recovery=True)
+    identity = dict(seed=1, task='t', execution='e')
+    monkeypatch.setattr(fixed, 'load_run', lambda folder: ([base], identity, 'h'))
+    report = FirstEpisodeReturns(tmp_path, dict(baseline_path='baseline', initial={'actor_sha256':'h'}),
+                                 dict(seed=1, task_contract='t', policy_execution='e'))
+    (tmp_path/'train').mkdir()
+    row = dict(base, scope='mixed-policy monitoring, not frozen score', episode_index=0,
+               native_episode_return=6., ball_side_complete_except_recovery=False)
+    report.path.write_text(''.join(json.dumps(r)+'\n' for r in
+                                   [dict(row,scope='frozen'), dict(row,episode_index=1), row, row]))
+    events = []
+    writer = SimpleNamespace(add_event=events.append, flush=lambda: None)
+    report.update(writer)
+    report.update(writer)
+    assert len(events) == 1 and events[0].step == 1
+    values = {s.tag:s.simple_value for s in events[0].summary.value}
+    assert values['first_completed_mixed_cases/mean_difference'] == -4.
+    assert values['first_completed_mixed_cases/ball_side_complete_except_recovery_net_cases'] == -1
