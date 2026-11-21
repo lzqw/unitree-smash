@@ -1,0 +1,130 @@
+{
+  "policy_version": 109,
+  "actor_sha256": "2617584fcf925423a226df6450e6ac5423dc10bfa29cca9a91cc6e262bb19ad5",
+  "world_updates": 192,
+  "world_sha256": "5df0928a4d078f6e36771b51e6b6395c4bcbb0884a440059bcb34fd35c883e87",
+  "source_chunks": [
+    {
+      "file": "chunk_00008.pt.zst",
+      "sha256": "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00009.pt.zst",
+      "sha256": "dac25f5e611a8e6c7eb58ced3e324c0d8b2faef6a15230dd8bceda9dd97f077f",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00010.pt.zst",
+      "sha256": "4512dd06824b0762bd1b74cad3e68f36809e7f946c370f088b6b3ccb76c153cd",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00011.pt.zst",
+      "sha256": "e81ebbc1fcf981fe49a00512ae264bcd3fc3692ffa707df86d78b9d66ff08cdf",
+      "ticks": 32
+    }
+  ],
+  "scope": "One control step from the same native pre-impact state and executed target. Replace only 49 robot endpoint channels with measurements. Compare speed to native control-step end. Uses no future ball inputs. Oracle is diagnostic only.",
+  "all_cases": {
+    "n": 110,
+    "deployed_mae": 0.2945077939466997,
+    "oracle_mae": 0.20205526135184548,
+    "part_changes": 4,
+    "oracle_hit": 110,
+    "deployed_hit": 109
+  },
+  "excluded_from_wm_fit": {
+    "n": 70,
+    "deployed_mae": 0.3152711800166539,
+    "oracle_mae": 0.22877699307032995,
+    "part_changes": 3,
+    "oracle_hit": 70,
+    "deployed_hit": 69
+  },
+  "sole_speed_loss": {
+    "n": 4,
+    "deployed_mae": 0.35608065128326416,
+    "oracle_mae": 0.1872159242630005,
+    "part_changes": 1,
+    "oracle_hit": 4,
+    "deployed_hit": 4
+  },
+  "speed_loss_rows": [
+    {
+      "case": "A-720401-007",
+      "lane": 7,
+      "native_tick": 6670,
+      "eligible_for_wm_fit": false,
+      "sole_speed_loss": true,
+      "sensor_mps": 4.896219253540039,
+      "release_mps": 4.886219501495361,
+      "deployed_mps": 5.361104965209961,
+      "oracle_mps": 5.171772480010986,
+      "hit": true,
+      "oracle_hit": true,
+      "part": 42,
+      "oracle_part": 41,
+      "rolled_speed": 5.447945594787598,
+      "rolled_first_offset": 0
+    },
+    {
+      "case": "A-720401-025",
+      "lane": 25,
+      "native_tick": 6672,
+      "eligible_for_wm_fit": true,
+      "sole_speed_loss": true,
+      "sensor_mps": 4.810741901397705,
+      "release_mps": 4.792954921722412,
+      "deployed_mps": 4.960058212280273,
+      "oracle_mps": 4.918684482574463,
+      "hit": true,
+      "oracle_hit": true,
+      "part": 41,
+      "oracle_part": 41,
+      "rolled_speed": 4.9992499351501465,
+      "rolled_first_offset": 0
+    },
+    {
+      "case": "A-720401-043",
+      "lane": 43,
+      "native_tick": 6672,
+      "eligible_for_wm_fit": true,
+      "sole_speed_loss": true,
+      "sensor_mps": 4.575664043426514,
+      "release_mps": 4.574666976928711,
+      "deployed_mps": 5.288177013397217,
+      "oracle_mps": 4.32800817489624,
+      "hit": true,
+      "oracle_hit": true,
+      "part": 31,
+      "oracle_part": 31,
+      "rolled_speed": 5.324326992034912,
+      "rolled_first_offset": 0
+    },
+    {
+      "case": "A-720401-039",
+      "lane": 39,
+      "native_tick": 6673,
+      "eligible_for_wm_fit": false,
+      "sole_speed_loss": true,
+      "sensor_mps": 4.943396091461182,
+      "release_mps": 4.923100471496582,
+      "deployed_mps": 5.041003704071045,
+      "oracle_mps": 5.061108112335205,
+      "hit": true,
+      "oracle_hit": true,
+      "part": 49,
+      "oracle_part": 49,
+      "rolled_speed": 4.935548782348633,
+      "rolled_first_offset": 0
+    }
+  ],
+  "false_above_5_same_tick": {
+    "cases": 12,
+    "mean_rolled_minus_from_native_start_mps": 0.06396365165710449,
+    "mean_deployed_minus_native_boundary_mps": 0.5102387269337978,
+    "mean_native_boundary_minus_latched_mps": 0.01139303048451712
+  },
+  "reproduced_on_independent_script_cases": 110
+}

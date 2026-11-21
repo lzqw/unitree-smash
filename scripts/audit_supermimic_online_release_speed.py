@@ -15,7 +15,7 @@ from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop,
 
 
 @torch.no_grad()
-def audit(arm, checkpoint, block, flights, *, baseline=None):
+def audit(arm, checkpoint, block, flights, *, baseline=None, robot_endpoint_oracle=False):
     command = json.loads((arm / 'registration.json').read_text())['command']
 
     def option(name):
@@ -51,6 +51,7 @@ def audit(arm, checkpoint, block, flights, *, baseline=None):
         for offset in (-1, 0, 1):
             wanted[event['native_tick'] + offset].append((i, offset))
     samples, releases = {}, {}
+    measured_endpoints = {}
     for receipt in block['source_chunks']:
         with read_archive_rows(arm / 'train/native_transitions', receipt, scratch=arm) as chunk:
             for row in chunk:
@@ -66,12 +67,16 @@ def audit(arm, checkpoint, block, flights, *, baseline=None):
                     continue
                 phys = before['physical']
                 state = encode_physical(phys)
+                if robot_endpoint_oracle:
+                    next_robot = encode_physical(after['physical'])[:, :49]
                 for i, offset in wanted[tick]:
                     lane = records[i]['lane']
                     if before['episode_index'][lane] != 0 or after['episode_index'][lane] != 0:
                         continue
                     if offset == 0 and (current['had_contact'][lane] or not following['had_contact'][lane]):
                         raise ValueError('First-contact label and archive disagree')
+                    if robot_endpoint_oracle and offset == 0:
+                        measured_endpoints[i] = next_robot[lane].clone()
                     fields = (state, row['final_joint_targets'], phys['final_action'],
                               phys['foot_contact'].float(), phys['ball_present'], phys['elapsed_s'],
                               after['physical']['ball_velocity_w'])
@@ -98,7 +103,17 @@ def audit(arm, checkpoint, block, flights, *, baseline=None):
         recorded_state, targets, previous, native_feet, native_present, elapsed, velocity = batch(offset)
         state, feet, present, hit, part = step(state, targets, previous, feet, present, elapsed)
         if offset == 0:
-            one, _, _, one_hit, _ = step(recorded_state, targets, previous, native_feet, native_present, elapsed)
+            boundary = (recorded_state, targets, previous, native_feet, native_present, elapsed)
+            one, _, _, one_hit, one_part = step(*boundary)
+            if robot_endpoint_oracle:
+                endpoints = torch.stack([measured_endpoints[i] for i in usable])
+                def replace_robot(_module, _inputs, output):
+                    physical, logits, available = output
+                    return torch.cat((endpoints, physical[:, 49:]), -1), logits, available
+                with adapter.physical_model.register_forward_hook(replace_robot):
+                    oracle, _, _, oracle_hit, oracle_part = step(*boundary)
+                if not torch.equal(oracle[:, :49], endpoints):
+                    raise ValueError('Measured robot endpoint did not reach the ball transition')
         for j, out in enumerate(outcomes):
             if hit[j] and out['first_predicted_offset'] is None:
                 first_part = int(part[j])
@@ -107,6 +122,10 @@ def audit(arm, checkpoint, block, flights, *, baseline=None):
             if offset == 0:
                 out.update(common_boundary_wm_mps=float(one[j, -3:].norm()),
                            common_boundary_native_mps=float(velocity[j].norm()), one_step_hit=bool(one_hit[j]))
+                if robot_endpoint_oracle:
+                    out.update(common_boundary_oracle_mps=float(oracle[j, -3:].norm()),
+                               oracle_hit=bool(oracle_hit[j]), oracle_part=int(oracle_part[j]),
+                               one_step_part=int(one_part[j]))
     flips = {f['lane']: f for f in flights['target_score_flips']
              if not f['gained'] and f['online']['failed_conditions'] == ['release_speed']}
     for out in outcomes:
@@ -174,9 +193,12 @@ if __name__ == '__main__':
     for arg in ('arm', 'checkpoint', 'block', 'flights', 'output'):
         parser.add_argument('--' + arg, required=True, type=Path)
     parser.add_argument('--baseline-audit', type=Path, help='Replay exactly the same commands with a later guarded WM')
+    parser.add_argument('--robot-endpoint-oracle', action='store_true',
+                        help='Repeat the first-contact step with the measured 49-channel robot endpoint')
     args = parser.parse_args()
     torch.set_num_threads(2)
     result = audit(args.arm, args.checkpoint, json.loads(args.block.read_text()), json.loads(args.flights.read_text()),
-                   baseline=json.loads(args.baseline_audit.read_text()) if args.baseline_audit else None)
+                   baseline=json.loads(args.baseline_audit.read_text()) if args.baseline_audit else None,
+                   robot_endpoint_oracle=args.robot_endpoint_oracle)
     args.output.write_text(json.dumps(result, indent=2, allow_nan=False) + '\n')
     print({key: result[key] for key in ('all_windows', 'string_first', 'sole_speed_losses')})
