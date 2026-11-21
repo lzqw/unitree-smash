@@ -851,9 +851,15 @@ def run(args, *, alternating=None):
                     # Fork the control only from a prefix that has never executed an auxiliary update.
                     retained = resumed['global_counters']['accepted'] - resumed['config']['research_origin']
                     handoff = resumed['metadata'].get('research_revision_handoff', {})
+                    from quadsmash.rl.supermimic_long_run_contract_v1 import sha256 as checkpoint_sha
+                    source_block = handoff.get('pre_auxiliary_checkpoint')
+                    revised_prefix = resumed['config'].get('landing_and_first_contact_objectives')
+                    verified_block = (source_block and Path(source_block).is_file()
+                                      and checkpoint_sha(Path(source_block)) == handoff.get('source_checkpoint_sha256')
+                                      and handoff.get('pause_actor') == handoff.get('starting_actor'))
                     if (retained > 40 or handoff.get('common_prefix_aux_updates') != 0
                             or handoff.get('starting_actor') != tensor_digest(resumed['actor'].items())
-                            or resumed['config'].get('landing_and_first_contact_objectives')):
+                            or (revised_prefix and not verified_block)):
                         raise ValueError('Control fork requires the common pre-auxiliary G1 prefix')
                     saved_alternating = dict(saved_alternating, execution_config=dict(
                         saved_alternating['execution_config'], contact_gradient='G0'))

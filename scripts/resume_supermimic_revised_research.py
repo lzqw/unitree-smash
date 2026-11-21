@@ -34,7 +34,7 @@ def native_flips(before, after):
 
 
 
-def compose(parent, destination):
+def recover_proposal_entry(parent):
     """Salvage only a stop at proposal entry, before the first optimizer/collect call."""
     source = parent/'train/interrupted.pt'
     last = read(parent/'train/progress.json')
@@ -51,10 +51,51 @@ def compose(parent, destination):
             and ck['world_updates'] == last['world_updates'] and ck['critic_updates'] == last['critic_updates']
             and tensor_digest(ck['world'].items()) == last['model_runtime_state_sha256']):
         raise ValueError('Uncommitted optimizer or collection work at interrupt')
+    counters['attempts'] -= 1
+    progress['attempts'] -= 1
+    ck['actor_attempts'] = progress['attempts']
+    progress['proposal_in_flight'] = False
+    return ck, source
+
+
+def recover_paused_block(parent, pause):
+    # Only the Replay from the last native collection crosses this boundary.
+    # Actor, WM, Critic and all optimizer states come from the scored block entry.
+    source = Path(pause['checkpoint']).resolve()
+    if source != (parent/'train/pre_block.pt').resolve():
+        raise ValueError('Expected the paused arm block entry')
+    ck = torch.load(source, map_location='cpu', mmap=True, weights_only=False)
+    if tensor_digest(ck['actor'].items()) != pause['checkpoint_actor']:
+        raise ValueError('Paused actor does not match the saved block')
+    interrupted = torch.load(parent/'train/interrupted.pt', map_location='cpu', mmap=True, weights_only=False)
+    fail = read(parent/'train/failure.json')
+    last_archive = (parent/'train/native_transitions').resolve()
+    before, after = (state['replay_archive_receipts'][-1]['chunks'] for state in (ck, interrupted))
+    n = sum(c['ticks'] for c in after[len(before):])
+    if (fail.get('message') != 'SIGTERM' or ck['replay_archives'] != interrupted['replay_archives']
+            or Path(ck['replay_archives'][-1]).resolve() != last_archive
+            or interrupted['replay_archive_receipts'][:-1] != ck['replay_archive_receipts'][:-1]
+            or after[:len(before)] != before or n != ck['config']['native_ticks_per_actor_update']
+            or interrupted['native_ticks'] != ck['native_ticks'] + n
+            or pause['body_audit']['source_chunks'] != [c['sha256'] for c in after]):
+        raise ValueError('Native archive does not match the observed pause interval')
+    state = interrupted['replay_state']
+    versions = interrupted['replay_metadata']['policy_versions']
+    rows = (torch.arange(n) + state['write_pos'] - n) % len(versions)
+    if not (versions[rows] == ck['global_counters']['accepted']).all():
+        raise ValueError('Additional native transitions do not belong to the scored policy')
+    for key in ('native_ticks','replay_state','replay_metadata','replay_archives','replay_archive_receipts',
+                'actor_start_bank','dynamic_stage_starts'):
+        ck[key] = interrupted[key]
+    return ck, source
+
+
+def compose(parent, destination, pause=None):
+    ck, source = recover_paused_block(parent, pause) if pause else recover_proposal_entry(parent)
     reg = read(parent/'registration.json')
-    original = Path(reg['command'][reg['command'].index('--resume-training')+1])
+    original = Path(reg.get('initial_checkpoint', reg['command'][reg['command'].index('--resume-training')+1]))
     base_dir = Path(reg['baseline_path']).parent
-    evaluation = parent/'pre_revision_fixed128'
+    evaluation = Path(pause['evaluation_dir']) if pause else parent/'pre_revision_fixed128'
     _, _, old = load_run(base_dir)
     _, _, actor = load_run(evaluation)
     if actor != tensor_digest(ck['actor'].items()) or old != reg['initial']['actor_sha256']:
@@ -67,17 +108,24 @@ def compose(parent, destination):
     if not result['identical_initial_states'] or [r['actor_sha256'] for r in result['native_sources']] != [old, actor]:
         raise ValueError('Frozen comparison identity mismatch')
     pre, post = (read(d/'metrics.json') for d in (base_dir, evaluation))
+    if pause and post['evaluated_checkpoint_sha256'] != digest(source):
+        raise ValueError('Frozen evaluation used a different block checkpoint')
     outcomes = result['paired_task_outcomes']
     delta = outcomes['native_return']
     # Do not roll back on the rolling mixed-policy scalar. Use the complete paired panel.
     down = post['complete5'] < pre['complete5'] or post['qualified_airborne_string_contact'] < pre['qualified_airborne_string_contact']
+    if pause:
+        recovery = result['paired_recovery']
+        down |= (post['body_ground_seen'] > pre['body_ground_seen']
+                 or recovery['recovered_after'] < recovery['recovered_before'])
     rollback = down and delta['descriptive_paired_case_bootstrap_95'][1] < 0
-    # The interrupt is at the start of a new proposal, after the prior rejection.
-    counters['attempts'] -= 1
-    progress['attempts'] -= 1
-    ck['actor_attempts'] = progress['attempts']
-    progress['proposal_in_flight'] = False
     history = [json.loads(line) for line in (parent/'train/training_history.jsonl').read_text().splitlines()]
+    history = [row for row in history if row['attempt_id'] <= ck['global_counters']['attempts']]
+    if not history or history[-1]['accepted_id'] != ck['global_counters']['accepted']:
+        raise ValueError('Training history does not reproduce the scored prefix')
+    if pause and (sum(r['update_accepted'] for r in history)
+                  != ck['global_counters']['accepted'] - ck['config']['research_origin']):
+        raise ValueError('Incomplete common policy prefix')
     if any(row.get('contact_aux_weight', 0) != 0 for row in history):
         raise ValueError('G0 and G1 must fork before any auxiliary gradient was applied')
     if rollback:
@@ -96,8 +144,11 @@ def compose(parent, destination):
                     frozen_scores={label:{k:scores[k] for k in ('qualified_airborne_string_contact',
                         'ball_side_complete_except_recovery','conditional_recovery_count','conditional_recovery_denominator',
                         'complete5','body_ground_seen','native_episode_return_mean')} for label,scores in (('baseline',pre),('pre_revision',post))})
+    if pause:
+        evidence.update(pre_auxiliary_checkpoint=str(source), extra_native_ticks=ck['config']['native_ticks_per_actor_update'],
+                        pause_actor=actor, policy_prefix_retained=not rollback)
     ck['metadata']['research_revision_handoff'] = evidence
-    ck['research_elapsed_s'] = 0. if rollback else read(parent/'exit.json')['wall_seconds']
+    ck['research_elapsed_s'] = 0. if rollback else (ck['research_elapsed_s'] if 'research_elapsed_s' in ck else read(parent/'exit.json')['wall_seconds'])
     destination.mkdir(exist_ok=False, parents=True)
     checkpoint = destination/'handoff.pt'
     atomic_torch_save(ck, checkpoint)
@@ -111,14 +162,16 @@ def main():
     cli.add_argument('--parent', required=True, type=Path)
     cli.add_argument('--destination', required=True, type=Path)
     cli.add_argument('--tensorboard', required=True, type=Path)
+    cli.add_argument('--native-pause', type=Path, help='Use the scored block entry and the durable native collection at a Return pause')
     args = cli.parse_args()
     root = args.destination.resolve()
     parent = args.parent.resolve()
-    reg, checkpoint, evidence = compose(parent, root)
+    pause = read(args.native_pause) if args.native_pause else None
+    reg, checkpoint, evidence = compose(parent, root, pause)
     for arm in ('G1', 'G0'):
         cmd = list(reg['command'])
-        original = cmd[cmd.index('--resume-training')+1]
-        if not evidence['rollback_to_baseline']:
+        original = evidence['original_checkpoint']
+        if '--resume-reset-schedule' in cmd and not evidence['rollback_to_baseline']:
             cmd.remove('--resume-reset-schedule')
         output = root/arm
         for opt, value in (('--resume-training',checkpoint),('--output',output/'train'),
@@ -130,6 +183,10 @@ def main():
                 cmd.append(option)
         quota = ('uniform=24,pre_touchdown=8,touchdown=24,post_touchdown=16,'
                  'post_landing_support_loss=20,pre_body_ground=16,recovery_failure=12,stable_recovery=8')
+        if pause:
+            if '--recovery-rollout-landing' not in cmd:
+                cmd.append('--recovery-rollout-landing')
+            quota = quota.replace('post_landing_support_loss=20','post_landing_support_loss=16,post_landing_unload=4')
         if '--wm-stage-quota' in cmd:
             cmd[cmd.index('--wm-stage-quota')+1] = quota
         else:

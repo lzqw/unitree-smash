@@ -1,0 +1,82 @@
+{
+  "reason": "two declines in completed native Return plus a worsening all-128 lower bound for body contacts",
+  "timestamp": 1795287046.2427933,
+  "trainer_pid": 649032,
+  "through_episode": 16,
+  "return_curve": [
+    -21.123412917776875,
+    -23.926831287453687,
+    -27.26223736935539
+  ],
+  "matched_curve": [
+    5.158923506767148,
+    -9.722577140333739,
+    -8.953241417699065
+  ],
+  "body_audit": {
+    "checkpoint_manifest_chunks": 20,
+    "independently_hashed_extra_chunks": 4,
+    "scope": "First native reward-bearing body contact in TRAIN128, mixed behavior. Baseline flags are full first episodes. Unfinished baseline falls may still occur online.",
+    "ticks": 768,
+    "completed_cases": 16,
+    "observed_body_cases": 67,
+    "baseline_final_body_cases": 60,
+    "confirmed_new_falls": 16,
+    "new_falls_on_unfinished": 12,
+    "confirmed_avoided_falls": 0,
+    "possible_avoided_including_unfinished": 9,
+    "lower_bound_net_additional_falls": 7,
+    "new_by_behavior_version": {
+      "77": 4,
+      "69": 3,
+      "85": 6,
+      "93": 3
+    },
+    "source_chunks": [
+      "248bc5b1e713835c6ce45b87f880c2c7b2a789ef31a40209c96d53738e51c32d",
+      "be27d577a64f1db6b49bc52d0c9dbe2da86c40ff7129bb0ecf0e41ae2ef87c7c",
+      "7a69884b3409f7c017f00bdef2d21b1a23623371c80860e1c90d9bb44bb47a8d",
+      "12d73bb0c9fa853191097ad11bace5a82102459a33cd7724bd820316614241b3",
+      "227fc67d18b8006d407aa39c38a5e4473e477338851b24bc32bb966b1af69a3b",
+      "e52e22ead5edeb3b543a1a6099e7cc8983ddd43305d050ff519ee77e3c2b5fb1",
+      "77763475b3749e41f13ea28e8d7acc5c30d87d11a79441144b033e8b3c466dd8",
+      "c61f810cbb69c82c349997848f049336d43c79ef16becc3b67038b8f4397fb3d",
+      "0173a6221302dca1267b88e61d2a237711f48c849661f08026689846c2b03796",
+      "d52c3082aa259d61995ec596b084cbf056e46d7c3e17d2e6d30d4997634d8a81",
+      "ca4134086d0ac3144a4aa9e3762ffdbf4230d290184f8696a99566f565436926",
+      "6e9de896c9dc253f56a1a9f3fa5f3702b2c7bdda09cccf7dbbf3fdd8d7dd8eb8",
+      "72737d6476a1632beaa8699017505b212af3ed6f870dea716c0e8e7b9a910fd0",
+      "0520044c16073fa941fe5d51b492f11b5516470f87b79e744b462b9076038aed",
+      "eb84107bc5de20efae6340be70b56db3b2a844fc15170e2e9532e733b4ab6e03",
+      "2c261a50ba7f7874431c58c8ae20b16e6b8a23085df2241abde7a8cc359cd64e",
+      "6dc428ac129cdb384d3a8fe73ed1240123a90b88cc04edb17a4f18fea4b72a56",
+      "5abe37889e82246b248aa99d417f38c5393ead5ba0b1018021d68069ae217d89",
+      "48947c259b9c02f2f857344dffcdb498679a5949dd64332fe223febfd3933c6d",
+      "fb78e0fd751b130d1744e09b13c09c66ee48ef53c432f1fec14e9114379d32c0",
+      "c5033e4b5d618a527623a25ffcb4865f6421bf24a348ca3b680f51b5a2d6d185",
+      "ad690d39ef20284b13960c997ca47460d674f7b8f9002bcd1afa6a83db858d9a",
+      "e1caf8922da761bd5bdd542d69b4d19a2cfde784b653e041fb1490b5cdbd0040",
+      "4702827e6a6ac36acf5286ac9d68bf973b01a041e7540be8dce156ed63706769"
+    ]
+  },
+  "checkpoint": "/home/autodrive/LZQW/experiments/supermimic_research_scale_20261121/revised_0036/G1/train/pre_block.pt",
+  "checkpoint_actor": "3f3d4e17a47de7ed2874a801db97dca2cf061f82a29aba952d218e13ebfc246a",
+  "evaluation_dir": "/home/autodrive/LZQW/experiments/supermimic_research_scale_20261121/revised_0036/G1/pause_fixed128_R24_A16",
+  "evaluation_pid": 1172716,
+  "uniform_policy_at_collection": "R24+A16",
+  "latest_completed_matched_cases": [
+    {
+      "case_id": "A-720401-004",
+      "native_episode_return": -81.19246505298474,
+      "body_ground_seen": true,
+      "episode_index": 0
+    },
+    {
+      "case_id": "A-720401-017",
+      "native_episode_return": -20.02769483234988,
+      "body_ground_seen": true,
+      "episode_index": 0
+    }
+  ],
+  "checkpoint_replay_ticks_after_import": 6398
+}
