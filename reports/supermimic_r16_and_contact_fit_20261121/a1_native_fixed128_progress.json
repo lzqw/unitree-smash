@@ -1,0 +1,35 @@
+{
+  "as_of": "2026-11-21T14:37:22+08:00",
+  "seed": 882072,
+  "num_envs": 128,
+  "expected_ticks": 800,
+  "matching_baseline_and_candidate_input_sha256": {
+    "initial_states": "5eb3cdf9c4adf48c467d0e804c0f50a22097726cb8e78431ea583813776c0f66",
+    "task_contract": "97149cc98e14ff05f85eb533c3b5b8194593ce946567548df60ebc3f1fd4816f",
+    "policy_execution": "02fceb486df09585b3548dc2b1136a695f9589240b64d05bcf93973bc58cb4b6",
+    "physics": "5449aa74ee01c72fa94677c6b530b4dc9d94a78001be4a6862425c1be2f93377",
+    "actuator_contract": "9e0406f1d7bb6a1a56fb4155f3ff55705aa91019097f4fb083c51ede3009522e"
+  },
+  "progress": {
+    "control_ticks": 200,
+    "first_episodes": 0,
+    "elapsed_s": 274.7169449290086,
+    "first_episode_numerical_audit_count": 0,
+    "active_episode_sweep_unresolved": 0,
+    "active_episode_sweep_misses": 0,
+    "native_episode_return_mean": null,
+    "native_episode_discounted_return_mean": null,
+    "native_return_gamma": 0.99498743710662
+  },
+  "paired_result_available": false,
+  "primary_metric": "qualified_airborne_string_contact",
+  "formal_baseline": {
+    "qualified_airborne_string_contact": 74,
+    "ball_side_complete_except_recovery": 52,
+    "conditional_recovery_count": 35,
+    "complete5": 26,
+    "native_episode_return_mean": -12.129494080700853
+  },
+  "large_training_started": false,
+  "contact_receipt_issued": false
+}
