@@ -1,0 +1,2819 @@
+{
+  "training_only": true,
+  "policy_training_admitted": false,
+  "contact_receipt": false,
+  "case_sha256": "c177f3b36de8b84963cbf327efc6f03fbbb5fd1eca97462eec706352bbf28af8",
+  "source_sha256": "c8e2507a5b5127421ede392d6554f57f6c54a36931d6d8b160ef9c350081df8b",
+  "status_sha256": "28706fb5886b428170965dd3cd59a79c49576d1f35bd6b2b3b752de386934095",
+  "physics_fit_sha256": "8b7a2cda3ba5d36561a18373769efb69171cca2de6bfe7e3aa373da4db4085fd",
+  "counts": {
+    "toi_switch": 15,
+    "manifold_switch": 7,
+    "no_contact": 14,
+    "racket_stable": 9
+  },
+  "independent_stable_with_response": [
+    "A-883211-027",
+    "A-883211-028",
+    "A-883211-029",
+    "A-883211-031",
+    "A-883211-035",
+    "A-883211-036",
+    "B-883212-000",
+    "B-883212-015",
+    "B-883212-028"
+  ],
+  "native_racket": {
+    "baseline": {
+      "all_signed": {
+        "rows": 45,
+        "supported": 31,
+        "absolute_rmse": 0.2673778235912323,
+        "gain_median": 0.4471673369407654,
+        "gain_p10": 0.04463812708854675,
+        "cosine_median": 0.42984917759895325,
+        "cosine_p10": -0.37971365451812744
+      },
+      "stable_signed": {
+        "rows": 9,
+        "supported": 9,
+        "absolute_rmse": 0.08623520284891129,
+        "gain_median": 0.6862624287605286,
+        "gain_p10": 0.056900039315223694,
+        "cosine_median": 0.4626086950302124,
+        "cosine_p10": -0.22274021804332733
+      },
+      "no_contact_signed_rmse": 0.0,
+      "absolute_rmse": 1.2594616413116455
+    },
+    "candidate": {
+      "all_signed": {
+        "rows": 45,
+        "supported": 31,
+        "absolute_rmse": 0.3335561752319336,
+        "gain_median": 0.35674694180488586,
+        "gain_p10": 0.03698934614658356,
+        "cosine_median": 0.4392682909965515,
+        "cosine_p10": -0.2807994782924652
+      },
+      "stable_signed": {
+        "rows": 9,
+        "supported": 9,
+        "absolute_rmse": 0.06514918804168701,
+        "gain_median": 0.1548404097557068,
+        "gain_p10": 0.04436894506216049,
+        "cosine_median": 0.3423977494239807,
+        "cosine_p10": -0.32427725195884705
+      },
+      "no_contact_signed_rmse": 0.0,
+      "absolute_rmse": 0.3743392825126648
+    },
+    "cases": [
+      {
+        "lane": 9,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          2.5073180198669434,
+          -1.2065863609313965,
+          -0.17857587337493896
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.1505204439163208,
+        "baseline": {
+          "delta_mps": [
+            4.2833709716796875,
+            -1.2237269878387451,
+            0.14173388481140137
+          ],
+          "error_norm_mps": 1.804787039756775,
+          "cosine": 0.9809873104095459,
+          "gain": 1.5984896421432495,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.14981250000000002,
+                0.149875
+              ],
+              "predicted_toi_s": 0.14983081817626953
+            },
+            "plus": {
+              "native_interval_s": [
+                0.150125,
+                0.1501875
+              ],
+              "predicted_toi_s": 0.15010203421115875
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            3.6384613513946533,
+            -0.9589579105377197,
+            0.09883987903594971
+          ],
+          "error_norm_mps": 1.1906992197036743,
+          "cosine": 0.9778146147727966,
+          "gain": 1.3499503135681152,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.14981250000000002,
+                0.149875
+              ],
+              "predicted_toi_s": 0.14983081817626953
+            },
+            "plus": {
+              "native_interval_s": [
+                0.150125,
+                0.1501875
+              ],
+              "predicted_toi_s": 0.15010203421115875
+            }
+          }
+        },
+        "case_id": "A-883211-009"
+      },
+      {
+        "lane": 10,
+        "mode": "manifold_switch",
+        "native_delta_mps": [
+          0.06758522987365723,
+          -0.04146528244018555,
+          -0.1543487310409546
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.002412080764770508,
+        "baseline": {
+          "delta_mps": [
+            0.0673985481262207,
+            -0.04803133010864258,
+            -0.0035848617553710938
+          ],
+          "error_norm_mps": 0.15090689063072205,
+          "cosine": 0.49392998218536377,
+          "gain": 0.47739583253860474,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.108625,
+                0.1086875
+              ],
+              "predicted_toi_s": 0.10865968465805054
+            },
+            "plus": {
+              "native_interval_s": [
+                0.108625,
+                0.1086875
+              ],
+              "predicted_toi_s": 0.10866566747426987
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.056029319763183594,
+            -0.04355001449584961,
+            -0.0016775131225585938
+          ],
+          "error_norm_mps": 0.15312212705612183,
+          "cosine": 0.47505834698677063,
+          "gain": 0.4090714752674103,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.108625,
+                0.1086875
+              ],
+              "predicted_toi_s": 0.10865968465805054
+            },
+            "plus": {
+              "native_interval_s": [
+                0.108625,
+                0.1086875
+              ],
+              "predicted_toi_s": 0.10866566747426987
+            }
+          }
+        },
+        "case_id": "A-883211-010"
+      },
+      {
+        "lane": 12,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          0.012106895446777344,
+          -0.029649436473846436,
+          0.2166898250579834
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0034186840057373047,
+        "baseline": {
+          "delta_mps": [
+            -0.0021533966064453125,
+            0.019501805305480957,
+            0.004141569137573242
+          ],
+          "error_norm_mps": 0.21862287819385529,
+          "cosine": 0.06673946976661682,
+          "gain": 0.09154649823904037,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0605,
+                0.0605625
+              ],
+              "predicted_toi_s": 0.060525137931108475
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0605625,
+                0.060625
+              ],
+              "predicted_toi_s": 0.06054734066128731
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.001986980438232422,
+            0.01989513635635376,
+            0.003464221954345703
+          ],
+          "error_norm_mps": 0.21935920417308807,
+          "cosine": 0.030760616064071655,
+          "gain": 0.09263905882835388,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0605,
+                0.0605625
+              ],
+              "predicted_toi_s": 0.060525137931108475
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0605625,
+                0.060625
+              ],
+              "predicted_toi_s": 0.06054734066128731
+            }
+          }
+        },
+        "case_id": "A-883211-012"
+      },
+      {
+        "lane": 19,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.1306246519088745,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "A-883211-019"
+      },
+      {
+        "lane": 20,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.08292710781097412,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "A-883211-020"
+      },
+      {
+        "lane": 22,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.00310516357421875,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "A-883211-022"
+      },
+      {
+        "lane": 23,
+        "mode": "manifold_switch",
+        "native_delta_mps": [
+          0.013375282287597656,
+          -0.15223276615142822,
+          0.3780784606933594
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0033632516860961914,
+        "baseline": {
+          "delta_mps": [
+            0.01181936264038086,
+            -0.011343598365783691,
+            -0.0018379688262939453
+          ],
+          "error_norm_mps": 0.4052020013332367,
+          "cosine": 0.17702679336071014,
+          "gain": 0.04042450338602066,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1388125,
+                0.138875
+              ],
+              "predicted_toi_s": 0.1388804316520691
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1388125,
+                0.138875
+              ],
+              "predicted_toi_s": 0.13885797560214996
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.011084318161010742,
+            -0.0016549527645111084,
+            -0.002837657928466797
+          ],
+          "error_norm_mps": 0.4096046984195709,
+          "cosine": -0.14268085360527039,
+          "gain": 0.02834964171051979,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1388125,
+                0.138875
+              ],
+              "predicted_toi_s": 0.1388804316520691
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1388125,
+                0.138875
+              ],
+              "predicted_toi_s": 0.13885797560214996
+            }
+          }
+        },
+        "case_id": "A-883211-023"
+      },
+      {
+        "lane": 24,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          0.0565495491027832,
+          -0.1803106963634491,
+          0.17690813541412354
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0032023191452026367,
+        "baseline": {
+          "delta_mps": [
+            0.12771272659301758,
+            -0.18448388576507568,
+            0.19098520278930664
+          ],
+          "error_norm_mps": 0.07266207784414291,
+          "cosine": 0.9737889766693115,
+          "gain": 1.138289213180542,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.059312500000000004,
+                0.059375000000000004
+              ],
+              "predicted_toi_s": 0.05933333560824394
+            },
+            "plus": {
+              "native_interval_s": [
+                0.059250000000000004,
+                0.059312500000000004
+              ],
+              "predicted_toi_s": 0.059279296547174454
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.11258220672607422,
+            -0.15203726291656494,
+            0.1562345027923584
+          ],
+          "error_norm_mps": 0.06607908755540848,
+          "cosine": 0.9670596718788147,
+          "gain": 0.9478463530540466,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.059312500000000004,
+                0.059375000000000004
+              ],
+              "predicted_toi_s": 0.05933333560824394
+            },
+            "plus": {
+              "native_interval_s": [
+                0.059250000000000004,
+                0.059312500000000004
+              ],
+              "predicted_toi_s": 0.059279296547174454
+            }
+          }
+        },
+        "case_id": "A-883211-024"
+      },
+      {
+        "lane": 25,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          0.08002853393554688,
+          0.001004338264465332,
+          -0.15722060203552246
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0849912166595459,
+        "baseline": {
+          "delta_mps": [
+            -0.05574941635131836,
+            0.048180222511291504,
+            0.028180837631225586
+          ],
+          "error_norm_mps": 0.23459520936012268,
+          "cosine": -0.6354379653930664,
+          "gain": 0.4471673369407654,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1463125,
+                0.146375
+              ],
+              "predicted_toi_s": 0.14643356204032898
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1465625,
+                0.146625
+              ],
+              "predicted_toi_s": 0.14668209850788116
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.04716777801513672,
+            -0.03905004262924194,
+            0.014539003372192383
+          ],
+          "error_norm_mps": 0.21745026111602783,
+          "cosine": -0.5493672490119934,
+          "gain": 0.35674694180488586,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1463125,
+                0.146375
+              ],
+              "predicted_toi_s": 0.14643356204032898
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1465625,
+                0.146625
+              ],
+              "predicted_toi_s": 0.14668209850788116
+            }
+          }
+        },
+        "case_id": "A-883211-025"
+      },
+      {
+        "lane": 26,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          -0.041769981384277344,
+          0.1786799430847168,
+          0.07200050354003906
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0035507678985595703,
+        "baseline": {
+          "delta_mps": [
+            0.21876025199890137,
+            0.008182525634765625,
+            -0.20559215545654297
+          ],
+          "error_norm_mps": 0.4171367585659027,
+          "cosine": -0.37971365451812744,
+          "gain": 1.5235497951507568,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0651875,
+                0.06525
+              ],
+              "predicted_toi_s": 0.06530433893203735
+            },
+            "plus": {
+              "native_interval_s": [
+                0.06525,
+                0.0653125
+              ],
+              "predicted_toi_s": 0.06536532938480377
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.00351715087890625,
+            0.006125926971435547,
+            0.010262727737426758
+          ],
+          "error_norm_mps": 0.18877862393856049,
+          "cosine": 0.6867667436599731,
+          "gain": 0.06320477277040482,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0651875,
+                0.06525
+              ],
+              "predicted_toi_s": 0.06530433893203735
+            },
+            "plus": {
+              "native_interval_s": [
+                0.06525,
+                0.0653125
+              ],
+              "predicted_toi_s": 0.06536532938480377
+            }
+          }
+        },
+        "case_id": "A-883211-026"
+      },
+      {
+        "lane": 27,
+        "mode": "racket_stable",
+        "native_delta_mps": [
+          -0.0002627372741699219,
+          -0.0008356571197509766,
+          0.014264583587646484
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0029387474060058594,
+        "baseline": {
+          "delta_mps": [
+            -0.0022215843200683594,
+            3.826618194580078e-05,
+            -0.00017404556274414062
+          ],
+          "error_norm_mps": 0.014597083441913128,
+          "cosine": -0.06062391772866249,
+          "gain": 0.1559477150440216,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.111875,
+                0.11193750000000001
+              ],
+              "predicted_toi_s": 0.11188437044620514
+            },
+            "plus": {
+              "native_interval_s": [
+                0.111875,
+                0.11193750000000001
+              ],
+              "predicted_toi_s": 0.11188534647226334
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.002143383026123047,
+            -0.0005463361740112305,
+            -6.580352783203125e-05
+          ],
+          "error_norm_mps": 0.014456159435212612,
+          "cosine": 0.0025623757392168045,
+          "gain": 0.1548404097557068,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.111875,
+                0.11193750000000001
+              ],
+              "predicted_toi_s": 0.11188437044620514
+            },
+            "plus": {
+              "native_interval_s": [
+                0.111875,
+                0.11193750000000001
+              ],
+              "predicted_toi_s": 0.11188534647226334
+            }
+          }
+        },
+        "case_id": "A-883211-027"
+      },
+      {
+        "lane": 28,
+        "mode": "racket_stable",
+        "native_delta_mps": [
+          0.05051851272583008,
+          -0.014655590057373047,
+          -0.022281885147094727
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0035753250122070312,
+        "baseline": {
+          "delta_mps": [
+            0.09050631523132324,
+            0.028786182403564453,
+            -0.021412968635559082
+          ],
+          "error_norm_mps": 0.0590505450963974,
+          "cosine": 0.8320315480232239,
+          "gain": 1.7042628526687622,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0764375,
+                0.0765
+              ],
+              "predicted_toi_s": 0.07654187083244324
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0764375,
+                0.0765
+              ],
+              "predicted_toi_s": 0.07655035704374313
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.07518661022186279,
+            0.026034832000732422,
+            -0.017709016799926758
+          ],
+          "error_norm_mps": 0.04780310392379761,
+          "cosine": 0.8184929490089417,
+          "gain": 1.4269050359725952,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0764375,
+                0.0765
+              ],
+              "predicted_toi_s": 0.07654187083244324
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0764375,
+                0.0765
+              ],
+              "predicted_toi_s": 0.07655035704374313
+            }
+          }
+        },
+        "case_id": "A-883211-028"
+      },
+      {
+        "lane": 29,
+        "mode": "racket_stable",
+        "native_delta_mps": [
+          -0.0007271766662597656,
+          -0.004583835601806641,
+          0.009272575378417969
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0029447078704833984,
+        "baseline": {
+          "delta_mps": [
+            0.0011401176452636719,
+            -0.002619028091430664,
+            0.0003352165222167969
+          ],
+          "error_norm_mps": 0.00933935958892107,
+          "cosine": 0.4789867401123047,
+          "gain": 0.27736184000968933,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.14254586398601532
+            },
+            "plus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.14254167675971985
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.00079345703125,
+            -0.0008367300033569336,
+            0.0003197193145751953
+          ],
+          "error_norm_mps": 0.009823785163462162,
+          "cosine": 0.501533567905426,
+          "gain": 0.1154015064239502,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.14254586398601532
+            },
+            "plus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.14254167675971985
+            }
+          }
+        },
+        "case_id": "A-883211-029"
+      },
+      {
+        "lane": 31,
+        "mode": "racket_stable",
+        "native_delta_mps": [
+          0.028073787689208984,
+          -0.14923691749572754,
+          0.0729832649230957
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0035338401794433594,
+        "baseline": {
+          "delta_mps": [
+            -0.018320083618164062,
+            0.017052650451660156,
+            -0.22437579929828644
+          ],
+          "error_norm_mps": 0.343841552734375,
+          "cosine": -0.5109351277351379,
+          "gain": 1.3400050401687622,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0583125,
+                0.058375
+              ],
+              "predicted_toi_s": 0.05837288126349449
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0583125,
+                0.058375
+              ],
+              "predicted_toi_s": 0.05839202553033829
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.006903409957885742,
+            0.021526575088500977,
+            0.0006840229034423828
+          ],
+          "error_norm_mps": 0.1887081116437912,
+          "cosine": -0.8808333873748779,
+          "gain": 0.1342381089925766,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0583125,
+                0.058375
+              ],
+              "predicted_toi_s": 0.05837288126349449
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0583125,
+                0.058375
+              ],
+              "predicted_toi_s": 0.05839202553033829
+            }
+          }
+        },
+        "case_id": "A-883211-031"
+      },
+      {
+        "lane": 33,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.003041505813598633,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "A-883211-033"
+      },
+      {
+        "lane": 35,
+        "mode": "racket_stable",
+        "native_delta_mps": [
+          -0.03836631774902344,
+          -0.2135028839111328,
+          -0.026718616485595703
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.002990245819091797,
+        "baseline": {
+          "delta_mps": [
+            -0.05215799808502197,
+            -0.2599012851715088,
+            -0.009894847869873047
+          ],
+          "error_norm_mps": 0.051245108246803284,
+          "cosine": 0.9961655735969543,
+          "gain": 1.2136962413787842,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0704375,
+                0.07050000000000001
+              ],
+              "predicted_toi_s": 0.07043097913265228
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0704375,
+                0.07050000000000001
+              ],
+              "predicted_toi_s": 0.07044467329978943
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.04272580146789551,
+            -0.21725618839263916,
+            -0.008243083953857422
+          ],
+          "error_norm_mps": 0.019350392743945122,
+          "cosine": 0.9962274432182312,
+          "gain": 1.013767123222351,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0704375,
+                0.07050000000000001
+              ],
+              "predicted_toi_s": 0.07043097913265228
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0704375,
+                0.07050000000000001
+              ],
+              "predicted_toi_s": 0.07044467329978943
+            }
+          }
+        },
+        "case_id": "A-883211-035"
+      },
+      {
+        "lane": 36,
+        "mode": "racket_stable",
+        "native_delta_mps": [
+          0.0012483596801757812,
+          -0.0018570423126220703,
+          0.018826723098754883
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0026091337203979492,
+        "baseline": {
+          "delta_mps": [
+            0.011522293090820312,
+            -0.0034581422805786133,
+            0.004956245422363281
+          ],
+          "error_norm_mps": 0.01733514852821827,
+          "cosine": 0.4626086950302124,
+          "gain": 0.6862624287605286,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06117279827594757
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06118238344788551
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.010497093200683594,
+            0.0,
+            0.0030755996704101562
+          ],
+          "error_norm_mps": 0.018359890207648277,
+          "cosine": 0.3423977494239807,
+          "gain": 0.5769423842430115,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06117279827594757
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06118238344788551
+            }
+          }
+        },
+        "case_id": "A-883211-036"
+      },
+      {
+        "lane": 42,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          -4.968242168426514,
+          1.331786870956421,
+          -1.6591923236846924
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0070950984954833984,
+        "baseline": {
+          "delta_mps": [
+            -3.7070136070251465,
+            2.1474671363830566,
+            -1.5881013870239258
+          ],
+          "error_norm_mps": 1.5036907196044922,
+          "cosine": 0.9683564901351929,
+          "gain": 0.8453839421272278,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.07993750000000001,
+                0.08
+              ],
+              "predicted_toi_s": 0.0798991397023201
+            },
+            "plus": {
+              "native_interval_s": [
+                0.079875,
+                0.07993750000000001
+              ],
+              "predicted_toi_s": 0.07990603148937225
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -3.1611266136169434,
+            1.3154033422470093,
+            -1.1112065315246582
+          ],
+          "error_norm_mps": 1.8884447813034058,
+          "cosine": 0.9920732378959656,
+          "gain": 0.6660388708114624,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.07993750000000001,
+                0.08
+              ],
+              "predicted_toi_s": 0.0798991397023201
+            },
+            "plus": {
+              "native_interval_s": [
+                0.079875,
+                0.07993750000000001
+              ],
+              "predicted_toi_s": 0.07990603148937225
+            }
+          }
+        },
+        "case_id": "A-883211-042"
+      },
+      {
+        "lane": 43,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          0.020963191986083984,
+          0.010545313358306885,
+          -0.0894932746887207
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0036406517028808594,
+        "baseline": {
+          "delta_mps": [
+            -0.0351412296295166,
+            0.0007064342498779297,
+            0.002439737319946289
+          ],
+          "error_norm_mps": 0.10814891755580902,
+          "cosine": -0.2906900644302368,
+          "gain": 0.38081932067871094,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1496875,
+                0.14975
+              ],
+              "predicted_toi_s": 0.14967811107635498
+            },
+            "plus": {
+              "native_interval_s": [
+                0.14975,
+                0.14981250000000002
+              ],
+              "predicted_toi_s": 0.1497463434934616
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.035140275955200195,
+            0.00010061264038085938,
+            0.0019979476928710938
+          ],
+          "error_norm_mps": 0.10783012211322784,
+          "cosine": -0.2807994782924652,
+          "gain": 0.3804331421852112,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1496875,
+                0.14975
+              ],
+              "predicted_toi_s": 0.14967811107635498
+            },
+            "plus": {
+              "native_interval_s": [
+                0.14975,
+                0.14981250000000002
+              ],
+              "predicted_toi_s": 0.1497463434934616
+            }
+          }
+        },
+        "case_id": "A-883211-043"
+      },
+      {
+        "lane": 45,
+        "mode": "manifold_switch",
+        "native_delta_mps": [
+          -0.009341716766357422,
+          -0.003711700439453125,
+          -0.10442328453063965
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.005407571792602539,
+        "baseline": {
+          "delta_mps": [
+            -0.01100015640258789,
+            0.0035314559936523438,
+            -0.004018068313598633
+          ],
+          "error_norm_mps": 0.10067979246377945,
+          "cosine": 0.3968457281589508,
+          "gain": 0.11659872531890869,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1080625,
+                0.108125
+              ],
+              "predicted_toi_s": 0.10816721618175507
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1080625,
+                0.108125
+              ],
+              "predicted_toi_s": 0.10815323889255524
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.009913921356201172,
+            0.002343893051147461,
+            -0.003212451934814453
+          ],
+          "error_norm_mps": 0.1013934463262558,
+          "cosine": 0.37424248456954956,
+          "gain": 0.10182200372219086,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1080625,
+                0.108125
+              ],
+              "predicted_toi_s": 0.10816721618175507
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1080625,
+                0.108125
+              ],
+              "predicted_toi_s": 0.10815323889255524
+            }
+          }
+        },
+        "case_id": "A-883211-045"
+      },
+      {
+        "lane": 47,
+        "mode": "manifold_switch",
+        "native_delta_mps": [
+          0.006707668304443359,
+          -0.2292780578136444,
+          0.007352352142333984
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.00398862361907959,
+        "baseline": {
+          "delta_mps": [
+            0.041674137115478516,
+            0.0283241868019104,
+            -0.05096721649169922
+          ],
+          "error_norm_mps": 0.26642587780952454,
+          "cosine": -0.4006161689758301,
+          "gain": 0.31229767203330994,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0566875,
+                0.05675
+              ],
+              "predicted_toi_s": 0.05688708275556564
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0566875,
+                0.05675
+              ],
+              "predicted_toi_s": 0.05690649151802063
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            1.5721893310546875,
+            0.030406296253204346,
+            2.2581448554992676
+          ],
+          "error_norm_mps": 2.7539491653442383,
+          "cosine": 0.0319506861269474,
+          "gain": 11.990348815917969,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0566875,
+                0.05675
+              ],
+              "predicted_toi_s": 0.05688708275556564
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0566875,
+                0.05675
+              ],
+              "predicted_toi_s": 0.05690649151802063
+            }
+          }
+        },
+        "case_id": "A-883211-047"
+      },
+      {
+        "lane": 52,
+        "mode": "manifold_switch",
+        "native_delta_mps": [
+          -0.006936073303222656,
+          0.009398698806762695,
+          0.09364950656890869
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.003264307975769043,
+        "baseline": {
+          "delta_mps": [
+            -0.0010423660278320312,
+            -0.003851652145385742,
+            -0.0007696151733398438
+          ],
+          "error_norm_mps": 0.095526322722435,
+          "cosine": -0.26346850395202637,
+          "gain": 0.043059512972831726,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.15025,
+                0.15031250000000002
+              ],
+              "predicted_toi_s": 0.1502339243888855
+            },
+            "plus": {
+              "native_interval_s": [
+                0.15025,
+                0.15031250000000002
+              ],
+              "predicted_toi_s": 0.15022432804107666
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.0015287399291992188,
+            -0.0014678239822387695,
+            -0.0007622241973876953
+          ],
+          "error_norm_mps": 0.09518873691558838,
+          "cosine": -0.3508468270301819,
+          "gain": 0.023864639922976494,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.15025,
+                0.15031250000000002
+              ],
+              "predicted_toi_s": 0.1502339243888855
+            },
+            "plus": {
+              "native_interval_s": [
+                0.15025,
+                0.15031250000000002
+              ],
+              "predicted_toi_s": 0.15022432804107666
+            }
+          }
+        },
+        "case_id": "A-883211-052"
+      },
+      {
+        "lane": 54,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          0.10668563842773438,
+          0.14663314819335938,
+          0.2077322006225586
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0028982162475585938,
+        "baseline": {
+          "delta_mps": [
+            0.05232810974121094,
+            0.1619865894317627,
+            -0.015023469924926758
+          ],
+          "error_norm_mps": 0.22980546951293945,
+          "cosine": 0.5563048720359802,
+          "gain": 0.6197394728660583,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.111,
+                0.11106250000000001
+              ],
+              "predicted_toi_s": 0.11096800118684769
+            },
+            "plus": {
+              "native_interval_s": [
+                0.11093750000000001,
+                0.111
+              ],
+              "predicted_toi_s": 0.1109355017542839
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.041625022888183594,
+            0.13444876670837402,
+            -0.012289285659790039
+          ],
+          "error_norm_mps": 0.2297624796628952,
+          "cosine": 0.5545163750648499,
+          "gain": 0.512357234954834,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.111,
+                0.11106250000000001
+              ],
+              "predicted_toi_s": 0.11096800118684769
+            },
+            "plus": {
+              "native_interval_s": [
+                0.11093750000000001,
+                0.111
+              ],
+              "predicted_toi_s": 0.1109355017542839
+            }
+          }
+        },
+        "case_id": "A-883211-054"
+      },
+      {
+        "lane": 55,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          -0.029205799102783203,
+          -0.053612470626831055,
+          0.09021854400634766
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0027358531951904297,
+        "baseline": {
+          "delta_mps": [
+            0.006144046783447266,
+            0.010922908782958984,
+            0.007616996765136719
+          ],
+          "error_norm_mps": 0.11062297224998474,
+          "cosine": -0.04873096942901611,
+          "gain": 0.13462744653224945,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.080875,
+                0.0809375
+              ],
+              "predicted_toi_s": 0.08090195059776306
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0809375,
+                0.081
+              ],
+              "predicted_toi_s": 0.08095152676105499
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.00696563720703125,
+            0.008104324340820312,
+            0.005819559097290039
+          ],
+          "error_norm_mps": 0.11063690483570099,
+          "cosine": -0.08517089486122131,
+          "gain": 0.11170317232608795,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.080875,
+                0.0809375
+              ],
+              "predicted_toi_s": 0.08090195059776306
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0809375,
+                0.081
+              ],
+              "predicted_toi_s": 0.08095152676105499
+            }
+          }
+        },
+        "case_id": "A-883211-055"
+      },
+      {
+        "lane": 56,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0033113956451416016,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "A-883211-056"
+      },
+      {
+        "lane": 58,
+        "mode": "manifold_switch",
+        "native_delta_mps": [
+          0.00128936767578125,
+          0.024578094482421875,
+          -0.016742706298828125
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0025364160537719727,
+        "baseline": {
+          "delta_mps": [
+            -0.004248142242431641,
+            0.009841203689575195,
+            -0.0003552436828613281
+          ],
+          "error_norm_mps": 0.022724192589521408,
+          "cosine": 0.7591311931610107,
+          "gain": 0.3602951765060425,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1364375,
+                0.1365
+              ],
+              "predicted_toi_s": 0.13652457296848297
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1364375,
+                0.1365
+              ],
+              "predicted_toi_s": 0.1365264356136322
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.003211498260498047,
+            0.007947087287902832,
+            -0.0004291534423828125
+          ],
+          "error_norm_mps": 0.02372720278799534,
+          "cosine": 0.7765012979507446,
+          "gain": 0.28831422328948975,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1364375,
+                0.1365
+              ],
+              "predicted_toi_s": 0.13652457296848297
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1364375,
+                0.1365
+              ],
+              "predicted_toi_s": 0.1365264356136322
+            }
+          }
+        },
+        "case_id": "A-883211-058"
+      },
+      {
+        "lane": 63,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          0.016046524047851562,
+          0.000148773193359375,
+          -0.3631923198699951
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.004079222679138184,
+        "baseline": {
+          "delta_mps": [
+            0.018904685974121094,
+            0.013034701347351074,
+            0.0009856224060058594
+          ],
+          "error_norm_mps": 0.36441704630851746,
+          "cosine": -0.006304264068603516,
+          "gain": 0.06322146207094193,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1598125,
+                0.15987500000000002
+              ],
+              "predicted_toi_s": 0.1597815304994583
+            },
+            "plus": {
+              "native_interval_s": [
+                0.15975,
+                0.1598125
+              ],
+              "predicted_toi_s": 0.15977926552295685
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.020660400390625,
+            0.0032969117164611816,
+            2.3126602172851562e-05
+          ],
+          "error_norm_mps": 0.36325839161872864,
+          "cosine": 0.04254750907421112,
+          "gain": 0.05754918232560158,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1598125,
+                0.15987500000000002
+              ],
+              "predicted_toi_s": 0.1597815304994583
+            },
+            "plus": {
+              "native_interval_s": [
+                0.15975,
+                0.1598125
+              ],
+              "predicted_toi_s": 0.15977926552295685
+            }
+          }
+        },
+        "case_id": "A-883211-063"
+      },
+      {
+        "lane": 64,
+        "mode": "racket_stable",
+        "native_delta_mps": [
+          0.007740974426269531,
+          -0.020646393299102783,
+          -0.21731352806091309
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.002411365509033203,
+        "baseline": {
+          "delta_mps": [
+            0.006133556365966797,
+            -0.011105477809906006,
+            0.0032575130462646484
+          ],
+          "error_norm_mps": 0.22078314423561096,
+          "cosine": -0.15069149434566498,
+          "gain": 0.05996551737189293,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.082125,
+                0.0821875
+              ],
+              "predicted_toi_s": 0.08211097866296768
+            },
+            "plus": {
+              "native_interval_s": [
+                0.082125,
+                0.0821875
+              ],
+              "predicted_toi_s": 0.08212032914161682
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.005574226379394531,
+            -0.007925719022750854,
+            0.002830028533935547
+          ],
+          "error_norm_mps": 0.22052142024040222,
+          "cosine": -0.18513822555541992,
+          "gain": 0.046213842928409576,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.082125,
+                0.0821875
+              ],
+              "predicted_toi_s": 0.08211097866296768
+            },
+            "plus": {
+              "native_interval_s": [
+                0.082125,
+                0.0821875
+              ],
+              "predicted_toi_s": 0.08212032914161682
+            }
+          }
+        },
+        "case_id": "B-883212-000"
+      },
+      {
+        "lane": 66,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0025212764739990234,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "B-883212-002"
+      },
+      {
+        "lane": 67,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.003142833709716797,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "B-883212-003"
+      },
+      {
+        "lane": 68,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.002986907958984375,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "B-883212-004"
+      },
+      {
+        "lane": 69,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.00432741641998291,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "B-883212-005"
+      },
+      {
+        "lane": 71,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          -0.2352299690246582,
+          0.30208414793014526,
+          -0.543481707572937
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.07737672328948975,
+        "baseline": {
+          "delta_mps": [
+            -0.735731840133667,
+            0.04268348217010498,
+            -0.4006388187408447
+          ],
+          "error_norm_mps": 0.5815452933311462,
+          "cosine": 0.7239249348640442,
+          "gain": 1.2617751359939575,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0994375,
+                0.0995
+              ],
+              "predicted_toi_s": 0.09943690896034241
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0999375,
+                0.1
+              ],
+              "predicted_toi_s": 0.09990502893924713
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.6887884140014648,
+            0.0307844877243042,
+            -0.31967103481292725
+          ],
+          "error_norm_mps": 0.5739424824714661,
+          "cosine": 0.6829675436019897,
+          "gain": 1.1431663036346436,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0994375,
+                0.0995
+              ],
+              "predicted_toi_s": 0.09943690896034241
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0999375,
+                0.1
+              ],
+              "predicted_toi_s": 0.09990502893924713
+            }
+          }
+        },
+        "case_id": "B-883212-007"
+      },
+      {
+        "lane": 72,
+        "mode": "manifold_switch",
+        "native_delta_mps": [
+          0.06749773025512695,
+          0.21771936118602753,
+          -0.09131479263305664
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0033881664276123047,
+        "baseline": {
+          "delta_mps": [
+            0.10155916213989258,
+            0.024375205859541893,
+            -0.15427780151367188
+          ],
+          "error_norm_mps": 0.20617100596427917,
+          "cosine": 0.57379150390625,
+          "gain": 0.7587229013442993,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1124375,
+                0.1125
+              ],
+              "predicted_toi_s": 0.1124693751335144
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1124375,
+                0.1125
+              ],
+              "predicted_toi_s": 0.11247561126947403
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.08329391479492188,
+            0.02227989211678505,
+            -0.12633347511291504
+          ],
+          "error_norm_mps": 0.19917935132980347,
+          "cosine": 0.5860036611557007,
+          "gain": 0.6228904128074646,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1124375,
+                0.1125
+              ],
+              "predicted_toi_s": 0.1124693751335144
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1124375,
+                0.1125
+              ],
+              "predicted_toi_s": 0.11247561126947403
+            }
+          }
+        },
+        "case_id": "B-883212-008"
+      },
+      {
+        "lane": 75,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.009071826934814453,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "B-883212-011"
+      },
+      {
+        "lane": 78,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          0.09406065940856934,
+          -0.18700098991394043,
+          0.49973440170288086
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.002483367919921875,
+        "baseline": {
+          "delta_mps": [
+            0.004137516021728516,
+            -0.00028896331787109375,
+            0.0011146068572998047
+          ],
+          "error_norm_mps": 0.5399715304374695,
+          "cosine": 0.42984917759895325,
+          "gain": 0.007926765829324722,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1320625,
+                0.132125
+              ],
+              "predicted_toi_s": 0.13211411237716675
+            },
+            "plus": {
+              "native_interval_s": [
+                0.132125,
+                0.1321875
+              ],
+              "predicted_toi_s": 0.13212479650974274
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.004069805145263672,
+            -0.0013573169708251953,
+            0.000804901123046875
+          ],
+          "error_norm_mps": 0.539900541305542,
+          "cosine": 0.4392682909965515,
+          "gain": 0.008056478574872017,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.1320625,
+                0.132125
+              ],
+              "predicted_toi_s": 0.13211411237716675
+            },
+            "plus": {
+              "native_interval_s": [
+                0.132125,
+                0.1321875
+              ],
+              "predicted_toi_s": 0.13212479650974274
+            }
+          }
+        },
+        "case_id": "B-883212-014"
+      },
+      {
+        "lane": 79,
+        "mode": "racket_stable",
+        "native_delta_mps": [
+          0.024339139461517334,
+          -0.06275475025177002,
+          0.013004779815673828
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0029212236404418945,
+        "baseline": {
+          "delta_mps": [
+            0.013019859790802002,
+            -0.07664084434509277,
+            0.020294189453125
+          ],
+          "error_norm_mps": 0.019341282546520233,
+          "cosine": 0.9786597490310669,
+          "gain": 1.1719809770584106,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10615569353103638
+            },
+            "plus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10616300255060196
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.009326040744781494,
+            -0.06184309720993042,
+            0.016736984252929688
+          ],
+          "error_norm_mps": 0.015496890060603619,
+          "cosine": 0.9745822548866272,
+          "gain": 0.9444078207015991,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10615569353103638
+            },
+            "plus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10616300255060196
+            }
+          }
+        },
+        "case_id": "B-883212-015"
+      },
+      {
+        "lane": 80,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          -1.4067327976226807,
+          -3.0529403686523438,
+          4.606677055358887
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.15037178993225098,
+        "baseline": {
+          "delta_mps": [
+            -0.7061238288879395,
+            -3.8974380493164062,
+            5.674742698669434
+          ],
+          "error_norm_mps": 1.5312718152999878,
+          "cosine": 0.9890774488449097,
+          "gain": 1.2135223150253296,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.128875,
+                0.1289375
+              ],
+              "predicted_toi_s": 0.12891001999378204
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1304375,
+                0.1305
+              ],
+              "predicted_toi_s": 0.13045865297317505
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.4210019111633301,
+            -3.1225719451904297,
+            4.615757942199707
+          ],
+          "error_norm_mps": 0.9882289171218872,
+          "cosine": 0.984882652759552,
+          "gain": 0.9799988865852356,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.128875,
+                0.1289375
+              ],
+              "predicted_toi_s": 0.12891001999378204
+            },
+            "plus": {
+              "native_interval_s": [
+                0.1304375,
+                0.1305
+              ],
+              "predicted_toi_s": 0.13045865297317505
+            }
+          }
+        },
+        "case_id": "B-883212-016"
+      },
+      {
+        "lane": 82,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          0.04526567459106445,
+          -0.0981706976890564,
+          0.20923751592636108
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.002432703971862793,
+        "baseline": {
+          "delta_mps": [
+            0.08564043045043945,
+            -0.0587577223777771,
+            0.23948383331298828
+          ],
+          "error_norm_mps": 0.06401830166578293,
+          "cosine": 0.9719650745391846,
+          "gain": 1.108363389968872,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0390625,
+                0.039125
+              ],
+              "predicted_toi_s": 0.039102181792259216
+            },
+            "plus": {
+              "native_interval_s": [
+                0.039,
+                0.0390625
+              ],
+              "predicted_toi_s": 0.03905554115772247
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0812993049621582,
+            -0.04020571708679199,
+            0.19275784492492676
+          ],
+          "error_norm_mps": 0.07021354138851166,
+          "cosine": 0.9559071660041809,
+          "gain": 0.9045314192771912,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0390625,
+                0.039125
+              ],
+              "predicted_toi_s": 0.039102181792259216
+            },
+            "plus": {
+              "native_interval_s": [
+                0.039,
+                0.0390625
+              ],
+              "predicted_toi_s": 0.03905554115772247
+            }
+          }
+        },
+        "case_id": "B-883212-018"
+      },
+      {
+        "lane": 83,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.002594470977783203,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "B-883212-019"
+      },
+      {
+        "lane": 88,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.012599468231201172,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "B-883212-024"
+      },
+      {
+        "lane": 91,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0030303001403808594,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "B-883212-027"
+      },
+      {
+        "lane": 92,
+        "mode": "racket_stable",
+        "native_delta_mps": [
+          0.006622314453125,
+          0.027268648147583008,
+          -0.16146457195281982
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0037897825241088867,
+        "baseline": {
+          "delta_mps": [
+            -0.0024280548095703125,
+            -0.006661653518676758,
+            -0.0018010139465332031
+          ],
+          "error_norm_mps": 0.163479745388031,
+          "cosine": 0.0776263177394867,
+          "gain": 0.04463812708854675,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.15837500000000002,
+                0.1584375
+              ],
+              "predicted_toi_s": 0.15842017531394958
+            },
+            "plus": {
+              "native_interval_s": [
+                0.15837500000000002,
+                0.1584375
+              ],
+              "predicted_toi_s": 0.1584041863679886
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.002922534942626953,
+            -0.0051653385162353516,
+            -0.0012352466583251953
+          ],
+          "error_norm_mps": 0.16375745832920074,
+          "cosine": 0.039500802755355835,
+          "gain": 0.03698934614658356,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.15837500000000002,
+                0.1584375
+              ],
+              "predicted_toi_s": 0.15842017531394958
+            },
+            "plus": {
+              "native_interval_s": [
+                0.15837500000000002,
+                0.1584375
+              ],
+              "predicted_toi_s": 0.1584041863679886
+            }
+          }
+        },
+        "case_id": "B-883212-028"
+      },
+      {
+        "lane": 93,
+        "mode": "no_contact",
+        "native_delta_mps": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0037592649459838867,
+        "baseline": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "error_norm_mps": 0.0,
+          "cosine": null,
+          "gain": null,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            },
+            "plus": {
+              "native_interval_s": null,
+              "predicted_toi_s": null
+            }
+          }
+        },
+        "case_id": "B-883212-029"
+      },
+      {
+        "lane": 95,
+        "mode": "toi_switch",
+        "native_delta_mps": [
+          -0.022593975067138672,
+          0.17985117435455322,
+          -0.3225436210632324
+        ],
+        "repeat_noise_mps": 0.0,
+        "executed_target_change_rad": 0.0035295486450195312,
+        "baseline": {
+          "delta_mps": [
+            -0.006145000457763672,
+            0.018991947174072266,
+            0.0172426700592041
+          ],
+          "error_norm_mps": 0.37629905343055725,
+          "cosine": -0.20564454793930054,
+          "gain": 0.07129240781068802,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.110625,
+                0.11068750000000001
+              ],
+              "predicted_toi_s": 0.11062484979629517
+            },
+            "plus": {
+              "native_interval_s": [
+                0.11068750000000001,
+                0.11075
+              ],
+              "predicted_toi_s": 0.11069907993078232
+            }
+          }
+        },
+        "candidate": {
+          "delta_mps": [
+            -0.006228923797607422,
+            0.018875598907470703,
+            0.014812946319580078
+          ],
+          "error_norm_mps": 0.37415292859077454,
+          "cosine": -0.13544690608978271,
+          "gain": 0.06700032204389572,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.110625,
+                0.11068750000000001
+              ],
+              "predicted_toi_s": 0.11062484979629517
+            },
+            "plus": {
+              "native_interval_s": [
+                0.11068750000000001,
+                0.11075
+              ],
+              "predicted_toi_s": 0.11069907993078232
+            }
+          }
+        },
+        "case_id": "B-883212-031"
+      }
+    ]
+  },
+  "filtered_momentum_balance": {
+    "nominal_a": {
+      "isolated_loaded_lane_ticks": 31,
+      "normal_only_rmse_mps": 0.6803174681436234,
+      "normal_and_friction_rmse_mps": 1.1006699670146665e-05,
+      "residual_norm_p95_mps": 3.313072270183486e-05,
+      "measured_impact_norm_median_mps": 12.47125948607984
+    },
+    "nominal_b": {
+      "isolated_loaded_lane_ticks": 31,
+      "normal_only_rmse_mps": 0.6803174681436234,
+      "normal_and_friction_rmse_mps": 1.1006699670146665e-05,
+      "residual_norm_p95_mps": 3.313072270183486e-05,
+      "measured_impact_norm_median_mps": 12.47125948607984
+    },
+    "minus": {
+      "isolated_loaded_lane_ticks": 31,
+      "normal_only_rmse_mps": 0.6863203890285581,
+      "normal_and_friction_rmse_mps": 9.501561784909312e-06,
+      "residual_norm_p95_mps": 2.724410131504255e-05,
+      "measured_impact_norm_median_mps": 12.469857381047655
+    },
+    "plus": {
+      "isolated_loaded_lane_ticks": 31,
+      "normal_only_rmse_mps": 0.7013699186191099,
+      "normal_and_friction_rmse_mps": 1.088015591195723e-05,
+      "residual_norm_p95_mps": 3.299766958020173e-05,
+      "measured_impact_norm_median_mps": 12.458193487001077
+    }
+  },
+  "unchanged_execution_lanes": [],
+  "actor_updates": 0,
+  "v13_updates": 0
+}
