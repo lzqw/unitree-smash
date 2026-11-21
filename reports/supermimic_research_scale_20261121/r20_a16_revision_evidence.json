@@ -1,0 +1,965 @@
+{
+  "evaluated_revision": "pre-fix R20+A16",
+  "implementation": "5ec2fd4",
+  "same_initial_states": true,
+  "seed": 882072,
+  "envs": 128,
+  "ticks": 800,
+  "native_progress": {
+    "control_ticks": 800,
+    "first_episodes": 128,
+    "elapsed_s": 1092.9812571919756,
+    "first_episode_numerical_audit_count": 0,
+    "active_episode_sweep_unresolved": 0,
+    "active_episode_sweep_misses": 0,
+    "native_episode_return_mean": -28.093464980442278,
+    "native_episode_discounted_return_mean": -2.7919064376057143,
+    "native_return_gamma": 0.99498743710662
+  },
+  "sources": [
+    {
+      "actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+      "seed": 882072,
+      "path": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/post_r16_toi_one_start_fix_fixed128",
+      "metrics_sha256": "2953935f7aaed2d5389a2a1e79bee0fdbf08ec404c69e2072c9b1c6aad2850de",
+      "episodes_sha256": "ca896da027ace7f940261c7b04b41ca8f10a4269acbb15be44a901aa727173e3"
+    },
+    {
+      "actor_sha256": "2581fbe0b874218de76bb33c6b9b303890b38dde1b694af5fde9481447efd7bb",
+      "seed": 882072,
+      "path": "/home/autodrive/LZQW/experiments/supermimic_research_scale_20261121/main_02/pre_revision_fixed128",
+      "metrics_sha256": "aeac7d2e944ad0247b7f5bfaf8b98a363737163bd86d6fd329e22ce6a484e971",
+      "episodes_sha256": "121e5a6519bc0a7ed565c098bd4f27b29400af7abe413737f828990aaf73d1fc"
+    }
+  ],
+  "scores": {
+    "baseline": {
+      "qualified_airborne_string_contact": 74,
+      "ball_side_complete_except_recovery": 51,
+      "conditional_recovery_count": 35,
+      "conditional_recovery_denominator": 74,
+      "complete5": 22,
+      "body_ground_seen": 60,
+      "native_episode_return_mean": -12.088589213086447
+    },
+    "pre_revision": {
+      "qualified_airborne_string_contact": 55,
+      "ball_side_complete_except_recovery": 26,
+      "conditional_recovery_count": 18,
+      "conditional_recovery_denominator": 55,
+      "complete5": 8,
+      "body_ground_seen": 61,
+      "native_episode_return_mean": -28.093464980442278
+    }
+  },
+  "case_flips": {
+    "new_body_ground": [
+      "A-720401-002",
+      "A-720401-005",
+      "A-720401-011",
+      "A-720401-018",
+      "A-720401-024",
+      "A-720401-026",
+      "A-720401-028",
+      "A-720401-034",
+      "A-720401-035",
+      "A-720401-037",
+      "A-720401-051",
+      "A-720401-063",
+      "B-720402-006",
+      "B-720402-008",
+      "B-720402-011",
+      "B-720402-033",
+      "B-720402-051",
+      "B-720402-059",
+      "B-720402-062"
+    ],
+    "avoided_body_ground": [
+      "A-720401-023",
+      "A-720401-027",
+      "B-720402-018",
+      "B-720402-010",
+      "B-720402-026",
+      "A-720401-007",
+      "A-720401-015",
+      "A-720401-019",
+      "A-720401-046",
+      "B-720402-003",
+      "B-720402-004",
+      "B-720402-012",
+      "B-720402-014",
+      "B-720402-025",
+      "B-720402-036",
+      "B-720402-037",
+      "B-720402-040",
+      "B-720402-058"
+    ],
+    "qualified_to_frame_first": [
+      "A-720401-042",
+      "A-720401-023",
+      "B-720402-018",
+      "B-720402-026",
+      "A-720401-010",
+      "A-720401-018",
+      "A-720401-020",
+      "A-720401-021",
+      "A-720401-022",
+      "A-720401-028",
+      "A-720401-036",
+      "A-720401-037",
+      "A-720401-049",
+      "A-720401-051",
+      "A-720401-052",
+      "A-720401-055",
+      "A-720401-057",
+      "A-720401-058",
+      "A-720401-063",
+      "B-720402-003",
+      "B-720402-013",
+      "B-720402-020",
+      "B-720402-030",
+      "B-720402-032",
+      "B-720402-062"
+    ],
+    "frame_first_to_qualified": [
+      "A-720401-002",
+      "A-720401-031",
+      "A-720401-062",
+      "B-720402-009",
+      "B-720402-039",
+      "B-720402-042",
+      "B-720402-043",
+      "B-720402-045"
+    ]
+  },
+  "paired": {
+    "binary": {
+      "contact": {
+        "improved_cases": [
+          "A-720401-002",
+          "A-720401-031",
+          "A-720401-062",
+          "B-720402-009",
+          "B-720402-039",
+          "B-720402-042",
+          "B-720402-043",
+          "B-720402-045"
+        ],
+        "regressed_cases": [
+          "A-720401-010",
+          "A-720401-018",
+          "A-720401-020",
+          "A-720401-021",
+          "A-720401-022",
+          "A-720401-023",
+          "A-720401-028",
+          "A-720401-036",
+          "A-720401-037",
+          "A-720401-042",
+          "A-720401-043",
+          "A-720401-049",
+          "A-720401-051",
+          "A-720401-052",
+          "A-720401-055",
+          "A-720401-057",
+          "A-720401-058",
+          "A-720401-063",
+          "B-720402-003",
+          "B-720402-013",
+          "B-720402-018",
+          "B-720402-020",
+          "B-720402-026",
+          "B-720402-030",
+          "B-720402-032",
+          "B-720402-057",
+          "B-720402-062"
+        ],
+        "paired_two_sided_p": 0.001878225477412343
+      },
+      "ball_side": {
+        "improved_cases": [
+          "A-720401-007",
+          "A-720401-031",
+          "B-720402-039"
+        ],
+        "regressed_cases": [
+          "A-720401-009",
+          "A-720401-010",
+          "A-720401-012",
+          "A-720401-018",
+          "A-720401-020",
+          "A-720401-023",
+          "A-720401-025",
+          "A-720401-028",
+          "A-720401-035",
+          "A-720401-036",
+          "A-720401-037",
+          "A-720401-040",
+          "A-720401-042",
+          "A-720401-043",
+          "A-720401-049",
+          "A-720401-051",
+          "A-720401-052",
+          "A-720401-055",
+          "A-720401-057",
+          "A-720401-058",
+          "A-720401-063",
+          "B-720402-003",
+          "B-720402-013",
+          "B-720402-020",
+          "B-720402-026",
+          "B-720402-030",
+          "B-720402-032",
+          "B-720402-057"
+        ],
+        "paired_two_sided_p": 4.649162292480469e-06
+      },
+      "complete5": {
+        "improved_cases": [
+          "A-720401-027",
+          "A-720401-061",
+          "B-720402-039"
+        ],
+        "regressed_cases": [
+          "A-720401-003",
+          "A-720401-010",
+          "A-720401-025",
+          "A-720401-028",
+          "A-720401-034",
+          "A-720401-035",
+          "A-720401-036",
+          "A-720401-037",
+          "A-720401-043",
+          "A-720401-049",
+          "A-720401-051",
+          "A-720401-052",
+          "A-720401-063",
+          "B-720402-013",
+          "B-720402-020",
+          "B-720402-030",
+          "B-720402-057"
+        ],
+        "paired_two_sided_p": 0.0025768280029296875
+      }
+    },
+    "native_return": {
+      "mean": -16.00487576735583,
+      "median": -0.0563873634165617,
+      "descriptive_paired_case_bootstrap_95": [
+        -24.972595376566932,
+        -7.371205190944443
+      ],
+      "seed": 882072,
+      "resamples": 20000
+    }
+  },
+  "handoff": {
+    "source_checkpoint_sha256": "25303fd06d5c73cc27945ba7ce80915d10dba599bc4891dc9d164fb9d831c68f",
+    "checkpoint_sha256": "5fd0e117d8ac40bcb9e034ea38d600ca0092f3740d4071cccc8bd2c3f3c3d217",
+    "original_checkpoint": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/research_scale_contact_fit/combined.pt",
+    "measured_actor": "2581fbe0b874218de76bb33c6b9b303890b38dde1b694af5fde9481447efd7bb",
+    "starting_actor": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+    "rollback_to_baseline": true,
+    "previous_heads": {
+      "recovery": 20,
+      "approach": 16
+    },
+    "previous_proposals": 37,
+    "native_ticks": 5630,
+    "paired_sha256": "186f1d8b74188f4208065e15001963c6281e3e70cc1734ce8d46f645aaaf1106",
+    "bitwise_restore_checks": {
+      "actor": true,
+      "actor_optimizers": true,
+      "actor_optimizer": true,
+      "actor_references": true,
+      "world": true,
+      "critic": true,
+      "critic_optimizer": true,
+      "world_optimizer": true,
+      "replay_archives": true,
+      "replay_rng": true,
+      "dynamic_stage_starts": true,
+      "actor_start_bank": true
+    }
+  },
+  "reconstructed_training_starts": {
+    "archive_ticks": 640,
+    "excluded_lanes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      11,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      21,
+      30,
+      32,
+      34,
+      37,
+      38,
+      39,
+      40,
+      41,
+      44,
+      46,
+      48,
+      49,
+      50,
+      51,
+      53,
+      57,
+      59,
+      60,
+      61,
+      62,
+      65,
+      70,
+      73,
+      74,
+      76,
+      77,
+      81,
+      84,
+      85,
+      86,
+      87,
+      89,
+      90,
+      94,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127
+    ],
+    "prefix_records": [
+      {
+        "lead": 20,
+        "lanes": [
+          91
+        ]
+      },
+      {
+        "lead": 40,
+        "lanes": [
+          91
+        ]
+      },
+      {
+        "lead": 60,
+        "lanes": [
+          91
+        ]
+      },
+      {
+        "lead": 20,
+        "lanes": [
+          12
+        ]
+      },
+      {
+        "lead": 40,
+        "lanes": [
+          12
+        ]
+      },
+      {
+        "lead": 60,
+        "lanes": [
+          12
+        ]
+      },
+      {
+        "lead": 20,
+        "lanes": [
+          82
+        ]
+      },
+      {
+        "lead": 40,
+        "lanes": [
+          82
+        ]
+      },
+      {
+        "lead": 60,
+        "lanes": [
+          82
+        ]
+      },
+      {
+        "lead": 20,
+        "lanes": [
+          72
+        ]
+      },
+      {
+        "lead": 40,
+        "lanes": [
+          72
+        ]
+      },
+      {
+        "lead": 60,
+        "lanes": [
+          72
+        ]
+      },
+      {
+        "lead": 20,
+        "lanes": [
+          95
+        ]
+      },
+      {
+        "lead": 40,
+        "lanes": [
+          95
+        ]
+      },
+      {
+        "lead": 60,
+        "lanes": [
+          95
+        ]
+      },
+      {
+        "lead": 20,
+        "lanes": [
+          68
+        ]
+      },
+      {
+        "lead": 40,
+        "lanes": [
+          68
+        ]
+      },
+      {
+        "lead": 60,
+        "lanes": [
+          68
+        ]
+      },
+      {
+        "lead": 20,
+        "lanes": [
+          28
+        ]
+      },
+      {
+        "lead": 40,
+        "lanes": [
+          28
+        ]
+      },
+      {
+        "lead": 60,
+        "lanes": [
+          28
+        ]
+      },
+      {
+        "lead": 20,
+        "lanes": [
+          54
+        ]
+      },
+      {
+        "lead": 40,
+        "lanes": [
+          54
+        ]
+      },
+      {
+        "lead": 60,
+        "lanes": [
+          54
+        ]
+      }
+    ],
+    "selected": [
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            91,
+            0,
+            431
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 91,
+            "episode": 0,
+            "tick": 431,
+            "since_landing_s": 1.307035207748413,
+            "landing_clock_source": "latest_observed_jump_landing",
+            "support_feet": 3,
+            "tilt_rad": 0.3780025839805603,
+            "failure_window_ticks": 40
+          }
+        ]
+      },
+      {
+        "stage": "post_landing_support_loss",
+        "lane_episode_tick": [
+          [
+            68,
+            0,
+            557
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 68,
+            "episode": 0,
+            "tick": 557,
+            "since_landing_s": 2.4730417728424072,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 0,
+            "tilt_rad": 0.749373197555542,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            12,
+            0,
+            468
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 12,
+            "episode": 0,
+            "tick": 468,
+            "since_landing_s": 1.596040964126587,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 2,
+            "tilt_rad": 0.5173355340957642,
+            "failure_window_ticks": 20
+          }
+        ]
+      },
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            82,
+            0,
+            449
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 82,
+            "episode": 0,
+            "tick": 449,
+            "since_landing_s": 1.3980414867401123,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 3,
+            "tilt_rad": 0.44058123230934143,
+            "failure_window_ticks": 40
+          }
+        ]
+      },
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            72,
+            0,
+            476
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 72,
+            "episode": 0,
+            "tick": 476,
+            "since_landing_s": 1.6740410327911377,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 2,
+            "tilt_rad": 0.527072012424469,
+            "failure_window_ticks": 20
+          }
+        ]
+      },
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            95,
+            0,
+            440
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 95,
+            "episode": 0,
+            "tick": 440,
+            "since_landing_s": 1.3740370273590088,
+            "landing_clock_source": "latest_observed_jump_landing",
+            "support_feet": 3,
+            "tilt_rad": 0.2865177392959595,
+            "failure_window_ticks": 60
+          }
+        ]
+      },
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            28,
+            0,
+            540
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 28,
+            "episode": 0,
+            "tick": 540,
+            "since_landing_s": 2.3540384769439697,
+            "landing_clock_source": "latest_observed_jump_landing",
+            "support_feet": 2,
+            "tilt_rad": 0.4729672968387604,
+            "failure_window_ticks": 40
+          }
+        ]
+      },
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            54,
+            0,
+            562
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 54,
+            "episode": 0,
+            "tick": 562,
+            "since_landing_s": 2.5920369625091553,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 2,
+            "tilt_rad": 0.5388907790184021,
+            "failure_window_ticks": 20
+          }
+        ]
+      },
+      {
+        "stage": "touchdown",
+        "lane_episode_tick": [
+          [
+            71,
+            0,
+            294
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 71,
+            "episode": 0,
+            "tick": 294,
+            "since_landing_s": 0.4889950752258301,
+            "landing_clock_source": "latest_observed_jump_landing",
+            "support_feet": 0,
+            "tilt_rad": 0.7129846811294556,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "post_touchdown",
+        "lane_episode_tick": [
+          [
+            10,
+            0,
+            624
+          ],
+          [
+            22,
+            0,
+            624
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 10,
+            "episode": 0,
+            "tick": 624,
+            "since_landing_s": 3.1660401821136475,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 3,
+            "tilt_rad": 0.4440751075744629,
+            "failure_window_ticks": null
+          },
+          {
+            "lane": 22,
+            "episode": 0,
+            "tick": 624,
+            "since_landing_s": 3.1660401821136475,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 3,
+            "tilt_rad": 0.08565378189086914,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "touchdown",
+        "lane_episode_tick": [
+          [
+            67,
+            0,
+            298
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 67,
+            "episode": 0,
+            "tick": 298,
+            "since_landing_s": 0.48799824714660645,
+            "landing_clock_source": "latest_observed_jump_landing",
+            "support_feet": 0,
+            "tilt_rad": 0.6627582311630249,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "stable_recovery",
+        "lane_episode_tick": [
+          [
+            80,
+            0,
+            457
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 80,
+            "episode": 0,
+            "tick": 457,
+            "since_landing_s": 1.5040395259857178,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 4,
+            "tilt_rad": 0.0670708492398262,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "stable_recovery",
+        "lane_episode_tick": [
+          [
+            43,
+            0,
+            469
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 43,
+            "episode": 0,
+            "tick": 469,
+            "since_landing_s": 1.6430385112762451,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 4,
+            "tilt_rad": 0.029786257073283195,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "stable_recovery",
+        "lane_episode_tick": [
+          [
+            24,
+            0,
+            472
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 24,
+            "episode": 0,
+            "tick": 472,
+            "since_landing_s": 1.663038969039917,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 4,
+            "tilt_rad": 0.037587184458971024,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "stable_recovery",
+        "lane_episode_tick": [
+          [
+            23,
+            0,
+            473
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 23,
+            "episode": 0,
+            "tick": 473,
+            "since_landing_s": 1.6870381832122803,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 4,
+            "tilt_rad": 0.036623138934373856,
+            "failure_window_ticks": null
+          }
+        ]
+      }
+    ],
+    "scope": "Committed native training archive only. Replay reconstruction; no optimizer update."
+  },
+  "shadows": {
+    "approach": {
+      "head": "approach",
+      "lanes": [
+        10,
+        12
+      ],
+      "H": 64,
+      "coverage": {
+        "head": "approach",
+        "reference_count": 22,
+        "verified_reference_count": 22,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 2,
+        "gate_active_selected_start_lanes": 2,
+        "reference_usage_by_sha256": {
+          "a9dc734f4c29488e6528c21dcc5490f1da62a576ff70e9d9619a22339b1621ef": 1,
+          "6ce449537b0336bc050f954e27486825204287648ac488efaffcd9df59182621": 1
+        },
+        "matched_lanes": 2,
+        "effective_weight_sum": 1.9999992847442627,
+        "tracking_applied": true,
+        "predicted_first_margin_sum_m": 0.04232677444815636,
+        "predicted_first_string_lanes": 1,
+        "predicted_first_frame_lanes": 1,
+        "per_record": [
+          {
+            "gate_lanes": 2,
+            "matched": 2,
+            "tracking_lane_steps": 2,
+            "task_gradient_norm": 0.0,
+            "tracking_gradient_norm": 4.246913433074951,
+            "anchor_gradient_norm": 1.8132787942886353,
+            "task_tracking_cosine": 0.0
+          }
+        ]
+      },
+      "gradients": {
+        "task_gradient_norm": 0.0,
+        "tracking_gradient_norm": 4.246913433074951,
+        "anchor_gradient_norm": 1.8132787942886353,
+        "task_tracking_cosine": 0.0
+      },
+      "loss": 0.8005147576332092
+    },
+    "recovery": {
+      "head": "recovery",
+      "lanes": [
+        10,
+        12
+      ],
+      "H": 64,
+      "coverage": {
+        "head": "recovery",
+        "reference_count": 16,
+        "verified_reference_count": 16,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 2,
+        "gate_active_selected_start_lanes": 2,
+        "reference_usage_by_sha256": {
+          "921767d7aff4d3d52c940dbc39bce20ee00f790e8b7974eeda8847ef62ea1887": 1,
+          "2cb919cd74af44589c53b705075612cae7046afda44929b77765aa216f47a44e": 1
+        },
+        "matched_lanes": 2,
+        "effective_weight_sum": 127.98406982421875,
+        "tracking_applied": true,
+        "per_record": [
+          {
+            "gate_lanes": 2,
+            "matched": 2,
+            "tracking_lane_steps": 128,
+            "task_gradient_norm": 49.820987701416016,
+            "tracking_gradient_norm": 0.24271447956562042,
+            "anchor_gradient_norm": 12.469892501831055,
+            "task_tracking_cosine": 0.8018642067909241
+          }
+        ]
+      },
+      "gradients": {
+        "task_gradient_norm": 49.820987701416016,
+        "tracking_gradient_norm": 0.24271447956562042,
+        "anchor_gradient_norm": 12.469892501831055,
+        "task_tracking_cosine": 0.8018642067909241
+      },
+      "loss": 3.2547059059143066
+    }
+  },
+  "restored_wm_forward_passed": true,
+  "cpu_regression": {
+    "passed": 702,
+    "warnings": 1
+  }
+}
