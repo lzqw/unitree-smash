@@ -56,11 +56,19 @@ class ReturnTrend:
         self.pending = []
         self.recent = deque(maxlen=128)
         self.cohorts = deque(maxlen=3)
+        self.raw_means = deque(maxlen=3)
 
-    def observe(self, episodes, tick):
+    def observe(self, episodes, tick, first_episode_body_cases=None):
+        if not episodes:
+            return None
         self.pending.extend(episodes)
         self.recent.extend(e['native_episode_return'] for e in episodes)
-        if len({e['env_id'] for e in self.pending}) < self.minimum_cases:
+        self.raw_means.append(mean(self.recent))
+        body_decline = (first_episode_body_cases is not None and len(self.raw_means) == 3
+                        and self.raw_means[0] > self.raw_means[1] > self.raw_means[2]
+                        and bool(self.baseline) and all(e['episode_index'] == 0 for e in self.pending)
+                        and first_episode_body_cases > sum(b['body_ground_seen'] for b in self.baseline.values()))
+        if not body_decline and len({e['env_id'] for e in self.pending}) < self.minimum_cases:
             return None
         rows, self.pending = self.pending, []
         pairs = [(e, self.baseline[(e['case_id'], e['env_id'])]) for e in rows
@@ -99,6 +107,11 @@ class ReturnTrend:
             if all(b['return_mean_128'] < a['return_mean_128'] and b['mean'] < a['mean']
                    for a,b in zip(history, history[1:])):
                 reason = 'consecutive_mixed_episode_return_declines'
+        if body_decline:
+            reason = reason or 'declining_return_with_confirmed_net_new_body_contacts'
+            current.update(first_episode_body_cases=first_episode_body_cases,
+                           frozen_baseline_body_cases=sum(b['body_ground_seen'] for b in self.baseline.values()),
+                           last_three_native_means=list(self.raw_means))
         return dict(reason=reason, cohorts=history,
                     cases=current['cases'])
 
@@ -117,13 +130,15 @@ def monitor(arm, trainer):
     baseline = FirstEpisodeReturns(arm, registration, json.loads(manifest_path.read_text())).baseline
     attach_baseline_flights(baseline, Path(registration['baseline_path']).with_name('episodes.jsonl'))
     trend = ReturnTrend(baseline)
+    history_path = (train/'native_collection_history.jsonl' if '--recovery-rollout-landing' in cmd
+                    else train/'training_history.jsonl')
     episode_offset = history_offset = consumed = 0
     episodes = []
     decisions = arm/'native_return_pauses.jsonl'
     previous, _ = read_new(decisions, 0)
     acknowledged = max((r['through_episode'] for r in previous), default=0)
     while trainer.is_running() and trainer.status() != psutil.STATUS_ZOMBIE:
-        history, history_offset = read_new(train/'training_history.jsonl', history_offset)
+        history, history_offset = read_new(history_path, history_offset)
         if history:
             new, episode_offset = read_new(train/'native_episodes.jsonl', episode_offset)
             episodes.extend(new)
@@ -133,12 +148,13 @@ def monitor(arm, trainer):
                 continue
             if not consumed < end <= len(episodes):
                 raise ValueError('Trainer history and completed episode counts disagree')
-            decision = trend.observe(episodes[consumed:end], row['native_ticks'])
+            decision = trend.observe(episodes[consumed:end], row['native_ticks'], row.get('first_episode_body_cases'))
             consumed = end
             if decision is None:
                 continue
             if consumed == acknowledged:
                 trend.cohorts.clear()
+                trend.raw_means.clear()
             if not decision['reason'] or consumed <= acknowledged:
                 continue
             trainer.suspend()
@@ -149,6 +165,7 @@ def monitor(arm, trainer):
             print(json.dumps(decision),flush=True)
             acknowledged = consumed
             trend.cohorts.clear()
+            trend.raw_means.clear()
             break
         time.sleep(5)
 

@@ -53,3 +53,17 @@ def test_pause_if_both_curves_keep_falling_despite_a_partial_cohort_rebound():
             assert decision['reason'] is None
     assert decision['reason'] == 'consecutive_native_and_paired_curve_declines'
     assert decision['cohorts'][-1]['mean'] > decision['cohorts'][-2]['mean']
+
+
+def test_small_terminal_cohort_with_full_panel_evidence_triggers_at_collection():
+    baseline = {(str(i), i): case(i, -100) for i in range(12)}
+    for observed_body_count, expected in ((0, None), (2, 'declining_return_with_confirmed_net_new_body_contacts')):
+        trend = ReturnTrend(baseline)
+        assert trend.observe([case(i, -1) for i in range(4)], 512, 0)['reason'] is None
+        assert trend.observe([case(i, -3) for i in range(4, 8)], 640, 0)['reason'] is None
+        decision = trend.observe([case(8, -8), case(9, -9)], 768, observed_body_count)
+        if expected:
+            assert decision['reason'] == expected
+            assert decision['cohorts'][-1]['first_episode_body_cases'] == 2
+        else:
+            assert decision is None

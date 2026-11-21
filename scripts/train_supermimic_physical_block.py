@@ -1319,6 +1319,8 @@ def run(args, *, alternating=None):
             while critic_coverage_blocks<len(critic_starts):cover_critic()
             ensure_critic()
         cursor=0;completed_returns=[];completed_discounted=[];phase='LEARNING'
+        first_body_lanes = torch.zeros(replay.lanes, dtype=torch.bool)
+        first_mixed_tick, first_refresh_serial = tick, refresh_serial
         episode_stats=NativeEpisodeStatistics()
         def verify_online_forward(head,attempt):
             if forward_guard is None:
@@ -1537,6 +1539,7 @@ def run(args, *, alternating=None):
                 critic_loss_before_proposal=trainer.last_critic_loss
                 if shutil.disk_usage(args.output).free<8*1024**3:raise RuntimeError('Disk guard: less than8GiB free')
                 started=time.perf_counter()
+                replay_tick_before_collect = replay._native_tick_counter
                 with torch.inference_mode():
                     for _ in range(args.native_ticks_per_actor_update if collect_block else 0):
                         check_stop();action=native_actor_action(obs);obs,reward,done,info=wrapper.step(action);tick+=1
@@ -1571,6 +1574,22 @@ def run(args, *, alternating=None):
                 collect_s=time.perf_counter()-started;check_stop()
                 if collect_block:
                     progress['collection_reward_mean']=float(reward.mean())
+                    if research and args.recovery_rollout_landing:
+                        body_count = None
+                        # All lanes start from the registered first episode. Only compare the
+                        # uninterrupted initial stream; each first body penalty is irreversible.
+                        n = replay._native_tick_counter - replay_tick_before_collect
+                        if (tick - first_mixed_tick <= 800 and refresh_serial == first_refresh_serial
+                                and n == args.native_ticks_per_actor_update and n <= replay.capacity):
+                            indices = (torch.arange(n) + replay.write_pos - n) % replay.capacity
+                            episode = replay.data['episode'][indices].reshape(n, replay.lanes)
+                            body = replay.data['next_event_state'][indices, :, 5] > replay.data['event_state'][indices, :, 5]
+                            first_body_lanes |= ((episode == 0) & body).any(0)
+                            body_count = int(first_body_lanes.sum())
+                        sample = dict(native_ticks=tick, accepted_id=global_accepted_id,
+                                      completed_native_episodes=len(completed_returns), first_episode_body_cases=body_count)
+                        with (args.output/'native_collection_history.jsonl').open('a') as stream:
+                            stream.write(json.dumps(sample)+'\n')
                 block_reward_mean=progress['collection_reward_mean']
                 world_stats=run_world_updates(global_attempt_id,head=block_name) if collect_block else {}
                 quality=check_head_quality(block_name,global_attempt_id)
