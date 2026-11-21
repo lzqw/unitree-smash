@@ -10,15 +10,41 @@ from quadsmash.rl.supermimic_archive_storage_v1 import read_archive_rows
 from scripts.compare_supermimic_fixed_stages import frame_before_string, load_run
 
 
+def release_speed(shot):
+    velocity = shot['outgoing_velocity_mps']
+    if shot['released'] and velocity is not None and all(v is not None and math.isfinite(v) for v in velocity):
+        return math.hypot(*velocity)
+    return None
+
+
 def flight_flags(shot):
     velocity = shot['outgoing_velocity_mps']
-    speed = math.hypot(*velocity) if shot['released'] and all(math.isfinite(v) for v in velocity) else None
+    speed = release_speed(shot)
     contact = shot['legal_initial_contact'] and shot['string_hit'] and shot['airborne_string_hit']
     scoring_cross = contact and speed is not None and speed >= 5. and velocity[0]>0 and shot['crossed_net']
     return dict(had_contact=shot['had_contact'],frame_hit=shot['frame_hit'],qualified_contact=contact,
                 scoring_cross=scoring_cross,scoring_target=scoring_cross and shot['landed_target'],ground_seen=shot['ground_seen'],airborne_string_hit=shot['airborne_string_hit'], crossed_net=shot['crossed_net'],
                 shuttle_net_contact=shot['shuttle_net_contact'], landed_target=shot['landed_target'],
                 released_at_least_5_mps=speed is not None and speed >= 5.)
+
+
+def target_evidence(shot, flags):
+    speed = release_speed(shot)
+    failed = []
+    if not flags['qualified_contact']:
+        failed.append('qualified_contact')
+    if speed is None:
+        failed.append('measured_release')
+    else:
+        if not flags['released_at_least_5_mps']:
+            failed.append('release_speed')
+        if shot['outgoing_velocity_mps'][0] <= 0:
+            failed.append('forward_release')
+    for flag in ('crossed_net', 'landed_target'):
+        if not flags[flag]:
+            failed.append(flag)
+    return dict(release_speed_mps=speed, failed_conditions=failed)
+
 
 
 def report(arm):
@@ -50,6 +76,7 @@ def report(arm):
     releases = {}
     finished = {}
     frame_first = {}
+    online_target = {}
     physics_dt = manifest['task_contract']['physics_dt_s']
     native_rewards = None
     for chunk in manifest['chunks']:
@@ -80,6 +107,7 @@ def report(arm):
                     shot['contact_time_s'] = float(b['contact_time'][lane])
                     frame_first[lane] = frame_before_string(shot, physics_dt)
                     finished[lane] = flight_flags(shot)
+                    online_target[lane] = target_evidence(shot, finished[lane])
         if len(finished)==len(cases):
             break
     paired = {i:(flight_flags(initial[i]),finished[i]) for i in sorted(finished)
@@ -106,6 +134,12 @@ def report(arm):
                                   if a['qualified_contact'] and not b['qualified_contact'] and frame_first[i]],
         frame_first_to_qualified=[cases[i] for i,(a,b) in paired.items()
                                   if not a['qualified_contact'] and b['qualified_contact'] and before_frame[i]])
+    target_flips = []
+    for lane, (before, after) in paired.items():
+        if before['scoring_target'] != after['scoring_target']:
+            target_flips.append(dict(case=cases[lane], lane=lane, gained=after['scoring_target'],
+                baseline=target_evidence(initial[lane], before), online=online_target[lane],
+                online_target_reward=float(native_rewards[lane, 2])))
     shooting_reward = {}
     for index,(metric,weight) in enumerate((('qualified_contact',20.),('scoring_cross',5.),('scoring_target',15.))):
         observed = float(native_rewards[list(paired),index].sum()) if paired else 0.
@@ -117,7 +151,8 @@ def report(arm):
                 manifest_env_steps=manifest['transitions'],cases=len(cases),online_resolved=len(finished),
                 paired_resolved_cases=len(paired),unresolved_online_cases=[c for i,c in enumerate(cases) if i not in finished],
                 unresolved_baseline_cases=[cases[i] for i in finished if i not in paired],
-                release_policy_versions=dict(Counter(releases[i] for i in paired if i in releases)),metrics=flags,first_contact_changes=first_contact_changes,landing_by_airborne_string_hit=contact_groups,shot_reward_totals=shooting_reward)
+                release_policy_versions=dict(Counter(releases[i] for i in paired if i in releases)),metrics=flags,first_contact_changes=first_contact_changes,
+                target_score_flips=target_flips,landing_by_airborne_string_hit=contact_groups,shot_reward_totals=shooting_reward)
 
 
 def publish(result, folder):
@@ -133,6 +168,10 @@ def publish(result, folder):
             for key, cases in result.get('first_contact_changes', {}).items():
                 if isinstance(cases, list):
                     writer.add_scalar('first_contact/'+key,len(cases),step)
+            if 'target_score_flips' in result:
+                losses = [row for row in result['target_score_flips'] if not row['gained']]
+                writer.add_scalar('target_score/sole_release_speed_losses',
+                    sum(row['online']['failed_conditions'] == ['release_speed'] for row in losses), step)
             for metric,totals in result['shot_reward_totals'].items():
                 delta=totals['online_recorded']-totals['initial_from_native_latches']
                 writer.add_scalar('shot_reward_difference_per_case/'+metric,delta/n,step)

@@ -1,0 +1,295 @@
+{
+  "scope": "First flight leaving play after launch, including faults before ground contact. Compare native latches to first-episode frozen terminal records on the same resolved cases. The online prefix spans behavior versions. Episode recovery, official ball-side outcome and final Return require complete scoring.",
+  "initial_actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+  "seed": 882072,
+  "suite_sha256": "2f9bf380d938a87418c4fa7da087e86d0da43f27a2ee6492bff7d7f1c3ff7c30",
+  "manifest_env_steps": 49152,
+  "online_resolved": 123,
+  "paired_resolved_cases": 123,
+  "unresolved_online_cases": [
+    "A-720401-005",
+    "A-720401-015",
+    "B-720402-009",
+    "B-720402-038",
+    "B-720402-047"
+  ],
+  "release_policy_versions": {
+    "69": 106
+  },
+  "first_contact_changes": {
+    "paired_cases": 123,
+    "unknown_initial_frame_order": [],
+    "unknown_online_frame_order": [],
+    "qualified_to_frame_first": [
+      "A-720401-040",
+      "B-720402-050",
+      "B-720402-062"
+    ],
+    "frame_first_to_qualified": [
+      "B-720402-010",
+      "B-720402-029"
+    ]
+  },
+  "target_score_flips": [
+    {
+      "case": "A-720401-018",
+      "lane": 18,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.02115852765057,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 4.940574574065277,
+        "failed_conditions": [
+          "release_speed"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-025",
+      "lane": 25,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.151834445609273,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 4.955852589461218,
+        "failed_conditions": [
+          "release_speed"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-028",
+      "lane": 28,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.254926514790947,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 4.934172650556666,
+        "failed_conditions": [
+          "release_speed"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-035",
+      "lane": 35,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.165947329211371,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 4.900452780569404,
+        "failed_conditions": [
+          "release_speed"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-040",
+      "lane": 40,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.1811699705076135,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 5.13034888014751,
+        "failed_conditions": [
+          "qualified_contact",
+          "crossed_net",
+          "landed_target"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-050",
+      "lane": 50,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.049920283671895,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 4.962855087028484,
+        "failed_conditions": [
+          "release_speed"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-055",
+      "lane": 55,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.167805838624775,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 4.840098733903,
+        "failed_conditions": [
+          "release_speed"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "A-720401-063",
+      "lane": 63,
+      "gained": false,
+      "baseline": {
+        "release_speed_mps": 5.679365974294035,
+        "failed_conditions": []
+      },
+      "online": {
+        "release_speed_mps": 5.560206750407072,
+        "failed_conditions": [
+          "landed_target"
+        ]
+      },
+      "online_target_reward": 0.0
+    },
+    {
+      "case": "B-720402-010",
+      "lane": 74,
+      "gained": true,
+      "baseline": {
+        "release_speed_mps": 5.424916982474429,
+        "failed_conditions": [
+          "qualified_contact",
+          "crossed_net",
+          "landed_target"
+        ]
+      },
+      "online": {
+        "release_speed_mps": 5.513744747646751,
+        "failed_conditions": []
+      },
+      "online_target_reward": 15.0
+    }
+  ],
+  "shot_reward_totals": {
+    "qualified_contact": {
+      "initial_from_native_latches": 1480.0,
+      "online_from_native_latches": 1460.0,
+      "online_recorded": 1460.0
+    },
+    "scoring_cross": {
+      "initial_from_native_latches": 290.0,
+      "online_from_native_latches": 260.0,
+      "online_recorded": 260.0
+    },
+    "scoring_target": {
+      "initial_from_native_latches": 780.0,
+      "online_from_native_latches": 675.0,
+      "online_recorded": 675.0
+    }
+  },
+  "archive_view": "First 12 atomically written chunks. Their hashes are checked on read; the 384-tick checkpoint manifest will be checked when published.",
+  "appended_chunks": [
+    {
+      "file": "chunk_00008.pt.zst",
+      "sha256": "0173a6221302dca1267b88e61d2a237711f48c849661f08026689846c2b03796",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00009.pt.zst",
+      "sha256": "d52c3082aa259d61995ec596b084cbf056e46d7c3e17d2e6d30d4997634d8a81",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00010.pt.zst",
+      "sha256": "ca4134086d0ac3144a4aa9e3762ffdbf4230d290184f8696a99566f565436926",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00011.pt.zst",
+      "sha256": "6e9de896c9dc253f56a1a9f3fa5f3702b2c7bdda09cccf7dbbf3fdd8d7dd8eb8",
+      "ticks": 32
+    }
+  ],
+  "matched_counts": {
+    "had_contact": {
+      "initial": 105,
+      "online": 106
+    },
+    "frame_hit": {
+      "initial": 31,
+      "online": 33
+    },
+    "qualified_contact": {
+      "initial": 74,
+      "online": 73
+    },
+    "scoring_cross": {
+      "initial": 58,
+      "online": 52
+    },
+    "scoring_target": {
+      "initial": 52,
+      "online": 45
+    },
+    "ground_seen": {
+      "initial": 108,
+      "online": 106
+    },
+    "airborne_string_hit": {
+      "initial": 74,
+      "online": 73
+    },
+    "crossed_net": {
+      "initial": 72,
+      "online": 69
+    },
+    "shuttle_net_contact": {
+      "initial": 13,
+      "online": 12
+    },
+    "landed_target": {
+      "initial": 63,
+      "online": 62
+    },
+    "released_at_least_5_mps": {
+      "initial": 84,
+      "online": 79
+    }
+  },
+  "behavior_replay": {
+    "actor_sha256": "4f2ef434d001647c84686dd47c5b42252e04fe4b0bcbc5151d32b9a55cb07c09",
+    "policy_version": 69,
+    "interval": [
+      5886,
+      6013
+    ],
+    "new_transitions": 16384,
+    "counts": {
+      "approach_active": 7031,
+      "approach_inactive": 9353,
+      "changed_request_rows_after_A8": 6763,
+      "recovery_gate_active": 12148
+    },
+    "distinct_approach_lanes": 128,
+    "request_max_abs": {
+      "request_replay": 5.21540641784668e-08,
+      "approach_active": 0.027261991053819656,
+      "approach_inactive": 0
+    },
+    "approach_active_A8_minus_R8_request_rms": 0.004716482890759141,
+    "recorded_first_contacts": 111,
+    "initial_qualified_to_observed_frame_first": 3,
+    "scope": "First contact in the archived interval. Native terminal scoring and final first-flight pairing are separate."
+  },
+  "scope_note": "The first 384 ticks contain 123 resolved flights. Completed episode return and recovery will be scored later."
+}

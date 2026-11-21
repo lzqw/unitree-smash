@@ -164,3 +164,20 @@ def test_geometric_cross_and_target_require_a_qualified_fast_release_for_native_
     assert not flight_flags(dict(shot,outgoing_velocity_mps=[-6.,0.,0.]))['scoring_cross']
     miss=flight_flags(dict(shot,released=False,outgoing_velocity_mps=[None]*3))
     assert not miss['released_at_least_5_mps'] and not miss['scoring_target']
+
+
+def test_target_score_evidence_separates_speed_margin_from_misses_and_backward_releases():
+    from scripts.report_supermimic_online_flights import flight_flags, target_evidence
+    shot=dict(released=True,had_contact=True,frame_hit=False,legal_initial_contact=True,
+              string_hit=True,airborne_string_hit=True,ground_seen=True,
+              crossed_net=True,shuttle_net_contact=False,landed_target=True)
+    for x,landed,expected in [(5., True, []), (4.999, True, ['release_speed']),
+                              (-5., False, ['forward_release','landed_target'])]:
+        case=dict(shot, outgoing_velocity_mps=[x,0.,0.], landed_target=landed)
+        flags=flight_flags(case)
+        evidence=target_evidence(case,flags)
+        assert evidence['release_speed_mps'] == abs(x)
+        assert evidence['failed_conditions'] == expected
+        assert flags['scoring_target'] == (not expected)
+    missing=dict(shot,outgoing_velocity_mps=[None]*3)
+    assert target_evidence(missing,flight_flags(missing)) == dict(release_speed_mps=None,failed_conditions=['measured_release'])
