@@ -128,6 +128,33 @@ def _slice_lane(value, lane, lanes):
     return value
 
 
+class NaturalFlightWindows:
+    """Cache training-only long-window indices without allocating another replay ring."""
+    keys=('state','next_state','targets','previous_action','feet','present','elapsed')
+
+    def __init__(self,data,excluded_lanes):
+        self.data=data
+        self.generator=torch.Generator().manual_seed(20261114)
+        valid=valid_windows(data['episode'],data['terminated'],data['timeout'],64)
+        if excluded_lanes:
+            valid[:,list(excluded_lanes)]=False
+        self.pools={'uniform':valid.nonzero()}
+        if not len(self.pools['uniform']):
+            raise ValueError('No eligible 64-step native anchor window')
+        for event in range(8):
+            delta=data['next_event_state'][...,event]>data['event_state'][...,event]
+            pool=(delta.unfold(0,64,1).any(-1)&valid).nonzero()
+            if len(pool):
+                self.pools[str(event)]=pool
+
+    def sample(self,count,iteration,device):
+        pairs,_=sample_event_windows(self.pools,count,self.generator,iteration)
+        starts,lanes=pairs.unbind(-1)
+        indices=torch.arange(64)[:,None]+starts
+        window={key:self.data[key][indices,lanes].to(device) for key in self.keys}
+        return window,lanes.to(device)
+
+
 class PhysicalLoopReplay:
     """CPU replay with chronological ring storage and reset-safe windows."""
     def __init__(self, package, schema, *, capacity_ticks=16384, approach_labeler=None):

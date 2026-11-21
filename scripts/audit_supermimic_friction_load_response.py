@@ -65,6 +65,19 @@ def independent_tangent_rows(arms, surfaces, velocity, spin, normals, budget, in
     return result.sum(0)
 
 
+def anchor_slip(force,normals,budget,points,ball,racket_center,racket_velocity,racket_spin,lever_center):
+    """Measure tangential slip at the reported anchor, using a single stated lever-arm origin."""
+    ball_velocity=ball[7:10]+torch.linalg.cross(ball[10:13].expand_as(points),points-lever_center)
+    surface=racket_velocity+torch.linalg.cross(racket_spin.expand_as(points),points-racket_center)
+    slip=ball_velocity-surface
+    tangent=slip-(slip*normals).sum(-1,keepdim=True)*normals
+    magnitude=force.norm(dim=-1)
+    return dict(tangent_speed_mps=tangent.norm(dim=-1).tolist(),
+                opposing_cosine=(-normalize(force,dim=-1)*normalize(tangent,dim=-1)).sum(-1).tolist(),
+                abs_normal_fraction=(normalize(force,dim=-1)*normals).sum(-1).abs().tolist(),
+                load_ratio=(magnitude/budget.clamp_min(1.e-12)).tolist())
+
+
 def friction_trace(trace,geometry,mat,mass):
     t=trace['tensors']
     scale=trace['physics_dt_s']/mass
@@ -135,7 +148,14 @@ def friction_trace(trace,geometry,mat,mass):
                                              v-t['racket_linear_velocity_w'][i,lane].double(),iterations)
                 result[mode][lane]+=dv
                 by_mode[mode]=dv.tolist()
-            records.append(dict(lane=lane,step=i,shapes=shape.tolist(),normal_points=len(points),
+            post=t['shuttle_state_w'][i+1,lane].double()
+            pre_slip=anchor_slip(force,patch_normals,budget,anchors,state,rc,
+                t['racket_linear_velocity_w'][i,lane].double(),t['racket_angular_velocity_w'][i,lane].double(),center)
+            # Keep the contact-prep lever arms fixed and substitute measured
+            # post-solve velocities to inspect the velocity constraint residual.
+            post_slip=anchor_slip(force,patch_normals,budget,anchors,post,rc,
+                t['racket_linear_velocity_w'][i+1,lane].double(),t['racket_angular_velocity_w'][i+1,lane].double(),center)
+            records.append(dict(lane=lane,step=i,pre_slip=pre_slip,post_slip=post_slip,shapes=shape.tolist(),normal_points=len(points),
                                 friction_points=len(force),anchor_to_normal_distance_m=distances.amin(dim=1).tolist(),
                                 inferred_anchor_shapes=patch_ids.tolist(),measured=true.tolist(),bound_mps=float(friction_budget),
                                 normalized_friction=float(true.norm()/load.norm().clamp_min(1.e-12)),predicted=by_mode))

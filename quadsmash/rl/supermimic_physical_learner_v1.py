@@ -16,6 +16,24 @@ from .supermimic_physical_dataset_v1 import valid_windows
 from .supermimic_racket_dynamics_v1 import racket_loss_components, racket_state, robot_loss
 
 
+def native_flight_rollout_loss(adapter,window,launch):
+    """Supervise free-running predictions at multiple horizons using archived commands."""
+    state=window['state'][0]
+    feet=window['feet'][0].float()
+    present=window['present'][0]
+    errors=[]
+    for i in range(64):
+        state,feet,present=ball_transition(adapter.physical_model,adapter.ball_model,state,window['targets'][i],
+            window['previous_action'][i],feet,present,window['elapsed'][i],launch,
+            action_model=adapter.action_ball_model)
+        if i+1 in (4,16,32,64):
+            truth=window['next_state'][i]
+            error=torch.nn.functional.smooth_l1_loss(state[:,52:55],truth[:,52:55],reduction='none').mean(-1)
+            mask=window['present'][i].reshape(-1).to(error.dtype)
+            errors.append((error*mask).sum()/mask.sum().clamp_min(1.))
+    return torch.stack(errors).mean()
+
+
 class PhysicalHorizonTrainer:
     def __init__(self,actor,adapter,initial_state,timebase,*,command_delta_budget=0.005,
                  target_delta_budget_rad=0.04,native_reference_command_budget=None,
@@ -396,7 +414,7 @@ class PhysicalHorizonTrainer:
             no_effective_gradient=reason in ('zero_total_gradient','no_task_or_tracking_gradient'),
             frozen_base_recovery_unchanged=True,model_unchanged_during_actor=True)
 
-    def fit_world_window(self,window,launch,*,loss_groups=None,separate_supervision=False):
+    def fit_world_window(self,window,launch,*,loss_groups=None,separate_supervision=False,long_native=None):
         """One actual WM optimizer step on 16 native transitions per sample.
 
         Physical state, contact probability and task numeric memory propagate
@@ -467,6 +485,10 @@ class PhysicalHorizonTrainer:
             state,feet,present=prediction,newfeet,newpresent
             values,validity=task.memory_schema.feedback_values(out['numeric'],out['valid_logits'].sigmoid())
         loss=loss/cfg.world_steps
+        long_flight=state.new_zeros(())
+        if long_native is not None:
+            long_flight=native_flight_rollout_loss(self.adapter,*long_native)
+            loss=loss+long_flight
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical multistep model loss')
         self.world_opt.zero_grad(set_to_none=True)
         if separate_supervision:
@@ -475,7 +497,8 @@ class PhysicalHorizonTrainer:
             # change the racket pose simply to fit an outgoing ball velocity.
             ball_modules=[ball]+([self.adapter.action_ball_model] if self.adapter.action_ball_model is not None else [])
             body_objective=physical_loss+contact_loss+self.racket_loss_weight*racket_loss_value
-            objectives=[(body_objective,[world]),(action_ball_loss,ball_modules),(task_loss,[task])]
+            objectives=[(body_objective+cfg.world_steps*long_flight,[world]),
+                        (action_ball_loss+cfg.world_steps*long_flight,ball_modules),(task_loss,[task])]
             active=[(value,[p for module in modules for p in module.parameters() if p.requires_grad])
                     for value,modules in objectives]
             active=[(value,params) for value,params in active if params and value.requires_grad]
@@ -506,7 +529,7 @@ class PhysicalHorizonTrainer:
         if loss_groups is not None:
             from .supermimic_training_audit_v1 import grouped_world_loss
             diagnostics['loss_by_group'] = grouped_world_loss(row_loss_sum.detach().cpu(),cfg.world_steps,loss_groups)
-        return dict(**diagnostics,world_supervision='separate' if separate_supervision else 'joint',world_loss=float(loss.detach()),world_gradient=float(norm),world_updates=self.world_updates,
+        return dict(**diagnostics,long_native_flight_loss=float(long_flight.detach()) if long_native is not None else None,world_supervision='separate' if separate_supervision else 'joint',world_loss=float(loss.detach()),world_gradient=float(norm),world_updates=self.world_updates,
                     world_physical_loss=float(physical_loss.detach()),
                     world_contact_loss=float(contact_loss.detach()),
                     world_ball_loss=float(ball_loss_value.detach()),

@@ -11,7 +11,7 @@ from quadsmash.rl.supermimic_archive_storage_v1 import read_archive_rows
 from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
 from quadsmash.rl.supermimic_physical_learner_v1 import PhysicalHorizonTrainer
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop, tensor_digest
-from quadsmash.rl.supermimic_physical_loop_replay_v1 import PhysicalLoopReplay
+from quadsmash.rl.supermimic_physical_loop_replay_v1 import NaturalFlightWindows, PhysicalLoopReplay
 from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache, APPROACH_TICKS
 from quadsmash.rl.supermimic_timebase_v2 import Timebase
 from quadsmash.rl.supermimic_training_probe_replay import import_training_collection
@@ -37,11 +37,14 @@ def main():
         parser.add_argument('--'+name, type=Path, required=True)
     parser.add_argument('--learning-rate',type=float,required=True)
     parser.add_argument('--separate-supervision', action='store_true')
+    parser.add_argument('--natural-flight-batch',type=int,default=0,help='Auxiliary 64-step native training windows per WM update')
     parser.add_argument('--adaptation',choices=('full','joint-and-racket-readouts'),default='full')
     parser.add_argument('--device',choices=('cpu','cuda:0'),default='cpu')
     parser.add_argument('--cuda-memory-gib',type=float,help='Limit allocator usage when sharing the GPU with a native rollout')
     parser.add_argument('--cpu-threads',type=int,default=5)
     args = parser.parse_args()
+    if args.natural_flight_batch<0:
+        parser.error('Natural flight batch must be nonnegative')
     if not 0 < args.learning_rate < 1 or args.cpu_threads <= 0:
         parser.error('Expected positive CPU count and learning rate in (0,1)')
     torch.set_num_threads(args.cpu_threads)
@@ -93,6 +96,7 @@ def main():
         capacity_ticks=len(packed['tensors']['state'])+n_ticks+1)
     imports=[]
     held=cfg['wm_holdout_lanes']
+    natural=NaturalFlightWindows(packed['tensors'],held) if args.natural_flight_batch else None
     for i,flag in enumerate(argv):
         if flag=='--wm-action-collection':
             imports.append(import_training_collection(replay,Path(argv[i+1]),manifest['task_contract'],manifest['policy_execution'],held))
@@ -155,11 +159,18 @@ def main():
                                 'unique_episode_count','native_tick_min','native_tick_max'):
                         if hist[key]!=observed_step['sampling'][key]:
                             raise ValueError(f'Sampled {key} differs at WM update {trainer.world_updates+1}')
-                    loss=trainer.fit_world_window(window,launch[lanes],separate_supervision=args.separate_supervision)['world_loss']
-                    if trainer.world_updates==1 and not args.separate_supervision and abs(loss-observed_step['world_loss'])>0.001*max(1,abs(loss)):
+                    long_native=None
+                    long_sha=None
+                    if natural is not None:
+                        extra,extra_lanes=natural.sample(args.natural_flight_batch,trainer.world_updates,device)
+                        long_native=(extra,launch[extra_lanes])
+                        long_sha=identity(extra)
+                    metrics=trainer.fit_world_window(window,launch[lanes],separate_supervision=args.separate_supervision,long_native=long_native)
+                    loss=metrics['world_loss']
+                    if trainer.world_updates==1 and long_native is None and not args.separate_supervision and abs(loss-observed_step['world_loss'])>0.001*max(1,abs(loss)):
                         raise ValueError(f'First objective does not reproduce native update: {loss} vs {observed_step["world_loss"]}')
                     info=dict(update=trainer.world_updates,loss=loss,original_loss=observed_step['world_loss'],
-                              window_sha256=identity(window),fallback=hist['fallback_count'])
+                              window_sha256=identity(window),natural_window_sha256=long_sha,flight_loss=metrics['long_native_flight_loss'],fallback=hist['fallback_count'])
                     f.write(json.dumps(info)+'\n')
                     f.flush()
     finally:
@@ -178,7 +189,7 @@ def main():
     torch.save(revised,out.with_suffix('.pending'))
     out.with_suffix('.pending').replace(out)
     info=dict(device=str(device),peak_cuda_bytes=torch.cuda.max_memory_allocated(device) if device.type=='cuda' else None,
-              updates=trainer.world_updates,policy_updates=0,critic_updates=0,
+              updates=trainer.world_updates,policy_updates=0,critic_updates=0,natural_flight_batch=args.natural_flight_batch,
               original_learning_rate=cfg['world_lr'],learning_rate=args.learning_rate,adaptation=args.adaptation,separate_supervision=args.separate_supervision,
               stage_checkpoint_sha256=digest(args.checkpoint),original_online_world_sha256=identity(ck['world']),
               initial_world_sha256=initial,online_world_sha256=identity_after,

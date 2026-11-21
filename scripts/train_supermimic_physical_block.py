@@ -78,6 +78,17 @@ def select_launch_for_start(row, launch):
     return launch[lane_id:lane_id+1]
 
 
+def restore_world_optimizer(optimizer,state,requested_lr):
+    optimizer.load_state_dict(state)
+    if requested_lr is not None:
+        for group in optimizer.param_groups:
+            group['lr']=requested_lr
+    lr=float(optimizer.param_groups[0]['lr'])
+    if not 0<lr<float('inf'):
+        raise ValueError('Invalid resumed WM optimizer rate')
+    return lr
+
+
 def main():
     from isaaclab.app import AppLauncher
     parser=argparse.ArgumentParser(description=__doc__)
@@ -141,7 +152,8 @@ def main():
                         help='World-model optimizer steps before each actor proposal')
     parser.add_argument('--wm-separate-supervision',action='store_true',help='Fit robot, ball and task parameters to their respective native targets')
     parser.add_argument('--wm-forward-guard',type=Path,help='Fixed native launch panel and verified block-initial WM score for every online refresh')
-    parser.add_argument('--world-learning-rate',type=float,default=2e-4)
+    parser.add_argument('--world-learning-rate',type=float,help='Defaults to the restored optimizer rate, or 0.0002 for a new run')
+    parser.add_argument('--wm-natural-flight-batch',type=int,default=0,help='Additional immutable training-lane 64-step native windows per shared WM update')
     parser.add_argument('--wm-calibration-updates',type=int,default=256,
                         help='GPU world-model updates for wm_calibrate stage')
     parser.add_argument('--wm-ball-loss-weight',type=float,default=4.0)
@@ -192,7 +204,11 @@ def main():
         parser.error('full_contact requires contact-bptt-mode=enabled')
     if args.wm_calibration_updates<1 or args.wm_ball_loss_weight<=0 or args.wm_contact_ball_loss_weight<1 or args.racket_loss_weight<0:
         parser.error('WM calibration/loss settings invalid')
-    if args.world_learning_rate<=0: parser.error('world-learning-rate must be positive')
+    args.requested_world_lr=args.world_learning_rate
+    if args.world_learning_rate is None:
+        args.world_learning_rate=2e-4
+    if not 0<args.world_learning_rate<float('inf'): parser.error('world-learning-rate must be finite and positive')
+    if args.wm_natural_flight_batch<0: parser.error('wm-natural-flight-batch must be nonnegative')
     if args.cpu_threads<1: parser.error('cpu-threads must be positive')
     if args.actor_update_budget is not None and args.actor_update_budget < 1: parser.error('actor-update-budget must be positive')
     if args.recovery_update_budget < 0 or args.approach_update_budget < 0: parser.error('block budgets must be non-negative')
@@ -368,6 +384,14 @@ def run(args, *, alternating=None):
         labeler = partial(recorded_approach_metadata, schema=adapter.task_model.memory_schema,
                           actor=actor, geometry=adapter.physical_model.geometry)
         replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema,capacity_ticks=args.replay_capacity_ticks,approach_labeler=labeler)
+        from quadsmash.rl.supermimic_physical_loop_replay_v1 import NaturalFlightWindows
+        natural_flight=NaturalFlightWindows(package['tensors'],wm_holdout_lanes) if args.wm_natural_flight_batch else None
+        def sample_long_flight():
+            if natural_flight is None:
+                return None
+            window,lanes=natural_flight.sample(args.wm_natural_flight_batch,trainer.world_updates,launch.device)
+            return window,launch[lanes]
+
         lifecycle_stage(args.output, 'REPLAY_READY')
         # Resolve the exact execution contract before validating any reference
         # bank.  The reference-bank check runs during startup, before the
@@ -560,7 +584,11 @@ def run(args, *, alternating=None):
                     trainer._actor_optimizers['joint'].load_state_dict(trainer._pending_actor_optimizer_states.pop('joint'))
             else:
                 trainer.actor_opt.load_state_dict(resumed['actor_optimizer'])
-            trainer.world_opt.load_state_dict(resumed['world_optimizer'])
+            args.world_learning_rate=trainer.world_lr=restore_world_optimizer(
+                trainer.world_opt,resumed['world_optimizer'],args.requested_world_lr)
+            if natural_flight is not None and resumed.get('natural_flight_rng') is not None:
+                natural_flight.generator.set_state(resumed['natural_flight_rng'].cpu())
+
             trainer.critic_opt.load_state_dict(resumed['critic_optimizer'])
             for name in ('actor_updates','world_updates','critic_updates','last_critic_loss'):setattr(trainer,name,resumed[name])
             tick=int(resumed['native_ticks'])
@@ -796,7 +824,7 @@ def run(args, *, alternating=None):
         config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=args.world_learning_rate,critic_lr=2e-4,
             wm_forward_guard_sha256=forward_guard.spec_sha256 if forward_guard else None,
-            wm_separate_supervision=args.wm_separate_supervision,
+            wm_separate_supervision=args.wm_separate_supervision,wm_natural_flight_batch=args.wm_natural_flight_batch,
             wm_action_collections=action_collections,wm_sampling_mode=args.wm_sampling_mode,
             native_return_monitor=frozen_return_monitor.config,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
@@ -876,6 +904,7 @@ def run(args, *, alternating=None):
                     native_ticks=replay.native_ticks.cpu()),
                 replay_archive_receipts=(replay_receipts if replay_receipts is not None else [json.loads((Path(d)/'manifest.json').read_text()) for d in replay_archives])+[json.loads((archive.directory/'manifest.json').read_text())],
                 replay_archives=replay_archives+[str(archive.directory)],replay_rng=replay.generator.get_state(),
+                natural_flight_rng=natural_flight.generator.get_state() if natural_flight is not None else None,
                 torch_rng=torch.get_rng_state(),cuda_rng=torch.cuda.get_rng_state()),args.output/name)
         def check_stop():
             if args.stop_request['signal'] is not None:raise InterruptedError(args.stop_request['signal'])
@@ -1067,7 +1096,7 @@ def run(args, *, alternating=None):
                 sampling_seconds=time.perf_counter()-sampling_started
                 fit_started=time.perf_counter()
                 stats=trainer.fit_world_window(window,launch[lanes],loss_groups=sampling.pop('loss_groups'),
-                                               separate_supervision=args.wm_separate_supervision); del window
+                                               separate_supervision=args.wm_separate_supervision,long_native=sample_long_flight()); del window
                 stats.update(sampling_seconds=sampling_seconds,fit_wall_seconds=time.perf_counter()-fit_started)
                 stats['sampling']=sampling; reports.append(stats)
                 if calibration_fast_path and ((offset + 1) == total or (offset + 1) % 16 == 0):
@@ -1644,7 +1673,7 @@ def run(args, *, alternating=None):
             collect_s=time.perf_counter()-started
             check_stop()
             window,lanes,sampling=replay.window(timebase.world_steps,128,trainer.actor_updates)
-            world_stats=trainer.fit_world_window(window,launch[lanes],separate_supervision=args.wm_separate_supervision);del window
+            world_stats=trainer.fit_world_window(window,launch[lanes],separate_supervision=args.wm_separate_supervision,long_native=sample_long_flight());del window
             verify_online_forward(trainer.block_name,trainer.actor_attempts+1)
             pool=replay.new_starts if replay.new_starts and trainer.actor_updates%2 else starts
             row=pool[trainer.actor_updates%len(pool)];state=as_state(row)

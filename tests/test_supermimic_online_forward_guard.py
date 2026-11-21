@@ -78,3 +78,79 @@ def test_friction_tangent_pair_respects_joint_limit(direction):
     result=independent_tangent_rows(zero,zero,torch.tensor([3.,4.,2.]),zero[0],
                  torch.tensor([[0.,0.,1.]]),torch.tensor([2.]),1.,torch.tensor([direction]),2)
     assert torch.allclose(result,torch.tensor([-1.2,-1.6,0.]),atol=1.e-6)
+
+
+def test_long_native_supervision_uses_recorded_flight_commands_and_targets(monkeypatch):
+    from types import SimpleNamespace
+    from quadsmash.rl import supermimic_physical_learner_v1 as learner
+    # Commands in the parked lane must never contribute to the supervised loss.
+    gain=torch.tensor(1.,requires_grad=True)
+    def transition(body,ball,state,target,prev,feet,present,elapsed,launch,action_model):
+        nxt=state.clone()
+        nxt[:,52:55]=state[:,52:55]+target*gain
+        return nxt,feet,present
+    monkeypatch.setattr(learner,'ball_transition',transition)
+    commands=torch.tensor([1.,100.]).reshape(1,2,1).expand(64,2,1)
+    values=torch.zeros(64,2,55)
+    window=dict(targets=commands,previous_action=commands,feet=commands,elapsed=commands,
+                present=torch.tensor([True,False]).expand(64,2),state=values,next_state=values)
+    adapter=SimpleNamespace(physical_model=None,ball_model=None,action_ball_model=None)
+    loss=learner.native_flight_rollout_loss(adapter,window,None)
+    loss.backward()
+    assert loss.item()==pytest.approx((4+16+32+64)/4-.5)
+    assert gain.grad.item()==pytest.approx((4+16+32+64)/4)
+
+
+@pytest.mark.parametrize('override,expected',[(None,1.e-6),(2.e-6,2.e-6)])
+def test_resumed_world_optimizer_honors_measured_rate_and_restores_moments(override,expected):
+    from scripts.train_supermimic_physical_block import restore_world_optimizer
+    layer=torch.nn.Linear(2,1)
+    previous=torch.optim.Adam(layer.parameters(),lr=1.e-6)
+    layer(torch.ones(2)).sum().backward()
+    previous.step()
+    resumed=torch.optim.Adam(layer.parameters(),lr=2.e-4)
+    assert restore_world_optimizer(resumed,previous.state_dict(),override)==expected
+    assert resumed.param_groups[0]['lr']==expected
+    assert torch.equal(resumed.state[layer.weight]['exp_avg'],previous.state[layer.weight]['exp_avg'])
+
+
+def test_natural_flight_windows_exclude_reserved_lanes_and_restore_draws():
+    from quadsmash.rl.supermimic_physical_loop_replay_v1 import NaturalFlightWindows
+    ticks,lanes=99,4
+    data={k:torch.zeros(ticks,lanes) for k in NaturalFlightWindows.keys}
+    data.update(episode=torch.ones(ticks,lanes,dtype=torch.long),
+                terminated=torch.zeros(ticks,lanes,dtype=torch.bool),timeout=torch.zeros(ticks,lanes,dtype=torch.bool),
+                event_state=torch.zeros(ticks,lanes,8),next_event_state=torch.zeros(ticks,lanes,8))
+    data['state']=torch.arange(ticks)[:,None].expand(-1,lanes)
+    data['next_event_state'][70,:,1]=1
+    data['timeout'][25,0]=True
+    sampler=NaturalFlightWindows(data,[1,3])
+    rng=sampler.generator.get_state()
+    win,selected=sampler.sample(32,0,'cpu')
+    assert set(selected.tolist())=={0,2}
+    assert (win['state'][0,selected==0]>25).all()
+    sampler.generator.set_state(rng)
+    again,ids=sampler.sample(32,0,'cpu')
+    assert torch.equal(ids,selected) and torch.equal(again['state'],win['state'])
+
+
+def test_frozen_refresh_validation_excludes_padding_and_other_lanes():
+    from scripts.audit_supermimic_frozen_refresh_forward import held_episode_data
+    ticks,lanes=800,128
+    values=torch.zeros(ticks,lanes)
+    keys=['state','next_state','targets','previous_action','feet','present','elapsed']
+    data={k:values for k in keys}
+    data.update(episode=torch.zeros_like(values,dtype=torch.long),terminated=values.bool(),timeout=values.bool(),
+                valid_lengths=torch.full((lanes,),800),event_state=values.unsqueeze(-1).expand(-1,-1,8),
+                next_event_state=torch.zeros(ticks,lanes,8))
+    data['valid_lengths'][3]=400
+    data['timeout'][data['valid_lengths']-1,torch.arange(lanes)]=True
+    data['next_event_state'][120,3,1]=1
+    data['next_event_state'][410,3,1]=1
+    receipt=dict(complete_lanes=128,lengths=data['valid_lengths'].tolist(),episode_ids=[0]*lanes)
+    selection=held_episode_data(data,receipt,[3,7])
+    assert selection['contact'].nonzero().tolist()==[[120,0]]
+    assert selection['episode'][400,0]==-1 and selection['episode'][400,1]==0
+    data['terminated'][300,3]=True
+    with pytest.raises(ValueError,match='terminal tick'):
+        held_episode_data(data,receipt,[3,7])

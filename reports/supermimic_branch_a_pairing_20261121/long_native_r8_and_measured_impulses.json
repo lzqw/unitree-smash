@@ -1,0 +1,397 @@
+{
+  "natural_flight": {
+    "r8_online_wm_cuda_long_native": {
+      "online_world_sha256": "d09b10833e68bea5f2b475ae5a36c18ff3ce1961e7411d5299b5fdc3ca779477",
+      "initial_world_sha256": "f850c9a3fdc8ddea14ba3285bf5b34ce1edabc8694b85b070ba2f2d13876ebd5",
+      "stage_checkpoint_sha256": "b874282ce3f9304e0cb08ea7c6542c6dd66a53aa03257ead7852e8a2d313baca",
+      "updates": 32,
+      "policy_updates": 0,
+      "critic_updates": 0,
+      "learning_rate": 2e-06,
+      "natural_flight_batch": 16,
+      "development": {
+        "panel_sha256": "543a168af3f5d5c94e566764a8972dbff3eb6066beb63083c91bb0ff78e82d8f",
+        "uniform_h64_velocity_rmse": 1.1300063133239746,
+        "contact_h1_velocity_rmse": 2.790445566177368
+      },
+      "monitoring": {
+        "panel_sha256": "864d72e638b3b7ae871c0fcde2f54d710445da3eb293e97fa0504f1ba17aa8cf",
+        "uniform_h64_velocity_rmse": 1.1326501369476318,
+        "contact_h1_velocity_rmse": 2.083752393722534
+      }
+    },
+    "r8_online_wm_cuda_long_half_rate": {
+      "online_world_sha256": "2dcfb8bfbb362e3068cb99e0c9d1d8bbd54f065763ab739856267661618fb792",
+      "initial_world_sha256": "f850c9a3fdc8ddea14ba3285bf5b34ce1edabc8694b85b070ba2f2d13876ebd5",
+      "stage_checkpoint_sha256": "b874282ce3f9304e0cb08ea7c6542c6dd66a53aa03257ead7852e8a2d313baca",
+      "updates": 32,
+      "policy_updates": 0,
+      "critic_updates": 0,
+      "learning_rate": 1e-06,
+      "natural_flight_batch": 16,
+      "development": {
+        "panel_sha256": "543a168af3f5d5c94e566764a8972dbff3eb6066beb63083c91bb0ff78e82d8f",
+        "uniform_h64_velocity_rmse": 1.1934407949447632,
+        "contact_h1_velocity_rmse": 2.831857919692993
+      },
+      "monitoring": {
+        "panel_sha256": "864d72e638b3b7ae871c0fcde2f54d710445da3eb293e97fa0504f1ba17aa8cf",
+        "uniform_h64_velocity_rmse": 1.151095986366272,
+        "contact_h1_velocity_rmse": 2.1351442337036133
+      }
+    }
+  },
+  "main_window_sequence_sha256": "aa521487de0734cfe2529fce37acd1b02927e7dc8f8edeb7ef45c3cc7f61884a",
+  "measured_momentum": {
+    "wide": {
+      "branches": {
+        "nominal_a": {
+          "all": {
+            "racket_frames": 20,
+            "isolated_frames": 20,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 6.965316288187751e-07,
+              "reference_component_rms": 7.025662422180176,
+              "norm_error_p95": 1.957500671778689e-06
+            },
+            "dw": {
+              "component_rmse": 0.0003373574872966856,
+              "reference_component_rms": 74.73168182373047,
+              "norm_error_p95": 0.001040186733007431
+            },
+            "dw_end_center": {
+              "component_rmse": 4.752931594848633,
+              "reference_component_rms": 74.73168182373047,
+              "norm_error_p95": 11.48920726776123
+            }
+          },
+          "racket_stable": {
+            "racket_frames": 4,
+            "isolated_frames": 4,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 5.93682443650323e-07,
+              "reference_component_rms": 6.622761249542236,
+              "norm_error_p95": 1.7071550928449142e-06
+            },
+            "dw": {
+              "component_rmse": 0.0003770923358388245,
+              "reference_component_rms": 87.92713928222656,
+              "norm_error_p95": 0.0009923080215230584
+            },
+            "dw_end_center": {
+              "component_rmse": 5.637907981872559,
+              "reference_component_rms": 87.92713928222656,
+              "norm_error_p95": 13.219223022460938
+            }
+          }
+        },
+        "nominal_b": {
+          "all": {
+            "racket_frames": 20,
+            "isolated_frames": 20,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 6.965316288187751e-07,
+              "reference_component_rms": 7.025662422180176,
+              "norm_error_p95": 1.957500671778689e-06
+            },
+            "dw": {
+              "component_rmse": 0.0003373574872966856,
+              "reference_component_rms": 74.73168182373047,
+              "norm_error_p95": 0.001040186733007431
+            },
+            "dw_end_center": {
+              "component_rmse": 4.752931594848633,
+              "reference_component_rms": 74.73168182373047,
+              "norm_error_p95": 11.48920726776123
+            }
+          },
+          "racket_stable": {
+            "racket_frames": 4,
+            "isolated_frames": 4,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 5.93682443650323e-07,
+              "reference_component_rms": 6.622761249542236,
+              "norm_error_p95": 1.7071550928449142e-06
+            },
+            "dw": {
+              "component_rmse": 0.0003770923358388245,
+              "reference_component_rms": 87.92713928222656,
+              "norm_error_p95": 0.0009923080215230584
+            },
+            "dw_end_center": {
+              "component_rmse": 5.637907981872559,
+              "reference_component_rms": 87.92713928222656,
+              "norm_error_p95": 13.219223022460938
+            }
+          }
+        },
+        "minus": {
+          "all": {
+            "racket_frames": 20,
+            "isolated_frames": 20,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 1.0623214166116668e-06,
+              "reference_component_rms": 7.011109828948975,
+              "norm_error_p95": 3.0386363505385816e-06
+            },
+            "dw": {
+              "component_rmse": 0.00024486848269589245,
+              "reference_component_rms": 76.20777893066406,
+              "norm_error_p95": 0.0007506665424443781
+            },
+            "dw_end_center": {
+              "component_rmse": 4.723396301269531,
+              "reference_component_rms": 76.20777893066406,
+              "norm_error_p95": 11.852608680725098
+            }
+          },
+          "racket_stable": {
+            "racket_frames": 4,
+            "isolated_frames": 4,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 8.957445061241742e-07,
+              "reference_component_rms": 6.634225845336914,
+              "norm_error_p95": 2.26899646804668e-06
+            },
+            "dw": {
+              "component_rmse": 0.0001412001729477197,
+              "reference_component_rms": 97.72382354736328,
+              "norm_error_p95": 0.0003407942713238299
+            },
+            "dw_end_center": {
+              "component_rmse": 5.5846357345581055,
+              "reference_component_rms": 97.72382354736328,
+              "norm_error_p95": 13.00143051147461
+            }
+          }
+        },
+        "plus": {
+          "all": {
+            "racket_frames": 20,
+            "isolated_frames": 20,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 9.039737278726534e-07,
+              "reference_component_rms": 6.953117370605469,
+              "norm_error_p95": 2.8644662961596623e-06
+            },
+            "dw": {
+              "component_rmse": 0.0003459152940195054,
+              "reference_component_rms": 79.63328552246094,
+              "norm_error_p95": 0.0012498358264565468
+            },
+            "dw_end_center": {
+              "component_rmse": 4.79099178314209,
+              "reference_component_rms": 79.63328552246094,
+              "norm_error_p95": 11.614115715026855
+            }
+          },
+          "racket_stable": {
+            "racket_frames": 4,
+            "isolated_frames": 4,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 8.836191796035564e-07,
+              "reference_component_rms": 6.627014636993408,
+              "norm_error_p95": 2.100521214742912e-06
+            },
+            "dw": {
+              "component_rmse": 0.0005614440888166428,
+              "reference_component_rms": 87.03257751464844,
+              "norm_error_p95": 0.001489286427386105
+            },
+            "dw_end_center": {
+              "component_rmse": 5.685935974121094,
+              "reference_component_rms": 87.03257751464844,
+              "norm_error_p95": 13.364914894104004
+            }
+          }
+        }
+      },
+      "physics_sha256": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+      "response_sha256": "0d77a53104f34f0c544a8410fea4612d9e0e3d6992c7ac3bfe0bc4f9f005528b",
+      "scope": "Observed racket-only substeps. Solid-sphere inertia, configured free-flight forces and measured 100 rad/s pre-solve spin limit. Duplicate nominal runs reported separately."
+    },
+    "half": {
+      "branches": {
+        "nominal_a": {
+          "all": {
+            "racket_frames": 20,
+            "isolated_frames": 20,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 6.965316288187751e-07,
+              "reference_component_rms": 7.025662422180176,
+              "norm_error_p95": 1.957500671778689e-06
+            },
+            "dw": {
+              "component_rmse": 0.0003373574872966856,
+              "reference_component_rms": 74.73168182373047,
+              "norm_error_p95": 0.001040186733007431
+            },
+            "dw_end_center": {
+              "component_rmse": 4.752931594848633,
+              "reference_component_rms": 74.73168182373047,
+              "norm_error_p95": 11.48920726776123
+            }
+          },
+          "racket_stable": {
+            "racket_frames": 6,
+            "isolated_frames": 6,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 6.785166419831512e-07,
+              "reference_component_rms": 6.958002090454102,
+              "norm_error_p95": 1.948855697264662e-06
+            },
+            "dw": {
+              "component_rmse": 0.0003454808902461082,
+              "reference_component_rms": 83.07733917236328,
+              "norm_error_p95": 0.0009627464460209012
+            },
+            "dw_end_center": {
+              "component_rmse": 5.699774265289307,
+              "reference_component_rms": 83.07733917236328,
+              "norm_error_p95": 13.002971649169922
+            }
+          }
+        },
+        "nominal_b": {
+          "all": {
+            "racket_frames": 20,
+            "isolated_frames": 20,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 6.965316288187751e-07,
+              "reference_component_rms": 7.025662422180176,
+              "norm_error_p95": 1.957500671778689e-06
+            },
+            "dw": {
+              "component_rmse": 0.0003373574872966856,
+              "reference_component_rms": 74.73168182373047,
+              "norm_error_p95": 0.001040186733007431
+            },
+            "dw_end_center": {
+              "component_rmse": 4.752931594848633,
+              "reference_component_rms": 74.73168182373047,
+              "norm_error_p95": 11.48920726776123
+            }
+          },
+          "racket_stable": {
+            "racket_frames": 6,
+            "isolated_frames": 6,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 6.785166419831512e-07,
+              "reference_component_rms": 6.958002090454102,
+              "norm_error_p95": 1.948855697264662e-06
+            },
+            "dw": {
+              "component_rmse": 0.0003454808902461082,
+              "reference_component_rms": 83.07733917236328,
+              "norm_error_p95": 0.0009627464460209012
+            },
+            "dw_end_center": {
+              "component_rmse": 5.699774265289307,
+              "reference_component_rms": 83.07733917236328,
+              "norm_error_p95": 13.002971649169922
+            }
+          }
+        },
+        "minus": {
+          "all": {
+            "racket_frames": 20,
+            "isolated_frames": 20,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 8.655294436721306e-07,
+              "reference_component_rms": 7.01594877243042,
+              "norm_error_p95": 2.345479060750222e-06
+            },
+            "dw": {
+              "component_rmse": 0.00035430476418696344,
+              "reference_component_rms": 72.57112884521484,
+              "norm_error_p95": 0.001109023578464985
+            },
+            "dw_end_center": {
+              "component_rmse": 4.7737884521484375,
+              "reference_component_rms": 72.57112884521484,
+              "norm_error_p95": 11.445127487182617
+            }
+          },
+          "racket_stable": {
+            "racket_frames": 6,
+            "isolated_frames": 6,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 8.149141308422259e-07,
+              "reference_component_rms": 6.95029878616333,
+              "norm_error_p95": 2.1197211026446894e-06
+            },
+            "dw": {
+              "component_rmse": 0.0005205475026741624,
+              "reference_component_rms": 83.2934799194336,
+              "norm_error_p95": 0.0013926210813224316
+            },
+            "dw_end_center": {
+              "component_rmse": 5.663345813751221,
+              "reference_component_rms": 83.2934799194336,
+              "norm_error_p95": 12.894927978515625
+            }
+          }
+        },
+        "plus": {
+          "all": {
+            "racket_frames": 20,
+            "isolated_frames": 20,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 8.91712659267796e-07,
+              "reference_component_rms": 6.971524715423584,
+              "norm_error_p95": 2.9327957236091606e-06
+            },
+            "dw": {
+              "component_rmse": 0.0003406787582207471,
+              "reference_component_rms": 76.30807495117188,
+              "norm_error_p95": 0.001296434085816145
+            },
+            "dw_end_center": {
+              "component_rmse": 4.802145957946777,
+              "reference_component_rms": 76.30807495117188,
+              "norm_error_p95": 11.538426399230957
+            }
+          },
+          "racket_stable": {
+            "racket_frames": 6,
+            "isolated_frames": 6,
+            "other_contact_frames": 0,
+            "dv": {
+              "component_rmse": 7.57769271331199e-07,
+              "reference_component_rms": 6.961938858032227,
+              "norm_error_p95": 1.791104864423687e-06
+            },
+            "dw": {
+              "component_rmse": 0.0004470915300771594,
+              "reference_component_rms": 82.76775360107422,
+              "norm_error_p95": 0.0013342450838536024
+            },
+            "dw_end_center": {
+              "component_rmse": 5.717718601226807,
+              "reference_component_rms": 82.76775360107422,
+              "norm_error_p95": 13.052489280700684
+            }
+          }
+        }
+      },
+      "physics_sha256": "dba0e8d45edd661185c7f0b8a379f63993d1a87269740e672688b4577e359229",
+      "response_sha256": "4117f71a15c649ef7734ecf35b122fec5564455d089e6d36b1f5875cb281e098",
+      "scope": "Observed racket-only substeps. Solid-sphere inertia, configured free-flight forces and measured 100 rad/s pre-solve spin limit. Duplicate nominal runs reported separately."
+    }
+  }
+}
