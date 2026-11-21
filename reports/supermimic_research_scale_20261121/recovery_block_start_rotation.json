@@ -1,0 +1,56 @@
+{
+  "scope": "CPU deterministic sampling on the frozen Recovery block-entry bank; initial archive fallback unused. Keys are lane, episode and tick within this panel.",
+  "checkpoint": "train/pre_block.pt",
+  "global_counts": {
+    "attempts": 106,
+    "accepted": 101,
+    "rejected": 5,
+    "backtracked": 9
+  },
+  "excluded_lanes": 83,
+  "eligible_records_by_stage": {
+    "pre_body_ground": 24,
+    "touchdown": 16,
+    "post_touchdown": 16,
+    "post_landing_support_loss": 16,
+    "recovery_failure": 16,
+    "stable_recovery": 16
+  },
+  "reproduced_online_accepted_ids": [
+    102,
+    103,
+    104,
+    105,
+    106
+  ],
+  "block_reset_4x8": {
+    "total": 512,
+    "distinct_lane_episode_tick": 84,
+    "distinct_lane_episode": 37,
+    "by_family": {
+      "risk": 256,
+      "landing": 128,
+      "stable": 128
+    }
+  },
+  "continuous_1_to_32": {
+    "total": 512,
+    "distinct_lane_episode_tick": 163,
+    "distinct_lane_episode": 44,
+    "by_family": {
+      "risk": 256,
+      "landing": 128,
+      "stable": 128
+    }
+  },
+  "illustrative_extension_draws_129_to_160": {
+    "total": 512,
+    "distinct_lane_episode_tick": 166,
+    "distinct_lane_episode": 43,
+    "by_family": {
+      "risk": 256,
+      "landing": 128,
+      "stable": 128
+    }
+  }
+}

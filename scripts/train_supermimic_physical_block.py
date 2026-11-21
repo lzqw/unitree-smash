@@ -1090,6 +1090,8 @@ def run(args, *, alternating=None):
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
         interleaved_approach_starts = bool(args.interleaved_approach_starts or args.extend_completed_research or
             (args.resume_training and resumed['config'].get('interleaved_approach_starts', False)))
+        continuous_recovery_starts = bool(args.extend_completed_research or
+            (args.resume_training and resumed['config'].get('continuous_recovery_starts', False)))
         trainer.restart_uphill_approach_momentum = bool(args.restart_uphill_approach_momentum or
             (args.resume_training and resumed['config'].get('restart_uphill_approach_momentum', False)))
         config=dict(restart_uphill_approach_momentum=trainer.restart_uphill_approach_momentum,interleaved_approach_starts=interleaved_approach_starts,outgoing_first_contact_semantics=('string_only_v1' if args.landing_and_first_contact_objectives else 'any_racket'),recovery_rollout_landing=args.recovery_rollout_landing,landing_and_first_contact_objectives=args.landing_and_first_contact_objectives,recovery_prefix_and_string_margin=args.recovery_prefix_and_string_margin,continuous_approach_starts=args.continuous_approach_starts,toi_effective_start_lanes=args.toi_effective_start_lanes,recovery_effective_start_lanes=args.recovery_effective_start_lanes,sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
@@ -1100,6 +1102,7 @@ def run(args, *, alternating=None):
             native_return_monitor=frozen_return_monitor.config,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=None if args.diagnostic_critic_loss else 50.,
             shuffle_wm_quota_groups=args.shuffle_wm_quota_groups,
+            continuous_recovery_starts=continuous_recovery_starts,
             diagnostic_critic_loss=args.diagnostic_critic_loss,critic_mse_reference=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
             native_reference_command_budget=args.native_reference_command_budget,
@@ -1647,7 +1650,9 @@ def run(args, *, alternating=None):
                             family=next((k for k,ids in categories.items() if id(item) in ids),'initial_archive')
                             families[family].append((item,mask))
                         batcher = late_recovery_batch if args.landing_and_first_contact_objectives else recovery_batch
-                        proposal_rows,layout=batcher(families,args.recovery_effective_start_lanes,attempts)
+                        draw = schedule.head_attempts('recovery') if continuous_recovery_starts else attempts
+                        proposal_rows,layout=batcher(families,args.recovery_effective_start_lanes,draw)
+                        start_sampling['recovery_draw_index'] = draw
                         row=proposal_rows[0]
                         if args.landing_and_first_contact_objectives:
                             count=args.recovery_effective_start_lanes
