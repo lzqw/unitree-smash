@@ -1,0 +1,82 @@
+{
+  "run": "paired_adam_direction_0040/G1",
+  "retained_by_head": {
+    "recovery": 24,
+    "approach": 17
+  },
+  "registered_budget": 256,
+  "collection": {
+    "native_ticks": 6526,
+    "accepted_id": 93,
+    "completed_native_episodes": 0,
+    "first_episode_body_cases": 0
+  },
+  "new_physx_transitions": 16384,
+  "shared_world_updates": 8,
+  "source_windows": {
+    "initial_archive": 256,
+    "recent_online": 192,
+    "older_online": 64,
+    "action_identification": 208,
+    "contact_event": 304
+  },
+  "online_transition_uses_by_behavior_version": {
+    "8": 2016,
+    "16": 1104,
+    "17": 1296,
+    "33": 615,
+    "61": 268,
+    "69": 3108,
+    "25": 9,
+    "93": 208
+  },
+  "world_holdout": {
+    "passed": true,
+    "comparison_reference": "formal_anchor",
+    "attempt": 99,
+    "world_sha256": "845804918b98f070cba195c03ba777c5f57febc7ea0d289e8ce1d7cdac265651",
+    "world_updates": 184,
+    "spec_sha256": "6b6eb41966776eff5ed83cbf33cbec397d35e0ea98d5b3e5b0424c9526da8203"
+  },
+  "start": {
+    "requested": "success_near",
+    "actual": "success_near",
+    "effective_lanes": 15,
+    "requested_lanes": 16,
+    "approach_draw_index": 17
+  },
+  "control_snapshots": 5,
+  "proposal": {
+    "update_accepted": true,
+    "attempt_id": 99,
+    "accepted_id": 94,
+    "adam_proposal_loss_slope": 0.022572297602891922,
+    "restarted_adam_proposal_loss_slope": -0.014812621288001537,
+    "objective_before": 0.6508703827857971,
+    "objective_after": 0.6336004734039307,
+    "backtrack_alpha": 1.0,
+    "contact_aux_weight": 0.1,
+    "contact_aux_to_toi_gradient_ratio": 0.004325425197395978,
+    "bptt_seconds": 196.01334413595032,
+    "world_update_seconds": 192.26844342501136,
+    "native_collect_seconds": 164.3171918289736,
+    "model_unchanged_during_actor": true
+  },
+  "budget": {
+    "residual_request_delta": 0.003377966582775116,
+    "final_normalized_command_delta": 0.0011125802993774414,
+    "final_joint_target_delta_rad": 0.0013511180877685547
+  },
+  "trial": {
+    "loss": 0.6336004734039307,
+    "alpha": 1.0,
+    "budget_ok": true,
+    "toi_coverage_preserved": true,
+    "first_contact_counts": {
+      "predicted_first_string_lanes": 11,
+      "predicted_first_frame_lanes": 4
+    }
+  },
+  "number_of_trials": 1,
+  "native_episode_return": null
+}

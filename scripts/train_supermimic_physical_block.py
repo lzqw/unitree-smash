@@ -1581,6 +1581,9 @@ def run(args, *, alternating=None):
                         if writer is not None and cursor < len(env.rally_records):
                             writer.flush()
                         cursor=len(env.rally_records)
+                if research and collect_block:
+                    # Publish the collected chunks to live native monitors before policy fitting.
+                    archive.flush()
                 collect_s=time.perf_counter()-started;check_stop()
                 if collect_block:
                     progress['collection_reward_mean']=float(reward.mean())
