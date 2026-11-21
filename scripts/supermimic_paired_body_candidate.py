@@ -128,7 +128,7 @@ def merged(signed,indices,device):
             if k in ('state','feet','present','elapsed','targets','previous_action','next_state')}
 
 
-def paired_terms(world,ball,window,launch,scales,*,training):
+def paired_terms(world,ball,window,launch,scales,*,training,arm_rows=None,arm_scales=None):
     total=launch.new_zeros(())
     scores={}
     physical_scale=launch.new_tensor([.03]*3+[1.]*3+[1.]*3+[3.]*3)
@@ -143,11 +143,20 @@ def paired_terms(world,ball,window,launch,scales,*,training):
         body=robot_loss(state,truth)
         absolute=F.smooth_l1_loss((got-actual)/physical_scale,torch.zeros_like(got))
         signed=F.smooth_l1_loss(err/scales[h],torch.zeros_like(err))
+        if arm_scales is not None:
+            q_minus,q_plus=state[:,arm_rows].chunk(2)
+            measured_minus,measured_plus=truth[:,arm_rows].chunk(2)
+            arm_error=(q_plus-q_minus)-(measured_plus-measured_minus)
+            arm_loss=F.smooth_l1_loss(arm_error/arm_scales[h],torch.zeros_like(arm_error))
+            signed=.5*(signed+arm_loss)
         gyro=F.smooth_l1_loss(state[:,10:13],truth[:,10:13],beta=.1)
         total=total+body+absolute+gyro+signed
         if not training:
             scores[h]=dict(center_rmse_m=float((got[:,:3]-actual[:,:3]).square().mean().sqrt()),
                 body_rmse=float((state[:,:49]-truth[:,:49]).square().mean().sqrt()), gyro_mae=float((state[:,10:13]-truth[:,10:13]).abs().mean()))
+            if arm_scales is not None:
+                scores[h]['arm_position_signed_rmse_rad']=float(arm_error[:,:6].square().mean().sqrt())
+                scores[h]['arm_velocity_signed_rmse_rad_s']=float(arm_error[:,6:].square().mean().sqrt())
             for i,name in enumerate(('center','normal','linear','angular')):
                 pred=(b-a)[:,3*i:3*i+3];target=(p-m)[:,3*i:3*i+3]
                 scores[h][name+'_signed_rmse']=float((pred-target).square().mean().sqrt())
@@ -273,10 +282,24 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
         original_rows=[x[frozen_rows].detach().clone() for x in (layer.weight,layer.bias)]
     trainable=[v for v in world.body.parameters() if v.requires_grad]
     opt=torch.optim.Adam(trainable,lr=1e-6)
+    arm_scales=None
+    if args.signed_arm_supervision:
+        arm_scales={}
+        # Scale each joint only with training traces, including the misses. The floor follows
+        # the measured state normalization used by the deployed Body's own residual readout.
+        floor=(.01*world.delta_scale[readout_rows]).clamp_min(1e-6)
+        for h in CHECKS:
+            diff=signed['plus']['next_state'][h-1,:,readout_rows]-signed['minus']['next_state'][h-1,:,readout_rows]
+            arm_scales[h]=torch.maximum(diff.to(floor).square().mean(0).sqrt(),floor)
+        all_training=merged(signed,torch.arange(len(lanes)),args.device)
     @torch.no_grad()
     def score():
-        return dict(paired=paired_terms(world,ball,devwin,devlaunch,scales,training=False)[1],
-                    natural=validate(world,ball,data,val,launch,args.device))
+        out=dict(paired=paired_terms(world,ball,devwin,devlaunch,scales,training=False,
+                 arm_rows=readout_rows,arm_scales=arm_scales)[1],natural=validate(world,ball,data,val,launch,args.device))
+        if arm_scales is not None:
+            out['training_paired']=paired_terms(world,ball,all_training,training_launch.repeat(2,1).to(args.device),
+                scales,training=False,arm_rows=readout_rows,arm_scales=arm_scales)[1]
+        return out
     base=score()
     initial={k:v.detach().clone() for k,v in world.body.named_parameters()}
     best=1.;steps=0;history=[]
@@ -284,14 +307,16 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
     def save():
         cpu_weights={k:v.detach().cpu() for k,v in world.state_dict().items()}
         atomic_torch_save(dict(parent,model=cpu_weights,calibration=dict(parent['calibration'],train_lanes=sorted(set(lanes)),additional_paired_training=extra,
-             paired_body_source_world=fit['online_world_sha256'],paired_body_update=steps,arm_readout_rows=readout_rows),
+             paired_body_source_world=fit['online_world_sha256'],paired_body_update=steps,arm_readout_rows=readout_rows,
+             signed_arm_supervision=args.signed_arm_supervision),
              policy_training_admitted=False),args.output/'world.pt')
     save()
     for epoch in range(4):
         for ix in torch.randperm(len(lanes),generator=rng).split(9):
             steps+=1
             win=merged(signed,ix,args.device)
-            loss,_=paired_terms(world,ball,win,training_launch[ix].repeat(2,1).to(args.device),scales,training=True)
+            loss,_=paired_terms(world,ball,win,training_launch[ix].repeat(2,1).to(args.device),scales,training=True,
+                                arm_rows=readout_rows,arm_scales=arm_scales)
             rows=torch.cat([pool[torch.randint(len(pool),(n,),generator=rng)] for pool,n in
                             ((pools['natural'],24),(pools['racket'],6),(pools['recovery'],6))])
             natural={k:v.to(args.device) for k,v in take_windows(data,*rows.T,16).items()}
@@ -334,7 +359,7 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
         (args.output/'development.json').write_text(json.dumps(history,indent=2,allow_nan=False)+'\n')
     report=dict(source_world_sha256=fit['online_world_sha256'],training=receipt,development_sha256=sha(args.paired_development/'status.json'),
         development_lanes=held,selected_update=selected,updates=steps,long_body_anchor=args.long_body_anchor,baseline=base,history=history,
-        arm_readout_rows=readout_rows,
+        arm_readout_rows=readout_rows,signed_arm_scales={h:s.tolist() for h,s in arm_scales.items()} if arm_scales else None,
         trained_lanes_per_epoch=original_lanes,additional_training=extra,training_pairs_per_epoch=len(training_launch),selected_sha256=sha(args.output/'world.pt'),actor_updates=0,critic_updates=0,
         ball_updates=0,final_holdout_opened=False,validation_windows={k:torch.stack(v,1).tolist() for k,v in val.items()})
     (args.output/'fit.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')

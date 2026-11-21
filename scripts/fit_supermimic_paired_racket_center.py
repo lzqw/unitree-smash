@@ -91,6 +91,8 @@ def main():
     cli.add_argument('--long-body-anchor', action='store_true', help='Add measured 32/64-step Body and racket targets to the paired shared-layer fit')
     cli.add_argument('--arm-pose-velocity-readout',action='store_true',
                      help='Restrict paired Body updates to the six arm position and velocity output rows each')
+    cli.add_argument('--signed-arm-supervision',action='store_true',
+                     help='Share the signed supervision weight between racket FK and measured arm joint responses')
     cli.add_argument('--audit-center-timing',action='store_true',help='Compare fixed timing offsets on signed Body trajectories with no optimizer updates')
     cli.add_argument('--additional-training',type=Path,help='Use another independently scored native training launch panel')
     cli.add_argument('--additional-support',type=Path)
@@ -101,6 +103,8 @@ def main():
         cli.error('The shared Body calibration and timing diagnostic require a paired development panel')
     if a.arm_pose_velocity_readout and (not a.paired_development or a.audit_center_timing):
         cli.error('Arm readout updates require a paired development fit')
+    if a.signed_arm_supervision and not a.arm_pose_velocity_readout:
+        cli.error('Direct arm response fitting requires the arm pose and velocity readout')
     if a.output.exists():
         raise FileExistsError(a.output)
     torch.manual_seed(20261121)
