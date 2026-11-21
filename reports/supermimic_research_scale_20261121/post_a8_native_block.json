@@ -1,0 +1,66 @@
+{
+  "actor_sha256": "06d4bfdce73720325339a34fc2c4b5548f3f4f5c72f38d8eacfcb2cb11b168c8",
+  "policy_version": 33,
+  "source": "mixed_training",
+  "stream": 8,
+  "block": "cycle000_pair001_recovery",
+  "native_ticks": [
+    5246,
+    5373
+  ],
+  "lane_transitions": 16384,
+  "source_chunks": [
+    {
+      "file": "chunk_00008.pt.zst",
+      "sha256": "75a143804d9e0b333ecf0224418eed89739f83a2415fee4989cd9365af241224",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00009.pt.zst",
+      "sha256": "676e42ac58209e80fd1e07768b9d9d078c737504f734b1c3ceb9a7afe9705df8",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00010.pt.zst",
+      "sha256": "2c14078d7eb06091dd2c46e5d271d22d7a276d01e38b0721630fddd3140be4f6",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00011.pt.zst",
+      "sha256": "b35b68f3b720a1716e0bd0db42ae032e11b7198dc94ba89adaed2040b37ff215",
+      "ticks": 32
+    }
+  ],
+  "counts": {
+    "qualified": {
+      "lane_ticks": 65,
+      "distinct_lane_episodes": 65
+    },
+    "frame": {
+      "lane_ticks": 44,
+      "distinct_lane_episodes": 44
+    },
+    "qualified_or_frame": {
+      "lane_ticks": 109,
+      "distinct_lane_episodes": 109
+    },
+    "posthit_gate": {
+      "lane_ticks": 12085,
+      "distinct_lane_episodes": 109
+    },
+    "posthit_gate_onset": {
+      "lane_ticks": 109,
+      "distinct_lane_episodes": 109
+    },
+    "posthit_ground_support": {
+      "lane_ticks": 8592,
+      "distinct_lane_episodes": 109
+    },
+    "posthit_no_foot_to_support": {
+      "lane_ticks": 137,
+      "distinct_lane_episodes": 109
+    }
+  },
+  "actor_identity_scope": "Archive rows identify the behavior by policy version and collection block. The hash is from the audited R8+A8 checkpoint.",
+  "scope": "128 training lanes carried on from the preceding blocks. Counts refer to this new interval only; these are not independent fixed-panel scores."
+}

@@ -45,11 +45,23 @@ def scalars(row):
                 if item.get('candidate') is not None:
                     path = '/'.join(map(str, (group, item.get('horizon', 'event'), item['metric'])))
                     metrics['world/'+path] = item['candidate']
-    fits = [r['contact_supervision'] for r in row.get('world_update_reports', []) if r.get('contact_supervision')]
+    reports = row.get('world_update_reports', [])
+    fits = [r['contact_supervision'] for r in reports if r.get('contact_supervision')]
     if fits:
         metrics['world/contact_supervision_batches'] = len(fits)
         metrics['world/contact_optimizer_steps'] = sum(int(r['updated']) for r in fits)
         metrics['world/sampled_contact_events'] = sum(r['measured_events'] for r in fits)
+    if reports and all('online_fit_by_policy' in r.get('sampling', {}) for r in reports):
+        # Collection and all WM updates precede this block's first Actor proposal.
+        behavior = str(row['accepted_id'] - int(row['update_accepted']))
+        coverage = [r['sampling']['online_fit_by_policy'] for r in reports]
+        metrics['world/online_transition_uses'] = sum(
+            group['transition_uses'] for batch in coverage for group in batch.values())
+        for key in ('transition_uses', 'racket_edge_uses'):
+            metrics['world/collection_policy_' + key] = sum(batch.get(behavior, {}).get(key, 0) for batch in coverage)
+        metrics['world/collection_policy_contact_fit_edge_uses'] = sum(
+            batch.get(behavior, {}).get('racket_edge_uses', 0) for batch, report in zip(coverage, reports)
+            if report.get('contact_supervision', {}).get('updated'))
     return metrics
 
 

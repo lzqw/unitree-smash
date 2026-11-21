@@ -26,6 +26,21 @@ def test_supervision_batches_are_distinct_from_optimizer_steps():
     assert result['world/contact_supervision_batches'] == 2
     assert result['world/contact_optimizer_steps'] == 1
     assert result['world/sampled_contact_events'] == 3
+    assert 'world/collection_policy_transition_uses' not in result
+
+
+def test_fit_coverage_tracks_the_policy_that_collected_before_a_retained_or_rejected_proposal():
+    batch = dict(sampling=dict(online_fit_by_policy={
+        '17': dict(transition_uses=5, racket_edge_uses=2),
+        '25': dict(transition_uses=8, racket_edge_uses=3)}))
+    for accepted in (True, False):
+        result = scalars(dict(block='recovery', update_accepted=accepted, accepted_id=25+int(accepted),
+            peak_gpu_bytes=0, world_update_reports=[batch, dict(batch, contact_supervision={
+                'updated': True, 'measured_events': 5})]))
+        assert result['world/online_transition_uses'] == 26
+        assert result['world/collection_policy_transition_uses'] == 16
+        assert result['world/collection_policy_racket_edge_uses'] == 6
+        assert result['world/collection_policy_contact_fit_edge_uses'] == 3
 
 
 def test_first_pair_budget_waits_for_both_heads_and_counts_rejections():

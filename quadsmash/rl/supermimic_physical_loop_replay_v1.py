@@ -113,6 +113,21 @@ def current_start(row):
     return tensor_tree_copy({key: row[key] for key in ('before', 'executor_before', 'observation')}, cpu=True)
 
 
+def online_fit_coverage(data, recorded_sources, versions, at, lanes):
+    """Count actual sampled transition uses, including overlaps and mid-window policy changes."""
+    indices = (at, lanes[None])
+    online = recorded_sources[indices] == SOURCE_CODES['online']
+    selected_versions = versions[indices]
+    before, after = data['event_state'][indices], data['next_event_state'][indices]
+    racket = (after[..., 1] > before[..., 1]) | (after[..., 6] > before[..., 6])
+    result = {}
+    for version in selected_versions[online].unique().tolist():
+        used = online & (selected_versions == version)
+        result[str(version)] = dict(transition_uses=int(used.sum()),
+                                    racket_edge_uses=int((used & racket).sum()))
+    return result
+
+
 def _slice_lane(value, lane, lanes):
     """Slice one lane from a captured start without changing scalar metadata."""
     if torch.is_tensor(value):
@@ -491,6 +506,7 @@ class PhysicalLoopReplay:
         start_stream = streams[t]
         start_source = source_codes[t, lanes]
         if report_loss_groups:
+            counts['online_fit_by_policy'] = online_fit_coverage(d, source_ids_all, policy_versions, at, lanes)
             source_groups = {'initial_archive': 0, 'recent_online': 1, 'older_online': 2,
                              'action_identification': SOURCE_CODES['action_identification'],
                              'contact_event': SOURCE_CODES['contact_event']}

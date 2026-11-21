@@ -2,9 +2,23 @@ import torch
 
 from quadsmash.rl.supermimic_physical_loop_replay_v1 import (
     PhysicalLoopReplay,
+    online_fit_coverage,
     _stage_ids_from_tensors,
     sample_stratified_windows,
 )
+
+
+def test_online_fit_counts_actual_selected_policy_and_repeated_racket_edges():
+    data = _data(time=3, lanes=3)
+    # Two overlapping lane-0 windows and a lane-2 excitation window.
+    at = torch.tensor([[0, 1, 1], [1, 2, 2]])
+    lanes = torch.tensor([0, 0, 2])
+    sources = torch.tensor([[1, 0, 3]] * 3)
+    versions = torch.tensor([[17, 0, -1], [25, 0, -1], [25, 0, -1]])
+    data['next_event_state'][1, :, 6] = 1
+    assert online_fit_coverage(data, sources, versions, at, lanes) == {
+        '17': {'transition_uses': 1, 'racket_edge_uses': 0},
+        '25': {'transition_uses': 3, 'racket_edge_uses': 2}}
 
 
 def _data(time=8, lanes=2):
