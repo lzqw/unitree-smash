@@ -56,3 +56,44 @@ def test_research_replicate_forks_sampler_streams_and_resume_keeps_cursors():
         assert sample() == second
         with pytest.raises(ValueError, match='ongoing schedule'):
             research_learner_rng(322, config, fresh=False, replay=replay, natural_flight=flight)
+
+
+def test_extension_launches_from_final_refresh_and_preserves_original_axes(tmp_path):
+    import json
+    import pytest
+    from scripts.extend_supermimic_research_scale import extension_registration
+    from scripts.report_supermimic_research_curve import arm_origin
+    from scripts.run_supermimic_research_scale import digest
+
+    parent = tmp_path/'main'
+    train = parent/'train'
+    archive = train/'native_transitions'
+    archive.mkdir(parents=True)
+    manifest = {'chunks': [{'sha256': 'chunk'}]}
+    (archive/'manifest.json').write_text(json.dumps(manifest))
+    contact = dict(**manifest, durable_env_steps=91008, total={'frame':3,'qualified_contact':6,'qualified_or_frame':9})
+    (parent/'native_contact_counts.json').write_text(json.dumps(contact))
+    initial = tmp_path/'original.pt'
+    torch.save(dict(global_counters={'accepted':17},native_ticks=4990), initial)
+    reg = dict(arm='G1',expected_retained_updates=256, initial={'checkpoint_sha256':digest(initial)},
+               command=['train','--resume-training',str(initial),'--resume-reset-schedule','--cycles','1',
+                        '--output',str(train),'--tensorboard-dir','old'])
+    (parent/'registration.json').write_text(json.dumps(reg))
+    (parent/'exit.json').write_text(json.dumps({'returncode':0,'wall_seconds':1000}))
+    completed=dict(actor_updates=256,recovery_accepted=128,approach_accepted=128,global_accepted=273,
+                   world_updates=490,critic_updates=560,head_counters={'recovery':{'attempts':130},'approach':{'attempts':138}})
+    (train/'training_completed.json').write_text(json.dumps(completed))
+    ck = dict(config={'research_origin':17}, global_counters={'accepted':273},world_updates=490,critic_updates=560,
+              alternating_schedule=dict(running=False,cursor=1,plan=[{'kind':'finalize'}],results=[{'event':{'kind':'finalize'}}]))
+    torch.save(ck, train/'latest.pt')
+    extended = extension_registration(parent, tmp_path/'next', tmp_path/'tb', 1024)
+    assert arm_origin(extended) == (17, 4990)
+    assert extended['previous_heads'] == {'recovery':128,'approach':128}
+    assert extended['previous_proposals'] == 268
+    cmd = extended['command']
+    assert cmd[cmd.index('--resume-training')+1] == str(train/'latest.pt')
+    assert cmd[cmd.index('--cycles')+1] == '4' and '--resume-reset-schedule' not in cmd
+    ck['world_updates'] -= 4
+    torch.save(ck, train/'latest.pt')
+    with pytest.raises(ValueError, match='post-refresh'):
+        extension_registration(parent, tmp_path/'next', tmp_path/'tb', 1024)

@@ -58,3 +58,7 @@ G1 的 R6 断点在旧配对入口会因当前 Actor 已更新而被拒绝。现
 首个 Recovery 块从 R1 结束到 R8 结束共 2,853 秒，其中 2,430 秒用于七次 Actor 提案的 BPTT 与复算。同期 568 个资源采样的整卡利用率中位数为 23%，显存占用中位数 5,138 MiB、采样最大值 5,557 MiB，训练进程 CPU 使用量中位数为 1.03 核。这段时间的负载有明显显存余量。每步的 16 条有效起点按原记录分别执行 H64，后续优先优化小批次的执行效率。第一个 Approach 块已保留两次全步长更新，均使用 16 条有效 lane。[原生训练资源记录](r2_r8_resources.json)
 
 为后续独立训练重复增加了 `run_supermimic_research_scale.py --training-seed`。显式指定时，程序从相同的组合权重与历史 Replay 出发，在原生环境 reset 后重新初始化学习器、Replay 窗口和长飞行窗口的随机流。G0 继承配对 G1 的训练种子。正常断点续接沿用各随机流保存的位置。使用本次 G1 的实际初始化 checkpoint 做 CPU 重放，新的训练种子改变了三个随机流的抽样顺序，重复指定同一种子可复现三组抽样。672 项回归测试通过。当前 G1 沿用原登记的种子，第二个训练 seed 的策略实验留到扩展阶段。
+
+新增累计扩展入口 `PYTHONPATH=.:scripts python scripts/extend_supermimic_research_scale.py --parent <已完成的组目录> --total-retained 1024 --output <新目录> --tensorboard <原TensorBoard根目录>`，后续终点可取 2048。入口使用上阶段冻结采集、WM 和 Critic 刷新全部结束后的 latest.pt。调度器核对原计划与回执，直接进入下一周期的 Recovery，沿用真实交互计数、学习器和采样器状态，完成扩展后执行独立 512 案例评分。新进程从新的原生回合开始；已有 Replay 通过归档恢复。新 checkpoint 保存训练墙钟，首个旧版 G1 的续接计时使用原 launcher 的进程耗时，包含其启动与 Replay 重建。
+
+在实际 R8+A4 checkpoint 上做了只读 CPU 检查。两个 Head 各有 6 个 Adam 参数状态，WM 有 64 个、Critic 有 14 个，Replay 随机状态与四份归档清单已保存。恢复出的调度指向首个 Approach 块的第 4 次保留更新。CPU 回归覆盖 256→1024→2048 的累计预算、保留的周期及冻结回执、使用刷新前 checkpoint 的拒绝路径，以及接触事件跨阶段累计。675 项通过。主训练仍在 256 阶段，尚无原生扩展成绩。[实际断点检查](cumulative_resume_inspection.json)

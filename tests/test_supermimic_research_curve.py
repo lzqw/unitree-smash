@@ -48,3 +48,19 @@ def test_first_pair_budget_waits_for_both_heads_and_counts_rejections():
     first_arm=first_pair_budget(plan,rows,historical,shared_baseline_pending=True)
     assert first_arm['fixed_panels']==3
     assert first_arm['estimated_remaining_hours_after_first_pair']==(180*15+380)/3600
+
+
+def test_extension_contact_totals_include_prior_stage_and_repair_missing_export(tmp_path):
+    import json
+    from scripts.report_supermimic_native_contact_counts import NativeContactCounts
+    directory = tmp_path/'train/native_transitions'
+    directory.mkdir(parents=True)
+    prior = {'qualified_contact': 8, 'frame': 2, 'qualified_or_frame': 9}
+    counts = {'qualified_contact': 2, 'frame': 0, 'qualified_or_frame': 2}
+    (tmp_path/'registration.json').write_text(json.dumps({'previous_native_contacts': {'env_steps': 512, 'counts': prior}}))
+    (directory/'manifest.json').write_text(json.dumps({'num_envs': 128, 'chunks': [
+        {'file':'a','sha256':'example','ticks':2,'native_events':counts}]}))
+    for _ in range(2):
+        NativeContactCounts(tmp_path).update()
+        report = json.loads((tmp_path/'native_contact_counts.json').read_text())
+        assert report['durable_env_steps'] == 768 and report['total']['qualified_or_frame'] == 11

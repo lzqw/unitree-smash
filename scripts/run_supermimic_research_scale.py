@@ -52,8 +52,6 @@ def main():
         else:cmd.extend([flag,str(v)])
     if a.training_seed is not None:
         cmd.extend(['--research-training-seed',str(a.training_seed)])
-    a.output.mkdir(parents=True,exist_ok=False)
-    env=dict(os.environ,PYTHONPATH='.:scripts',OMP_NUM_THREADS='2',QUADSMASH_ZSTD_ARCHIVE='1')
     registration=dict(command=cmd,arm=a.arm,initial=composition,expected_retained_updates=256,
                       max_proposals=512,train_case_seed=NATIVE_TRAIN128_SEED,learner_initial_seed=LEARNER_SEED,
                       research_training_seed=a.training_seed,
@@ -61,22 +59,30 @@ def main():
                                             else 'forked after native reset from the registered training seed'),compression='zstd',
                       previous_registration_sha256=digest(a.source_registration),
                       baseline_path=cmd[cmd.index('--paired-evaluation-baseline')+1])
-    (a.output/'registration.json').write_text(json.dumps(registration,indent=2)+'\n')
+    return run_registered_arm(a.output, a.tensorboard, registration)
+
+
+def run_registered_arm(output, tensorboard, registration):
+    cmd = registration['command']
+    arm = registration['arm']
+    output.mkdir(parents=True, exist_ok=False)
+    env=dict(os.environ,PYTHONPATH='.:scripts',OMP_NUM_THREADS='2',QUADSMASH_ZSTD_ARCHIVE='1')
+    (output/'registration.json').write_text(json.dumps(registration,indent=2)+'\n')
     started=time.time()
     repo = Path(__file__).resolve().parents[1]
-    with (a.output/'train.log').open('w') as log:
+    with (output/'train.log').open('w') as log:
         with subprocess.Popen([sys.executable,*cmd],cwd=repo,env=env,stdout=log,stderr=subprocess.STDOUT) as trainer:
-            with (a.output/'curve_export.log').open('w') as curve_log, (a.output/'resources.log').open('w') as resource_log:
+            with (output/'curve_export.log').open('w') as curve_log, (output/'resources.log').open('w') as resource_log:
                 monitor = subprocess.Popen([sys.executable,'scripts/report_supermimic_research_curve.py',
-                    '--arm-dir',str(a.output.resolve()),'--tensorboard',str((a.tensorboard/(a.arm+'_learning')).resolve()),
+                    '--arm-dir',str(output.resolve()),'--tensorboard',str((tensorboard/(arm+'_learning')).resolve()),
                     '--follow-pid',str(trainer.pid)],cwd=repo,env=env,stdout=curve_log,stderr=subprocess.STDOUT)
                 resources = subprocess.Popen([sys.executable,'scripts/monitor_supermimic_research_gpu.py',
-                    '--pid',str(trainer.pid),'--output',str((a.tensorboard/(a.arm+'_resources')).resolve())],
+                    '--pid',str(trainer.pid),'--output',str((tensorboard/(arm+'_resources')).resolve())],
                     cwd=repo,env=env,stdout=resource_log,stderr=subprocess.STDOUT)
                 result = trainer.wait()
                 resource_result = resources.wait()
                 monitor_result = monitor.wait()
-    (a.output/'exit.json').write_text(json.dumps(dict(returncode=result,curve_export_returncode=monitor_result,
+    (output/'exit.json').write_text(json.dumps(dict(returncode=result,curve_export_returncode=monitor_result,
         resource_monitor_returncode=resource_result,
         wall_seconds=time.time()-started))+'\n')
     return result

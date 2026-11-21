@@ -97,7 +97,16 @@ class AlternatingSchedule:
         return dict(schema=self.schema,plan=copy.deepcopy(self.plan),execution_config=copy.deepcopy(self.execution_config),cursor=self.cursor,
                     running=self.running,results=copy.deepcopy(self.results))
 
-    def load_state_dict(self, state):
+    def load_state_dict(self, state, *, extend_completed=False):
+        if extend_completed and state.get('plan') != self.plan:
+            prior = state.get('plan')
+            if (not prior or self.plan[:len(prior)] != prior or len(self.plan) <= len(prior)
+                    or prior[-1]['kind'] != 'finalize' or state.get('cursor') != len(prior)
+                    or state.get('running') is not False):
+                raise ValueError('Research extension requires a completed prefix of the requested cycles')
+            # Replay the original receipts through the normal verifier. The cursor
+            # stays on the first new event, after the prior cycle's final refresh.
+            state = dict(state, plan=self.plan)
         if (state.get('schema')!=self.schema or state.get('plan')!=self.plan
                 or state.get('execution_config')!=self.execution_config):
             raise ValueError('Resume changes alternating schedule/configuration')

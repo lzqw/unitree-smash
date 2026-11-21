@@ -14,11 +14,13 @@ from quadsmash.rl.supermimic_archive_pipeline import native_event_counts
 
 class NativeContactCounts:
     def __init__(self, arm):
+        registration = arm/'registration.json'
+        self.previous = json.loads(registration.read_text()).get('previous_native_contacts', {}) if registration.exists() else {}
         self.directory = arm/'train/native_transitions'
         self.report = arm/'native_contact_counts.json'
         self.chunks = json.loads(self.report.read_text())['chunks'] if self.report.exists() else []
 
-    def update(self, writer):
+    def update(self, writer=None):
         manifest = self.directory/'manifest.json'
         if not manifest.is_file():
             return
@@ -30,7 +32,8 @@ class NativeContactCounts:
         if len(receipts) == len(self.chunks):
             return
         totals = dict(qualified_contact=0, frame=0, qualified_or_frame=0)
-        steps = 0
+        totals.update(self.previous.get('counts', {}))
+        steps = self.previous.get('env_steps', 0)
         for c in self.chunks:
             steps += c['env_steps']
             for key in totals:
@@ -47,9 +50,11 @@ class NativeContactCounts:
                 totals[key] += counts[key]
             self.chunks.append(dict(file=receipt['file'], sha256=receipt['sha256'], env_steps=n,
                                     **entry))
-            writer.add_event(Event(wall_time=time.time(),step=steps,summary=Summary(value=[
-                Summary.Value(tag='new_native_env_steps/native/'+k,simple_value=v) for k,v in totals.items()])))
-        writer.flush()
+            if writer is not None:
+                writer.add_event(Event(wall_time=time.time(),step=steps,summary=Summary(value=[
+                    Summary.Value(tag='new_native_env_steps/native/'+k,simple_value=v) for k,v in totals.items()])))
+        if writer is not None:
+            writer.flush()
         tmp = self.report.with_suffix('.tmp')
         tmp.write_text(json.dumps(dict(scope='Newly collected native lane-tick rising edges of qualified-contact and frame latches; repeated WM draws excluded.',
                                        durable_env_steps=steps, total=totals, chunks=self.chunks),indent=2)+'\n')

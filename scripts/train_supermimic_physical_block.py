@@ -127,6 +127,8 @@ def main():
     parser.add_argument('--native-acceptance-receipt',type=Path)
     parser.add_argument('--training-profile',choices=('bounded','large','research_scale'),default='bounded')
     parser.add_argument('--research-contact-gradient',choices=('G0','G1'),default='G1')
+    parser.add_argument('--extend-completed-research', action='store_true',
+                        help='Append cycles after the final refresh of a completed research schedule')
     parser.add_argument('--research-training-seed', type=int,
                         help='Fork learner and sampler RNGs for an independent research training replicate')
     parser.add_argument('--research-contact-weight',type=float,default=.10)
@@ -236,6 +238,9 @@ def main():
     research = args.training_profile == 'research_scale'
     if args.research_training_seed is not None and (not research or not 0 <= args.research_training_seed < 2**63):
         parser.error('research-training-seed requires research_scale and a nonnegative signed 64-bit seed')
+    if args.extend_completed_research and (not research or args.resume_training is None or
+                                           args.resume_reset_schedule or args.resume_next_cycle):
+        parser.error('Extending research cycles requires continuation of a saved research schedule')
     if research != (args.training_stage == 'research_contact'):
         parser.error('research_scale uses the non-promotable research_contact stage')
     if research and (args.sequential_layout!='short-alternating' or args.update_mode!='sequential' or
@@ -790,7 +795,7 @@ def run(args, *, alternating=None):
             saved_alternating=resumed.get('alternating_schedule')
             if alternating is not None and not args.resume_reset_schedule:
                 if saved_alternating is None:raise ValueError('Legacy checkpoint has no alternating cursor; no silent schedule migration')
-                alternating.load_state_dict(saved_alternating)
+                alternating.load_state_dict(saved_alternating, extend_completed=args.extend_completed_research)
                 if alternating.complete:raise ValueError('Completed alternating cycle requires explicit native acceptance and resume-next-cycle')
             elif saved_alternating is not None and alternating is None and not args.resume_reset_schedule:
                 raise ValueError('Cannot silently resume alternating checkpoint in legacy layout')
@@ -1018,7 +1023,6 @@ def run(args, *, alternating=None):
             use_substep_toi_references=args.use_substep_toi_references,intercept_plane_calibration=plane_calibration,
             paired_evaluation_baseline=str(args.paired_evaluation_baseline.resolve()) if args.paired_evaluation_baseline else None,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
-        write(args.output/'config.json',config)
         metadata=dict(wm_action_collections=action_collections,policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
         global_attempt_id=0;global_accepted_id=0;global_rejected=0;global_backtracked=0
@@ -1028,7 +1032,16 @@ def run(args, *, alternating=None):
         research_origin=(global_accepted_id if args.resume_reset_schedule else resumed.get('config',{}).get('research_origin',global_accepted_id)) if research and args.resume_training else 0
         config['research_origin']=research_origin
         if research: config['research_training_seed']=training_seed
-        research_started=time.monotonic()
+        write(args.output/'config.json',config)
+        elapsed_offset = 0.
+        if research and args.resume_training and not args.resume_reset_schedule:
+            elapsed_offset = resumed.get('research_elapsed_s', 0.)
+            if args.extend_completed_research and 'research_elapsed_s' not in resumed:
+                # The first G1 process predates checkpoint timing. Its launcher
+                # measured the entire training process, including replay rebuild.
+                previous_exit = args.resume_training.resolve().parent.parent/'exit.json'
+                elapsed_offset = json.loads(previous_exit.read_text())['wall_seconds']
+        research_started=time.monotonic()-elapsed_offset
         from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability
         loaded_identity=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,global_accepted_id)
         invocation_start=dict(actor_sha256=loaded_identity['actor_state_sha256'],accepted=global_accepted_id,
@@ -1057,6 +1070,7 @@ def run(args, *, alternating=None):
                 world_optimizer=trainer.world_opt.state_dict(),critic_optimizer=trainer.critic_opt.state_dict(),
                 actor_updates=trainer.actor_updates,actor_attempts=trainer.actor_attempts,
                 rejected_actor_updates=trainer.rejected_actor_updates,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
+                research_elapsed_s=time.monotonic()-research_started,
                 native_ticks=tick,metadata=metadata,config=config,last_critic_loss=trainer.last_critic_loss,
                 critic_coverage_blocks=critic_coverage_blocks,
                 global_counters=dict(attempts=global_attempt_id,accepted=global_accepted_id,

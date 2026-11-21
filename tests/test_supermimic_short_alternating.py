@@ -195,3 +195,27 @@ def test_resume_cannot_change_refresh_fitting_or_native_collection_budget():
     a=AlternatingSchedule(plan,execution_config=dict(refresh_world_updates=32,native_ticks_per_proposal=16))
     b=AlternatingSchedule(plan,execution_config=dict(refresh_world_updates=64,native_ticks_per_proposal=16))
     with pytest.raises(ValueError,match='configuration'):b.load_state_dict(a.state_dict())
+
+
+def test_completed_research_schedule_extends_twice_without_replaying_a_block():
+    def plan(cycles):
+        return make_plan(128, 128, 256, 256, cycles=cycles, refresh_every_pairs=8)
+
+    config = {'contact_gradient': 'G1'}
+    schedule = AlternatingSchedule(plan(1), execution_config=config)
+    for cycles in (1, 4, 8):
+        if schedule.complete:
+            previous = schedule.state_dict()
+            schedule = AlternatingSchedule(plan(cycles), execution_config=config)
+            with pytest.raises(ValueError, match='configuration'):
+                schedule.load_state_dict(previous)
+            corrupt = dict(previous, cursor=previous['cursor']-1)
+            with pytest.raises(ValueError, match='completed prefix'):
+                schedule.load_state_dict(corrupt, extend_completed=True)
+            schedule.load_state_dict(previous, extend_completed=True)
+            assert schedule.current['cycle'] == previous['plan'][-1]['cycle'] + 1
+            assert schedule.current['head'] == 'recovery'
+            assert schedule.results == previous['results']
+        run_schedule(schedule, train=accepted, refresh=refreshed, finalize=lambda e: {}, checkpoint=lambda name: None)
+        assert [s['accepted'] for s in schedule.head_totals().values()] == [128*cycles]*2
+        assert sum(r['event']['kind']=='refresh' for r in schedule.results) == 2*cycles

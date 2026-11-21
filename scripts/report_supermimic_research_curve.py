@@ -13,7 +13,7 @@ def arm_origin(registration):
     import torch
     from run_supermimic_research_scale import digest
     cmd = registration['command']
-    path = Path(cmd[cmd.index('--resume-training') + 1])
+    path = Path(registration.get('initial_checkpoint', cmd[cmd.index('--resume-training') + 1]))
     if digest(path) != registration['initial']['checkpoint_sha256']:
         raise ValueError('Initial training checkpoint changed')
     ck = torch.load(path, mmap=True, map_location='cpu', weights_only=False)
@@ -88,8 +88,8 @@ def main():
     from scripts.report_supermimic_native_contact_counts import NativeContactCounts
     contacts = NativeContactCounts(arm)
     offset = 0
-    heads = {'recovery': 0, 'approach': 0}
-    attempts = 0
+    heads = dict(reg.get('previous_heads', {'recovery': 0, 'approach': 0}))
+    attempts = reg.get('previous_proposals', 0)
     try:
         while True:
             live = owner and owner.is_running() and owner.status() != psutil.STATUS_ZOMBIE

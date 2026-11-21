@@ -52,7 +52,7 @@ def evaluate(folder, step, writer):
     cmd=reg['command']
     seed=882072
     execution_root=cmd[cmd.index('--g07-execution-root')+1]
-    initial_checkpoint=Path(cmd[cmd.index('--resume-training')+1])
+    initial_checkpoint=Path(reg.get('initial_checkpoint', cmd[cmd.index('--resume-training')+1]))
     old=reg['initial']['actor_sha256']
     baseline=folder.parent/'research_fixed128_zero'
     initial_metrics=score_fixed128(baseline, initial_checkpoint, reg['initial']['checkpoint_sha256'], old, execution_root, seed)

@@ -1,0 +1,53 @@
+{
+  "scope": "Read-only CPU inspection of active G1 latest.pt, scheduler and stored optimizer state only.",
+  "retained_this_run": 12,
+  "current_event": "cycle000_pair000_approach",
+  "cursor": 1,
+  "restored_complete_head_blocks": {
+    "recovery": {
+      "attempts": 8,
+      "accepted": 8,
+      "rejected": 0,
+      "backtracked": 1
+    },
+    "approach": {
+      "attempts": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "backtracked": 0
+    }
+  },
+  "partial_block_progress": 4,
+  "head_adam": {
+    "recovery": {
+      "slot_count": 6,
+      "step_values": [
+        24
+      ]
+    },
+    "approach": {
+      "slot_count": 6,
+      "step_values": [
+        5
+      ]
+    }
+  },
+  "wm_adam": {
+    "slot_count": 64,
+    "step_values": [
+      24,
+      112
+    ]
+  },
+  "critic_adam": {
+    "slot_count": 14,
+    "step_values": [
+      1808
+    ]
+  },
+  "replay_count_ticks": 6046,
+  "native_ticks": 5246,
+  "stored_replay_receipts": 4,
+  "rng_states_present": true,
+  "premature_extension_rejection": "Research extension requires a completed prefix of the requested cycles"
+}
