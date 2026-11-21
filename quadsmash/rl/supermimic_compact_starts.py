@@ -22,9 +22,8 @@ def compact_start(row, selected, launch):
         return x
 
     executor=row['executor_before']
-    # Logs are append-only planner diagnostics. They contain original case ids,
-    # heterogeneous history lengths and public observations, and are never read
-    # by the execution preview. Preserve them and the original object aliases.
+    # Controller cursors index the original plan history. Its per-plan rows are
+    # indexed by recorded env_ids and do not share the current lane dimension.
     tensors={k:(v if '/logs/' in k else gather(v)) for k,v in executor['tensors'].items()}
     values={k:(len(ids) if k.endswith('/count') and '/checkpoint/' not in k and v==n else v)
             for k,v in executor['values'].items()}

@@ -1,0 +1,36 @@
+{
+  "scope": "CPU replay of two success_near start records at the scored R24+A16 block entry, no optimizer updates",
+  "lanes": 7,
+  "controller_records": 2,
+  "horizon": 64,
+  "device": "cpu",
+  "threads": 1,
+  "first_string": 4,
+  "first_frame": 3,
+  "non_racket_post_impact_integration": {
+    "prior_advance_calls_before": 512,
+    "prior_advance_calls_after": 390,
+    "baseline_no_grad_seconds": [9.66530, 9.73891],
+    "candidate_no_grad_seconds": [9.46009, 9.40523],
+    "compared_fields": ["loss", "task", "tracking", "anchor", "ret"],
+    "max_abs_difference": 0
+  },
+  "archived_public_plan_storage": {
+    "command_elements_compared": 8064,
+    "actor_gradient_elements_compared": 111186,
+    "command_max_abs_difference": 0,
+    "gradient_max_abs_difference": 0,
+    "objective_terms_max_abs_difference": 0,
+    "baseline_no_grad_seconds": [9.49833, 9.52503, 9.37313],
+    "array_no_grad_seconds": [8.40078, 8.50922, 8.56524],
+    "baseline_forward_backward_seconds": [29.03811, 29.67132],
+    "array_forward_backward_seconds": [29.25798, 30.12678]
+  },
+  "current_checkpoint_audit": {
+    "run": "paired_adam_direction_0040/G1/train/pre_block.pt",
+    "distinct_start_snapshots": 193,
+    "early_lateral_cursors_at_end": 193,
+    "shared_target_cursors_at_end": 193,
+    "momentum_strike_with_zero_request_gain": 193
+  }
+}

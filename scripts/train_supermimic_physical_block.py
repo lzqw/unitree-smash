@@ -987,7 +987,8 @@ def run(args, *, alternating=None):
                 from quadsmash.rl.supermimic_compact_starts import compact_start
                 lanes=training_start_mask(row,wm_holdout_lanes)
                 small,small_launch=compact_start(row,lanes,select_launch_for_start(row,launch))
-                return PhysicalImaginationStateV1.from_record(small,executor_template=template,launch=small_launch,device='cuda:0')
+                return PhysicalImaginationStateV1.from_record(small,executor_template=template,launch=small_launch,
+                                                               device='cuda:0',array_plan_observations=True)
             state=as_state(row)
             if wm_holdout_lanes:
                 state.clock_goal_context['actor_lane_mask']=training_start_mask(row,wm_holdout_lanes).to(state.physical.device)

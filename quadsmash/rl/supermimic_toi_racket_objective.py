@@ -133,7 +133,8 @@ def compact_intercept_preview(row, allowed, launch, template, trainer, device):
     if not selected.any():
         return result
     small, small_launch = compact_start(row, selected, launch)
-    state = PhysicalImaginationStateV1.from_record(small, executor_template=template, launch=small_launch, device=device)
+    state = PhysicalImaginationStateV1.from_record(small, executor_template=template, launch=small_launch,
+                                                   device=device, array_plan_observations=True)
     cfg = trainer.timebase
     reference = bind_intercept_reference(state, trainer.reference_bank, trainer.adapter.physical_model.geometry,
                                          cfg.control_dt_s * cfg.imagination_steps, plane_offset_m=trainer.toi_plane_offset_m)

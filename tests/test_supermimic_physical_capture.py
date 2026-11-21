@@ -160,6 +160,13 @@ def test_compact_causal_plan_roundtrip_and_mutable_native_buffers():
     after_load = torch.load(stream, weights_only=True)[1]
     restored = restore_archive_execution(template, after_load)
     assert capture_controller(restored) == baseline
+    from quadsmash.rl.supermimic_g07_memory_preview_v1 import clone_execution_graph
+    compact = restore_archive_execution(template, after_load, array_plan_observations=True)
+    matrix = compact.logs[0]['used_public_observations']
+    assert matrix.tolist() == original
+    branch = clone_execution_graph(compact, learning=True)
+    branch.logs[0]['used_public_observations'][0, 0] = 321.
+    assert matrix.tolist() == original and compact.logs[0]['valid'] == [True, False]
     restored.logs[0]['used_public_observations'][0][0] = 123.
     original[0][0] = 342.
     changed = capture_controller(controller, plan_observation_cache=cache)

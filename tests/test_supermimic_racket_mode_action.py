@@ -285,3 +285,35 @@ def test_v13_pure_semantics_ignore_inherited_v10_six_dimensional_residual():
         return_details=True)[3]
     assert not details['action_model_info']['legacy_v10_residual_enabled']
     assert torch.equal(details['action_residual'], torch.zeros_like(details['action_residual']))
+
+
+@pytest.mark.parametrize('objects', [(1, 2, 3, 1), (1, 0, 3, 2)])
+def test_deferred_no_grad_flight_matches_differentiable_path(objects):
+    class Prior:
+        supports_deferred_post_impact = True
+        calls = 0
+
+        def __call__(self, state, geometry, present, predicted_robot, *, defer_post_impact):
+            ids = state.new_tensor(objects, dtype=torch.long)
+            return state[:, 49:], dict(
+                active=ids < 3, object_id=ids, deferred_post_impact=(ids == 0) & defer_post_impact,
+                normal=state.new_tensor([0., 0., 1.]).expand(len(state), -1),
+                pre_position=state[:, 49:52], pre_velocity=state[:, 52:55],
+                impulse_dv=torch.zeros_like(state[:, 52:55]), remaining_time=state.new_full((len(state),), .005))
+
+        def advance(self, position, velocity, duration):
+            self.calls += 1
+            return position + duration[:, None]*velocity, velocity
+
+    model = TemporalCausalRacketModeImpulseResidualBallV13(preview=FakePreview())
+    prior = Prior()
+    model.impulse_prior = prior
+    world, ball, args = FakeWorld(), ModeBall(torch.tensor(.8)), inputs()
+    expected = ball_transition(world, ball, *args, action_model=model, return_details=True)
+    assert prior.calls == 1
+    with torch.no_grad():
+        actual = ball_transition(world, ball, *args, action_model=model, return_details=True)
+    assert prior.calls == 1 + int(0 in objects)
+    for before, after in zip(expected[:3], actual[:3]):
+        torch.testing.assert_close(before, after, rtol=0, atol=0)
+    torch.testing.assert_close(expected[3]['impulse_action_residual'], actual[3]['impulse_action_residual'], rtol=0, atol=0)

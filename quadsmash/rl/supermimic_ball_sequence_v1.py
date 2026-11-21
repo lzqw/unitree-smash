@@ -143,11 +143,6 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
             # analytic prior.  Adding a raw six-dimensional end-state offset
             # would mix impulse units with position units and would apply the
             # correction at the wrong time.
-            corrected_position, corrected_velocity = impulse_prior.advance(
-                impulse_info['pre_position'],
-                impulse_info['pre_velocity'] + impulse_info['impulse_dv'] + residual_dv,
-                impulse_info['remaining_time'])
-            corrected_ball=torch.cat((corrected_position, corrected_velocity),-1)
             analytic_ball=action_model_info.get('analytic_ball', analytic_ball)
             if analytic_ball is None:
                 raise ValueError('Analytic ball state is required for TOI residual')
@@ -156,10 +151,20 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
                 & (impulse_info.get('object_id', torch.zeros_like(
                     impulse_info['active'], dtype=torch.long)) == 0)
                 & present.reshape(-1).bool())
+            deferred_mask=impulse_info.get('deferred_post_impact')
+            if (not torch.is_grad_enabled() and deferred_mask is not None
+                    and not (deferred_mask | impulse_mask).any()):
+                # The transition and diagnostics discard the second flight for every lane.
+                corrected_ball = analytic_ball
+            else:
+                corrected_position, corrected_velocity = impulse_prior.advance(
+                    impulse_info['pre_position'],
+                    impulse_info['pre_velocity'] + impulse_info['impulse_dv'] + residual_dv,
+                    impulse_info['remaining_time'])
+                corrected_ball=torch.cat((corrected_position, corrected_velocity),-1)
             impulse_action_residual=corrected_ball-analytic_ball
             impulse_action_residual=impulse_action_residual * impulse_mask[:,None].to(
                 impulse_action_residual.dtype)
-            deferred_mask=impulse_info.get('deferred_post_impact')
             if deferred_mask is not None:
                 # In deferred mode analytic_ball contains the common TOI
                 # pre-state plus the analytic impulse velocity.  Apply the

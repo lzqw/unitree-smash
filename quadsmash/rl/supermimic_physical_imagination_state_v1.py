@@ -32,7 +32,7 @@ class PhysicalImaginationStateV1:
     clock_goal_context: dict
 
     @classmethod
-    def from_record(cls,row,*,executor_template,launch,device='cpu'):
+    def from_record(cls,row,*,executor_template,launch,device='cpu',array_plan_observations=False):
         before=row['before']
         require_physical_start(before,row['executor_before'])
         # The input record is a CURRENT start. Never consult its after/base/
@@ -56,7 +56,8 @@ class PhysicalImaginationStateV1:
             history_tick=before['history_tick'].to(device).clone())
         if '_actor_lane_mask' in row:
             context['actor_lane_mask']=row['_actor_lane_mask'].to(device).bool().clone()
-        executor=restore_archive_execution(executor_template,row['executor_before'],device=device)
+        executor=restore_archive_execution(executor_template,row['executor_before'],device=device,
+                                           array_plan_observations=array_plan_observations)
         return cls(encode_physical(p),executor,memory,current_history,observation,context)
 
     def branch(self):

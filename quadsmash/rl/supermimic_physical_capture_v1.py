@@ -123,7 +123,7 @@ def capture_controller(controller, *, plan_observation_cache=None):
     return snapshot
 
 
-def restore_archive_execution(template, snapshot, *, device='cpu'):
+def restore_archive_execution(template, snapshot, *, device='cpu', array_plan_observations=False):
     """Decode archive storage into the original G07 reconstruction contract."""
     from .supermimic_g07_memory_preview_v1 import restore_captured_execution
 
@@ -134,7 +134,10 @@ def restore_archive_execution(template, snapshot, *, device='cpu'):
             if (not path.endswith('/used_public_observations') or '/logs/' not in path
                     or not isinstance(payload, bytes) or len(payload) % (794 * 8) or path in values):
                 raise ValueError('Malformed packed G07 observation matrix')
-            values[path] = np.frombuffer(payload, dtype='<f8').reshape(-1, 794).tolist()
+            matrix = np.frombuffer(payload, dtype='<f8').reshape(-1, 794)
+            # Imagination branches clone these public inputs at every control step.
+            # A private contiguous array preserves the samples with one copy per matrix.
+            values[path] = matrix.copy() if array_plan_observations else matrix.tolist()
         snapshot = dict(snapshot, values=values)
     return restore_captured_execution(template, snapshot, device=device)
 

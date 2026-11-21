@@ -249,7 +249,8 @@ def test_compact_preview_maps_sparse_results_to_original_lanes(monkeypatch):
     present[2]=True
     row=dict(observation=torch.arange(128)[:,None], before=dict(physical=dict(ball_present=present)),
              executor_before=dict(tensors={},values={}))
-    def state(record, *, executor_template, launch, device):
+    def state(record, *, executor_template, launch, device, array_plan_observations):
+        assert array_plan_observations
         assert record['observation'].flatten().tolist()==[8,81]
         assert launch[:,0].tolist()==[8,81]
         return record['observation']
