@@ -22,7 +22,7 @@ class FrozenRefresh:
         if self.snapshot_dir is not None:self.snapshot_dir.mkdir(parents=True,exist_ok=False)
         self.stage_seen={stage:torch.zeros(lanes,dtype=torch.bool) for stage in stage_ticks}
 
-    def append(self,row):
+    def append(self,row, *, record=None):
         b=row['before']; episode=b['episode_index'].detach().cpu().long()
         elapsed=b['elapsed_tick'].detach().cpu().long(); done=(row['terminated']|row['timeout']).detach().cpu().bool()
         new=(self.ids<0)&(elapsed==0);self.ids[new]=episode[new]
@@ -30,7 +30,11 @@ class FrozenRefresh:
         if ((self.ids>=0)&~self.complete&~active).any():raise RuntimeError('Frozen episode changed without terminal evidence')
         if not torch.equal(elapsed[active],self.lengths[active]):raise RuntimeError('Frozen refresh lost or duplicated a control tick')
         if (elapsed[active]>=self.episode_ticks).any():raise RuntimeError('Frozen episode exceeded task horizon')
-        record=row_tensors(row,self.schema)
+        if not active.any() and not (row.get('task_sequence') or {}).get('racket_reference_targets'):
+            self.calls+=1
+            return
+        if record is None:
+            record=row_tensors(row,self.schema)
         if self.compact is None:
             self.compact={k:torch.zeros((self.episode_ticks,*v.shape),dtype=v.dtype) for k,v in record.items()}
         lanes=torch.where(active)[0]; steps=elapsed[lanes]

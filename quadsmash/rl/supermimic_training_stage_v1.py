@@ -12,6 +12,7 @@ STAGES = (
     "shadow_policy",
     "precontact_only",
     "contact_detached",
+    "research_contact",
     "full_contact",
 )
 
@@ -45,7 +46,7 @@ def resolve_training_stage(name):
         return TrainingStage(name, "precontact", True, False)
     if name == "contact_detached":
         return TrainingStage(name, "detached", True, False)
-    return TrainingStage(name, "enabled", True, True)
+    return TrainingStage(name, "enabled", True, name == "full_contact")
 
 
 def validate_contact_bptt_mode(mode):

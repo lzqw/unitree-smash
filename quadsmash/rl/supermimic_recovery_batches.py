@@ -122,6 +122,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     loss=trainer.tracking_coefficient(trainer.block_name)*scalars['tracking']+trainer.anchor_coeff*scalars['anchor']
     if not toi:
         loss=loss+scalars['task']
+    elif getattr(trainer,'contact_aux_weight',0.):
+        loss=loss+trainer.contact_aux_weight*scalars['task']
     coverage=dict(report,**covered)
     coverage.update(matched_lanes=counts['matched_references'],effective_weight_sum=counts['tracking_effective_weight_sum'],
                     tracking_applied=bool(counts['tracking_active_lane_steps']),reference_usage_by_sha256=usage,per_record=by_record)

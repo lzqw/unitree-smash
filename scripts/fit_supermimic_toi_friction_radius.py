@@ -1,6 +1,7 @@
 """Test one spatial coefficient for racket sticking strength with fixed contact, direction and friction cap."""
 import argparse
 import json
+import math
 from pathlib import Path
 
 import torch
@@ -33,6 +34,35 @@ class SpatialSticking(TOISlip):
         scale = torch.minimum(self.sticking*factor, cap/tangent.norm(dim=-1,keepdim=True).clamp_min(1e-12))
         active = present.reshape(-1).bool() & row['active'] & (row['object_id']==0)
         return dict(impulse_residual_active=active,impulse_residual_dv=-tangent*scale*active[:,None])
+
+
+class StripSeamSticking(TOISlip):
+    """Test whether the contact point's phase in the native strip mesh affects sticking."""
+
+    def __init__(self, friction, sticking, slope, racket, ball_radius):
+        super().__init__(friction, sticking)
+        from quadsmash.physics.full_racket_v4 import string_strips
+        if racket['string_collision_representation'] != 'inscribed-z-strips' or abs(slope) >= 1:
+            raise ValueError('Expected the native strip mesh and positive sticking gain')
+        self.half_extent = racket['assumptions']['strings_semiaxes_yz_m'][1]
+        self.pitch = 2*self.half_extent/racket['strings_strip_count']
+        self.string_parts = len(string_strips(racket))
+        self.radius = ball_radius
+        self.slope = slope
+
+    def toi_response(self, row, present):
+        if self.slope == 0:
+            return super().toi_response(row, present)
+        normal = row['normal']
+        contact_z = row['local'][:,2] - self.radius*(row['string_axes'][:,:,1]*normal).sum(-1)
+        phase = (contact_z+self.half_extent)*(2*math.pi/self.pitch)
+        on_string = (row['racket_part'] >= 0) & (row['racket_part'] < self.string_parts)
+        gain = self.sticking*(1+self.slope*torch.cos(phase)*on_string)
+        tangent = row['relative_velocity'] - normal*(row['relative_velocity']*normal).sum(-1,keepdim=True)
+        limit = self.friction*row['impulse_dv'].norm(dim=-1)
+        scale = torch.minimum(gain,limit/tangent.norm(dim=-1).clamp_min(1.e-12))
+        active = present.reshape(-1).bool() & row['active'] & (row['object_id']==0)
+        return dict(impulse_residual_active=active,impulse_residual_dv=-tangent*(scale*active)[:,None])
 
 
 class DirectionalSticking(TOISlip):
@@ -98,7 +128,9 @@ def main():
         parser.add_argument('--'+key,type=Path,required=True)
     parser.add_argument('--new-training',type=Path)
     parser.add_argument('--support',type=Path)
-    parser.add_argument('--directional-sticking',action='store_true',help='Fit different gains along the two racket string axes')
+    mechanism=parser.add_mutually_exclusive_group()
+    mechanism.add_argument('--strip-seam-sticking',action='store_true',help='Fit native string-strip phase dependence at the predicted contact point')
+    mechanism.add_argument('--directional-sticking',action='store_true',help='Fit different gains along the two racket string axes')
     parser.add_argument('--additional-training-panel',type=Path,action='append',default=[],
                         help='Training directory containing raw/ and support.json, weighted by independent launch panel')
     args=parser.parse_args()
@@ -109,7 +141,8 @@ def main():
     fit=read(args.fit)
     configs=Path(__file__).resolve().parents[1]/'configs'
     physics=read(configs/'shuttle_physics_v2.json')
-    axes=read(configs/'full_racket_v4_r3.json')['assumptions']['strings_semiaxes_yz_m']
+    racket=read(configs/'full_racket_v4_r3.json')
+    axes=racket['assumptions']['strings_semiaxes_yz_m']
     development=read(args.development/'completed.json')
     if (sha(configs/'shuttle_physics_v2.json')!=fit['physics_sha256'] or sha(args.calibration)!=fit['calibration_sha256']
             or fit['g07_sha256']!=development['wide'] or sha(args.training/'status.json')!=fit['g07_training']['status_sha256']
@@ -117,6 +150,8 @@ def main():
         raise ValueError('Training sources or reference changed')
     prior=BallImpulsePriorV1(normal_impulse_scale=read(args.calibration)['fitted']['normal_impulse_scale']).eval()
     def model(slope):
+        if args.strip_seam_sticking:
+            return StripSeamSticking(fit['selected']['friction'],fit['selected']['sticking'],slope,racket,physics['collision_radius_m'])
         if args.directional_sticking:
             return DirectionalSticking(fit['selected']['friction'],fit['selected']['sticking'],slope)
         return SpatialSticking(fit['selected']['friction'],fit['selected']['sticking'],slope,axes)
@@ -140,7 +175,8 @@ def main():
         receipts[key] = sha(receipt)
     refs={k:friction_errors(model(0.),*v) for k,v in panels.items()}
     grid=[]
-    for slope in (0.,-.75,-.5,-.25,-.125,.125,.25,.5,.75):
+    slopes=(0.,-.125,-.0625,-.03125,-.015625,.015625,.03125,.0625,.125) if args.strip_seam_sticking else (0.,-.75,-.5,-.25,-.125,.125,.25,.5,.75)
+    for slope in slopes:
         errors={k:friction_errors(model(slope),*v) for k,v in panels.items()}
         relative={}
         for name,row in errors.items():
@@ -157,7 +193,7 @@ def main():
         results[scale]=free_rollout(model(chosen['slope']),prior,seq,groups,repeat,commands,baseline_model=model(0.))
     if results['wide']['baseline']!=fit['g07']['candidate']:
         raise ValueError('Frozen first-impact model failed to reproduce')
-    result=dict(mechanism='directional_sticking' if args.directional_sticking else 'spatial_sticking', additional_support=receipts, launch_groups=launch_group, fit_sha256=sha(args.fit),new_training_support_sha256=sha(args.support) if args.support else None,
+    result=dict(mechanism='strip_seam_sticking' if args.strip_seam_sticking else ('directional_sticking' if args.directional_sticking else 'spatial_sticking'), additional_support=receipts, launch_groups=launch_group, fit_sha256=sha(args.fit),new_training_support_sha256=sha(args.support) if args.support else None,
                 geometry_sha256=sha(configs/'full_racket_v4_r3.json'),train=grid,selected=chosen,development=results,
                 actor_updates=0,v13_updates=0,contact_receipt=False,final_holdout_opened=False)
     with args.output.open('x') as stream:

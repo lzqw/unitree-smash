@@ -78,6 +78,11 @@ class FullRacketEnvV4(BallEnv):
             else:half=part['size']/2
             racket_points.extend(part['center']+np.array(list(itertools.product((-1,1),repeat=3)))*half)
         self.racket_points=torch.tensor(np.array(racket_points),dtype=torch.float32,device=device)[None]
+        # Static geometry is reused at every physics substep.
+        geom_dtype = self.robot.data.body_link_pos_w.dtype
+        self.string_polygon_vertices = torch.as_tensor(string_polygon(self.racket_config), dtype=geom_dtype, device=device)
+        self.string_polygon_edges = self.string_polygon_vertices.roll(-1, 0) - self.string_polygon_vertices
+        self.racket_normal_axis = torch.tensor([1., 0., 0.], device=device).expand(n, -1)
         self.racket_plane_support=RacketPlaneSupport(self.racket_config,device)
         self.racket_plane_geometry=RacketPlaneGeometry(self.racket_config,self.court_config)
         self.racket_plane_records=[];self.racket_plane_query_calls=0
@@ -114,8 +119,8 @@ class FullRacketEnvV4(BallEnv):
         broad=self.racket_plane_geometry.gpu_broadphase_over_net(
             tool-self.scene.env_origins,quaternion)
         self.racket_plane_gpu_broadphase_calls+=1
-        self.racket_plane_gpu_broadphase_candidates+=int((candidates&broad).sum().item())
         ids=torch.where(candidates&broad)[0].cpu().tolist()
+        self.racket_plane_gpu_broadphase_candidates+=len(ids)
         if not ids:return over
         positions=(tool[ids]-self.scene.env_origins[ids]).cpu().numpy()
         rotations=quaternion[ids].cpu().numpy()
@@ -203,8 +208,7 @@ class FullRacketEnvV4(BallEnv):
         touching=racket_force.norm(dim=-1)>PHYSICS['contact_force_threshold_n']
         point=self.shuttle_contact.data.contact_pos_w[:,0,0]
         local=quat_rotate(torch.cat((q[:,:1],-q[:,1:]),-1),torch.nan_to_num(point)-tool)
-        polygon=torch.as_tensor(string_polygon(self.racket_config),dtype=local.dtype,device=self.device)
-        edges=polygon.roll(-1,0)-polygon
+        polygon,edges=self.string_polygon_vertices,self.string_polygon_edges
         delta=local[:,None,1:]-polygon
         inside=(edges[:,0]*delta[...,1]-edges[:,1]*delta[...,0]>=0).all(-1)
         string=inside&(local[:,0].abs()<=self.racket_config['assumptions']['string_thickness_m']/2+.001)
@@ -220,14 +224,15 @@ class FullRacketEnvV4(BallEnv):
         racket_maximum_x=self.racket_plane_support.maximum_x(tool-self.scene.env_origins,q)
         racket_fully_own=racket_maximum_x<=self.court_config['net_plane_x_m']
         racket_over=self._racket_over_net_geometry(tool,q,racket_fully_own)
-        normal=quat_rotate(q,torch.tensor([1.,0,0],device=self.device).expand(self.num_envs,-1))
+        normal=quat_rotate(q,self.racket_normal_axis)
         head_velocity=d.body_link_lin_vel_w[:,self.racket_body_id]
         events=(self.contact_events.count>counts)&self.rally.in_play
         first=events&(~self.rally.had_contact)
         first_strings=touching&string&self.rally.in_play&torch.isnan(self.first_string_time)
-        self.first_string_point[first_strings]=(point-self.scene.env_origins)[first_strings]
-        self.first_string_time[first_strings]=self.ball_clock[first_strings]
-        self.first_tool_normal[first]=normal[first];self.first_tool_velocity[first]=head_velocity[first]
+        torch.where(first_strings[:,None], point-self.scene.env_origins, self.first_string_point, out=self.first_string_point)
+        torch.where(first_strings, self.ball_clock, self.first_string_time, out=self.first_string_time)
+        torch.where(first[:,None], normal, self.first_tool_normal, out=self.first_tool_normal)
+        torch.where(first[:,None], head_velocity, self.first_tool_velocity, out=self.first_tool_velocity)
         same_pair=((self.rally.frame_hit&string)|(self.rally.string_hit&rim))
         same_stroke=(same_pair&((self.ball_clock-self.rally.contact_time)<.04)&
                      ((normal*self.first_tool_normal).sum(-1)>np.cos(np.deg2rad(15)))&

@@ -100,7 +100,7 @@ def load_physical_loop(*,archive,physical_checkpoint,ball_checkpoint,task_checkp
     if action_ball_checkpoint is not None:
         candidate=torch.load(paths['action_ball'],map_location='cpu',weights_only=True)
         action_ball=action_ball_from_checkpoint(candidate).to(device)
-        if candidate.get('schema') == TemporalCausalRacketModeImpulseResidualBallV13.schema:
+        if isinstance(action_ball, TemporalCausalRacketModeImpulseResidualBallV13):
             expected_version = TemporalCausalRacketModeImpulseResidualBallV13.V13_SEMANTICS_VERSION
             if int(candidate.get('v13_semantics_version', -1)) != expected_version:
                 raise ValueError(

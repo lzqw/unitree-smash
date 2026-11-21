@@ -70,3 +70,19 @@ def test_direction_dependent_sticking_preserves_plane_scope_friction_cap_and_dis
         assert not dv[2].count_nonzero()
     torch.testing.assert_close(DirectionalSticking(.32,2/7,0.).toi_response(row,present)['impulse_residual_dv'],
                                TOISlip(.32,2/7).toi_response(row,present)['impulse_residual_dv'],rtol=0.,atol=0.)
+
+
+def test_mesh_phase_uses_contact_point_and_only_modulates_string_parts():
+    import json
+    from pathlib import Path
+    from scripts.fit_supermimic_toi_friction_radius import StripSeamSticking
+    cfg=json.loads((Path(__file__).resolve().parents[1]/'configs/full_racket_v4_r3.json').read_text())
+    model=StripSeamSticking(.9,.25,.125,cfg,.025)
+    row=dict(normal=torch.tensor([[1.,0.,0.]]).expand(5,-1), local=torch.zeros(5,3),
+             relative_velocity=torch.tensor([[-2.,1.,0.]]).expand(5,-1),
+             string_axes=torch.eye(3)[:,1:].expand(5,-1,-1),racket_part=torch.tensor([0,0,0,model.string_parts,0]),
+             active=torch.ones(5,dtype=torch.bool),object_id=torch.tensor([0,0,0,0,1]),
+             impulse_dv=torch.tensor([[3.,0.,0.]]).expand(5,-1))
+    row['local'][:,2]=torch.tensor([0.,model.pitch/2,model.pitch,0.,0.])
+    dv=model.toi_response(row,torch.ones(5,dtype=torch.bool))['impulse_residual_dv']
+    torch.testing.assert_close(-dv[:,1],torch.tensor([.28125,.21875,.28125,.25,0.]))

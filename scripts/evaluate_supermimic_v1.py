@@ -15,6 +15,7 @@ import time
 import traceback
 import signal
 import faulthandler
+import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -131,7 +132,8 @@ def _run_native(args, stop_request):
         torch.manual_seed(args.seed)
         trained = None
         if args.checkpoint:
-            trained = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
+            trained = torch.load(args.checkpoint, map_location='cpu', weights_only=False,
+                                 mmap=zipfile.is_zipfile(args.checkpoint))
             if trained.get('algorithm') != 'supermimic_v1':
                 raise ValueError('Expected SuperMimic checkpoint')
             init_meta = trained['metadata']['init_policy_checkpoint']
@@ -207,7 +209,7 @@ def _run_native(args, stop_request):
         from quadsmash.rl.supermimic_actuator_identification import actuator_contract
         write_json(args.output/'actuator_contract.json', actuator_contract(env, contract))
         first, cursor, numerical = {}, 0, 0
-        head_active_lane_steps=dict(recovery=0,approach=0)
+        head_counts = torch.zeros(2, dtype=torch.long, device=env.device)
         mapping = dict(max_final_target_error_rad=0., tolerance_rad=2e-6,
                        phase_samples={str(i):0 for i in range(5)}, phase_max_error={str(i):0. for i in range(5)},
                        checked_native_ticks=0, scope='Independent old controller versus new actor+executor on the SAME live observations; not a separate old physics rollout')
@@ -220,17 +222,18 @@ def _run_native(args, stop_request):
                 raise ValueError('Native training probe requires the causal execution contract')
             probe_capture=NativePairCapture(spec,args.native_action_probe_branch)
         start = time.perf_counter()
+        step_wall_seconds = 0.
         stage = 'EVALUATING'
         with torch.inference_mode():
             for tick in range(args.shutdown_diagnostic_ticks or 800):
                 if stop_request['signal'] is not None:
                     raise InterruptedError(f"Evaluation stopped at control boundary: {stop_request['signal']}")
-                before = obs['policy'].clone()
+                before = obs['policy'] if reference is None and probe_capture is None else obs['policy'].clone()
                 old_target = None
                 action = policy_forward(actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
                 if probe_capture is not None:action=probe_capture.before(tick,env,before,action)
-                head_active_lane_steps['recovery']+=int((env.rally.had_contact&env.rally.released).sum())
-                head_active_lane_steps['approach']+=int((actor.actor.gate(before)>.25).sum())
+                head_counts[0].add_((env.rally.had_contact & env.rally.released).sum())
+                head_counts[1].add_((actor.actor.gate(before) > .25).sum())
                 if reference is not None:
                     if policy_execution['recovery_gate']==POSTHIT:
                         old_final=reference.apply_residual(obs,action,env._sm_residual_default,env._sm_residual_limits)
@@ -239,11 +242,13 @@ def _run_native(args, stop_request):
                     old_target = full_range_targets(old_final, env._sm_residual_limits).clone()
                 if not torch.isfinite(action).all():
                     raise FloatingPointError('Nonfinite evaluation action')
+                step_start = time.perf_counter()
                 obs, _, done, _ = wrapper.step(action)
                 if probe_capture is not None:probe_capture.after(tick,env,done)
                 ticks_completed += 1
                 if not torch.isfinite(obs['policy']).all():
                     raise FloatingPointError('Nonfinite evaluation observation')
+                step_wall_seconds += time.perf_counter() - step_start
                 if old_target is not None:
                     errors=(env._sm_joint_targets-old_target).abs().amax(1)
                     maximum=float(errors.max())
@@ -309,6 +314,11 @@ def _run_native(args, stop_request):
         native_summary = summarize_native_episodes(rows)
         n=native_summary['conditional_recovery_denominator']
         recovery=native_summary['conditional_recovery_count']
+        with (args.checkpoint or source_path).open('rb') as checkpoint_stream:
+            digest = hashlib.sha256()
+            for chunk in iter(lambda: checkpoint_stream.read(8 << 20), b''):
+                digest.update(chunk)
+            checkpoint_sha256 = digest.hexdigest()
         metrics=dict(policy_execution=policy_execution,policy_execution_provenance=execution_provenance,evaluation_scope='TRAIN128 development, not A/B acceptance',
             num_envs=128,control_ticks=800,episode_seconds=8.,
             qualified_airborne_string_contact=n,
@@ -327,9 +337,11 @@ def _run_native(args, stop_request):
             historical_base_and_recovery_assistance_preserved=contract['historical_base_and_recovery_assistance_preserved'],
             task_contract=contract,source=init_meta,actor_updated=trained is not None,
             elapsed_s=time.perf_counter()-start,physics=physics,
-            evaluated_checkpoint_sha256=hashlib.sha256((args.checkpoint or source_path).read_bytes()).hexdigest())
+            native_step_and_observation_check_seconds=step_wall_seconds,
+            evaluated_checkpoint_sha256=checkpoint_sha256)
         actor_state_after=tensor_digest(actor.state_dict().items())
         if actor_state_after!=actor_state_before:raise RuntimeError('Frozen evaluation mutated actor weights')
+        head_active_lane_steps = dict(zip(("recovery", "approach"), head_counts.tolist()))
         metrics.update(actor_state_sha256=actor_state_after,actor_parameters_unchanged=True,
             optimizer_updates=dict(actor=0,world=0,critic=0),head_active_lane_steps=head_active_lane_steps)
         metrics['native_episode_metrics'] = native_summary

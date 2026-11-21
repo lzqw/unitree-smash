@@ -102,8 +102,10 @@ def main():
     parser.add_argument('--resume-without-replay',action='store_true',
                         help='Bounded diagnostic resume using model/optimizer state without loading historical online chunks')
     parser.add_argument('--native-acceptance-receipt',type=Path)
-    parser.add_argument('--training-profile',choices=('bounded','large'),default='bounded')
-    parser.add_argument('--training-stage',choices=('wm_calibrate','shadow_policy','precontact_only','contact_detached','full_contact'),default='full_contact')
+    parser.add_argument('--training-profile',choices=('bounded','large','research_scale'),default='bounded')
+    parser.add_argument('--research-contact-gradient',choices=('G0','G1'),default='G1')
+    parser.add_argument('--research-contact-weight',type=float,default=.10)
+    parser.add_argument('--training-stage',choices=('wm_calibrate','shadow_policy','precontact_only','contact_detached','research_contact','full_contact'),default='full_contact')
     parser.add_argument('--contact-bptt-mode',choices=('blocked','detached','precontact','enabled'))
     parser.add_argument('--contact-validation-receipt',type=Path)
     parser.add_argument('--action-ball-checkpoint',type=Path,default=None,
@@ -206,6 +208,14 @@ def main():
     # absent, instead of spending minutes constructing a simulator that can
     # only fail later on a hard-coded cuda:0 tensor allocation.
     import torch
+    research = args.training_profile == 'research_scale'
+    if research != (args.training_stage == 'research_contact'):
+        parser.error('research_scale uses the non-promotable research_contact stage')
+    if research and (args.sequential_layout!='short-alternating' or args.update_mode!='sequential' or
+                     args.approach_objective!='toi_racket_only' or args.action_ball_checkpoint is None or
+                     args.contact_bptt_mode not in (None,'enabled') or args.resume_without_replay or
+                     not 0 < args.research_contact_weight <= 1):
+        parser.error('Research training requires alternating TOI blocks, calibrated contact and complete replay')
     if not 1<=args.toi_effective_start_lanes<=128 or (args.toi_effective_start_lanes>1 and args.approach_objective!='toi_racket_only'):
         parser.error('TOI start pooling requires a size in [1,128] and the TOI racket objective')
     if not 1<=args.recovery_effective_start_lanes<=128:
@@ -249,7 +259,7 @@ def main():
     if args.approach_objective=='toi_racket_only' and (args.toi_racket_weight<=0 or args.training_stage=='full_contact'):
         parser.error('TOI-only Approach requires positive racket weight and a detached-contact diagnostic stage')
     if args.intercept_plane_calibration and (not args.resume_training or args.approach_objective!='toi_racket_only'
-                                             or args.training_profile!='bounded'):
+                                             or args.training_profile not in ('bounded','research_scale')):
         parser.error('A fitted contact plane requires the corresponding bounded TOI-only resume checkpoint')
     if args.approach_objective=='toi_racket_only' and args.task_reference_bank is None:
         parser.error('toi_racket_only requires a validated event-aligned task reference bank')
@@ -267,7 +277,7 @@ def main():
     if args.training_profile=='large' and (args.cycles!=1 or args.refresh_ticks!=800 or args.update_mode!='sequential'):parser.error('Large profile uses one cycle per process, full refresh, and external frozen evaluation between cycles')
     if args.resume_next_cycle and (args.resume_training is None or args.native_acceptance_receipt is None):parser.error('New cycle requires checkpoint and matching native acceptance')
     if args.resume_reset_schedule and (args.resume_training is None or args.resume_next_cycle or
-                                       args.training_profile!='bounded' or args.training_stage=='full_contact'):
+                                       args.training_profile not in ('bounded','research_scale') or args.training_stage=='full_contact'):
         parser.error('Fresh schedule requires a bounded non-promotable checkpoint continuation')
     if args.resume_without_replay and (args.resume_training is None or args.training_profile=='large' or args.training_stage=='full_contact'):
         parser.error('resume-without-replay is restricted to bounded non-promotable diagnostics')
@@ -283,9 +293,10 @@ def main():
         try:
             alternating=AlternatingSchedule(make_plan(args.recovery_update_budget,args.approach_update_budget,
                 args.recovery_proposal_budget,args.approach_proposal_budget,block_size=args.head_block_size,
-                cycles=args.cycles,refresh_mode=args.refresh_mode),execution_config=dict(
+                cycles=args.cycles,refresh_mode=args.refresh_mode,refresh_every_pairs=8 if research else 1),execution_config=dict(
                     native_ticks_per_proposal=args.native_ticks_per_actor_update,world_updates_per_proposal=args.world_updates_per_actor_update,wm_batch_size=args.wm_batch_size,
                     refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,
+                    **(dict(contact_gradient=args.research_contact_gradient,contact_weight=args.research_contact_weight) if research else {}),
                     training_profile=args.training_profile,contact_receipt_sha256=hashlib.sha256(args.contact_validation_receipt.read_bytes()).hexdigest() if args.contact_validation_receipt else None))
         except ValueError as error:parser.error(str(error))
     args.output=args.output.resolve();args.output.mkdir(parents=True,exist_ok=False)
@@ -324,6 +335,7 @@ def main():
 
 
 def run(args, *, alternating=None):
+    research=args.training_profile=='research_scale'
     from quadsmash.rl.supermimic_run_lifecycle import stage as lifecycle_stage
     # These audits are consumed by nested WM/actor callbacks.  Import them in
     # the run scope as well as the CLI setup scope so frozen refreshes cannot
@@ -391,7 +403,16 @@ def run(args, *, alternating=None):
         forward_guard=None
         if args.wm_forward_guard:
             from scripts.supermimic_online_forward_guard import OnlineForwardGuard
-            forward_guard=OnlineForwardGuard(args.wm_forward_guard,adapter,manifest['task_contract'])
+            if research:
+                # The published panel baseline is bound to the legacy component sources.
+                # Verify it with that model, then score the actual composed WM on the same windows.
+                _,baseline_adapter,_,_,_=load_physical_loop(archive=args.archive,physical_checkpoint=args.physical_checkpoint,
+                    ball_checkpoint=args.ball_checkpoint,task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping,
+                    execution_root=args.g07_execution_root)
+                forward_guard=OnlineForwardGuard(args.wm_forward_guard,baseline_adapter,manifest['task_contract'])
+                del baseline_adapter
+            else:
+                forward_guard=OnlineForwardGuard(args.wm_forward_guard,adapter,manifest['task_contract'])
         write(args.output/'model_manifest.json',adapter.manifest)
         packed_sha=hashlib.sha256(args.packed_data.read_bytes()).hexdigest()
         expected=json.loads((args.packed_data.parent/'completed.json').read_text())
@@ -491,8 +512,12 @@ def run(args, *, alternating=None):
             row_launch=select_launch_for_start(row,launch)
             return PhysicalImaginationStateV1.from_record(row,executor_template=template,launch=row_launch,device='cuda:0')
         timebase=Timebase(**json.loads((ROOT/'configs/supermimic_task_horizon_v2.json').read_text()))
+        if research:
+            from quadsmash.rl.supermimic_action_ball_v1 import CalibratedRacketImpulseV13
+            if not isinstance(adapter.action_ball_model, CalibratedRacketImpulseV13):
+                raise ValueError('Research profile requires calibrated C1 and V13')
         trainer=PhysicalHorizonTrainer(actor,adapter,as_state(starts[1]),timebase,
-            command_delta_budget=args.command_delta_budget,
+            actor_lr=2e-4 if research else 5e-5,command_delta_budget=args.command_delta_budget,
             target_delta_budget_rad=args.target_delta_budget_rad,
             native_reference_command_budget=args.native_reference_command_budget,
             native_reference_target_budget_rad=args.native_reference_target_budget_rad,
@@ -500,6 +525,10 @@ def run(args, *, alternating=None):
             reference_bank=reference_bank,tracking_weight=args.tracking_weight,
             world_lr=args.world_learning_rate,approach_objective=args.approach_objective,
             toi_racket_weight=args.toi_racket_weight)
+        if research:
+            adapter.checkpoint_supervised_rollout=True
+            trainer.anchor_coeff=.01
+            trainer.research_court=json.loads((ROOT/'configs/court_net_v4.json').read_text())
         trainer.ball_loss_weight=float(args.wm_ball_loss_weight)
         trainer.contact_ball_loss_weight=float(args.wm_contact_ball_loss_weight)
         trainer.direct_long_body_supervision=args.wm_direct_long_body_supervision
@@ -567,7 +596,7 @@ def run(args, *, alternating=None):
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
             saved_plane = resumed['config'].get('intercept_plane_calibration')
-            if args.approach_objective=='toi_racket_only' and args.training_profile=='bounded':
+            if args.approach_objective=='toi_racket_only' and args.training_profile in ('bounded','research_scale'):
                 plane_calibration = saved_plane
             if args.intercept_plane_calibration:
                 from quadsmash.rl.supermimic_long_run_contract_v1 import sha256 as file_sha
@@ -577,6 +606,9 @@ def run(args, *, alternating=None):
                     if not (args.resume_reset_schedule or args.resume_next_cycle):
                         raise ValueError('A changed contact target plane requires a fresh schedule')
                     source = file_sha(args.resume_training)
+                    if research and args.resume_reset_schedule:
+                        composition = resumed['metadata'].get('research_contact_composition', {})
+                        source = composition.get('source_checkpoint_sha256', source)
                 else:
                     source = saved_plane['source_checkpoint_sha256']
                 offset = calibrated_plane_offset(json.loads(args.intercept_plane_calibration.read_text()),
@@ -635,7 +667,7 @@ def run(args, *, alternating=None):
             if forward_guard is not None:
                 resume_check=forward_guard.check(adapter)
                 write(args.output/'resumed_forward_validation.json',resume_check)
-                if not resume_check['passed']:
+                if not resume_check['passed'] and not research:
                     raise ValueError('Restored online WM failed fixed native forward validation')
             if reference_bank is None and resumed.get('reference_bank') is not None:
                 from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
@@ -817,7 +849,12 @@ def run(args, *, alternating=None):
                 return dict(critic_input=adapter.critic_input(state).detach(),head_masks=dict(recovery=recovery,approach=approach))
         def training_lane_available(row):
             return bool(training_start_mask(row,wm_holdout_lanes).any())
-        def training_state(row):
+        def training_state(row,*,compact=False):
+            if compact and '_actor_lane_mask' in row:
+                from quadsmash.rl.supermimic_compact_starts import compact_start
+                lanes=training_start_mask(row,wm_holdout_lanes)
+                small,small_launch=compact_start(row,lanes,select_launch_for_start(row,launch))
+                return PhysicalImaginationStateV1.from_record(small,executor_template=template,launch=small_launch,device='cuda:0')
             state=as_state(row)
             if wm_holdout_lanes:
                 state.clock_goal_context['actor_lane_mask']=training_start_mask(row,wm_holdout_lanes).to(state.physical.device)
@@ -864,10 +901,20 @@ def run(args, *, alternating=None):
                                collection_mode='frozen_wm_bootstrap')
                 row['stream_id']=replay.current_stream
                 row['native_tick']=tick
-                replay.append(row,policy_version=global_accepted_id,native_tick=tick,approach_metadata=sampling_metadata)
-                if refresh_collector is not None: refresh_collector.append(row)
-                if len(self.rows)>=archive_flush_rows:self.flush()
+                record = replay.append(row,policy_version=global_accepted_id,native_tick=tick,
+                                       approach_metadata=sampling_metadata,return_record=refresh_collector is not None)
+                if refresh_collector is not None:
+                    refresh_collector.append(row, record=record)
+                if len(self.rows)>=archive_flush_rows:
+                    if getattr(self,'pipeline',None) is None:self.flush()
+                    else:self.pipeline.enqueue()
+
             def flush(self):
+                if getattr(self,'pipeline',None) is not None:
+                    self.pipeline.enqueue()
+                    self.pipeline.drain()
+                    self._manifest()
+                    return
                 if os.environ.get('QUADSMASH_ZSTD_ARCHIVE','0')=='1':
                     return self.flush_compressed()
                 if self.rows:
@@ -884,6 +931,9 @@ def run(args, *, alternating=None):
             scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=args.recovery_update_budget+args.approach_update_budget,
             replay_source_schema=['recent_online','older_online','initial_archive'],
             replay_stage_schema=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery','approach_active','hit_prepare','contact_release','approach_failure','post_hit']),chunk_ticks=1000000,compact_plan_observations=True)
+        if research and os.environ.get('QUADSMASH_ZSTD_ARCHIVE','0')=='1':
+            from quadsmash.rl.supermimic_archive_pipeline import ArchivePipeline
+            archive.pipeline=ArchivePipeline(archive)
         archive.attach_task_sequence(env);env.physical_transition_archive=archive
         # The packed 800-tick archive is a separate stream from this fresh
         # native rollout.  Prevent windows from crossing the reset boundary
@@ -896,7 +946,7 @@ def run(args, *, alternating=None):
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
         config=dict(toi_effective_start_lanes=args.toi_effective_start_lanes,recovery_effective_start_lanes=args.recovery_effective_start_lanes,sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
-            world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=args.world_learning_rate,critic_lr=2e-4,
+            world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=trainer.actor_lr,actor_anchor=trainer.anchor_coeff,world_lr=args.world_learning_rate,critic_lr=2e-4,
             wm_forward_guard_sha256=forward_guard.spec_sha256 if forward_guard else None,wm_replay_handoff=replay_handoff,
             wm_separate_supervision=args.wm_separate_supervision,wm_direct_long_body_supervision=args.wm_direct_long_body_supervision,wm_active_flight_batch=args.wm_active_flight_batch,wm_natural_flight_batch=args.wm_natural_flight_batch,wm_natural_flight_loss=args.wm_natural_flight_loss,
             wm_action_collections=action_collections,wm_sampling_mode=args.wm_sampling_mode,
@@ -926,6 +976,9 @@ def run(args, *, alternating=None):
         if args.resume_training:
             global_attempt_id=int(resumed_global.get('attempts',0));global_accepted_id=int(resumed_global.get('accepted',0))
             global_rejected=int(resumed_global.get('rejected',0));global_backtracked=int(resumed_global.get('backtracked',0))
+        research_origin=(global_accepted_id if args.resume_reset_schedule else resumed.get('config',{}).get('research_origin',global_accepted_id)) if research and args.resume_training else 0
+        config['research_origin']=research_origin
+        research_started=time.monotonic()
         from quadsmash.rl.supermimic_evidence_binding_v1 import runtime_identity,probe_applicability
         loaded_identity=runtime_identity(actor,adapter,manifest['task_contract'],policy_execution,global_accepted_id)
         invocation_start=dict(actor_sha256=loaded_identity['actor_state_sha256'],accepted=global_accepted_id,
@@ -1122,7 +1175,7 @@ def run(args, *, alternating=None):
                 writer.add_scalar('quality/fixed_native_forward_passed',float(result['passed']),trainer.world_updates)
             metadata['online_forward_validation']=dict(passed=result['passed'],world_sha256=result['world_sha256'],
                                                        spec_sha256=forward_guard.spec_sha256)
-            if not result['passed']:
+            if not result['passed'] and not research:
                 write(args.output/'online_forward_rejected.json',result)
                 raise RuntimeError('Online WM failed fixed native forward validation before downstream updates')
             return result
@@ -1171,9 +1224,12 @@ def run(args, *, alternating=None):
                 sampling_seconds=time.perf_counter()-sampling_started
                 fit_started=time.perf_counter()
                 stats=trainer.fit_world_window(window,launch[lanes],loss_groups=sampling.pop('loss_groups'),
-                                               separate_supervision=args.wm_separate_supervision,long_native=sample_long_flight()); del window
+                                               separate_supervision=args.wm_separate_supervision,long_native=sample_long_flight() if not research or offset%4==0 else None)
+                if research and offset%2==0:
+                    stats['contact_supervision']=trainer.fit_research_contact(window,launch[lanes])
+                del window
                 stats.update(sampling_seconds=sampling_seconds,fit_wall_seconds=time.perf_counter()-fit_started)
-                if forward_guard is not None:
+                if forward_guard is not None and (not research or offset+1==total):
                     stats['fixed_native_forward']=verify_online_forward(head,iteration)
                 stats['sampling']=sampling; reports.append(stats)
                 if calibration_fast_path and ((offset + 1) == total or (offset + 1) % 16 == 0):
@@ -1282,6 +1338,9 @@ def run(args, *, alternating=None):
             if progress.get('proposal_in_flight',False):raise ValueError('Interrupted proposal: resume its pre_proposal checkpoint, not partial optimizer state')
             continuing=progress['status']!='new'
             trainer.set_trainable_names(names,block_name,reset_block=not continuing)
+            if research:
+                for group in trainer.actor_opt.param_groups:
+                    group['lr']=trainer.actor_lr
             progress['status']='training'
             dynamic_names=('touchdown','post_touchdown','recovery_failure','stable_recovery') if block_name=='recovery' else ('approach_active',)
             dynamic_pool=[item for name in dynamic_names for item in replay.stage_starts.get(name,[]) if training_lane_available(item)]
@@ -1300,8 +1359,10 @@ def run(args, *, alternating=None):
                 schedule.finish_approach_refresh(progress,refresh_frozen_policy(block_name))
                 save('latest.pt')
             while accepted<budget and attempts<max_attempts:
-                proposal_checkpoint=args.output/f'pre_proposal_{cycle_index}_{block_name}.pt'
-                save(proposal_checkpoint.name)
+                collect_block = not research or attempts == 0
+                proposal_checkpoint=args.output/('pre_block.pt' if research else f'pre_proposal_{cycle_index}_{block_name}.pt')
+                if collect_block:
+                    save(proposal_checkpoint.name)
                 pre_native_metrics=summarize_native_episodes(completed_records)
                 attempts+=1;global_attempt_id+=1;trainer.block_attempts=attempts
                 invocation_heads[block_name]['attempts']+=1
@@ -1312,7 +1373,7 @@ def run(args, *, alternating=None):
                 if shutil.disk_usage(args.output).free<8*1024**3:raise RuntimeError('Disk guard: less than8GiB free')
                 started=time.perf_counter()
                 with torch.inference_mode():
-                    for _ in range(args.native_ticks_per_actor_update):
+                    for _ in range(args.native_ticks_per_actor_update if collect_block else 0):
                         check_stop();action=native_actor_action(obs);obs,reward,done,info=wrapper.step(action);tick+=1
                         if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite native observation')
                         for raw in env.rally_records[cursor:]:
@@ -1333,7 +1394,10 @@ def run(args, *, alternating=None):
                                 writer.flush()
                         cursor=len(env.rally_records)
                 collect_s=time.perf_counter()-started;check_stop()
-                world_stats=run_world_updates(global_attempt_id,head=block_name)
+                if collect_block:
+                    progress['collection_reward_mean']=float(reward.mean())
+                block_reward_mean=progress['collection_reward_mean']
+                world_stats=run_world_updates(global_attempt_id,head=block_name) if collect_block else {}
                 quality=check_head_quality(block_name,global_attempt_id)
                 # Rebuild the start pool for every proposal.  Recovery starts
                 # therefore follow fresh event-aligned native data as it
@@ -1414,9 +1478,20 @@ def run(args, *, alternating=None):
                         actual=sum(len(r['lane_episode_tick']) for r in layout)
                         start_sampling.update(requested_lanes=args.toi_effective_start_lanes,effective_lanes=actual,
                                               missing_episodes=args.toi_effective_start_lanes-actual,records=layout)
-                state=training_state(row);check_stop();trainer.actor_attempts=attempts-1
-                actor_start=(tuple([state]+[training_state(r) for r in proposal_rows[1:]]) if proposal_rows else state)
-                stats=trainer.imagine_update(actor_start)
+                state=training_state(row,compact=research);check_stop();trainer.actor_attempts=attempts-1
+                actor_start=(tuple([state]+[training_state(r,compact=research) for r in proposal_rows[1:]]) if proposal_rows else state)
+                if research:
+                    retained=global_accepted_id-research_origin
+                    trainer.contact_aux_weight=(args.research_contact_weight if block_name=='approach'
+                        and args.research_contact_gradient=='G1' and retained>=32 else 0.)
+                    adapter.action_ball_model.detach_residual_for_actor=True
+                try:
+                    stats=trainer.imagine_update(actor_start)
+                finally:
+                    if research:adapter.action_ball_model.detach_residual_for_actor=False
+                if research:
+                    stats['contact_aux_weight']=trainer.contact_aux_weight
+                    stats['research_elapsed_s']=time.monotonic()-research_started
                 stats['actor_start_sampling']=start_sampling
                 stats['quality_protection']=quality
                 post_native_metrics=summarize_native_episodes(completed_records)
@@ -1442,16 +1517,16 @@ def run(args, *, alternating=None):
                     replay_stream=replay.current_stream)
                 progress.update(proposal_in_flight=False,attempts=attempts,accepted=accepted,rejected=progress.get('rejected',0)+int(not stats['update_accepted']),backtracked=progress.get('backtracked',0)+backtracked)
                 with torch.no_grad():request=trainer._actor_action(state,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
-                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_key=str(cycle_index),block_accepted_updates=accepted,block_rejected=progress['rejected'],block_backtracked=progress['backtracked'],attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
+                record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_key=str(cycle_index),block_accepted_updates=accepted,block_rejected=progress['rejected'],block_backtracked=progress['backtracked'],attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=block_reward_mean,completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
                 if block_name=='recovery':
                     stats['imagined_start_source']=start_sampling['source']
                 if writer is not None:
                     step=int(tick*128)
-                    writer.add_scalar('native/step_reward_mean',float(reward.mean()),step)
+                    writer.add_scalar('native/step_reward_mean',block_reward_mean,step)
                     writer.add_scalar('native/completed_episodes',len(completed_returns),step)
                     if completed_returns: writer.add_scalar('native/return_mean_128',sum(completed_returns[-128:])/len(completed_returns[-128:]),step)
                     writer.add_scalar('actor/imagined_return',float(stats.get('imagined_return_mean',0.0)),step)
-                    writer.add_scalar('model/world_loss',float(world_stats.get('world_loss',0.0)),step)
+                    if 'world_loss' in world_stats:writer.add_scalar('model/world_loss',float(world_stats['world_loss']),step)
                     writer.add_scalar('critic/loss',float(stats.get('critic_loss',0.0)),step)
                     writer.add_scalar('actor/%s_updates'%block_name,sum(row['accepted'] for key,row in schedule.cycles.items() if key.endswith('/'+block_name)),step)
                     writer.add_scalar('actor/%s_gate_active'%block_name,float(stats.get('effective_gate_lanes',0)),step)
@@ -1459,6 +1534,13 @@ def run(args, *, alternating=None):
                     writer.add_scalar('actor/tracking_loss',float(stats.get('tracking_loss',0.0)),step)
                     for name in ('task_gradient_norm','tracking_gradient_norm','anchor_gradient_norm','task_tracking_cosine','final_command_max_change','objective_before','objective_after','tracking_active_lane_steps','tracking_effective_weight_sum','tracking_nonzero_gradient_lanes'):
                         if name in stats:writer.add_scalar('actor/'+name,float(stats[name]),step)
+                    if research:
+                        axes={'retained_updates':global_accepted_id-research_origin,'native_env_steps':int(tick*128),
+                              'wall_seconds':int(stats['research_elapsed_s'])}
+                        for axis,position in axes.items():
+                            for metric in ('objective_before','objective_after','final_command_max_change',
+                                           'tracking_loss','task_gradient_norm','tracking_gradient_norm','contact_aux_weight'):
+                                if metric in stats:writer.add_scalar(f'research/{axis}/{block_name}/{metric}',stats[metric],position)
                     writer.add_scalar('actor/accepted_updates',global_accepted_id,step)
                     writer.add_scalar('actor/rejected_updates',global_rejected,step)
                     writer.add_scalar('performance/native_collect_s',collect_s,step)
@@ -1466,7 +1548,8 @@ def run(args, *, alternating=None):
                     writer.add_scalar('performance/critic_s',float(stats.get('critic_seconds',0.0)),step)
                     writer.add_scalar('performance/gpu_peak_memory',float(torch.cuda.max_memory_allocated()),step)
                     writer.flush()
-                save('latest.pt');write(args.output/'progress.json',record)
+                if not research:save('latest.pt')
+                write(args.output/'progress.json',record)
                 with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                 print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
                 if stats['update_accepted'] and accepted and accepted%16==0:save(f'{cycle_index}_{block_name}_checkpoint_{accepted:04d}.pt')
@@ -1482,8 +1565,10 @@ def run(args, *, alternating=None):
             if not managed_refresh and block_name=='approach' and accepted>progress['refresh_at']:
                 progress['pending_refresh']=True;save('latest.pt')
                 schedule.finish_approach_refresh(progress,refresh_frozen_policy('approach'))
-            save(f'{cycle_index}_{block_name}_candidate_{accepted:04d}.pt')
+            if not research:save(f'{cycle_index}_{block_name}_candidate_{accepted:04d}.pt')
             progress['status']='done';save('latest.pt')
+            if research and (global_accepted_id-research_origin)%32==0:
+                save(f'research_{global_accepted_id-research_origin:04d}.pt')
             return accepted
         def refresh_frozen_policy(head,*,event_id=None,managed_refresh=False):
             """Bounded first-complete-episode collection; no mid-episode manual reset."""
@@ -1505,6 +1590,9 @@ def run(args, *, alternating=None):
                 stage_ticks=capture_ticks,start_encoder=encode_native_value_start)
             replay.new_stream(source='online',policy_version=global_accepted_id)
             start_tick=tick
+            collect_started=time.perf_counter()
+            io_pipeline=getattr(archive,'pipeline',None)
+            io_before=io_pipeline.timing() if io_pipeline is not None else {}
             record_cursor=len(env.rally_records)
             if archive.task_sequence is not None:
                 archive.task_sequence.capture_reference_targets = trainer.reference_bank is not None
@@ -1516,6 +1604,7 @@ def run(args, *, alternating=None):
                         obs,reward,done,info=wrapper.step(native_actor_action(obs)); tick+=1
                         if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite frozen refresh')
                         if refresh_collector.complete.all():break
+                rollout_seconds=time.perf_counter()-collect_started
                 collector=refresh_collector
                 rtg_refresh,receipt=collector.result()
             finally:
@@ -1529,6 +1618,10 @@ def run(args, *, alternating=None):
                     primary.add_note('Archive flush during exception cleanup also failed: '+repr(cleanup_error))
                     write(refresh_dir/'archive_flush_failure.json',dict(type=type(cleanup_error).__name__,message=str(cleanup_error),
                         original_type=type(primary).__name__,original_message=str(primary)))
+            receipt['collection_timing']=dict(
+                rollout_wall_seconds=rollout_seconds,through_archive_drain_seconds=time.perf_counter()-collect_started,
+                native_ticks=tick-start_tick,env_steps_per_second=(tick-start_tick)*128/rollout_seconds,
+                archive={k:v-io_before[k] for k,v in io_pipeline.timing().items()} if io_pipeline is not None else None)
             if actor_hash!=tensor_digest(actor.state_dict().items()):raise RuntimeError('Frozen collection changed actor')
             wanted={(lane,int(ep)) for lane,ep in enumerate(collector.ids.tolist())}
             native_records=[score_terminal_episode(r,dict(protocol,_root=str(ROOT))) for r in env.rally_records[record_cursor:]
@@ -1630,7 +1723,10 @@ def run(args, *, alternating=None):
                         match_distance_threshold=trainer.reference_bank.match_distance_threshold,terminal_records=native_records,
                         excluded_lanes=wm_holdout_lanes,use_substep_toi=args.use_substep_toi_references,
                         execution_contract_sha256=trainer.reference_bank.execution_contract_sha256)
-                trainer.reference_bank.extend(additions)
+                if research:
+                    atomic_torch_save(additions.payload(),refresh_dir/'candidate_references.pt')
+                else:
+                    trainer.reference_bank.extend(additions)
                 atomic_torch_save(trainer.reference_bank.payload(),refresh_dir/'reference_bank.pt')
                 receipt['reference_bank']=trainer.reference_bank.manifest
             # Same post-refresh WM and same completed trajectories are checked for BOTH heads.
@@ -1667,6 +1763,11 @@ def run(args, *, alternating=None):
                            warmup_ticks=0,partial_suffix_scope='WM only, excluded from calibration')
             write(refresh_dir/'manifest.json',receipt)
             if writer is not None:
+                timing=receipt['collection_timing']
+                for key in ('env_steps_per_second','through_archive_drain_seconds','rollout_wall_seconds'):
+                    writer.add_scalar('native_frozen/'+key,timing[key],tick*128)
+                for key,value in (timing['archive'] or {}).items():
+                    writer.add_scalar('native_frozen/archive_'+key,value,tick*128)
                 writer.add_scalar('native_frozen/episode_return_mean',sum(receipt['returns'])/128,tick*128)
                 writer.flush()
             print('PHYSICAL_REFRESH='+json.dumps(receipt),flush=True)
@@ -1863,7 +1964,11 @@ def run(args, *, alternating=None):
             writer.flush(); writer.close()
         if archive is not None:
             try:
-                archive.flush()
+                try:
+                    archive.flush()
+                finally:
+                    if getattr(archive,'pipeline',None) is not None:
+                        archive.pipeline.close()
             except BaseException as cleanup_error:
                 if failed:
                     write(args.output/'archive_cleanup_failure.json',dict(

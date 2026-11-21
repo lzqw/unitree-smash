@@ -83,6 +83,7 @@ class PhysicalImaginationAdapter(nn.Module):
         # unverified ball/contact Jacobian can reach the actor.  This only
         # affects imagination gradients.  World-model supervision continues to
         # use the complete native ball target in fit_world_window().
+        outgoing_ball=predicted[:,49:]
         if detach_ball or self.contact_bptt_mode in ('blocked', 'detached', 'precontact'):
             force_detach=detach_ball
             detach_ball = torch.ones(len(predicted), dtype=torch.bool,
@@ -179,6 +180,7 @@ class PhysicalImaginationAdapter(nn.Module):
         self.calls+=1
         next_state=PhysicalImaginationStateV1(predicted,executor,next_task,history,observation,next_context)
         return next_state,reward[:,None],done[:,None],dict(
+            outgoing_ball=outgoing_ball,impulse_info=ball_details.get('impulse_info'),
             requested_action=actor_action,base_action=base,
             final_joint_targets=preview.final_joint_targets,event_delta=event_delta,
             task_prediction=task,continuous_reward=continuous,

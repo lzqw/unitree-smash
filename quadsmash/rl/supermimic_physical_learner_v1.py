@@ -16,6 +16,16 @@ from .supermimic_physical_dataset_v1 import valid_windows
 from .supermimic_racket_dynamics_v1 import racket_loss_components, racket_state, robot_loss
 
 
+def supervised_transition(adapter,state,targets,previous,feet,present,elapsed,launch):
+    def step(*args):
+        return ball_transition(adapter.physical_model,adapter.ball_model,*args,action_model=adapter.action_ball_model)
+    args=(state,targets,previous,feet,present,elapsed,launch)
+    if getattr(adapter,'checkpoint_supervised_rollout',False) and torch.is_grad_enabled():
+        from torch.utils.checkpoint import checkpoint
+        return checkpoint(step,*args,use_reentrant=False,preserve_rng_state=False)
+    return step(*args)
+
+
 def native_flight_rollout_loss(adapter,window,launch,loss_kind="huber", *, supervise_body=False):
     """Supervise free-running predictions at multiple horizons using archived commands."""
     losses={"huber": torch.nn.functional.smooth_l1_loss, "mse": torch.nn.functional.mse_loss}
@@ -28,9 +38,8 @@ def native_flight_rollout_loss(adapter,window,launch,loss_kind="huber", *, super
     errors=[]
     body_errors=[]
     for i in range(64):
-        state,feet,present=ball_transition(adapter.physical_model,adapter.ball_model,state,window['targets'][i],
-            window['previous_action'][i],feet,present,window['elapsed'][i],launch,
-            action_model=adapter.action_ball_model)
+        state,feet,present=supervised_transition(adapter,state,window['targets'][i],
+            window['previous_action'][i],feet,present,window['elapsed'][i],launch)
         if i+1 in (4,16,32,64):
             truth=window['next_state'][i]
             error=velocity_loss(state[:,52:55],truth[:,52:55],reduction='none').mean(-1)
@@ -232,6 +241,10 @@ class PhysicalHorizonTrainer:
         survival=state.physical.new_ones(len(state.physical))
         reference=None
         toi_only = self.block_name=='approach' and getattr(self,'approach_objective','task')=='toi_racket_only'
+        contact_weight=getattr(self,'contact_aux_weight',0.) if toi_only else 0.
+        if contact_weight:
+            outgoing=state.physical.new_zeros((len(selected),6))
+            impacted=torch.zeros_like(selected)
         if toi_only:
             from .supermimic_toi_racket_objective import bind_intercept_reference, intercept_loss, precontact_mask
         tracking_coeff=self.tracking_coefficient(self.block_name)
@@ -269,7 +282,12 @@ class PhysicalHorizonTrainer:
                 if 'had_contact' not in rally:track_mask=torch.zeros_like(track_mask)
                 else:track_mask=track_mask&(rally['had_contact'].reshape(-1)<.5)
             previous=state
-            state,reward,done,_=self.adapter(state,action,**({'detach_ball': True} if toi_only else {}))
+            state,reward,done,transition=self.adapter(state,action,**({'detach_ball': True} if toi_only or hasattr(self,'research_court') else {}))
+            if contact_weight:
+                impact=transition['impulse_info']
+                first=track_mask & impact['active'].reshape(-1) & (impact['object_id'].reshape(-1)==0) & ~impacted
+                outgoing=torch.where(first[:,None],transition['outgoing_ball'],outgoing)
+                impacted=impacted|first
             if reference is not None:
                 if toi_only:
                     numerator,weights=intercept_loss(previous.physical,state.physical,
@@ -294,6 +312,14 @@ class PhysicalHorizonTrainer:
         task_loss=-masked_lane_mean(ret,weights)
         if toi_only:
             task_loss=task_loss.detach()
+            if contact_weight:
+                from .supermimic_outgoing_flight import outgoing_cost
+                impact_lanes=impacted&weights.bool().reshape(-1)
+                if impact_lanes.any():
+                    cost=outgoing_cost(outgoing[impact_lanes],self.adapter.action_ball_model.impulse_prior,self.research_court)
+                    task_loss=cost.sum()/weights.sum().clamp_min(1.)
+                else:
+                    task_loss=outgoing.sum()*0.
         anchor_loss=masked_lane_mean(torch.stack(anchors).sum(0),weights)
         track_weight_sum=torch.stack(track_weights).sum() if tracks else ret.new_zeros(())
         tracking_loss=torch.stack(tracks).sum()/track_weight_sum.clamp_min(1e-8) if tracks else ret.sum()*0.
@@ -308,6 +334,8 @@ class PhysicalHorizonTrainer:
         loss=tracking_coeff*tracking_loss+self.anchor_coeff*anchor_loss
         if not toi_only:
             loss=loss+task_loss
+        elif contact_weight:
+            loss=loss+contact_weight*task_loss
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical BPTT objective')
         from .supermimic_dual_head_quality_v1 import reference_coverage
         coverage=reference_coverage(self.reference_bank,self.block_name,tracking_coeff)
@@ -438,6 +466,31 @@ class PhysicalHorizonTrainer:
             no_effective_gradient=reason in ('zero_total_gradient','no_task_or_tracking_gradient'),
             frozen_base_recovery_unchanged=True,model_unchanged_during_actor=True)
 
+    def fit_research_contact(self,window,launch):
+        # Supervise the outgoing velocity only on measured racket event edges.
+        # Free-flight transitions remain in the ordinary shared WM loss.
+        change=window['next_event_state']>window['event_state']
+        t,lane=(change[:,:,1]|change[:,:,6]).nonzero(as_tuple=True)
+        if not len(t):
+            return dict(measured_events=0,updated=False)
+        model=self.adapter.action_ball_model
+        idx=(t,lane)
+        pred,_,_=ball_transition(self.adapter.physical_model,self.adapter.ball_model,window['state'][idx],
+            window['targets'][idx],window['previous_action'][idx],window['feet'][idx].float(),
+            window['present'][idx],window['elapsed'][idx],launch[lane],action_model=model)
+        loss=torch.nn.functional.smooth_l1_loss(pred[:,52:55],window['next_state'][idx][:,52:55],beta=.1)
+        params=list(model.impulse_residual_head.parameters())
+        self.world_opt.zero_grad(set_to_none=True)
+        grads=torch.autograd.grad(loss,params,allow_unused=True)
+        for p,g in zip(params,grads):
+            p.grad=g
+        norm=torch.nn.utils.clip_grad_norm_(params,1.,error_if_nonfinite=True)
+        if not torch.isfinite(loss):
+            raise FloatingPointError('Nonfinite event-only contact supervision')
+        if norm>0:
+            self.world_opt.step()
+        return dict(measured_events=len(t),updated=bool(norm>0),velocity_huber=float(loss.detach()),gradient_norm=float(norm))
+
     def fit_world_window(self,window,launch,*,loss_groups=None,separate_supervision=False,long_native=None):
         """One actual WM optimizer step on 16 native transitions per sample.
 
@@ -459,9 +512,8 @@ class PhysicalHorizonTrainer:
         racket_components={name: state.new_zeros(()) for name in
                            ('position','normal','velocity','angular')}
         for i in range(cfg.world_steps):
-            prediction,newfeet,newpresent=ball_transition(world,ball,state,window['targets'][i],
-                window['previous_action'][i],feet,present,window['elapsed'][i],launch,
-                action_model=self.adapter.action_ball_model)
+            prediction,newfeet,newpresent=supervised_transition(self.adapter,state,window['targets'][i],
+                window['previous_action'][i],feet,present,window['elapsed'][i],launch)
             out=task.forward_values(state,prediction,window['targets'][i],window['previous_action'][i],feet,
                 window['elapsed'][i],values,validity)
             if separate_supervision:
@@ -512,6 +564,8 @@ class PhysicalHorizonTrainer:
         long_flight=state.new_zeros(())
         long_body=state.new_zeros(())
         direct_body=getattr(self,'direct_long_body_supervision',False)
+        if getattr(self.adapter,'checkpoint_supervised_rollout',False) and long_native is None:
+            direct_body=False
         if direct_body and (not separate_supervision or long_native is None):
             raise ValueError('Direct multistep body supervision requires separate losses and long native windows')
         if direct_body:

@@ -46,6 +46,73 @@ def response(pred, real, noise, mask):
     return out
 
 
+def first_support(initial_feet, predicted_feet, native_feet):
+    """First support at control boundaries for initially airborne lanes; preserve censored events."""
+    airborne = ~initial_feet.bool().any(dim=-1)
+    horizon = len(native_feet)
+    steps = torch.arange(1,horizon+1,device=native_feet.device)[:,None]
+    def onset(support):
+        return torch.where(support.any(dim=-1), steps, horizon+1).amin(dim=0)[airborne]
+    actual = onset(native_feet.bool())
+    predicted = onset(predicted_feet >= .5)
+    both = (actual <= horizon) & (predicted <= horizon)
+    delta = predicted[both]-actual[both]
+    return dict(initially_airborne=int(airborne.sum()),native_observed=int((actual<=horizon).sum()),
+                predicted_observed=int((predicted<=horizon).sum()),both_observed=int(both.sum()),
+                missed=int(((actual<=horizon)&(predicted>horizon)).sum()),
+                spurious=int(((actual>horizon)&(predicted<=horizon)).sum()),
+                jointly_censored=int(((actual>horizon)&(predicted>horizon)).sum()),
+                signed_tick_errors=delta.tolist(),mean_abs_ticks=float(delta.abs().float().mean()) if len(delta) else None)
+
+
+@torch.no_grad()
+def landing_forward(adapter, phy, launch, ids, sequence, dt):
+    """Free-run from the nominal prefix and compare a single step restarted from native state."""
+    from quadsmash.rl.supermimic_toi_racket_objective import racket_features
+    geom = adapter.physical_model.geometry
+    initial = encode_physical(phy)[ids]
+    x = native = initial
+    feet = native_feet = phy['foot_contact'][ids].float()
+    present = native_present = phy['ball_present'][ids]
+    previous = phy['final_action'][ids]
+    elapsed = phy['elapsed_s'][ids]
+    out = {}
+    foot_predictions,foot_targets = [],[]
+
+    def errors(guess, foot, reference, expected_feet):
+        pred_q = torch.nn.functional.normalize(guess[:,3:7].double(), dim=-1)
+        true_q = torch.nn.functional.normalize(reference[:,3:7].double(), dim=-1)
+        angle = 2*(pred_q*true_q).sum(-1).abs().clamp(max=1).acos()
+        err = (guess-reference).abs()
+        racket = (racket_features(guess,geom)-racket_features(reference,geom)).abs()
+        return dict(root_height_mae_m=float(err[:,2].mean()),root_attitude_mae_rad=float(angle.mean()),
+                    root_angular_mae_rad_s=float(err[:,10:13].mean()),leg_position_mae_rad=float(err[:,13:25].mean()),
+                    leg_velocity_mae_rad_s=float(err[:,31:43].mean()),racket_position_mae_m=float(racket[:,:3].mean()),
+                    foot_probability_brier=float((foot-expected_feet).square().mean()),
+                    all_four_foot_flags_correct=int(((foot>=.5)==expected_feet.bool()).all(dim=1).sum()))
+
+    for h,row in enumerate(sequence,1):
+        if row['done'][ids].any() or not torch.allclose(row['elapsed_s'][ids],elapsed+dt,atol=1.e-5,rtol=0):
+            raise ValueError('Nominal forward window crossed reset or a missing control tick')
+        def transition(start, support, presence):
+            return ball_transition(adapter.physical_model,adapter.ball_model,start,row['final_joint_targets'][ids],
+                    previous,support,presence,elapsed,launch[ids],action_model=adapter.action_ball_model)
+        x,feet,present = transition(x,feet,present)
+        reference = row['next_state'][ids]
+        expected_feet = row['foot_contact'][ids].float()
+        foot_predictions.append(feet)
+        foot_targets.append(expected_feet)
+        if h in (1,2,4,8,16,32,64):
+            restarted,restarted_feet,_ = transition(native,native_feet,native_present)
+            out[h] = dict(lanes=len(ids),free=errors(x,feet,reference,expected_feet),
+                          one_step_from_native=errors(restarted,restarted_feet,reference,expected_feet),
+                          initial_state_persistence=errors(initial,phy['foot_contact'][ids].float(),reference,expected_feet))
+        native,native_feet,native_present = reference,expected_feet,row['ball_present'][ids]
+        elapsed,previous = row['elapsed_s'][ids],row['final_action'][ids]
+    out['first_support'] = first_support(phy['foot_contact'][ids],torch.stack(foot_predictions),torch.stack(foot_targets))
+    return out
+
+
 def audit(collection, run, checkpoint):
     status = json.loads((collection/'status.json').read_text())
     if status['status'] != 'COLLECTION_FINISHED' or len(status['completed']) != 4:
@@ -126,7 +193,10 @@ def audit(collection, run, checkpoint):
         scores[h]={group:{k:{m:response(result[t,:,ss],truth[t,:,ss],noise[t,:,ss],mask)
                         for m,result in [('finite_difference',diff),('midpoint_derivative',jvp)]}
                         for k,ss in sections.items()} for group,mask in subsets.items()}
-    return dict(checkpoint_sha256=digest(checkpoint), world_sha256=tensor_digest(ck['world'].items()),
+    nominal_forward = {}
+    if eligible.any() and 'step_sequence' in base['raw']:
+        nominal_forward = landing_forward(adapter,phy,launch,ids[eligible],seqs['nominal_a'],contract['task_contract']['control_dt_s'])
+    return dict(nominal_forward=nominal_forward,checkpoint_sha256=digest(checkpoint), world_sha256=tensor_digest(ck['world'].items()),
                 model_policy_sha256=tensor_digest(ck['actor'].items()), probe_actor_sha256=native_actor,
                 native_status_sha256=digest(collection/'status.json'), prefix_sha256=base['prefix_sha256'],
                 selected=len(ids), held=int(held.sum()), released_held=int(eligible.sum()), horizon=horizon,

@@ -38,7 +38,7 @@ SOURCE_STATE_TYPES = frozenset((
 
 def tensor_tree_copy(value, *, cpu=False):
     if isinstance(value, torch.Tensor):
-        return value.detach().to('cpu').clone() if cpu else value.detach().clone()
+        return value.detach().to('cpu', copy=True) if cpu else value.detach().clone()
     if isinstance(value, dict):
         return {k: tensor_tree_copy(v, cpu=cpu) for k, v in value.items()}
     if isinstance(value, (list, tuple)):

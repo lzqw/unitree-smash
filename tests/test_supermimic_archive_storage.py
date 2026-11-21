@@ -43,3 +43,35 @@ def test_resume_reads_verified_rows_and_releases_temporary_file(tmp_path, compre
     with pytest.raises(ValueError,match='hash mismatch'):
         with storage.read_archive_rows(tmp_path,dict(receipt,sha256='bad'),scratch=tmp_path):
             pass
+
+
+def test_pipeline_commits_in_order_with_immutable_snapshots(tmp_path):
+    import torch
+    from quadsmash.rl.supermimic_archive_pipeline import ArchivePipeline
+    archive = SimpleNamespace(directory=tmp_path, schema='test', chunks=[], rows=[])
+    pipe = ArchivePipeline(archive)
+    sample = torch.tensor([1])
+    for value in (1, 2):
+        sample.fill_(value)
+        archive.rows.append({'sample': sample})
+        pipe.enqueue()
+    sample.fill_(99)
+    pipe.close()
+    for i, receipt in enumerate(archive.chunks, 1):
+        assert receipt['file'] == f'chunk_{i-1:05d}.pt.zst'
+        with storage.read_archive_rows(tmp_path, receipt, scratch=tmp_path) as rows:
+            assert rows[0]['sample'].item() == i
+
+
+def test_pipeline_failure_blocks_all_checkpoint_boundaries(tmp_path, monkeypatch):
+    import quadsmash.rl.supermimic_archive_pipeline as pipeline
+    archive = SimpleNamespace(directory=tmp_path, schema='test', chunks=[], rows=[{}])
+    def fail(*args):
+        raise OSError('simulated disk failure')
+    monkeypatch.setattr(pipeline, 'serialize', fail)
+    pipe = pipeline.ArchivePipeline(archive)
+    pipe.enqueue()
+    for op in (pipe.drain, pipe.close):
+        with pytest.raises(OSError, match='disk failure'):
+            op()
+    assert archive.chunks == []

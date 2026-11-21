@@ -230,3 +230,18 @@ def test_refresh_joins_substep_target_only_to_qualified_complete_episode():
     packed = collector.packed_complete()['native_toi_racket']
     assert packed[0,0].isnan().all()
     torch.testing.assert_close(packed[0,1], torch.cat((torch.tensor([.004]),features[1])))
+
+
+def test_frozen_reference_and_cpu_ring_record_agree():
+    from quadsmash.rl.supermimic_physical_loop_replay_v1 import row_tensors
+    first = row(0, [0, 0], [1, 1], [False, False])
+    initial = {k: v.unsqueeze(0) for k, v in row_tensors(first, Schema()).items()}
+    replay = PhysicalLoopReplay({'tensors': initial}, Schema(), capacity_ticks=64)
+    collectors = [FrozenRefresh(2, 2, .9, 'frozen', Schema(), stage_ticks=()) for _ in range(2)]
+    for t in range(2):
+        sample = row(t, [t,t], [1,1], [t==1,t==1])
+        record = replay.append(sample, return_record=True)
+        collectors[0].append(sample)
+        collectors[1].append(sample, record=record)
+    assert collectors[0].result()[1] == collectors[1].result()[1]
+    torch.testing.assert_close(collectors[0].packed_complete(), collectors[1].packed_complete())

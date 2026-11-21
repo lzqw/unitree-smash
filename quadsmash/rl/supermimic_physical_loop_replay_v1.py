@@ -239,16 +239,7 @@ class PhysicalLoopReplay:
         if policy_version is not None:
             self.current_policy_version = int(policy_version)
 
-    def _stage(self, row):
-        """Return per-lane metadata; no lane may inherit another lane's event."""
-        record = row_tensors(row, self.schema)
-        ids = _stage_ids_from_tensors(record)
-        names = ('prepare', 'approach', 'pre_touchdown', 'post_touchdown',
-                 'touchdown', 'recovery_failure', 'stable_recovery')
-        ids = ids.reshape(-1)
-        return [names[int(value)] for value in ids], ids
-
-    def append(self, row, *, retain_start=True, policy_version=None, native_tick=None, approach_metadata=None):
+    def append(self, row, *, retain_start=True, policy_version=None, native_tick=None, approach_metadata=None, return_record=False):
         """Append one native transition.
 
         Restoring an old checkpoint must rebuild the ring tensors, but does not
@@ -262,7 +253,7 @@ class PhysicalLoopReplay:
         index = self.write_pos
         for key, tensor in self.data.items():
             tensor[index].copy_(record[key].detach().cpu())
-        stages, stage_ids = self._stage(row)
+        stage_ids = _stage_ids_from_tensors(record).reshape(-1)
         self.stage_ids[index].copy_(stage_ids)
         self.source_ids[index].fill_(SOURCE_CODES[self.current_source])
         self.policy_versions[index].fill_(int(self.current_policy_version if policy_version is None else policy_version))
@@ -286,8 +277,10 @@ class PhysicalLoopReplay:
         # training block, so long runs do not grow memory with every tick.
         # Preserve the full G07 execution graph. A mask selects training lanes;
         # never slice arbitrary tensors/scalars/aliases from a 128-lane template.
-        for stage in set(stages):
-            mask = torch.tensor([x == stage for x in stages])
+        stage_names=('prepare','approach','pre_touchdown','post_touchdown','touchdown','recovery_failure','stable_recovery')
+        for stage_id in stage_ids.unique().tolist():
+            stage=stage_names[stage_id]
+            mask=(stage_ids==stage_id).cpu()
             entry = dict(start, _actor_lane_mask=mask, _source_lanes=self.lanes)
             self.stage_starts.setdefault(stage, []).append(entry)
             self.stage_starts[stage] = self.stage_starts[stage][-16:]
@@ -297,6 +290,10 @@ class PhysicalLoopReplay:
             self.stage_starts['approach_active']=self.stage_starts['approach_active'][-16:]
         self.new_starts.append(start)
         self.new_starts = self.new_starts[-32:]
+        if return_record:
+            # The collector copies this CPU slot before the next environment step.
+            return {key: self.data[key][index] if self.data[key].dtype == value.dtype else value
+                    for key, value in record.items()}
 
     def training_probe_stream(self, lanes, tensors):
         """Expand measured lanes to the fixed suite layout. Missing lanes are never eligible."""

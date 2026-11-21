@@ -1,0 +1,87 @@
+{
+  "scope": "Host-resident recorded 128-lane chunks, same immutable input and compression; no native simulation, GPU copy or consumer work; drained immediately. Paired compressed byte hashes matched.",
+  "summary": {
+    "sync": {
+      "foreground_s": 1.4513493844860932,
+      "through_drain_s": 1.451351090479875
+    },
+    "async": {
+      "foreground_s": 0.21084475099632982,
+      "through_drain_s": 1.4867979245173046
+    }
+  },
+  "samples": [
+    {
+      "source_sha256": "964b6102cbff3f37b5cb514df4e01ac2386df08d51e469a4b822409d95f3188a",
+      "ticks": 32,
+      "mode": "sync",
+      "iteration": 0,
+      "compressed_bytes": 6295172,
+      "foreground_s": 1.3208410590013955,
+      "through_drain_s": 1.320841997017851
+    },
+    {
+      "source_sha256": "964b6102cbff3f37b5cb514df4e01ac2386df08d51e469a4b822409d95f3188a",
+      "ticks": 32,
+      "mode": "async",
+      "iteration": 0,
+      "compressed_bytes": 6295172,
+      "foreground_s": 0.18916900199837983,
+      "through_drain_s": 1.3559075640223455
+    },
+    {
+      "source_sha256": "964b6102cbff3f37b5cb514df4e01ac2386df08d51e469a4b822409d95f3188a",
+      "ticks": 32,
+      "mode": "async",
+      "iteration": 1,
+      "compressed_bytes": 6295172,
+      "foreground_s": 0.18167784198885784,
+      "through_drain_s": 1.3074981259997003
+    },
+    {
+      "source_sha256": "964b6102cbff3f37b5cb514df4e01ac2386df08d51e469a4b822409d95f3188a",
+      "ticks": 32,
+      "mode": "sync",
+      "iteration": 1,
+      "compressed_bytes": 6295172,
+      "foreground_s": 1.3295311389956623,
+      "through_drain_s": 1.3295336369774304
+    },
+    {
+      "source_sha256": "406e69ea0fffcd25a84c0dcdd409662f9d3210e3737be1176be76ac9eb18ea0d",
+      "ticks": 32,
+      "mode": "sync",
+      "iteration": 0,
+      "compressed_bytes": 49131871,
+      "foreground_s": 1.573167629976524,
+      "through_drain_s": 1.5731685439823195
+    },
+    {
+      "source_sha256": "406e69ea0fffcd25a84c0dcdd409662f9d3210e3737be1176be76ac9eb18ea0d",
+      "ticks": 32,
+      "mode": "async",
+      "iteration": 0,
+      "compressed_bytes": 49131871,
+      "foreground_s": 0.23252049999427982,
+      "through_drain_s": 1.6176882850122638
+    },
+    {
+      "source_sha256": "406e69ea0fffcd25a84c0dcdd409662f9d3210e3737be1176be76ac9eb18ea0d",
+      "ticks": 32,
+      "mode": "async",
+      "iteration": 1,
+      "compressed_bytes": 49131871,
+      "foreground_s": 0.3024305139842909,
+      "through_drain_s": 1.744842277985299
+    },
+    {
+      "source_sha256": "406e69ea0fffcd25a84c0dcdd409662f9d3210e3737be1176be76ac9eb18ea0d",
+      "ticks": 32,
+      "mode": "sync",
+      "iteration": 1,
+      "compressed_bytes": 49131871,
+      "foreground_s": 1.6659254120022524,
+      "through_drain_s": 1.6659262779867277
+    }
+  ]
+}

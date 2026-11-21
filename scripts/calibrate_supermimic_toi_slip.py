@@ -11,25 +11,7 @@ from fit_supermimic_native_racket_toi_head import fixture, free_rollout, g07, me
 from quadsmash.rl.supermimic_ball_impulse_prior_v1 import BallImpulsePriorV1
 
 
-class TOISlip:
-    """Velocity-unit sticking impulse capped by a fraction of the predicted normal impulse."""
-
-    def __init__(self, friction, sticking, residual=None):
-        self.residual = residual
-        self.friction = friction
-        self.sticking = sticking
-
-    def toi_response(self, row, present):
-        normal = row['normal']
-        relative = row['relative_velocity']
-        slip = relative - (relative * normal).sum(-1, keepdim=True) * normal
-        bound = self.friction * row['impulse_dv'].norm(dim=-1, keepdim=True)
-        scale = torch.minimum(torch.full_like(bound, self.sticking), bound / slip.norm(dim=-1, keepdim=True).clamp_min(1e-12))
-        active = present.reshape(-1).bool() & row['active'].reshape(-1).bool() & (row['object_id'] == 0)
-        dv = -slip * scale
-        if self.residual is not None:
-            dv = dv + self.residual.toi_response(row, present)['impulse_residual_dv']
-        return dict(impulse_residual_active=active, impulse_residual_dv=dv * active[:, None])
+from quadsmash.rl.supermimic_racket_slip import TOISlip
 
 
 def integrated_friction(root, split, physics, prior):

@@ -32,7 +32,7 @@ def racket_transition_inputs(prior, ball, stream):
     present=torch.ones(len(ball),dtype=torch.bool)
     analytic,info=prior(frame(0),MeasuredRacket(),present,frame(-1))
     keys=('active','object_id','normal','time','normal_speed','pre_velocity','pre_position','local','relative_velocity',
-          'surface_velocity','racket_axis','impulse_dv','remaining_time')
+          'surface_velocity','racket_axis','racket_part','impulse_dv','remaining_time')
     row={k:info[k] for k in keys}
     # Use the same TOI orientation interpolator as the impact prior. The columns
     # are the two string-plane axes for diagnostics with direction-dependent friction.
@@ -209,11 +209,20 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('fixture','calibration','output'):p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--calibrated-slip', type=Path, help='Use the admitted native/Body first-impact calibration as a frozen baseline')
+    p.add_argument('--research-calibration',action='store_true',help='Fit against the measured calibration and retain its diagnostic status')
+    p.add_argument('--residual-max-dv',type=float,default=None,help='Symmetric bound per local impulse coefficient in m/s')
+    p.add_argument('--runtime-source',type=Path,help='Bind a research contact checkpoint to this physical-loop source')
     p.add_argument('--evaluate-head',type=Path,help='Evaluate saved fixture weights without running the optimizer')
     p.add_argument('--g07-training',type=Path)
     p.add_argument('--g07-development',type=Path)
     p.add_argument('--device',choices=('cpu','cuda:0'),default='cuda:0')
     a=p.parse_args()
+    if a.research_calibration and not a.calibrated_slip:
+        p.error('Research calibration requires the recorded physical calibration')
+    if a.runtime_source and (not a.research_calibration or a.evaluate_head):
+        p.error('Runtime packaging requires a freshly trained research calibration')
+    if a.residual_max_dv is not None and not 0<a.residual_max_dv<float('inf'):
+        p.error('Invalid residual bound')
     if a.g07_training and not a.g07_development:p.error('Specify separate train and development G07 collections together')
     torch.manual_seed(20261121);torch.set_num_threads(2)
     cfg=json.loads(a.calibration.read_text())
@@ -262,13 +271,15 @@ def main():
     data={b:{k:v.to(device) for k,v in r.items()} for b,r in data.items()}
     prior=prior.to(device)
     model=V13().to(device)
+    if a.residual_max_dv is not None:
+        model.impulse_residual_scale.fill_(a.residual_max_dv)
     analytic = None
     predictor = model
     slip_sha = None
     if a.calibrated_slip:
         from calibrate_supermimic_toi_slip import TOISlip
         slip = json.loads(a.calibrated_slip.read_text())
-        if (not a.g07_training or not slip['development_passed'] or not slip['body_racket_response_passed']
+        if (not a.g07_training or (not a.research_calibration and not (slip['development_passed'] and slip['body_racket_response_passed']))
                 or slip['final_holdout_opened'] or slip['calibration_sha256'] != sha(a.calibration)
                 or slip['fixture_sha256'] != {s: provenance[s] for s in ('train', 'development')}
                 or slip['g07_training']['status_sha256'] != provenance['g07_train']
@@ -287,6 +298,10 @@ def main():
             or ck.get('slip_calibration_sha256')!=slip_sha or ck['analytic']!=prior.calibration_manifest() or not set(fit_labels)<=ck['source_sha256'].keys()
             or any(provenance.get(key)!=digest for key,digest in ck['source_sha256'].items())):
             raise ValueError('Fixture head or source binding changed')
+        saved_limit=ck.get('residual_max_dv',.5)
+        if a.residual_max_dv is not None and saved_limit!=a.residual_max_dv:
+            raise ValueError('Cannot change a fitted residual bound at evaluation')
+        model.impulse_residual_scale.fill_(saved_limit)
         model.impulse_residual_head.load_state_dict(ck['state'],strict=True)
     for _ in range(updates):
         ix=torch.randint(n,(128,),device=device)
@@ -330,9 +345,31 @@ def main():
         path=a.evaluate_head
     else:
         atomic_torch_save(dict(schema='supermimic-supervised-native-racket-head-v1',v13_semantics_version=model.V13_SEMANTICS_VERSION,
-                           state=model.impulse_residual_head.state_dict(),analytic=prior.calibration_manifest(),
+                           state=model.impulse_residual_head.state_dict(),residual_max_dv=float(model.impulse_residual_scale[0]),analytic=prior.calibration_manifest(),
                            slip_calibration_sha256=slip_sha,source_sha256=provenance),path)
     evidence['checkpoint_sha256']=sha(path)
+    if a.runtime_source:
+        from quadsmash.rl.supermimic_action_ball_v1 import CalibratedRacketImpulseV13
+        from quadsmash.rl.supermimic_ball_impulse_prior_v1 import hybrid_ball_manifest
+        src=torch.load(a.runtime_source,weights_only=False,map_location='cpu',mmap=True)
+        meta=src['metadata']['physical_imagination']
+        runtime=CalibratedRacketImpulseV13().eval()
+        runtime.load_state_dict(model.state_dict() | {'friction':torch.tensor(analytic.friction),'sticking':torch.tensor(analytic.sticking)},strict=True)
+        # Verify the serialized composition already implements the supervised predictor, in physical units.
+        examples=stages['development'][0]['plus']
+        present=torch.ones_like(examples['active'])
+        torch.testing.assert_close(runtime.toi_response(examples,present)['impulse_residual_dv'],
+                                   predictor.toi_response(examples,present)['impulse_residual_dv'])
+        package=dict(schema=runtime.schema,model=runtime.state_dict(),updates=updates,
+                     v13_semantics_version=runtime.V13_SEMANTICS_VERSION,asset_sha256=src['metadata']['task_contract']['asset']['sha256'],
+                     physical_sha256=meta['checkpoint_sha256']['physical'],legacy_ball_sha256=meta['checkpoint_sha256']['ball'],
+                     geometry_hashes=runtime.preview.geometry_hashes,softness_m=runtime.softness_m,
+                     hybrid_ball_transition=hybrid_ball_manifest(normal_impulse_scale=cfg['fitted']['normal_impulse_scale']),
+                     calibration_sha256=sha(a.calibrated_slip),supervised_head_sha256=sha(path),
+                     research_only=True,source_sha256=provenance)
+        destination=a.output/'research_contact.pt'
+        atomic_torch_save(package,destination)
+        evidence['runtime_checkpoint_sha256']=sha(destination)
     (a.output/'result.json').write_text(json.dumps(evidence,indent=2,allow_nan=False)+'\n')
 
 

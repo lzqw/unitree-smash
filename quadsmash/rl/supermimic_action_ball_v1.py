@@ -1170,6 +1170,26 @@ def migrate_material_inertia_v4(source,material_contract):
     return candidate
 
 
+class CalibratedRacketImpulseV13(TemporalCausalRacketModeImpulseResidualBallV13):
+    """Research transition with one TOI and one post-impact flight."""
+    schema = 'calibrated-tangential-racket-impulse-v13'
+
+    def __init__(self):
+        super().__init__(legacy_v10_residual=False)
+        self.register_buffer('friction',torch.tensor(0.))
+        self.register_buffer('sticking',torch.tensor(0.))
+        self.detach_residual_for_actor = False
+
+    def toi_response(self, impact_info, present):
+        from .supermimic_racket_slip import calibrated_tangent_dv
+        result=super().toi_response(impact_info,present)
+        residual=result['impulse_residual_dv']
+        analytic,_=calibrated_tangent_dv(impact_info,present,self.friction,self.sticking)
+        result.update(analytic_tangent_dv=analytic,learned_racket_dv=residual,
+                      impulse_residual_dv=analytic+(residual.detach() if self.detach_residual_for_actor else residual))
+        return result
+
+
 def action_ball_from_checkpoint(checkpoint):
     kwargs={}
     if checkpoint.get('schema') in (CausalActionConditionedBallV2.schema,
@@ -1204,6 +1224,7 @@ def action_ball_for_schema(schema, **kwargs):
         TemporalCausalRacketModeActionBallV7, TemporalCausalRacketModeTargetActionBallV8,
         TemporalCausalRacketModeTargetActionBallV9, TemporalCausalRacketModeTargetLinearActionBallV10,
         TemporalCausalRacketModeImpulseResidualBallV13)}
+    classes[CalibratedRacketImpulseV13.schema] = CalibratedRacketImpulseV13
     classes[TemporalCausalRacketModeNativeResponseBallV11.schema] = TemporalCausalRacketModeNativeResponseBallV11
     classes[TemporalCausalRacketModeNativeResponseBallV12.schema] = TemporalCausalRacketModeNativeResponseBallV12
     if schema not in classes:

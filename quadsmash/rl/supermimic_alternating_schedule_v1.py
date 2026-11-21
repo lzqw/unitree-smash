@@ -10,7 +10,9 @@ HEADS = ('recovery', 'approach')
 
 
 def make_plan(recovery, approach, recovery_proposals, approach_proposals, *,
-              block_size=8, cycles=1, refresh_mode='pair'):
+              block_size=8, cycles=1, refresh_mode='pair', refresh_every_pairs=1):
+    if type(refresh_every_pairs) is not int or refresh_every_pairs < 1 or (refresh_mode=='per-head' and refresh_every_pairs!=1):
+        raise ValueError('Invalid combined refresh cadence')
     if refresh_mode not in ('pair', 'per-head'):
         raise ValueError('Unknown refresh mode')
     values=(recovery, approach, recovery_proposals, approach_proposals, block_size, cycles)
@@ -33,7 +35,7 @@ def make_plan(recovery, approach, recovery_proposals, approach_proposals, *,
             for head in HEADS:
                 events.append(dict(id=key+'_'+head,kind='train',cycle=cycle,pair=pair,
                     block_key=key,head=head,target=n,proposal_limit=limits[head][pair]))
-                if refresh_mode=='per-head' or head=='approach':
+                if refresh_mode=='per-head' or (head=='approach' and ((pair+1)%refresh_every_pairs==0 or pair+1==len(sizes))):
                     events.append(dict(id=key+'_refresh_after_'+head,kind='refresh',cycle=cycle,
                         pair=pair,after_head=head,consumer_heads=list(HEADS)))
         events.append(dict(id=f'cycle{cycle:03d}_finalize',kind='finalize',cycle=cycle))
