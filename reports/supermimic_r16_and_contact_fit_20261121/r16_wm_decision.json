@@ -1,0 +1,220 @@
+{
+  "passed": true,
+  "cpu_forward_passed": true,
+  "gpu_load_and_forward_passed": true,
+  "body_forward_vs_formal": {
+    "passed": true,
+    "comparisons": [
+      {
+        "horizon": 1,
+        "metric": "body_rmse",
+        "anchor": 0.7073731422424316,
+        "candidate": 0.588203489780426,
+        "passed": true
+      },
+      {
+        "horizon": 1,
+        "metric": "root_angular_mae",
+        "anchor": 0.05900824815034866,
+        "candidate": 0.04913487657904625,
+        "passed": true
+      },
+      {
+        "horizon": 2,
+        "metric": "body_rmse",
+        "anchor": 0.7125383019447327,
+        "candidate": 0.5782396793365479,
+        "passed": true
+      },
+      {
+        "horizon": 2,
+        "metric": "root_angular_mae",
+        "anchor": 0.08543752133846283,
+        "candidate": 0.06905520707368851,
+        "passed": true
+      },
+      {
+        "horizon": 4,
+        "metric": "body_rmse",
+        "anchor": 0.7204390168190002,
+        "candidate": 0.5601615309715271,
+        "passed": true
+      },
+      {
+        "horizon": 4,
+        "metric": "root_angular_mae",
+        "anchor": 0.12691093981266022,
+        "candidate": 0.09792955219745636,
+        "passed": true
+      },
+      {
+        "horizon": 8,
+        "metric": "body_rmse",
+        "anchor": 0.9075583219528198,
+        "candidate": 0.6440698504447937,
+        "passed": true
+      },
+      {
+        "horizon": 8,
+        "metric": "root_angular_mae",
+        "anchor": 0.16166944801807404,
+        "candidate": 0.1125674694776535,
+        "passed": true
+      },
+      {
+        "horizon": 16,
+        "metric": "body_rmse",
+        "anchor": 0.7419193387031555,
+        "candidate": 0.5620353817939758,
+        "passed": true
+      },
+      {
+        "horizon": 16,
+        "metric": "root_angular_mae",
+        "anchor": 0.21590487658977509,
+        "candidate": 0.13773813843727112,
+        "passed": true
+      },
+      {
+        "horizon": 32,
+        "metric": "body_rmse",
+        "anchor": 0.551118791103363,
+        "candidate": 0.4059608280658722,
+        "passed": true
+      },
+      {
+        "horizon": 32,
+        "metric": "root_angular_mae",
+        "anchor": 0.23676209151744843,
+        "candidate": 0.15303631126880646,
+        "passed": true
+      },
+      {
+        "horizon": 64,
+        "metric": "body_rmse",
+        "anchor": 0.6821431517601013,
+        "candidate": 0.5487428903579712,
+        "passed": true
+      },
+      {
+        "horizon": 64,
+        "metric": "root_angular_mae",
+        "anchor": 0.265298992395401,
+        "candidate": 0.16739003360271454,
+        "passed": true
+      }
+    ]
+  },
+  "body_forward_vs_deployed": {
+    "passed": false,
+    "comparisons": [
+      {
+        "horizon": 1,
+        "metric": "body_rmse",
+        "anchor": 0.5876370668411255,
+        "candidate": 0.588203489780426,
+        "passed": false
+      },
+      {
+        "horizon": 1,
+        "metric": "root_angular_mae",
+        "anchor": 0.04833458364009857,
+        "candidate": 0.04913487657904625,
+        "passed": false
+      },
+      {
+        "horizon": 2,
+        "metric": "body_rmse",
+        "anchor": 0.5776209235191345,
+        "candidate": 0.5782396793365479,
+        "passed": false
+      },
+      {
+        "horizon": 2,
+        "metric": "root_angular_mae",
+        "anchor": 0.06758201122283936,
+        "candidate": 0.06905520707368851,
+        "passed": false
+      },
+      {
+        "horizon": 4,
+        "metric": "body_rmse",
+        "anchor": 0.560941219329834,
+        "candidate": 0.5601615309715271,
+        "passed": true
+      },
+      {
+        "horizon": 4,
+        "metric": "root_angular_mae",
+        "anchor": 0.09661922603845596,
+        "candidate": 0.09792955219745636,
+        "passed": false
+      },
+      {
+        "horizon": 8,
+        "metric": "body_rmse",
+        "anchor": 0.6453943252563477,
+        "candidate": 0.6440698504447937,
+        "passed": true
+      },
+      {
+        "horizon": 8,
+        "metric": "root_angular_mae",
+        "anchor": 0.11489657312631607,
+        "candidate": 0.1125674694776535,
+        "passed": true
+      },
+      {
+        "horizon": 16,
+        "metric": "body_rmse",
+        "anchor": 0.5640191435813904,
+        "candidate": 0.5620353817939758,
+        "passed": true
+      },
+      {
+        "horizon": 16,
+        "metric": "root_angular_mae",
+        "anchor": 0.14025719463825226,
+        "candidate": 0.13773813843727112,
+        "passed": true
+      },
+      {
+        "horizon": 32,
+        "metric": "body_rmse",
+        "anchor": 0.4063561260700226,
+        "candidate": 0.4059608280658722,
+        "passed": true
+      },
+      {
+        "horizon": 32,
+        "metric": "root_angular_mae",
+        "anchor": 0.15552262961864471,
+        "candidate": 0.15303631126880646,
+        "passed": true
+      },
+      {
+        "horizon": 64,
+        "metric": "body_rmse",
+        "anchor": 0.5501052141189575,
+        "candidate": 0.5487428903579712,
+        "passed": true
+      },
+      {
+        "horizon": 64,
+        "metric": "root_angular_mae",
+        "anchor": 0.1727522313594818,
+        "candidate": 0.16739003360271454,
+        "passed": true
+      }
+    ]
+  },
+  "candidate": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/r16_measured_body_validation/wm_replay",
+  "checkpoint": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/sweep_bounded_recovery32/cycle_02_recovery_refresh_candidate_0008.pt",
+  "checkpoint_sha256": "c8e2507a5b5127421ede392d6554f57f6c54a36931d6d8b160ef9c350081df8b",
+  "guard": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/r16_measured_body_validation/forward_guard.json",
+  "guard_sha256": "6b6eb41966776eff5ed83cbf33cbec397d35e0ea98d5b3e5b0424c9526da8203",
+  "score_sha256": "177a9b75508c82f65070b4406bd14dc03bdccdc9f2963c14253e4f9ced365975",
+  "world_sha256": "db1538ae1f3a5d29a54cfeb87b55539ffc84d55fcb8a97b0315b4fc845ad88ae",
+  "actor_sha256": "d93b80b584aa8103f577c65e7ded69bf5e9ede2372ac4a9ec70bd37ce04681e3",
+  "scope": "Same-policy prospective WM forward evaluation. Native response and policy promotion are evaluated separately."
+}

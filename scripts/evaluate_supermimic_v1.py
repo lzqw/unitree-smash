@@ -147,7 +147,15 @@ def _run_native(args, stop_request):
         scoring_protocol = dict(protocol, _root=str(ROOT))
         if trained is not None:
             require_resume_contract(trained, contract)
-        write_json(args.output/'task_contract.json', contract)
+        capture_contract = contract
+        if args.native_action_probe_spec:
+            from scripts.declare_supermimic_contact_training_cases import resolve_probe_cases
+            spec = json.loads(args.native_action_probe_spec.read_text())
+            cases, training_digest = resolve_probe_cases(spec, cases)
+            if training_digest:
+                capture_contract = dict(contract, contact_training_panel_sha256=training_digest,
+                                        contact_training_only=True)
+        write_json(args.output/'task_contract.json', capture_contract)
         cfg = make_task_cfg(128, contract, protocol, receipt)
         cfg.seed, cfg.sim.device = args.seed, args.physics_device
         validate_sweep_contract(cfg, contract, args.sweep_audit_iterations)
@@ -210,7 +218,7 @@ def _run_native(args, stop_request):
             from quadsmash.rl.supermimic_native_pair_capture_v1 import NativePairCapture
             if policy_execution['recovery_gate']!=POSTHIT:
                 raise ValueError('Native training probe requires the causal execution contract')
-            probe_capture=NativePairCapture(json.loads(args.native_action_probe_spec.read_text()),args.native_action_probe_branch)
+            probe_capture=NativePairCapture(spec,args.native_action_probe_branch)
         start = time.perf_counter()
         stage = 'EVALUATING'
         with torch.inference_mode():
@@ -282,7 +290,7 @@ def _run_native(args, stop_request):
         if env.physical_transition_archive is not None:
             env.physical_transition_archive.flush()
         if probe_capture is not None:
-            probe_capture.save(args.output,actor,contract,policy_execution,physics,args.seed)
+            probe_capture.save(args.output,actor,capture_contract,policy_execution,physics,args.seed)
         if args.shutdown_diagnostic_ticks is not None:
             write_json(args.output/'command_consistency.json', mapping)
             write_json(args.output/'shutdown_diagnostic.json', dict(

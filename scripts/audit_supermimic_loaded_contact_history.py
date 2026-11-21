@@ -33,6 +33,7 @@ def summarize_trace(tr, tick, mass, rows, geometry):
         q=t['racket_quaternion_w'][i,lane]
         shuttle=t['shuttle_state_w'][i:i+2,lane]
         rels=[]; tangent=[];local=[]
+        projected=[]
         for k in range(2):
             b=shuttle[k];tw=t['racket_angular_velocity_w'][i+k,lane]
             surface=t['racket_linear_velocity_w'][i+k,lane]+torch.linalg.cross(tw.expand_as(anchors),anchors-t['racket_position_w'][i+k,lane])
@@ -40,7 +41,8 @@ def summarize_trace(tr, tick, mass, rows, geometry):
             rels.append(rel.tolist())
             if len(points) and len(anchors):
                 n=normalize(normals[torch.cdist(anchors,points).argmin(1)],dim=1)
-                tangent.append((rel-n*(rel*n).sum(1,keepdim=True)).norm(dim=1).tolist())
+                projected.append(rel-n*(rel*n).sum(1,keepdim=True))
+                tangent.append(projected[-1].norm(dim=1).tolist())
             else:
                 tangent.append(None)
         if len(anchors):
@@ -53,10 +55,16 @@ def summarize_trace(tr, tick, mass, rows, geometry):
                           geometry.racket_round_halves,geometry.racket_round_radii,geometry.racket_round_capsule)),-1)
             nearest=torch.cdist(anchors,points).argmin(1)
             inferred=gaps.abs().argmin(1)[nearest].tolist()
+        along_incident=None
+        if projected:
+            incident,outgoing=projected
+            along=(outgoing*normalize(incident,dim=1)).sum(1)
+            along_incident=[float(v) if speed>1e-6 else None for v,speed in zip(along,incident.norm(dim=1),strict=True)]
         bucket=rows[lane]
         impulses=[a[i,lane]*scale for a in (normal,friction)]
         cum=[x+torch.tensor(bucket[-1]['cumulative_dv_mps'][j]) if bucket else x for j,x in enumerate(impulses)]
         bucket.append(dict(frame=tick*len(normal)+i, normal_points=len(points), friction_points=len(anchors),
+             signed_post_slip_along_incident_mps=along_incident,separation_m=nf['separation_m'][select].tolist(),
              anchors_local_m=local,inferred_anchor_shape=inferred,normal_w=normals.tolist(),relative_velocity_w_mps=rels,tangent_speed_pre_post_mps=tangent,
              spin_pre_post_rad_s=shuttle[:,10:13].tolist(),normal_dv_mps=impulses[0].tolist(),
              tangent_dv_mps=impulses[1].tolist(),cumulative_dv_mps=[v.tolist() for v in cum]))

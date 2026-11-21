@@ -13,7 +13,9 @@ from scripts.evaluate_supermimic_fresh_wm_panel import digest
 
 
 @torch.no_grad()
-def collect(run, directory, checkpoint, scratch):
+def collect(run, directory, checkpoint, scratch, offsets=(0,1)):
+    if len(set(offsets))!=len(offsets) or 0 not in offsets or any(t<0 for t in offsets):
+        raise ValueError("Expected distinct nonnegative offsets including the landing transition")
     def read(path):
         return json.loads(path.read_text())
     ck = torch.load(checkpoint, map_location='cpu', mmap=True, weights_only=False)
@@ -37,6 +39,7 @@ def collect(run, directory, checkpoint, scratch):
     landing = ((archive['event_state'][...,0] > .5) & (archive['event_state'][...,1] > .5)
                & ~archive['feet'].bool().any(-1) & archive['next_feet'].bool().any(-1))
     wanted, controls = set(), set()
+    landing_by_lane={}
     for rec in read(directory/'episodes_summary.json'):
         if not rec['qualified_airborne_string_contact']:
             continue
@@ -46,9 +49,8 @@ def collect(run, directory, checkpoint, scratch):
         if not len(first):
             continue
         t = int(first[0])
-        wanted.add((lane, ep, t))
-        if t+1 < length:
-            wanted.add((lane, ep, t+1))
+        landing_by_lane[lane]=t
+        wanted.update((lane,ep,t+dt) for dt in offsets if t+dt<length)
         known = [key for key in ids if key[:2] == (lane, ep)]
         controls.add(min(known, key=lambda key: abs(key[2]-t)))
     pending = wanted | controls
@@ -90,16 +92,17 @@ def collect(run, directory, checkpoint, scratch):
     order = sorted(captured)
     return dict(identity=order, inputs=torch.stack([captured[k][0] for k in order]),
                 recovery=torch.tensor([captured[k][1] for k in order]), actor_sha256=bank['actor_sha256'],
-                source_sha256=bank['source_sha256'], reproduced_sparse_inputs=len(controls))
+                source_sha256=bank['source_sha256'], reproduced_sparse_inputs=len(controls), landing_by_lane=landing_by_lane, offsets=tuple(offsets))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for key in ('run','refresh','checkpoint','scratch','output'):
         parser.add_argument('--'+key,type=Path,required=True)
+    parser.add_argument('--offsets',type=int,nargs='+',default=[0,1])
     args = parser.parse_args()
     torch.set_num_threads(2)
-    result = collect(args.run,args.refresh,args.checkpoint,args.scratch)
+    result = collect(args.run,args.refresh,args.checkpoint,args.scratch,args.offsets)
     temp = args.output.with_suffix('.pending')
     torch.save(result,temp)
     temp.replace(args.output)

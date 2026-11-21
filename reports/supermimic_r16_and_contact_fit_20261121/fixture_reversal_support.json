@@ -1,0 +1,1508 @@
+{
+  "final_holdout_opened": false,
+  "scope": "Observed single-substep patch slip, signed along the incident relative tangent per anchor. A measured reversal is not a solver stick/slip flag.",
+  "full_report_sha256": "1178ce26c1c4109c9fd871562fe12a1f935f954c4254b18302f412828821824d",
+  "train": {
+    "summary": {
+      "counts": {
+        "cases": 896,
+        "racket_stable": 176,
+        "single_substep_with_normals_and_slip": 169,
+        "response_above_repeat_noise": 169,
+        "mixed_sign_within_patch": 16,
+        "uniform_anchor_signs": 153,
+        "signed_pair_reversal_switch": 20,
+        "switch_beyond_nominal_slip_jitter": 20,
+        "switch_both_branches_over_0p05_mps": 13
+      },
+      "switches": [
+        [
+          994067,
+          32
+        ],
+        [
+          994067,
+          83
+        ],
+        [
+          994068,
+          4
+        ],
+        [
+          994068,
+          6
+        ],
+        [
+          994068,
+          19
+        ],
+        [
+          994069,
+          35
+        ],
+        [
+          994069,
+          84
+        ],
+        [
+          994069,
+          95
+        ],
+        [
+          994070,
+          44
+        ],
+        [
+          994070,
+          57
+        ],
+        [
+          994070,
+          60
+        ],
+        [
+          994070,
+          78
+        ],
+        [
+          994071,
+          65
+        ],
+        [
+          994072,
+          4
+        ],
+        [
+          994072,
+          14
+        ],
+        [
+          994072,
+          48
+        ],
+        [
+          994072,
+          118
+        ],
+        [
+          994073,
+          20
+        ],
+        [
+          994073,
+          26
+        ],
+        [
+          994073,
+          122
+        ]
+      ],
+      "distinct_switch_seeds": [
+        994067,
+        994068,
+        994069,
+        994070,
+        994071,
+        994072,
+        994073
+      ]
+    },
+    "split_sha256": "ebb122737239aaa013c57b7bb65830c3025b632e1eea9a5258d687863dce95db",
+    "switch_cases": [
+      {
+        "seed": 994067,
+        "lane": 32,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 2.7002270817756653,
+          "signed_outgoing_mps": 0.6959963142871857,
+          "min_signed_mps": 0.6895002126693726,
+          "max_signed_mps": 0.7036121487617493,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.0003807786852121353,
+          "max_separation_m": -0.0003807786852121353
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 2.7002270817756653,
+          "signed_outgoing_mps": 0.6959963142871857,
+          "min_signed_mps": 0.6895002126693726,
+          "max_signed_mps": 0.7036121487617493,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.0003807786852121353,
+          "max_separation_m": -0.0003807786852121353
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 2.6806421279907227,
+          "signed_outgoing_mps": 0.13863147422671318,
+          "min_signed_mps": 0.1298883557319641,
+          "max_signed_mps": 0.14885878562927246,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00036827847361564636,
+          "max_separation_m": -0.00036827847361564636
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 2.7202929258346558,
+          "signed_outgoing_mps": -0.06631140690296888,
+          "min_signed_mps": -0.075681671500206,
+          "max_signed_mps": -0.055371399968862534,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0003929436206817627,
+          "max_separation_m": -0.0003929436206817627
+        }
+      },
+      {
+        "seed": 994067,
+        "lane": 83,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 8.58073616027832,
+          "signed_outgoing_mps": 0.007383137941360474,
+          "min_signed_mps": 0.00253884494304657,
+          "max_signed_mps": 0.012411445379257202,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.0006486289203166962,
+          "max_separation_m": -0.0006475336849689484
+        },
+        "nominal_b": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 8.58073616027832,
+          "signed_outgoing_mps": 0.007383137941360474,
+          "min_signed_mps": 0.00253884494304657,
+          "max_signed_mps": 0.012411445379257202,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.0006486289203166962,
+          "max_separation_m": -0.0006475336849689484
+        },
+        "minus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 8.58696961402893,
+          "signed_outgoing_mps": -0.028950024396181107,
+          "min_signed_mps": -0.04341200739145279,
+          "max_signed_mps": -0.014481665566563606,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0005705934017896652,
+          "max_separation_m": -0.0005687717348337173
+        },
+        "plus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 8.574928283691406,
+          "signed_outgoing_mps": 0.02137930691242218,
+          "min_signed_mps": 0.01715385913848877,
+          "max_signed_mps": 0.02574443817138672,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.0007293857634067535,
+          "max_separation_m": -0.0007288306951522827
+        }
+      },
+      {
+        "seed": 994068,
+        "lane": 4,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.21861743927002,
+          "signed_outgoing_mps": 0.019591527059674263,
+          "min_signed_mps": 0.019591527059674263,
+          "max_signed_mps": 0.019591527059674263,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00025682710111141205,
+          "max_separation_m": -0.00025682710111141205
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.21861743927002,
+          "signed_outgoing_mps": 0.019591527059674263,
+          "min_signed_mps": 0.019591527059674263,
+          "max_signed_mps": 0.019591527059674263,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00025682710111141205,
+          "max_separation_m": -0.00025682710111141205
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.119285583496094,
+          "signed_outgoing_mps": -0.0038511259481310844,
+          "min_signed_mps": -0.0038511259481310844,
+          "max_signed_mps": -0.0038511259481310844,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0002653449773788452,
+          "max_separation_m": -0.0002653449773788452
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.317988395690918,
+          "signed_outgoing_mps": 0.07990825921297073,
+          "min_signed_mps": 0.07990825921297073,
+          "max_signed_mps": 0.07990825921297073,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00024714134633541107,
+          "max_separation_m": -0.00024714134633541107
+        }
+      },
+      {
+        "seed": 994068,
+        "lane": 6,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 7.4438042640686035,
+          "signed_outgoing_mps": 0.13553714752197266,
+          "min_signed_mps": 0.13553714752197266,
+          "max_signed_mps": 0.13553714752197266,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00013157539069652557,
+          "max_separation_m": -0.00013157539069652557
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 7.4438042640686035,
+          "signed_outgoing_mps": 0.13553714752197266,
+          "min_signed_mps": 0.13553714752197266,
+          "max_signed_mps": 0.13553714752197266,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00013157539069652557,
+          "max_separation_m": -0.00013157539069652557
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 7.366031646728516,
+          "signed_outgoing_mps": 0.2191942185163498,
+          "min_signed_mps": 0.2191942185163498,
+          "max_signed_mps": 0.2191942185163498,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -5.6371092796325684e-05,
+          "max_separation_m": -5.6371092796325684e-05
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 7.521786212921143,
+          "signed_outgoing_mps": -0.027081329375505447,
+          "min_signed_mps": -0.027081329375505447,
+          "max_signed_mps": -0.027081329375505447,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0002065058797597885,
+          "max_separation_m": -0.0002065058797597885
+        }
+      },
+      {
+        "seed": 994068,
+        "lane": 19,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 5.963843584060669,
+          "signed_outgoing_mps": -0.6729011237621307,
+          "min_signed_mps": -0.6784805059432983,
+          "max_signed_mps": -0.6670554876327515,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00026851147413253784,
+          "max_separation_m": -0.00026851147413253784
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 5.963843584060669,
+          "signed_outgoing_mps": -0.6729011237621307,
+          "min_signed_mps": -0.6784805059432983,
+          "max_signed_mps": -0.6670554876327515,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00026851147413253784,
+          "max_separation_m": -0.00026851147413253784
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 5.998257994651794,
+          "signed_outgoing_mps": -0.02106888545677066,
+          "min_signed_mps": -0.026500815525650978,
+          "max_signed_mps": -0.015282277017831802,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00017002224922180176,
+          "max_separation_m": -0.00017002224922180176
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 5.929454326629639,
+          "signed_outgoing_mps": 0.2770461291074753,
+          "min_signed_mps": 0.2725263237953186,
+          "max_signed_mps": 0.2817125618457794,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.0003654360771179199,
+          "max_separation_m": -0.0003654360771179199
+        }
+      },
+      {
+        "seed": 994069,
+        "lane": 35,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 2,
+          "friction_points": 3,
+          "incident_tangent_mps": 8.06030019124349,
+          "signed_outgoing_mps": 0.8709732294082642,
+          "min_signed_mps": 0.6656132340431213,
+          "max_signed_mps": 1.2789127826690674,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00012995488941669464,
+          "max_separation_m": -9.413249790668488e-05
+        },
+        "nominal_b": {
+          "normal_points": 2,
+          "friction_points": 3,
+          "incident_tangent_mps": 8.06030019124349,
+          "signed_outgoing_mps": 0.8709732294082642,
+          "min_signed_mps": 0.6656132340431213,
+          "max_signed_mps": 1.2789127826690674,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00012995488941669464,
+          "max_separation_m": -9.413249790668488e-05
+        },
+        "minus": {
+          "normal_points": 2,
+          "friction_points": 3,
+          "incident_tangent_mps": 8.050834814707438,
+          "signed_outgoing_mps": 1.524893323580424,
+          "min_signed_mps": 1.312125325202942,
+          "max_signed_mps": 1.9503211975097656,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00018571317195892334,
+          "max_separation_m": -0.00015037693083286285
+        },
+        "plus": {
+          "normal_points": 2,
+          "friction_points": 3,
+          "incident_tangent_mps": 8.069775422414144,
+          "signed_outgoing_mps": -1.1167583862940471,
+          "min_signed_mps": -1.3352360725402832,
+          "max_signed_mps": -0.6817564964294434,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -7.539801299571991e-05,
+          "max_separation_m": -3.904104232788086e-05
+        }
+      },
+      {
+        "seed": 994069,
+        "lane": 84,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.403563499450684,
+          "signed_outgoing_mps": 0.2502593994140625,
+          "min_signed_mps": 0.2502593994140625,
+          "max_signed_mps": 0.2502593994140625,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00017704814672470093,
+          "max_separation_m": -0.00017704814672470093
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.403563499450684,
+          "signed_outgoing_mps": 0.2502593994140625,
+          "min_signed_mps": 0.2502593994140625,
+          "max_signed_mps": 0.2502593994140625,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00017704814672470093,
+          "max_separation_m": -0.00017704814672470093
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.49240779876709,
+          "signed_outgoing_mps": -0.07576093822717667,
+          "min_signed_mps": -0.07576093822717667,
+          "max_signed_mps": -0.07576093822717667,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0004030875861644745,
+          "max_separation_m": -0.0004030875861644745
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.31574535369873,
+          "signed_outgoing_mps": 0.8925243616104126,
+          "min_signed_mps": 0.8925243616104126,
+          "max_signed_mps": 0.8925243616104126,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 4.6757981181144714e-05,
+          "max_separation_m": 4.6757981181144714e-05
+        }
+      },
+      {
+        "seed": 994069,
+        "lane": 95,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 10.978029251098633,
+          "signed_outgoing_mps": -2.898092269897461,
+          "min_signed_mps": -2.898092269897461,
+          "max_signed_mps": -2.898092269897461,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00023071467876434326,
+          "max_separation_m": -0.00023071467876434326
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 10.978029251098633,
+          "signed_outgoing_mps": -2.898092269897461,
+          "min_signed_mps": -2.898092269897461,
+          "max_signed_mps": -2.898092269897461,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00023071467876434326,
+          "max_separation_m": -0.00023071467876434326
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 11.07296085357666,
+          "signed_outgoing_mps": -2.6202328205108643,
+          "min_signed_mps": -2.6202328205108643,
+          "max_signed_mps": -2.6202328205108643,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0001087673008441925,
+          "max_separation_m": -0.0001087673008441925
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 10.883584976196289,
+          "signed_outgoing_mps": 0.08195196092128754,
+          "min_signed_mps": 0.08195196092128754,
+          "max_signed_mps": 0.08195196092128754,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00035454146564006805,
+          "max_separation_m": -0.00035454146564006805
+        }
+      },
+      {
+        "seed": 994070,
+        "lane": 44,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 2,
+          "incident_tangent_mps": 5.317969560623169,
+          "signed_outgoing_mps": 0.11749430745840073,
+          "min_signed_mps": 0.11234528571367264,
+          "max_signed_mps": 0.12264332920312881,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00014857947826385498,
+          "max_separation_m": -0.00014857947826385498
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 2,
+          "incident_tangent_mps": 5.317969560623169,
+          "signed_outgoing_mps": 0.11749430745840073,
+          "min_signed_mps": 0.11234528571367264,
+          "max_signed_mps": 0.12264332920312881,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00014857947826385498,
+          "max_separation_m": -0.00014857947826385498
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 2,
+          "incident_tangent_mps": 5.270207643508911,
+          "signed_outgoing_mps": 0.1222466342151165,
+          "min_signed_mps": 0.11682095378637314,
+          "max_signed_mps": 0.12767231464385986,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.0002078171819448471,
+          "max_separation_m": -0.0002078171819448471
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 2,
+          "incident_tangent_mps": 5.365833044052124,
+          "signed_outgoing_mps": -0.06834866479039192,
+          "min_signed_mps": -0.07347935438156128,
+          "max_signed_mps": -0.06321797519922256,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -8.975528180599213e-05,
+          "max_separation_m": -8.975528180599213e-05
+        }
+      },
+      {
+        "seed": 994070,
+        "lane": 57,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.8581900596618652,
+          "signed_outgoing_mps": 0.010100582614541054,
+          "min_signed_mps": -0.0015454664826393127,
+          "max_signed_mps": 0.021793106570839882,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0003687907010316849,
+          "max_separation_m": -0.00036824122071266174
+        },
+        "nominal_b": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.8581900596618652,
+          "signed_outgoing_mps": 0.010100582614541054,
+          "min_signed_mps": -0.0015454664826393127,
+          "max_signed_mps": 0.021793106570839882,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0003687907010316849,
+          "max_separation_m": -0.00036824122071266174
+        },
+        "minus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.8654339909553528,
+          "signed_outgoing_mps": -0.19100090488791466,
+          "min_signed_mps": -0.22648108005523682,
+          "max_signed_mps": -0.15537989139556885,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.000539267435669899,
+          "max_separation_m": -0.0005381517112255096
+        },
+        "plus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.8521021604537964,
+          "signed_outgoing_mps": 0.032353976741433144,
+          "min_signed_mps": 0.025570880621671677,
+          "max_signed_mps": 0.03915637731552124,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00020387955009937286,
+          "max_separation_m": -0.00020370446145534515
+        }
+      },
+      {
+        "seed": 994070,
+        "lane": 60,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 6.9465107917785645,
+          "signed_outgoing_mps": 0.0035442430526018143,
+          "min_signed_mps": 0.0035442430526018143,
+          "max_signed_mps": 0.0035442430526018143,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -6.595626473426819e-05,
+          "max_separation_m": -6.595626473426819e-05
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 6.9465107917785645,
+          "signed_outgoing_mps": 0.0035442430526018143,
+          "min_signed_mps": 0.0035442430526018143,
+          "max_signed_mps": 0.0035442430526018143,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -6.595626473426819e-05,
+          "max_separation_m": -6.595626473426819e-05
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 7.016477108001709,
+          "signed_outgoing_mps": 0.3725403845310211,
+          "min_signed_mps": 0.3725403845310211,
+          "max_signed_mps": 0.3725403845310211,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 0.00019745342433452606,
+          "max_separation_m": 0.00019745342433452606
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 6.875857830047607,
+          "signed_outgoing_mps": -0.061629485338926315,
+          "min_signed_mps": -0.061629485338926315,
+          "max_signed_mps": -0.061629485338926315,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00033473409712314606,
+          "max_separation_m": -0.00033473409712314606
+        }
+      },
+      {
+        "seed": 994070,
+        "lane": 78,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.044589042663574,
+          "signed_outgoing_mps": -0.04793407395482063,
+          "min_signed_mps": -0.04793407395482063,
+          "max_signed_mps": -0.04793407395482063,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": 0.00010192207992076874,
+          "max_separation_m": 0.00010192207992076874
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.044589042663574,
+          "signed_outgoing_mps": -0.04793407395482063,
+          "min_signed_mps": -0.04793407395482063,
+          "max_signed_mps": -0.04793407395482063,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": 0.00010192207992076874,
+          "max_separation_m": 0.00010192207992076874
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.112749099731445,
+          "signed_outgoing_mps": 0.8015090227127075,
+          "min_signed_mps": 0.8015090227127075,
+          "max_signed_mps": 0.8015090227127075,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 3.094598650932312e-05,
+          "max_separation_m": 3.094598650932312e-05
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 7.976836681365967,
+          "signed_outgoing_mps": -1.5821032524108887,
+          "min_signed_mps": -1.5821032524108887,
+          "max_signed_mps": -1.5821032524108887,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": 0.00016940943896770477,
+          "max_separation_m": 0.00016940943896770477
+        }
+      },
+      {
+        "seed": 994071,
+        "lane": 65,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.097502052783966,
+          "signed_outgoing_mps": -0.06085569737479091,
+          "min_signed_mps": -0.10295391827821732,
+          "max_signed_mps": -0.018433567136526108,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0006039422005414963,
+          "max_separation_m": -0.0006023179739713669
+        },
+        "nominal_b": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.097502052783966,
+          "signed_outgoing_mps": -0.06085569737479091,
+          "min_signed_mps": -0.10295391827821732,
+          "max_signed_mps": -0.018433567136526108,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0006039422005414963,
+          "max_separation_m": -0.0006023179739713669
+        },
+        "minus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.1352121829986572,
+          "signed_outgoing_mps": -0.4598899558186531,
+          "min_signed_mps": -0.4870458245277405,
+          "max_signed_mps": -0.43252575397491455,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0007994417101144791,
+          "max_separation_m": -0.000799279659986496
+        },
+        "plus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.0755317509174347,
+          "signed_outgoing_mps": 0.3284780904650688,
+          "min_signed_mps": 0.23622465133666992,
+          "max_signed_mps": 0.4203975796699524,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00041229650378227234,
+          "max_separation_m": -0.00040779076516628265
+        }
+      },
+      {
+        "seed": 994072,
+        "lane": 4,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.342757225036621,
+          "signed_outgoing_mps": -0.006615529768168926,
+          "min_signed_mps": -0.006615529768168926,
+          "max_signed_mps": -0.006615529768168926,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -5.9934332966804504e-05,
+          "max_separation_m": -5.9934332966804504e-05
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.342757225036621,
+          "signed_outgoing_mps": -0.006615529768168926,
+          "min_signed_mps": -0.006615529768168926,
+          "max_signed_mps": -0.006615529768168926,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -5.9934332966804504e-05,
+          "max_separation_m": -5.9934332966804504e-05
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.31124496459961,
+          "signed_outgoing_mps": -0.01624187082052231,
+          "min_signed_mps": -0.01624187082052231,
+          "max_signed_mps": -0.01624187082052231,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00013751350343227386,
+          "max_separation_m": -0.00013751350343227386
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 8.374730110168457,
+          "signed_outgoing_mps": 0.20392079651355743,
+          "min_signed_mps": 0.20392079651355743,
+          "max_signed_mps": 0.20392079651355743,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 1.6050413250923157e-05,
+          "max_separation_m": 1.6050413250923157e-05
+        }
+      },
+      {
+        "seed": 994072,
+        "lane": 14,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 5.654179096221924,
+          "signed_outgoing_mps": 0.05579297989606857,
+          "min_signed_mps": 0.05579297989606857,
+          "max_signed_mps": 0.05579297989606857,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -6.60046935081482e-05,
+          "max_separation_m": -6.60046935081482e-05
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 5.654179096221924,
+          "signed_outgoing_mps": 0.05579297989606857,
+          "min_signed_mps": 0.05579297989606857,
+          "max_signed_mps": 0.05579297989606857,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -6.60046935081482e-05,
+          "max_separation_m": -6.60046935081482e-05
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 5.646988391876221,
+          "signed_outgoing_mps": 0.7600480318069458,
+          "min_signed_mps": 0.7600480318069458,
+          "max_signed_mps": 0.7600480318069458,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 0.00012879446148872375,
+          "max_separation_m": 0.00012879446148872375
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 5.661507606506348,
+          "signed_outgoing_mps": -0.05422498285770416,
+          "min_signed_mps": -0.05422498285770416,
+          "max_signed_mps": -0.05422498285770416,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0002603139728307724,
+          "max_separation_m": -0.0002603139728307724
+        }
+      },
+      {
+        "seed": 994072,
+        "lane": 48,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 9.485076427459717,
+          "signed_outgoing_mps": -0.4399521052837372,
+          "min_signed_mps": -0.486078679561615,
+          "max_signed_mps": -0.3915650248527527,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0005413684993982315,
+          "max_separation_m": -0.0005353298038244247
+        },
+        "nominal_b": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 9.485076427459717,
+          "signed_outgoing_mps": -0.4399521052837372,
+          "min_signed_mps": -0.486078679561615,
+          "max_signed_mps": -0.3915650248527527,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0005413684993982315,
+          "max_separation_m": -0.0005353298038244247
+        },
+        "minus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 9.443168878555298,
+          "signed_outgoing_mps": -0.3142857551574707,
+          "min_signed_mps": -0.3709704875946045,
+          "max_signed_mps": -0.25462543964385986,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0005675330758094788,
+          "max_separation_m": -0.0005571991205215454
+        },
+        "plus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 9.527775764465332,
+          "signed_outgoing_mps": 0.5677869617938995,
+          "min_signed_mps": 0.5370117425918579,
+          "max_signed_mps": 0.6000083088874817,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.0005208216607570648,
+          "max_separation_m": -0.000517919659614563
+        }
+      },
+      {
+        "seed": 994072,
+        "lane": 118,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 11.331572532653809,
+          "signed_outgoing_mps": -0.03989842161536217,
+          "min_signed_mps": -0.03989842161536217,
+          "max_signed_mps": -0.03989842161536217,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0003739353269338608,
+          "max_separation_m": -0.0003739353269338608
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 11.331572532653809,
+          "signed_outgoing_mps": -0.03989842161536217,
+          "min_signed_mps": -0.03989842161536217,
+          "max_signed_mps": -0.03989842161536217,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0003739353269338608,
+          "max_separation_m": -0.0003739353269338608
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 11.411626815795898,
+          "signed_outgoing_mps": 0.3544006645679474,
+          "min_signed_mps": 0.3544006645679474,
+          "max_signed_mps": 0.3544006645679474,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.0002491232007741928,
+          "max_separation_m": -0.0002491232007741928
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 11.249518394470215,
+          "signed_outgoing_mps": -0.1136857122182846,
+          "min_signed_mps": -0.1136857122182846,
+          "max_signed_mps": -0.1136857122182846,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00048761628568172455,
+          "max_separation_m": -0.00048761628568172455
+        }
+      },
+      {
+        "seed": 994073,
+        "lane": 20,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 2,
+          "incident_tangent_mps": 11.218960762023926,
+          "signed_outgoing_mps": 0.13633620738983154,
+          "min_signed_mps": 0.11346012353897095,
+          "max_signed_mps": 0.15921229124069214,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -8.662790060043335e-05,
+          "max_separation_m": -8.662790060043335e-05
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 2,
+          "incident_tangent_mps": 11.218960762023926,
+          "signed_outgoing_mps": 0.13633620738983154,
+          "min_signed_mps": 0.11346012353897095,
+          "max_signed_mps": 0.15921229124069214,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -8.662790060043335e-05,
+          "max_separation_m": -8.662790060043335e-05
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 2,
+          "incident_tangent_mps": 11.179630756378174,
+          "signed_outgoing_mps": -0.3468128740787506,
+          "min_signed_mps": -0.3660997748374939,
+          "max_signed_mps": -0.3275259733200073,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00015655718743801117,
+          "max_separation_m": -0.00015655718743801117
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 2,
+          "incident_tangent_mps": 11.258301734924316,
+          "signed_outgoing_mps": 0.6059926450252533,
+          "min_signed_mps": 0.5793377161026001,
+          "max_signed_mps": 0.6326475739479065,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -2.248026430606842e-05,
+          "max_separation_m": -2.248026430606842e-05
+        }
+      },
+      {
+        "seed": 994073,
+        "lane": 26,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 8.635460138320923,
+          "signed_outgoing_mps": 0.44833114743232727,
+          "min_signed_mps": 0.3285054564476013,
+          "max_signed_mps": 0.5771072506904602,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00043145008385181427,
+          "max_separation_m": -0.00039091333746910095
+        },
+        "nominal_b": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 8.635460138320923,
+          "signed_outgoing_mps": 0.44833114743232727,
+          "min_signed_mps": 0.3285054564476013,
+          "max_signed_mps": 0.5771072506904602,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00043145008385181427,
+          "max_separation_m": -0.00039091333746910095
+        },
+        "minus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 8.629350185394287,
+          "signed_outgoing_mps": 0.8281179517507553,
+          "min_signed_mps": 0.6854753494262695,
+          "max_signed_mps": 0.9783551692962646,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.0004930533468723297,
+          "max_separation_m": -0.0004602186381816864
+        },
+        "plus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 8.642651319503784,
+          "signed_outgoing_mps": -0.14334579184651375,
+          "min_signed_mps": -0.27255237102508545,
+          "max_signed_mps": -0.0033612921833992004,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0003765914589166641,
+          "max_separation_m": -0.00032769888639450073
+        }
+      },
+      {
+        "seed": 994073,
+        "lane": 122,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 2,
+          "friction_points": 2,
+          "incident_tangent_mps": 8.656385898590088,
+          "signed_outgoing_mps": 0.02419900707900524,
+          "min_signed_mps": 0.006110280752182007,
+          "max_signed_mps": 0.042287733405828476,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 0.00014919787645339966,
+          "max_separation_m": 0.00015436485409736633
+        },
+        "nominal_b": {
+          "normal_points": 2,
+          "friction_points": 2,
+          "incident_tangent_mps": 8.656385898590088,
+          "signed_outgoing_mps": 0.02419900707900524,
+          "min_signed_mps": 0.006110280752182007,
+          "max_signed_mps": 0.042287733405828476,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 0.00014919787645339966,
+          "max_separation_m": 0.00015436485409736633
+        },
+        "minus": {
+          "normal_points": 2,
+          "friction_points": 2,
+          "incident_tangent_mps": 8.673237323760986,
+          "signed_outgoing_mps": 0.11899120360612869,
+          "min_signed_mps": 0.10023944079875946,
+          "max_signed_mps": 0.13774296641349792,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 0.00017326697707176208,
+          "max_separation_m": 0.00017913244664669037
+        },
+        "plus": {
+          "normal_points": 2,
+          "friction_points": 2,
+          "incident_tangent_mps": 8.63980770111084,
+          "signed_outgoing_mps": -0.1698908880352974,
+          "min_signed_mps": -0.18530407547950745,
+          "max_signed_mps": -0.15447770059108734,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": 0.0001239422708749771,
+          "max_separation_m": 0.00012845546007156372
+        }
+      }
+    ]
+  },
+  "development": {
+    "summary": {
+      "counts": {
+        "cases": 256,
+        "racket_stable": 46,
+        "single_substep_with_normals_and_slip": 44,
+        "response_above_repeat_noise": 44,
+        "uniform_anchor_signs": 41,
+        "signed_pair_reversal_switch": 5,
+        "switch_beyond_nominal_slip_jitter": 5,
+        "switch_both_branches_over_0p05_mps": 3,
+        "mixed_sign_within_patch": 3
+      },
+      "switches": [
+        [
+          994074,
+          27
+        ],
+        [
+          994074,
+          54
+        ],
+        [
+          994075,
+          17
+        ],
+        [
+          994075,
+          46
+        ],
+        [
+          994075,
+          50
+        ]
+      ],
+      "distinct_switch_seeds": [
+        994074,
+        994075
+      ]
+    },
+    "split_sha256": "3c588202dfdd297b95d4a41f3e54a0b807befbfa4d580d678c4d7fdae0d95256",
+    "switch_cases": [
+      {
+        "seed": 994074,
+        "lane": 27,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 6.22848117351532,
+          "signed_outgoing_mps": -0.8448311537504196,
+          "min_signed_mps": -0.850419282913208,
+          "max_signed_mps": -0.8395900726318359,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00044425204396247864,
+          "max_separation_m": -0.00044425204396247864
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 6.22848117351532,
+          "signed_outgoing_mps": -0.8448311537504196,
+          "min_signed_mps": -0.850419282913208,
+          "max_signed_mps": -0.8395900726318359,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00044425204396247864,
+          "max_separation_m": -0.00044425204396247864
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 6.164411187171936,
+          "signed_outgoing_mps": 0.30859553068876266,
+          "min_signed_mps": 0.30152052640914917,
+          "max_signed_mps": 0.3151822090148926,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.0006321799010038376,
+          "max_separation_m": -0.0006321799010038376
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 4,
+          "incident_tangent_mps": 6.289723992347717,
+          "signed_outgoing_mps": -0.9923011213541031,
+          "min_signed_mps": -0.9984948635101318,
+          "max_signed_mps": -0.9864546060562134,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0002573039382696152,
+          "max_separation_m": -0.0002573039382696152
+        }
+      },
+      {
+        "seed": 994074,
+        "lane": 54,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 9.778508186340332,
+          "signed_outgoing_mps": 0.024646328762173653,
+          "min_signed_mps": 0.024646328762173653,
+          "max_signed_mps": 0.024646328762173653,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00031191855669021606,
+          "max_separation_m": -0.00031191855669021606
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 9.778508186340332,
+          "signed_outgoing_mps": 0.024646328762173653,
+          "min_signed_mps": 0.024646328762173653,
+          "max_signed_mps": 0.024646328762173653,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00031191855669021606,
+          "max_separation_m": -0.00031191855669021606
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 9.864447593688965,
+          "signed_outgoing_mps": -0.07016311585903168,
+          "min_signed_mps": -0.07016311585903168,
+          "max_signed_mps": -0.07016311585903168,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00042309239506721497,
+          "max_separation_m": -0.00042309239506721497
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 9.692479133605957,
+          "signed_outgoing_mps": 0.2912435531616211,
+          "min_signed_mps": 0.2912435531616211,
+          "max_signed_mps": 0.2912435531616211,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00020136311650276184,
+          "max_separation_m": -0.00020136311650276184
+        }
+      },
+      {
+        "seed": 994075,
+        "lane": 17,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.5999015867710114,
+          "signed_outgoing_mps": -0.17259125411510468,
+          "min_signed_mps": -0.19356799125671387,
+          "max_signed_mps": -0.1514289230108261,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0002530105412006378,
+          "max_separation_m": -0.00025276467204093933
+        },
+        "nominal_b": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.5999015867710114,
+          "signed_outgoing_mps": -0.17259125411510468,
+          "min_signed_mps": -0.19356799125671387,
+          "max_signed_mps": -0.1514289230108261,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0002530105412006378,
+          "max_separation_m": -0.00025276467204093933
+        },
+        "minus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.4637532532215118,
+          "signed_outgoing_mps": -0.4203392565250397,
+          "min_signed_mps": -0.5302165746688843,
+          "max_signed_mps": -0.30908671021461487,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0001787785440683365,
+          "max_separation_m": -0.00017397291958332062
+        },
+        "plus": {
+          "normal_points": 2,
+          "friction_points": 4,
+          "incident_tangent_mps": 1.7458138763904572,
+          "signed_outgoing_mps": 0.5713083744049072,
+          "min_signed_mps": 0.5301113724708557,
+          "max_signed_mps": 0.6124778985977173,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -0.00032409466803073883,
+          "max_separation_m": -0.00032252632081508636
+        }
+      },
+      {
+        "seed": 994075,
+        "lane": 46,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 7.306379795074463,
+          "signed_outgoing_mps": 0.00703378114849329,
+          "min_signed_mps": 0.00703378114849329,
+          "max_signed_mps": 0.00703378114849329,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 2.6480385713512078e-05,
+          "max_separation_m": 2.6480385713512078e-05
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 7.306379795074463,
+          "signed_outgoing_mps": 0.00703378114849329,
+          "min_signed_mps": 0.00703378114849329,
+          "max_signed_mps": 0.00703378114849329,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 2.6480385713512078e-05,
+          "max_separation_m": 2.6480385713512078e-05
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 7.285088539123535,
+          "signed_outgoing_mps": -0.015275528654456139,
+          "min_signed_mps": -0.015275528654456139,
+          "max_signed_mps": -0.015275528654456139,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.0001308765640715137,
+          "max_separation_m": -0.0001308765640715137
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 7.3305344581604,
+          "signed_outgoing_mps": 0.02642429620027542,
+          "min_signed_mps": 0.02642429620027542,
+          "max_signed_mps": 0.02642429620027542,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 0.000182635776582174,
+          "max_separation_m": 0.000182635776582174
+        }
+      },
+      {
+        "seed": 994075,
+        "lane": 50,
+        "kind": "racket_stable",
+        "above_repeat_noise": true,
+        "nominal_a": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 6.003032684326172,
+          "signed_outgoing_mps": 0.00692868372425437,
+          "min_signed_mps": 0.00692868372425437,
+          "max_signed_mps": 0.00692868372425437,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -6.43506646156311e-05,
+          "max_separation_m": -6.43506646156311e-05
+        },
+        "nominal_b": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 6.003032684326172,
+          "signed_outgoing_mps": 0.00692868372425437,
+          "min_signed_mps": 0.00692868372425437,
+          "max_signed_mps": 0.00692868372425437,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": -6.43506646156311e-05,
+          "max_separation_m": -6.43506646156311e-05
+        },
+        "minus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 6.085236072540283,
+          "signed_outgoing_mps": 0.015248470939695835,
+          "min_signed_mps": 0.015248470939695835,
+          "max_signed_mps": 0.015248470939695835,
+          "every_anchor_reversed": false,
+          "any_anchor_reversed": false,
+          "min_separation_m": 1.1749565601348877e-05,
+          "max_separation_m": 1.1749565601348877e-05
+        },
+        "plus": {
+          "normal_points": 1,
+          "friction_points": 1,
+          "incident_tangent_mps": 5.920236110687256,
+          "signed_outgoing_mps": -0.0026598188560456038,
+          "min_signed_mps": -0.0026598188560456038,
+          "max_signed_mps": -0.0026598188560456038,
+          "every_anchor_reversed": true,
+          "any_anchor_reversed": true,
+          "min_separation_m": -0.00013665109872817993,
+          "max_separation_m": -0.00013665109872817993
+        }
+      }
+    ]
+  }
+}

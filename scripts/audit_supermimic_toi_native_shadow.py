@@ -49,7 +49,18 @@ def run(args):
     if expected_guard is not None and (guard is None or guard.spec_sha256!=expected_guard):
         raise ValueError('TOI validation must retain the checkpoint-bound forward panel')
     if args.resume_wm_replay:
-        world,_,handoff=guard.replay_for_resume(args.resume_wm_replay,args.checkpoint,ck,ck['config']['wm_holdout_lanes'],{})
+        # Keep the training recipe, optimizer and anchor sampling clock from the scored WM.
+        recipe = {}
+        if args.canary_updates:
+            fit = json.loads((args.resume_wm_replay/'fit.json').read_text())
+            recipe = {key: fit[key] for key in ('natural_flight_batch', 'natural_flight_loss',
+                      'active_flight_batch', 'direct_long_body_supervision', 'separate_supervision', 'learning_rate')}
+        world, wm_state, handoff = guard.replay_for_resume(
+            args.resume_wm_replay, args.checkpoint, ck, ck['config']['wm_holdout_lanes'], recipe)
+        if args.canary_updates:
+            ck = dict(ck, world_optimizer=wm_state['optimizer'], natural_flight_rng=wm_state['natural_flight_rng'],
+                      config={**ck['config'], **{'wm_'+key: value for key, value in recipe.items()}},
+                      wm_replay_handoff=handoff)
     actor.load_state_dict(ck['actor'],strict=True)
     adapter.load_state_dict(world,strict=True)
     if guard is not None:
@@ -161,10 +172,7 @@ def main(*, canary=False):
     for arg in ('checkpoint','archive','reference-bank','safety-mapping','output'):
         p.add_argument('--'+arg,type=Path,required=True)
     p.add_argument('--wm-forward-guard',type=Path)
-    if not canary:
-        p.add_argument('--resume-wm-replay',type=Path)
-    else:
-        p.set_defaults(resume_wm_replay=None)
+    p.add_argument('--resume-wm-replay',type=Path)
     if canary:
         p.description='32 native training cases, supervised WM refresh, bounded TOI Approach updates and frozen RTG.'
         p.set_defaults(canary_updates=8)

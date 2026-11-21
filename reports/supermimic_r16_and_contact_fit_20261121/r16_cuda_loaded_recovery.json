@@ -1,0 +1,1097 @@
+{
+  "checkpoint_sha256": "c8e2507a5b5127421ede392d6554f57f6c54a36931d6d8b160ef9c350081df8b",
+  "actor_sha256": "d93b80b584aa8103f577c65e7ded69bf5e9ede2372ac4a9ec70bd37ce04681e3",
+  "world_sha256": "db1538ae1f3a5d29a54cfeb87b55539ffc84d55fcb8a97b0315b4fc845ad88ae",
+  "optimizer_updates": 0,
+  "pools": {
+    "touchdown": {
+      "starts": 16,
+      "valid_starts": 2,
+      "selected_lanes_by_start": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "first_verified_start": 0,
+      "coverage": {
+        "head": "recovery",
+        "reference_count": 38,
+        "verified_reference_count": 38,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 1,
+        "gate_active_selected_start_lanes": 1,
+        "reference_usage_by_sha256": {
+          "dd64179aaeee5d3eb5c0c39e99a3aad1aa0f7e8eee4fe321274147c8d2f15843": 1
+        },
+        "matched_lanes": 1,
+        "effective_weight_sum": 63.971519470214844,
+        "tracking_applied": true
+      },
+      "gradients": {
+        "task_gradient_norm": 16.70644760131836,
+        "anchor_gradient_norm": 0.0857636108994484,
+        "tracking_gradient_norm": 0.02804042212665081,
+        "task_tracking_cosine": 0.1620703935623169
+      },
+      "lane_steps": 64,
+      "nonzero_lanes": 1
+    },
+    "post_touchdown": {
+      "starts": 16,
+      "valid_starts": 16,
+      "selected_lanes_by_start": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9
+      ],
+      "first_verified_start": 0,
+      "coverage": {
+        "head": "recovery",
+        "reference_count": 38,
+        "verified_reference_count": 38,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 8,
+        "gate_active_selected_start_lanes": 8,
+        "reference_usage_by_sha256": {
+          "2b31588b6bf0f3e248ed4939808c3967b498f284868890ac1720344ad1547dc5": 1,
+          "58ac561eb9f7ef4f1268e078432c4f83290be9dbd89f5bbd1ec89bcd4ad84578": 1,
+          "a578ad1237f74cde9f860da7e66257d6807d48257253aec3ad223e0a4e66feb8": 1,
+          "d406c1330488d7a20ee012103524b49d001817db8b4f23767dbbb4a84009663e": 2,
+          "c780031cf4ee27da55ff24937e738806146a7347d942eb31d0ce1a833cb63d64": 1,
+          "dd64179aaeee5d3eb5c0c39e99a3aad1aa0f7e8eee4fe321274147c8d2f15843": 2
+        },
+        "matched_lanes": 8,
+        "effective_weight_sum": 509.1512451171875,
+        "tracking_applied": true
+      },
+      "gradients": {
+        "task_gradient_norm": 18.26456069946289,
+        "anchor_gradient_norm": 0.15908505022525787,
+        "tracking_gradient_norm": 0.09415803849697113,
+        "task_tracking_cosine": 0.46781134605407715
+      },
+      "lane_steps": 512,
+      "nonzero_lanes": 8
+    },
+    "recovery_failure": {
+      "starts": 16,
+      "valid_starts": 7,
+      "selected_lanes_by_start": [
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0
+      ],
+      "first_verified_start": 3,
+      "coverage": {
+        "head": "recovery",
+        "reference_count": 38,
+        "verified_reference_count": 38,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 1,
+        "gate_active_selected_start_lanes": 1,
+        "reference_usage_by_sha256": {
+          "a578ad1237f74cde9f860da7e66257d6807d48257253aec3ad223e0a4e66feb8": 1
+        },
+        "matched_lanes": 1,
+        "effective_weight_sum": 63.863677978515625,
+        "tracking_applied": true
+      },
+      "gradients": {
+        "task_gradient_norm": 9.623138427734375,
+        "anchor_gradient_norm": 0.18349431455135345,
+        "tracking_gradient_norm": 0.2955368161201477,
+        "task_tracking_cosine": 0.25517213344573975
+      },
+      "lane_steps": 64,
+      "nonzero_lanes": 1
+    },
+    "stable_recovery": {
+      "starts": 16,
+      "valid_starts": 8,
+      "selected_lanes_by_start": [
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        4
+      ],
+      "first_verified_start": 1,
+      "coverage": {
+        "head": "recovery",
+        "reference_count": 38,
+        "verified_reference_count": 38,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 1,
+        "gate_active_selected_start_lanes": 1,
+        "reference_usage_by_sha256": {
+          "dd64179aaeee5d3eb5c0c39e99a3aad1aa0f7e8eee4fe321274147c8d2f15843": 1
+        },
+        "matched_lanes": 1,
+        "effective_weight_sum": 63.99439239501953,
+        "tracking_applied": true
+      },
+      "gradients": {
+        "task_gradient_norm": 6.010472297668457,
+        "anchor_gradient_norm": 0.10280128568410873,
+        "tracking_gradient_norm": 0.013468015007674694,
+        "task_tracking_cosine": 0.20952863991260529
+      },
+      "lane_steps": 64,
+      "nonzero_lanes": 1
+    },
+    "initial_archive": {
+      "starts": 7,
+      "valid_starts": 7,
+      "selected_lanes_by_start": [
+        41,
+        40,
+        40,
+        39,
+        39,
+        39,
+        38
+      ],
+      "first_verified_start": 0,
+      "coverage": {
+        "head": "recovery",
+        "reference_count": 38,
+        "verified_reference_count": 38,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 41,
+        "gate_active_selected_start_lanes": 41,
+        "reference_usage_by_sha256": {
+          "b286c0dd02bcc48412d1f884cda6eda951e198347c083bc274fc655d0edfa177": 1,
+          "5c8105eb14e0210af8afd05327cb7e1022a1e71cbdee8006e499362bbd15164b": 1,
+          "935976e43c6724c91079fb68aaa5c05da774b758604c82638056a8c0ec7e48e7": 1,
+          "78dd19bf37d48e0772d76dba6fac3713e9b3307f62cc5880d2080ed80790918a": 1,
+          "1e7b5b063db69f70ead63af5d0234dfa14314e9958bb728fd64b5b76af890c44": 1,
+          "be03b8b2b8f4f32423e86c6c57d857ece0818787600aa8e0c1212ccc1bb2f81b": 1,
+          "7cdeb162531103fb9252e27240c61b2fc0d71d779dee712a9b9e5732d669b418": 4,
+          "f72ad0663a107d3942d8655268210c0c08b733f5eeeaa5fd02c0a84fcc236832": 1,
+          "921767d7aff4d3d52c940dbc39bce20ee00f790e8b7974eeda8847ef62ea1887": 2,
+          "2cb919cd74af44589c53b705075612cae7046afda44929b77765aa216f47a44e": 2,
+          "fb1ec1278df72a7038fa85f4fdf79f0881a7167dc366b5eccfce53b9ea1a555c": 1,
+          "d1d50956bf0abcc88ee09955a7f09fb1d9f958d3c79f38311d2a5d1fa7a416e5": 1,
+          "4d515ff6a9d491fc86c1190c092a58150d2f7c71dc3b7af4b95704f1a5fc978b": 1,
+          "4a4e34dc4ba30290e5f1b21cbb5bc4d65519c49fbb58eb7da5fd39116617602d": 6,
+          "b096aab7e8f98019c75bfa2dd040b9096ae6203c0de4d5281dc99f1f29af275b": 2,
+          "5f7b4ebd13a03e8d88c2335c55d69f180e563549cfd91526bad89aee80149982": 6,
+          "d406c1330488d7a20ee012103524b49d001817db8b4f23767dbbb4a84009663e": 2,
+          "dd64179aaeee5d3eb5c0c39e99a3aad1aa0f7e8eee4fe321274147c8d2f15843": 7
+        },
+        "matched_lanes": 41,
+        "effective_weight_sum": 2591.37841796875,
+        "tracking_applied": true
+      },
+      "gradients": {
+        "task_gradient_norm": 15.711263656616211,
+        "anchor_gradient_norm": 0.13532577455043793,
+        "tracking_gradient_norm": 0.050452351570129395,
+        "task_tracking_cosine": 0.48099562525749207
+      },
+      "lane_steps": 2624,
+      "nonzero_lanes": 41
+    }
+  },
+  "pooled": null,
+  "wm_handoff": {
+    "fit_sha256": "07e1c6c1215fd40b0d343ab40ccbd45da0756a4c7e04fc75613d81e05800545e",
+    "world_sha256": "db1538ae1f3a5d29a54cfeb87b55539ffc84d55fcb8a97b0315b4fc845ad88ae",
+    "optimizer_sha256": "fcacc31417e09e47ee5a385d2fa29eef39511c7baf30043a94f943d1a1e17017",
+    "panel_sha256": "6b6eb41966776eff5ed83cbf33cbec397d35e0ea98d5b3e5b0424c9526da8203",
+    "source_checkpoint_sha256": "c8e2507a5b5127421ede392d6554f57f6c54a36931d6d8b160ef9c350081df8b"
+  },
+  "forward_check": {
+    "passed": true,
+    "body": {
+      "passed": true,
+      "comparisons": [
+        {
+          "horizon": 1,
+          "metric": "body_rmse",
+          "anchor": 0.7073731422424316,
+          "candidate": 0.588203489780426,
+          "passed": true
+        },
+        {
+          "horizon": 1,
+          "metric": "root_angular_mae",
+          "anchor": 0.05900824815034866,
+          "candidate": 0.04913488030433655,
+          "passed": true
+        },
+        {
+          "horizon": 2,
+          "metric": "body_rmse",
+          "anchor": 0.7125383019447327,
+          "candidate": 0.5782396793365479,
+          "passed": true
+        },
+        {
+          "horizon": 2,
+          "metric": "root_angular_mae",
+          "anchor": 0.08543752133846283,
+          "candidate": 0.06905519962310791,
+          "passed": true
+        },
+        {
+          "horizon": 4,
+          "metric": "body_rmse",
+          "anchor": 0.7204390168190002,
+          "candidate": 0.5601615309715271,
+          "passed": true
+        },
+        {
+          "horizon": 4,
+          "metric": "root_angular_mae",
+          "anchor": 0.12691093981266022,
+          "candidate": 0.09792955219745636,
+          "passed": true
+        },
+        {
+          "horizon": 8,
+          "metric": "body_rmse",
+          "anchor": 0.9075583219528198,
+          "candidate": 0.6440698504447937,
+          "passed": true
+        },
+        {
+          "horizon": 8,
+          "metric": "root_angular_mae",
+          "anchor": 0.16166944801807404,
+          "candidate": 0.1125674769282341,
+          "passed": true
+        },
+        {
+          "horizon": 16,
+          "metric": "body_rmse",
+          "anchor": 0.7419193387031555,
+          "candidate": 0.5620354413986206,
+          "passed": true
+        },
+        {
+          "horizon": 16,
+          "metric": "root_angular_mae",
+          "anchor": 0.21590487658977509,
+          "candidate": 0.13773813843727112,
+          "passed": true
+        },
+        {
+          "horizon": 32,
+          "metric": "body_rmse",
+          "anchor": 0.551118791103363,
+          "candidate": 0.4059607982635498,
+          "passed": true
+        },
+        {
+          "horizon": 32,
+          "metric": "root_angular_mae",
+          "anchor": 0.23676209151744843,
+          "candidate": 0.15303625166416168,
+          "passed": true
+        },
+        {
+          "horizon": 64,
+          "metric": "body_rmse",
+          "anchor": 0.6821431517601013,
+          "candidate": 0.5487428307533264,
+          "passed": true
+        },
+        {
+          "horizon": 64,
+          "metric": "root_angular_mae",
+          "anchor": 0.265298992395401,
+          "candidate": 0.16739003360271454,
+          "passed": true
+        }
+      ]
+    },
+    "flight": {
+      "passed": true,
+      "comparisons": [
+        {
+          "horizon": 64,
+          "metric": "ball_velocity_rmse",
+          "anchor": 1.2001900672912598,
+          "candidate": 1.044500470161438,
+          "passed": true
+        }
+      ]
+    },
+    "contact": {
+      "schema": "supermimic-wm-candidate-gate-v1",
+      "passed": true,
+      "checks": [
+        {
+          "metric": "event_aligned/0/1/ball_velocity_rmse",
+          "anchor": 6.065291881561279,
+          "candidate": 0.962304949760437,
+          "absolute_tolerance": 0.02,
+          "relative_tolerance": 0.05,
+          "delta": -5.102986931800842,
+          "allowance": 0.323264594078064,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/0/1/ball_forward_sign_error",
+          "anchor": 1.0,
+          "candidate": 0.0,
+          "absolute_tolerance": 0.01,
+          "relative_tolerance": 0.05,
+          "delta": -1.0,
+          "allowance": 0.060000000000000005,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/-1/1/ball_velocity_rmse",
+          "anchor": 0.96098792552948,
+          "candidate": 1.7290631149080582e-05,
+          "absolute_tolerance": 0.0,
+          "relative_tolerance": 0.0,
+          "delta": -0.9609706348983309,
+          "allowance": 0.0,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/1/1/ball_velocity_rmse",
+          "anchor": 0.11826983094215393,
+          "candidate": 0.0,
+          "absolute_tolerance": 0.0,
+          "relative_tolerance": 0.0,
+          "delta": -0.11826983094215393,
+          "allowance": 0.0,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/-1/4/ball_velocity_rmse",
+          "anchor": 3.2677929401397705,
+          "candidate": 0.8226044178009033,
+          "absolute_tolerance": 0.0,
+          "relative_tolerance": 0.0,
+          "delta": -2.445188522338867,
+          "allowance": 0.0,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/0/4/ball_velocity_rmse",
+          "anchor": 3.189774751663208,
+          "candidate": 0.9562596678733826,
+          "absolute_tolerance": 0.03,
+          "relative_tolerance": 0.1,
+          "delta": -2.2335150837898254,
+          "allowance": 0.3489774751663208,
+          "status": "improved"
+        }
+      ],
+      "improvements": [
+        {
+          "metric": "event_aligned/0/1/ball_velocity_rmse",
+          "anchor": 6.065291881561279,
+          "candidate": 0.962304949760437,
+          "absolute_tolerance": 0.02,
+          "relative_tolerance": 0.05,
+          "delta": -5.102986931800842,
+          "allowance": 0.323264594078064,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/0/1/ball_forward_sign_error",
+          "anchor": 1.0,
+          "candidate": 0.0,
+          "absolute_tolerance": 0.01,
+          "relative_tolerance": 0.05,
+          "delta": -1.0,
+          "allowance": 0.060000000000000005,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/-1/1/ball_velocity_rmse",
+          "anchor": 0.96098792552948,
+          "candidate": 1.7290631149080582e-05,
+          "absolute_tolerance": 0.0,
+          "relative_tolerance": 0.0,
+          "delta": -0.9609706348983309,
+          "allowance": 0.0,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/1/1/ball_velocity_rmse",
+          "anchor": 0.11826983094215393,
+          "candidate": 0.0,
+          "absolute_tolerance": 0.0,
+          "relative_tolerance": 0.0,
+          "delta": -0.11826983094215393,
+          "allowance": 0.0,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/-1/4/ball_velocity_rmse",
+          "anchor": 3.2677929401397705,
+          "candidate": 0.8226044178009033,
+          "absolute_tolerance": 0.0,
+          "relative_tolerance": 0.0,
+          "delta": -2.445188522338867,
+          "allowance": 0.0,
+          "status": "improved"
+        },
+        {
+          "metric": "event_aligned/0/4/ball_velocity_rmse",
+          "anchor": 3.189774751663208,
+          "candidate": 0.9562596678733826,
+          "absolute_tolerance": 0.03,
+          "relative_tolerance": 0.1,
+          "delta": -2.2335150837898254,
+          "allowance": 0.3489774751663208,
+          "status": "improved"
+        }
+      ],
+      "failures": [],
+      "contact_edge_improved": true,
+      "policy": "candidate must preserve every protected metric and improve the held-out contact-edge velocity metric",
+      "metric_specs": [
+        {
+          "name": "event_aligned/0/1/ball_velocity_rmse",
+          "absolute_tolerance": 0.02,
+          "relative_tolerance": 0.05
+        },
+        {
+          "name": "event_aligned/0/1/ball_forward_sign_error",
+          "absolute_tolerance": 0.01,
+          "relative_tolerance": 0.05
+        },
+        {
+          "name": "event_aligned/-1/1/ball_velocity_rmse",
+          "absolute_tolerance": 0.0,
+          "relative_tolerance": 0.0
+        },
+        {
+          "name": "event_aligned/1/1/ball_velocity_rmse",
+          "absolute_tolerance": 0.0,
+          "relative_tolerance": 0.0
+        },
+        {
+          "name": "event_aligned/-1/4/ball_velocity_rmse",
+          "absolute_tolerance": 0.0,
+          "relative_tolerance": 0.0
+        },
+        {
+          "name": "event_aligned/0/4/ball_velocity_rmse",
+          "absolute_tolerance": 0.03,
+          "relative_tolerance": 0.1
+        }
+      ]
+    },
+    "comparison_reference": "formal_anchor",
+    "vs_formal_anchor": {
+      "passed": true,
+      "body": {
+        "passed": true,
+        "comparisons": [
+          {
+            "horizon": 1,
+            "metric": "body_rmse",
+            "anchor": 0.7073731422424316,
+            "candidate": 0.588203489780426,
+            "passed": true
+          },
+          {
+            "horizon": 1,
+            "metric": "root_angular_mae",
+            "anchor": 0.05900824815034866,
+            "candidate": 0.04913488030433655,
+            "passed": true
+          },
+          {
+            "horizon": 2,
+            "metric": "body_rmse",
+            "anchor": 0.7125383019447327,
+            "candidate": 0.5782396793365479,
+            "passed": true
+          },
+          {
+            "horizon": 2,
+            "metric": "root_angular_mae",
+            "anchor": 0.08543752133846283,
+            "candidate": 0.06905519962310791,
+            "passed": true
+          },
+          {
+            "horizon": 4,
+            "metric": "body_rmse",
+            "anchor": 0.7204390168190002,
+            "candidate": 0.5601615309715271,
+            "passed": true
+          },
+          {
+            "horizon": 4,
+            "metric": "root_angular_mae",
+            "anchor": 0.12691093981266022,
+            "candidate": 0.09792955219745636,
+            "passed": true
+          },
+          {
+            "horizon": 8,
+            "metric": "body_rmse",
+            "anchor": 0.9075583219528198,
+            "candidate": 0.6440698504447937,
+            "passed": true
+          },
+          {
+            "horizon": 8,
+            "metric": "root_angular_mae",
+            "anchor": 0.16166944801807404,
+            "candidate": 0.1125674769282341,
+            "passed": true
+          },
+          {
+            "horizon": 16,
+            "metric": "body_rmse",
+            "anchor": 0.7419193387031555,
+            "candidate": 0.5620354413986206,
+            "passed": true
+          },
+          {
+            "horizon": 16,
+            "metric": "root_angular_mae",
+            "anchor": 0.21590487658977509,
+            "candidate": 0.13773813843727112,
+            "passed": true
+          },
+          {
+            "horizon": 32,
+            "metric": "body_rmse",
+            "anchor": 0.551118791103363,
+            "candidate": 0.4059607982635498,
+            "passed": true
+          },
+          {
+            "horizon": 32,
+            "metric": "root_angular_mae",
+            "anchor": 0.23676209151744843,
+            "candidate": 0.15303625166416168,
+            "passed": true
+          },
+          {
+            "horizon": 64,
+            "metric": "body_rmse",
+            "anchor": 0.6821431517601013,
+            "candidate": 0.5487428307533264,
+            "passed": true
+          },
+          {
+            "horizon": 64,
+            "metric": "root_angular_mae",
+            "anchor": 0.265298992395401,
+            "candidate": 0.16739003360271454,
+            "passed": true
+          }
+        ]
+      },
+      "flight": {
+        "passed": true,
+        "comparisons": [
+          {
+            "horizon": 64,
+            "metric": "ball_velocity_rmse",
+            "anchor": 1.2001900672912598,
+            "candidate": 1.044500470161438,
+            "passed": true
+          }
+        ]
+      },
+      "contact": {
+        "schema": "supermimic-wm-candidate-gate-v1",
+        "passed": true,
+        "checks": [
+          {
+            "metric": "event_aligned/0/1/ball_velocity_rmse",
+            "anchor": 6.065291881561279,
+            "candidate": 0.962304949760437,
+            "absolute_tolerance": 0.02,
+            "relative_tolerance": 0.05,
+            "delta": -5.102986931800842,
+            "allowance": 0.323264594078064,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/0/1/ball_forward_sign_error",
+            "anchor": 1.0,
+            "candidate": 0.0,
+            "absolute_tolerance": 0.01,
+            "relative_tolerance": 0.05,
+            "delta": -1.0,
+            "allowance": 0.060000000000000005,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/-1/1/ball_velocity_rmse",
+            "anchor": 0.96098792552948,
+            "candidate": 1.7290631149080582e-05,
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0,
+            "delta": -0.9609706348983309,
+            "allowance": 0.0,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/1/1/ball_velocity_rmse",
+            "anchor": 0.11826983094215393,
+            "candidate": 0.0,
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0,
+            "delta": -0.11826983094215393,
+            "allowance": 0.0,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/-1/4/ball_velocity_rmse",
+            "anchor": 3.2677929401397705,
+            "candidate": 0.8226044178009033,
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0,
+            "delta": -2.445188522338867,
+            "allowance": 0.0,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/0/4/ball_velocity_rmse",
+            "anchor": 3.189774751663208,
+            "candidate": 0.9562596678733826,
+            "absolute_tolerance": 0.03,
+            "relative_tolerance": 0.1,
+            "delta": -2.2335150837898254,
+            "allowance": 0.3489774751663208,
+            "status": "improved"
+          }
+        ],
+        "improvements": [
+          {
+            "metric": "event_aligned/0/1/ball_velocity_rmse",
+            "anchor": 6.065291881561279,
+            "candidate": 0.962304949760437,
+            "absolute_tolerance": 0.02,
+            "relative_tolerance": 0.05,
+            "delta": -5.102986931800842,
+            "allowance": 0.323264594078064,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/0/1/ball_forward_sign_error",
+            "anchor": 1.0,
+            "candidate": 0.0,
+            "absolute_tolerance": 0.01,
+            "relative_tolerance": 0.05,
+            "delta": -1.0,
+            "allowance": 0.060000000000000005,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/-1/1/ball_velocity_rmse",
+            "anchor": 0.96098792552948,
+            "candidate": 1.7290631149080582e-05,
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0,
+            "delta": -0.9609706348983309,
+            "allowance": 0.0,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/1/1/ball_velocity_rmse",
+            "anchor": 0.11826983094215393,
+            "candidate": 0.0,
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0,
+            "delta": -0.11826983094215393,
+            "allowance": 0.0,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/-1/4/ball_velocity_rmse",
+            "anchor": 3.2677929401397705,
+            "candidate": 0.8226044178009033,
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0,
+            "delta": -2.445188522338867,
+            "allowance": 0.0,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/0/4/ball_velocity_rmse",
+            "anchor": 3.189774751663208,
+            "candidate": 0.9562596678733826,
+            "absolute_tolerance": 0.03,
+            "relative_tolerance": 0.1,
+            "delta": -2.2335150837898254,
+            "allowance": 0.3489774751663208,
+            "status": "improved"
+          }
+        ],
+        "failures": [],
+        "contact_edge_improved": true,
+        "policy": "candidate must preserve every protected metric and improve the held-out contact-edge velocity metric",
+        "metric_specs": [
+          {
+            "name": "event_aligned/0/1/ball_velocity_rmse",
+            "absolute_tolerance": 0.02,
+            "relative_tolerance": 0.05
+          },
+          {
+            "name": "event_aligned/0/1/ball_forward_sign_error",
+            "absolute_tolerance": 0.01,
+            "relative_tolerance": 0.05
+          },
+          {
+            "name": "event_aligned/-1/1/ball_velocity_rmse",
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0
+          },
+          {
+            "name": "event_aligned/1/1/ball_velocity_rmse",
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0
+          },
+          {
+            "name": "event_aligned/-1/4/ball_velocity_rmse",
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0
+          },
+          {
+            "name": "event_aligned/0/4/ball_velocity_rmse",
+            "absolute_tolerance": 0.03,
+            "relative_tolerance": 0.1
+          }
+        ]
+      }
+    },
+    "vs_block_initial": {
+      "passed": false,
+      "body": {
+        "passed": false,
+        "comparisons": [
+          {
+            "horizon": 1,
+            "metric": "body_rmse",
+            "anchor": 0.5876370072364807,
+            "candidate": 0.588203489780426,
+            "passed": false
+          },
+          {
+            "horizon": 1,
+            "metric": "root_angular_mae",
+            "anchor": 0.048334576189517975,
+            "candidate": 0.04913488030433655,
+            "passed": false
+          },
+          {
+            "horizon": 2,
+            "metric": "body_rmse",
+            "anchor": 0.5776209831237793,
+            "candidate": 0.5782396793365479,
+            "passed": false
+          },
+          {
+            "horizon": 2,
+            "metric": "root_angular_mae",
+            "anchor": 0.06758201122283936,
+            "candidate": 0.06905519962310791,
+            "passed": false
+          },
+          {
+            "horizon": 4,
+            "metric": "body_rmse",
+            "anchor": 0.5609411597251892,
+            "candidate": 0.5601615309715271,
+            "passed": true
+          },
+          {
+            "horizon": 4,
+            "metric": "root_angular_mae",
+            "anchor": 0.09661924839019775,
+            "candidate": 0.09792955219745636,
+            "passed": false
+          },
+          {
+            "horizon": 8,
+            "metric": "body_rmse",
+            "anchor": 0.6453942656517029,
+            "candidate": 0.6440698504447937,
+            "passed": true
+          },
+          {
+            "horizon": 8,
+            "metric": "root_angular_mae",
+            "anchor": 0.11489657312631607,
+            "candidate": 0.1125674769282341,
+            "passed": true
+          },
+          {
+            "horizon": 16,
+            "metric": "body_rmse",
+            "anchor": 0.5640191435813904,
+            "candidate": 0.5620354413986206,
+            "passed": true
+          },
+          {
+            "horizon": 16,
+            "metric": "root_angular_mae",
+            "anchor": 0.14025722444057465,
+            "candidate": 0.13773813843727112,
+            "passed": true
+          },
+          {
+            "horizon": 32,
+            "metric": "body_rmse",
+            "anchor": 0.4063560962677002,
+            "candidate": 0.4059607982635498,
+            "passed": true
+          },
+          {
+            "horizon": 32,
+            "metric": "root_angular_mae",
+            "anchor": 0.1555226445198059,
+            "candidate": 0.15303625166416168,
+            "passed": true
+          },
+          {
+            "horizon": 64,
+            "metric": "body_rmse",
+            "anchor": 0.5501051545143127,
+            "candidate": 0.5487428307533264,
+            "passed": true
+          },
+          {
+            "horizon": 64,
+            "metric": "root_angular_mae",
+            "anchor": 0.1727522611618042,
+            "candidate": 0.16739003360271454,
+            "passed": true
+          }
+        ]
+      },
+      "flight": {
+        "passed": true,
+        "comparisons": [
+          {
+            "horizon": 64,
+            "metric": "ball_velocity_rmse",
+            "anchor": 1.117512583732605,
+            "candidate": 1.044500470161438,
+            "passed": true
+          }
+        ]
+      },
+      "contact": {
+        "schema": "supermimic-wm-candidate-gate-v1",
+        "passed": false,
+        "checks": [
+          {
+            "metric": "event_aligned/0/1/ball_velocity_rmse",
+            "anchor": 1.015875220298767,
+            "candidate": 0.962304949760437,
+            "absolute_tolerance": 0.02,
+            "relative_tolerance": 0.05,
+            "delta": -0.05357027053833008,
+            "allowance": 0.07079376101493835,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/0/1/ball_forward_sign_error",
+            "anchor": 0.0,
+            "candidate": 0.0,
+            "absolute_tolerance": 0.01,
+            "relative_tolerance": 0.05,
+            "delta": 0.0,
+            "allowance": 0.01000005,
+            "status": "unchanged"
+          },
+          {
+            "metric": "event_aligned/-1/1/ball_velocity_rmse",
+            "anchor": 1.7264961570617743e-05,
+            "candidate": 1.7290631149080582e-05,
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0,
+            "delta": 2.5669578462839127e-08,
+            "allowance": 0.0,
+            "status": "degraded"
+          },
+          {
+            "metric": "event_aligned/1/1/ball_velocity_rmse",
+            "anchor": 0.0,
+            "candidate": 0.0,
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0,
+            "delta": 0.0,
+            "allowance": 0.0,
+            "status": "unchanged"
+          },
+          {
+            "metric": "event_aligned/-1/4/ball_velocity_rmse",
+            "anchor": 0.890298068523407,
+            "candidate": 0.8226044178009033,
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0,
+            "delta": -0.06769365072250366,
+            "allowance": 0.0,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/0/4/ball_velocity_rmse",
+            "anchor": 1.0095621347427368,
+            "candidate": 0.9562596678733826,
+            "absolute_tolerance": 0.03,
+            "relative_tolerance": 0.1,
+            "delta": -0.05330246686935425,
+            "allowance": 0.1309562134742737,
+            "status": "improved"
+          }
+        ],
+        "improvements": [
+          {
+            "metric": "event_aligned/0/1/ball_velocity_rmse",
+            "anchor": 1.015875220298767,
+            "candidate": 0.962304949760437,
+            "absolute_tolerance": 0.02,
+            "relative_tolerance": 0.05,
+            "delta": -0.05357027053833008,
+            "allowance": 0.07079376101493835,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/-1/4/ball_velocity_rmse",
+            "anchor": 0.890298068523407,
+            "candidate": 0.8226044178009033,
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0,
+            "delta": -0.06769365072250366,
+            "allowance": 0.0,
+            "status": "improved"
+          },
+          {
+            "metric": "event_aligned/0/4/ball_velocity_rmse",
+            "anchor": 1.0095621347427368,
+            "candidate": 0.9562596678733826,
+            "absolute_tolerance": 0.03,
+            "relative_tolerance": 0.1,
+            "delta": -0.05330246686935425,
+            "allowance": 0.1309562134742737,
+            "status": "improved"
+          }
+        ],
+        "failures": [
+          {
+            "metric": "event_aligned/-1/1/ball_velocity_rmse",
+            "anchor": 1.7264961570617743e-05,
+            "candidate": 1.7290631149080582e-05,
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0,
+            "delta": 2.5669578462839127e-08,
+            "allowance": 0.0,
+            "status": "degraded"
+          }
+        ],
+        "contact_edge_improved": true,
+        "policy": "candidate must preserve every protected metric and improve the held-out contact-edge velocity metric",
+        "metric_specs": [
+          {
+            "name": "event_aligned/0/1/ball_velocity_rmse",
+            "absolute_tolerance": 0.02,
+            "relative_tolerance": 0.05
+          },
+          {
+            "name": "event_aligned/0/1/ball_forward_sign_error",
+            "absolute_tolerance": 0.01,
+            "relative_tolerance": 0.05
+          },
+          {
+            "name": "event_aligned/-1/1/ball_velocity_rmse",
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0
+          },
+          {
+            "name": "event_aligned/1/1/ball_velocity_rmse",
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0
+          },
+          {
+            "name": "event_aligned/-1/4/ball_velocity_rmse",
+            "absolute_tolerance": 0.0,
+            "relative_tolerance": 0.0
+          },
+          {
+            "name": "event_aligned/0/4/ball_velocity_rmse",
+            "absolute_tolerance": 0.03,
+            "relative_tolerance": 0.1
+          }
+        ]
+      }
+    },
+    "spec_sha256": "6b6eb41966776eff5ed83cbf33cbec397d35e0ea98d5b3e5b0424c9526da8203",
+    "world_sha256": "db1538ae1f3a5d29a54cfeb87b55539ffc84d55fcb8a97b0315b4fc845ad88ae"
+  },
+  "scope": "Offline gradient audit on recorded, causally gated Recovery starts"
+}

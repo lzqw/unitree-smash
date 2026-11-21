@@ -232,6 +232,7 @@ def learn(args, *, budget_states, env, wrapper, observation, trainer, state, lau
                 or final_world == initial_world or trainer.frozen_hash() != frozen_hash):
             raise RuntimeError('Frozen Actor or WM/Critic update check failed')
         output = dict(schema='bounded-native-toi-canary-v1', parent_sha256=parent_id,
+                      wm_replay_handoff=ck.get('wm_replay_handoff'),
                       actor=actor.state_dict(), critic=trainer.critic.state_dict(), world=adapter.state_dict(),
                       approach_optimizer=trainer.actor_opt.state_dict(), world_optimizer=trainer.world_opt.state_dict(),
                       critic_optimizer=trainer.critic_opt.state_dict(), original_lanes=lanes, promotable=False)
@@ -243,6 +244,7 @@ def learn(args, *, budget_states, env, wrapper, observation, trainer, state, lau
                       contact_gradients='detached', parent_sha256=parent_id, actor_before=initial_actor, actor_after=actor_id,
                       critic_after=final_critic, world_after=final_world, native_transitions=archive.transitions,
                       frozen=receipt, native_scores=summarize_native_episodes(records), rtg_fit=fit,
+                      wm_replay_handoff=ck.get('wm_replay_handoff'), world_before=initial_world,
                       candidate_sha256=_sha256(args.output/'canary.pt'))
     finally:
         env.physical_transition_archive = None
