@@ -42,3 +42,14 @@ def test_pause_keeps_both_matched_cohorts_and_does_not_pair_resets():
             assert detail['baseline_scores']['release_speed_mps'] is None
     reset = trend.observe([case(i, -12, episode=1) for i in range(4)], 384)
     assert all(c['paired_delta'] is None and c['baseline_scores'] is None for c in reset['cases'])
+
+
+def test_pause_if_both_curves_keep_falling_despite_a_partial_cohort_rebound():
+    baseline = {(str(i), i): case(i, int(i >= 8)) for i in range(12)}
+    trend = ReturnTrend(baseline)
+    for start, value in ((0, 0), (4, -9), (8, -6)):
+        decision = trend.observe([case(i, value) for i in range(start, start+4)], start)
+        if start < 8:
+            assert decision['reason'] is None
+    assert decision['reason'] == 'consecutive_native_and_paired_curve_declines'
+    assert decision['cohorts'][-1]['mean'] > decision['cohorts'][-2]['mean']

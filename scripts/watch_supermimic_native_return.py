@@ -52,6 +52,7 @@ class ReturnTrend:
     def __init__(self, baseline, minimum_cases=4):
         self.baseline = baseline
         self.minimum_cases = minimum_cases
+        self.paired_sum = self.paired_cases = 0
         self.pending = []
         self.recent = deque(maxlen=128)
         self.cohorts = deque(maxlen=3)
@@ -67,10 +68,13 @@ class ReturnTrend:
         if any(e['scoring_schema'] != b['scoring_schema'] for e, b in pairs):
             raise ValueError('Inconsistent paired native scores')
         deltas = [e['native_episode_return'] - b['native_episode_return'] for e,b in pairs]
+        self.paired_cases += len(deltas)
+        self.paired_sum += sum(deltas)
         fields = ('body_ground_seen', 'qualified_airborne_string_contact', 'ball_side_complete_except_recovery', 'complete5')
         current = dict(tick=tick, count=len(rows), mean=mean(e['native_episode_return'] for e in rows),
                        return_mean_128=mean(self.recent), paired_count=len(pairs),
                        paired_delta=mean(deltas) if deltas else None,
+                       cumulative_paired_delta=self.paired_sum/self.paired_cases if self.paired_cases else None,
                        paired_net={k:sum(int(e[k])-int(b[k]) for e,b in pairs) for k in fields})
         matched = {(e['case_id'], e['env_id']): b for e,b in pairs}
         current['cases'] = [case_evidence(e, matched.get((e['case_id'], e['env_id']))
@@ -84,6 +88,13 @@ class ReturnTrend:
                     and b['paired_delta'] < a['paired_delta'] < 0
                     and b['return_mean_128'] < a['return_mean_128'] and b['mean'] < a['mean']):
                 reason = 'paired_first_episode_loss_worsened'
+        if reason is None and len(history) == 3 and all(c['paired_count'] == c['count'] for c in history):
+            # Successive case mixes can have different baseline difficulty. Detect a
+            # sustained decline in both recorded curves even if a cohort mean rebounds.
+            if all(b['paired_delta'] < 0 and b['return_mean_128'] < a['return_mean_128']
+                   and b['cumulative_paired_delta'] < a['cumulative_paired_delta']
+                   for a,b in zip(history, history[1:])):
+                reason = 'consecutive_native_and_paired_curve_declines'
         if len(history) == 3 and any(c['paired_count'] != c['count'] for c in history):
             if all(b['return_mean_128'] < a['return_mean_128'] and b['mean'] < a['mean']
                    for a,b in zip(history, history[1:])):
