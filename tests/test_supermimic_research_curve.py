@@ -79,3 +79,36 @@ def test_extension_contact_totals_include_prior_stage_and_repair_missing_export(
         NativeContactCounts(tmp_path).update()
         report = json.loads((tmp_path/'native_contact_counts.json').read_text())
         assert report['durable_env_steps'] == 768 and report['total']['qualified_or_frame'] == 11
+
+
+def test_checkpoint_and_stage_end_account_for_frozen_suffix_and_async_episode_lengths():
+    import pytest
+    from scripts.evaluate_supermimic_research_arm import training_interactions
+
+    receipts = [dict(start_tick=110, end_tick=125, native_ticks=15, complete_lanes=2, lengths=[8, 7]),
+                dict(start_tick=135, end_tick=147, native_ticks=12, complete_lanes=2, lengths=[8, 8])]
+    assert training_interactions(100, 110, 2, receipts)['frozen_all'] == 0
+    assert training_interactions(100, 135, 2, receipts) == dict(
+        training_total=70, online_mixed=40, frozen_all=30, frozen_in_complete_rtg_episodes=15)
+    assert training_interactions(100, 147, 2, receipts) == dict(
+        training_total=94, online_mixed=40, frozen_all=54, frozen_in_complete_rtg_episodes=31)
+    with pytest.raises(ValueError):
+        training_interactions(100, 147, 2, receipts + receipts[:1])
+
+
+def test_interaction_budget_uses_only_collections_completed_by_checkpoint(tmp_path):
+    import json
+    import pytest
+    from scripts.evaluate_supermimic_research_arm import checkpoint_interactions
+
+    manifest = tmp_path/'manifest.json'
+    identity = dict(policy_id='combined_v128', actor_sha256='abc')
+    manifest.write_text(json.dumps(dict(**identity, schedule_event_id='first_refresh', start_tick=100,
+        end_tick=112, native_ticks=12, complete_lanes=2, lengths=[8, 7])))
+    refresh = dict(event=dict(kind='refresh', id='first_refresh'),
+                   result=dict(**identity, manifest_path=str(manifest)))
+    ck = dict(native_ticks=120, alternating_schedule={'results':[refresh]})
+    assert checkpoint_interactions(ck, 90, 2)['online_mixed'] == 36
+    refresh['result']['policy_id'] = 'wrong'
+    with pytest.raises(ValueError, match='identity'):
+        checkpoint_interactions(ck, 90, 2)

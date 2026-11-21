@@ -82,6 +82,43 @@ def command_scalars(report, *, before_checkpoint, after_checkpoint, before_actor
     return metrics
 
 
+def training_interactions(native_origin, end_tick, lanes, refreshes):
+    """Count physics steps through this point, including the whole asynchronous frozen rollout."""
+    if lanes <= 0 or end_tick < native_origin:
+        raise ValueError('Invalid native interaction range')
+    frozen_ticks = 0
+    labeled_steps = 0
+    last_end = native_origin
+    for receipt in sorted(refreshes, key=lambda r: r['start_tick']):
+        start, end = receipt['start_tick'], receipt['end_tick']
+        if start >= end_tick:
+            break
+        if (start < last_end or end <= start or end > end_tick
+                or end - start != receipt['native_ticks'] or receipt['complete_lanes'] != lanes
+                or len(receipt['lengths']) != lanes
+                or any(n <= 0 or n > end-start for n in receipt['lengths'])):
+            raise ValueError('Frozen receipt does not match the completed training interval')
+        frozen_ticks += end - start
+        labeled_steps += sum(receipt['lengths'])
+        last_end = end
+    total = (end_tick - native_origin) * lanes
+    return dict(training_total=total, online_mixed=total - frozen_ticks * lanes,
+                frozen_all=frozen_ticks * lanes, frozen_in_complete_rtg_episodes=labeled_steps)
+
+
+def checkpoint_interactions(checkpoint, native_origin, lanes):
+    receipts = []
+    for entry in checkpoint['alternating_schedule']['results']:
+        if entry['event']['kind'] == 'refresh':
+            result = entry['result']
+            receipt = json.loads(Path(result['manifest_path']).read_text())
+            if (receipt['policy_id'] != result['policy_id'] or receipt['actor_sha256'] != result['actor_sha256']
+                    or receipt['schedule_event_id'] != entry['event']['id']):
+                raise ValueError('Frozen collection identity differs from saved schedule')
+            receipts.append(receipt)
+    return training_interactions(native_origin, checkpoint['native_ticks'], lanes, receipts)
+
+
 def evaluate(folder, step, writer):
     reg=json.loads((folder/'registration.json').read_text())
     cmd=reg['command']
@@ -98,6 +135,7 @@ def evaluate(folder, step, writer):
     actor=tensor_digest(ck['actor'].items())
     if retained!=step or ck['config']['training_profile']!='research_scale':
         raise ValueError('Milestone differs from actual retained optimizer count')
+    milestone_clock = {key: ck[key] for key in ('native_ticks', 'alternating_schedule')}
     del ck
     folder_eval=folder/f'fixed128_{step:04d}'
     def run(args,log):
@@ -117,6 +155,28 @@ def evaluate(folder, step, writer):
     origin = arm_origin(reg)
     row = next(r for r in trace if r['update_accepted'] and r['accepted_id'] == origin[0] + step)
     positions = axes(row, origin, metrics['num_envs'])
+    lanes = metrics['num_envs']
+    budget = dict(checkpoint_sha256=checkpoint_sha,
+                  heldout_evaluation_env_steps=lanes * metrics['control_ticks'],
+                  shared_zero_evaluation_env_steps=initial_metrics['num_envs'] * initial_metrics['control_ticks'])
+    try:
+        if milestone_clock['native_ticks'] != row['native_ticks']:
+            raise ValueError('Milestone and Actor log native step counts differ')
+        budget['at_actor_checkpoint'] = checkpoint_interactions(milestone_clock, origin[1], lanes)
+        if (train/'training_completed.json').is_file():
+            final = torch.load(train/'latest.pt', map_location='cpu', mmap=True, weights_only=False)
+            completed = json.loads((train/'training_completed.json').read_text())
+            if final['native_ticks'] != completed['native_ticks']:
+                raise ValueError('Final native step count differs from training summary')
+            budget['at_training_end'] = checkpoint_interactions(final, origin[1], lanes)
+            del final
+    except (OSError, KeyError, ValueError) as error:
+        # Missing historical accounting must not discard genuine fixed-panel scores.
+        budget['accounting_issue'] = str(error)
+    budget_path = folder/f'interaction_budget_{step:04d}.json'
+    budget_path.write_text(json.dumps(budget, indent=2)+'\n')
+    for name, value in budget.get('at_actor_checkpoint', {}).items():
+        writer.add_scalar('interactions_at_checkpoint/'+name, value, step)
     for k in ('qualified_airborne_string_contact','ball_side_complete_except_recovery','complete5',
               'conditional_recovery_count','recovery_given_airborne_string_contact','native_episode_return_mean'):
         for axis,pos in positions.items():
