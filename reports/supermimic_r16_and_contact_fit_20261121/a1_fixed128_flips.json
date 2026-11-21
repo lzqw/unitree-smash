@@ -1,0 +1,91 @@
+{
+  "fixed_panel_sha256": "42e65659dd1378dc3088ea07a5c5f2ffcb89320b6b4f27642f8d0cd92148db04",
+  "seed": 882072,
+  "distinct_cases": 128,
+  "primary": "contact",
+  "binary_flips": {
+    "contact": {
+      "improved": [],
+      "regressed": [],
+      "two_sided_p": 1.0
+    },
+    "ball_side": {
+      "improved": [
+        "A-720401-012",
+        "A-720401-040"
+      ],
+      "regressed": [
+        "A-720401-017",
+        "A-720401-024",
+        "B-720402-062"
+      ],
+      "two_sided_p": 1.0
+    },
+    "complete5": {
+      "improved": [
+        "A-720401-003",
+        "A-720401-035"
+      ],
+      "regressed": [
+        "A-720401-017",
+        "A-720401-023",
+        "A-720401-024",
+        "A-720401-027",
+        "A-720401-061",
+        "B-720402-062"
+      ],
+      "two_sided_p": 0.2890625
+    }
+  },
+  "common_contact_recovery": {
+    "common_contacts": 74,
+    "improved_cases": [
+      "A-720401-003",
+      "A-720401-006",
+      "A-720401-035",
+      "B-720402-008",
+      "B-720402-022",
+      "B-720402-033"
+    ],
+    "regressed_cases": [
+      "A-720401-017",
+      "A-720401-023",
+      "A-720401-027",
+      "A-720401-032",
+      "A-720401-061",
+      "B-720402-035"
+    ],
+    "recovered_before": 35,
+    "recovered_after": 35,
+    "paired_two_sided_p": 1.0,
+    "gained_contacts": [],
+    "lost_contacts": []
+  },
+  "return_difference": {
+    "mean": 0.040904867614402374,
+    "median": -0.00023035500612422766,
+    "paired_bootstrap_95": [
+      -3.9247988760611525,
+      3.9169096722430607
+    ],
+    "resamples": 20000
+  },
+  "source_actor_sha256": "d93b80b584aa8103f577c65e7ded69bf5e9ede2372ac4a9ec70bd37ce04681e3",
+  "candidate_actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+  "metrics": {
+    "before": {
+      "qualified_airborne_string_contact": 74,
+      "ball_side_complete_except_recovery": 52,
+      "conditional_recovery_count": 35,
+      "complete5": 26,
+      "native_episode_return_mean": -12.129494080700853
+    },
+    "after": {
+      "qualified_airborne_string_contact": 74,
+      "ball_side_complete_except_recovery": 51,
+      "conditional_recovery_count": 35,
+      "complete5": 22,
+      "native_episode_return_mean": -12.088589213086447
+    }
+  }
+}

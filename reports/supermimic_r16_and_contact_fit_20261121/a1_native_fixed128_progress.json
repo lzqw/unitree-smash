@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-21T14:52:36+08:00",
+  "as_of": "2026-11-21T15:03:39+08:00",
   "seed": 882072,
   "num_envs": 128,
   "expected_ticks": 800,
@@ -11,17 +11,17 @@
     "actuator_contract": "9e0406f1d7bb6a1a56fb4155f3ff55705aa91019097f4fb083c51ede3009522e"
   },
   "progress": {
-    "control_ticks": 600,
-    "first_episodes": 9,
-    "elapsed_s": 982.260896207008,
+    "control_ticks": 800,
+    "first_episodes": 128,
+    "elapsed_s": 1788.1113435989828,
     "first_episode_numerical_audit_count": 0,
     "active_episode_sweep_unresolved": 0,
     "active_episode_sweep_misses": 0,
-    "native_episode_return_mean": -14.615533119264057,
-    "native_episode_discounted_return_mean": 0.14586402301595916,
+    "native_episode_return_mean": -12.088589213086449,
+    "native_episode_discounted_return_mean": -0.3216531485167586,
     "native_return_gamma": 0.99498743710662
   },
-  "paired_result_available": false,
+  "paired_result_available": true,
   "primary_metric": "qualified_airborne_string_contact",
   "formal_baseline": {
     "qualified_airborne_string_contact": 74,
@@ -31,5 +31,13 @@
     "native_episode_return_mean": -12.129494080700853
   },
   "large_training_started": false,
-  "contact_receipt_issued": false
+  "contact_receipt_issued": false,
+  "candidate": {
+    "qualified_airborne_string_contact": 74,
+    "ball_side_complete_except_recovery": 51,
+    "conditional_recovery_count": 35,
+    "complete5": 22,
+    "native_episode_return_mean": -12.088589213086447
+  },
+  "paired_result_sha256": "42e65659dd1378dc3088ea07a5c5f2ffcb89320b6b4f27642f8d0cd92148db04"
 }

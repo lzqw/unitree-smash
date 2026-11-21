@@ -114,7 +114,8 @@ def score(folder, expected, adapter, template, launch, bank, task, execution, he
         noise=abs(float(native_loss['nominal_a'][k]-native_loss['nominal_b'][k]))
         delta=float(finite[k]); jac=float(grad[i])
         target_change=float((cmds['plus'][0][:j+1,i]-cmds['minus'][0][:j+1,i]).abs().max())
-        rows.append(dict(lane=l,tick=j+1,measured=dv,nominal_repeat=noise,model_difference=delta,model_derivative=jac,
+        rows.append(dict(lane=l,tick=j+1,reference_digest=ref['reference_digests'][int(ref['indices'][l])],
+                         reference_distance=float(ref['distance'][l]),measured=dv,nominal_repeat=noise,model_difference=delta,model_derivative=jac,
                          at_native_midpoint=float(at_native_center[k]),with_native_difference=float(with_native_delta[k]),
                          measured_terms=observed_terms[k].tolist(),derivative_terms=component_jvp[i].tolist(),
                          target_change_rad=target_change,supported=target_change>0 and abs(dv)>max(1.e-7,3*noise)))
