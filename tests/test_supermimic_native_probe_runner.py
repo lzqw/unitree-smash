@@ -1,3 +1,4 @@
+from pathlib import Path
 import pytest
 
 from scripts.run_supermimic_event_aligned_native_probes import child_environment, kit_args_option
@@ -16,7 +17,7 @@ def test_empty_kit_args_are_rejected():
 
 def test_child_environment_explicitly_exports_project_import_path():
     env = child_environment({'PYTHONPATH': '/existing', 'PATH': '/bin'})
-    assert env['PYTHONPATH'].split(':')[:1] == ['/home/autodrive/supermimic_work_20261118']
+    assert env['PYTHONPATH'].split(':')[:1] == [str(Path(__file__).resolve().parents[1])]
     assert env['PYTHONPATH'].endswith(':/existing')
     assert env['PYTHONUNBUFFERED'] == '1'
 

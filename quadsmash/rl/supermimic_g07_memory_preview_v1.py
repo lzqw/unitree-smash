@@ -7,6 +7,7 @@ Torch feedback and command slew remain differentiable. This module alone is
 NOT a certified PhysicalImaginationAdapter or a training entry point.
 """
 import ast
+import hashlib
 import inspect
 import textwrap
 import types
@@ -65,6 +66,18 @@ def _arm_rate(self, desired, observed, time):
     return self.target.clone()
 
 
+def _stance_foot_jacobians(self, q):
+    # Each unit joint velocity is an independent lane of the same frozen FK.
+    # Positions do not depend on velocity, so reuse the first column's positions.
+    q = np.asarray(q, dtype=float)
+    joints = q.shape[1]
+    basis = np.broadcast_to(np.eye(12, joints), (len(q), 12, joints)).reshape(-1, joints)
+    result = self.model.forward(np.repeat(q, 12, axis=0), basis)
+    feet = result['position'][::12][:, self.feet]
+    columns = result['linear'][:, self.feet].reshape(len(q), 12, len(self.feet), 3)
+    return feet, columns.transpose(0, 2, 3, 1)
+
+
 _CLASSES = {}
 
 
@@ -79,6 +92,12 @@ def _learning_class(cls):
         methods['action'] = _rally_action
     if cls is ArmTargetRateV4:
         methods['__call__'] = _arm_rate
+    if (cls.__module__, cls.__name__) == ('checked_public_stance_core', 'StanceLegRequest'):
+        # The native G07 checkout supplies this method. Specialize only the
+        # verified 12-column implementation. Other controller revisions inherit it verbatim.
+        source = inspect.getsource(cls.foot_jacobians)
+        if hashlib.sha256(source.encode()).hexdigest() == '9bc49b76872a1a54ff34aef279742020114370b87e01326c00a776199396f430':
+            methods['foot_jacobians'] = _stance_foot_jacobians
     derived = type(cls.__name__+'BranchPreview', (cls,), methods)
     _CLASSES[cls] = derived
     _CLASSES[derived] = derived

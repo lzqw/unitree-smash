@@ -92,3 +92,27 @@ def test_fixed_budget_command_uses_each_records_post_base_mixer_memory():
             torch.testing.assert_close(actual.final_normalized,preview.final_normalized,atol=0,rtol=0)
             torch.testing.assert_close(actual.final_joint_targets,preview.final_joint_targets,atol=0,rtol=0)
         assert not memory.mixer.arm_rate.initialized.any()
+
+
+def test_stance_preview_batches_independent_joint_axes_without_mixing_lanes():
+    import numpy as np
+    from quadsmash.rl.supermimic_g07_memory_preview_v1 import _stance_foot_jacobians
+
+    class Kinematics:
+        def __init__(self):
+            self.calls = 0
+
+        def forward(self, q, qd):
+            self.calls += 1
+            position = q[:, :9].reshape(-1, 3, 3)
+            velocity = np.einsum('nbc,nj,j->nbc', position, qd, np.arange(1., 19.))
+            return dict(position=position, linear=velocity)
+
+    for lanes in (1, 7, 128):
+        q = np.arange(lanes * 18, dtype=float).reshape(lanes, 18) + .5
+        request = SimpleNamespace(model=Kinematics(), feet=[2, 0])
+        position, jacobian = _stance_foot_jacobians(request, q)
+        expected = q[:, :9].reshape(lanes, 3, 3)[:, request.feet]
+        np.testing.assert_array_equal(position, expected)
+        np.testing.assert_array_equal(jacobian, expected[..., None] * np.arange(1., 13.))
+        assert request.model.calls == 1
