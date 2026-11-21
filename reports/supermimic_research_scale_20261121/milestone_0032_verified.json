@@ -1,0 +1,59 @@
+{
+  "checkpoint": "research_0032.pt",
+  "retained": {
+    "recovery": 16,
+    "approach": 16
+  },
+  "actor_sha256": "a7394ef75d6f6013a520220bcd7c5ed08420497d828fac626f9da2f9f8497ab2",
+  "world_sha256": "6e0fcad70ddd443269451624bf39e522b199777f19d517a01f76e7057eafa09b",
+  "changed_actor_tensor_norms": {
+    "actor.recovery.0.weight": 0.5199552178382874,
+    "actor.recovery.0.bias": 0.028547225520014763,
+    "actor.recovery.2.weight": 0.16923166811466217,
+    "actor.recovery.2.bias": 0.02032286673784256,
+    "actor.recovery.4.weight": 0.050335876643657684,
+    "actor.recovery.4.bias": 0.0076623279601335526,
+    "actor.approach.0.weight": 0.528501570224762,
+    "actor.approach.0.bias": 0.020795688033103943,
+    "actor.approach.2.weight": 0.1464785933494568,
+    "actor.approach.2.bias": 0.01522575318813324,
+    "actor.approach.4.weight": 0.0568171851336956,
+    "actor.approach.4.bias": 0.008038843050599098
+  },
+  "world_updates": 128,
+  "wm_guard_passed": true,
+  "development_flight": [
+    {
+      "horizon": 64,
+      "metric": "ball_velocity_rmse",
+      "anchor": 1.2001900672912598,
+      "candidate": 1.0466006994247437,
+      "passed": true
+    }
+  ],
+  "native_collection": {
+    "ticks": {
+      "49": 128
+    },
+    "new_env_steps": 16384,
+    "fresh_launch_by_episode": {
+      "1": 4
+    },
+    "first_racket_contact_by_episode": {},
+    "source_chunks": [
+      "b9f2a3d1c23799ce3aca7714afb26a26e7d220511bde20e5a1f29c1402d1ac94",
+      "c2aec092c1838774c01f87993bef6ae44f903a3d3cdd2541197739418927a250",
+      "e57346e92157aaf703a235610604047a3509333537ea49640321f2c50ec27f3b",
+      "f54663590fd78a57d7dca808a12b77169b4f4cc74cbb2b3176b0c11ceb2fd1f7"
+    ],
+    "replayed_request_max_absolute_error": 1.1920928955078125e-07,
+    "replayed_request_rms_error": 4.996432743453389e-09
+  },
+  "case_matched_early_terminations": {
+    "n": 12,
+    "baseline": -7.130455723201251,
+    "online": -25.384060056426417,
+    "scope": "Only completed first episodes, multi-version exposure."
+  },
+  "scope": "Archived normalized requests reproduced on CPU from native observations and native gate. One 128-tick block immediately after R16+A16."
+}

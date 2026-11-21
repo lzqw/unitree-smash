@@ -1,0 +1,434 @@
+{
+  "scope": "First completed same-case TRAIN128 episodes. Baseline body, qualified contact, cross and target use native terminal latches and one-shot weights. Online terms are summed from the archive. Other baseline terms cannot be individually reconstructed. Mixed behavior, termination order, no frozen-policy comparison.",
+  "baseline_actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+  "source_chunk_sha256": [
+    "a249788e2cdc3e55ab6ff1dd46d897fc04f8679e67bd8e736a9563ab079dd050",
+    "f198c30eaa20417498fcbc6e3ca08d22430a2ff234bb841745530d8edd876ca0",
+    "2f1a9eaabb4de1ebedb154e763ca3c8340d47f810bfcc809c5a6667c7d34a1ad",
+    "95e6763e6bc382d6d2e3da801818ecb1b915bd8a3cd25f161c5988cc5f511f66",
+    "f510005bf40a7f66aa1b4ddd2d5489a2cb18913ad867b0a433be11072a689039",
+    "72f5d8cb3ad52c1afcb5681c45ed8a243056af226e3994943afa7651590bcc9c",
+    "f9315991bd53df64632b0b223836dca56d4aefaa4b4fa3d642d6aa49887bc3d3",
+    "a7124f21839a6afeaeaedca0df5b48da83fb324c77ea3f154f099b3f67434560",
+    "75a143804d9e0b333ecf0224418eed89739f83a2415fee4989cd9365af241224",
+    "676e42ac58209e80fd1e07768b9d9d078c737504f734b1c3ceb9a7afe9705df8",
+    "2c14078d7eb06091dd2c46e5d271d22d7a276d01e38b0721630fddd3140be4f6",
+    "b35b68f3b720a1716e0bd0db42ae032e11b7198dc94ba89adaed2040b37ff215",
+    "acfae58db6d33e729f4a3a193369a17e86e49460023b62ab4d1517d59cc515f1",
+    "f6fd5ea887b7a5aa7e427c86232aced45e1bf69816558456b0cf7e978c60804e",
+    "c7e5a7b5473f50631a8ee7e3bdd8f8d6269a6f9a08ce013e93dee9492fb7324d",
+    "8f5b78c50d0d291b3142ff35b01862c48434ee620fab980d226c4eb6829965f8",
+    "b9f2a3d1c23799ce3aca7714afb26a26e7d220511bde20e5a1f29c1402d1ac94",
+    "c2aec092c1838774c01f87993bef6ae44f903a3d3cdd2541197739418927a250",
+    "e57346e92157aaf703a235610604047a3509333537ea49640321f2c50ec27f3b",
+    "f54663590fd78a57d7dca808a12b77169b4f4cc74cbb2b3176b0c11ceb2fd1f7"
+  ],
+  "cases": 12,
+  "mean_before": -7.130455723201251,
+  "mean_after": -25.38406005642642,
+  "mean_difference_by_term": {
+    "body": -10.0,
+    "qualified_contact": -1.6666666666666667,
+    "cross": -0.8333333333333334,
+    "target": -3.75,
+    "other_terms_combined": -2.003604333225167
+  },
+  "records": [
+    {
+      "case_id": "B-720402-061",
+      "env_id": 125,
+      "before": -27.226879391868522,
+      "after": -22.626607970130607,
+      "difference": 4.600271421737915,
+      "baseline_reconstructed_terms": {
+        "body": -40.0,
+        "qualified_contact": 20.0,
+        "cross": 0.0,
+        "target": 0.0
+      },
+      "online_measured_terms": {
+        "continuous": -4.62660800758178,
+        "jump": 2.0,
+        "qualified_contact": 20.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "other_terms_combined": 4.600271421737915
+      }
+    },
+    {
+      "case_id": "A-720401-009",
+      "env_id": 9,
+      "before": -2.599108395701876,
+      "after": -22.654395755227597,
+      "difference": -20.05528735952572,
+      "baseline_reconstructed_terms": {
+        "body": -40.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 15.0
+      },
+      "online_measured_terms": {
+        "continuous": -4.654394975907508,
+        "jump": 2.0,
+        "qualified_contact": 20.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": 0.0,
+        "qualified_contact": 0.0,
+        "cross": -5.0,
+        "target": -15.0,
+        "other_terms_combined": -0.05528735952572106
+      }
+    },
+    {
+      "case_id": "A-720401-030",
+      "env_id": 30,
+      "before": -7.4134585472857,
+      "after": -2.727639436458958,
+      "difference": 4.685819110826742,
+      "baseline_reconstructed_terms": {
+        "body": -40.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 15.0
+      },
+      "online_measured_terms": {
+        "continuous": -4.7276402924999275,
+        "jump": 2.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 15.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "other_terms_combined": 4.685819110826742
+      }
+    },
+    {
+      "case_id": "A-720401-040",
+      "env_id": 40,
+      "before": -2.733913734121188,
+      "after": -2.701111597054023,
+      "difference": 0.03280213706716495,
+      "baseline_reconstructed_terms": {
+        "body": -40.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 15.0
+      },
+      "online_measured_terms": {
+        "continuous": -4.701111509614748,
+        "jump": 2.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 15.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "other_terms_combined": 0.03280213706716495
+      }
+    },
+    {
+      "case_id": "A-720401-029",
+      "env_id": 29,
+      "before": -53.03826251066096,
+      "after": -55.65147236472217,
+      "difference": -2.6132098540612105,
+      "baseline_reconstructed_terms": {
+        "body": -40.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0
+      },
+      "online_measured_terms": {
+        "continuous": -5.101473546714033,
+        "jump": 2.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": -4.0,
+        "miss_rate": -8.549999490380287,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "other_terms_combined": -2.6132098540612105
+      }
+    },
+    {
+      "case_id": "A-720401-012",
+      "env_id": 12,
+      "before": -4.271112113308618,
+      "after": -19.02282665020823,
+      "difference": -14.751714536899613,
+      "baseline_reconstructed_terms": {
+        "body": -40.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 15.0
+      },
+      "online_measured_terms": {
+        "continuous": -6.022827405954672,
+        "jump": 2.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": -15.0,
+        "other_terms_combined": 0.24828546310038746
+      }
+    },
+    {
+      "case_id": "B-720402-033",
+      "env_id": 97,
+      "before": 24.224210072935875,
+      "after": -24.348467659378684,
+      "difference": -48.57267773231456,
+      "baseline_reconstructed_terms": {
+        "body": -0.0,
+        "qualified_contact": 20.0,
+        "cross": 0.0,
+        "target": 0.0
+      },
+      "online_measured_terms": {
+        "continuous": -6.3484679496816625,
+        "jump": 2.0,
+        "qualified_contact": 20.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": -40.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "other_terms_combined": -8.57267773231456
+      }
+    },
+    {
+      "case_id": "A-720401-044",
+      "env_id": 44,
+      "before": -55.99510217999159,
+      "after": -58.224727037576486,
+      "difference": -2.229624857584895,
+      "baseline_reconstructed_terms": {
+        "body": -40.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0
+      },
+      "online_measured_terms": {
+        "continuous": -6.374729109543296,
+        "jump": 2.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": -13.84999917447567,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "other_terms_combined": -2.229624857584895
+      }
+    },
+    {
+      "case_id": "B-720402-031",
+      "env_id": 95,
+      "before": -7.341314101341084,
+      "after": -62.351065257871596,
+      "difference": -55.00975115653051,
+      "baseline_reconstructed_terms": {
+        "body": -40.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 15.0
+      },
+      "online_measured_terms": {
+        "continuous": -6.4010652549859515,
+        "jump": 2.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": -4.0,
+        "miss_rate": -13.949999168515205,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": 0.0,
+        "qualified_contact": -20.0,
+        "cross": -5.0,
+        "target": -15.0,
+        "other_terms_combined": -15.009751156530513
+      }
+    },
+    {
+      "case_id": "A-720401-058",
+      "env_id": 58,
+      "before": -6.479481265427694,
+      "after": -4.554520564020095,
+      "difference": 1.9249607014075991,
+      "baseline_reconstructed_terms": {
+        "body": -40.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 15.0
+      },
+      "online_measured_terms": {
+        "continuous": -6.554519297441857,
+        "jump": 2.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 15.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "other_terms_combined": 1.9249607014075991
+      }
+    },
+    {
+      "case_id": "A-720401-018",
+      "env_id": 18,
+      "before": 33.15120693564086,
+      "after": -4.8363294928713,
+      "difference": -37.98753642851216,
+      "baseline_reconstructed_terms": {
+        "body": -0.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 15.0
+      },
+      "online_measured_terms": {
+        "continuous": -6.836329557458612,
+        "jump": 2.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 15.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": -40.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "other_terms_combined": 2.0124635714878423
+      }
+    },
+    {
+      "case_id": "B-720402-001",
+      "env_id": 65,
+      "before": 24.15774655271548,
+      "after": -24.909556891597276,
+      "difference": -49.067303444312756,
+      "baseline_reconstructed_terms": {
+        "body": -0.0,
+        "qualified_contact": 20.0,
+        "cross": 0.0,
+        "target": 0.0
+      },
+      "online_measured_terms": {
+        "continuous": -6.909555457382339,
+        "jump": 2.0,
+        "qualified_contact": 20.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": -40.0
+      },
+      "difference_by_term": {
+        "body": -40.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "other_terms_combined": -9.067303444312756
+      }
+    }
+  ]
+}
