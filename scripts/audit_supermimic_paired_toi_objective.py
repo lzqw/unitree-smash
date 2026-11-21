@@ -16,7 +16,7 @@ from quadsmash.rl.supermimic_toi_racket_objective import flight_intercept, inter
 from scripts.evaluate_supermimic_fresh_wm_panel import digest
 
 
-def score(folder, expected, adapter, template, launch, bank, task, execution, held, *, training=False):
+def score(folder, expected, adapter, template, launch, bank, task, execution, held, *, training=False, native_arrival_substeps=False):
     read=lambda p: json.loads(p.read_text())
     status=read(folder/'status.json')
     if digest(folder/'status.json')!=expected or status['status']!='COLLECTION_FINISHED':
@@ -93,6 +93,19 @@ def score(folder, expected, adapter, template, launch, bank, task, execution, he
         return a+b+c+d
     with torch.no_grad():
         native_features={b:kinematics(v) for b,v in native.items()}
+        native_control_features = native_features
+        frames = None
+        if native_arrival_substeps:
+            from scripts.supermimic_native_arrival_readout import measured_at_arrival
+            native_features = {}
+            for name, run in runs.items():
+                native_features[name], branch_frames = measured_at_arrival(
+                    run['raw'], run['spec'], selections, alpha_time, dt)
+                if frames is not None and branch_frames != frames:
+                    raise ValueError('Paired native branches used different arrival clocks')
+                frames = branch_frames
+        if frames is not None:
+            control_delta = total(terms(native_control_features['plus'])) - total(terms(native_control_features['minus']))
         native_loss={b:total(terms(v)) for b,v in native_features.items()}
         m,p=(kinematics(predicted(torch.tensor(v))) for v in (0.,1.))
         native_m,native_p=(native_features[b] for b in ('minus','plus'))
@@ -119,12 +132,18 @@ def score(folder, expected, adapter, template, launch, bank, task, execution, he
                          at_native_midpoint=float(at_native_center[k]),with_native_difference=float(with_native_delta[k]),
                          measured_terms=observed_terms[k].tolist(),derivative_terms=component_jvp[i].tolist(),
                          target_change_rad=target_change,supported=target_change>0 and abs(dv)>max(1.e-7,3*noise)))
+        if frames is not None:
+            rows[-1].update(native_frame_pair=frames[k],
+                measured_control_interpolated=float(control_delta[k]),
+                nominal_kinematic_control_minus_substep=(native_control_features['nominal_a'][k]-native_features['nominal_a'][k]).tolist(),
+                measured_kinematic_delta=(native_features['plus'][k]-native_features['minus'][k]).tolist(),
+                model_kinematic_delta=(p[k]-m[k]).tolist())
     supported=[r for r in rows if r['supported']]
     counts={}
     for key in ('model_difference','model_derivative','at_native_midpoint','with_native_difference'):
         counts[key]=dict(same_direction=sum(r[key]*r['measured']>0 for r in supported),
                          gain_median=statistics.median(abs(r[key]/r['measured']) for r in supported) if supported else None)
-    return dict(lanes=len(ids),matched_and_inside=len(rows),above_noise=len(supported),scores=counts,cases=rows,
+    return dict(native_arrival_substeps=native_arrival_substeps,lanes=len(ids),matched_and_inside=len(rows),above_noise=len(supported),scores=counts,cases=rows,
                 probe_actor_sha256=tensor_digest(base['actor_state'].items()))
 
 

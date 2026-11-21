@@ -24,6 +24,8 @@ def main():
                         help='Score an offline substep reconstruction with the final frozen WM')
     parser.add_argument('--disjoint-collection', type=Path,
                         help='Preregistered paired probe directory with specifications/ and raw/ on other held lanes')
+    parser.add_argument('--native-arrival-substeps',action='store_true',
+                        help='Compare the original differentiable objective against adjacent measured native frames at arrival')
     args = parser.parse_args()
     if args.disjoint_collection and not args.rebuilt_references:
         parser.error('The prospective comparison must name the registered candidate references')
@@ -118,13 +120,13 @@ def main():
             bank.assert_excludes(held)
             results[world_name][bank_name] = {
                 scale: score(folder, status_sha, adapter, template, launch, bank,
-                             contract['task_contract'], after['metadata']['policy_execution'], held)
+                             contract['task_contract'], after['metadata']['policy_execution'], held, native_arrival_substeps=args.native_arrival_substeps)
                 for scale, (folder,status_sha) in panels.items()}
             if expected_actor and any(x.get('probe_actor_sha256', expected_actor) != expected_actor
                                       for x in results[world_name][bank_name].values()):
                 raise ValueError('Native paired behavior differs from frozen A1 actor')
     result = dict(actor_sha256=manifest['actor_sha256'], stages=identities, development=development,
-                  native_panels={k:v[1] for k,v in panels.items()}, world_then_reference=results, actor_updates=0, contact_receipt=False,
+                  native_panels={k:v[1] for k,v in panels.items()}, world_then_reference=results, native_arrival_substeps=args.native_arrival_substeps, actor_updates=0, contact_receipt=False,
                   scope='Frozen models and references evaluated against signed native command sequences. No policy updates or promotion.')
     with args.output.open('x') as stream:
         json.dump(result, stream, indent=2, allow_nan=False)
