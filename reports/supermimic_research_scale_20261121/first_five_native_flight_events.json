@@ -1,0 +1,572 @@
+{
+  "scope": "Five early-terminating mixed-policy TRAIN128 episodes. Event edges from native task latches, continuous measurements from the last available same-episode after-state, versus native terminal records of the frozen initial actor on the same cases. A lane can change policy between shot and termination. No new simulation.",
+  "baseline_actor": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+  "sources": [
+    "a249788e2cdc3e55ab6ff1dd46d897fc04f8679e67bd8e736a9563ab079dd050",
+    "f198c30eaa20417498fcbc6e3ca08d22430a2ff234bb841745530d8edd876ca0",
+    "2f1a9eaabb4de1ebedb154e763ca3c8340d47f810bfcc809c5a6667c7d34a1ad",
+    "95e6763e6bc382d6d2e3da801818ecb1b915bd8a3cd25f161c5988cc5f511f66",
+    "f510005bf40a7f66aa1b4ddd2d5489a2cb18913ad867b0a433be11072a689039",
+    "72f5d8cb3ad52c1afcb5681c45ed8a243056af226e3994943afa7651590bcc9c",
+    "f9315991bd53df64632b0b223836dca56d4aefaa4b4fa3d642d6aa49887bc3d3",
+    "a7124f21839a6afeaeaedca0df5b48da83fb324c77ea3f154f099b3f67434560",
+    "75a143804d9e0b333ecf0224418eed89739f83a2415fee4989cd9365af241224",
+    "676e42ac58209e80fd1e07768b9d9d078c737504f734b1c3ceb9a7afe9705df8",
+    "2c14078d7eb06091dd2c46e5d271d22d7a276d01e38b0721630fddd3140be4f6",
+    "b35b68f3b720a1716e0bd0db42ae032e11b7198dc94ba89adaed2040b37ff215",
+    "acfae58db6d33e729f4a3a193369a17e86e49460023b62ab4d1517d59cc515f1",
+    "f6fd5ea887b7a5aa7e427c86232aced45e1bf69816558456b0cf7e978c60804e",
+    "c7e5a7b5473f50631a8ee7e3bdd8f8d6269a6f9a08ce013e93dee9492fb7324d"
+  ],
+  "records": [
+    {
+      "case_id": "B-720402-061",
+      "baseline": {
+        "contact_time_s": 2.707926034927368,
+        "release_time_s": 2.708425760269165,
+        "crossing_time_s": 2.793788433074951,
+        "first_landing_time_s": 3.2118990421295166,
+        "contact_point_m": [
+          1.1283977031707764,
+          -0.11962686479091644,
+          1.8431295156478882
+        ],
+        "outgoing_velocity_mps": [
+          4.357029438018799,
+          1.71633780002594,
+          -1.237382173538208
+        ],
+        "net_margin_m": 0.15337765216827393,
+        "crossing_point_m": [
+          1.524999976158142,
+          0.031565990298986435,
+          1.7023776769638062
+        ],
+        "first_landing_m": [
+          3.27443790435791,
+          0.7207068800926208,
+          0.025227557867765427
+        ],
+        "had_contact": true,
+        "released": true,
+        "crossed_net": true,
+        "shuttle_net_contact": false,
+        "net_blocked_fault": false,
+        "ground_seen": true,
+        "landed_target": true,
+        "frame_hit": false
+      },
+      "online": {
+        "contact_time_s": 2.7086756229400635,
+        "release_time_s": 2.7091128826141357,
+        "crossing_time_s": 2.798405885696411,
+        "first_landing_time_s": 3.2243921756744385,
+        "contact_point_m": [
+          1.1218233108520508,
+          -0.11947373300790787,
+          1.841028094291687
+        ],
+        "outgoing_velocity_mps": [
+          4.2393975257873535,
+          1.5514392852783203,
+          -1.088972806930542
+        ],
+        "net_margin_m": 0.15652740001678467,
+        "crossing_point_m": [
+          1.524999976158142,
+          0.02337394468486309,
+          1.705527424812317
+        ],
+        "first_landing_m": [
+          3.259902238845825,
+          0.6582772731781006,
+          0.025036349892616272
+        ],
+        "had_contact": true,
+        "released": true,
+        "crossed_net": true,
+        "shuttle_net_contact": false,
+        "net_blocked_fault": false,
+        "ground_seen": true,
+        "landed_target": true,
+        "frame_hit": false
+      },
+      "events": [
+        {
+          "events": [
+            "had_contact",
+            "released"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 270,
+          "native_tick": 5260
+        },
+        {
+          "events": [
+            "crossed_net"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 279,
+          "native_tick": 5269
+        },
+        {
+          "events": [
+            "ground_seen",
+            "landed_target"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 322,
+          "native_tick": 5312
+        }
+      ],
+      "policy_versions": [
+        17,
+        25,
+        33,
+        41
+      ]
+    },
+    {
+      "case_id": "A-720401-009",
+      "baseline": {
+        "contact_time_s": 2.6978065967559814,
+        "release_time_s": 2.6982438564300537,
+        "crossing_time_s": 2.769767999649048,
+        "first_landing_time_s": 3.103083848953247,
+        "contact_point_m": [
+          1.139305591583252,
+          -0.007764076814055443,
+          1.7950310707092285
+        ],
+        "outgoing_velocity_mps": [
+          5.038604259490967,
+          0.914569079875946,
+          -2.50114107131958
+        ],
+        "net_margin_m": 0.04195511341094971,
+        "crossing_point_m": [
+          1.524999976158142,
+          0.06154986470937729,
+          1.590955138206482
+        ],
+        "first_landing_m": [
+          3.1422243118286133,
+          0.35509514808654785,
+          0.025260481983423233
+        ],
+        "had_contact": true,
+        "released": true,
+        "crossed_net": true,
+        "shuttle_net_contact": false,
+        "net_blocked_fault": false,
+        "ground_seen": true,
+        "landed_target": true,
+        "frame_hit": false
+      },
+      "online": {
+        "contact_time_s": 2.7006800174713135,
+        "release_time_s": 2.7011797428131104,
+        "crossing_time_s": 2.7985663414001465,
+        "first_landing_time_s": 3.798076868057251,
+        "contact_point_m": [
+          1.1205631494522095,
+          -0.010050946846604347,
+          1.784581184387207
+        ],
+        "outgoing_velocity_mps": [
+          4.180812358856201,
+          1.25700843334198,
+          -2.435889482498169
+        ],
+        "net_margin_m": 0.0481029748916626,
+        "crossing_point_m": [
+          1.524999976158142,
+          0.11281949281692505,
+          1.5971601009368896
+        ],
+        "first_landing_m": [
+          3.6842308044433594,
+          1.02180814743042,
+          0.02516504004597664
+        ],
+        "had_contact": true,
+        "released": true,
+        "crossed_net": true,
+        "shuttle_net_contact": true,
+        "net_blocked_fault": false,
+        "ground_seen": true,
+        "landed_target": false,
+        "frame_hit": false
+      },
+      "events": [
+        {
+          "events": [
+            "had_contact",
+            "released"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 270,
+          "native_tick": 5260
+        },
+        {
+          "events": [
+            "shuttle_net_contact"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 278,
+          "native_tick": 5268
+        },
+        {
+          "events": [
+            "crossed_net"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 279,
+          "native_tick": 5269
+        },
+        {
+          "events": [
+            "ground_seen"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 379,
+          "native_tick": 5369
+        }
+      ],
+      "policy_versions": [
+        17,
+        25,
+        33,
+        41
+      ]
+    },
+    {
+      "case_id": "A-720401-030",
+      "baseline": {
+        "contact_time_s": 2.76676869392395,
+        "release_time_s": 2.767268419265747,
+        "crossing_time_s": 2.835338592529297,
+        "first_landing_time_s": 3.177605390548706,
+        "contact_point_m": [
+          1.173906922340393,
+          0.00808385107666254,
+          1.8458576202392578
+        ],
+        "outgoing_velocity_mps": [
+          4.777589797973633,
+          0.3291224539279938,
+          -2.5336861610412598
+        ],
+        "net_margin_m": 0.09964823722839355,
+        "crossing_point_m": [
+          1.524999976158142,
+          0.031217925250530243,
+          1.6486482620239258
+        ],
+        "first_landing_m": [
+          3.1014976501464844,
+          0.1398189514875412,
+          0.025277573615312576
+        ],
+        "had_contact": true,
+        "released": true,
+        "crossed_net": true,
+        "shuttle_net_contact": false,
+        "net_blocked_fault": false,
+        "ground_seen": true,
+        "landed_target": true,
+        "frame_hit": false
+      },
+      "online": {
+        "contact_time_s": 2.7673308849334717,
+        "release_time_s": 2.7678306102752686,
+        "crossing_time_s": 2.838392972946167,
+        "first_landing_time_s": 3.2037785053253174,
+        "contact_point_m": [
+          1.17007315158844,
+          0.00820027943700552,
+          1.8430742025375366
+        ],
+        "outgoing_velocity_mps": [
+          4.6634907722473145,
+          0.4200299084186554,
+          -2.136263847351074
+        ],
+        "net_margin_m": 0.11771762371063232,
+        "crossing_point_m": [
+          1.524999976158142,
+          0.03875621408224106,
+          1.6667176485061646
+        ],
+        "first_landing_m": [
+          3.167024612426758,
+          0.18664751946926117,
+          0.025186417624354362
+        ],
+        "had_contact": true,
+        "released": true,
+        "crossed_net": true,
+        "shuttle_net_contact": false,
+        "net_blocked_fault": false,
+        "ground_seen": true,
+        "landed_target": true,
+        "frame_hit": false
+      },
+      "events": [
+        {
+          "events": [
+            "had_contact",
+            "released"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 276,
+          "native_tick": 5266
+        },
+        {
+          "events": [
+            "crossed_net"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 283,
+          "native_tick": 5273
+        },
+        {
+          "events": [
+            "ground_seen",
+            "landed_target"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 320,
+          "native_tick": 5310
+        }
+      ],
+      "policy_versions": [
+        17,
+        25,
+        33,
+        41
+      ]
+    },
+    {
+      "case_id": "A-720401-040",
+      "baseline": {
+        "contact_time_s": 2.7847588062286377,
+        "release_time_s": 2.7852585315704346,
+        "crossing_time_s": 2.858438730239868,
+        "first_landing_time_s": 3.1868503093719482,
+        "contact_point_m": [
+          1.1815862655639648,
+          -0.06225230544805527,
+          1.8689842224121094
+        ],
+        "outgoing_velocity_mps": [
+          4.340547561645508,
+          -0.7354338765144348,
+          -2.731905221939087
+        ],
+        "net_margin_m": 0.09242570400238037,
+        "crossing_point_m": [
+          1.524999976158142,
+          -0.11600307375192642,
+          1.6414828300476074
+        ],
+        "first_landing_m": [
+          2.901109218597412,
+          -0.3491543233394623,
+          0.025077607482671738
+        ],
+        "had_contact": true,
+        "released": true,
+        "crossed_net": true,
+        "shuttle_net_contact": false,
+        "net_blocked_fault": false,
+        "ground_seen": true,
+        "landed_target": true,
+        "frame_hit": false
+      },
+      "online": {
+        "contact_time_s": 2.784571409225464,
+        "release_time_s": 2.7850711345672607,
+        "crossing_time_s": 2.852518081665039,
+        "first_landing_time_s": 3.2150847911834717,
+        "contact_point_m": [
+          1.1827908754348755,
+          -0.06237480416893959,
+          1.8701046705245972
+        ],
+        "outgoing_velocity_mps": [
+          4.687513828277588,
+          -0.59799724817276,
+          -2.289414167404175
+        ],
+        "net_margin_m": 0.1425333023071289,
+        "crossing_point_m": [
+          1.524999976158142,
+          -0.10237269848585129,
+          1.691590428352356
+        ],
+        "first_landing_m": [
+          3.162734270095825,
+          -0.3112952411174774,
+          0.025067148730158806
+        ],
+        "had_contact": true,
+        "released": true,
+        "crossed_net": true,
+        "shuttle_net_contact": false,
+        "net_blocked_fault": false,
+        "ground_seen": true,
+        "landed_target": true,
+        "frame_hit": false
+      },
+      "events": [
+        {
+          "events": [
+            "had_contact",
+            "released"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 278,
+          "native_tick": 5268
+        },
+        {
+          "events": [
+            "crossed_net"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 285,
+          "native_tick": 5275
+        },
+        {
+          "events": [
+            "ground_seen",
+            "landed_target"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 321,
+          "native_tick": 5311
+        }
+      ],
+      "policy_versions": [
+        17,
+        25,
+        33,
+        41
+      ]
+    },
+    {
+      "case_id": "A-720401-029",
+      "baseline": {
+        "contact_time_s": 2.7911927700042725,
+        "release_time_s": 2.7913177013397217,
+        "crossing_time_s": 2.890839099884033,
+        "first_landing_time_s": 3.7154972553253174,
+        "contact_point_m": [
+          1.1641902923583984,
+          -0.07664669305086136,
+          1.8684751987457275
+        ],
+        "outgoing_velocity_mps": [
+          3.443998098373413,
+          -4.68133544921875,
+          2.4867212772369385
+        ],
+        "net_margin_m": 0.5284035205841064,
+        "crossing_point_m": [
+          1.524999976158142,
+          -0.5480544567108154,
+          2.078171730041504
+        ],
+        "first_landing_m": [
+          4.1565327644348145,
+          -4.125082492828369,
+          0.02519983798265457
+        ],
+        "had_contact": true,
+        "released": true,
+        "crossed_net": false,
+        "shuttle_net_contact": false,
+        "net_blocked_fault": false,
+        "ground_seen": true,
+        "landed_target": false,
+        "frame_hit": true
+      },
+      "online": {
+        "contact_time_s": 2.790817975997925,
+        "release_time_s": 2.790942907333374,
+        "crossing_time_s": 2.854721784591675,
+        "first_landing_time_s": 3.348573923110962,
+        "contact_point_m": [
+          1.1627291440963745,
+          -0.08147863298654556,
+          1.8779370784759521
+        ],
+        "outgoing_velocity_mps": [
+          5.307226181030273,
+          -2.0867433547973633,
+          -0.7020308375358582
+        ],
+        "net_margin_m": 0.2682124376296997,
+        "crossing_point_m": [
+          1.524999976158142,
+          -0.21733349561691284,
+          1.817371129989624
+        ],
+        "first_landing_m": [
+          4.022843360900879,
+          -1.199496865272522,
+          0.02503301575779915
+        ],
+        "had_contact": true,
+        "released": true,
+        "crossed_net": false,
+        "shuttle_net_contact": false,
+        "net_blocked_fault": false,
+        "ground_seen": true,
+        "landed_target": false,
+        "frame_hit": true
+      },
+      "events": [
+        {
+          "events": [
+            "had_contact",
+            "released",
+            "frame_hit"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 279,
+          "native_tick": 5269
+        },
+        {
+          "events": [
+            "ground_seen"
+          ],
+          "policy_version": 33,
+          "arm_retained": 16,
+          "episode_tick_start": 334,
+          "native_tick": 5324
+        }
+      ],
+      "policy_versions": [
+        17,
+        25,
+        33,
+        41
+      ]
+    }
+  ]
+}

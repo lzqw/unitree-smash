@@ -151,3 +151,16 @@ def test_mixed_case_returns_use_only_first_online_episode_and_matching_frozen_ca
     values = {s.tag:s.simple_value for s in events[0].summary.value}
     assert values['first_completed_mixed_cases/mean_difference'] == -4.
     assert values['first_completed_mixed_cases/ball_side_complete_except_recovery_net_cases'] == -1
+
+
+def test_geometric_cross_and_target_require_a_qualified_fast_release_for_native_rewards():
+    from scripts.report_supermimic_online_flights import flight_flags
+    shot=dict(released=True,had_contact=True,frame_hit=False,legal_initial_contact=True,
+              string_hit=True,airborne_string_hit=True,ground_seen=True,
+              crossed_net=True,landed_target=True,shuttle_net_contact=False)
+    slow=flight_flags(dict(shot,outgoing_velocity_mps=[4.999,0.,0.]))
+    assert slow['crossed_net'] and slow['landed_target'] and not slow['scoring_cross'] and not slow['scoring_target']
+    assert flight_flags(dict(shot,outgoing_velocity_mps=[5.,0.,0.]))['scoring_target']
+    assert not flight_flags(dict(shot,outgoing_velocity_mps=[-6.,0.,0.]))['scoring_cross']
+    miss=flight_flags(dict(shot,released=False,outgoing_velocity_mps=[None]*3))
+    assert not miss['released_at_least_5_mps'] and not miss['scoring_target']

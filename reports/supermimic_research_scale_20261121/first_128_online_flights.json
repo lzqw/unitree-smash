@@ -1,0 +1,338 @@
+{
+  "scope": "First flight leaving play after launch, including faults before ground contact. Compare native latches to first-episode frozen terminal records on the same resolved cases. The online prefix spans behavior versions. Episode recovery, official ball-side outcome and final Return require complete scoring.",
+  "initial_actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+  "seed": 882072,
+  "suite_sha256": "2f9bf380d938a87418c4fa7da087e86d0da43f27a2ee6492bff7d7f1c3ff7c30",
+  "manifest_env_steps": 65536,
+  "cases": 128,
+  "online_resolved": 128,
+  "paired_resolved_cases": 128,
+  "unresolved_online_cases": [],
+  "unresolved_baseline_cases": [],
+  "release_policy_versions": {
+    "33": 109
+  },
+  "metrics": {
+    "had_contact": {
+      "initial": 110,
+      "online": 109,
+      "false_to_true": [
+        "B-720402-014",
+        "B-720402-040",
+        "B-720402-052"
+      ],
+      "true_to_false": [
+        "A-720401-019",
+        "B-720402-036",
+        "B-720402-059",
+        "B-720402-063"
+      ]
+    },
+    "frame_hit": {
+      "initial": 36,
+      "online": 44,
+      "false_to_true": [
+        "A-720401-017",
+        "A-720401-020",
+        "A-720401-028",
+        "A-720401-037",
+        "A-720401-042",
+        "A-720401-051",
+        "A-720401-055",
+        "A-720401-063",
+        "B-720402-014",
+        "B-720402-026",
+        "B-720402-031",
+        "B-720402-040",
+        "B-720402-050",
+        "B-720402-052",
+        "B-720402-057",
+        "B-720402-062"
+      ],
+      "true_to_false": [
+        "A-720401-002",
+        "A-720401-019",
+        "A-720401-031",
+        "A-720401-056",
+        "A-720401-062",
+        "B-720402-036",
+        "B-720402-059",
+        "B-720402-063"
+      ]
+    },
+    "qualified_contact": {
+      "initial": 74,
+      "online": 65,
+      "false_to_true": [
+        "A-720401-002",
+        "A-720401-031",
+        "A-720401-056",
+        "A-720401-062"
+      ],
+      "true_to_false": [
+        "A-720401-017",
+        "A-720401-020",
+        "A-720401-028",
+        "A-720401-037",
+        "A-720401-042",
+        "A-720401-051",
+        "A-720401-055",
+        "A-720401-063",
+        "B-720402-026",
+        "B-720402-031",
+        "B-720402-050",
+        "B-720402-057",
+        "B-720402-062"
+      ]
+    },
+    "scoring_cross": {
+      "initial": 58,
+      "online": 48,
+      "false_to_true": [
+        "A-720401-002",
+        "A-720401-007",
+        "A-720401-031",
+        "A-720401-056",
+        "A-720401-062"
+      ],
+      "true_to_false": [
+        "A-720401-009",
+        "A-720401-017",
+        "A-720401-020",
+        "A-720401-028",
+        "A-720401-035",
+        "A-720401-037",
+        "A-720401-042",
+        "A-720401-050",
+        "A-720401-051",
+        "A-720401-055",
+        "A-720401-063",
+        "B-720402-026",
+        "B-720402-031",
+        "B-720402-057",
+        "B-720402-062"
+      ]
+    },
+    "scoring_target": {
+      "initial": 52,
+      "online": 43,
+      "false_to_true": [
+        "A-720401-002",
+        "A-720401-007",
+        "A-720401-031",
+        "A-720401-056",
+        "A-720401-062"
+      ],
+      "true_to_false": [
+        "A-720401-009",
+        "A-720401-012",
+        "A-720401-020",
+        "A-720401-028",
+        "A-720401-035",
+        "A-720401-037",
+        "A-720401-042",
+        "A-720401-050",
+        "A-720401-051",
+        "A-720401-055",
+        "A-720401-063",
+        "B-720402-026",
+        "B-720402-031",
+        "B-720402-057"
+      ]
+    },
+    "ground_seen": {
+      "initial": 112,
+      "online": 117,
+      "false_to_true": [
+        "A-720401-011",
+        "A-720401-019",
+        "A-720401-031",
+        "A-720401-041",
+        "A-720401-048",
+        "A-720401-056",
+        "B-720402-004",
+        "B-720402-029",
+        "B-720402-037",
+        "B-720402-038",
+        "B-720402-059"
+      ],
+      "true_to_false": [
+        "A-720401-037",
+        "A-720401-059",
+        "B-720402-005",
+        "B-720402-040",
+        "B-720402-052",
+        "B-720402-054"
+      ]
+    },
+    "airborne_string_hit": {
+      "initial": 74,
+      "online": 65,
+      "false_to_true": [
+        "A-720401-002",
+        "A-720401-031",
+        "A-720401-056",
+        "A-720401-062"
+      ],
+      "true_to_false": [
+        "A-720401-017",
+        "A-720401-020",
+        "A-720401-028",
+        "A-720401-037",
+        "A-720401-042",
+        "A-720401-051",
+        "A-720401-055",
+        "A-720401-063",
+        "B-720402-026",
+        "B-720402-031",
+        "B-720402-050",
+        "B-720402-057",
+        "B-720402-062"
+      ]
+    },
+    "crossed_net": {
+      "initial": 72,
+      "online": 65,
+      "false_to_true": [
+        "A-720401-002",
+        "A-720401-011",
+        "A-720401-031",
+        "A-720401-056",
+        "A-720401-062",
+        "B-720402-004"
+      ],
+      "true_to_false": [
+        "A-720401-017",
+        "A-720401-020",
+        "A-720401-028",
+        "A-720401-037",
+        "A-720401-042",
+        "A-720401-051",
+        "A-720401-055",
+        "A-720401-063",
+        "B-720402-026",
+        "B-720402-031",
+        "B-720402-050",
+        "B-720402-057",
+        "B-720402-062"
+      ]
+    },
+    "shuttle_net_contact": {
+      "initial": 13,
+      "online": 12,
+      "false_to_true": [
+        "A-720401-009",
+        "A-720401-020",
+        "A-720401-037",
+        "A-720401-055",
+        "A-720401-059",
+        "B-720402-043",
+        "B-720402-054"
+      ],
+      "true_to_false": [
+        "A-720401-000",
+        "A-720401-011",
+        "A-720401-031",
+        "A-720401-056",
+        "A-720401-062",
+        "B-720402-004",
+        "B-720402-048",
+        "B-720402-059"
+      ]
+    },
+    "landed_target": {
+      "initial": 63,
+      "online": 56,
+      "false_to_true": [
+        "A-720401-002",
+        "A-720401-031",
+        "A-720401-056",
+        "A-720401-062",
+        "B-720402-004",
+        "B-720402-033"
+      ],
+      "true_to_false": [
+        "A-720401-009",
+        "A-720401-012",
+        "A-720401-020",
+        "A-720401-028",
+        "A-720401-037",
+        "A-720401-042",
+        "A-720401-051",
+        "A-720401-055",
+        "A-720401-063",
+        "B-720402-026",
+        "B-720402-031",
+        "B-720402-050",
+        "B-720402-057"
+      ]
+    },
+    "released_at_least_5_mps": {
+      "initial": 89,
+      "online": 87,
+      "false_to_true": [
+        "A-720401-000",
+        "A-720401-007",
+        "B-720402-014",
+        "B-720402-040",
+        "B-720402-052"
+      ],
+      "true_to_false": [
+        "A-720401-009",
+        "A-720401-011",
+        "A-720401-035",
+        "A-720401-050",
+        "B-720402-054",
+        "B-720402-059",
+        "B-720402-063"
+      ]
+    }
+  },
+  "landing_by_airborne_string_hit": {
+    "1_to_1": {
+      "cases": 61,
+      "initial_landed_target": 52,
+      "online_landed_target": 52,
+      "online_frame_hit": 0,
+      "online_no_contact": 0
+    },
+    "1_to_0": {
+      "cases": 13,
+      "initial_landed_target": 11,
+      "online_landed_target": 0,
+      "online_frame_hit": 13,
+      "online_no_contact": 0
+    },
+    "0_to_1": {
+      "cases": 4,
+      "initial_landed_target": 0,
+      "online_landed_target": 4,
+      "online_frame_hit": 0,
+      "online_no_contact": 0
+    },
+    "0_to_0": {
+      "cases": 50,
+      "initial_landed_target": 0,
+      "online_landed_target": 0,
+      "online_frame_hit": 31,
+      "online_no_contact": 19
+    }
+  },
+  "shot_reward_totals": {
+    "qualified_contact": {
+      "initial_from_native_latches": 1480.0,
+      "online_from_native_latches": 1300.0,
+      "online_recorded": 1300.0
+    },
+    "scoring_cross": {
+      "initial_from_native_latches": 290.0,
+      "online_from_native_latches": 240.0,
+      "online_recorded": 240.0
+    },
+    "scoring_target": {
+      "initial_from_native_latches": 780.0,
+      "online_from_native_latches": 645.0,
+      "online_recorded": 645.0
+    }
+  }
+}

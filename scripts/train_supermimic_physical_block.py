@@ -1464,7 +1464,16 @@ def run(args, *, alternating=None):
                         check_stop();action=native_actor_action(obs);obs,reward,done,info=wrapper.step(action);tick+=1
                         if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite native observation')
                         for raw in env.rally_records[cursor:]:
-                            record=score_terminal_episode(raw,dict(protocol,_root=str(ROOT)));record.update(policy_block=block_name,policy_update_at_end=accepted,scope='mixed-policy monitoring, not frozen score');completed_returns.append(record['native_episode_return']);completed_discounted.append(record['native_episode_discounted_return']);completed_records.append(record)
+                            record=score_terminal_episode(raw,dict(protocol,_root=str(ROOT)))
+                            record.update(policy_block=block_name,policy_update_at_end=accepted,
+                                behavior_at_terminal=dict(policy_version=global_accepted_id,actor_sha256=behavior_actor_hash,native_tick=tick),
+                                native_flight={key:raw[key] for key in ('outgoing_velocity_mps','first_landing_m',
+                                    'contact_time_s','release_time_s','crossing_time_s','first_landing_time_s',
+                                    'net_margin_m','shuttle_net_contact','crossed_net','landed_target') if key in raw},
+                                scope='mixed-policy monitoring, not frozen score')
+                            completed_returns.append(record['native_episode_return'])
+                            completed_discounted.append(record['native_episode_discounted_return'])
+                            completed_records.append(record)
                             replay.actor_start_bank.label_terminal(record,replay.current_stream)
                             with (args.output/'native_episodes.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                             if writer is not None:
