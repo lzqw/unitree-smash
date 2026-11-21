@@ -35,3 +35,45 @@ def test_toi_start_rejects_expired_arrival_and_unmatched_reference(monkeypatch):
         return dict(matched=torch.tensor([True,True,True,False]))
     ref=bind_intercept_reference(state,SimpleNamespace(bind=bind),None,.64)
     assert ref['matched'].tolist()==[True,False,False,False]
+
+
+def test_intercept_preview_checks_gate_and_precontact_latch_at_arrival():
+    from types import SimpleNamespace
+    from quadsmash.rl.supermimic_toi_racket_objective import preview_intercept_lanes
+    def state(t):
+        return SimpleNamespace(physical=torch.zeros(5,55),clock_goal_context={'elapsed':torch.full((5,),float(t))},
+                               task_memory={'rally':{'had_contact':torch.tensor([0,0,int(t>0),0,0])}})
+    actions=[]
+    def advance(current, action, *, detach_ball):
+        assert detach_ball and not torch.is_grad_enabled()
+        actions.append(action)
+        t=int(current.clock_goal_context['elapsed'][0])
+        return state(t+1),None,torch.tensor([0.,0.,0.,float(t==0),0.]),None
+    initial=state(0)
+    initial.branch=lambda:state(0)
+    trainer=SimpleNamespace(timebase=SimpleNamespace(imagination_steps=8,episode_s=8),adapter=advance,
+        _actor_action=lambda s,sample:(torch.zeros(5),),_head_gate=lambda s:torch.tensor([1.,float(s.clock_goal_context['elapsed'][0]==0),1.,1.,1.]))
+    ref={'matched':torch.ones(5,dtype=torch.bool),'intercept':{'time':torch.full((5,),2.),'valid':torch.ones(5,dtype=torch.bool)}}
+    actual=preview_intercept_lanes(initial,ref,torch.tensor([True,True,True,True,False]),trainer)
+    assert actual.tolist()==[True,False,False,False,False]
+    assert len(actions)==2
+
+
+def test_native_body_source_uses_executed_command_history_and_checks_resets(monkeypatch):
+    import pytest
+    from scripts import supermimic_paired_body_candidate as fit
+    n=3
+    initial=dict(foot_contact=torch.ones(n,4),ball_present=torch.ones(n),elapsed_s=torch.tensor([1.,1.1,1.2]),
+                 final_action=torch.tensor([[0.],[1.],[2.]]))
+    monkeypatch.setattr(fit,'encode_physical',lambda _:torch.zeros(n,55))
+    steps=[dict(done=torch.zeros(n,dtype=torch.bool),elapsed_s=initial['elapsed_s']+.01*(i+1),
+                final_action=initial['final_action']+100*i,final_joint_targets=initial['final_action']+5*i,
+                next_state=torch.ones(n,55)*i) for i in range(16)]
+    raw=dict(start={'before':{'physical':initial}},step_sequence=steps)
+    win=fit.recorded_body_inputs(raw,[2,0],.01)
+    torch.testing.assert_close(win['elapsed'][0],initial['elapsed_s'][[2,0]])
+    torch.testing.assert_close(win['previous_action'][2],steps[1]['final_action'][[2,0]])
+    torch.testing.assert_close(win['targets'][2],steps[2]['final_joint_targets'][[2,0]])
+    steps[3]['done'][0]=True
+    with pytest.raises(ValueError,match='uninterrupted'):
+        fit.recorded_body_inputs(raw,[2,0],.01)

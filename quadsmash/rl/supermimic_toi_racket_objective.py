@@ -45,11 +45,46 @@ def racket_features(physical, geometry):
     return torch.cat((body[:, :3], body[:, 12:15], normal, body[:, 15:18]), dim=-1)
 
 
+def precontact_mask(state, selected, gate, episode_s):
+    active = state.clock_goal_context['elapsed'].reshape(-1) < episode_s - 1e-7
+    contact = state.task_memory.get('rally', {}).get('had_contact')
+    if contact is None:
+        return torch.zeros_like(selected)
+    return selected & active & (gate.detach().reshape(-1) > .25) & (contact.reshape(-1) < .5)
+
+
+def intercept_interval(start, end, reference, mask):
+    arrival = reference['intercept']['time']
+    return (mask & reference['matched'] & reference['intercept']['valid'] &
+            (start < arrival) & (arrival <= end))
+
+
+@torch.no_grad()
+def preview_intercept_lanes(initial, reference, allowed, trainer):
+    """Check the same frozen model, causal latch and interval used by the TOI loss."""
+    state = initial.branch()
+    selected = allowed & reference['matched']
+    covered = torch.zeros_like(selected)
+    survival = state.physical.new_ones(len(selected))
+    for _ in range(trainer.timebase.imagination_steps):
+        start = state.clock_goal_context['elapsed'].reshape(-1)
+        pending = selected & (start < reference['intercept']['time']) & (survival > 0)
+        pending &= start < trainer.timebase.episode_s - 1e-7
+        if not pending.any():
+            break
+        mask = precontact_mask(state, pending, trainer._head_gate(state), trainer.timebase.episode_s)
+        action = trainer._actor_action(state, sample=False)[0]
+        state, _, done, _ = trainer.adapter(state, action, detach_ball=True)
+        end = state.clock_goal_context['elapsed'].reshape(-1)
+        covered |= intercept_interval(start, end, reference, mask)
+        survival = survival * (1 - done.reshape(-1))
+    return covered
+
+
 def intercept_loss(before, after, start, end, reference, mask, survival, geometry, *, fixed_weights=None):
     """Sample racket kinematics at the requested sub-tick arrival. Each lane contributes once."""
     arrival = reference['intercept']['time']
-    active = (mask & reference['matched'] & reference['intercept']['valid'] &
-              (start < arrival) & (arrival <= end))
+    active = intercept_interval(start, end, reference, mask)
     weights = active.to(after.dtype) * (survival.detach().reshape(-1) if fixed_weights is None else fixed_weights)
     if not active.any():
         return after[:, :1].sum() * 0, weights

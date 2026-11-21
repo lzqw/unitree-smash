@@ -36,6 +36,7 @@ def main():
         parser.add_argument('--'+k,type=Path,required=True)
     parser.add_argument('--reserved-panel',type=Path,action='append',default=[])
     parser.add_argument('--seed',required=True,type=int)
+    parser.add_argument('--epsilon-request',type=float,help='Override the source excitation in normalized policy-request units')
     args=parser.parse_args()
     root=Path(__file__).resolve().parents[1]
     read=lambda p: json.loads(p.read_text())
@@ -50,7 +51,8 @@ def main():
     directions=np.zeros((len(eligible),18))
     directions[:,12:]=arm/np.linalg.norm(arm,axis=1,keepdims=True)
     panel=dict(seed=args.seed,cases=cases,case_sha256=case_digest(cases))
-    spec=dict(spec,contact_training_panel=panel,lanes=eligible,request_directions=directions.tolist(),
+    spec=dict(spec,contact_training_panel=panel,lanes=eligible,request_directions=directions.tolist(),direction_seed=args.seed+2,
+              epsilon_request=spec['epsilon_request'] if args.epsilon_request is None else args.epsilon_request,
               data_role='contact_model_training',capture_wm_window=False)
     validate_spec(spec)
     protocol=read(root/'configs/g07_full_racket_eval_v4.json')
@@ -61,7 +63,9 @@ def main():
             raise ValueError('Original suite changed')
         reserved.append(path)
     for path in reserved:
-        resolve_probe_cases(spec,read(path)['cases'])
+        previous=read(path)
+        previous_cases=(resolve_probe_cases(previous,[])[0] if 'contact_training_panel' in previous else previous['cases'])
+        resolve_probe_cases(spec,previous_cases)
     args.output.mkdir(parents=True,exist_ok=False)
     path=args.output/f"spec_00_tick{spec['tick']}.json"
     path.write_text(json.dumps(spec,indent=2,allow_nan=False)+'\n')

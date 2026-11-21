@@ -25,8 +25,7 @@ class MeasuredRacket:
                     velocity=linear[:,None],angular_velocity=angular[:,None])
 
 
-@torch.no_grad()
-def prepare(prior, ball, target, stream):
+def racket_transition_inputs(prior, ball, stream):
     def frame(t):
         # Only racket pose/twist and incoming shuttle are needed by this analytic prior.
         return torch.cat((*[s[t] for s in stream],ball.new_zeros((len(ball),36)),ball),1)
@@ -35,10 +34,18 @@ def prepare(prior, ball, target, stream):
     keys=('active','object_id','normal','time','normal_speed','pre_velocity','pre_position','local','relative_velocity',
           'surface_velocity','racket_axis','impulse_dv','remaining_time')
     row={k:info[k] for k in keys}
-    row.update(analytic=analytic[:,3:],analytic_position=analytic[:,:3],target=target)
+    row.update(analytic=analytic[:,3:],analytic_position=analytic[:,:3])
     if any(not torch.isfinite(v).all() for v in row.values()):
         raise ValueError('Nonfinite measured labels or analytic features')
     return row
+
+
+@torch.no_grad()
+def prepare(prior, ball, target, stream):
+    row=racket_transition_inputs(prior,ball,stream)
+    if not torch.isfinite(target).all():
+        raise ValueError('Nonfinite native target')
+    return dict(row,target=target)
 
 
 def concatenate(rows):

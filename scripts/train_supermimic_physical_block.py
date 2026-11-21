@@ -792,14 +792,14 @@ def run(args, *, alternating=None):
             return state
         @torch.no_grad()
         def toi_start_lanes(row):
-            from quadsmash.rl.supermimic_toi_racket_objective import bind_intercept_reference
+            from quadsmash.rl.supermimic_toi_racket_objective import bind_intercept_reference, preview_intercept_lanes
             state=training_state(row)
             allowed=training_start_mask(row,wm_holdout_lanes).reshape(-1).cpu()
             reference=bind_intercept_reference(state,trainer.reference_bank,adapter.physical_model.geometry,
                                                timebase.imagination_steps*timebase.control_dt_s)
             if reference is None:
                 return torch.zeros_like(allowed)
-            return allowed & reference['matched'].detach().reshape(-1).cpu()
+            return preview_intercept_lanes(state,reference,allowed.to(state.physical.device),trainer).cpu()
 
         from quadsmash.rl.supermimic_frozen_refresh_v1 import FrozenRefresh
         from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
@@ -1362,7 +1362,7 @@ def run(args, *, alternating=None):
                                     start_sampling['effective_lanes']=int(mask.sum())
                                     break
                             else:
-                                raise RuntimeError('No training lane with a causal TOI and a matched successful racket reference within the rollout')
+                                raise RuntimeError('No eligible training lane at its predicted TOI with live precontact gate and successful reference')
                 state=training_state(row);check_stop();trainer.actor_attempts=attempts-1
                 actor_start=(tuple([state]+[training_state(r) for r in recovery_rows[1:]]) if recovery_rows else state)
                 stats=trainer.imagine_update(actor_start)

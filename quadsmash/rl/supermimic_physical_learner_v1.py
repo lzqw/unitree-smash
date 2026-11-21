@@ -232,7 +232,7 @@ class PhysicalHorizonTrainer:
         reference=None
         toi_only = self.block_name=='approach' and getattr(self,'approach_objective','task')=='toi_racket_only'
         if toi_only:
-            from .supermimic_toi_racket_objective import bind_intercept_reference, intercept_loss
+            from .supermimic_toi_racket_objective import bind_intercept_reference, intercept_loss, precontact_mask
         tracking_coeff=self.tracking_coefficient(self.block_name)
         if self.reference_bank is not None and tracking_coeff>0 and self.block_name in ('approach','recovery'):
             # G07's causal current plan is available without consulting archived
@@ -262,7 +262,9 @@ class PhysicalHorizonTrainer:
             anchors.append((action-ref_action).square().mean(-1)*active*survival.detach())
             track_mask=usable&(gate.detach()>.25)
             rally=state.task_memory.get('rally',{})
-            if self.block_name=='approach':
+            if toi_only:
+                track_mask=precontact_mask(state,selected,gate,cfg.episode_s)
+            elif self.block_name=='approach':
                 if 'had_contact' not in rally:track_mask=torch.zeros_like(track_mask)
                 else:track_mask=track_mask&(rally['had_contact'].reshape(-1)<.5)
             previous=state

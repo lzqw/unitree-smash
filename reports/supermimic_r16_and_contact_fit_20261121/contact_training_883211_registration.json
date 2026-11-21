@@ -1,0 +1,38 @@
+{
+  "source_panel": "53e83519ab3b9920b139357956473c977feb5420a8169546f27ccdf845db1d9b",
+  "spec_sha256": "fced3535519c66735e1f105a542dc64ad11a879edced0c1f71d6f1167ddffe60",
+  "native_stable_support_in_previous_panel": 5,
+  "aim": "Measure independent above-repeat-noise stable racket cases and slip changes at half the request amplitude in a fresh native prefix.",
+  "max_new_panels": 1,
+  "promotion": false,
+  "collect": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "scripts/run_supermimic_event_aligned_native_probes.py",
+    "--checkpoint",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/sweep_bounded_recovery32/cycle_02_recovery_refresh_candidate_0008.pt",
+    "--g07-execution-root",
+    "/home/autodrive/LZQW/unitree_smash",
+    "--spec-dir",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/g07_training_883211/specifications",
+    "--output",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/g07_training_883211/raw",
+    "--seed",
+    "883211",
+    "--workers",
+    "1",
+    "--physics-device",
+    "cuda:0"
+  ],
+  "score": [
+    "/home/autodrive/Isaac/env_isaaclab/bin/python",
+    "scripts/score_supermimic_training_contact_panel.py",
+    "--collection",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/g07_training_883211/raw",
+    "--fit",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/r8_train_substep_16/same_version/physics_fit.json",
+    "--calibration",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/origin_matched_surface_panel/compound_separation_calibration.json",
+    "--output",
+    "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/g07_training_883211/support.json"
+  ]
+}

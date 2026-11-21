@@ -1,5 +1,6 @@
 """Joint multi-horizon Body calibration on signed commands, natural flight and Recovery."""
 import json
+from pathlib import Path
 
 import torch
 from torch.nn import functional as F
@@ -62,6 +63,64 @@ def development_window(root,task,execution,excluded):
             elapsed=torch.stack([initial['elapsed_s'][ids]+i*task['control_dt_s'] for i in range(16)]))
     torch.testing.assert_close(result['minus']['state'],result['plus']['state'],rtol=0,atol=0)
     return ids,result
+
+
+def recorded_body_inputs(raw, lanes, dt):
+    initial=raw['start']['before']['physical']
+    steps=raw['step_sequence']
+    if len(steps)!=16 or any(step['done'][lanes].any() for step in steps):
+        raise ValueError('Expected an uninterrupted 16-step native trajectory')
+    elapsed=torch.stack([initial['elapsed_s'][lanes],*[step['elapsed_s'][lanes] for step in steps]])
+    torch.testing.assert_close(elapsed.diff(dim=0),torch.full_like(elapsed[:-1],dt),atol=2e-5,rtol=0)
+    return dict(state=encode_physical(initial)[lanes][None],feet=initial['foot_contact'][lanes][None],
+        present=initial['ball_present'][lanes][None],elapsed=elapsed[:-1],
+        targets=torch.stack([step['final_joint_targets'][lanes] for step in steps]),
+        previous_action=torch.stack([initial['final_action'][lanes],*[step['final_action'][lanes] for step in steps[:-1]]]),
+        next_state=torch.stack([step['next_state'][lanes] for step in steps]))
+
+
+def additional_body_pairs(collection,support_path,task,execution,stage_hash,excluded):
+    from declare_supermimic_contact_training_cases import resolve_probe_cases
+    read=lambda p:json.loads(p.read_text())
+    support=read(support_path)
+    status=read(collection/'status.json')
+    spec=read(collection/'startup.json')['specs'][0]['spec']
+    suite=task['suite']
+    if sha(Path(suite['path']))!=suite['sha256']:
+        raise ValueError('Changed original launch suite')
+    cases,case_hash=resolve_probe_cases(spec,read(Path(suite['path']))['cases'])
+    if (not case_hash or support['case_sha256']!=case_hash or not support['training_only']
+            or support['source_sha256']!=stage_hash or support['status_sha256']!=sha(collection/'status.json')
+            or support['policy_training_admitted'] or support['contact_receipt'] or support['counts'].get('nominal_mismatch',0)):
+        raise ValueError('Different scored native training panel or policy')
+    lanes=spec['lanes']
+    if set(lanes)&set(excluded) or len(lanes)!=len(set(lanes)):
+        raise ValueError('Reserved or repeated training lanes')
+    rows=status['completed']
+    if (status['status']!='COLLECTION_FINISHED' or len(rows)!=4 or len({r['spec'] for r in rows})!=1
+            or {r['branch'] for r in rows}!=set(BRANCHES)):
+        raise ValueError('Incomplete native sign or repeat')
+    runs={}
+    for row in rows:
+        folder=collection/row['spec']
+        if row['exit_code'] or sha(folder/row['branch']/'native_probe.pt')!=row['probe_sha256']:
+            raise ValueError('Changed native trajectory')
+        runs[row['branch']]=_load_branch(folder,row['branch'])
+    _same_contract(runs)
+    expected=dict(task,contact_training_only=True,contact_training_panel_sha256=case_hash)
+    for run in runs.values():
+        if run['task_contract']!=expected or run['policy_execution']!=execution or run['spec']!=spec:
+            raise ValueError('Changed physics, execution or registered excitation')
+    seq={b:recorded_body_inputs(run['raw'],lanes,task['control_dt_s']) for b,run in runs.items()}
+    for k,x in seq['nominal_a'].items():
+        torch.testing.assert_close(x,seq['nominal_b'][k],rtol=0,atol=0)
+    for b in ('minus','plus'):
+        for k in ('state','feet','present','elapsed','previous_action'):
+            torch.testing.assert_close(seq[b][k][0],seq['nominal_a'][k][0],rtol=0,atol=0)
+    launch=torch.tensor([cases[i]['launch']['position_m']+cases[i]['launch']['velocity_mps'] for i in lanes])
+    return lanes,{b:seq[b] for b in ('minus','plus')},launch,dict(support_sha256=sha(support_path),
+        status_sha256=support['status_sha256'],case_sha256=case_hash,case_ids=[cases[i]['case_id'] for i in lanes],
+        no_contact_cases=support['counts'].get('no_contact',0))
 
 
 def merged(signed,indices,device):
@@ -132,6 +191,16 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
             set(lanes)&set(reg['held_out_lanes'])):
         raise ValueError('Expected every registered training lane and an independent validation set')
     excluded=(~eligible).nonzero().flatten().tolist()
+    training_launch=launch[lanes]
+    original_lanes=list(lanes)
+    extra=None
+    if args.additional_training:
+        ids,additional,new_launch,extra=additional_body_pairs(args.additional_training,args.additional_support,task,
+                                                               execution,fit['stage_checkpoint_sha256'],excluded)
+        for sign in ('minus','plus'):
+            signed[sign]={k:torch.cat((signed[sign][k][:v.shape[0]],v),dim=1) for k,v in additional[sign].items()}
+        training_launch=torch.cat((training_launch,new_launch))
+        lanes=lanes+ids
     held,signed_dev=development_window(args.paired_development,task,execution,excluded)
     rng=torch.Generator().manual_seed(61037)
     devwin=merged(signed_dev,torch.arange(len(held)),args.device)
@@ -175,7 +244,7 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
     selected=0
     def save():
         cpu_weights={k:v.detach().cpu() for k,v in world.state_dict().items()}
-        atomic_torch_save(dict(parent,model=cpu_weights,calibration=dict(parent['calibration'],train_lanes=lanes,
+        atomic_torch_save(dict(parent,model=cpu_weights,calibration=dict(parent['calibration'],train_lanes=sorted(set(lanes)),additional_paired_training=extra,
              paired_body_source_world=fit['online_world_sha256'],paired_body_update=steps),
              policy_training_admitted=False),args.output/'world.pt')
     save()
@@ -183,7 +252,7 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
         for ix in torch.randperm(len(lanes),generator=rng).split(9):
             steps+=1
             win=merged(signed,ix,args.device)
-            loss,_=paired_terms(world,ball,win,launch[torch.tensor(lanes)[ix]].repeat(2,1).to(args.device),scales,training=True)
+            loss,_=paired_terms(world,ball,win,training_launch[ix].repeat(2,1).to(args.device),scales,training=True)
             rows=torch.cat([pool[torch.randint(len(pool),(n,),generator=rng)] for pool,n in
                             ((pools['natural'],24),(pools['racket'],6),(pools['recovery'],6))])
             natural={k:v.to(args.device) for k,v in take_windows(data,*rows.T,16).items()}
@@ -220,6 +289,6 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
         (args.output/'development.json').write_text(json.dumps(history,indent=2,allow_nan=False)+'\n')
     report=dict(source_world_sha256=fit['online_world_sha256'],training=receipt,development_sha256=sha(args.paired_development/'status.json'),
         development_lanes=held,selected_update=selected,updates=steps,long_body_anchor=args.long_body_anchor,baseline=base,history=history,
-        trained_lanes_per_epoch=lanes,selected_sha256=sha(args.output/'world.pt'),actor_updates=0,critic_updates=0,
+        trained_lanes_per_epoch=original_lanes,additional_training=extra,training_pairs_per_epoch=len(training_launch),selected_sha256=sha(args.output/'world.pt'),actor_updates=0,critic_updates=0,
         ball_updates=0,final_holdout_opened=False,validation_windows={k:torch.stack(v,1).tolist() for k,v in val.items()})
     (args.output/'fit.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
