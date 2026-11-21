@@ -1,0 +1,215 @@
+{
+  "retained": 25,
+  "head_counts": {
+    "recovery": 16,
+    "approach": 9
+  },
+  "global_accepted": 42,
+  "native_env_steps": 65536,
+  "collection": {
+    "behavior": 41,
+    "start_tick": 5374,
+    "end_tick_exclusive": 5502
+  },
+  "draws": [
+    {
+      "world_update": 121,
+      "maximum_start_tick": 5271,
+      "maximum_start_policy": 33,
+      "source_counts": {
+        "initial_archive": 32,
+        "recent_online": 24,
+        "older_online": 8,
+        "action_identification": 26,
+        "contact_event": 38
+      },
+      "fallback_count": 0,
+      "contact_supervision": {
+        "measured_events": 59,
+        "updated": true,
+        "velocity_huber": 0.11103951930999756,
+        "gradient_norm": 0.7861631512641907
+      }
+    },
+    {
+      "world_update": 122,
+      "maximum_start_tick": 5275,
+      "maximum_start_policy": 33,
+      "source_counts": {
+        "initial_archive": 32,
+        "recent_online": 24,
+        "older_online": 8,
+        "action_identification": 26,
+        "contact_event": 38
+      },
+      "fallback_count": 0,
+      "contact_supervision": null
+    },
+    {
+      "world_update": 123,
+      "maximum_start_tick": 5271,
+      "maximum_start_policy": 33,
+      "source_counts": {
+        "initial_archive": 32,
+        "recent_online": 24,
+        "older_online": 8,
+        "action_identification": 26,
+        "contact_event": 38
+      },
+      "fallback_count": 0,
+      "contact_supervision": {
+        "measured_events": 59,
+        "updated": true,
+        "velocity_huber": 0.11102064698934555,
+        "gradient_norm": 0.7853027582168579
+      }
+    },
+    {
+      "world_update": 124,
+      "maximum_start_tick": 5275,
+      "maximum_start_policy": 33,
+      "source_counts": {
+        "initial_archive": 32,
+        "recent_online": 24,
+        "older_online": 8,
+        "action_identification": 26,
+        "contact_event": 38
+      },
+      "fallback_count": 0,
+      "contact_supervision": null
+    },
+    {
+      "world_update": 125,
+      "maximum_start_tick": 5274,
+      "maximum_start_policy": 33,
+      "source_counts": {
+        "initial_archive": 32,
+        "recent_online": 24,
+        "older_online": 8,
+        "action_identification": 26,
+        "contact_event": 38
+      },
+      "fallback_count": 0,
+      "contact_supervision": {
+        "measured_events": 59,
+        "updated": true,
+        "velocity_huber": 0.11100452393293381,
+        "gradient_norm": 0.7844337224960327
+      }
+    },
+    {
+      "world_update": 126,
+      "maximum_start_tick": 5275,
+      "maximum_start_policy": 33,
+      "source_counts": {
+        "initial_archive": 32,
+        "recent_online": 24,
+        "older_online": 8,
+        "action_identification": 26,
+        "contact_event": 38
+      },
+      "fallback_count": 0,
+      "contact_supervision": null
+    },
+    {
+      "world_update": 127,
+      "maximum_start_tick": 5273,
+      "maximum_start_policy": 33,
+      "source_counts": {
+        "initial_archive": 32,
+        "recent_online": 24,
+        "older_online": 8,
+        "action_identification": 26,
+        "contact_event": 38
+      },
+      "fallback_count": 0,
+      "contact_supervision": {
+        "measured_events": 59,
+        "updated": true,
+        "velocity_huber": 0.11097436398267746,
+        "gradient_norm": 0.783494234085083
+      }
+    },
+    {
+      "world_update": 128,
+      "maximum_start_tick": 5275,
+      "maximum_start_policy": 33,
+      "source_counts": {
+        "initial_archive": 32,
+        "recent_online": 24,
+        "older_online": 8,
+        "action_identification": 26,
+        "contact_event": 38
+      },
+      "fallback_count": 0,
+      "contact_supervision": null
+    }
+  ],
+  "forward": {
+    "world_sha256": "6e0fcad70ddd443269451624bf39e522b199777f19d517a01f76e7057eafa09b",
+    "formal_reference_pass": true,
+    "versus_block_initial_pass": false,
+    "body64": [
+      {
+        "horizon": 64,
+        "metric": "body_rmse",
+        "anchor": 0.6821431517601013,
+        "candidate": 0.5507426261901855,
+        "passed": true
+      },
+      {
+        "horizon": 64,
+        "metric": "root_angular_mae",
+        "anchor": 0.265298992395401,
+        "candidate": 0.16896754503250122,
+        "passed": true
+      }
+    ],
+    "flight64": [
+      {
+        "horizon": 64,
+        "metric": "ball_velocity_rmse",
+        "anchor": 1.2001900672912598,
+        "candidate": 1.0466006994247437,
+        "passed": true
+      }
+    ],
+    "contact0": {
+      "metric": "event_aligned/0/1/ball_velocity_rmse",
+      "anchor": 6.065291881561279,
+      "candidate": 0.31232884526252747,
+      "absolute_tolerance": 0.02,
+      "relative_tolerance": 0.05,
+      "delta": -5.752963036298752,
+      "allowance": 0.323264594078064,
+      "status": "improved"
+    }
+  },
+  "actor": {
+    "update_accepted": true,
+    "task_gradient_norm": 0.0,
+    "tracking_gradient_norm": 1.7077211141586304,
+    "contact_aux_weight": 0.0,
+    "model_unchanged_during_actor": true,
+    "effective_gate_lanes": 16,
+    "budget_report": {
+      "relative_block_start": {
+        "residual_request_delta": 0.0037940144538879395,
+        "final_normalized_command_delta": 0.0013749003410339355,
+        "final_joint_target_delta_rad": 0.001517653465270996
+      },
+      "relative_last_accepted": {
+        "residual_request_delta": 0.0,
+        "final_normalized_command_delta": 0.0,
+        "final_joint_target_delta_rad": 0.0
+      },
+      "relative_native_accepted": {
+        "residual_request_delta": 0.12112301588058472,
+        "final_normalized_command_delta": 0.045110560953617096,
+        "final_joint_target_delta_rad": 0.04844927787780762
+      }
+    },
+    "bptt_seconds": 466.1445624509943
+  },
+  "scope": "Main G1. Each short WM draw spans 16 control ticks. Long anchor replay and repeated contact supervision have separate provenance. Repeated event uses do not count as newly observed contacts."
+}
