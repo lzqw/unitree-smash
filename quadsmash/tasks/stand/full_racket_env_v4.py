@@ -116,10 +116,9 @@ class FullRacketEnvV4(BallEnv):
         """Use live GPU poses, not stale DirectGPU CPU scene-query poses."""
         over=self.rally.followthrough_crossed&(~self.rally.followthrough_finished)&(~fully_own)
         candidates=self.rally.in_play&(~fully_own)&(~over)
-        broad=self.racket_plane_geometry.gpu_broadphase_over_net(
-            tool-self.scene.env_origins,quaternion)
         self.racket_plane_gpu_broadphase_calls+=1
-        ids=torch.where(candidates&broad)[0].cpu().tolist()
+        ids=self.racket_plane_geometry.over_net_candidate_ids(
+            tool,self.scene.env_origins,quaternion,candidates).tolist()
         self.racket_plane_gpu_broadphase_candidates+=len(ids)
         if not ids:return over
         positions=(tool[ids]-self.scene.env_origins[ids]).cpu().numpy()

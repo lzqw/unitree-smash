@@ -9,6 +9,21 @@ from quadsmash.physics.court_v4 import load_court
 
 
 class RacketVolumeGeometryTest(unittest.TestCase):
+    def test_gpu_broadphase_keeps_original_lane_ids_for_eligible_rackets(self):
+        import torch
+        geom = RacketPlaneGeometry(load_racket(), load_court())
+        origins = torch.arange(12).reshape(4, 3).float()
+        local = torch.tensor([[1.395146, 0., 3.], [1.395146, 0., .5],
+                              [1.395146, 0., 3.], [-1., 0., 3.]])
+        tool = local + origins
+        rotation = torch.tensor([[np.sqrt(.5), 0., .5, -.5]]).expand(4, -1).float()
+        dense = geom.gpu_broadphase_over_net(tool - origins, rotation)
+        self.assertTrue(dense[2])
+        for eligible in (torch.ones(4).bool(), torch.zeros(4).bool(),
+                         torch.tensor([False, True, True, False])):
+            expected = (dense & eligible).nonzero(as_tuple=True)[0]
+            self.assertTrue(torch.equal(geom.over_net_candidate_ids(tool, origins, rotation, eligible), expected))
+
     def test_segment_box_piecewise_minimum_matches_independent_scalar_optimizer(self):
         rng=np.random.default_rng(725701)
         for _ in range(100):

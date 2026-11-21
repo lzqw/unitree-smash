@@ -163,6 +163,14 @@ class RacketPlaneGeometry:
                  (high[...,1]>-half)&(low[...,1]<half)).any(-1)
         return overlap
 
+    def over_net_candidate_ids(self, world_position, origins, quaternion, eligible):
+        """Return original lane IDs that still require an exact net-volume check."""
+        ids = eligible.nonzero(as_tuple=True)[0]
+        if ids.numel() == 0:
+            return ids
+        broad = self.gpu_broadphase_over_net(world_position - origins, quaternion)
+        return (eligible & broad).nonzero(as_tuple=True)[0]
+
     def first_above_net_overlap(self,position,quaternion):
         """Return one actual primitive/volume witness, or None."""
         rotation=quaternion_matrix(quaternion);position=np.asarray(position,dtype=float)
