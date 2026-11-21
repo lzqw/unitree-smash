@@ -17,16 +17,22 @@ from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest, load
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
 
 
-def command_rollout(body,prior,slip,initial,launch,traces,lanes,alpha,*,adapter=None):
+def command_rollout(body,prior,slip,initial,launch,traces,lanes,alpha,*,adapter=None,observed=None,channels=()):
     state=encode_physical(initial)[lanes]
     previous,feet,elapsed,present=(initial[k][lanes] for k in ('final_action','foot_contact','elapsed_s','ball_present'))
     def command(minus,plus,key):
         return torch.lerp(minus[key][lanes],plus[key][lanes],alpha[:,None])
-    for minus,plus in zip(traces['minus'],traces['plus'],strict=True):
+    if observed is not None:
+        if adapter is not None or torch.is_grad_enabled() or len(observed)!=len(traces['minus']):
+            raise ValueError('Measured racket substitution requires a complete forward-only analytic comparison')
+    for tick,(minus,plus) in enumerate(zip(traces['minus'],traces['plus'],strict=True)):
         target=command(minus,plus,'final_joint_targets')
         if adapter is None:
             robot,contact,next_present=body(state,target,previous,feet.float(),present,elapsed,launch)
             endpoints=[torch.stack((first,last)) for first,last in zip(racket(state,body.geometry),racket(robot,body.geometry),strict=True)]
+            if observed is not None:
+                for channel in channels:
+                    endpoints[channel]=observed[tick][2][channel]
             row=racket_transition_inputs(prior,state[:,49:],endpoints)
             state=torch.cat((robot[:,:49],predicted_state(slip,prior,row)),1)
             feet=contact.sigmoid()
@@ -167,6 +173,20 @@ def main():
                                 measured_racket_calibrated_contact=native_racket['candidate'],
                                 calibrated_body_signed=(hybrid['plus']-hybrid['minus']).tolist(),
                                 native_racket_cases=native_racket['cases'])
+                comparison['measured_channels']={}
+                for label,channels in [('center',(0,)),('rotation',(1,)),('twist',(2,3)),('all',(0,1,2,3))]:
+                    preds={}
+                    for branch,command in [('minus',torch.zeros_like(alpha)),('plus',torch.ones_like(alpha))]:
+                        preds[branch]=command_rollout(adapter.physical_model,prior,slip,initial,launches[lanes],
+                            traces,lanes,command,observed=seq[branch],channels=channels)
+                    result=metrics(native_labels,preds)
+                    if label=='all':
+                        torch.testing.assert_close(torch.as_tensor(result['absolute_rmse']),
+                            torch.as_tensor(native_racket['candidate']['absolute_rmse']))
+                        torch.testing.assert_close(preds['plus']-preds['minus'],
+                            torch.tensor([row['candidate']['delta_mps'] for row in native_racket['cases']]),rtol=1e-4,atol=1e-5)
+                    comparison['measured_channels'][label]=dict(metrics=result,
+                        signed_mps=(preds['plus']-preds['minus']).tolist())
             stable=torch.tensor([g=='racket_stable' for g in groups])
             signals=dict(autograd=derivative,central_difference=near,model_signed=secant)
             stats={k:derivative_summary(native,noise,signals,m) for k,m in (
