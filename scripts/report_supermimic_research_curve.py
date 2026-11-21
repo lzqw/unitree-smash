@@ -116,6 +116,8 @@ class FirstEpisodeReturns:
         self.offset = 0
         self.seen = set()
         self.online_total = self.initial_total = 0.
+        self.duration_pairs = self.duration_delta = 0
+        self.early_after_timeout = self.timeout_after_early = 0
         self.flips = dict(ball_side_complete_except_recovery=0, physical_recovery_success=0, complete5=0)
 
     def update(self, writer):
@@ -139,6 +141,16 @@ class FirstEpisodeReturns:
                            mean_difference=(self.online_total-self.initial_total)/n,
                            latest_case_difference=row['native_episode_return']-baseline['native_episode_return'],
                            **{name+'_net_cases': count for name,count in self.flips.items()})
+            if all(r.get('native_episode_length_steps') is not None and
+                   isinstance(r.get('episode_timeout'), bool) for r in (row, baseline)):
+                self.duration_pairs += 1
+                self.duration_delta += row['native_episode_length_steps'] - baseline['native_episode_length_steps']
+                self.early_after_timeout += baseline['episode_timeout'] and not row['episode_timeout']
+                self.timeout_after_early += row['episode_timeout'] and not baseline['episode_timeout']
+                metrics.update(duration_pairs=self.duration_pairs,
+                               mean_episode_length_delta_ticks=self.duration_delta/self.duration_pairs,
+                               baseline_timeout_to_online_early=self.early_after_timeout,
+                               baseline_early_to_online_timeout=self.timeout_after_early)
             values = [Summary.Value(tag='first_completed_mixed_cases/'+k,simple_value=v) for k,v in metrics.items()]
             writer.add_event(Event(wall_time=time.time(),step=n,summary=Summary(value=values)))
         if rows:

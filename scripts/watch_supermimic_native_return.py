@@ -26,6 +26,7 @@ def case_evidence(observed, baseline):
         return dict(native_return=row['native_episode_return'], body_ground=row['body_ground_seen'],
                     qualified_contact=row['qualified_airborne_string_contact'],
                     ball_side=row['ball_side_complete_except_recovery'], complete5=row['complete5'],
+                    episode_length_steps=row.get('native_episode_length_steps'), timeout=row.get('episode_timeout'),
                     physical_recovery=row.get('physical_recovery_success'), release_speed_mps=speed,
                     failed_criteria=row.get('rejection_reasons'))
 
