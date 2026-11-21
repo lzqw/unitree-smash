@@ -1,6 +1,7 @@
 """Reset-safe event windows and full-state autoregressive ball supervision."""
 import torch
-from .supermimic_physical_dataset_v1 import valid_windows
+from .supermimic_physical_dataset_v1 import encode_physical, valid_windows
+from .supermimic_physical_world_v2 import PhysicalWorldV2
 from .supermimic_ball_residual_v1 import ball_geometry_features
 
 
@@ -29,7 +30,20 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
     body_input = state
     if not ball_input_grad:
         state = state.detach()
-    prior,_=base.prior(state,present,elapsed,launch)
+    # PhysicalWorldV2 integrates the same 160 flight substeps for its body
+    # transition. Its robot and free-flight priors use disjoint state slices.
+    # Keep the robot gradient when the caller detaches the ball input.
+    body_options = {}
+    # When both consumers differentiate flight, keep their original independent
+    # backward traversals (and floating-point accumulation order).
+    single_gradient_path = not launch.requires_grad and (not body_input.requires_grad or not ball_input_grad)
+    if type(base) is PhysicalWorldV2 and (not torch.is_grad_enabled() or single_gradient_path):
+        fields,availability = base.prior_fields(body_input,present,elapsed,launch,detach_ball_input=not ball_input_grad)
+        body_options['prior_result'] = (encode_physical(fields),availability)
+        free_ball = torch.cat((fields['ball_position_w'],fields['ball_velocity_w']),-1)
+    else:
+        prior,_=base.prior(state,present,elapsed,launch)
+        free_ball=prior[:,49:]
     features=ball_geometry_features(state,base.geometry)
     impulse_prior=getattr(action_model,'impulse_prior',None)
     mode_conditioned=getattr(action_model,'requires_racket_probability',False)
@@ -54,13 +68,13 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
             correction=present[:,None].to(response.dtype)*(probability[:,1:,None]*response).sum(1)
     else:
         correction,_=ball(features,present)
-    physical,logits,active=base(body_input,targets,previous_action,feet,present,elapsed,launch)
+    physical,logits,active=base(body_input,targets,previous_action,feet,present,elapsed,launch,**body_options)
     robot_prediction = physical[:,:49]
     if not ball_input_grad:
         physical = physical.detach()
         targets = targets.detach()
         previous_action = previous_action.detach()
-    ball_prediction=prior[:,49:]+correction
+    ball_prediction=free_ball+correction
     launch_now=(~present.bool()) & (elapsed.reshape(-1) >=
                                     getattr(base,'launch_s',2.) - 1e-6)
     if impulse_prior is not None:
@@ -80,7 +94,7 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
         # Launch is an external schedule transition.  It has priority over
         # the collision prior, which intentionally leaves parked-ball states
         # unchanged until the ball is present.
-        ball_prediction=torch.where(launch_now[:,None], prior[:,49:],
+        ball_prediction=torch.where(launch_now[:,None], free_ball,
                                     analytic_ball+correction)
     else:
         impulse_info=None
@@ -114,7 +128,7 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
         # the free-flight side of the transition.  Feeding the already
         # impacted analytic state back into this gate would let the response
         # change the event it is meant to model.
-        action_ball_endpoint = prior[:,49:]
+        action_ball_endpoint = free_ball
         response=action_model(state,physical,action_ball_endpoint,
                               base.geometry,present,**kwargs)
         if need_action_details:
@@ -162,7 +176,7 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
     if return_details:
         return state,next_feet,active,dict(
             predicted_robot=robot_prediction,
-            prior_ball=prior[:,49:],
+            prior_ball=free_ball,
             analytic_ball=None if impulse_info is None else analytic_ball,
             legacy_correction=correction,
             action_residual=action_residual,

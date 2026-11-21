@@ -32,7 +32,14 @@ class PhysicalWorldV1(nn.Module):
                           present.reshape(-1,1).to(state.dtype),elapsed.reshape(-1,1),launch),-1)
 
     def prior(self,state,present,elapsed,launch):
+        fields,active=self.prior_fields(state,present,elapsed,launch)
+        return encode_physical(fields),active
+
+    def prior_fields(self,state,present,elapsed,launch,*,detach_ball_input=False):
         p=decode_physical(state)
+        if detach_ball_input:
+            p['ball_position_w']=p['ball_position_w'].detach()
+            p['ball_velocity_w']=p['ball_velocity_w'].detach()
         # Constant-rate articulated motion is a prior, not a no-contact
         # acceleration certificate. Native contact effects remain supervised.
         root=p['root_position_w']+self.dt*p['root_link_velocity_w']
@@ -45,10 +52,10 @@ class PhysicalWorldV1(nn.Module):
         ball_p=torch.where(launch_now[:,None],launch[:,:3],p['ball_position_w'])
         ball_v=torch.where(launch_now[:,None],launch[:,3:],p['ball_velocity_w'])
         flown_p,flown_v=self.flight(ball_p,ball_v)
-        return encode_physical(dict(p,root_position_w=root,root_quaternion_w=orientation,
+        return dict(p,root_position_w=root,root_quaternion_w=orientation,
              joint_position=p['joint_position']+self.dt*p['joint_velocity'],
              ball_position_w=torch.where(active[:,None],flown_p,ball_p),
-             ball_velocity_w=torch.where(active[:,None],flown_v,ball_v))),active
+             ball_velocity_w=torch.where(active[:,None],flown_v,ball_v)),active
 
     @torch.no_grad()
     def set_normalization(self,features,prior,next_state):
@@ -63,10 +70,10 @@ class PhysicalWorldV1(nn.Module):
         self.delta_scale.copy_(delta.std(0,unbiased=False).clamp_min(1e-3))
         self.normalization_ready.fill_(True)
 
-    def forward(self,state,targets,previous_action,feet,present,elapsed,launch):
+    def forward(self,state,targets,previous_action,feet,present,elapsed,launch,*,prior_result=None):
         features=self.features(state,targets,previous_action,feet,present,elapsed,launch)
         out=self.body((features-self.input_mean)/self.input_scale)
-        prior,active=self.prior(state,present,elapsed,launch)
+        prior,active=self.prior(state,present,elapsed,launch) if prior_result is None else prior_result
         predicted=prior+self.delta_mean+self.delta_scale*out[:,:55]
         p=decode_physical(predicted)
         p['root_quaternion_w']=nn.functional.normalize(p['root_quaternion_w'],dim=-1)

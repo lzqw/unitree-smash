@@ -1,0 +1,62 @@
+{
+  "scope": "One hybrid ball and Body WM control step, including gradients to state and executed target when enabled. Sixteen archived lane states and G07 commands at tick 272, with the first two presence/clock inputs set to launch and parked respectively. Three interleaved trials per variant on the same checkpoint. GPU shared with G1. No native policy scoring.",
+  "reference_commit": "9141ae7",
+  "cases": [
+    {
+      "device": "cpu",
+      "lanes": 16,
+      "checkpoint_world": "d2881ec1414adaecedaeb0c848cb76a2e930eb73ff8a51423a3b5a6a00025644",
+      "modes": {
+        "detached_ball": {
+          "seconds": {
+            "old": 0.04209978200378828,
+            "shared": 0.03235539299203083
+          },
+          "max_abs_error": 9.313225746154785e-10
+        },
+        "attached_ball": {
+          "seconds": {
+            "old": 0.11687294801231474,
+            "shared": 0.12592168399714865
+          },
+          "max_abs_error": 0.0
+        },
+        "forward_only": {
+          "seconds": {
+            "old": 0.028551013994729146,
+            "shared": 0.02607593999709934
+          },
+          "max_abs_error": 0.0
+        }
+      }
+    },
+    {
+      "device": "cuda:0",
+      "lanes": 16,
+      "checkpoint_world": "d2881ec1414adaecedaeb0c848cb76a2e930eb73ff8a51423a3b5a6a00025644",
+      "modes": {
+        "detached_ball": {
+          "seconds": {
+            "old": 0.08098963400698267,
+            "shared": 0.0647386189957615
+          },
+          "max_abs_error": 1.862645149230957e-09
+        },
+        "attached_ball": {
+          "seconds": {
+            "old": 0.20419825598946773,
+            "shared": 0.20883866099757142
+          },
+          "max_abs_error": 0.0
+        },
+        "forward_only": {
+          "seconds": {
+            "old": 0.05926766901393421,
+            "shared": 0.052894950000336394
+          },
+          "max_abs_error": 0.0
+        }
+      }
+    }
+  ]
+}

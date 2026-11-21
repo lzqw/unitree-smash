@@ -44,9 +44,9 @@ class PhysicalWorldV2(PhysicalWorldV1):
         next_probability=feet*(1.-unload)+(1.-feet)*load
         return next_probability.clamp(1e-6,1.-1e-6)
 
-    def forward(self,state,targets,previous_action,feet,present,elapsed,launch,*,detach_contacts=False):
+    def forward(self,state,targets,previous_action,feet,present,elapsed,launch,*,detach_contacts=False,prior_result=None):
         args=(state,targets,previous_action,feet,present,elapsed,launch)
-        predicted,_,active=super().forward(*args)
+        predicted,_,active=super().forward(*args,prior_result=prior_result)
         if detach_contacts:
             # Used ONLY while fitting physical dynamics. Actor inference uses
             # the differentiable branch below with model parameters frozen.

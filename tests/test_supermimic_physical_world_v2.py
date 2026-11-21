@@ -67,3 +67,30 @@ def test_event_sampling_has_fixed_category_share_and_no_lane_leak():
     # One rare contact window category retains equal quota despite the much
     # larger number of foot-transition windows.
     assert len(pools['foot_transition'])>len(pools['qualified_contact'])
+
+
+def test_joint_transition_reuses_flight_without_reconnecting_the_detached_ball():
+    from quadsmash.rl.supermimic_ball_residual_v1 import BallResidualV1
+    from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
+
+    model=PhysicalWorldV2(ASSET,hidden=(16,),contact_hidden=(8,)).requires_grad_(False)
+    ball=BallResidualV1(gate_hidden=(8,),response_hidden=(8,)).requires_grad_(False)
+    state,target,previous,feet,present,elapsed,launch=inputs()
+    state.requires_grad_()
+    target.requires_grad_()
+    present[2:]=True
+    elapsed[1]=model.launch_s
+    calls=[]
+    hook=model.flight.register_forward_hook(lambda *args: calls.append(1))
+    try:
+        for allow_ball_gradient in (False,True):
+            calls.clear()
+            prediction,_,active,details=ball_transition(model,ball,state,target,previous,feet,present,elapsed,launch,
+                                                        return_details=True,ball_input_grad=allow_ball_gradient)
+            assert len(calls)==(2 if allow_ball_gradient else 1)
+            assert active.tolist()==[False,True,True,True]
+            assert details['prior_ball'].requires_grad==allow_ball_gradient
+            state_grad,target_grad=torch.autograd.grad(prediction[:,:49].sum(),(state,target))
+            assert state_grad.abs().sum()>0 and target_grad.abs().sum()>0
+    finally:
+        hook.remove()
