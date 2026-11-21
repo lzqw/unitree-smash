@@ -58,6 +58,76 @@ def load_training_baseline(path, actor_hash, execution, task):
     return rows
 
 
+def restore_training_comparison(path, current_actor, execution, task, *, continuation=None):
+    """Restore the zero-update comparator without loading it into the live policy."""
+    import torch
+    from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+
+    actor = current_actor
+    context = None
+    saved_path = continuation['config'].get('paired_evaluation_baseline') if continuation else None
+    if saved_path:
+        context = continuation.get('paired_evaluation_context')
+        if context is not None:
+            if digest(path) != context['baseline_sha256']:
+                raise ValueError('Paired baseline scores changed during the schedule')
+            actor = context['baseline_actor']
+        else:
+            if Path(saved_path).resolve() != path.resolve() and digest(saved_path) != digest(path):
+                raise ValueError('Different baseline supplied for an ongoing paired comparison')
+            bundle = path.name == 'episodes_summary.json' and (path.parent/'completed.json').is_file()
+            if bundle:
+                _, _, expected = load_run(path.parent)
+            else:
+                payload = json.loads(path.read_text())
+                if isinstance(payload, dict):
+                    payload = payload.get('records', payload.get('episodes'))
+                if not isinstance(payload,list) or not payload:
+                    raise ValueError('Missing paired baseline rows')
+                expected = payload[0].get('actor_sha256')
+            # Legacy checkpoints may still hold the baseline as a block or native reference.
+            for candidate in (current_actor, *continuation.get('actor_references', {}).values()):
+                if tensor_digest(candidate.items()) == expected:
+                    actor = candidate
+                    break
+            else:
+                if not bundle:
+                    raise ValueError('Legacy checkpoint has no matching baseline actor reference')
+                argv = read(path.parent, 'startup')['argv']
+                if argv.count('--checkpoint') != 1:
+                    raise ValueError('Legacy paired continuation lacks the original evaluated actor')
+                source = Path(argv[argv.index('--checkpoint')+1])
+                if digest(source) != read(path.parent, 'metrics')['evaluated_checkpoint_sha256']:
+                    raise ValueError('Original paired evaluation checkpoint changed')
+                import zipfile
+                actor = torch.load(source, map_location='cpu', weights_only=False, mmap=zipfile.is_zipfile(source))['actor']
+    sha = tensor_digest(actor.items())
+    rows = load_training_baseline(path, sha, execution, task)
+    snapshots = {'pre-update': rows}
+    actors = {'pre-update': {k: v.detach().cpu().clone() for k, v in actor.items()}}
+    if context is not None and context.get('previous') is not None:
+        previous = context['previous']
+        stage = previous['stage']
+        previous_actor = previous['actor']
+        if stage == 'pre-update':
+            raise ValueError('Invalid previous paired refresh stage')
+        verify_baseline(previous['records'], tensor_digest(previous_actor.items()), execution)
+        if {r['case_id'] for r in rows} != {r['case_id'] for r in previous['records']}:
+            raise ValueError('Paired refresh changed the fixed cases')
+        snapshots[stage] = previous['records']
+        actors[stage] = previous_actor
+    return snapshots, actors, sha
+
+
+def training_comparison_context(snapshots, actors, baseline_sha256):
+    if not snapshots:
+        return None
+    stage = next(reversed(snapshots))
+    previous = (dict(stage=stage, records=snapshots[stage], actor=actors[stage])
+                if stage != 'pre-update' else None)
+    return dict(baseline_sha256=baseline_sha256, baseline_actor=actors['pre-update'], previous=previous)
+
+
 def discordant_landing_evidence(before, after, paired):
     """Join first-episode native flight measurements to the officially scored recovery flips."""
     paths = [folder / 'episodes.jsonl' for folder in (before, after)]

@@ -101,3 +101,31 @@ def test_load_native_training_baseline_uses_completed_frozen_run_and_rejects_con
     path.write_text(json.dumps(rows))
     with pytest.raises(ValueError,match='scores disagree'):
         load_training_baseline(path,'a',execution,task)
+
+
+def test_mid_block_resume_keeps_baseline_and_previous_refresh_separate_from_live_actor(tmp_path):
+    import json
+    import pytest
+    from scripts.compare_supermimic_fixed_stages import digest, restore_training_comparison, training_comparison_context
+    from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+
+    pre, post, current = ({'head': torch.tensor([x])} for x in (1., 2., 3.))
+    execution = {'recovery_gate':'posthit'}
+    def records(actor):
+        sha = tensor_digest(actor.items())
+        return [dict(row(i,True,True,True,True,1.),actor_sha256=sha,policy_execution=execution) for i in range(128)]
+    path=tmp_path/'initial.json'
+    path.write_text(json.dumps(records(pre)))
+    legacy=dict(config={'paired_evaluation_baseline':str(path)},actor_references={'block':pre})
+    snapshots, actors, sha=restore_training_comparison(path,current,execution,{},continuation=legacy)
+    assert sha == tensor_digest(pre.items()) and current['head'].item() == 3.
+    snapshots['post-refresh_05'] = records(post)
+    actors['post-refresh_05'] = post
+    fresh=dict(legacy,actor_references={},paired_evaluation_context=training_comparison_context(snapshots,actors,digest(path)))
+    restored, weights, _=restore_training_comparison(path,current,execution,{},continuation=fresh)
+    assert list(restored)==['pre-update','post-refresh_05'] and weights['post-refresh_05']['head'].item()==2.
+    with pytest.raises(ValueError,match='Baseline differs'):
+        restore_training_comparison(path,current,execution,{})
+    path.write_text(json.dumps(records(post)))
+    with pytest.raises(ValueError,match='scores changed'):
+        restore_training_comparison(path,current,execution,{},continuation=fresh)

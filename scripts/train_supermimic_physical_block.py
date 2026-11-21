@@ -743,13 +743,15 @@ def run(args, *, alternating=None):
                 runtime_validation_path=saved_validation['path']
                 runtime_validation_data=torch.load(runtime_validation_path,map_location='cpu',weights_only=True)['tensors']
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
+        from scripts.compare_supermimic_fixed_stages import restore_training_comparison, training_comparison_context
+        baseline_file_sha = None
         if args.paired_evaluation_baseline is not None:
-            from scripts.compare_supermimic_fixed_stages import load_training_baseline
-            baseline_hash=tensor_digest(actor.state_dict().items())
-            baseline_payload=load_training_baseline(args.paired_evaluation_baseline,baseline_hash,
-                                                    policy_execution,manifest['task_contract'])
-            paired_eval_snapshots['pre-update']=baseline_payload
-            paired_eval_actor_snapshots['pre-update']={k:v.detach().cpu().clone() for k,v in actor.state_dict().items()}
+            baseline_file_sha = hashlib.sha256(args.paired_evaluation_baseline.read_bytes()).hexdigest()
+            continuing = args.resume_training and not (args.resume_reset_schedule or args.resume_next_cycle)
+            paired_eval_snapshots, paired_eval_actor_snapshots, baseline_hash = restore_training_comparison(
+                args.paired_evaluation_baseline, actor.state_dict(), policy_execution, manifest['task_contract'],
+                continuation=resumed if continuing else None)
+            baseline_payload=paired_eval_snapshots['pre-update']
             write(paired_eval_dir/'pre-update.json',dict(schema='supermimic-paired-fixed-case-evaluation-v1',stage='pre-update',
                 actor_sha256=baseline_hash,case_count=len(baseline_payload),case_ids=sorted(str(row.get('case_id')) for row in baseline_payload),
                 records=baseline_payload,actor_parameter_delta={'available':False},
@@ -1043,6 +1045,7 @@ def run(args, *, alternating=None):
                     streams=replay.streams.cpu(), stage_ids=replay.stage_ids.cpu(),
                     source_ids=replay.source_ids.cpu(), policy_versions=replay.policy_versions.cpu(),
                     native_ticks=replay.native_ticks.cpu()),
+                paired_evaluation_context=training_comparison_context(paired_eval_snapshots,paired_eval_actor_snapshots,baseline_file_sha),
                 replay_archive_receipts=(replay_receipts if replay_receipts is not None else [json.loads((Path(d)/'manifest.json').read_text()) for d in replay_archives])+[json.loads((archive.directory/'manifest.json').read_text())],
                 replay_archives=replay_archives+[str(archive.directory)],replay_rng=replay.generator.get_state(),
                 natural_flight_rng=natural_flight.generator.get_state() if natural_flight is not None else None,
