@@ -3,6 +3,7 @@ import argparse
 from collections import deque
 import fcntl
 import json
+from math import hypot, isfinite
 from pathlib import Path
 from statistics import mean
 import time
@@ -10,6 +11,40 @@ import time
 import psutil
 
 from scripts.report_supermimic_research_curve import FirstEpisodeReturns, read_new
+
+
+def case_evidence(observed, baseline):
+    """Preserve native scoring flags for the same lane's first episode."""
+    def scores(row):
+        flight = row.get('native_flight', {})
+        velocity = flight.get('outgoing_velocity_mps')
+        if 'release_time_s' in flight and (flight['release_time_s'] is None or not flight['release_time_s'] >= 0):
+            velocity = None
+        speed = None
+        if velocity is not None and len(velocity) == 3 and all(v is not None and isfinite(v) for v in velocity):
+            speed = hypot(*velocity)
+        return dict(native_return=row['native_episode_return'], body_ground=row['body_ground_seen'],
+                    qualified_contact=row['qualified_airborne_string_contact'],
+                    ball_side=row['ball_side_complete_except_recovery'], complete5=row['complete5'],
+                    physical_recovery=row.get('physical_recovery_success'), release_speed_mps=speed,
+                    failed_criteria=row.get('rejection_reasons'))
+
+    return dict(case=observed['case_id'], lane=observed['env_id'], episode=observed['episode_index'],
+                observed=observed['native_episode_return'], terminal_behavior=observed.get('behavior_at_terminal'),
+                observed_scores=scores(observed), baseline_scores=scores(baseline) if baseline else None,
+                paired_delta=observed['native_episode_return']-baseline['native_episode_return'] if baseline else None)
+
+
+def attach_baseline_flights(baseline, path):
+    # Older terminal summaries omit the latched velocity, but keep a linked
+    # raw episode file. Use only first episodes that reproduce the scored Return.
+    raw, _ = read_new(path, 0)
+    for row in raw:
+        key = row['case_id'], row['env_id']
+        if row['episode_index'] == 0 and key in baseline:
+            scored = baseline[key]
+            if row.get('native_episode_return') == scored['native_episode_return'] and row.get('released'):
+                scored['native_flight'] = dict(outgoing_velocity_mps=row.get('outgoing_velocity_mps'))
 
 
 class ReturnTrend:
@@ -36,6 +71,9 @@ class ReturnTrend:
                        return_mean_128=mean(self.recent), paired_count=len(pairs),
                        paired_delta=mean(deltas) if deltas else None,
                        paired_net={k:sum(int(e[k])-int(b[k]) for e,b in pairs) for k in fields})
+        matched = {(e['case_id'], e['env_id']): b for e,b in pairs}
+        current['cases'] = [case_evidence(e, matched.get((e['case_id'], e['env_id']))
+                                          if e['episode_index'] == 0 else None) for e in rows]
         self.cohorts.append(current)
         history = list(self.cohorts)
         reason = None
@@ -50,9 +88,7 @@ class ReturnTrend:
                    for a,b in zip(history, history[1:])):
                 reason = 'consecutive_mixed_episode_return_declines'
         return dict(reason=reason, cohorts=history,
-                    cases=[dict(case=e.get('case_id'), lane=e['env_id'], episode=e['episode_index'],
-                                observed=e['native_episode_return'], terminal_behavior=e.get('behavior_at_terminal'))
-                           for e in rows])
+                    cases=current['cases'])
 
 
 def monitor(arm, trainer):
@@ -67,6 +103,7 @@ def monitor(arm, trainer):
     if not manifest_path.exists():
         return
     baseline = FirstEpisodeReturns(arm, registration, json.loads(manifest_path.read_text())).baseline
+    attach_baseline_flights(baseline, Path(registration['baseline_path']).with_name('episodes.jsonl'))
     trend = ReturnTrend(baseline)
     episode_offset = history_offset = consumed = 0
     episodes = []

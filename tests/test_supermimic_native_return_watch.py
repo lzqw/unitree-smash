@@ -23,3 +23,22 @@ def test_later_episodes_require_three_distinct_declining_collections():
     for v in (0,-1):
         assert trend.observe([case(i,v,episode=1) for i in range(4)],100-v)['reason'] is None
     assert trend.observe([case(i,-2,episode=2) for i in range(4)],200)['reason']=='consecutive_mixed_episode_return_declines'
+
+
+def test_pause_keeps_both_matched_cohorts_and_does_not_pair_resets():
+    observed = [dict(case(i, -3 if i < 4 else -10), body_ground_seen=True,
+                     native_flight={'outgoing_velocity_mps': [3., 4., 0.]}) for i in range(8)]
+    baseline = {(str(i), i): case(i, 0) for i in range(8)}
+    trend = ReturnTrend(baseline)
+    trend.observe(observed[:4], 128)
+    decision = trend.observe(observed[4:], 256)
+    assert decision['reason'] == 'paired_first_episode_loss_worsened'
+    for cohort in decision['cohorts']:
+        assert len(cohort['cases']) == 4
+        for detail in cohort['cases']:
+            assert detail['paired_delta'] == cohort['paired_delta']
+            assert detail['observed_scores']['body_ground'] and not detail['baseline_scores']['body_ground']
+            assert detail['observed_scores']['release_speed_mps'] == 5
+            assert detail['baseline_scores']['release_speed_mps'] is None
+    reset = trend.observe([case(i, -12, episode=1) for i in range(4)], 384)
+    assert all(c['paired_delta'] is None and c['baseline_scores'] is None for c in reset['cases'])
