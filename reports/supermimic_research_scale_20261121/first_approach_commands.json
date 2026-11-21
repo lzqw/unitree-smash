@@ -1,0 +1,276 @@
+{
+  "groups": {
+    "approach": {
+      "ticks": [
+        224,
+        240,
+        256,
+        272
+      ],
+      "groups": {
+        "all": {
+          "rows": 512,
+          "gaussian_kl_per_dim": 4.380744377646915e-05,
+          "request": {
+            "rms": 0.00046602102230502865,
+            "max_abs": 0.003262524725869298,
+            "changed_rows": 210
+          },
+          "final_normalized": {
+            "rms": 0.00012645735269279103,
+            "max_abs": 0.0008797049522399902,
+            "changed_rows": 205
+          },
+          "final_target_rad": {
+            "rms": 0.00018499498239159037,
+            "max_abs": 0.0013051033020019531,
+            "changed_rows": 205
+          }
+        },
+        "recovery_active": {
+          "rows": 39,
+          "gaussian_kl_per_dim": 7.628343877062839e-05,
+          "request": {
+            "rms": 0.0006149597383508777,
+            "max_abs": 0.0024898075498640537,
+            "changed_rows": 39
+          },
+          "final_normalized": {
+            "rms": 0.0001494153617072541,
+            "max_abs": 0.0006713271141052246,
+            "changed_rows": 39
+          },
+          "final_target_rad": {
+            "rms": 0.00023737787045034444,
+            "max_abs": 0.0009958744049072266,
+            "changed_rows": 39
+          }
+        },
+        "recovery_inactive": {
+          "rows": 473,
+          "gaussian_kl_per_dim": 4.112971903065052e-05,
+          "request": {
+            "rms": 0.00045155371900339994,
+            "max_abs": 0.003262524725869298,
+            "changed_rows": 171
+          },
+          "final_normalized": {
+            "rms": 0.0001243754418852628,
+            "max_abs": 0.0008797049522399902,
+            "changed_rows": 166
+          },
+          "final_target_rad": {
+            "rms": 0.0001799968733305558,
+            "max_abs": 0.0013051033020019531,
+            "changed_rows": 166
+          }
+        },
+        "approach_zero": {
+          "rows": 252,
+          "gaussian_kl_per_dim": 0.0,
+          "request": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_normalized": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_target_rad": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          }
+        },
+        "approach_up_to_quarter": {
+          "rows": 108,
+          "gaussian_kl_per_dim": 1.699819650878919e-06,
+          "request": {
+            "rms": 9.179794833825394e-05,
+            "max_abs": 0.0006411392241716385,
+            "changed_rows": 58
+          },
+          "final_normalized": {
+            "rms": 2.9891315692241692e-05,
+            "max_abs": 0.0002409219741821289,
+            "changed_rows": 53
+          },
+          "final_target_rad": {
+            "rms": 3.6712661556265535e-05,
+            "max_abs": 0.0002562999725341797,
+            "changed_rows": 53
+          }
+        },
+        "approach_above_quarter": {
+          "rows": 152,
+          "gaussian_kl_per_dim": 0.0001463541492845874,
+          "request": {
+            "rms": 0.0008517930101888888,
+            "max_abs": 0.003262524725869298,
+            "changed_rows": 152
+          },
+          "final_normalized": {
+            "rms": 0.00023071872212352486,
+            "max_abs": 0.0008797049522399902,
+            "changed_rows": 152
+          },
+          "final_target_rad": {
+            "rms": 0.000338112844845731,
+            "max_abs": 0.0013051033020019531,
+            "changed_rows": 152
+          }
+        }
+      }
+    },
+    "recovery": {
+      "ticks": [
+        384,
+        400,
+        416,
+        448,
+        480,
+        576,
+        672
+      ],
+      "groups": {
+        "all": {
+          "rows": 896,
+          "gaussian_kl_per_dim": 2.181509008392227e-07,
+          "request": {
+            "rms": 3.28859246577301e-05,
+            "max_abs": 0.0017133932560682297,
+            "changed_rows": 11
+          },
+          "final_normalized": {
+            "rms": 1.0362868806584838e-05,
+            "max_abs": 0.0006053447723388672,
+            "changed_rows": 9
+          },
+          "final_target_rad": {
+            "rms": 1.3154990741230797e-05,
+            "max_abs": 0.0006853342056274414,
+            "changed_rows": 9
+          }
+        },
+        "recovery_active": {
+          "rows": 748,
+          "gaussian_kl_per_dim": 2.9149811838587215e-09,
+          "request": {
+            "rms": 3.8014512898184775e-06,
+            "max_abs": 0.00011293962597846985,
+            "changed_rows": 10
+          },
+          "final_normalized": {
+            "rms": 1.3160510878554411e-06,
+            "max_abs": 4.7929584980010986e-05,
+            "changed_rows": 8
+          },
+          "final_target_rad": {
+            "rms": 1.5210283364909448e-06,
+            "max_abs": 4.5180320739746094e-05,
+            "changed_rows": 8
+          }
+        },
+        "recovery_inactive": {
+          "rows": 148,
+          "gaussian_kl_per_dim": 1.3059648731514677e-06,
+          "request": {
+            "rms": 8.046319993604537e-05,
+            "max_abs": 0.0017133932560682297,
+            "changed_rows": 1
+          },
+          "final_normalized": {
+            "rms": 2.5325590604913593e-05,
+            "max_abs": 0.0006053447723388672,
+            "changed_rows": 1
+          },
+          "final_target_rad": {
+            "rms": 3.218670929652447e-05,
+            "max_abs": 0.0006853342056274414,
+            "changed_rows": 1
+          }
+        },
+        "approach_zero": {
+          "rows": 789,
+          "gaussian_kl_per_dim": 0.0,
+          "request": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_normalized": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          },
+          "final_target_rad": {
+            "rms": 0.0,
+            "max_abs": 0.0,
+            "changed_rows": 0
+          }
+        },
+        "approach_up_to_quarter": {
+          "rows": 106,
+          "gaussian_kl_per_dim": 2.056986722194645e-08,
+          "request": {
+            "rms": 1.0098277392717803e-05,
+            "max_abs": 0.00011293962597846985,
+            "changed_rows": 10
+          },
+          "final_normalized": {
+            "rms": 3.495993486421044e-06,
+            "max_abs": 4.7929584980010986e-05,
+            "changed_rows": 8
+          },
+          "final_target_rad": {
+            "rms": 4.040500559669966e-06,
+            "max_abs": 4.5180320739746094e-05,
+            "changed_rows": 8
+          }
+        },
+        "approach_above_quarter": {
+          "rows": 1,
+          "gaussian_kl_per_dim": 0.00019328280122641727,
+          "request": {
+            "rms": 0.0009788770752777417,
+            "max_abs": 0.0017133932560682297,
+            "changed_rows": 1
+          },
+          "final_normalized": {
+            "rms": 0.00030809910717848206,
+            "max_abs": 0.0006053447723388672,
+            "changed_rows": 1
+          },
+          "final_target_rad": {
+            "rms": 0.0003915682185650008,
+            "max_abs": 0.0006853342056274414,
+            "changed_rows": 1
+          }
+        }
+      }
+    }
+  },
+  "parameter_delta": {
+    "available": true,
+    "l2": 0.052923645824193954,
+    "rms": 7.7146636613179e-05,
+    "max_abs": 0.0002000727254198864,
+    "changed_elements": 110929
+  },
+  "changed_tensors": [
+    "actor.approach.0.weight",
+    "actor.approach.0.bias",
+    "actor.approach.2.weight",
+    "actor.approach.2.bias",
+    "actor.approach.4.weight",
+    "actor.approach.4.bias"
+  ],
+  "before_actor_sha256": "009e85659eacef63c4164e5f0a04a93b7613a563a71247e08594cda4be83043c",
+  "after_actor_sha256": "79828dce5efb8916b1e2e9d51d1c036b5f007b3e91ad7382ced1ebe0b0a1c6dd",
+  "before_checkpoint_sha256": "7c0e1e30b4c520610327f813df3a1f9b2a3d843408bcb8fb09628e417e26ce5d",
+  "after_checkpoint_sha256": "713fe79c52654756481b761b3c3939092cbe2442871e8dc39e2ac85288a45c63",
+  "archive_manifest_sha256": "ee3d9b989a48f7b33ca6ed8273023af0de77cb4ec1bb24814105a6d7b1eb0012",
+  "scope": "Both policies and G07 previews use the same recorded state, command limits, latch and controller memory in each lane"
+}
