@@ -25,7 +25,11 @@ def main():
     parser.add_argument('--wm-forward-guard',type=Path)
     parser.add_argument('--resume-wm-replay',type=Path)
     parser.add_argument('--device',default='cpu',choices=('cpu','cuda:0'))
+    parser.add_argument('--effective-start-lanes',type=int,default=1)
+    parser.add_argument('--pooled-only',action='store_true')
     args=parser.parse_args()
+    if not 1<=args.effective_start_lanes<=128 or (args.pooled_only and args.effective_start_lanes==1):
+        parser.error('A pooled audit needs a target of 2 to 128 lanes')
     if bool(args.wm_forward_guard)!=bool(args.resume_wm_replay):
         parser.error('A candidate audit requires both the preregistered WM replay and the native guard')
     torch.set_num_threads(3)
@@ -64,10 +68,12 @@ def main():
     pools['initial_archive']=[starts[tick] for tick in RECOVERY_TICKS]
     tb=Timebase(**json.loads((Path(__file__).resolve().parents[1]/'configs/supermimic_task_horizon_v2.json').read_text()))
     results={}
+    families={}
     trainer=None
     for name,rows in pools.items():
         masks=[training_start_mask(row,held,recovery=True) for row in rows]
         eligible=[i for i,mask in enumerate(masks) if mask.any()]
+        families[name]=[(rows[i],masks[i]) for i in eligible]
         result=dict(starts=len(rows),valid_starts=len(eligible),selected_lanes_by_start=[int(m.sum()) for m in masks])
         results[name]=result
         if not eligible:
@@ -79,6 +85,8 @@ def main():
             trainer=PhysicalHorizonTrainer(actor,adapter,state,tb,block_name='recovery',trainable_names=RECOVERY_NAMES,
                                           reference_bank=bank,tracking_weight=cfg['tracking_weight'])
             trainer.critic.load_state_dict(ck['critic'],strict=True)
+        if args.pooled_only:
+            continue
         with frozen(adapter,trainer.critic):
             rollout=trainer._rollout_objective(state)
             grads=gradient_parts({k:rollout[k] for k in ('task','anchor','tracking')},[p for p in actor.parameters() if p.requires_grad])
@@ -87,12 +95,26 @@ def main():
             del rollout
     if trainer is None:
         raise ValueError('No eligible Recovery start')
+    pooled=None
+    if args.effective_start_lanes>1:
+        from quadsmash.rl.supermimic_recovery_batches import recovery_batch
+        rows,layout=recovery_batch(families,args.effective_start_lanes,1)
+        states=tuple(PhysicalImaginationStateV1.from_record(row,executor_template=template,
+                         launch=select_launch_for_start(row,launch),device=args.device) for row in rows)
+        with frozen(adapter,trainer.critic):
+            result=trainer._rollout_objective(states)
+            grads=gradient_parts({k:result[k] for k in ('task','anchor','tracking')},[p for p in actor.parameters() if p.requires_grad])
+            with torch.no_grad():
+                repeat=trainer._rollout_objective(states,effective_weights=result['effective_weights'])
+                torch.testing.assert_close(result['loss'].detach(),repeat['loss'],rtol=1e-5,atol=1e-6)
+            pooled=dict(requested=args.effective_start_lanes,layout=layout,gate_lanes=result['gate_lanes'],
+                        coverage=result['reference_coverage'],gradients=grads,valid_critic_lane_steps=int(result['critic_data'][-1].sum()))
     hashes=[(actor,ck['actor']),(adapter,world),(trainer.critic,ck['critic'])]
     if any(tensor_digest(module.state_dict().items())!=tensor_digest(saved.items()) for module,saved in hashes):
         raise RuntimeError('Read-only audit changed model weights')
     report=dict(checkpoint_sha256=digest(args.checkpoint),actor_sha256=tensor_digest(ck['actor'].items()),
-                world_sha256=tensor_digest(world.items()),optimizer_updates=0,pools=results,
-                wm_handoff=handoff,forward_check=online_check,scope='Offline gradient diagnostic at first eligible recorded start per pool')
+                world_sha256=tensor_digest(world.items()),optimizer_updates=0,pools=results,pooled=pooled,
+                wm_handoff=handoff,forward_check=online_check,scope='Offline gradient audit on recorded, causally gated Recovery starts')
     with args.output.open('x') as f:
         json.dump(report,f,indent=2,allow_nan=False)
 

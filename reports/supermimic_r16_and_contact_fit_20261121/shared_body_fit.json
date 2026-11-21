@@ -1,0 +1,1674 @@
+{
+  "source_world_sha256": "cb672d2fa92ab505f85141638cf487408ab51bfa24f176885e25aecb537c1e05",
+  "training": {
+    "path": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/r8_train_substep_16/same_version/raw",
+    "status_sha256": "d05cc9098ba2dde24a694c2693048a1113f989c8fa1eedce3a74c3c70104ca42",
+    "source_checkpoint_sha256": "b874282ce3f9304e0cb08ea7c6542c6dd66a53aa03257ead7852e8a2d313baca",
+    "spec_branches": {
+      "spec_00_tick278": {
+        "nominal_a": "e9329bcec1fad11a07a890d99a05ade9d9f616fa9dc5bbb7c28f4cc04931bdb8",
+        "nominal_b": "46fc231ce5afa10df8a712e11196c4f750771c46acbf8d38c520a345e6aab154",
+        "minus": "50290c5251f8557771096b8e036fc928c5d117e7c54d961695673143e5c8050b",
+        "plus": "7fd16e43978ed3b360f4ef36b2278e7d53201bf9e8df607d1b117eaf8007c404"
+      }
+    },
+    "included_lanes": {
+      "spec_00_tick278": [
+        9,
+        10,
+        12,
+        19,
+        20,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        31,
+        33,
+        35,
+        36,
+        42,
+        43,
+        45,
+        47,
+        52,
+        54,
+        55,
+        56,
+        58,
+        63,
+        64,
+        66,
+        67,
+        68,
+        69,
+        71,
+        72,
+        75,
+        78,
+        79,
+        80,
+        82,
+        83,
+        88,
+        91,
+        92,
+        93,
+        95
+      ]
+    },
+    "excluded_lanes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      11,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      21,
+      30,
+      32,
+      34,
+      37,
+      38,
+      39,
+      40,
+      41,
+      44,
+      46,
+      48,
+      49,
+      50,
+      51,
+      53,
+      57,
+      59,
+      60,
+      61,
+      62,
+      65,
+      70,
+      73,
+      74,
+      76,
+      77,
+      81,
+      84,
+      85,
+      86,
+      87,
+      89,
+      90,
+      94,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127
+    ],
+    "measured_windows": 90,
+    "signed_streams": 2,
+    "world_window_steps": 16
+  },
+  "development_sha256": "b8eff681b1b99d9f808c47ce70be5fd79936d59fbe7c3f1e4beece6331459907",
+  "development_lanes": [
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127
+  ],
+  "selected_update": 0,
+  "updates": 20,
+  "baseline": {
+    "paired": {
+      "2": {
+        "center_rmse_m": 0.002687812549993396,
+        "body_rmse": 0.8091912865638733,
+        "gyro_mae": 0.08339329808950424,
+        "center_signed_rmse": 0.0003177748585585505,
+        "center_supported": 32,
+        "center_gain": 0.4791192412376404,
+        "center_cosine": 0.8962198495864868,
+        "normal_signed_rmse": 0.0006119039026089013,
+        "normal_supported": 32,
+        "normal_gain": 0.6480936408042908,
+        "normal_cosine": 0.9656684398651123,
+        "linear_signed_rmse": 0.02008531242609024,
+        "linear_supported": 32,
+        "linear_gain": 0.6042386293411255,
+        "linear_cosine": 0.9092793464660645,
+        "angular_signed_rmse": 0.05868730694055557,
+        "angular_supported": 32,
+        "angular_gain": 0.6060460209846497,
+        "angular_cosine": 0.9017242789268494
+      },
+      "4": {
+        "center_rmse_m": 0.0054263221099972725,
+        "body_rmse": 0.9329155087471008,
+        "gyro_mae": 0.10910280793905258,
+        "center_signed_rmse": 0.0006274916813708842,
+        "center_supported": 32,
+        "center_gain": 0.6353124976158142,
+        "center_cosine": 0.8994815349578857,
+        "normal_signed_rmse": 0.0012277229689061642,
+        "normal_supported": 32,
+        "normal_gain": 0.6977424621582031,
+        "normal_cosine": 0.9782580137252808,
+        "linear_signed_rmse": 0.021941427141427994,
+        "linear_supported": 32,
+        "linear_gain": 0.7990863919258118,
+        "linear_cosine": 0.9308489561080933,
+        "angular_signed_rmse": 0.054465025663375854,
+        "angular_supported": 32,
+        "angular_gain": 0.6120050549507141,
+        "angular_cosine": 0.9251516461372375
+      },
+      "8": {
+        "center_rmse_m": 0.008951020427048206,
+        "body_rmse": 0.4298236668109894,
+        "gyro_mae": 0.12760041654109955,
+        "center_signed_rmse": 0.0008311957935802639,
+        "center_supported": 32,
+        "center_gain": 0.9840869307518005,
+        "center_cosine": 0.9319069385528564,
+        "normal_signed_rmse": 0.0012981940526515245,
+        "normal_supported": 32,
+        "normal_gain": 0.8581357002258301,
+        "normal_cosine": 0.9716867804527283,
+        "linear_signed_rmse": 0.06623490154743195,
+        "linear_supported": 32,
+        "linear_gain": 0.7603345513343811,
+        "linear_cosine": 0.6536411643028259,
+        "angular_signed_rmse": 0.15392184257507324,
+        "angular_supported": 32,
+        "angular_gain": 0.6883732676506042,
+        "angular_cosine": 0.656683623790741
+      },
+      "16": {
+        "center_rmse_m": 0.01211532112210989,
+        "body_rmse": 0.3798491060733795,
+        "gyro_mae": 0.09755365550518036,
+        "center_signed_rmse": 0.0025208222214132547,
+        "center_supported": 32,
+        "center_gain": 1.039642333984375,
+        "center_cosine": 0.6550735235214233,
+        "normal_signed_rmse": 0.005373389460146427,
+        "normal_supported": 32,
+        "normal_gain": 0.9324213266372681,
+        "normal_cosine": 0.8716948628425598,
+        "linear_signed_rmse": 0.05962586775422096,
+        "linear_supported": 32,
+        "linear_gain": 0.9719829559326172,
+        "linear_cosine": 0.6955220699310303,
+        "angular_signed_rmse": 0.1420169472694397,
+        "angular_supported": 32,
+        "angular_gain": 0.7544808387756348,
+        "angular_cosine": 0.8075900077819824
+      }
+    },
+    "natural": {
+      "natural": {
+        "1": {
+          "body_rmse": 0.2869715392589569,
+          "gyro_mae": 0.038353562355041504,
+          "center_mae": 0.00043900497257709503,
+          "ball_velocity_rmse": 1.015220046043396
+        },
+        "2": {
+          "body_rmse": 0.2758050262928009,
+          "gyro_mae": 0.05117880180478096,
+          "center_mae": 0.0008440821547992527,
+          "ball_velocity_rmse": 1.0155456066131592
+        },
+        "4": {
+          "body_rmse": 0.279724657535553,
+          "gyro_mae": 0.05698699131608009,
+          "center_mae": 0.0019900307524949312,
+          "ball_velocity_rmse": 0.21320341527462006
+        },
+        "8": {
+          "body_rmse": 0.2698669135570526,
+          "gyro_mae": 0.08107616752386093,
+          "center_mae": 0.0048718806356191635,
+          "ball_velocity_rmse": 0.21148920059204102
+        },
+        "16": {
+          "body_rmse": 0.33278968930244446,
+          "gyro_mae": 0.07227347046136856,
+          "center_mae": 0.007811372634023428,
+          "ball_velocity_rmse": 0.6044327020645142
+        },
+        "32": {
+          "body_rmse": 0.313203901052475,
+          "gyro_mae": 0.0854024887084961,
+          "center_mae": 0.01403600350022316,
+          "ball_velocity_rmse": 0.2909432649612427
+        },
+        "64": {
+          "body_rmse": 0.3406125605106354,
+          "gyro_mae": 0.08317959308624268,
+          "center_mae": 0.023605739697813988,
+          "ball_velocity_rmse": 1.2728348970413208
+        }
+      },
+      "racket": {
+        "1": {
+          "body_rmse": 2.2278828620910645,
+          "gyro_mae": 0.08954956382513046,
+          "center_mae": 0.0011202240129932761,
+          "ball_velocity_rmse": 0.0
+        },
+        "2": {
+          "body_rmse": 1.076859474182129,
+          "gyro_mae": 0.12333998084068298,
+          "center_mae": 0.002577598672360182,
+          "ball_velocity_rmse": 4.3902967372666524e-10
+        },
+        "4": {
+          "body_rmse": 1.117213487625122,
+          "gyro_mae": 0.18961863219738007,
+          "center_mae": 0.004667400848120451,
+          "ball_velocity_rmse": 0.27397701144218445
+        },
+        "8": {
+          "body_rmse": 0.6303044557571411,
+          "gyro_mae": 0.10464448481798172,
+          "center_mae": 0.006836190819740295,
+          "ball_velocity_rmse": 0.39758625626564026
+        },
+        "16": {
+          "body_rmse": 0.9586632251739502,
+          "gyro_mae": 0.11182492226362228,
+          "center_mae": 0.010835249908268452,
+          "ball_velocity_rmse": 0.46172696352005005
+        },
+        "32": {
+          "body_rmse": 1.4988771677017212,
+          "gyro_mae": 0.11637146025896072,
+          "center_mae": 0.015452694147825241,
+          "ball_velocity_rmse": 1.4280979633331299
+        },
+        "64": {
+          "body_rmse": 0.525348424911499,
+          "gyro_mae": 0.13906337320804596,
+          "center_mae": 0.023422956466674805,
+          "ball_velocity_rmse": 1.945329189300537
+        }
+      },
+      "recovery": {
+        "1": {
+          "body_rmse": 0.2709806561470032,
+          "gyro_mae": 0.041214246302843094,
+          "center_mae": 0.0006556013249792159,
+          "ball_velocity_rmse": 0.4674372375011444
+        },
+        "2": {
+          "body_rmse": 0.6305323839187622,
+          "gyro_mae": 0.19826889038085938,
+          "center_mae": 0.0014563828008249402,
+          "ball_velocity_rmse": 0.541857123374939
+        },
+        "4": {
+          "body_rmse": 0.5559585094451904,
+          "gyro_mae": 0.19089454412460327,
+          "center_mae": 0.004287601914256811,
+          "ball_velocity_rmse": 0.5122779607772827
+        },
+        "8": {
+          "body_rmse": 0.4648652970790863,
+          "gyro_mae": 0.1785154491662979,
+          "center_mae": 0.010096562094986439,
+          "ball_velocity_rmse": 0.3850996792316437
+        },
+        "16": {
+          "body_rmse": 0.7493472099304199,
+          "gyro_mae": 0.20545071363449097,
+          "center_mae": 0.01937948912382126,
+          "ball_velocity_rmse": 0.8687689900398254
+        },
+        "32": {
+          "body_rmse": 0.5353456735610962,
+          "gyro_mae": 0.32134735584259033,
+          "center_mae": 0.03663891926407814,
+          "ball_velocity_rmse": 1.4944380521774292
+        },
+        "64": {
+          "body_rmse": 0.5233678221702576,
+          "gyro_mae": 0.35094010829925537,
+          "center_mae": 0.06468269973993301,
+          "ball_velocity_rmse": 1.0819969177246094
+        }
+      }
+    }
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "updates": 5,
+      "score": 0.9965317840041783,
+      "max_long_ratio": 1.025709124942744,
+      "validation": {
+        "paired": {
+          "2": {
+            "center_rmse_m": 0.0026510742027312517,
+            "body_rmse": 0.8078597187995911,
+            "gyro_mae": 0.08211597055196762,
+            "center_signed_rmse": 0.00031756528187543154,
+            "center_supported": 32,
+            "center_gain": 0.47959083318710327,
+            "center_cosine": 0.8965221643447876,
+            "normal_signed_rmse": 0.0006116474978625774,
+            "normal_supported": 32,
+            "normal_gain": 0.6478397846221924,
+            "normal_cosine": 0.9655308723449707,
+            "linear_signed_rmse": 0.0201487448066473,
+            "linear_supported": 32,
+            "linear_gain": 0.6036308407783508,
+            "linear_cosine": 0.9119613170623779,
+            "angular_signed_rmse": 0.05871139094233513,
+            "angular_supported": 32,
+            "angular_gain": 0.6058463454246521,
+            "angular_cosine": 0.9019888639450073
+          },
+          "4": {
+            "center_rmse_m": 0.0053295255638659,
+            "body_rmse": 0.9317308664321899,
+            "gyro_mae": 0.10677844285964966,
+            "center_signed_rmse": 0.0006263747345656157,
+            "center_supported": 32,
+            "center_gain": 0.6375164985656738,
+            "center_cosine": 0.9022083282470703,
+            "normal_signed_rmse": 0.0012300785165280104,
+            "normal_supported": 32,
+            "normal_gain": 0.6969684958457947,
+            "normal_cosine": 0.9795455932617188,
+            "linear_signed_rmse": 0.022219818085432053,
+            "linear_supported": 32,
+            "linear_gain": 0.817159116268158,
+            "linear_cosine": 0.9328185319900513,
+            "angular_signed_rmse": 0.05538736656308174,
+            "angular_supported": 32,
+            "angular_gain": 0.6121571660041809,
+            "angular_cosine": 0.9240925908088684
+          },
+          "8": {
+            "center_rmse_m": 0.008738727308809757,
+            "body_rmse": 0.4255122244358063,
+            "gyro_mae": 0.12453487515449524,
+            "center_signed_rmse": 0.000862415530718863,
+            "center_supported": 32,
+            "center_gain": 0.9797089695930481,
+            "center_cosine": 0.9203690886497498,
+            "normal_signed_rmse": 0.001329940278083086,
+            "normal_supported": 32,
+            "normal_gain": 0.8563684821128845,
+            "normal_cosine": 0.9736219644546509,
+            "linear_signed_rmse": 0.06583121418952942,
+            "linear_supported": 32,
+            "linear_gain": 0.7544004321098328,
+            "linear_cosine": 0.6695219874382019,
+            "angular_signed_rmse": 0.15377996861934662,
+            "angular_supported": 32,
+            "angular_gain": 0.6861044764518738,
+            "angular_cosine": 0.6579336524009705
+          },
+          "16": {
+            "center_rmse_m": 0.011948633939027786,
+            "body_rmse": 0.3763381838798523,
+            "gyro_mae": 0.09679242223501205,
+            "center_signed_rmse": 0.0024761175736784935,
+            "center_supported": 32,
+            "center_gain": 1.0878173112869263,
+            "center_cosine": 0.5172319412231445,
+            "normal_signed_rmse": 0.005251982714980841,
+            "normal_supported": 32,
+            "normal_gain": 0.9362578988075256,
+            "normal_cosine": 0.6745138764381409,
+            "linear_signed_rmse": 0.05838053300976753,
+            "linear_supported": 32,
+            "linear_gain": 0.9627023339271545,
+            "linear_cosine": 0.7943511009216309,
+            "angular_signed_rmse": 0.13826534152030945,
+            "angular_supported": 32,
+            "angular_gain": 0.7543229460716248,
+            "angular_cosine": 0.8103386759757996
+          }
+        },
+        "natural": {
+          "natural": {
+            "1": {
+              "body_rmse": 0.28698861598968506,
+              "gyro_mae": 0.03845929354429245,
+              "center_mae": 0.00043765222653746605,
+              "ball_velocity_rmse": 1.015220046043396
+            },
+            "2": {
+              "body_rmse": 0.2758571207523346,
+              "gyro_mae": 0.051158130168914795,
+              "center_mae": 0.0008393370662815869,
+              "ball_velocity_rmse": 1.0155723094940186
+            },
+            "4": {
+              "body_rmse": 0.27956706285476685,
+              "gyro_mae": 0.056517843157052994,
+              "center_mae": 0.00198135687969625,
+              "ball_velocity_rmse": 0.21278329193592072
+            },
+            "8": {
+              "body_rmse": 0.2697826623916626,
+              "gyro_mae": 0.08113377541303635,
+              "center_mae": 0.004852097015827894,
+              "ball_velocity_rmse": 0.21157199144363403
+            },
+            "16": {
+              "body_rmse": 0.33235085010528564,
+              "gyro_mae": 0.07199502736330032,
+              "center_mae": 0.007641442120075226,
+              "ball_velocity_rmse": 0.6047425866127014
+            },
+            "32": {
+              "body_rmse": 0.31346234679222107,
+              "gyro_mae": 0.08577915281057358,
+              "center_mae": 0.013619691133499146,
+              "ball_velocity_rmse": 0.2897198796272278
+            },
+            "64": {
+              "body_rmse": 0.34066662192344666,
+              "gyro_mae": 0.08383536338806152,
+              "center_mae": 0.02395469695329666,
+              "ball_velocity_rmse": 1.2401844263076782
+            }
+          },
+          "racket": {
+            "1": {
+              "body_rmse": 2.2277045249938965,
+              "gyro_mae": 0.08957374095916748,
+              "center_mae": 0.0011171548394486308,
+              "ball_velocity_rmse": 0.0
+            },
+            "2": {
+              "body_rmse": 1.0764508247375488,
+              "gyro_mae": 0.12301918864250183,
+              "center_mae": 0.0025697550736367702,
+              "ball_velocity_rmse": 4.3902967372666524e-10
+            },
+            "4": {
+              "body_rmse": 1.1160794496536255,
+              "gyro_mae": 0.18846333026885986,
+              "center_mae": 0.004642788786441088,
+              "ball_velocity_rmse": 0.2716051936149597
+            },
+            "8": {
+              "body_rmse": 0.628118634223938,
+              "gyro_mae": 0.10296178609132767,
+              "center_mae": 0.006786804646253586,
+              "ball_velocity_rmse": 0.393024206161499
+            },
+            "16": {
+              "body_rmse": 0.9597384929656982,
+              "gyro_mae": 0.10993409901857376,
+              "center_mae": 0.010674846358597279,
+              "ball_velocity_rmse": 0.4546976685523987
+            },
+            "32": {
+              "body_rmse": 1.4967247247695923,
+              "gyro_mae": 0.11339202523231506,
+              "center_mae": 0.015141740441322327,
+              "ball_velocity_rmse": 1.4255220890045166
+            },
+            "64": {
+              "body_rmse": 0.5263471603393555,
+              "gyro_mae": 0.14039714634418488,
+              "center_mae": 0.02399151772260666,
+              "ball_velocity_rmse": 1.992017149925232
+            }
+          },
+          "recovery": {
+            "1": {
+              "body_rmse": 0.27110862731933594,
+              "gyro_mae": 0.0413963757455349,
+              "center_mae": 0.000653734605293721,
+              "ball_velocity_rmse": 0.4674372375011444
+            },
+            "2": {
+              "body_rmse": 0.6305267214775085,
+              "gyro_mae": 0.19824205338954926,
+              "center_mae": 0.001451594871468842,
+              "ball_velocity_rmse": 0.5419502854347229
+            },
+            "4": {
+              "body_rmse": 0.5559065341949463,
+              "gyro_mae": 0.1914418488740921,
+              "center_mae": 0.004268469754606485,
+              "ball_velocity_rmse": 0.5123895406723022
+            },
+            "8": {
+              "body_rmse": 0.4645296633243561,
+              "gyro_mae": 0.18014095723628998,
+              "center_mae": 0.010082962922751904,
+              "ball_velocity_rmse": 0.38579604029655457
+            },
+            "16": {
+              "body_rmse": 0.7490112781524658,
+              "gyro_mae": 0.2072470784187317,
+              "center_mae": 0.019615504890680313,
+              "ball_velocity_rmse": 0.8651794195175171
+            },
+            "32": {
+              "body_rmse": 0.5353105068206787,
+              "gyro_mae": 0.3233970105648041,
+              "center_mae": 0.03758087381720543,
+              "ball_velocity_rmse": 1.495306372642517
+            },
+            "64": {
+              "body_rmse": 0.5233200788497925,
+              "gyro_mae": 0.3522220551967621,
+              "center_mae": 0.06519909203052521,
+              "ball_velocity_rmse": 1.0823179483413696
+            }
+          }
+        }
+      }
+    },
+    {
+      "epoch": 2,
+      "updates": 10,
+      "score": 0.996559076600402,
+      "max_long_ratio": 1.0444852842117358,
+      "validation": {
+        "paired": {
+          "2": {
+            "center_rmse_m": 0.002615377539768815,
+            "body_rmse": 0.8068913221359253,
+            "gyro_mae": 0.08113543689250946,
+            "center_signed_rmse": 0.00031729176407679915,
+            "center_supported": 32,
+            "center_gain": 0.4790116548538208,
+            "center_cosine": 0.8966803550720215,
+            "normal_signed_rmse": 0.000611346447840333,
+            "normal_supported": 32,
+            "normal_gain": 0.6474500298500061,
+            "normal_cosine": 0.9654215574264526,
+            "linear_signed_rmse": 0.020184222608804703,
+            "linear_supported": 32,
+            "linear_gain": 0.6019464135169983,
+            "linear_cosine": 0.9135053157806396,
+            "angular_signed_rmse": 0.05870608612895012,
+            "angular_supported": 32,
+            "angular_gain": 0.6057653427124023,
+            "angular_cosine": 0.9021643996238708
+          },
+          "4": {
+            "center_rmse_m": 0.005240715574473143,
+            "body_rmse": 0.9304837584495544,
+            "gyro_mae": 0.1050141379237175,
+            "center_signed_rmse": 0.0006254350300878286,
+            "center_supported": 32,
+            "center_gain": 0.6394453048706055,
+            "center_cosine": 0.905199408531189,
+            "normal_signed_rmse": 0.0012335508363321424,
+            "normal_supported": 32,
+            "normal_gain": 0.6963561177253723,
+            "normal_cosine": 0.9796292781829834,
+            "linear_signed_rmse": 0.02251003123819828,
+            "linear_supported": 32,
+            "linear_gain": 0.8103346228599548,
+            "linear_cosine": 0.9339978098869324,
+            "angular_signed_rmse": 0.056521277874708176,
+            "angular_supported": 32,
+            "angular_gain": 0.6123653054237366,
+            "angular_cosine": 0.9228819012641907
+          },
+          "8": {
+            "center_rmse_m": 0.008616148494184017,
+            "body_rmse": 0.4213765859603882,
+            "gyro_mae": 0.12312093377113342,
+            "center_signed_rmse": 0.0008751446148380637,
+            "center_supported": 32,
+            "center_gain": 0.9749913811683655,
+            "center_cosine": 0.9194878339767456,
+            "normal_signed_rmse": 0.001331829815171659,
+            "normal_supported": 32,
+            "normal_gain": 0.8541982173919678,
+            "normal_cosine": 0.9755905866622925,
+            "linear_signed_rmse": 0.06618404388427734,
+            "linear_supported": 32,
+            "linear_gain": 0.7480493187904358,
+            "linear_cosine": 0.6788826584815979,
+            "angular_signed_rmse": 0.1546671986579895,
+            "angular_supported": 32,
+            "angular_gain": 0.6859727501869202,
+            "angular_cosine": 0.6570979952812195
+          },
+          "16": {
+            "center_rmse_m": 0.011901176534593105,
+            "body_rmse": 0.37469547986984253,
+            "gyro_mae": 0.09736159443855286,
+            "center_signed_rmse": 0.0024827925954014063,
+            "center_supported": 32,
+            "center_gain": 1.08523690700531,
+            "center_cosine": 0.530489444732666,
+            "normal_signed_rmse": 0.005184515379369259,
+            "normal_supported": 32,
+            "normal_gain": 0.9410151243209839,
+            "normal_cosine": 0.6912912726402283,
+            "linear_signed_rmse": 0.058128472417593,
+            "linear_supported": 32,
+            "linear_gain": 0.954142689704895,
+            "linear_cosine": 0.7734107375144958,
+            "angular_signed_rmse": 0.13803520798683167,
+            "angular_supported": 32,
+            "angular_gain": 0.7532758116722107,
+            "angular_cosine": 0.802774965763092
+          }
+        },
+        "natural": {
+          "natural": {
+            "1": {
+              "body_rmse": 0.2870141565799713,
+              "gyro_mae": 0.03853638842701912,
+              "center_mae": 0.00043615218601189554,
+              "ball_velocity_rmse": 1.015220046043396
+            },
+            "2": {
+              "body_rmse": 0.27593427896499634,
+              "gyro_mae": 0.05111750587821007,
+              "center_mae": 0.0008348224218934774,
+              "ball_velocity_rmse": 1.0155913829803467
+            },
+            "4": {
+              "body_rmse": 0.2795579731464386,
+              "gyro_mae": 0.056283120065927505,
+              "center_mae": 0.001979341497644782,
+              "ball_velocity_rmse": 0.21244700253009796
+            },
+            "8": {
+              "body_rmse": 0.2697581350803375,
+              "gyro_mae": 0.08079514652490616,
+              "center_mae": 0.0048489500768482685,
+              "ball_velocity_rmse": 0.2115689069032669
+            },
+            "16": {
+              "body_rmse": 0.3321794867515564,
+              "gyro_mae": 0.07192724198102951,
+              "center_mae": 0.00751318596303463,
+              "ball_velocity_rmse": 0.6052326560020447
+            },
+            "32": {
+              "body_rmse": 0.3137187063694,
+              "gyro_mae": 0.08603909611701965,
+              "center_mae": 0.01330355554819107,
+              "ball_velocity_rmse": 0.28945961594581604
+            },
+            "64": {
+              "body_rmse": 0.34065908193588257,
+              "gyro_mae": 0.0837785005569458,
+              "center_mae": 0.024420984089374542,
+              "ball_velocity_rmse": 1.1785414218902588
+            }
+          },
+          "racket": {
+            "1": {
+              "body_rmse": 2.2274463176727295,
+              "gyro_mae": 0.08943256735801697,
+              "center_mae": 0.0011136318789795041,
+              "ball_velocity_rmse": 0.0
+            },
+            "2": {
+              "body_rmse": 1.0763072967529297,
+              "gyro_mae": 0.12257365137338638,
+              "center_mae": 0.0025590406730771065,
+              "ball_velocity_rmse": 4.3902967372666524e-10
+            },
+            "4": {
+              "body_rmse": 1.1152727603912354,
+              "gyro_mae": 0.18763820827007294,
+              "center_mae": 0.004618524108082056,
+              "ball_velocity_rmse": 0.26934072375297546
+            },
+            "8": {
+              "body_rmse": 0.6272059082984924,
+              "gyro_mae": 0.10169855505228043,
+              "center_mae": 0.006749875843524933,
+              "ball_velocity_rmse": 0.3911469280719757
+            },
+            "16": {
+              "body_rmse": 0.9593951106071472,
+              "gyro_mae": 0.1076134443283081,
+              "center_mae": 0.010488170199096203,
+              "ball_velocity_rmse": 0.45135706663131714
+            },
+            "32": {
+              "body_rmse": 1.4962974786758423,
+              "gyro_mae": 0.1112140491604805,
+              "center_mae": 0.01493773888796568,
+              "ball_velocity_rmse": 1.4249913692474365
+            },
+            "64": {
+              "body_rmse": 0.5257280468940735,
+              "gyro_mae": 0.1412113457918167,
+              "center_mae": 0.02443455159664154,
+              "ball_velocity_rmse": 1.971898078918457
+            }
+          },
+          "recovery": {
+            "1": {
+              "body_rmse": 0.2710803747177124,
+              "gyro_mae": 0.041592951864004135,
+              "center_mae": 0.0006527568330056965,
+              "ball_velocity_rmse": 0.4674372375011444
+            },
+            "2": {
+              "body_rmse": 0.6304814219474792,
+              "gyro_mae": 0.19830138981342316,
+              "center_mae": 0.0014537833631038666,
+              "ball_velocity_rmse": 0.5419834852218628
+            },
+            "4": {
+              "body_rmse": 0.5557881593704224,
+              "gyro_mae": 0.19187386333942413,
+              "center_mae": 0.004268696065992117,
+              "ball_velocity_rmse": 0.5124527215957642
+            },
+            "8": {
+              "body_rmse": 0.4640556573867798,
+              "gyro_mae": 0.18202580511569977,
+              "center_mae": 0.010098801925778389,
+              "ball_velocity_rmse": 0.38607093691825867
+            },
+            "16": {
+              "body_rmse": 0.7490759491920471,
+              "gyro_mae": 0.20872503519058228,
+              "center_mae": 0.019868724048137665,
+              "ball_velocity_rmse": 0.8680629730224609
+            },
+            "32": {
+              "body_rmse": 0.5353987216949463,
+              "gyro_mae": 0.32537198066711426,
+              "center_mae": 0.038268812000751495,
+              "ball_velocity_rmse": 1.497221827507019
+            },
+            "64": {
+              "body_rmse": 0.5233964323997498,
+              "gyro_mae": 0.3534635007381439,
+              "center_mae": 0.06588011234998703,
+              "ball_velocity_rmse": 1.0857850313186646
+            }
+          }
+        }
+      }
+    },
+    {
+      "epoch": 3,
+      "updates": 15,
+      "score": 0.9977759555947971,
+      "max_long_ratio": 1.0542124016985954,
+      "validation": {
+        "paired": {
+          "2": {
+            "center_rmse_m": 0.002579307649284601,
+            "body_rmse": 0.8063411116600037,
+            "gyro_mae": 0.08042390644550323,
+            "center_signed_rmse": 0.0003170682757627219,
+            "center_supported": 32,
+            "center_gain": 0.4793959856033325,
+            "center_cosine": 0.8969056606292725,
+            "normal_signed_rmse": 0.0006112783448770642,
+            "normal_supported": 32,
+            "normal_gain": 0.647304892539978,
+            "normal_cosine": 0.9653275012969971,
+            "linear_signed_rmse": 0.020208049565553665,
+            "linear_supported": 32,
+            "linear_gain": 0.602047860622406,
+            "linear_cosine": 0.9134520292282104,
+            "angular_signed_rmse": 0.0587238185107708,
+            "angular_supported": 32,
+            "angular_gain": 0.6056803464889526,
+            "angular_cosine": 0.9023327827453613
+          },
+          "4": {
+            "center_rmse_m": 0.0051500629633665085,
+            "body_rmse": 0.9291445016860962,
+            "gyro_mae": 0.1036076471209526,
+            "center_signed_rmse": 0.0006245780969038606,
+            "center_supported": 32,
+            "center_gain": 0.6394303441047668,
+            "center_cosine": 0.9065409302711487,
+            "normal_signed_rmse": 0.0012379103573039174,
+            "normal_supported": 32,
+            "normal_gain": 0.6955481767654419,
+            "normal_cosine": 0.9793850183486938,
+            "linear_signed_rmse": 0.023159824311733246,
+            "linear_supported": 32,
+            "linear_gain": 0.8148898482322693,
+            "linear_cosine": 0.9190739989280701,
+            "angular_signed_rmse": 0.056887395679950714,
+            "angular_supported": 32,
+            "angular_gain": 0.6126446723937988,
+            "angular_cosine": 0.9216458797454834
+          },
+          "8": {
+            "center_rmse_m": 0.008475267328321934,
+            "body_rmse": 0.4177176058292389,
+            "gyro_mae": 0.12139402329921722,
+            "center_signed_rmse": 0.000901554012671113,
+            "center_supported": 32,
+            "center_gain": 0.9712042212486267,
+            "center_cosine": 0.9329532384872437,
+            "normal_signed_rmse": 0.0013088625855743885,
+            "normal_supported": 32,
+            "normal_gain": 0.8680933713912964,
+            "normal_cosine": 0.9770960211753845,
+            "linear_signed_rmse": 0.0664978101849556,
+            "linear_supported": 32,
+            "linear_gain": 0.7437125444412231,
+            "linear_cosine": 0.7927086353302002,
+            "angular_signed_rmse": 0.1573227047920227,
+            "angular_supported": 32,
+            "angular_gain": 0.6866497993469238,
+            "angular_cosine": 0.6561742424964905
+          },
+          "16": {
+            "center_rmse_m": 0.011791443452239037,
+            "body_rmse": 0.3738614022731781,
+            "gyro_mae": 0.09760849922895432,
+            "center_signed_rmse": 0.002533149905502796,
+            "center_supported": 32,
+            "center_gain": 1.079749345779419,
+            "center_cosine": 0.5404326319694519,
+            "normal_signed_rmse": 0.005165773909538984,
+            "normal_supported": 32,
+            "normal_gain": 0.9446763396263123,
+            "normal_cosine": 0.8070501089096069,
+            "linear_signed_rmse": 0.05749519169330597,
+            "linear_supported": 32,
+            "linear_gain": 0.9453385472297668,
+            "linear_cosine": 0.7617391347885132,
+            "angular_signed_rmse": 0.13776899874210358,
+            "angular_supported": 32,
+            "angular_gain": 0.7522004246711731,
+            "angular_cosine": 0.8110977411270142
+          }
+        },
+        "natural": {
+          "natural": {
+            "1": {
+              "body_rmse": 0.2870272994041443,
+              "gyro_mae": 0.038628529757261276,
+              "center_mae": 0.0004348956572357565,
+              "ball_velocity_rmse": 1.015220046043396
+            },
+            "2": {
+              "body_rmse": 0.27598491311073303,
+              "gyro_mae": 0.05110756680369377,
+              "center_mae": 0.0008314026053994894,
+              "ball_velocity_rmse": 1.015601634979248
+            },
+            "4": {
+              "body_rmse": 0.27950289845466614,
+              "gyro_mae": 0.056020766496658325,
+              "center_mae": 0.001977929612621665,
+              "ball_velocity_rmse": 0.21228152513504028
+            },
+            "8": {
+              "body_rmse": 0.26975321769714355,
+              "gyro_mae": 0.08058768510818481,
+              "center_mae": 0.004842530004680157,
+              "ball_velocity_rmse": 0.21154563128948212
+            },
+            "16": {
+              "body_rmse": 0.3321661651134491,
+              "gyro_mae": 0.07206510007381439,
+              "center_mae": 0.007444508373737335,
+              "ball_velocity_rmse": 0.6059516668319702
+            },
+            "32": {
+              "body_rmse": 0.3139112591743469,
+              "gyro_mae": 0.08617197722196579,
+              "center_mae": 0.013133429922163486,
+              "ball_velocity_rmse": 0.2893002927303314
+            },
+            "64": {
+              "body_rmse": 0.3407357931137085,
+              "gyro_mae": 0.0839105024933815,
+              "center_mae": 0.024534033611416817,
+              "ball_velocity_rmse": 1.1731338500976562
+            }
+          },
+          "racket": {
+            "1": {
+              "body_rmse": 2.2272534370422363,
+              "gyro_mae": 0.08945351094007492,
+              "center_mae": 0.001111730351112783,
+              "ball_velocity_rmse": 0.0
+            },
+            "2": {
+              "body_rmse": 1.0765504837036133,
+              "gyro_mae": 0.122441865503788,
+              "center_mae": 0.0025499663315713406,
+              "ball_velocity_rmse": 4.3902967372666524e-10
+            },
+            "4": {
+              "body_rmse": 1.1143803596496582,
+              "gyro_mae": 0.18748460710048676,
+              "center_mae": 0.004593911115080118,
+              "ball_velocity_rmse": 0.2681637704372406
+            },
+            "8": {
+              "body_rmse": 0.6263547539710999,
+              "gyro_mae": 0.10192640870809555,
+              "center_mae": 0.006755155045539141,
+              "ball_velocity_rmse": 0.38813820481300354
+            },
+            "16": {
+              "body_rmse": 0.959639847278595,
+              "gyro_mae": 0.10603394359350204,
+              "center_mae": 0.010384704917669296,
+              "ball_velocity_rmse": 0.4460288882255554
+            },
+            "32": {
+              "body_rmse": 1.4952846765518188,
+              "gyro_mae": 0.11084013432264328,
+              "center_mae": 0.01494570355862379,
+              "ball_velocity_rmse": 1.4237967729568481
+            },
+            "64": {
+              "body_rmse": 0.5224800109863281,
+              "gyro_mae": 0.1402122527360916,
+              "center_mae": 0.02456970512866974,
+              "ball_velocity_rmse": 1.990880012512207
+            }
+          },
+          "recovery": {
+            "1": {
+              "body_rmse": 0.27110859751701355,
+              "gyro_mae": 0.04171627759933472,
+              "center_mae": 0.0006519458256661892,
+              "ball_velocity_rmse": 0.4674372375011444
+            },
+            "2": {
+              "body_rmse": 0.6305245757102966,
+              "gyro_mae": 0.19844752550125122,
+              "center_mae": 0.0014541278360411525,
+              "ball_velocity_rmse": 0.541975200176239
+            },
+            "4": {
+              "body_rmse": 0.5557600259780884,
+              "gyro_mae": 0.19187772274017334,
+              "center_mae": 0.004259552340954542,
+              "ball_velocity_rmse": 0.5124279260635376
+            },
+            "8": {
+              "body_rmse": 0.4632435142993927,
+              "gyro_mae": 0.18281155824661255,
+              "center_mae": 0.010089229792356491,
+              "ball_velocity_rmse": 0.3861578106880188
+            },
+            "16": {
+              "body_rmse": 0.7503290772438049,
+              "gyro_mae": 0.20915530622005463,
+              "center_mae": 0.020014043897390366,
+              "ball_velocity_rmse": 0.8699435591697693
+            },
+            "32": {
+              "body_rmse": 0.5354171395301819,
+              "gyro_mae": 0.32643839716911316,
+              "center_mae": 0.03862520307302475,
+              "ball_velocity_rmse": 1.4979325532913208
+            },
+            "64": {
+              "body_rmse": 0.5234276056289673,
+              "gyro_mae": 0.354049414396286,
+              "center_mae": 0.06630701571702957,
+              "ball_velocity_rmse": 1.0877703428268433
+            }
+          }
+        }
+      }
+    },
+    {
+      "epoch": 4,
+      "updates": 20,
+      "score": 1.0012673545448227,
+      "max_long_ratio": 1.0610267117497028,
+      "validation": {
+        "paired": {
+          "2": {
+            "center_rmse_m": 0.0025476994924247265,
+            "body_rmse": 0.8058713674545288,
+            "gyro_mae": 0.07995893806219101,
+            "center_signed_rmse": 0.0003169230476487428,
+            "center_supported": 32,
+            "center_gain": 0.4790273904800415,
+            "center_cosine": 0.8978736996650696,
+            "normal_signed_rmse": 0.0006116143194958568,
+            "normal_supported": 32,
+            "normal_gain": 0.6469968557357788,
+            "normal_cosine": 0.965288519859314,
+            "linear_signed_rmse": 0.020241770893335342,
+            "linear_supported": 32,
+            "linear_gain": 0.6022260785102844,
+            "linear_cosine": 0.9128929376602173,
+            "angular_signed_rmse": 0.05880555137991905,
+            "angular_supported": 32,
+            "angular_gain": 0.6057635545730591,
+            "angular_cosine": 0.9025152921676636
+          },
+          "4": {
+            "center_rmse_m": 0.005064907483756542,
+            "body_rmse": 0.9278547763824463,
+            "gyro_mae": 0.10243205726146698,
+            "center_signed_rmse": 0.0006234545726329088,
+            "center_supported": 32,
+            "center_gain": 0.6390891075134277,
+            "center_cosine": 0.9049773812294006,
+            "normal_signed_rmse": 0.001240812474861741,
+            "normal_supported": 32,
+            "normal_gain": 0.6942853331565857,
+            "normal_cosine": 0.979249119758606,
+            "linear_signed_rmse": 0.023909449577331543,
+            "linear_supported": 32,
+            "linear_gain": 0.8232341408729553,
+            "linear_cosine": 0.9194747805595398,
+            "angular_signed_rmse": 0.05663348734378815,
+            "angular_supported": 32,
+            "angular_gain": 0.6128406524658203,
+            "angular_cosine": 0.9200961589813232
+          },
+          "8": {
+            "center_rmse_m": 0.00832553580403328,
+            "body_rmse": 0.4148705303668976,
+            "gyro_mae": 0.11989723145961761,
+            "center_signed_rmse": 0.0009484620532020926,
+            "center_supported": 32,
+            "center_gain": 0.9609817862510681,
+            "center_cosine": 0.9183655381202698,
+            "normal_signed_rmse": 0.0013141011586412787,
+            "normal_supported": 32,
+            "normal_gain": 0.8599864840507507,
+            "normal_cosine": 0.9697266817092896,
+            "linear_signed_rmse": 0.06670036166906357,
+            "linear_supported": 32,
+            "linear_gain": 0.7414693832397461,
+            "linear_cosine": 0.7908082008361816,
+            "angular_signed_rmse": 0.15975546836853027,
+            "angular_supported": 32,
+            "angular_gain": 0.6877562403678894,
+            "angular_cosine": 0.6851704120635986
+          },
+          "16": {
+            "center_rmse_m": 0.011668762192130089,
+            "body_rmse": 0.37349385023117065,
+            "gyro_mae": 0.0977645069360733,
+            "center_signed_rmse": 0.0025751199573278427,
+            "center_supported": 32,
+            "center_gain": 1.0789633989334106,
+            "center_cosine": 0.6101744174957275,
+            "normal_signed_rmse": 0.005175955127924681,
+            "normal_supported": 32,
+            "normal_gain": 0.9456378221511841,
+            "normal_cosine": 0.8894276022911072,
+            "linear_signed_rmse": 0.057124063372612,
+            "linear_supported": 32,
+            "linear_gain": 0.937756359577179,
+            "linear_cosine": 0.7647560238838196,
+            "angular_signed_rmse": 0.13766136765480042,
+            "angular_supported": 32,
+            "angular_gain": 0.7522091865539551,
+            "angular_cosine": 0.8131719827651978
+          }
+        },
+        "natural": {
+          "natural": {
+            "1": {
+              "body_rmse": 0.28702160716056824,
+              "gyro_mae": 0.03862752765417099,
+              "center_mae": 0.0004339014703873545,
+              "ball_velocity_rmse": 1.015220046043396
+            },
+            "2": {
+              "body_rmse": 0.27594995498657227,
+              "gyro_mae": 0.05095561966300011,
+              "center_mae": 0.000829203287139535,
+              "ball_velocity_rmse": 1.0156127214431763
+            },
+            "4": {
+              "body_rmse": 0.27942314743995667,
+              "gyro_mae": 0.05571885034441948,
+              "center_mae": 0.0019794092513620853,
+              "ball_velocity_rmse": 0.21213938295841217
+            },
+            "8": {
+              "body_rmse": 0.26977604627609253,
+              "gyro_mae": 0.08079732209444046,
+              "center_mae": 0.0048528797924518585,
+              "ball_velocity_rmse": 0.21155837178230286
+            },
+            "16": {
+              "body_rmse": 0.33219945430755615,
+              "gyro_mae": 0.07253791391849518,
+              "center_mae": 0.007447673473507166,
+              "ball_velocity_rmse": 0.6060960292816162
+            },
+            "32": {
+              "body_rmse": 0.314161092042923,
+              "gyro_mae": 0.08640783280134201,
+              "center_mae": 0.013118329457938671,
+              "ball_velocity_rmse": 0.2899753451347351
+            },
+            "64": {
+              "body_rmse": 0.34080466628074646,
+              "gyro_mae": 0.08440238982439041,
+              "center_mae": 0.024745022878050804,
+              "ball_velocity_rmse": 1.2088195085525513
+            }
+          },
+          "racket": {
+            "1": {
+              "body_rmse": 2.2270240783691406,
+              "gyro_mae": 0.08969273418188095,
+              "center_mae": 0.001108149066567421,
+              "ball_velocity_rmse": 0.0
+            },
+            "2": {
+              "body_rmse": 1.0766831636428833,
+              "gyro_mae": 0.12280688434839249,
+              "center_mae": 0.0025353615637868643,
+              "ball_velocity_rmse": 4.3902967372666524e-10
+            },
+            "4": {
+              "body_rmse": 1.1131380796432495,
+              "gyro_mae": 0.1874140501022339,
+              "center_mae": 0.0045513189397752285,
+              "ball_velocity_rmse": 0.2680233418941498
+            },
+            "8": {
+              "body_rmse": 0.6252931952476501,
+              "gyro_mae": 0.10265222191810608,
+              "center_mae": 0.006720994133502245,
+              "ball_velocity_rmse": 0.38487008213996887
+            },
+            "16": {
+              "body_rmse": 0.960354745388031,
+              "gyro_mae": 0.1044391319155693,
+              "center_mae": 0.010341719724237919,
+              "ball_velocity_rmse": 0.44037771224975586
+            },
+            "32": {
+              "body_rmse": 1.4938526153564453,
+              "gyro_mae": 0.11140092462301254,
+              "center_mae": 0.015077092684805393,
+              "ball_velocity_rmse": 1.4237244129180908
+            },
+            "64": {
+              "body_rmse": 0.5196146368980408,
+              "gyro_mae": 0.13955000042915344,
+              "center_mae": 0.024384332820773125,
+              "ball_velocity_rmse": 2.0277011394500732
+            }
+          },
+          "recovery": {
+            "1": {
+              "body_rmse": 0.27113857865333557,
+              "gyro_mae": 0.0417330302298069,
+              "center_mae": 0.0006509958184324205,
+              "ball_velocity_rmse": 0.4674372375011444
+            },
+            "2": {
+              "body_rmse": 0.6304750442504883,
+              "gyro_mae": 0.1984812170267105,
+              "center_mae": 0.0014505815925076604,
+              "ball_velocity_rmse": 0.5419938564300537
+            },
+            "4": {
+              "body_rmse": 0.5556836724281311,
+              "gyro_mae": 0.19171921908855438,
+              "center_mae": 0.004241129849106073,
+              "ball_velocity_rmse": 0.5124090313911438
+            },
+            "8": {
+              "body_rmse": 0.4628658592700958,
+              "gyro_mae": 0.18318413197994232,
+              "center_mae": 0.010062558576464653,
+              "ball_velocity_rmse": 0.3865382969379425
+            },
+            "16": {
+              "body_rmse": 0.7508115172386169,
+              "gyro_mae": 0.20903128385543823,
+              "center_mae": 0.020048601552844048,
+              "ball_velocity_rmse": 0.8738493919372559
+            },
+            "32": {
+              "body_rmse": 0.535445511341095,
+              "gyro_mae": 0.32741376757621765,
+              "center_mae": 0.03887487202882767,
+              "ball_velocity_rmse": 1.4995533227920532
+            },
+            "64": {
+              "body_rmse": 0.523341715335846,
+              "gyro_mae": 0.35529181361198425,
+              "center_mae": 0.06690164655447006,
+              "ball_velocity_rmse": 1.0868613719940186
+            }
+          }
+        }
+      }
+    }
+  ],
+  "trained_lanes_per_epoch": [
+    9,
+    10,
+    12,
+    19,
+    20,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    31,
+    33,
+    35,
+    36,
+    42,
+    43,
+    45,
+    47,
+    52,
+    54,
+    55,
+    56,
+    58,
+    63,
+    64,
+    66,
+    67,
+    68,
+    69,
+    71,
+    72,
+    75,
+    78,
+    79,
+    80,
+    82,
+    83,
+    88,
+    91,
+    92,
+    93,
+    95
+  ],
+  "selected_sha256": "249844fbb6ab6003dba2ea8f77deeaa17b3b57a80256ad07e31dbb665c3a29ce",
+  "actor_updates": 0,
+  "critic_updates": 0,
+  "ball_updates": 0,
+  "final_holdout_opened": false,
+  "validation_windows": {
+    "natural": [
+      [
+        163,
+        115
+      ],
+      [
+        691,
+        37
+      ],
+      [
+        641,
+        57
+      ],
+      [
+        77,
+        89
+      ],
+      [
+        452,
+        117
+      ],
+      [
+        314,
+        112
+      ],
+      [
+        389,
+        109
+      ],
+      [
+        150,
+        96
+      ],
+      [
+        536,
+        51
+      ],
+      [
+        112,
+        49
+      ],
+      [
+        107,
+        6
+      ],
+      [
+        332,
+        114
+      ],
+      [
+        385,
+        77
+      ],
+      [
+        36,
+        38
+      ],
+      [
+        221,
+        118
+      ],
+      [
+        598,
+        34
+      ],
+      [
+        523,
+        103
+      ],
+      [
+        590,
+        124
+      ],
+      [
+        671,
+        21
+      ],
+      [
+        725,
+        77
+      ],
+      [
+        232,
+        4
+      ],
+      [
+        657,
+        98
+      ],
+      [
+        48,
+        60
+      ],
+      [
+        481,
+        116
+      ]
+    ],
+    "racket": [
+      [
+        252,
+        17
+      ],
+      [
+        271,
+        60
+      ],
+      [
+        261,
+        85
+      ],
+      [
+        220,
+        57
+      ],
+      [
+        215,
+        11
+      ],
+      [
+        268,
+        126
+      ],
+      [
+        243,
+        61
+      ],
+      [
+        239,
+        40
+      ],
+      [
+        254,
+        39
+      ],
+      [
+        235,
+        32
+      ],
+      [
+        230,
+        40
+      ],
+      [
+        254,
+        37
+      ],
+      [
+        233,
+        50
+      ],
+      [
+        233,
+        98
+      ],
+      [
+        215,
+        34
+      ],
+      [
+        232,
+        53
+      ],
+      [
+        261,
+        40
+      ],
+      [
+        233,
+        57
+      ],
+      [
+        228,
+        30
+      ],
+      [
+        238,
+        1
+      ],
+      [
+        228,
+        57
+      ],
+      [
+        261,
+        6
+      ],
+      [
+        235,
+        6
+      ],
+      [
+        262,
+        115
+      ]
+    ],
+    "recovery": [
+      [
+        293,
+        21
+      ],
+      [
+        458,
+        60
+      ],
+      [
+        506,
+        1
+      ],
+      [
+        297,
+        61
+      ],
+      [
+        522,
+        97
+      ],
+      [
+        344,
+        87
+      ],
+      [
+        516,
+        38
+      ],
+      [
+        549,
+        11
+      ],
+      [
+        492,
+        126
+      ],
+      [
+        543,
+        57
+      ],
+      [
+        373,
+        114
+      ],
+      [
+        276,
+        50
+      ],
+      [
+        469,
+        77
+      ],
+      [
+        351,
+        30
+      ],
+      [
+        478,
+        30
+      ],
+      [
+        283,
+        3
+      ],
+      [
+        539,
+        6
+      ],
+      [
+        438,
+        60
+      ],
+      [
+        435,
+        125
+      ],
+      [
+        527,
+        38
+      ],
+      [
+        465,
+        77
+      ],
+      [
+        294,
+        87
+      ],
+      [
+        281,
+        77
+      ],
+      [
+        290,
+        84
+      ]
+    ]
+  }
+}

@@ -1,0 +1,309 @@
+{
+  "checkpoint_sha256": "c8e2507a5b5127421ede392d6554f57f6c54a36931d6d8b160ef9c350081df8b",
+  "actor_sha256": "d93b80b584aa8103f577c65e7ded69bf5e9ede2372ac4a9ec70bd37ce04681e3",
+  "world_sha256": "9969def4545076eb7e8c7f5af9819f7a45517c3e722694238150c5c6585369af",
+  "optimizer_updates": 0,
+  "pools": {
+    "touchdown": {
+      "starts": 16,
+      "valid_starts": 2,
+      "selected_lanes_by_start": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "post_touchdown": {
+      "starts": 16,
+      "valid_starts": 16,
+      "selected_lanes_by_start": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9
+      ]
+    },
+    "recovery_failure": {
+      "starts": 16,
+      "valid_starts": 7,
+      "selected_lanes_by_start": [
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    "stable_recovery": {
+      "starts": 16,
+      "valid_starts": 8,
+      "selected_lanes_by_start": [
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        4
+      ]
+    },
+    "initial_archive": {
+      "starts": 7,
+      "valid_starts": 7,
+      "selected_lanes_by_start": [
+        41,
+        40,
+        40,
+        39,
+        39,
+        39,
+        38
+      ]
+    }
+  },
+  "pooled": {
+    "requested": 12,
+    "layout": [
+      {
+        "stage": "touchdown",
+        "lane_episode_tick": [
+          [
+            42,
+            4,
+            296
+          ]
+        ]
+      },
+      {
+        "stage": "post_touchdown",
+        "lane_episode_tick": [
+          [
+            12,
+            5,
+            452
+          ],
+          [
+            28,
+            4,
+            478
+          ],
+          [
+            54,
+            4,
+            427
+          ]
+        ]
+      },
+      {
+        "stage": "recovery_failure",
+        "lane_episode_tick": [
+          [
+            68,
+            3,
+            617
+          ]
+        ]
+      },
+      {
+        "stage": "stable_recovery",
+        "lane_episode_tick": [
+          [
+            72,
+            3,
+            568
+          ]
+        ]
+      },
+      {
+        "stage": "initial_archive",
+        "lane_episode_tick": [
+          [
+            9,
+            0,
+            384
+          ],
+          [
+            10,
+            0,
+            384
+          ],
+          [
+            12,
+            0,
+            384
+          ]
+        ]
+      },
+      {
+        "stage": "touchdown",
+        "lane_episode_tick": [
+          [
+            67,
+            4,
+            298
+          ]
+        ]
+      },
+      {
+        "stage": "post_touchdown",
+        "lane_episode_tick": [
+          [
+            58,
+            4,
+            380
+          ],
+          [
+            63,
+            4,
+            457
+          ]
+        ]
+      }
+    ],
+    "gate_lanes": 12,
+    "coverage": {
+      "head": "recovery",
+      "reference_count": 38,
+      "verified_reference_count": 38,
+      "tracking_weight": 1.0,
+      "success_guided_available": true,
+      "mode": "success-guided",
+      "reason": null,
+      "selected_start_lanes": 12,
+      "gate_active_selected_start_lanes": 12,
+      "reference_usage_by_sha256": {
+        "dd64179aaeee5d3eb5c0c39e99a3aad1aa0f7e8eee4fe321274147c8d2f15843": 4,
+        "d406c1330488d7a20ee012103524b49d001817db8b4f23767dbbb4a84009663e": 2,
+        "c780031cf4ee27da55ff24937e738806146a7347d942eb31d0ce1a833cb63d64": 1,
+        "a578ad1237f74cde9f860da7e66257d6807d48257253aec3ad223e0a4e66feb8": 1,
+        "921767d7aff4d3d52c940dbc39bce20ee00f790e8b7974eeda8847ef62ea1887": 1,
+        "4a4e34dc4ba30290e5f1b21cbb5bc4d65519c49fbb58eb7da5fd39116617602d": 1,
+        "7cdeb162531103fb9252e27240c61b2fc0d71d779dee712a9b9e5732d669b418": 1,
+        "58ac561eb9f7ef4f1268e078432c4f83290be9dbd89f5bbd1ec89bcd4ad84578": 1
+      },
+      "matched_lanes": 12,
+      "effective_weight_sum": 766.4723854064941,
+      "tracking_applied": true,
+      "per_record": [
+        {
+          "gate_lanes": 1,
+          "matched": 1,
+          "tracking_lane_steps": 64,
+          "task_gradient_norm": 26.824535369873047,
+          "tracking_gradient_norm": 0.06952418386936188,
+          "anchor_gradient_norm": 0.11587522178888321,
+          "task_tracking_cosine": 0.2956901788711548
+        },
+        {
+          "gate_lanes": 3,
+          "matched": 3,
+          "tracking_lane_steps": 192,
+          "task_gradient_norm": 1.9150744676589966,
+          "tracking_gradient_norm": 0.18032053112983704,
+          "anchor_gradient_norm": 0.23991504311561584,
+          "task_tracking_cosine": 0.4087943136692047
+        },
+        {
+          "gate_lanes": 1,
+          "matched": 1,
+          "tracking_lane_steps": 64,
+          "task_gradient_norm": 74.35102844238281,
+          "tracking_gradient_norm": 0.2835363745689392,
+          "anchor_gradient_norm": 0.13282200694084167,
+          "task_tracking_cosine": 0.46643930673599243
+        },
+        {
+          "gate_lanes": 1,
+          "matched": 1,
+          "tracking_lane_steps": 64,
+          "task_gradient_norm": 4.334278583526611,
+          "tracking_gradient_norm": 0.020816832780838013,
+          "anchor_gradient_norm": 0.09976909309625626,
+          "task_tracking_cosine": 0.08142007142305374
+        },
+        {
+          "gate_lanes": 3,
+          "matched": 3,
+          "tracking_lane_steps": 192,
+          "task_gradient_norm": 6.133063793182373,
+          "tracking_gradient_norm": 0.10786684602499008,
+          "anchor_gradient_norm": 0.19707080721855164,
+          "task_tracking_cosine": 0.3890516459941864
+        },
+        {
+          "gate_lanes": 1,
+          "matched": 1,
+          "tracking_lane_steps": 64,
+          "task_gradient_norm": 40.166770935058594,
+          "tracking_gradient_norm": 0.05111308768391609,
+          "anchor_gradient_norm": 0.07446584105491638,
+          "task_tracking_cosine": 0.3025285601615906
+        },
+        {
+          "gate_lanes": 2,
+          "matched": 2,
+          "tracking_lane_steps": 128,
+          "task_gradient_norm": 22.73202896118164,
+          "tracking_gradient_norm": 0.04729913920164108,
+          "anchor_gradient_norm": 0.11744845658540726,
+          "task_tracking_cosine": -0.10767000913619995
+        }
+      ]
+    },
+    "gradients": {
+      "task_gradient_norm": 13.81704330444336,
+      "anchor_gradient_norm": 0.14488713443279266,
+      "tracking_gradient_norm": 0.07942962646484375,
+      "task_tracking_cosine": 0.4058421850204468
+    },
+    "valid_critic_lane_steps": 768
+  },
+  "wm_handoff": null,
+  "forward_check": null,
+  "scope": "Offline gradient audit on recorded, causally gated Recovery starts"
+}

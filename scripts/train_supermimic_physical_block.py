@@ -117,6 +117,7 @@ def main():
     parser.add_argument('--resume-warmup-ticks',type=int,default=0,
                         help='Optional native ticks before a resumed stream; zero preserves exact block budgets')
     parser.add_argument('--actor-update-budget',type=int,default=None,help='Legacy single-block budget')
+    parser.add_argument('--recovery-effective-start-lanes',type=int,default=12,help='Pool distinct gated Recovery episodes across archived G07 snapshots per optimizer proposal')
     parser.add_argument('--recovery-update-budget',type=int,default=256,
                         help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
     parser.add_argument('--approach-update-budget',type=int,default=256,
@@ -199,6 +200,8 @@ def main():
     # absent, instead of spending minutes constructing a simulator that can
     # only fail later on a hard-coded cuda:0 tensor allocation.
     import torch
+    if not 1<=args.recovery_effective_start_lanes<=128:
+        parser.error('Recovery effective start lanes must be in [1,128]')
     if not torch.cuda.is_available() or torch.cuda.device_count() < 1:
         parser.error('CUDA GPU is required for SuperMimic training; no usable CUDA device is visible')
     from quadsmash.rl.supermimic_training_stage_v1 import resolve_training_stage
@@ -849,7 +852,7 @@ def run(args, *, alternating=None):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
+        config=dict(recovery_effective_start_lanes=args.recovery_effective_start_lanes,sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=args.world_learning_rate,critic_lr=2e-4,
             wm_forward_guard_sha256=forward_guard.spec_sha256 if forward_guard else None,wm_replay_handoff=replay_handoff,
             wm_separate_supervision=args.wm_separate_supervision,wm_direct_long_body_supervision=args.wm_direct_long_body_supervision,wm_active_flight_batch=args.wm_active_flight_batch,wm_natural_flight_batch=args.wm_natural_flight_batch,wm_natural_flight_loss=args.wm_natural_flight_loss,
@@ -1302,6 +1305,7 @@ def run(args, *, alternating=None):
                 if block_name=='approach':
                     active_pool=[item for item in pool if approach_active(item)]
                     pool=active_pool if active_pool else approach_pool
+                recovery_rows=None
                 if block_name=='recovery':
                     eligible=[]
                     for item in pool:
@@ -1315,6 +1319,19 @@ def run(args, *, alternating=None):
                     start_sampling=dict(source='recovery_event_pool' if any(original is item for item in dynamic_pool)
                                         else 'verified_initial_archive',pool_size=len(pool),eligible_starts=len(eligible),
                                         effective_start_lanes=int(lane_mask.sum()))
+                    if args.recovery_effective_start_lanes>1:
+                        from quadsmash.rl.supermimic_recovery_batches import recovery_batch
+                        categories={name:{id(v) for v in replay.stage_starts.get(name,[])}
+                                    for name in dynamic_names}
+                        families={name:[] for name in (*categories,'initial_archive')}
+                        for item,mask in eligible:
+                            family=next((k for k,ids in categories.items() if id(item) in ids),'initial_archive')
+                            families[family].append((item,mask))
+                        recovery_rows,layout=recovery_batch(families,args.recovery_effective_start_lanes,attempts)
+                        row=recovery_rows[0]
+                        start_sampling.update(source='pooled_recovery_episodes',records=layout,
+                            requested_lanes=args.recovery_effective_start_lanes,
+                            effective_start_lanes=sum(len(r['lane_episode_tick']) for r in layout))
                 else:
                     row=pool[(attempts-1)%len(pool)]
                 if block_name=='approach':
@@ -1322,7 +1339,8 @@ def run(args, *, alternating=None):
                     if sampled is not None and training_lane_available(sampled):row=sampled
                     else:start_sampling['fallback']='verified_initial_archive_or_event_pool';start_sampling['excluded_holdout_only_start']=sampled is not None
                 state=training_state(row);check_stop();trainer.actor_attempts=attempts-1
-                stats=trainer.imagine_update(state)
+                actor_start=(tuple([state]+[training_state(r) for r in recovery_rows[1:]]) if recovery_rows else state)
+                stats=trainer.imagine_update(actor_start)
                 stats['actor_start_sampling']=start_sampling
                 stats['quality_protection']=quality
                 post_native_metrics=summarize_native_episodes(completed_records)

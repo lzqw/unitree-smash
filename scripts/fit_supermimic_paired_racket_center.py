@@ -87,13 +87,18 @@ def main():
     for name in ('body','ball','replay','stage','packed','training-collection','output'):
         cli.add_argument('--'+name,type=Path,required=True)
     cli.add_argument('--device',choices=('cpu','cuda:0'),default='cuda:0')
+    cli.add_argument('--paired-development',type=Path,help='Fit shared Body layers on absolute and signed trajectories and select on independent cases')
+    cli.add_argument('--long-body-anchor', action='store_true', help='Add measured 32/64-step Body and racket targets to the paired shared-layer fit')
+    cli.add_argument('--audit-center-timing',action='store_true',help='Compare fixed timing offsets on signed Body trajectories with no optimizer updates')
     a=cli.parse_args()
+    if (a.long_body_anchor or a.audit_center_timing) and not a.paired_development:
+        cli.error('The shared Body calibration and timing diagnostic require a paired development panel')
     if a.output.exists():
         raise FileExistsError(a.output)
     torch.manual_seed(20261121)
     torch.set_num_threads(3)
     if a.device.startswith('cuda'):
-        torch.cuda.set_per_process_memory_fraction(.09)
+        torch.cuda.set_per_process_memory_fraction(.18 if a.paired_development else .09)
     parent=torch.load(a.body,map_location='cpu',mmap=True,weights_only=True)
     parent_hash=sha(a.body)
     task=parent['source_manifest']['task_contract']
@@ -131,6 +136,10 @@ def main():
     train,receipt=training_windows(a.training_collection,task,contract(),excluded)
     if len(train)!=1:
         raise ValueError('Expected one registered 16-step excitation specification')
+    if a.paired_development:
+        from supermimic_paired_body_candidate import fit_candidate
+        fit_candidate(a,world,ball,data,launches,eligible,train,receipt,parent,fit,task,contract())
+        return
     lanes,signed=train[0]
     if len(lanes)<2:
         raise ValueError('No independent signed training lanes')

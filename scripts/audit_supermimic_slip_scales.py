@@ -22,6 +22,7 @@ def main():
     for key in ('fit', 'physics-calibration', 'development', 'body', 'online-body', 'source-stage', 'output'):
         parser.add_argument('--' + key, type=Path, required=True)
     parser.add_argument('--compare-endpoint-twist', action='store_true', help='Compare the derivative of the interpolated pose with the calibrated surface velocity')
+    parser.add_argument('--racket-channels', action='store_true', help='Replace individual Body racket channels on the wide-scale panel with native measurements')
     args = parser.parse_args()
     torch.set_num_threads(2)
     fit = read(args.fit)
@@ -67,6 +68,12 @@ def main():
         scores[name] = dict(epsilon_request=epsilon, stable_observable_lanes=sorted(observable),
                             groups={k:groups.count(k) for k in sorted(set(groups))},
                             native_racket=oracle['candidate'], body_racket=body['metrics'])
+        if args.racket_channels and name == 'wide':
+            swaps = {key:body_transfer(root,args.body,prior,model,groups,noise,seq,cmds,args.online_body,args.source_stage,measured=key)
+                     for key in ('center','rotation','twist','both')}
+            expected = torch.tensor([case['candidate']['delta_mps'] for case in oracle['cases']])
+            torch.testing.assert_close(torch.tensor(swaps['both']['predicted_delta_mps']),expected,atol=1e-6,rtol=1e-6)
+            scores[name]['racket_channel_replacement'] = {key:row['metrics'] for key,row in swaps.items()}
         if args.compare_endpoint_twist:
             from audit_supermimic_impact_twist import EndpointTwistPrior
             alternative = EndpointTwistPrior(normal_impulse_scale=prior.normal_impulse_scale).eval()
