@@ -412,7 +412,7 @@ def run(args, *, alternating=None):
     from quadsmash.rl.supermimic_timebase_v2 import Timebase
     from quadsmash.rl.supermimic_task_contract import resolve_task_contract,make_task_cfg,zero_panel_reset_noise
     from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
-    from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
+    from quadsmash.rl.supermimic_native_metrics import NativeEpisodeStatistics, summarize_native_episodes
     from quadsmash.rl.supermimic_run_lifecycle import close_resource,stage
     # The alternating schedule is constructed in main(), but execution happens
     # inside this function.  Import the runner here as well so the short
@@ -1305,7 +1305,8 @@ def run(args, *, alternating=None):
             # discount formula.
             while critic_coverage_blocks<len(critic_starts):cover_critic()
             ensure_critic()
-        cursor=0;completed_returns=[];completed_discounted=[];completed_records=[];phase='LEARNING'
+        cursor=0;completed_returns=[];completed_discounted=[];phase='LEARNING'
+        episode_stats=NativeEpisodeStatistics()
         def verify_online_forward(head,attempt):
             if forward_guard is None:
                 return None
@@ -1473,7 +1474,7 @@ def run(args, *, alternating=None):
                   training_stage=args.training_stage)
             return
         def run_block(block_name, names, budget, proposal_limit,cycle_index=0,*,managed_refresh=False):
-            nonlocal completed_returns,completed_discounted,completed_records,obs,tick,cursor
+            nonlocal obs,tick,cursor
             nonlocal global_attempt_id,global_accepted_id,global_rejected,global_backtracked
             sampling_history_start=len(replay.actor_start_bank.sampling_history)
             if budget<=0:return 0
@@ -1510,7 +1511,7 @@ def run(args, *, alternating=None):
                 proposal_checkpoint=args.output/('pre_block.pt' if research else f'pre_proposal_{cycle_index}_{block_name}.pt')
                 if collect_block:
                     save(proposal_checkpoint.name)
-                pre_native_metrics=summarize_native_episodes(completed_records)
+                pre_native_metrics=episode_stats.snapshot()
                 attempts+=1;global_attempt_id+=1;trainer.block_attempts=attempts
                 invocation_heads[block_name]['attempts']+=1
                 progress['attempts']=attempts;progress['proposal_in_flight']=True
@@ -1537,21 +1538,22 @@ def run(args, *, alternating=None):
                                 scope='mixed-policy monitoring, not frozen score')
                             completed_returns.append(record['native_episode_return'])
                             completed_discounted.append(record['native_episode_discounted_return'])
-                            completed_records.append(record)
+                            episode_stats.add(record)
                             replay.actor_start_bank.label_terminal(record,replay.current_stream)
                             with (args.output/'native_episodes.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                             if writer is not None:
-                                step=int(tick*128); total=len(completed_records)
-                                measured=summarize_native_episodes(completed_records)
+                                step=int(tick*128)
+                                measured=episode_stats.snapshot()
                                 metric_names={'qualified_airborne_string_contact_rate':'qualified_contact_rate','ball_side_complete_except_recovery_rate':'ball_side_rate','recovery_given_airborne_string_contact':'conditional_recovery_rate','complete5_rate':'complete5_rate'}
                                 for key,name in metric_names.items():
                                     if measured[key] is not None:writer.add_scalar('native/'+name,measured[key],step)
-                                body=[x['body_ground_seen'] for x in completed_records if x.get('body_ground_seen') is not None]
-                                writer.add_scalar('native/body_ground_evidence_count',len(body),step)
-                                if len(body)==total:writer.add_scalar('native/body_ground_rate',sum(map(bool,body))/total,step)
+                                writer.add_scalar('native/body_ground_evidence_count',episode_stats.body_observed,step)
+                                if episode_stats.body_observed == episode_stats.episodes:
+                                    writer.add_scalar('native/body_ground_rate',episode_stats.body_contacts/episode_stats.episodes,step)
                                 writer.add_scalar('native/episode_return',float(record['native_episode_return']),step)
                                 writer.add_scalar('native/return_ema',sum(completed_returns[-16:])/len(completed_returns[-16:]),step)
-                                writer.flush()
+                        if writer is not None and cursor < len(env.rally_records):
+                            writer.flush()
                         cursor=len(env.rally_records)
                 collect_s=time.perf_counter()-started;check_stop()
                 if collect_block:
@@ -1674,7 +1676,7 @@ def run(args, *, alternating=None):
                     stats['research_elapsed_s']=time.monotonic()-research_started
                 stats['actor_start_sampling']=start_sampling
                 stats['quality_protection']=quality
-                post_native_metrics=summarize_native_episodes(completed_records)
+                post_native_metrics=episode_stats.snapshot()
                 if stats['update_accepted']:
                     invocation_heads[block_name]['accepted']+=1
                     if not any(v>0.0 for v in stats['parameter_max_changes'].values()):

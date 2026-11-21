@@ -56,6 +56,7 @@ class NativeEpisodeStatistics:
     """O(1) streaming summary; each input is one independently scored terminal."""
     def __init__(self):
         self.episodes = self.contacts = self.recoveries = self.ball_ok = self.complete = 0
+        self.body_observed = self.body_contacts = 0
         self.return_count = 0
         self.return_mean = self.return_m2 = 0.
         self.return_min = self.return_max = self.last_return = None
@@ -72,6 +73,9 @@ class NativeEpisodeStatistics:
                 raise ValueError('Invalid native terminal return evidence')
         contact=bool(row['qualified_airborne_string_contact'])
         self.episodes += 1
+        if row.get('body_ground_seen') is not None:
+            self.body_observed += 1
+            self.body_contacts += int(bool(row['body_ground_seen']))
         self.contacts += int(contact)
         self.recoveries += int(contact and bool(row['recovery_success']))
         self.ball_ok += int(bool(row['ball_side_complete_except_recovery']))
