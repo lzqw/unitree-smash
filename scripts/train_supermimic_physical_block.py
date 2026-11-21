@@ -414,7 +414,7 @@ def run(args, *, alternating=None):
     from quadsmash.rl.supermimic_timebase_v2 import Timebase
     from quadsmash.rl.supermimic_task_contract import resolve_task_contract,make_task_cfg,zero_panel_reset_noise
     from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
-    from quadsmash.rl.supermimic_native_metrics import NativeEpisodeStatistics, summarize_native_episodes
+    from quadsmash.rl.supermimic_native_metrics import NativeEpisodeStatistics, count_first_episode_body_contacts, summarize_native_episodes
     from quadsmash.rl.supermimic_run_lifecycle import close_resource,stage
     # The alternating schedule is constructed in main(), but execution happens
     # inside this function.  Import the runner here as well so the short
@@ -1584,8 +1584,7 @@ def run(args, *, alternating=None):
                             indices = (torch.arange(n) + replay.write_pos - n) % replay.capacity
                             episode = replay.data['episode'][indices].reshape(n, replay.lanes)
                             body = replay.data['next_event_state'][indices, :, 5] > replay.data['event_state'][indices, :, 5]
-                            first_body_lanes |= ((episode == 0) & body).any(0)
-                            body_count = int(first_body_lanes.sum())
+                            body_count = count_first_episode_body_contacts(first_body_lanes, episode, body)
                         sample = dict(native_ticks=tick, accepted_id=global_accepted_id,
                                       completed_native_episodes=len(completed_returns), first_episode_body_cases=body_count)
                         with (args.output/'native_collection_history.jsonl').open('a') as stream:

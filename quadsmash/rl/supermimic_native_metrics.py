@@ -52,6 +52,12 @@ class NativeReturnAccumulator:
         self.steps[ids] = 0
 
 
+def count_first_episode_body_contacts(seen_lanes, episode, body_edge):
+    """Accumulate first-episode body contacts per lane across native collection blocks."""
+    seen_lanes.logical_or_(((episode == 0) & body_edge).any(dim=0))
+    return int(seen_lanes.sum())
+
+
 class NativeEpisodeStatistics:
     """O(1) streaming summary; each input is one independently scored terminal."""
     def __init__(self):

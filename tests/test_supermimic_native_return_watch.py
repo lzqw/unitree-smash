@@ -67,3 +67,14 @@ def test_small_terminal_cohort_with_full_panel_evidence_triggers_at_collection()
             assert decision['cohorts'][-1]['first_episode_body_cases'] == 2
         else:
             assert decision is None
+
+
+def test_native_collection_accumulates_distinct_body_lanes_before_first_reset():
+    import torch
+    from quadsmash.rl.supermimic_native_metrics import count_first_episode_body_contacts
+    seen = torch.zeros(3, dtype=torch.bool)
+    def collect(episode, edges):
+        return count_first_episode_body_contacts(seen, torch.tensor(episode), torch.tensor(edges).bool())
+    assert collect([[0, 0, 0], [0, 0, 1]], [[1, 0, 0], [1, 0, 1]]) == 1
+    assert collect([[1, 0, 1], [1, 0, 1]], [[1, 0, 1], [0, 1, 0]]) == 2
+    assert seen.tolist() == [True, True, False]
