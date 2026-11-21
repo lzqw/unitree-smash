@@ -8,7 +8,7 @@ import sys
 
 import torch
 
-from compare_supermimic_fixed_stages import load_run
+from compare_supermimic_fixed_stages import first_episode_failure_flips, load_run
 from run_supermimic_research_scale import digest, run_registered_arm
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
 from quadsmash.rl.supermimic_physical_run_guard_v1 import atomic_torch_save
@@ -30,16 +30,8 @@ def native_flips(before, after):
     a,b = first_rows(before),first_rows(after)
     if len(a) != 128 or a.keys() != b.keys():
         raise ValueError('Incomplete matched first-episode records')
-    dt = read(before/'task_contract.json')['physics_dt_s']
-    def frame_first(r):
-        if not r['had_contact'] or not r['frame_hit']:
-            return False
-        return (not r['string_hit'] or r['first_string_time_s'] > r['contact_time_s'] + dt/2)
-    qualified = 'qualified_airborne_string_contact'
-    return dict(new_body_ground=[k for k in a if not a[k]['body_ground_seen'] and b[k]['body_ground_seen']],
-                avoided_body_ground=[k for k in a if a[k]['body_ground_seen'] and not b[k]['body_ground_seen']],
-                qualified_to_frame_first=[k for k in a if a[k][qualified] and not b[k][qualified] and frame_first(b[k])],
-                frame_first_to_qualified=[k for k in a if not a[k][qualified] and frame_first(a[k]) and b[k][qualified]])
+    return first_episode_failure_flips(a, b, read(before/'task_contract.json')['physics_dt_s'])
+
 
 
 def compose(parent, destination):

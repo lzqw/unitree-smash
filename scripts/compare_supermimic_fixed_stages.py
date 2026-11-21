@@ -145,6 +145,25 @@ def paired_task_outcomes(result):
                                    seed=seed, resamples=len(means)))
 
 
+def first_episode_failure_flips(before, after, physics_dt):
+    """Track body-ground changes and qualified-string/frame-first switches on matched cases."""
+    if before.keys() != after.keys():
+        raise ValueError('Failure comparison requires identical case IDs')
+
+    def frame_first(row):
+        return (row['had_contact'] and row['frame_hit']
+                and (not row['string_hit'] or row['first_string_time_s'] > row['contact_time_s'] + physics_dt / 2))
+
+    def switched(string_case, frame_case):
+        return (string_case['qualified_airborne_string_contact']
+                and not frame_case['qualified_airborne_string_contact'] and frame_first(frame_case))
+
+    return dict(new_body_ground=[k for k in before if after[k]['body_ground_seen'] and not before[k]['body_ground_seen']],
+                avoided_body_ground=[k for k in before if before[k]['body_ground_seen'] and not after[k]['body_ground_seen']],
+                qualified_to_frame_first=[k for k in before if switched(before[k], after[k])],
+                frame_first_to_qualified=[k for k in before if switched(after[k], before[k])])
+
+
 def discordant_landing_evidence(before, after, paired):
     """Join first-episode native flight measurements to the officially scored recovery flips."""
     paths = [folder / 'episodes.jsonl' for folder in (before, after)]
@@ -165,6 +184,10 @@ def discordant_landing_evidence(before, after, paired):
     if any(set(rows) != set(paired['case_ids']) for rows in stages):
         raise ValueError('Raw landing measurements and official evaluation have different cases')
     result = dict(available=True, raw_sha256=[digest(p) for p in paths])
+    required = {'body_ground_seen', 'had_contact', 'frame_hit', 'string_hit', 'first_string_time_s',
+                'contact_time_s', 'qualified_airborne_string_contact'}
+    if all(required.issubset(row) for stage in stages for row in stage.values()):
+        result['failure_flips'] = first_episode_failure_flips(*stages, read(before, 'task_contract')['physics_dt_s'])
     fields = ('body_landing', 'stable_recovery', 'qualified_contact_landing', 'recovery_s',
               'terminal_root_height_m', 'maximum_body_ground_force_n', 'contact_flight_landing_s', 'rally_contact_time_s')
     for category in ('improved_cases', 'regressed_cases'):

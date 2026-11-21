@@ -149,3 +149,19 @@ def test_native_panel_reports_flips_and_return_interval_on_their_own_denominator
     assert cached['common_contact_recovery/gained_cases'] == 1
     assert cached['common_contact_recovery/lost_cases'] == 0
     assert cached['contact/gained_cases'] == cached['contact/lost_cases'] == 1
+
+
+def test_failure_flips_require_a_frame_first_and_count_ground_on_all_cases():
+    from scripts.compare_supermimic_fixed_stages import first_episode_failure_flips
+
+    string = dict(qualified_airborne_string_contact=True, had_contact=True, body_ground_seen=False,
+                  frame_hit=False, string_hit=True, first_string_time_s=1., contact_time_s=1.)
+    frame = dict(string, qualified_airborne_string_contact=False, frame_hit=True,
+                 first_string_time_s=1.0000625, body_ground_seen=True)
+    same_substep = dict(frame, first_string_time_s=1.)
+    miss = dict(string, qualified_airborne_string_contact=False, had_contact=False, string_hit=False)
+    before = dict(a=string, b=frame, c=string, d=miss)
+    after = dict(d=dict(miss, body_ground_seen=True), c=same_substep, b=string, a=frame)
+    assert first_episode_failure_flips(before, after, .0000625) == dict(
+        new_body_ground=['a', 'c', 'd'], avoided_body_ground=['b'],
+        qualified_to_frame_first=['a'], frame_first_to_qualified=['b'])

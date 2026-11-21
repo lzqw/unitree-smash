@@ -56,6 +56,8 @@ def paired_scalars(result):
         metrics[name+'/lost_cases'] = len(comparison['regressed_cases'])
     for field in ('common_contacts', 'recovered_before', 'recovered_after'):
         metrics['common_contact_recovery/'+field] = recovery[field]
+    for name, cases in result.get('landing_diagnostics', {}).get('failure_flips', {}).items():
+        metrics['native_failure_flips/'+name] = len(cases)
     change = outcomes['native_return']
     low, high = change['descriptive_paired_case_bootstrap_95']
     metrics.update({'native_return/mean_delta': change['mean'], 'native_return/median_delta': change['median'],
@@ -119,6 +121,15 @@ def checkpoint_interactions(checkpoint, native_origin, lanes):
     return training_interactions(native_origin, checkpoint['native_ticks'], lanes, receipts)
 
 
+def log_fixed_scores(writer, metrics, positions):
+    for name in ('qualified_airborne_string_contact', 'ball_side_complete_except_recovery', 'complete5',
+                 'body_ground_seen', 'conditional_recovery_count', 'recovery_given_airborne_string_contact',
+                 'native_episode_return_mean'):
+        if metrics.get(name) is not None:
+            for axis, position in positions.items():
+                writer.add_scalar(f'fixed128/{axis}/{name}', metrics[name], position)
+
+
 def evaluate(folder, step, writer):
     reg=json.loads((folder/'registration.json').read_text())
     cmd=reg['command']
@@ -128,6 +139,10 @@ def evaluate(folder, step, writer):
     old=reg['initial']['actor_sha256']
     baseline=folder.parent/'research_fixed128_zero'
     initial_metrics=score_fixed128(baseline, initial_checkpoint, reg['initial']['checkpoint_sha256'], old, execution_root, seed)
+    if step == 0:
+        log_fixed_scores(writer, initial_metrics, dict(retained_updates=0, new_native_env_steps=0, training_wall_seconds=0))
+        writer.flush()
+        return
     train=folder/'train'
     checkpoint=train/f'research_{step:04d}.pt'
     ck=torch.load(checkpoint,map_location='cpu',mmap=True,weights_only=False)
@@ -177,14 +192,9 @@ def evaluate(folder, step, writer):
     budget_path.write_text(json.dumps(budget, indent=2)+'\n')
     for name, value in budget.get('at_actor_checkpoint', {}).items():
         writer.add_scalar('interactions_at_checkpoint/'+name, value, step)
-    for k in ('qualified_airborne_string_contact','ball_side_complete_except_recovery','complete5',
-              'conditional_recovery_count','recovery_given_airborne_string_contact','native_episode_return_mean'):
-        for axis,pos in positions.items():
-            tag='fixed128/'+axis+'/'+k
-            if step == 128 and initial_metrics.get(k) is not None:
-                writer.add_scalar(tag,initial_metrics[k],0)
-            if metrics.get(k) is not None:
-                writer.add_scalar(tag,metrics[k],pos)
+    if step == 128:
+        log_fixed_scores(writer, initial_metrics, dict.fromkeys(positions, 0))
+    log_fixed_scores(writer, metrics, positions)
     for name, value in paired_scalars(result).items():
         for axis, position in positions.items():
             writer.add_scalar(f'fixed128_paired/{axis}/{name}', value, position)
