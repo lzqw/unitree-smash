@@ -51,7 +51,7 @@ def development_window(root,task,execution,excluded):
         raise ValueError('Unexpected held-out physical cases')
     result={sign:recorded_body_inputs(runs[sign]['raw'],ids,task['control_dt_s'])
             for sign in ('minus','plus')}
-    torch.testing.assert_close(result['minus']['state'],result['plus']['state'],rtol=0,atol=0)
+    torch.testing.assert_close(result['minus']['state'][0],result['plus']['state'][0],rtol=0,atol=0)
     return ids,result
 
 
@@ -62,8 +62,12 @@ def recorded_body_inputs(raw, lanes, dt):
         raise ValueError('Expected an uninterrupted 16-step native trajectory')
     elapsed=torch.stack([initial['elapsed_s'][lanes],*[step['elapsed_s'][lanes] for step in steps]])
     torch.testing.assert_close(elapsed.diff(dim=0),torch.full_like(elapsed[:-1],dt),atol=2e-5,rtol=0)
-    return dict(state=encode_physical(initial)[lanes][None],feet=initial['foot_contact'][lanes][None],
-        present=initial['ball_present'][lanes][None],elapsed=elapsed[:-1],
+    def boundaries(first, field):
+        return torch.stack([first[lanes], *[step[field][lanes] for step in steps[:-1]]])
+
+    return dict(state=boundaries(encode_physical(initial), 'next_state'),
+        feet=boundaries(initial['foot_contact'], 'foot_contact'),
+        present=boundaries(initial['ball_present'], 'ball_present'),elapsed=elapsed[:-1],
         targets=torch.stack([step['final_joint_targets'][lanes] for step in steps]),
         previous_action=torch.stack([initial['final_action'][lanes],*[step['final_action'][lanes] for step in steps[:-1]]]),
         next_state=torch.stack([step['next_state'][lanes] for step in steps]))
@@ -164,10 +168,36 @@ def center_timing(world, ball, window, launches, lanes):
     centers=[]
     actual=[]
     components={}
+    boundary_errors={}
+    motion=dict(state=window['state'][0],feet=window['feet'][0],present=window['present'][0])
     for i,state in enumerate(signed_rollout(world,ball,window,launches)):
         centers.append(fields(state,world.geometry)[:,:3])
         truth=window['next_state'][i]
         actual.append(fields(truth,world.geometry)[:,:3])
+        if i:
+            torch.testing.assert_close(window['state'][i],window['next_state'][i-1],rtol=0,atol=0)
+        local,_,_=ball_transition(world,ball,window['state'][i],window['targets'][i],
+            window['previous_action'][i],window['feet'][i],window['present'][i],window['elapsed'][i],launches)
+        if i==0:
+            torch.testing.assert_close(local,state,rtol=0,atol=0)
+        boundary_errors[i+1]={}
+        # Fixed trapezoidal arm readout. Feed its predicted pose back at every tick.
+        # Neither arm velocities nor positions are taken from the recorded future.
+        old=motion['state']
+        ordinary,feet,present=ball_transition(world,ball,old,window['targets'][i],
+            window['previous_action'][i],motion['feet'],motion['present'],window['elapsed'][i],launches)
+        consistent=ordinary.clone()
+        consistent[:,25:31]=old[:,25:31]+(.5*world.dt)*(old[:,43:49]+ordinary[:,43:49])
+        motion=dict(state=consistent,feet=feet,present=present)
+        for branch,pred in (('free',state),('measured_previous',local),('trapezoidal_arm',consistent)):
+            signed_errors={}
+            for key,values in [('arm_q_rad',pred[:,25:31]-truth[:,25:31]),
+                               ('arm_qd_rad_s',pred[:,43:49]-truth[:,43:49]),
+                               ('center_m',fields(pred,world.geometry)[:,:3]-actual[-1])]:
+                low,high=values.chunk(2)
+                signed_errors[key]=dict(midpoint_rmse=float(((high+low)/2).square().mean().sqrt()),
+                                        difference_rmse=float((high-low).square().mean().sqrt()))
+            boundary_errors[i+1][branch]=signed_errors
         if i+1 in CHECKS:
             # Replace pose only at readout. The next tick still uses the free rollout.
             components[i+1]={}
@@ -195,7 +225,7 @@ def center_timing(world, ball, window, launches, lanes):
         errors=torch.stack([(prediction[ticks+offset]-target[ticks]).square().mean((0,2)) for offset in offsets])
         result[name]=dict(rmse_m_by_offset={s:float(e.mean().sqrt()) for s,e in zip(offsets,errors,strict=True)},
                          per_lane_rmse_m={lane:row for lane,row in zip(lanes,errors.sqrt().T.tolist(),strict=True)})
-    return dict(native_ticks=(ticks+1).tolist(),model_offsets=list(offsets),fk_pose_substitutions=components,**result)
+    return dict(native_ticks=(ticks+1).tolist(),model_offsets=list(offsets),fk_pose_substitutions=components,per_tick_prediction_errors=boundary_errors,**result)
 
 
 def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,task,execution):
@@ -221,6 +251,16 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
     rng=torch.Generator().manual_seed(61037)
     devwin=merged(signed_dev,torch.arange(len(held)),args.device)
     devlaunch=launch[held].repeat(2,1).to(args.device)
+    if args.audit_center_timing or args.audit_arm_drive:
+        if parent['source_manifest']['joint_names'][12:] != ['joint'+str(i) for i in range(1,7)]:
+            raise ValueError('Arm channels differ from the recorded six-joint layout')
+    if args.audit_arm_drive:
+        from supermimic_arm_drive_audit import audit_drive
+        audit_drive(args,world,ball,merged(signed,torch.arange(len(lanes)),args.device),
+                    training_launch.repeat(2,1).to(args.device),devwin,devlaunch,data,eligible,launch,
+                    dict(world=fit['online_world_sha256'],training=receipt['status_sha256'],additional=extra,
+                         development=sha(args.paired_development/'status.json')))
+        return
     if args.audit_center_timing:
         index=torch.arange(len(lanes))
         # Native lane numbers repeat across independently seeded training suites.

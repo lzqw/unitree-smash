@@ -68,12 +68,15 @@ def test_native_body_source_uses_executed_command_history_and_checks_resets(monk
     monkeypatch.setattr(fit,'encode_physical',lambda _:torch.zeros(n,55))
     steps=[dict(done=torch.zeros(n,dtype=torch.bool),elapsed_s=initial['elapsed_s']+.01*(i+1),
                 final_action=initial['final_action']+100*i,final_joint_targets=initial['final_action']+5*i,
+                foot_contact=torch.full((n,4),float(i)),ball_present=torch.full((n,),float(i==2)),
                 next_state=torch.ones(n,55)*i) for i in range(16)]
     raw=dict(start={'before':{'physical':initial}},step_sequence=steps)
     win=fit.recorded_body_inputs(raw,[2,0],.01)
     torch.testing.assert_close(win['elapsed'][0],initial['elapsed_s'][[2,0]])
     torch.testing.assert_close(win['previous_action'][2],steps[1]['final_action'][[2,0]])
     torch.testing.assert_close(win['targets'][2],steps[2]['final_joint_targets'][[2,0]])
+    for field, source in [('state','next_state'),('feet','foot_contact'),('present','ball_present')]:
+        torch.testing.assert_close(win[field][3],steps[2][source][[2,0]])
     steps[3]['done'][0]=True
     with pytest.raises(ValueError,match='uninterrupted'):
         fit.recorded_body_inputs(raw,[2,0],.01)
@@ -153,3 +156,15 @@ def test_pooled_toi_backtracking_preserves_each_arrival_and_global_weight():
         assert b['toi_coverage_preserved']
         a['toi_weights'][1][0,0]=0
         assert not pooled_objective(trainer,[1,2],a['effective_weights'],a['toi_weights'])['toi_coverage_preserved']
+
+
+def test_drive_fit_uses_signed_and_absolute_motion_and_tolerates_unexcited_joint():
+    from scripts.supermimic_arm_drive_audit import fit_drive
+    rng=torch.Generator().manual_seed(5)
+    features=torch.randn(16,12,6,2,generator=rng)
+    features[:,:,4]=0
+    coef=torch.randn(6,2,generator=rng)
+    errors=(features*coef).sum(-1)
+    actual,rank=fit_drive(features,errors)
+    torch.testing.assert_close((features*actual).sum(-1),errors)
+    assert rank==[2,2,2,2,0,2]

@@ -1,0 +1,679 @@
+{
+  "883201": {
+    "groups": {
+      "all": {
+        "pre": {
+          "rows": 45,
+          "supported": 33,
+          "absolute_rmse": 0.16056337544902743,
+          "gain_median": 0.6513364918664641,
+          "gain_p10": 0.04390976600770214,
+          "cosine_median": -0.012568784931805022,
+          "cosine_p10": -0.8687739088137523
+        },
+        "pre_radial": {
+          "rows": 45,
+          "supported": 33,
+          "absolute_rmse": 0.10949879568044246,
+          "gain_median": 0.3824868599832303,
+          "gain_p10": 0.029390816908999095,
+          "cosine_median": 0.3336196791446205,
+          "cosine_p10": -0.5814907361527368
+        },
+        "post_racket": {
+          "rows": 45,
+          "supported": 33,
+          "absolute_rmse": 0.1515028642788656,
+          "gain_median": 0.6194852101203151,
+          "gain_p10": 0.040416725309186274,
+          "cosine_median": -0.05870148473783865,
+          "cosine_p10": -0.7877240799270107
+        },
+        "patch": {
+          "rows": 45,
+          "supported": 33,
+          "absolute_rmse": 0.1005851441721843,
+          "gain_median": 0.44917029371846146,
+          "gain_p10": 0.0714716927268509,
+          "cosine_median": 0.24379268444652707,
+          "cosine_p10": -0.6324912535496926
+        },
+        "patch_reversed": {
+          "rows": 45,
+          "supported": 33,
+          "absolute_rmse": 0.10075595036924978,
+          "gain_median": 0.3487806728446017,
+          "gain_p10": 0.07161286349939568,
+          "cosine_median": 0.31519325107467766,
+          "cosine_p10": -0.6262701104283659
+        },
+        "row_single": {
+          "rows": 45,
+          "supported": 33,
+          "absolute_rmse": 0.10804530390627491,
+          "gain_median": 0.46755234363730974,
+          "gain_p10": 0.08552727995640062,
+          "cosine_median": 0.24594091593877557,
+          "cosine_p10": -0.8609293417951631
+        },
+        "row_iterated": {
+          "rows": 45,
+          "supported": 33,
+          "absolute_rmse": 0.1005837912713956,
+          "gain_median": 0.449169957232295,
+          "gain_p10": 0.07147454689417354,
+          "cosine_median": 0.2451106700404213,
+          "cosine_p10": -0.6328181227343558
+        }
+      },
+      "manifold_switch": {
+        "pre": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.14475989379456658,
+          "gain_median": 0.14369147993628537,
+          "gain_p10": 0.02238413873510079,
+          "cosine_median": 0.010925489734913904,
+          "cosine_p10": -0.7573287177799441
+        },
+        "pre_radial": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.11991642122882253,
+          "gain_median": 0.13606069050778039,
+          "gain_p10": 0.021929241258546738,
+          "cosine_median": 0.08501456251676387,
+          "cosine_p10": -0.7533137774261718
+        },
+        "post_racket": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.14283585002537802,
+          "gain_median": 0.1389723609598569,
+          "gain_p10": 0.02884406107488876,
+          "cosine_median": -0.027819642970612315,
+          "cosine_p10": -0.7673028982423226
+        },
+        "patch": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.12012673314968055,
+          "gain_median": 0.14371640124117985,
+          "gain_p10": 0.03006328617008292,
+          "cosine_median": 0.15006907396239588,
+          "cosine_p10": -0.6151209623183596
+        },
+        "patch_reversed": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.12030599793763243,
+          "gain_median": 0.13658875263511347,
+          "gain_p10": 0.03610436064354537,
+          "cosine_median": 0.15164716468058378,
+          "cosine_p10": -0.5519988856161342
+        },
+        "row_single": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.11671089138644247,
+          "gain_median": 0.1454759234017361,
+          "gain_p10": 0.06606711338040064,
+          "cosine_median": 0.16389545189260826,
+          "cosine_p10": -0.4629256911594467
+        },
+        "row_iterated": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.12013093986492686,
+          "gain_median": 0.14381270983522834,
+          "gain_p10": 0.028574341816588928,
+          "cosine_median": 0.1503975982659265,
+          "cosine_p10": -0.6144134898697001
+        }
+      },
+      "no_contact": {
+        "pre": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "pre_radial": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "post_racket": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "patch": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "patch_reversed": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "row_single": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "row_iterated": {
+          "rows": 12,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        }
+      },
+      "nonracket_contact": {
+        "pre": {
+          "rows": 1,
+          "supported": 1,
+          "absolute_rmse": 0.4267590555245063,
+          "gain_median": 1.4324342143294522,
+          "gain_p10": 1.4324342143294522,
+          "cosine_median": 0.8213662529795777,
+          "cosine_p10": 0.8213662529795777
+        },
+        "pre_radial": {
+          "rows": 1,
+          "supported": 1,
+          "absolute_rmse": 0.3401006538239984,
+          "gain_median": 0.5143395922908247,
+          "gain_p10": 0.5143395922908247,
+          "cosine_median": 0.797871959562009,
+          "cosine_p10": 0.797871959562009
+        },
+        "post_racket": {
+          "rows": 1,
+          "supported": 1,
+          "absolute_rmse": 0.40274584427355803,
+          "gain_median": 1.4217799739535908,
+          "gain_p10": 1.4217799739535908,
+          "cosine_median": 0.843703428817385,
+          "cosine_p10": 0.843703428817385
+        },
+        "patch": {
+          "rows": 1,
+          "supported": 1,
+          "absolute_rmse": 0.1551514506162815,
+          "gain_median": 0.8303891538186946,
+          "gain_p10": 0.8303891538186946,
+          "cosine_median": 0.9617105421829834,
+          "cosine_p10": 0.9617105421829834
+        },
+        "patch_reversed": {
+          "rows": 1,
+          "supported": 1,
+          "absolute_rmse": 0.15910900038528436,
+          "gain_median": 0.8359833919230115,
+          "gain_p10": 0.8359833919230115,
+          "cosine_median": 0.9579964959499931,
+          "cosine_p10": 0.9579964959499931
+        },
+        "row_single": {
+          "rows": 1,
+          "supported": 1,
+          "absolute_rmse": 0.2850658881309148,
+          "gain_median": 0.8466059814749215,
+          "gain_p10": 0.8466059814749215,
+          "cosine_median": 0.8297588206984262,
+          "cosine_p10": 0.8297588206984262
+        },
+        "row_iterated": {
+          "rows": 1,
+          "supported": 1,
+          "absolute_rmse": 0.15506689558633463,
+          "gain_median": 0.8302758526581409,
+          "gain_p10": 0.8302758526581409,
+          "cosine_median": 0.961789076636776,
+          "cosine_p10": 0.961789076636776
+        }
+      },
+      "racket_stable": {
+        "pre": {
+          "rows": 5,
+          "supported": 5,
+          "absolute_rmse": 0.05708453687561457,
+          "gain_median": 0.25481235538275615,
+          "gain_p10": 0.11449148779828694,
+          "cosine_median": -0.012568784931805022,
+          "cosine_p10": -0.7290902914827676
+        },
+        "pre_radial": {
+          "rows": 5,
+          "supported": 5,
+          "absolute_rmse": 0.055485704617758515,
+          "gain_median": 0.2548323439747769,
+          "gain_p10": 0.08091733315488221,
+          "cosine_median": -0.013315998100301846,
+          "cosine_p10": -0.4570508984121179
+        },
+        "post_racket": {
+          "rows": 5,
+          "supported": 5,
+          "absolute_rmse": 0.05738001289134658,
+          "gain_median": 0.24740683049966583,
+          "gain_p10": 0.07613417417193806,
+          "cosine_median": -0.3894385230457197,
+          "cosine_p10": -0.7081269483393708
+        },
+        "patch": {
+          "rows": 5,
+          "supported": 5,
+          "absolute_rmse": 0.057014285422319205,
+          "gain_median": 0.25481235538276215,
+          "gain_p10": 0.11449779340771972,
+          "cosine_median": -0.012568784931713456,
+          "cosine_p10": -0.7290987571691868
+        },
+        "patch_reversed": {
+          "rows": 5,
+          "supported": 5,
+          "absolute_rmse": 0.05700622705173447,
+          "gain_median": 0.25481235538276215,
+          "gain_p10": 0.11440452179993411,
+          "cosine_median": -0.012568784931713456,
+          "cosine_p10": -0.7298993545124949
+        },
+        "row_single": {
+          "rows": 5,
+          "supported": 5,
+          "absolute_rmse": 0.05701481517933045,
+          "gain_median": 0.254812355354919,
+          "gain_p10": 0.1144977863274067,
+          "cosine_median": -0.012568784546558104,
+          "cosine_p10": -0.7290988479382007
+        },
+        "row_iterated": {
+          "rows": 5,
+          "supported": 5,
+          "absolute_rmse": 0.05701418314994557,
+          "gain_median": 0.2548123553827596,
+          "gain_p10": 0.11449779394076369,
+          "cosine_median": -0.012568784931753924,
+          "cosine_p10": -0.7290987517367843
+        }
+      },
+      "toi_switch": {
+        "pre": {
+          "rows": 20,
+          "supported": 20,
+          "absolute_rmse": 0.201869064979971,
+          "gain_median": 0.9476002665364188,
+          "gain_p10": 0.0658925539805647,
+          "cosine_median": -0.15663600705852349,
+          "cosine_p10": -0.8355557918832976
+        },
+        "pre_radial": {
+          "rows": 20,
+          "supported": 20,
+          "absolute_rmse": 0.12406207581641782,
+          "gain_median": 0.46798900099882074,
+          "gain_p10": 0.0332177507404402,
+          "cosine_median": 0.386538130070399,
+          "cosine_p10": -0.4306913891366372
+        },
+        "post_racket": {
+          "rows": 20,
+          "supported": 20,
+          "absolute_rmse": 0.18860132554777212,
+          "gain_median": 0.8449568615003104,
+          "gain_p10": 0.0470305793433509,
+          "cosine_median": -0.1072286975236616,
+          "cosine_p10": -0.7121424700454883
+        },
+        "patch": {
+          "rows": 20,
+          "supported": 20,
+          "absolute_rmse": 0.12528838030845735,
+          "gain_median": 0.46808724290640386,
+          "gain_p10": 0.15977428701388713,
+          "cosine_median": 0.24379268444652707,
+          "cosine_p10": -0.6430651273017942
+        },
+        "patch_reversed": {
+          "rows": 20,
+          "supported": 20,
+          "absolute_rmse": 0.1252897269274543,
+          "gain_median": 0.46029419437566765,
+          "gain_p10": 0.1265050151844151,
+          "cosine_median": 0.3672758195819796,
+          "cosine_p10": -0.6508710750149745
+        },
+        "row_single": {
+          "rows": 20,
+          "supported": 20,
+          "absolute_rmse": 0.128929130693166,
+          "gain_median": 0.4738482231254036,
+          "gain_p10": 0.12383939066606109,
+          "cosine_median": 0.24594091593877557,
+          "cosine_p10": -0.8713904252894447
+        },
+        "row_iterated": {
+          "rows": 20,
+          "supported": 20,
+          "absolute_rmse": 0.12528977043156195,
+          "gain_median": 0.4680872429062742,
+          "gain_p10": 0.159945224608649,
+          "cosine_median": 0.2451106700404213,
+          "cosine_p10": -0.6430637825470229
+        }
+      }
+    },
+    "source_sha256": "0d77a53104f34f0c544a8410fea4612d9e0e3d6992c7ac3bfe0bc4f9f005528b",
+    "status_sha256": "e170e156048e068bcce687fcbc7d1f8fbea22d32c3127c09a7deab8adbc43eba",
+    "training_support_sha256": "53e83519ab3b9920b139357956473c977feb5420a8169546f27ccdf845db1d9b",
+    "scope": "Signed native friction only; post-racket velocities and loaded anchor positions used for attribution",
+    "contact_gradients_admitted": false
+  },
+  "883211": {
+    "groups": {
+      "all": {
+        "pre": {
+          "rows": 45,
+          "supported": 31,
+          "absolute_rmse": 0.36880428949670685,
+          "gain_median": 0.575907919190918,
+          "gain_p10": 0.028188078453433383,
+          "cosine_median": 0.5214584708113117,
+          "cosine_p10": -0.6516790003896105
+        },
+        "pre_radial": {
+          "rows": 45,
+          "supported": 31,
+          "absolute_rmse": 0.08681373714996657,
+          "gain_median": 0.2806516513804477,
+          "gain_p10": 0.014764256495000998,
+          "cosine_median": 0.4552355994174249,
+          "cosine_p10": -0.4443889773182955
+        },
+        "post_racket": {
+          "rows": 45,
+          "supported": 31,
+          "absolute_rmse": 0.37693834623983385,
+          "gain_median": 0.6487773661957156,
+          "gain_p10": 0.028037080437241704,
+          "cosine_median": 0.2495003817127264,
+          "cosine_p10": -0.799968299019977
+        },
+        "patch": {
+          "rows": 45,
+          "supported": 31,
+          "absolute_rmse": 0.08685896367823896,
+          "gain_median": 0.3032805293249124,
+          "gain_p10": 0.019456209075916893,
+          "cosine_median": 0.5289612854575965,
+          "cosine_p10": -0.5517786091105832
+        },
+        "patch_reversed": {
+          "rows": 45,
+          "supported": 31,
+          "absolute_rmse": 0.08609994331962109,
+          "gain_median": 0.2590409365043597,
+          "gain_p10": 0.019538560546852237,
+          "cosine_median": 0.5153011803254242,
+          "cosine_p10": -0.655919058408641
+        },
+        "row_single": {
+          "rows": 45,
+          "supported": 31,
+          "absolute_rmse": 0.08680153706368406,
+          "gain_median": 0.27459512002421377,
+          "gain_p10": 0.020350537777874912,
+          "cosine_median": 0.5619802585676122,
+          "cosine_p10": -0.5517784329404776
+        },
+        "row_iterated": {
+          "rows": 45,
+          "supported": 31,
+          "absolute_rmse": 0.08686885062893561,
+          "gain_median": 0.3032805271436528,
+          "gain_p10": 0.019435227344361143,
+          "cosine_median": 0.539872942956388,
+          "cosine_p10": -0.5517785811386557
+        }
+      },
+      "manifold_switch": {
+        "pre": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.5046246195724595,
+          "gain_median": 0.10775513896823523,
+          "gain_p10": 0.023335130498122598,
+          "cosine_median": 0.8251146465533015,
+          "cosine_p10": 0.378803764369326
+        },
+        "pre_radial": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.09167758415305315,
+          "gain_median": 0.4086584442037516,
+          "gain_p10": 0.022290806390074903,
+          "cosine_median": 0.44151962510032805,
+          "cosine_p10": -0.37084957169716537
+        },
+        "post_racket": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.49588073270009886,
+          "gain_median": 0.513595171529546,
+          "gain_p10": 0.027439888738099175,
+          "cosine_median": 0.8310803948187948,
+          "cosine_p10": -0.1780980950739062
+        },
+        "patch": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.09335835377521055,
+          "gain_median": 0.3032805293249124,
+          "gain_p10": 0.08784878245773754,
+          "cosine_median": 0.5289612854575965,
+          "cosine_p10": 0.1684063165344713
+        },
+        "patch_reversed": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.0921456556957396,
+          "gain_median": 0.1508953595268765,
+          "gain_p10": 0.03365255306815735,
+          "cosine_median": 0.5153011803254242,
+          "cosine_p10": 0.2087042828044413
+        },
+        "row_single": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.09282672372976397,
+          "gain_median": 0.27459512002421377,
+          "gain_p10": 0.07092106425609511,
+          "cosine_median": 0.603495404543756,
+          "cosine_p10": -0.203641903677553
+        },
+        "row_iterated": {
+          "rows": 7,
+          "supported": 7,
+          "absolute_rmse": 0.09336665485339567,
+          "gain_median": 0.3032805271436528,
+          "gain_p10": 0.08662066698032125,
+          "cosine_median": 0.6413557525351263,
+          "cosine_p10": 0.168406237430724
+        }
+      },
+      "no_contact": {
+        "pre": {
+          "rows": 14,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "pre_radial": {
+          "rows": 14,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "post_racket": {
+          "rows": 14,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "patch": {
+          "rows": 14,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "patch_reversed": {
+          "rows": 14,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "row_single": {
+          "rows": 14,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        },
+        "row_iterated": {
+          "rows": 14,
+          "supported": 0,
+          "absolute_rmse": 0.0
+        }
+      },
+      "racket_stable": {
+        "pre": {
+          "rows": 9,
+          "supported": 9,
+          "absolute_rmse": 0.06604791572904731,
+          "gain_median": 0.16849148220534396,
+          "gain_p10": 0.017534281518053998,
+          "cosine_median": 0.28757464579938385,
+          "cosine_p10": -0.668094626794973
+        },
+        "pre_radial": {
+          "rows": 9,
+          "supported": 9,
+          "absolute_rmse": 0.06644329343793405,
+          "gain_median": 0.16689315865586982,
+          "gain_p10": 0.014117927222227263,
+          "cosine_median": 0.20981571259212478,
+          "cosine_p10": -0.6705789239826219
+        },
+        "post_racket": {
+          "rows": 9,
+          "supported": 9,
+          "absolute_rmse": 0.0663060983835095,
+          "gain_median": 0.1750809013385273,
+          "gain_p10": 0.018873133556982658,
+          "cosine_median": 0.22063268372666445,
+          "cosine_p10": -0.8758981252703172
+        },
+        "patch": {
+          "rows": 9,
+          "supported": 9,
+          "absolute_rmse": 0.06851884934979449,
+          "gain_median": 0.1685074429277376,
+          "gain_p10": 0.01774947310687747,
+          "cosine_median": -0.48189747921072823,
+          "cosine_p10": -0.7252675258245702
+        },
+        "patch_reversed": {
+          "rows": 9,
+          "supported": 9,
+          "absolute_rmse": 0.06600647846799208,
+          "gain_median": 0.16850105563919782,
+          "gain_p10": 0.017912456812071827,
+          "cosine_median": 0.2875774458334429,
+          "cosine_p10": -0.6951686313136671
+        },
+        "row_single": {
+          "rows": 9,
+          "supported": 9,
+          "absolute_rmse": 0.0662343436537196,
+          "gain_median": 0.16844298841284813,
+          "gain_p10": 0.019251644255400536,
+          "cosine_median": 0.2875686699358736,
+          "cosine_p10": -0.6533287991620595
+        },
+        "row_iterated": {
+          "rows": 9,
+          "supported": 9,
+          "absolute_rmse": 0.06851117800170022,
+          "gain_median": 0.16850008942086428,
+          "gain_p10": 0.017704182456140256,
+          "cosine_median": -0.48248317761084697,
+          "cosine_p10": -0.7276962815124425
+        }
+      },
+      "toi_switch": {
+        "pre": {
+          "rows": 15,
+          "supported": 15,
+          "absolute_rmse": 0.5353481226580686,
+          "gain_median": 0.882787768803237,
+          "gain_p10": 0.17785888015528611,
+          "cosine_median": 0.175110862517049,
+          "cosine_p10": -0.6576424835458786
+        },
+        "pre_radial": {
+          "rows": 15,
+          "supported": 15,
+          "absolute_rmse": 0.1266444539826784,
+          "gain_median": 0.3817511446359682,
+          "gain_p10": 0.05995867720498211,
+          "cosine_median": 0.6642144808826516,
+          "cosine_p10": 0.14317920937383272
+        },
+        "post_racket": {
+          "rows": 15,
+          "supported": 15,
+          "absolute_rmse": 0.5557493957641363,
+          "gain_median": 0.8686413633301682,
+          "gain_p10": 0.1566538708244903,
+          "cosine_median": 0.2495003817127264,
+          "cosine_p10": -0.6830788230403498
+        },
+        "patch": {
+          "rows": 15,
+          "supported": 15,
+          "absolute_rmse": 0.12549571326630868,
+          "gain_median": 0.40611562551012104,
+          "gain_p10": 0.055350409193391195,
+          "cosine_median": 0.5722547823180204,
+          "cosine_p10": -0.15183320881251125
+        },
+        "patch_reversed": {
+          "rows": 15,
+          "supported": 15,
+          "absolute_rmse": 0.12515232344120888,
+          "gain_median": 0.36983664736165345,
+          "gain_p10": 0.0604670991543885,
+          "cosine_median": 0.5723066279354,
+          "cosine_p10": -0.14664864330062333
+        },
+        "row_single": {
+          "rows": 15,
+          "supported": 15,
+          "absolute_rmse": 0.12629391874138957,
+          "gain_median": 0.6670782110464357,
+          "gain_p10": 0.046261126970779255,
+          "cosine_median": 0.6823203877006012,
+          "cosine_p10": 0.04113675284027316
+        },
+        "row_iterated": {
+          "rows": 15,
+          "supported": 15,
+          "absolute_rmse": 0.125515872877082,
+          "gain_median": 0.4041281457451137,
+          "gain_p10": 0.055399192924162274,
+          "cosine_median": 0.5726353475483397,
+          "cosine_p10": -0.15157958651562436
+        }
+      }
+    },
+    "source_sha256": "0d77a53104f34f0c544a8410fea4612d9e0e3d6992c7ac3bfe0bc4f9f005528b",
+    "status_sha256": "28706fb5886b428170965dd3cd59a79c49576d1f35bd6b2b3b752de386934095",
+    "training_support_sha256": "860b8e689fd5f99d41fb792672b1418b923715ee383056ec314273e5596898a6",
+    "scope": "Signed native friction only; post-racket velocities and loaded anchor positions used for attribution",
+    "contact_gradients_admitted": false
+  }
+}

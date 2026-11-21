@@ -166,10 +166,17 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ('collection','response','material','output'):
         p.add_argument('--'+key,type=Path,required=True)
+    p.add_argument('--training-support',type=Path,help='Scored independent training collection using the same physical contract')
     a=p.parse_args();torch.set_num_threads(2)
     read=lambda path:json.loads(path.read_text())
     r=read(a.response);status=read(a.collection/'status.json')
-    if status['status']!='COLLECTION_FINISHED' or sha(a.collection/'status.json')!=r['status_sha256'] or sha(a.material)!=r['material_sha256']:
+    groups=r['cases']
+    support=read(a.training_support) if a.training_support else r
+    if a.training_support:
+        if not support['training_only'] or support['policy_training_admitted'] or support['contact_receipt']:
+            raise ValueError('Expected independently scored training-only native branches')
+        groups=[dict(lane=row['lane'],group=row['mode']) for row in support['native_racket']['cases']]
+    if status['status']!='COLLECTION_FINISHED' or sha(a.collection/'status.json')!=support['status_sha256'] or sha(a.material)!=r['material_sha256']:
         raise ValueError('Physical evidence or material changed')
     mat=torch.tensor(validate_contract(read(a.material),r['task_contract']['asset']['sha256'])['effective'])
     geometry=BallImpulsePriorV1().double().preview
@@ -179,9 +186,19 @@ def main():
     runs={}
     for run in status['completed']:
         b=run['branch'];folder=a.collection/run['spec']
-        if sha(folder/b/'native_probe.pt')!=run['probe_sha256']:raise ValueError('Changed native branch')
+        if run['exit_code'] or b in runs or sha(folder/b/'native_probe.pt')!=run['probe_sha256']:raise ValueError('Changed native branch')
         runs[b]=_load_branch(folder,b)
+    if set(runs)!={'plus','minus','nominal_a','nominal_b'}:
+        raise ValueError('Expected four native branches')
     _same_contract(runs)
+    if a.training_support:
+        base=runs['nominal_a']
+        reference=r['task_contract']
+        task=base['task_contract']
+        if (not task.get('contact_training_only') or task.get('contact_training_panel_sha256')!=support['case_sha256']
+                or any(task.get(k)!=v for k,v in reference.items() if k!='suite')
+                or [case['lane'] for case in groups]!=base['spec']['lanes']):
+            raise ValueError('Training geometry, protocol or lane order differs')
     summaries={};frames={}
     for b,run in runs.items():
         sums={};events=[]
@@ -194,12 +211,13 @@ def main():
     native=summaries['plus']['actual']-summaries['minus']['actual']
     repeat=summaries['nominal_b']['actual']-summaries['nominal_a']['actual']
     stats={}
-    for g in ['all',*sorted({c['group'] for c in r['cases']})]:
-        sel=torch.tensor([g=='all' or c['group']==g for c in r['cases']])
+    for g in ['all',*sorted({c['group'] for c in groups})]:
+        sel=torch.tensor([g=='all' or c['group']==g for c in groups])
         stats[g]={k:response_metrics(native[sel],(v-summaries['minus'][k])[sel],repeat[sel])
                   for k,v in summaries['plus'].items() if k!='actual'}
     with a.output.open('x') as out:
-        json.dump(dict(groups=stats,frames=frames,source_sha256=sha(a.response),
+        json.dump(dict(groups=stats,frames=frames,source_sha256=sha(a.response),status_sha256=sha(a.collection/'status.json'),
+                  training_support_sha256=sha(a.training_support) if a.training_support else None,
                   scope='Signed native friction only; post-racket velocities and loaded anchor positions used for attribution',
                   contact_gradients_admitted=False),out,indent=2,allow_nan=False)
         out.write('\n')
