@@ -1,0 +1,101 @@
+{
+  "run": "paired_adam_direction_0040/G1",
+  "source": "training_history.jsonl and native_collection_history.jsonl",
+  "completed_block": {
+    "recovery": 24,
+    "approach": 24
+  },
+  "block_counts": {
+    "samples": 8,
+    "actual_counts": {
+      "gate_onset": 2,
+      "pre_contact": 3,
+      "failure_pre": 2,
+      "success_near": 1
+    },
+    "requested_counts": {
+      "gate_onset": 2,
+      "pre_contact": 3,
+      "failure_pre": 2,
+      "success_near": 1
+    },
+    "shortfall": 0,
+    "unlabeled_lane_snapshots": 12
+  },
+  "recorded_start_occurrences": 127,
+  "distinct_lane_episode": 55,
+  "distinct_lane": 33,
+  "bptt_seconds": 1969.7052398389787,
+  "proposals": [
+    {
+      "approach_index": 17,
+      "actual_start": "success_near",
+      "alpha": 1.0,
+      "objective_before": 0.6508703827857971,
+      "objective_after": 0.6336004734039307
+    },
+    {
+      "approach_index": 18,
+      "actual_start": "pre_contact",
+      "alpha": 0.5,
+      "objective_before": 1.493417739868164,
+      "objective_after": 1.4922704696655273
+    },
+    {
+      "approach_index": 19,
+      "actual_start": "gate_onset",
+      "alpha": 1.0,
+      "objective_before": 1.2447952032089233,
+      "objective_after": 1.2218538522720337
+    },
+    {
+      "approach_index": 20,
+      "actual_start": "failure_pre",
+      "alpha": 1.0,
+      "objective_before": 2.0483615398406982,
+      "objective_after": 2.0091023445129395
+    },
+    {
+      "approach_index": 21,
+      "actual_start": "pre_contact",
+      "alpha": 1.0,
+      "objective_before": 1.3537254333496094,
+      "objective_after": 1.3359178304672241
+    },
+    {
+      "approach_index": 22,
+      "actual_start": "gate_onset",
+      "alpha": 1.0,
+      "objective_before": 1.1592884063720703,
+      "objective_after": 1.138598084449768
+    },
+    {
+      "approach_index": 23,
+      "actual_start": "failure_pre",
+      "alpha": 1.0,
+      "objective_before": 1.9268418550491333,
+      "objective_after": 1.921987533569336
+    },
+    {
+      "approach_index": 24,
+      "actual_start": "pre_contact",
+      "alpha": 1.0,
+      "objective_before": 1.2999637126922607,
+      "objective_after": 1.286913514137268
+    }
+  ],
+  "native_collection_history": [
+    {
+      "native_ticks": 6526,
+      "accepted_id": 93,
+      "completed_native_episodes": 0,
+      "first_episode_body_cases": 0
+    },
+    {
+      "native_ticks": 6654,
+      "accepted_id": 101,
+      "completed_native_episodes": 0,
+      "first_episode_body_cases": 0
+    }
+  ]
+}
