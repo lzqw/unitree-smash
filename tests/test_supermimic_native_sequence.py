@@ -58,3 +58,21 @@ def test_discounted_native_return_is_separate_and_resets_per_lane():
     values.reset(torch.tensor([0]));values.add(torch.tensor([3.,8.]))
     assert values.records([0])[0]['native_episode_discounted_return']==3
     assert values.records([1])[1]['native_episode_discounted_return']==6
+
+
+def test_sparse_racket_label_uses_same_physics_frame_and_world_origin():
+    rec = NativeTaskSequenceV1.__new__(NativeTaskSequenceV1)
+    xyz = torch.arange(6, dtype=torch.float).reshape(2,1,3)
+    data = SimpleNamespace(body_link_pos_w=xyz, body_link_lin_vel_w=2*xyz, body_link_ang_vel_w=3*xyz)
+    rec.env = SimpleNamespace(robot=SimpleNamespace(data=data), racket_body_id=0, cfg=SimpleNamespace(decimation=160),
+        shuttle=SimpleNamespace(data=SimpleNamespace(root_pos_w=xyz[:,0]-1)), episode_index=torch.tensor([5,6]),
+        first_tool_normal=torch.tensor([[1.,0,0],[1.,0,0]]), physics_dt=.0000625, _last_physics_frame=118)
+    rec.start_frame = 100
+    rec.reference_targets = []
+    rec.record_racket_target(dict(legal_air_strings_touching=torch.tensor([True,True]),
+        time=torch.tensor([1.,2.]), rally_contact_time=torch.tensor([.9,2.])))
+    label, = rec.reference_targets
+    assert label['lanes'].tolist() == [1] and label['episode'].tolist() == [6]
+    assert label['substep']==18 and label['offset_s']==18*.0000625
+    torch.testing.assert_close(label['features'][0],torch.cat((torch.ones(3),2*xyz[1,0],
+                                                              torch.tensor([1.,0,0]),3*xyz[1,0])))

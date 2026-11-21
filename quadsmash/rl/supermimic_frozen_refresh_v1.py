@@ -16,6 +16,7 @@ class FrozenRefresh:
         self.lengths=torch.zeros(lanes,dtype=torch.long);self.complete=torch.zeros(lanes,dtype=torch.bool)
         self.rewards=torch.zeros(episode_ticks,lanes,dtype=torch.float64)
         self.dones=torch.zeros(episode_ticks,lanes,dtype=torch.bool)
+        self.racket_targets = None
         self.starts={};self.compact=None;self.calls=0;self.start_encoder=start_encoder
         self.snapshot_dir=Path(snapshot_dir) if snapshot_dir is not None else None
         if self.snapshot_dir is not None:self.snapshot_dir.mkdir(parents=True,exist_ok=False)
@@ -36,6 +37,22 @@ class FrozenRefresh:
         for k,v in record.items(): self.compact[k][steps,lanes]=v.detach().cpu()[lanes]
         self.rewards[steps,lanes]=row['reward'].detach().cpu()[lanes].double()
         self.dones[steps,lanes]=done[lanes]
+        for target in (row.get('task_sequence') or {}).get('racket_reference_targets', ()):
+            ids = target['lanes'].detach().cpu()
+            if not torch.equal(episode[ids], target['episode'].detach().cpu()):
+                raise ValueError('Racket contact and control interval have different episode identities')
+            edge = (record['event_state'][:, 1] < .5) & (record['next_event_state'][:, 1] > .5)
+            use = active[ids] & edge.detach().cpu()[ids]
+            chosen = ids[use]
+            if not len(chosen):
+                continue
+            if self.racket_targets is None:
+                self.racket_targets = torch.full((self.episode_ticks, self.lanes, 13), float('nan'))
+            idx = (elapsed[chosen], chosen)
+            if torch.isfinite(self.racket_targets[idx][:, 0]).any():
+                raise ValueError('Duplicate first racket contact for frozen interval')
+            times = record['elapsed'].detach().cpu()[chosen, None] + target['offset_s']
+            self.racket_targets[idx] = torch.cat((times, target['features'].detach().cpu()[use]), -1)
         snapshot=None
         for stage in self.stages:
             mask=active&(elapsed==stage)&~self.stage_seen[stage]
@@ -71,7 +88,8 @@ class FrozenRefresh:
         # Each column is one complete episode. Pad only AFTER its terminal;
         # builders must honor valid_windows/terminal boundaries and never use
         # padded tails as new training windows.
-        return dict(self.compact,reward=self.rewards,valid_lengths=self.lengths.clone())
+        extra = {'native_toi_racket': self.racket_targets} if self.racket_targets is not None else {}
+        return dict(self.compact, **extra, reward=self.rewards,valid_lengths=self.lengths.clone())
 
     def calibration_rows(self):
         """Read one complete execution graph at a time; never merge G07 trees."""

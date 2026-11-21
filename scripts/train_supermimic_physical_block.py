@@ -190,6 +190,8 @@ def main():
     parser.add_argument('--task-reference-bank',type=Path,default=None,
                         help='Optional success-only task-space reference bank')
     parser.add_argument('--tracking-weight',type=float,default=0.0)
+    parser.add_argument('--use-substep-toi-references', action='store_true',
+                        help='Use measured first-string substep targets for newly admitted Approach references')
     parser.add_argument('--toi-racket-weight',type=float,default=1.0,
                         help='Approach TOI-racket-only auxiliary loss weight')
     parser.add_argument('--approach-objective',choices=('task','toi_racket_only'),default='task',
@@ -888,6 +890,7 @@ def run(args, *, alternating=None):
             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
             action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()) if args.action_ball_checkpoint else None,
             tracking_weight=args.tracking_weight,approach_objective=args.approach_objective,toi_racket_weight=args.toi_racket_weight,
+            use_substep_toi_references=args.use_substep_toi_references,
             paired_evaluation_baseline=str(args.paired_evaluation_baseline.resolve()) if args.paired_evaluation_baseline else None,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         write(args.output/'config.json',config)
@@ -1477,6 +1480,8 @@ def run(args, *, alternating=None):
             replay.new_stream(source='online',policy_version=global_accepted_id)
             start_tick=tick
             record_cursor=len(env.rally_records)
+            if archive.task_sequence is not None:
+                archive.task_sequence.capture_reference_targets = trainer.reference_bank is not None
             try:
                 with torch.inference_mode():
                     for _ in range(1601):
@@ -1488,6 +1493,8 @@ def run(args, *, alternating=None):
                 collector=refresh_collector
                 rtg_refresh,receipt=collector.result()
             finally:
+                if archive.task_sequence is not None:
+                    archive.task_sequence.capture_reference_targets = False
                 refresh_collector=None;frozen_policy_id=None
                 primary=sys.exc_info()[1]
                 try:archive.flush()
@@ -1595,7 +1602,7 @@ def run(args, *, alternating=None):
                     additions=TaskSpaceReferenceBankV1.from_packed({k:v.to(device) for k,v in packed.items()},
                         adapter.physical_model.geometry,source_sha256=source_hash,policy_id=policy_id,
                         match_distance_threshold=trainer.reference_bank.match_distance_threshold,terminal_records=native_records,
-                        excluded_lanes=wm_holdout_lanes,
+                        excluded_lanes=wm_holdout_lanes,use_substep_toi=args.use_substep_toi_references,
                         execution_contract_sha256=trainer.reference_bank.execution_contract_sha256)
                 trainer.reference_bank.extend(additions)
                 atomic_torch_save(trainer.reference_bank.payload(),refresh_dir/'reference_bank.pt')

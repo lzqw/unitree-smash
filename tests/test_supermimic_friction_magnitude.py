@@ -54,3 +54,19 @@ def test_normal_oracle_subtracts_existing_impulse_before_the_single_integration(
     oracle=MeasuredFriction(TOISlip(.32,2/7),friction,'all_loads',normal)
     result=row['impulse_dv']+oracle.toi_response(row,active)['impulse_residual_dv']
     torch.testing.assert_close(result, normal+friction)
+
+
+def test_direction_dependent_sticking_preserves_plane_scope_friction_cap_and_dissipation():
+    from scripts.fit_supermimic_toi_friction_radius import DirectionalSticking
+    n = torch.nn.functional.normalize(torch.tensor([[1.,.2,.1],[0.,0.,1.],[1.,0.,0.]]),dim=-1)
+    velocity = torch.tensor([[-2.,2.,4.],[-1.,0.,1.],[1.,2.,3.]])
+    row = dict(normal=n,relative_velocity=velocity,active=torch.ones(3,dtype=torch.bool),
+               object_id=torch.tensor([0,0,2]),impulse_dv=n*2,string_axes=torch.eye(3)[:,1:].expand(3,-1,-1))
+    present = torch.ones(3,dtype=torch.bool)
+    for slope in (-.75,.75):
+        dv = DirectionalSticking(.32,2/7,slope).toi_response(row,present)['impulse_residual_dv']
+        torch.testing.assert_close((dv*n).sum(1),torch.zeros(3),atol=1e-6,rtol=0.)
+        assert (dv.norm(dim=1)<=.640001).all() and (dv*velocity).sum(1).max()<=0
+        assert not dv[2].count_nonzero()
+    torch.testing.assert_close(DirectionalSticking(.32,2/7,0.).toi_response(row,present)['impulse_residual_dv'],
+                               TOISlip(.32,2/7).toi_response(row,present)['impulse_residual_dv'],rtol=0.,atol=0.)

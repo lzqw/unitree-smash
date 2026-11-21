@@ -112,3 +112,27 @@ def test_toi_surrogate_uses_racket_at_arrival_without_ball_gradient():
     _,lost=intercept_loss(before,after,start,end,ref,torch.zeros(3,dtype=torch.bool),
                           torch.ones(3),geometry,fixed_weights=fixed)
     assert not ((fixed<=0)|(lost>0)).all()
+
+
+def test_substep_target_joins_preceding_transition_preserves_legacy_tracking():
+    geometry, data = fixture()
+    old = TaskSpaceReferenceBankV1.from_packed(data, geometry)
+    data['native_toi_racket'] = torch.full((12, 3, 13), float('nan'))
+    measured = torch.tensor([.045, .01, .02, .03, 1., 2., 3., 1., 0., 0., 4., 5., 6.])
+    data['native_toi_racket'][4, 0] = measured
+    exact = TaskSpaceReferenceBankV1.from_packed(data, geometry, use_substep_toi=True)
+    old.extend(exact)
+    assert len(old.entries) == 2
+    entry = old.entries[0]
+    assert entry['trajectory_digest'] != entry['digest']
+    torch.testing.assert_close(entry['toi_racket'], measured[1:])
+    query = dict(geometry=geometry, elapsed=torch.tensor([.03]))
+    assert old.bind(data['state'][3,:1], 'approach', **query)['anchor_time'].item() == pytest.approx(.05)
+    assert old.bind(data['state'][3,:1], 'approach', **query, require_toi=True)['anchor_time'].item() == pytest.approx(.045)
+    data['native_toi_racket'][4,0] = float('nan')
+    missing = TaskSpaceReferenceBankV1.from_packed(data, geometry, use_substep_toi=True)
+    assert 'toi_racket' not in missing.entries[0]
+    data['native_toi_racket'][4,0] = measured
+    data['native_toi_racket'][4,0,0] = .07
+    with pytest.raises(ValueError, match='Invalid native'):
+        TaskSpaceReferenceBankV1.from_packed(data, geometry, use_substep_toi=True)

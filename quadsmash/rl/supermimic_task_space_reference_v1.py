@@ -80,7 +80,7 @@ class TaskSpaceReferenceBankV1:
         return cls(**payload)
 
     @classmethod
-    def from_packed(cls,tensors,geometry,*,source_sha256='',policy_id='unknown',match_distance_threshold=1.,horizon=None,terminal_records=None,excluded_lanes=(),execution_contract_sha256=None):
+    def from_packed(cls,tensors,geometry,*,source_sha256='',policy_id='unknown',match_distance_threshold=1.,horizon=None,terminal_records=None,excluded_lanes=(),execution_contract_sha256=None,use_substep_toi=False):
         if horizon is not None: raise ValueError('Do not truncate reference episodes')
         for name in ('state','next_state','event_state','next_event_state','episode','elapsed','terminated','timeout','feet','next_feet'):
             if name not in tensors: raise ValueError('Reference evidence missing: '+name)
@@ -129,8 +129,25 @@ class TaskSpaceReferenceBankV1:
                         contact_state = seq[anchor:anchor+1]
                         kin = racket_features(contact_state, geometry).detach()[0]
                         toi_data['toi_racket'] = torch.cat((kin[:3] - contact_state[0,49:52], kin[3:]))
+                        if use_substep_toi:
+                            # Tracking can use the success trajectory even if exact contact telemetry is missing.
+                            toi_data = {}
+                            samples = d.get('native_toi_racket')
+                            if anchor > 0 and samples is not None:
+                                sample = samples[start+anchor-1, lane]
+                                if not sample.isnan().all():
+                                    if (sample.shape != (13,) or not sample.isfinite().all()
+                                            or not times[anchor-1] < sample[0] <= times[anchor]+1e-6
+                                            or abs(sample[7:10].norm()-1.) > 2e-4):
+                                        raise ValueError('Invalid native first-string substep target')
+                                    toi_data = dict(toi_time=float(sample[0]), toi_racket=sample[1:].detach(),
+                                                    toi_source='native-first-airborne-string-substep')
                     choices=torch.arange(max(0,anchor-64),anchor+1,device=seq.device) if mode=='approach' else torch.arange(anchor,len(seq),device=seq.device)
                     digest=hashlib.sha256(seq.cpu().contiguous().numpy().tobytes()+mode.encode()).hexdigest()
+                    if 'toi_time' in toi_data:
+                        from .supermimic_native_pair_capture_v1 import tree_digest
+                        toi_data['trajectory_digest'] = digest
+                        digest = tree_digest((digest, toi_data['toi_racket'], toi_data['toi_time'], toi_data['toi_source']))
                     entries.append(dict(**toi_data,mode=mode,features=features,times=times.detach(),anchor_time=float(times[anchor]),
                                         choices=choices,policy_id=str(policy_id),lane_id=lane,episode_id=int(d['episode'][end,lane]),
                                         digest=digest,source_sha256=source_sha256,terminal_verified=True,
@@ -147,9 +164,10 @@ class TaskSpaceReferenceBankV1:
         self.assert_excludes(excluded);other.assert_excludes(excluded)
         seen=set(); kept=[]
         for e in reversed(self.entries+other.entries):
-            if e['digest'] in seen: continue
+            trajectory = e.get('trajectory_digest', e['digest'])
+            if trajectory in seen: continue
             if sum(x['mode']==e['mode'] for x in kept)>=self.max_per_head: continue
-            seen.add(e['digest']);kept.append(e)
+            seen.add(trajectory);kept.append(e)
         self.entries=list(reversed(kept))
         self.excluded_lanes=tuple(sorted(excluded))
 
@@ -163,13 +181,14 @@ class TaskSpaceReferenceBankV1:
         if not candidates:return None
         best=current.new_full((len(current),),float('inf')); chosen=torch.zeros(len(current),dtype=torch.long,device=current.device)
         aligned=current.new_zeros(len(current))
+        anchors = [(e.get('toi_time', e['anchor_time']) if require_toi else e['anchor_time']) for e in candidates]
         for i,e in enumerate(candidates):
             ids=e['choices'].to(current.device); ts=e['times'].to(current.device); fs=e['features'].to(current.device)
             distance=(current[:,None]-fs[ids][None]).square().mean(-1)
             if event_time is not None:
                 relative=elapsed.reshape(-1)-event_time.reshape(-1)
                 known=torch.isfinite(relative)
-                compatible=(relative[:,None]-(ts[ids]-e['anchor_time'])[None]).abs()<=.02
+                compatible=(relative[:,None]-(ts[ids]-anchors[i])[None]).abs()<=.02
                 distance=distance.masked_fill(known[:,None]&~compatible,float('inf'))
             value,idx=distance.min(-1); better=value<best
             best=torch.where(better,value,best); chosen=torch.where(better,i,chosen)
@@ -184,7 +203,7 @@ class TaskSpaceReferenceBankV1:
         for i,e in enumerate(candidates):
             size=len(e['times']);time_table[i,:size]=e['times'].to(current)
             feature_table[i,:size]=e['features'].to(current)
-            anchor_table[i]=float(e['anchor_time'])
+            anchor_table[i]=float(anchors[i])
         anchor_time=anchor_table[chosen]
         anchor_index=(time_table[chosen]-anchor_time[:,None]).abs().argmin(-1)
         anchor_features=feature_table[chosen,anchor_index]

@@ -17,6 +17,8 @@ class NativeTaskSequenceV1:
     schema = 'native-task-call-sequence-v1'
 
     def __init__(self, env):
+        self.env = env
+        self.capture_reference_targets = False
         self.capacity = int(env.cfg.decimation) + 8
         self.active = False
         self.streams, self.order = {}, []
@@ -41,6 +43,8 @@ class NativeTaskSequenceV1:
                         # FullRacketEnv sets in_play when launch signals become
                         # ready, outside RallyRules.advance. Record that input.
                         values['external_in_play'] = _obj.in_play
+                    if self.capture_reference_targets and _label == 'recovery.contact':
+                        self.record_racket_target(values)
                     self.record(_label, values)
                 return _original(*args, **kwargs)
             self.originals.append((obj, method, original))
@@ -50,7 +54,28 @@ class NativeTaskSequenceV1:
         if self.active:
             raise RuntimeError('Unfinished native task trace')
         self.streams, self.order = {}, []
+        self.reference_targets = []
+        if self.capture_reference_targets:
+            self.start_frame = self.env._sim_step_counter
         self.active = True
+
+    @torch.no_grad()
+    def record_racket_target(self, values):
+        env = self.env
+        ids = torch.where(values['legal_air_strings_touching'] &
+                          (values['time'] == values['rally_contact_time']))[0]
+        if not len(ids):
+            return
+        frame = env._last_physics_frame - self.start_frame
+        if not 1 <= frame <= env.cfg.decimation:
+            raise ValueError('Native contact outside current control interval')
+        body = env.robot.data
+        racket = env.racket_body_id
+        features = torch.cat((body.body_link_pos_w[ids, racket] - env.shuttle.data.root_pos_w[ids],
+                              body.body_link_lin_vel_w[ids, racket], env.first_tool_normal[ids],
+                              body.body_link_ang_vel_w[ids, racket]), -1)
+        self.reference_targets.append(dict(lanes=ids, episode=env.episode_index[ids], features=features,
+                                           substep=frame, offset_s=frame*env.physics_dt))
 
     @torch.no_grad()
     def record(self, name, values):
@@ -75,7 +100,8 @@ class NativeTaskSequenceV1:
         if not self.active:
             raise RuntimeError('Missing native task trace begin')
         self.active = False
-        return dict(schema=self.schema, order=self.order,
+        extra = {'racket_reference_targets': self.reference_targets} if self.capture_reference_targets else {}
+        return dict(schema=self.schema, order=self.order, **extra,
             streams={name: dict(count=s['count'], literals=s['literals'],
                 tensors={key: value[:s['count']].clone() for key,value in s['tensors'].items()})
                 for name,s in self.streams.items()})

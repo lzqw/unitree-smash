@@ -34,7 +34,11 @@ def racket_transition_inputs(prior, ball, stream):
     keys=('active','object_id','normal','time','normal_speed','pre_velocity','pre_position','local','relative_velocity',
           'surface_velocity','racket_axis','impulse_dv','remaining_time')
     row={k:info[k] for k in keys}
-    row.update(analytic=analytic[:,3:],analytic_position=analytic[:,:3])
+    # Use the same TOI orientation interpolator as the impact prior. The columns
+    # are the two string-plane axes for diagnostics with direction-dependent friction.
+    rotation = prior._interpolate_rotation(quat_matrix(stream[1][0]), quat_matrix(stream[1][-1]),
+                                           (info['time']/prior.dt)[:,None])
+    row.update(analytic=analytic[:,3:],analytic_position=analytic[:,:3], string_axes=rotation[:,:,1:])
     if any(not torch.isfinite(v).all() for v in row.values()):
         raise ValueError('Nonfinite measured labels or analytic features')
     return row

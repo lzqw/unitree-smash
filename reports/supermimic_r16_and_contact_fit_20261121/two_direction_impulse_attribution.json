@@ -1,0 +1,731 @@
+{
+  "captured": "2026-11-21T15:33:11.998154+08:00",
+  "counts": {
+    "toi_switch": 13,
+    "manifold_switch": 10,
+    "no_contact": 14,
+    "racket_stable": 8
+  },
+  "paired_support": 14,
+  "paired_common": 3,
+  "role": "training-only",
+  "support_sha256": "c85c6f547e7f906deb5198b3a5caf25cd55889a266ffb7d5565275893839c666",
+  "force_sha256": "aa01c903313b12ebaded49a10b5def2257b823aca0a9b2cf6388aec062131f4d",
+  "source_status_sha256": "787bff6eb4b02b47ef536c631cf6f4b876cf7795090cadff3057f0d49fed8167",
+  "stable_signed": {
+    "rows": 8,
+    "supported": 8,
+    "absolute_rmse": 0.04843280836939812,
+    "gain_median": 0.8553054332733154,
+    "gain_p10": 0.04098892956972122,
+    "cosine_median": 0.4971506595611572,
+    "cosine_p10": -0.02590600959956646
+  },
+  "substitution": {
+    "magnitude": {
+      "rows": 8,
+      "supported": 8,
+      "absolute_rmse": 0.038264308124780655,
+      "gain_median": 0.9839604496955872,
+      "gain_p10": 0.2012103646993637,
+      "cosine_median": 0.9688283801078796,
+      "cosine_p10": 0.08930851519107819
+    },
+    "direction": {
+      "rows": 8,
+      "supported": 8,
+      "absolute_rmse": 0.05033447593450546,
+      "gain_median": 0.8538272380828857,
+      "gain_p10": 0.42641472816467285,
+      "cosine_median": 0.8980372548103333,
+      "cosine_p10": 0.1426084339618683
+    },
+    "both": {
+      "rows": 8,
+      "supported": 8,
+      "absolute_rmse": 0.029995549470186234,
+      "gain_median": 1.0184953212738037,
+      "gain_p10": 0.7589920163154602,
+      "cosine_median": 0.9772094488143921,
+      "cosine_p10": 0.4920133352279663
+    },
+    "normal_magnitude": {
+      "rows": 8,
+      "supported": 8,
+      "absolute_rmse": 0.04749198630452156,
+      "gain_median": 0.8413628339767456,
+      "gain_p10": 0.08587932586669922,
+      "cosine_median": 0.7715768218040466,
+      "cosine_p10": -0.030145538970828056
+    },
+    "normal_direction": {
+      "rows": 8,
+      "supported": 8,
+      "absolute_rmse": 0.03954310342669487,
+      "gain_median": 0.7916541695594788,
+      "gain_p10": 0.07707630842924118,
+      "cosine_median": 0.9321632385253906,
+      "cosine_p10": 0.4063427448272705
+    },
+    "normal_both": {
+      "rows": 8,
+      "supported": 8,
+      "absolute_rmse": 0.03836412727832794,
+      "gain_median": 0.7786121964454651,
+      "gain_p10": 0.16878408193588257,
+      "cosine_median": 0.9319802522659302,
+      "cosine_p10": 0.2503874599933624
+    },
+    "all_loads": {
+      "rows": 8,
+      "supported": 8,
+      "absolute_rmse": 2.377550845267251e-05,
+      "gain_median": 0.9999873638153076,
+      "gain_p10": 0.9998980164527893,
+      "cosine_median": 0.9999999403953552,
+      "cosine_p10": 0.9999998807907104
+    }
+  },
+  "shared_stable_cases": [
+    {
+      "lane": 29,
+      "case_id": "A-883211-029",
+      "executed_command_cosine": 0.19770251214504242,
+      "initial_face_normal_motion_m": [
+        -0.00044699147110804915,
+        -0.00016656503430567682
+      ],
+      "initial_face_tangent_motion_m": [
+        0.0001134364865720272,
+        0.0013597826473414898
+      ],
+      "modes": [
+        "racket_stable",
+        "racket_stable"
+      ],
+      "ball_response_mps": [
+        [
+          -0.0007271766662597656,
+          -0.004583835601806641,
+          0.009272575378417969
+        ],
+        [
+          -0.007246494293212891,
+          -9.21487808227539e-05,
+          -0.004259347915649414
+        ]
+      ],
+      "impulse_comparison": {
+        "magnitude": {
+          "delta_mps": [
+            -0.0011262893676757812,
+            0.001045823097229004,
+            0.009618282318115234
+          ],
+          "error_norm_mps": 0.015209882520139217,
+          "cosine": -0.40184661746025085,
+          "gain": 1.158721685409546,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.14254507422447205
+            },
+            "plus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.1425398737192154
+            }
+          }
+        },
+        "direction": {
+          "delta_mps": [
+            0.0012221336364746094,
+            0.008690834045410156,
+            0.0002498626708984375
+          ],
+          "error_norm_mps": 0.013007360510528088,
+          "cosine": -0.14526590704917908,
+          "gain": 1.0444698333740234,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.14254507422447205
+            },
+            "plus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.1425398737192154
+            }
+          }
+        },
+        "both": {
+          "delta_mps": [
+            0.0014562606811523438,
+            0.0035572052001953125,
+            0.010623931884765625
+          ],
+          "error_norm_mps": 0.0176229327917099,
+          "cosine": -0.5910394191741943,
+          "gain": 1.3440136909484863,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.14254507422447205
+            },
+            "plus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.1425398737192154
+            }
+          }
+        },
+        "normal_magnitude": {
+          "delta_mps": [
+            -0.010976314544677734,
+            0.006157636642456055,
+            -0.0006492137908935547
+          ],
+          "error_norm_mps": 0.00812431238591671,
+          "cosine": 0.7715768218040466,
+          "gain": 1.4991859197616577,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.14254507422447205
+            },
+            "plus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.1425398737192154
+            }
+          }
+        },
+        "normal_direction": {
+          "delta_mps": [
+            -0.00026226043701171875,
+            0.004662275314331055,
+            -0.014976739883422852
+          ],
+          "error_norm_mps": 0.013647218234837055,
+          "cosine": 0.4948841631412506,
+          "gain": 1.8662487268447876,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.14254507422447205
+            },
+            "plus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.1425398737192154
+            }
+          }
+        },
+        "normal_both": {
+          "delta_mps": [
+            -0.009992122650146484,
+            0.0036188364028930664,
+            -0.015020608901977539
+          ],
+          "error_norm_mps": 0.01170959509909153,
+          "cosine": 0.8796228766441345,
+          "gain": 2.188882350921631,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.14254507422447205
+            },
+            "plus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.1425398737192154
+            }
+          }
+        },
+        "all_loads": {
+          "delta_mps": [
+            -0.00725555419921875,
+            -9.238719940185547e-05,
+            -0.004262685775756836
+          ],
+          "error_norm_mps": 9.658159797254484e-06,
+          "cosine": 0.9999998807907104,
+          "gain": 1.0011305809020996,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.14254507422447205
+            },
+            "plus": {
+              "native_interval_s": [
+                0.14250000000000002,
+                0.1425625
+              ],
+              "predicted_toi_s": 0.1425398737192154
+            }
+          }
+        }
+      }
+    },
+    {
+      "lane": 36,
+      "case_id": "A-883211-036",
+      "executed_command_cosine": 0.15917477011680603,
+      "initial_face_normal_motion_m": [
+        -0.000156670983415097,
+        5.806223998661153e-05
+      ],
+      "initial_face_tangent_motion_m": [
+        0.0008807802805677056,
+        0.0005624175537377596
+      ],
+      "modes": [
+        "racket_stable",
+        "racket_stable"
+      ],
+      "ball_response_mps": [
+        [
+          0.0012483596801757812,
+          -0.0018570423126220703,
+          0.018826723098754883
+        ],
+        [
+          -0.021499156951904297,
+          0.03419828414916992,
+          -0.13078546524047852
+        ]
+      ],
+      "impulse_comparison": {
+        "magnitude": {
+          "delta_mps": [
+            -0.007305622100830078,
+            0.06271374225616455,
+            -0.11897039413452148
+          ],
+          "error_norm_mps": 0.03397328034043312,
+          "cosine": 0.9688283801078796,
+          "gain": 0.9839604496955872,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06118202954530716
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06117655709385872
+            }
+          }
+        },
+        "direction": {
+          "delta_mps": [
+            -0.003188610076904297,
+            -0.013589978218078613,
+            -0.007431745529174805
+          ],
+          "error_norm_mps": 0.13354824483394623,
+          "cosine": 0.2659831643104553,
+          "gain": 0.11553118377923965,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06118202954530716
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06117655709385872
+            }
+          }
+        },
+        "both": {
+          "delta_mps": [
+            -0.004902839660644531,
+            0.0368424654006958,
+            -0.13044381141662598
+          ],
+          "error_norm_mps": 0.01680910959839821,
+          "cosine": 0.9924325942993164,
+          "gain": 0.9908965229988098,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06118202954530716
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06117655709385872
+            }
+          }
+        },
+        "normal_magnitude": {
+          "delta_mps": [
+            -0.014712810516357422,
+            -0.0013881921768188477,
+            -0.0016269683837890625
+          ],
+          "error_norm_mps": 0.13414308428764343,
+          "cosine": 0.23666052520275116,
+          "gain": 0.10861536115407944,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06118202954530716
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06117655709385872
+            }
+          }
+        },
+        "normal_direction": {
+          "delta_mps": [
+            0.0018591880798339844,
+            0.001201033592224121,
+            -0.0013403892517089844
+          ],
+          "error_norm_mps": 0.135611429810524,
+          "cosine": 0.49804601073265076,
+          "gain": 0.01890397258102894,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06118202954530716
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06117655709385872
+            }
+          }
+        },
+        "normal_both": {
+          "delta_mps": [
+            -0.014698982238769531,
+            -0.0014317035675048828,
+            -0.0016198158264160156
+          ],
+          "error_norm_mps": 0.13416223227977753,
+          "cosine": 0.23548732697963715,
+          "gain": 0.10853984206914902,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06118202954530716
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06117655709385872
+            }
+          }
+        },
+        "all_loads": {
+          "delta_mps": [
+            -0.021515846252441406,
+            0.03419530391693115,
+            -0.1307849884033203
+          ],
+          "error_norm_mps": 1.6960009816102684e-05,
+          "cosine": 0.9999999403953552,
+          "gain": 1.0000104904174805,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06118202954530716
+            },
+            "plus": {
+              "native_interval_s": [
+                0.0611875,
+                0.06125
+              ],
+              "predicted_toi_s": 0.06117655709385872
+            }
+          }
+        }
+      }
+    },
+    {
+      "lane": 79,
+      "case_id": "B-883212-015",
+      "executed_command_cosine": -0.29834407567977905,
+      "initial_face_normal_motion_m": [
+        -0.00025426477077417076,
+        -0.00020719709573313594
+      ],
+      "initial_face_tangent_motion_m": [
+        9.887758642435074e-05,
+        0.0014032924082130194
+      ],
+      "modes": [
+        "racket_stable",
+        "racket_stable"
+      ],
+      "ball_response_mps": [
+        [
+          0.024339139461517334,
+          -0.06275475025177002,
+          0.013004779815673828
+        ],
+        [
+          0.13569164276123047,
+          0.08344292640686035,
+          -0.020705223083496094
+        ]
+      ],
+      "impulse_comparison": {
+        "magnitude": {
+          "delta_mps": [
+            0.20118176937103271,
+            0.07385104894638062,
+            -0.030075550079345703
+          ],
+          "error_norm_mps": 0.06684881448745728,
+          "cosine": 0.9804661273956299,
+          "gain": 1.3472049236297607,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10616997629404068
+            },
+            "plus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10614784806966782
+            }
+          }
+        },
+        "direction": {
+          "delta_mps": [
+            0.1958104372024536,
+            0.07311296463012695,
+            -0.021155834197998047
+          ],
+          "error_norm_mps": 0.061001479625701904,
+          "cosine": 0.9810929298400879,
+          "gain": 1.3078261613845825,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10616997629404068
+            },
+            "plus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10614784806966782
+            }
+          }
+        },
+        "both": {
+          "delta_mps": [
+            0.20442801713943481,
+            0.07145822048187256,
+            -0.02507305145263672
+          ],
+          "error_norm_mps": 0.0699099451303482,
+          "cosine": 0.9772094488143921,
+          "gain": 1.357137680053711,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10616997629404068
+            },
+            "plus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10614784806966782
+            }
+          }
+        },
+        "normal_magnitude": {
+          "delta_mps": [
+            0.173151433467865,
+            0.0741657018661499,
+            -0.061946868896484375
+          ],
+          "error_norm_mps": 0.05648164451122284,
+          "cosine": 0.9721811413764954,
+          "gain": 1.234419584274292,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10616997629404068
+            },
+            "plus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10614784806966782
+            }
+          }
+        },
+        "normal_direction": {
+          "delta_mps": [
+            0.14339116215705872,
+            0.08957713842391968,
+            0.011896610260009766
+          ],
+          "error_norm_mps": 0.03405569866299629,
+          "cosine": 0.9801403880119324,
+          "gain": 1.055119514465332,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10616997629404068
+            },
+            "plus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10614784806966782
+            }
+          }
+        },
+        "normal_both": {
+          "delta_mps": [
+            0.12345129251480103,
+            0.0880732536315918,
+            -0.022495269775390625
+          ],
+          "error_norm_mps": 0.01320872362703085,
+          "cosine": 0.9975479245185852,
+          "gain": 0.9543826580047607,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10616997629404068
+            },
+            "plus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10614784806966782
+            }
+          }
+        },
+        "all_loads": {
+          "delta_mps": [
+            0.13564658164978027,
+            0.08344030380249023,
+            -0.020746707916259766
+          ],
+          "error_norm_mps": 6.130557449068874e-05,
+          "cosine": 0.9999999403953552,
+          "gain": 0.9997879266738892,
+          "first_racket_impact": {
+            "minus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10616997629404068
+            },
+            "plus": {
+              "native_interval_s": [
+                0.106125,
+                0.1061875
+              ],
+              "predicted_toi_s": 0.10614784806966782
+            }
+          }
+        }
+      }
+    }
+  ],
+  "full_contact_admitted": false
+}

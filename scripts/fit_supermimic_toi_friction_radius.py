@@ -35,6 +35,33 @@ class SpatialSticking(TOISlip):
         return dict(impulse_residual_active=active,impulse_residual_dv=-tangent*scale*active[:,None])
 
 
+class DirectionalSticking(TOISlip):
+    """One bounded coefficient for the difference between the two in-plane sticking gains."""
+
+    def __init__(self, friction, sticking, slope):
+        super().__init__(friction, sticking)
+        if not -1 < slope < 1:
+            raise ValueError('Both principal sticking gains must remain positive')
+        self.slope = slope
+
+    def toi_response(self, row, present):
+        if self.slope == 0:
+            return super().toi_response(row, present)
+        n = row['normal']
+        slip = row['relative_velocity'] - n*(n*row['relative_velocity']).sum(-1, keepdim=True)
+        axes = row['string_axes']
+        # Project both principal axes onto the contact tangent plane. Even at a
+        # rim this operator dissipates energy without switching reference axes.
+        axes = axes - n[:,:,None] * (n[:,:,None]*axes).sum(1,keepdim=True)
+        components = (slip[:,:,None] * axes).sum(1)
+        anisotropy = components[:,:1]*axes[:,:,0] - components[:,1:]*axes[:,:,1]
+        dv = -self.sticking*(slip+self.slope*anisotropy)
+        bound = self.friction*row['impulse_dv'].norm(dim=-1,keepdim=True)
+        dv = dv*torch.clamp(bound/dv.norm(dim=-1,keepdim=True).clamp_min(1e-12),max=1.)
+        active = present.reshape(-1).bool() & row['active'] & (row['object_id']==0)
+        return dict(impulse_residual_active=active, impulse_residual_dv=dv*active[:,None])
+
+
 def fresh_training(collection, receipt, fit_hash, prior, physics):
     read=lambda p:json.loads(p.read_text())
     support=read(receipt)
@@ -71,6 +98,9 @@ def main():
         parser.add_argument('--'+key,type=Path,required=True)
     parser.add_argument('--new-training',type=Path)
     parser.add_argument('--support',type=Path)
+    parser.add_argument('--directional-sticking',action='store_true',help='Fit different gains along the two racket string axes')
+    parser.add_argument('--additional-training-panel',type=Path,action='append',default=[],
+                        help='Training directory containing raw/ and support.json, weighted by independent launch panel')
     args=parser.parse_args()
     if bool(args.new_training)!=bool(args.support):
         parser.error('Provide both the collected training source and its signed support score')
@@ -87,21 +117,36 @@ def main():
         raise ValueError('Training sources or reference changed')
     prior=BallImpulsePriorV1(normal_impulse_scale=read(args.calibration)['fitted']['normal_impulse_scale']).eval()
     def model(slope):
+        if args.directional_sticking:
+            return DirectionalSticking(fit['selected']['friction'],fit['selected']['sticking'],slope)
         return SpatialSticking(fit['selected']['friction'],fit['selected']['sticking'],slope,axes)
     signed,labels,_=signed_training_capture(args.training,args.development/'wide',prior,physics)
     panels={'fixture':(fixture(args.fixture,'train',prior),integrated_friction(args.fixture,'train',physics,prior)),
             'original_training':(signed,labels)}
     if args.new_training:
         panels['new_training']=fresh_training(args.new_training,args.support,sha(args.fit),prior,physics)
+    launch_group = {k:k for k in panels}
+    receipts = {}
+    if args.new_training:
+        launch_group['new_training'] = read(args.support)['case_sha256']
+        receipts['new_training'] = sha(args.support)
+    for directory in args.additional_training_panel:
+        key = directory.name
+        receipt = directory / 'support.json'
+        if key in panels or sha(receipt) in receipts.values():
+            raise ValueError('Repeated source')
+        panels[key] = fresh_training(directory/'raw',receipt,sha(args.fit),prior,physics)
+        launch_group[key] = read(receipt)['case_sha256']
+        receipts[key] = sha(receipt)
     refs={k:friction_errors(model(0.),*v) for k,v in panels.items()}
     grid=[]
     for slope in (0.,-.75,-.5,-.25,-.125,.125,.25,.5,.75):
         errors={k:friction_errors(model(slope),*v) for k,v in panels.items()}
-        relative=[]
+        relative={}
         for name,row in errors.items():
             ratios=[value/refs[name][k] for k,value in row.items() if refs[name][k] is not None and refs[name][k]>0]
-            relative.append(sum(ratios)/len(ratios))
-        grid.append(dict(slope=slope,source_errors=errors,score=sum(relative)/len(relative)))
+            relative.setdefault(launch_group[name],[]).append(sum(ratios)/len(ratios))
+        grid.append(dict(slope=slope,source_errors=errors,score=sum(sum(v)/len(v) for v in relative.values())/len(relative)))
     chosen=min(grid,key=lambda x:x['score'])
     results={}
     for scale in ('wide','half','quarter'):
@@ -112,7 +157,7 @@ def main():
         results[scale]=free_rollout(model(chosen['slope']),prior,seq,groups,repeat,commands,baseline_model=model(0.))
     if results['wide']['baseline']!=fit['g07']['candidate']:
         raise ValueError('Frozen first-impact model failed to reproduce')
-    result=dict(fit_sha256=sha(args.fit),new_training_support_sha256=sha(args.support) if args.support else None,
+    result=dict(mechanism='directional_sticking' if args.directional_sticking else 'spatial_sticking', additional_support=receipts, launch_groups=launch_group, fit_sha256=sha(args.fit),new_training_support_sha256=sha(args.support) if args.support else None,
                 geometry_sha256=sha(configs/'full_racket_v4_r3.json'),train=grid,selected=chosen,development=results,
                 actor_updates=0,v13_updates=0,contact_receipt=False,final_holdout_opened=False)
     with args.output.open('x') as stream:

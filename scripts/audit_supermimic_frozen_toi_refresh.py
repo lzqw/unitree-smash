@@ -20,7 +20,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for key in ('run', 'before-refresh', 'frozen-episodes', 'development', 'output'):
         parser.add_argument('--' + key, type=Path, required=True)
+    parser.add_argument('--rebuilt-references', type=Path,
+                        help='Score an offline substep reconstruction with the final frozen WM')
+    parser.add_argument('--disjoint-collection', type=Path,
+                        help='Preregistered paired probe directory with specifications/ and raw/ on other held lanes')
     args = parser.parse_args()
+    if args.disjoint_collection and not args.rebuilt_references:
+        parser.error('The prospective comparison must name the registered candidate references')
     torch.set_num_threads(2)
     run = args.run
     argv = read(run / 'startup.json')['argv']
@@ -61,19 +67,65 @@ def main():
     adapter.eval().requires_grad_(False)
     development = read(args.development / 'completed.json')
     results = {}
-    for world_name, world_stage in stages.items():
+    worlds = stages
+    banks = {name: stage['reference_bank'] for name, stage in stages.items()}
+    if args.rebuilt_references:
+        audit = read(args.rebuilt_references / 'audit.json')
+        candidate_path = args.rebuilt_references / 'bank.pt'
+        if (audit['source_bank_identity'] != identities['after']['reference_sha256']
+                or audit['bank_sha256'] != digest(candidate_path)):
+            raise ValueError('Reconstructed labels do not belong to the frozen reference bank')
+        candidate = torch.load(candidate_path, weights_only=True, map_location='cpu')
+        original = banks['after']
+        original_ids = [e.get('trajectory_digest', e['digest']) for e in original['entries']]
+        candidate_ids = [e.get('trajectory_digest', e['digest']) for e in candidate['entries']]
+        if (tree_digest(candidate) != audit['bank_identity'] or original_ids != candidate_ids
+                or any(candidate[k] != v for k,v in original.items() if k != 'entries')):
+            raise ValueError('Reference population or execution contract changed')
+        worlds = {'after': after}
+        banks = {'control_boundary': original, 'substep': candidate}
+        identities['substep_reference_sha256'] = audit['bank_identity']
+    panels = {scale: (args.development / scale, development[scale]) for scale in ('wide','half','quarter')}
+    expected_actor = None
+    if args.disjoint_collection:
+        root = args.disjoint_collection
+        raw = root / 'raw'
+        reg_path = root / 'specifications/manifest.json'
+        reg, startup = read(reg_path), read(raw/'startup.json')
+        spec, = startup['specs']
+        if (startup['spec_manifest_sha256'] != digest(reg_path) or spec['sha256'] != reg['spec_sha256']
+                or digest(Path(spec['path'])) != reg['spec_sha256'] or startup['seed'] != reg['seed']
+                or startup['source_sha256'] != identities['after']['checkpoint_sha256']
+                or startup['source_sha256'] != reg['initial_checkpoint_sha256']
+                or reg['candidate_bank_sha256'] != audit['bank_sha256']
+                or reg['original_bank_identity'] != audit['source_bank_identity']
+                or spec['spec']['lanes'] != reg['case_ids'] or set(reg['case_ids']) != held-set(reg['excluded_previous_development_lanes'])
+                or reg['formal_promotion']):
+            raise ValueError('Disjoint native capture differs from preregistered policy, references or held cases')
+        for scale, (folder, status_sha) in panels.items():
+            if digest(folder/'status.json') != status_sha:
+                raise ValueError('Original development source changed')
+            previous, = read(folder/'startup.json')['specs']
+            if set(previous['spec']['lanes']) != set(reg['excluded_previous_development_lanes']):
+                raise ValueError('Previous development lanes changed')
+        panels = {'disjoint': (raw, digest(raw/'status.json'))}
+        expected_actor = manifest['actor_sha256']
+    for world_name, world_stage in worlds.items():
         adapter.load_state_dict(world_stage['world'], strict=True)
         results[world_name] = {}
-        for bank_name, bank_stage in stages.items():
-            bank = TaskSpaceReferenceBankV1.from_payload(bank_stage['reference_bank'])
+        for bank_name, payload in banks.items():
+            bank = TaskSpaceReferenceBankV1.from_payload(payload)
             bank.assert_excludes(held)
             results[world_name][bank_name] = {
-                scale: score(args.development / scale, development[scale], adapter, template, launch, bank,
+                scale: score(folder, status_sha, adapter, template, launch, bank,
                              contract['task_contract'], after['metadata']['policy_execution'], held)
-                for scale in ('wide', 'half', 'quarter')}
+                for scale, (folder,status_sha) in panels.items()}
+            if expected_actor and any(x.get('probe_actor_sha256', expected_actor) != expected_actor
+                                      for x in results[world_name][bank_name].values()):
+                raise ValueError('Native paired behavior differs from frozen A1 actor')
     result = dict(actor_sha256=manifest['actor_sha256'], stages=identities, development=development,
-                  world_then_reference=results, actor_updates=0, contact_receipt=False,
-                  scope='Historical native commands at three scales on the same development launches, with a fixed actor.')
+                  native_panels={k:v[1] for k,v in panels.items()}, world_then_reference=results, actor_updates=0, contact_receipt=False,
+                  scope='Frozen models and references evaluated against signed native command sequences. No policy updates or promotion.')
     with args.output.open('x') as stream:
         json.dump(result, stream, indent=2, allow_nan=False)
 

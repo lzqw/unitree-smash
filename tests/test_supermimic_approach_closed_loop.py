@@ -216,3 +216,17 @@ def test_per_row_hazard_attribution_preserves_masked_gradient():
     rows=event_hazard_loss(logits,paid,after,per_row=True)
     torch.testing.assert_close(old,rows.mean())
     torch.testing.assert_close(torch.autograd.grad(old,logits)[0],torch.autograd.grad(rows.mean(),logits)[0])
+
+
+def test_refresh_joins_substep_target_only_to_qualified_complete_episode():
+    collector = FrozenRefresh(2, 1, .9, 'frozen', Schema(), stage_ticks=())
+    item = row(0, [0, 0], [1, 3], [True, True])
+    item['after'] = dict(item['before'], event_state=item['before']['event_state'].clone())
+    item['after']['event_state'][1,1] = 1
+    features = torch.arange(24, dtype=torch.float).reshape(2,12)
+    item['task_sequence'] = dict(racket_reference_targets=[dict(lanes=torch.tensor([0,1]),
+            episode=torch.tensor([1,3]), features=features, offset_s=.004)])
+    collector.append(item)
+    packed = collector.packed_complete()['native_toi_racket']
+    assert packed[0,0].isnan().all()
+    torch.testing.assert_close(packed[0,1], torch.cat((torch.tensor([.004]),features[1])))
