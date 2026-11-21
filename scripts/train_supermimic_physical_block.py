@@ -840,7 +840,13 @@ def run(args, *, alternating=None):
                     reason='Actor contact updates are not promotable in this stage',
                     action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()),
                     dual_head_quality_available=dual_quality is not None))
+        behavior_key = behavior_actor_hash = None
         def native_actor_action(observation):
+            nonlocal behavior_key, behavior_actor_hash
+            key = (global_accepted_id, trainer.actor_updates)
+            if key != behavior_key:
+                behavior_actor_hash = tensor_digest(actor.state_dict().items())
+                behavior_key = key
             return policy_forward(actor,observation['policy'],env.rally,sample=False)[0]
         def encode_native_value_start(row):
             from quadsmash.rl.supermimic_policy_execution_v1 import recovery_gate
@@ -894,6 +900,7 @@ def run(args, *, alternating=None):
                 sampling_metadata=native_approach_metadata(row,actor,adapter.physical_model.geometry)
                 row['sampling_metadata']=sampling_metadata
                 row['policy_version']=global_accepted_id
+                row['actor_state_sha256']=behavior_actor_hash
                 row['source_id']='online'
                 row['block_name']='combined_refresh' if frozen_policy_id is not None else trainer.block_name
                 row['policy_id']=frozen_policy_id or f'mixed_v{global_accepted_id}'
@@ -929,8 +936,12 @@ def run(args, *, alternating=None):
                     self.chunks.append(dict(file=name,ticks=len(self.rows),**saved))
                     self.rows.clear()
                 self._manifest()
+        startup_identity=json.loads((args.output/'startup.json').read_text())
         archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,policy_execution=policy_execution,control_ticks=0,transitions=0,chunks=[],
-            scope='Mixed-policy training transitions, NOT frozen evaluation',actor_update_budget=args.recovery_update_budget+args.approach_update_budget,
+            initial_archive_identity={k:manifest.get(k) for k in ('policy_id','actor_state_sha256','runtime_commit')},
+            behavior_policy_scope='per_transition',policy_id='mixed-training',actor_state_sha256=None,
+            runtime_commit=startup_identity['commit'],runtime_script_sha256=startup_identity['script_sha256'],
+            scope='Native training transitions with per-row behavior identity',actor_update_budget=args.recovery_update_budget+args.approach_update_budget,
             replay_source_schema=['recent_online','older_online','initial_archive'],
             replay_stage_schema=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery','approach_active','hit_prepare','contact_release','approach_failure','post_hit']),chunk_ticks=1000000,compact_plan_observations=True)
         if research and os.environ.get('QUADSMASH_ZSTD_ARCHIVE','0')=='1':
@@ -1057,13 +1068,15 @@ def run(args, *, alternating=None):
         # Keep the audit explicit so the candidate cannot be mistaken for a
         # policy-training checkpoint.
         from quadsmash.rl.supermimic_dual_head_quality_v1 import split_native_value_rows,critic_holdout,reference_coverage
+        from scripts.index_supermimic_success_archive import archive_actor_sha256
+        label_actor_sha256=archive_actor_sha256(manifest)
         if args.training_stage == 'wm_calibrate':
             native_value_bank=dict(
                 inputs=torch.empty((0, 0)), rtg=torch.empty((0,)), identity=[],
                 head_masks={'recovery':torch.empty((0,),dtype=torch.bool),
                             'approach':torch.empty((0,),dtype=torch.bool)},
                 policy_id=manifest.get('policy_id','initial_archive_unknown_policy'),
-                actor_sha256=manifest.get('actor_state_sha256'), source_sha256=packed_sha,
+                actor_sha256=label_actor_sha256, source_sha256=packed_sha,
                 policy_execution=manifest.get('policy_execution'), accepted_updates=0,
                 label_actor_state=None)
             write(args.output/'native_critic_stage_audit.json',dict(
@@ -1088,8 +1101,8 @@ def run(args, *, alternating=None):
                     for h in value_masks:value_masks[h].append(encoded['head_masks'][h].cpu()[valid])
                 native_value_bank=dict(inputs=torch.cat(value_x),rtg=torch.cat(value_y),identity=value_ids,
                     head_masks={h:torch.cat(v) for h,v in value_masks.items()},policy_id=manifest.get('policy_id','initial_archive_unknown_policy'),
-                    actor_sha256=manifest.get('actor_state_sha256'),source_sha256=packed_sha,policy_execution=manifest.get('policy_execution'),accepted_updates=0,
-                    label_actor_state={k:v.detach().cpu().clone() for k,v in trainer.reference.state_dict().items()} if manifest.get('actor_state_sha256')==tensor_digest(trainer.reference.state_dict().items()) else None)
+                    actor_sha256=label_actor_sha256,source_sha256=packed_sha,policy_execution=manifest.get('policy_execution'),accepted_updates=0,
+                    label_actor_state={k:v.detach().cpu().clone() for k,v in trainer.reference.state_dict().items()} if label_actor_sha256==tensor_digest(trainer.reference.state_dict().items()) else None)
         if args.training_stage != 'wm_calibrate' and not args.resume_training:
             from quadsmash.rl.supermimic_dual_head_quality_v1 import native_calibration_rows
             initial_ids,calibration_contract=native_calibration_rows(native_value_bank,policy_execution,wm_holdout_lanes,CRITIC_TICKS,expected_actor_sha256=tensor_digest(actor.state_dict().items()))

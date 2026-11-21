@@ -10,6 +10,14 @@ from pathlib import Path
 EXCLUDE={'.git','.cache','site-packages','node_modules','.local','__pycache__','env_isaaclab','envs','.codex','.config','.vscode','.npm','.rustup','.cargo'}
 FLAGS=('qualified_airborne_string_contact','ball_side_complete_except_recovery','recovery_success','complete5')
 
+def archive_actor_sha256(manifest):
+    """An online replay has per-transition actors, including legacy mislabeled manifests."""
+    if (manifest.get('behavior_policy_scope') == 'per_transition'
+            or ('replay_source_schema' in manifest and 'replay_stage_schema' in manifest)):
+        return None
+    return manifest.get('actor_state_sha256')
+
+
 def digest(path):
     h=hashlib.sha256()
     with path.open('rb') as f:
@@ -104,7 +112,7 @@ def build(roots,output,*,resume=False):
     # Admission is deliberately separate from discovery: matching actor/execution/asset
     # contracts and chunk/episode validation are required by reference-bank tooling.
     for path,manifest,missing in db.execute('SELECT path,manifest_json,missing_chunks FROM archives').fetchall():
-        m=json.loads(manifest);known=bool(m.get('actor_state_sha256') and m.get('policy_execution') and m.get('task_contract'))
+        m=json.loads(manifest);known=bool(archive_actor_sha256(m) and m.get('policy_execution') and m.get('task_contract'))
         available=not missing and bool(m.get('chunks'))
         db.execute('UPDATE occurrences SET identity_known=?,raw_available=?,eligibility=? WHERE archive=?',
                    (int(known),int(available),'requires-chunk-hash-episode-and-contract-validation' if known and available else 'missing-identity-or-raw-data',path))

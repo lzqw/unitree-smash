@@ -178,7 +178,7 @@ class PhysicalTransitionArchive:
         self.directory.mkdir(parents=True, exist_ok=False)
         self.metadata = dict(metadata, schema=self.schema,
                              joint_names=list(JOINT_NAMES),
-                             scope='native data only; executor memory completeness not certified',
+                             scope=metadata.get('scope','native data only; executor memory completeness not certified'),
                              substep_contact_traces=False,
                              auxiliary_schema=AUXILIARY_SCHEMA,
                              causal_plan_logs_captured=True)

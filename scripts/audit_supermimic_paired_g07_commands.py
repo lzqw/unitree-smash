@@ -7,6 +7,7 @@ from pathlib import Path
 
 import torch
 
+from scripts.index_supermimic_success_archive import archive_actor_sha256
 from quadsmash.rl.supermimic_paired_evaluation_v1 import parameter_delta
 from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop, tensor_digest
@@ -57,7 +58,7 @@ def main():
     second = copy.deepcopy(first)
     if a.before is not None:
         load_actor(checkpoint(a.before),first)
-    elif tensor_digest(first.state_dict().items())!=manifest['actor_state_sha256']:
+    elif tensor_digest(first.state_dict().items())!=archive_actor_sha256(manifest):
         raise ValueError('The initial actor differs from the actor that collected the archive')
     load_actor(after,second)
     states=load_start_cache(a.archive,manifest)

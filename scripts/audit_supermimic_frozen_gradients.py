@@ -7,6 +7,7 @@ critic objective or a physical finite-difference counterfactual.
 import argparse,json,time,traceback
 from pathlib import Path
 import torch
+from scripts.index_supermimic_success_archive import archive_actor_sha256
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import load_physical_loop,tensor_digest,set_actor_trainable,APPROACH_NAMES,RECOVERY_NAMES
 from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
 from quadsmash.rl.supermimic_horizon_learner_v2 import frozen
@@ -36,7 +37,7 @@ def main():
         if manifest.get('policy_execution')!=contract():raise ValueError('Archive is not the current causal execution contract')
         actor.eval();adapter.eval()
         actor_before=tensor_digest(actor.state_dict().items());world_before=tensor_digest(adapter.state_dict().items())
-        if manifest.get('actor_state_sha256')!=actor_before:raise ValueError('Archive actor identity mismatch')
+        if archive_actor_sha256(manifest)!=actor_before:raise ValueError('Archive actor identity mismatch')
         cfg=Timebase(**json.loads(Path('configs/supermimic_task_horizon_v2.json').read_text()))
         for head,tick,names in (('recovery',a.recovery_tick,RECOVERY_NAMES),('approach',a.approach_tick,APPROACH_NAMES)):
             stage=head.upper();set_actor_trainable(actor,names);actor.zero_grad(set_to_none=True)

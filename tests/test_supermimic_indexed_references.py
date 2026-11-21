@@ -25,3 +25,21 @@ def test_unidentified_or_missing_raw_cannot_be_used_as_tracking_reference():
     connection,record=fixture()
     connection.execute('UPDATE occurrences SET identity_known=0')
     with pytest.raises(ValueError):indexed_terminal_records(connection,'/archive',[record])
+
+
+def test_training_archive_cannot_inherit_frozen_actor_identity(tmp_path):
+    from scripts.index_supermimic_success_archive import archive_actor_sha256
+    from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive
+
+    initial = dict(policy_id='frozen-evaluation', actor_state_sha256='initial')
+    assert archive_actor_sha256(initial) == 'initial'
+    legacy = dict(initial, replay_source_schema=['initial_archive','online'], replay_stage_schema=['uniform'])
+    assert archive_actor_sha256(legacy) is None
+    current = dict(behavior_policy_scope='per_transition', actor_state_sha256=None,
+                   scope='Native training transitions with per-row behavior identity',
+                   initial_archive_identity=initial)
+    PhysicalTransitionArchive(tmp_path/'archive', metadata=current)
+    saved = json.loads((tmp_path/'archive/manifest.json').read_text())
+    assert saved['scope'] == current['scope']
+    assert saved['initial_archive_identity'] == initial
+    assert archive_actor_sha256(saved) is None

@@ -59,6 +59,9 @@ def main():
     archive = a.archive.resolve()
     manifest_path = archive / 'manifest.json'
     manifest = json.loads(manifest_path.read_text())
+    from scripts.index_supermimic_success_archive import archive_actor_sha256
+    if not archive_actor_sha256(manifest):
+        raise ValueError('Single-policy references require a known archive-wide behavior actor')
     with sqlite3.connect(a.database.resolve().as_uri() + '?mode=ro', uri=True) as connection:
         registered = connection.execute('SELECT manifest_sha256 FROM archives WHERE path=?', (str(archive),)).fetchone()
         if not registered or registered[0] != sha(manifest_path):

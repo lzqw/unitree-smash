@@ -5,6 +5,7 @@ from pathlib import Path
 
 import torch
 
+from scripts.index_supermimic_success_archive import archive_actor_sha256
 from quadsmash.rl.supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
 from quadsmash.rl.supermimic_physical_learner_v1 import PhysicalHorizonTrainer
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import RECOVERY_NAMES, load_physical_loop, tensor_digest
@@ -93,7 +94,7 @@ def main():
         physical_checkpoint=paths['physical'],ball_checkpoint=paths['ball'],task_checkpoint=paths['task'],
         action_ball_checkpoint=paths.get('action_ball'),execution_root=meta['g07_execution_root'],device=a.device)
     weights=[{k:v.detach().cpu().clone() for k,v in actor.state_dict().items()},eight['actor'],ck['actor']]
-    if manifest['actor_state_sha256']!=sources[0]['actor_sha256'] or adapter.manifest['checkpoint_sha256']!=meta['checkpoint_sha256']:
+    if archive_actor_sha256(manifest)!=sources[0]['actor_sha256'] or adapter.manifest['checkpoint_sha256']!=meta['checkpoint_sha256']:
         raise ValueError('Initial archive or model dependencies changed')
     fit=read(a.replay/'fit.json')
     world=torch.load(a.replay/'online_world.pt',map_location='cpu',mmap=True,weights_only=True)
