@@ -95,6 +95,7 @@ def main():
     for name in ('archive','packed-data','physical-checkpoint','ball-checkpoint','task-checkpoint','safety-mapping','output'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--resume-training',type=Path)
+    parser.add_argument('--resume-wm-replay',type=Path,help='Resume the preregistered candidate WM with its fitted Adam and sampling state')
     parser.add_argument('--resume-next-cycle',action='store_true',help='Start a new cycle only after checkpoint-matched native acceptance')
     parser.add_argument('--resume-reset-schedule',action='store_true',
                         help='Resume model/optimizer state while starting a fresh bounded short-alternating schedule')
@@ -205,6 +206,9 @@ def main():
         parser.error('full_contact requires contact-bptt-mode=enabled')
     if args.wm_calibration_updates<1 or args.wm_ball_loss_weight<=0 or args.wm_contact_ball_loss_weight<1 or args.racket_loss_weight<0:
         parser.error('WM calibration/loss settings invalid')
+    if args.resume_wm_replay and (not args.resume_training or not args.wm_forward_guard or args.resume_without_replay
+            or args.training_profile!='bounded' or args.contact_bptt_mode!='detached'):
+        parser.error('A replayed WM requires a bounded detached resume with its full replay and a native forward guard')
     args.requested_world_lr=args.world_learning_rate
     if args.world_learning_rate is None:
         args.world_learning_rate=2e-4
@@ -534,6 +538,7 @@ def run(args, *, alternating=None):
         rtg,rtg_complete=complete_native_rtg(package['tensors'],timebase.gamma)
         replay_archives=[];replay_receipts=[];critic_coverage_blocks=0
         refresh_world_updates=0;refresh_critic_updates=0
+        replay_handoff=None
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
             previous_guard=resumed.get('config',{}).get('wm_forward_guard_sha256')
@@ -566,7 +571,20 @@ def run(args, *, alternating=None):
                 saved_objective=resumed['config'].get('approach_objective','task')
                 if args.approach_objective!=saved_objective:
                     raise ValueError('An Approach objective change requires a fresh schedule; inherited updates cannot count toward the new objective')
-            actor.load_state_dict(resumed['actor'],strict=True);adapter.load_state_dict(resumed['world'],strict=True)
+            world=resumed['world']
+            world_optimizer=resumed['world_optimizer']
+            natural_rng=resumed.get('natural_flight_rng')
+            if args.resume_wm_replay:
+                recipe=dict(natural_flight_batch=args.wm_natural_flight_batch,natural_flight_loss=args.wm_natural_flight_loss,
+                            separate_supervision=args.wm_separate_supervision)
+                if args.requested_world_lr is not None:
+                    recipe['learning_rate']=args.requested_world_lr
+                world,wm_state,replay_handoff=forward_guard.replay_for_resume(args.resume_wm_replay,args.resume_training,
+                                                                            resumed,wm_holdout_lanes,recipe)
+                world_optimizer=wm_state['optimizer']
+                natural_rng=wm_state['natural_flight_rng']
+            actor.load_state_dict(resumed['actor'],strict=True)
+            adapter.load_state_dict(world,strict=True)
             if forward_guard is not None:
                 resume_check=forward_guard.check(adapter)
                 write(args.output/'resumed_forward_validation.json',resume_check)
@@ -586,9 +604,9 @@ def run(args, *, alternating=None):
             else:
                 trainer.actor_opt.load_state_dict(resumed['actor_optimizer'])
             args.world_learning_rate=trainer.world_lr=restore_world_optimizer(
-                trainer.world_opt,resumed['world_optimizer'],args.requested_world_lr)
-            if natural_flight is not None and resumed.get('natural_flight_rng') is not None:
-                natural_flight.generator.set_state(resumed['natural_flight_rng'].cpu())
+                trainer.world_opt,world_optimizer,args.requested_world_lr)
+            if natural_flight is not None and natural_rng is not None:
+                natural_flight.generator.set_state(natural_rng.cpu())
 
             trainer.critic_opt.load_state_dict(resumed['critic_optimizer'])
             for name in ('actor_updates','world_updates','critic_updates','last_critic_loss'):setattr(trainer,name,resumed[name])
@@ -821,7 +839,7 @@ def run(args, *, alternating=None):
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
         config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=args.world_learning_rate,critic_lr=2e-4,
-            wm_forward_guard_sha256=forward_guard.spec_sha256 if forward_guard else None,
+            wm_forward_guard_sha256=forward_guard.spec_sha256 if forward_guard else None,wm_replay_handoff=replay_handoff,
             wm_separate_supervision=args.wm_separate_supervision,wm_natural_flight_batch=args.wm_natural_flight_batch,wm_natural_flight_loss=args.wm_natural_flight_loss,
             wm_action_collections=action_collections,wm_sampling_mode=args.wm_sampling_mode,
             native_return_monitor=frozen_return_monitor.config,

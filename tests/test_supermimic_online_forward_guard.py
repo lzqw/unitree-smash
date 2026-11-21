@@ -231,3 +231,57 @@ def test_recovery_start_requires_simultaneous_current_latches_in_training_event_
                  before=dict(task=dict(had_contact=torch.ones(1),released=torch.ones(1))))
     assert training_start_mask(compact,[5,17],recovery=True).tolist()==[False]
     assert training_start_mask(compact,[5,18],recovery=True).tolist()==[True]
+
+
+def test_recovery_replay_requires_all_intervening_refresh_steps_in_order():
+    from scripts.replay_supermimic_recovery_wm_updates import insert_refreshes
+    def stage(tick, *updates):
+        return {'native_ticks':tick,'world_update_reports':[{'world_updates':i} for i in updates]}
+    first,second=stage(16,1),stage(848,4)
+    frozen,final=stage(832,2,3),stage(1664,5)
+    assert insert_refreshes([first,second],{848:final,16:frozen},5)==[first,frozen,second,final]
+    with pytest.raises(ValueError,match='Missing or duplicated'):
+        insert_refreshes([first,second],{848:final},5)
+    with pytest.raises(ValueError,match='outside'):
+        insert_refreshes([first],{32:frozen},3)
+
+
+def test_preregistered_replay_resume_binds_behavior_weights_optimizer_and_sampling(tmp_path):
+    import json
+    from scripts.supermimic_online_forward_guard import OnlineForwardGuard,digest,tensor_digest
+    guard=object.__new__(OnlineForwardGuard)
+    world={'w':torch.tensor([2.])}
+    actor={'a':torch.tensor([1.])}
+    parent={'actor':actor,'world':{'w':torch.tensor([.5])},'world_updates':4}
+    checkpoint=tmp_path/'parent.pt'
+    torch.save(parent,checkpoint)
+    world_path=tmp_path/'online_world.pt'
+    fit_path=tmp_path/'fit.json'
+    optimizer_path=tmp_path/'online_world_optimizer.pt'
+    torch.save(world,world_path)
+    parameter=torch.nn.Parameter(torch.ones(1))
+    optimizer=torch.optim.Adam([parameter],lr=.001)
+    parameter.sum().backward()
+    optimizer.step()
+    before=tensor_digest(parent['world'].items())
+    after=tensor_digest(world.items())
+    rng=torch.Generator().manual_seed(17).get_state()
+    torch.save(dict(optimizer=optimizer.state_dict(),updates=4,world_sha256=after,natural_flight_rng=rng),optimizer_path)
+    recipe=dict(natural_flight_batch=16,natural_flight_loss='mse',separate_supervision=True)
+    fit=dict(recipe,stage_checkpoint_sha256=digest(checkpoint),original_online_world_sha256=before,
+             initial_world_sha256='base',online_world_sha256=after,optimizer_file_sha256=digest(optimizer_path),
+             updates=4,excluded_lanes=[5],learning_rate=.001,adaptation='full',policy_updates=0,critic_updates=0)
+    fit_path.write_text(json.dumps(fit))
+    guard.spec_sha256='guard-spec'
+    guard.behavior_actor_sha256=tensor_digest(actor.items())
+    guard.initial_world_sha256='base'
+    guard.reference_policy='formal_anchor'
+    guard.panel={'online_world_comparison':{str(tmp_path):{str(f):digest(f) for f in (world_path,fit_path)}}}
+    copied,restored,receipt=guard.replay_for_resume(tmp_path,checkpoint,parent,[5],recipe)
+    assert torch.equal(copied['w'],world['w']) and torch.equal(restored['natural_flight_rng'],rng)
+    assert receipt['world_sha256']==after and restored['optimizer']['state'][0]['step']==1
+    with pytest.raises(ValueError,match='policy'):
+        guard.replay_for_resume(tmp_path,checkpoint,parent,[7],recipe)
+    with optimizer_path.open('ab') as out:out.write(b'x')
+    with pytest.raises(ValueError,match='optimizer binding'):
+        guard.replay_for_resume(tmp_path,checkpoint,parent,[5],recipe)

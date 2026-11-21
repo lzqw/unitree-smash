@@ -99,7 +99,7 @@ def main():
         stage_world_sha256=tensor_digest(adapter.state_dict().items()),initial_world_sha256=initial['runtime_world_sha256'],
         native_panel_sha256=digest(a.panel),native_capture_sha256=measured['data_sha256'],initial_score_sha256=digest(a.initial_score),
         native_behavior_actor_sha256=measured['actor_sha256'],horizons=panel['horizons'],world_updates=stage['world_updates'],
-        forward_guard_vs_formal_anchor=compare_forward(baseline,current,panel['horizons']),
+        forward_guard_vs_formal_anchor=compare_forward(baseline,current,panel['horizons'],require_contact_improvement=True),
         forward_guard_vs_block_initial=compare_forward(before,current,panel['horizons']),
         uniform_vs_formal_anchor=body_forward_check(score['metrics'],panel['horizons'],names),
         contact_vs_formal_anchor=compare_candidate_to_anchor(event_metrics(baseline),event_metrics(current)),

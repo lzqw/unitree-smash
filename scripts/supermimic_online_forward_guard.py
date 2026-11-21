@@ -14,12 +14,12 @@ def event_metrics(metrics):
         for h,groups in metrics.items() if f'contact{offset:+d}' in groups} for offset in (-1,0,1)}}
 
 
-def compare_forward(initial, candidate, horizons):
+def compare_forward(initial, candidate, horizons, *, require_contact_improvement=False):
     m=dict(anchor=initial,candidate=candidate)
     body=body_forward_check(m,horizons,['body_rmse','root_angular_mae'])
     flight=body_forward_check(m,[64],['ball_velocity_rmse'])
     contact=compare_candidate_to_anchor(event_metrics(initial),event_metrics(candidate),
-                                        require_contact_improvement=False)
+                                        require_contact_improvement=require_contact_improvement)
     return dict(passed=body['passed'] and flight['passed'] and contact['passed'],
                 body=body,flight=flight,contact=contact)
 
@@ -63,6 +63,8 @@ class OnlineForwardGuard:
         if (actor['metadata']['task_contract']!=task_contract
             or tensor_digest(actor['actor'].items())!=recorded['actor_sha256']):
             raise ValueError('Held-out native task or collecting policy identity differs')
+        self.behavior_actor_sha256=recorded['actor_sha256']
+        self.initial_world_sha256=reference['runtime_world_sha256']
         self.data=torch.load(native,map_location='cpu',weights_only=True,mmap=True)
         self.windows=recorded['windows']
         # Recompute the reference using the training backend. CPU/GPU roundoff
@@ -78,6 +80,38 @@ class OnlineForwardGuard:
         if not body['passed'] or not contact['passed']:
             raise ValueError('The deployed initial weights do not pass their native forward gate on this backend')
 
+    def replay_for_resume(self, directory, checkpoint_path, checkpoint, held_lanes, recipe):
+        """Resolve only a preregistered WM+Adam pair for the policy that supplied this panel."""
+        directory=Path(directory).resolve()
+        world_path=directory/'online_world.pt'
+        fit_path=directory/'fit.json'
+        fit_hash=digest(fit_path)
+        registered=self.panel.get('online_world_comparison',{}).get(str(directory))
+        if registered!={str(world_path):digest(world_path),str(fit_path):fit_hash}:
+            raise ValueError('WM replay was not preregistered on this native panel')
+        fit=json.loads(fit_path.read_text())
+        if (self.reference_policy!='formal_anchor' or self.behavior_actor_sha256!=tensor_digest(checkpoint['actor'].items())
+                or digest(checkpoint_path)!=fit['stage_checkpoint_sha256']
+                or fit['original_online_world_sha256']!=tensor_digest(checkpoint['world'].items())
+                or self.initial_world_sha256!=fit['initial_world_sha256']
+                or fit['updates']!=checkpoint['world_updates'] or set(fit['excluded_lanes'])!=set(held_lanes)
+                or fit['adaptation']!='full' or fit['policy_updates']!=0 or fit['critic_updates']!=0
+                or any(fit.get(k)!=v for k,v in recipe.items())):
+            raise ValueError('WM replay policy, checkpoint, sampling split or optimizer recipe changed')
+        optimizer_path=directory/'online_world_optimizer.pt'
+        if not fit.get('optimizer_file_sha256') or digest(optimizer_path)!=fit['optimizer_file_sha256']:
+            raise ValueError('WM replay optimizer binding changed')
+        world=torch.load(world_path,map_location='cpu',weights_only=True,mmap=True)
+        state=torch.load(optimizer_path,map_location='cpu',weights_only=True,mmap=True)
+        if (tensor_digest(world.items())!=fit['online_world_sha256'] or state['world_sha256']!=fit['online_world_sha256']
+                or state['updates']!=fit['updates'] or not state['optimizer']['state']
+                or (state['natural_flight_rng'] is None)!=(fit['natural_flight_batch']==0)
+                or any(g['lr']!=fit['learning_rate'] for g in state['optimizer']['param_groups'])):
+            raise ValueError('WM weights, optimizer or anchor sampling state mismatch')
+        return world,state,dict(fit_sha256=fit_hash,world_sha256=fit['online_world_sha256'],
+                                optimizer_sha256=fit['optimizer_file_sha256'],panel_sha256=self.spec_sha256,
+                                source_checkpoint_sha256=fit['stage_checkpoint_sha256'])
+
     @torch.no_grad()
     def score(self, adapter):
         device=next(adapter.parameters()).device
@@ -89,11 +123,7 @@ class OnlineForwardGuard:
     def check(self, adapter):
         current=self.score(adapter)
         deployed=compare_forward(self.initial,current,self.panel['horizons'])
-        formal=compare_forward(self.formal,current,self.panel['horizons'])
-        # The registered formal panel requires the candidate to improve the
-        # contact tick as well as retain its adjacent-tick accuracy.
-        formal['contact']=compare_candidate_to_anchor(event_metrics(self.formal),event_metrics(current))
-        formal['passed']=formal['body']['passed'] and formal['flight']['passed'] and formal['contact']['passed']
+        formal=compare_forward(self.formal,current,self.panel['horizons'],require_contact_improvement=True)
         comparison=formal if self.reference_policy=='formal_anchor' else deployed
         return dict(comparison,comparison_reference=self.reference_policy,vs_formal_anchor=formal,
                     vs_block_initial=deployed,spec_sha256=self.spec_sha256,

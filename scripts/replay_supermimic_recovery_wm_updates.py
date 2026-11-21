@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay a first Recovery block's real WM batches with a prescribed learning rate."""
+"""Replay consecutive Recovery blocks and their frozen-policy WM updates."""
 import argparse
 import json
 from pathlib import Path
@@ -32,7 +32,7 @@ def fit_readout_rows(module, layer, rows):
 
 
 def frozen_recovery_stage(run, pre, post, prefix, receipt):
-    """Bind the first frozen WM refresh to its behavior policy and adjacent checkpoints."""
+    """Bind a frozen WM refresh to its behavior policy and adjacent checkpoints."""
     actor_sha=tensor_digest(pre['actor'].items())
     if (tensor_digest(post['actor'].items())!=actor_sha or receipt['actor_sha256']!=actor_sha
             or receipt['policy_execution']!=pre['metadata']['policy_execution']
@@ -50,8 +50,30 @@ def frozen_recovery_stage(run, pre, post, prefix, receipt):
     if not expected or [u['world_updates'] for u in updates]!=expected or receipt['world_updates']!=len(expected):
         raise ValueError('Nonconsecutive frozen Recovery WM updates')
     return dict(native_ticks=receipt['end_tick'],attempt_id=prefix['attempt_id'],world_update_reports=updates,
-                policy_id=receipt['policy_id'],policy_version=prefix['actor_updates'])
+                policy_id=receipt['policy_id'],policy_version=prefix.get('global_accepted',prefix['actor_updates']))
 
+
+
+def insert_refreshes(stages, refreshes, expected_updates):
+    """Interleave each receipt after its generating proposal and detect missing batches."""
+    chronological=[]
+    remaining=dict(refreshes)
+    count=0
+    for proposal in stages:
+        chronological.append(proposal)
+        refresh=remaining.pop(proposal['native_ticks'],None)
+        if refresh is not None:
+            chronological.append(refresh)
+    if remaining:
+        raise ValueError('Frozen refresh outside requested replay prefix')
+    for stage in chronological:
+        for update in stage['world_update_reports']:
+            count+=1
+            if update['world_updates']!=count:
+                raise ValueError(f'Missing or duplicated WM update {count}; check the frozen refresh checkpoints')
+    if count!=expected_updates:
+        raise ValueError('Incomplete recovery replay prefix')
+    return chronological
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -59,6 +81,9 @@ def main():
         parser.add_argument('--'+name, type=Path, required=True)
     parser.add_argument('--refresh-manifest',type=Path,help='Include the first complete frozen Recovery episodes after this block')
     parser.add_argument('--post-refresh-checkpoint',type=Path)
+    parser.add_argument('--prior-refresh',nargs=3,action='append',default=[],type=Path,
+                        metavar=('MANIFEST','PRE','POST'),help='Earlier frozen refresh in the same uninterrupted run')
+    parser.add_argument('--save-optimizer',action='store_true',help='Persist candidate Adam state for continuous WM fitting')
     parser.add_argument('--learning-rate',type=float,required=True)
     parser.add_argument('--separate-supervision', action='store_true')
     parser.add_argument('--natural-flight-loss',choices=('huber','mse'),default='huber')
@@ -95,7 +120,7 @@ def main():
     if (not stages or stages[-1]['world_update_reports'][-1]['world_updates'] != ck['world_updates']
             or any(s['block_name']!='recovery' or s['attempt_id']!=i+1 for i,s in enumerate(stages))
             or '--resume-training' in argv or '--wm-bootstrap-max-ticks' in argv):
-        raise ValueError('Expected an original uninterrupted first Recovery block without bootstrap')
+        raise ValueError('Expected an original uninterrupted Recovery training sequence without bootstrap')
     def option(key):
         return Path(argv[argv.index('--'+key)+1])
     def number(key, fallback):
@@ -119,9 +144,31 @@ def main():
     if packed['source_manifest']['task_contract']!=manifest['task_contract']:
         raise ValueError('Training data task mismatch')
     final_checkpoint=ck
+    refresh_specs=list(args.prior_refresh)
     if args.refresh_manifest is not None:
-        final_checkpoint=torch.load(args.post_refresh_checkpoint,map_location='cpu',weights_only=False,mmap=True)
-        stages.append(frozen_recovery_stage(cfg,ck,final_checkpoint,stages[-1],read(args.refresh_manifest)))
+        refresh_specs.append((args.refresh_manifest,args.checkpoint,args.post_refresh_checkpoint))
+    proposals={s['native_ticks']:s for s in stages}
+    refreshes={}
+    refresh_sources=[]
+    for manifest_path,pre_path,post_path in refresh_specs:
+        pre=torch.load(pre_path,map_location='cpu',weights_only=False,mmap=True)
+        post=torch.load(post_path,map_location='cpu',weights_only=False,mmap=True)
+        tick=pre['native_ticks']
+        prefix=proposals.get(tick)
+        if (prefix is None or tick in refreshes or prefix['world_updates']!=pre['world_updates']
+                or prefix['global_accepted']!=pre['global_counters']['accepted']
+                or pre['global_counters']!=post['global_counters']):
+            raise ValueError('Frozen receipt is not adjacent to its recorded proposal')
+        refresh=frozen_recovery_stage(cfg,pre,post,prefix,read(manifest_path))
+        refresh['pre_rng']=pre['replay_rng'].clone()
+        refresh['post_rng']=post['replay_rng'].clone()
+        refreshes[tick]=refresh
+        refresh_sources.append(dict(policy_id=refresh['policy_id'],start_tick=tick,end_tick=refresh['native_ticks'],
+                                    manifest_sha256=digest(manifest_path),pre_sha256=digest(pre_path),post_sha256=digest(post_path)))
+        if post_path==args.post_refresh_checkpoint:
+            final_checkpoint=post
+        del pre,post
+    stages=insert_refreshes(stages,refreshes,final_checkpoint['world_updates'])
     n_ticks=stages[-1]['native_ticks']
     replay=PhysicalLoopReplay(packed,adapter.task_model.memory_schema,
         capacity_ticks=min(cfg['replay_capacity_ticks'],len(packed['tensors']['state'])+n_ticks+1))
@@ -176,7 +223,7 @@ def main():
             for stage in stages:
                 frozen='policy_id' in stage
                 if frozen:
-                    replay.generator.set_state(ck['replay_rng'].cpu())
+                    replay.generator.set_state(stage['pre_rng'])
                     replay.new_stream(source='online',policy_version=stage['policy_version'])
                 expected_mode='frozen_combination' if frozen else 'mixed_training'
                 while tick<stage['native_ticks']:
@@ -211,6 +258,9 @@ def main():
                               window_sha256=identity(window),natural_window_sha256=long_sha,flight_loss=metrics['long_native_flight_loss'],fallback=hist['fallback_count'])
                     f.write(json.dumps(info)+'\n')
                     f.flush()
+                if frozen:
+                    # Critic calibration draws a lane permutation after the WM fit.
+                    replay.generator.set_state(stage['post_rng'])
     finally:
         rows.close()
     for name, param in adapter.named_parameters():
@@ -226,7 +276,14 @@ def main():
     out=args.output/'online_world.pt'
     torch.save(revised,out.with_suffix('.pending'))
     out.with_suffix('.pending').replace(out)
-    info=dict(device=str(device),peak_cuda_bytes=torch.cuda.max_memory_allocated(device) if device.type=='cuda' else None,
+    optimizer_sha=None
+    if args.save_optimizer:
+        optimizer_path=args.output/'online_world_optimizer.pt'
+        torch.save(dict(optimizer=trainer.world_opt.state_dict(),natural_flight_rng=natural.generator.get_state() if natural else None,
+                        world_sha256=identity_after,updates=trainer.world_updates),optimizer_path.with_suffix('.pending'))
+        optimizer_path.with_suffix('.pending').replace(optimizer_path)
+        optimizer_sha=digest(optimizer_path)
+    info=dict(optimizer_file_sha256=optimizer_sha,refresh_sources=refresh_sources,device=str(device),peak_cuda_bytes=torch.cuda.max_memory_allocated(device) if device.type=='cuda' else None,
               updates=trainer.world_updates,policy_updates=0,critic_updates=0,natural_flight_batch=args.natural_flight_batch,natural_flight_loss=args.natural_flight_loss,
               original_learning_rate=cfg['world_lr'],learning_rate=args.learning_rate,adaptation=args.adaptation,separate_supervision=args.separate_supervision,
               stage_checkpoint_sha256=digest(args.post_refresh_checkpoint or args.checkpoint),
