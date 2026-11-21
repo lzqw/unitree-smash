@@ -1,0 +1,583 @@
+{
+  "comparison": "Revised versus previous mixed-policy G1 research runs, 128 identical initial physical states and common initial Actor. Sum actual native rewards until equal control tick or first episode termination; reset episodes excluded. Measures changes of the complete training protocol.",
+  "initial_actor": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+  "seed": 882072,
+  "completed_return_crosschecks": {
+    "previous": 12,
+    "revised": 14
+  },
+  "chunks_by_arm": {
+    "previous": [
+      "a249788e2cdc3e55ab6ff1dd46d897fc04f8679e67bd8e736a9563ab079dd050",
+      "f198c30eaa20417498fcbc6e3ca08d22430a2ff234bb841745530d8edd876ca0",
+      "2f1a9eaabb4de1ebedb154e763ca3c8340d47f810bfcc809c5a6667c7d34a1ad",
+      "95e6763e6bc382d6d2e3da801818ecb1b915bd8a3cd25f161c5988cc5f511f66",
+      "f510005bf40a7f66aa1b4ddd2d5489a2cb18913ad867b0a433be11072a689039",
+      "72f5d8cb3ad52c1afcb5681c45ed8a243056af226e3994943afa7651590bcc9c",
+      "f9315991bd53df64632b0b223836dca56d4aefaa4b4fa3d642d6aa49887bc3d3",
+      "a7124f21839a6afeaeaedca0df5b48da83fb324c77ea3f154f099b3f67434560",
+      "75a143804d9e0b333ecf0224418eed89739f83a2415fee4989cd9365af241224",
+      "676e42ac58209e80fd1e07768b9d9d078c737504f734b1c3ceb9a7afe9705df8",
+      "2c14078d7eb06091dd2c46e5d271d22d7a276d01e38b0721630fddd3140be4f6",
+      "b35b68f3b720a1716e0bd0db42ae032e11b7198dc94ba89adaed2040b37ff215",
+      "acfae58db6d33e729f4a3a193369a17e86e49460023b62ab4d1517d59cc515f1",
+      "f6fd5ea887b7a5aa7e427c86232aced45e1bf69816558456b0cf7e978c60804e",
+      "c7e5a7b5473f50631a8ee7e3bdd8f8d6269a6f9a08ce013e93dee9492fb7324d",
+      "8f5b78c50d0d291b3142ff35b01862c48434ee620fab980d226c4eb6829965f8",
+      "b9f2a3d1c23799ce3aca7714afb26a26e7d220511bde20e5a1f29c1402d1ac94",
+      "c2aec092c1838774c01f87993bef6ae44f903a3d3cdd2541197739418927a250",
+      "e57346e92157aaf703a235610604047a3509333537ea49640321f2c50ec27f3b",
+      "f54663590fd78a57d7dca808a12b77169b4f4cc74cbb2b3176b0c11ceb2fd1f7"
+    ],
+    "revised": [
+      "248bc5b1e713835c6ce45b87f880c2c7b2a789ef31a40209c96d53738e51c32d",
+      "be27d577a64f1db6b49bc52d0c9dbe2da86c40ff7129bb0ecf0e41ae2ef87c7c",
+      "7a69884b3409f7c017f00bdef2d21b1a23623371c80860e1c90d9bb44bb47a8d",
+      "12d73bb0c9fa853191097ad11bace5a82102459a33cd7724bd820316614241b3",
+      "227fc67d18b8006d407aa39c38a5e4473e477338851b24bc32bb966b1af69a3b",
+      "e52e22ead5edeb3b543a1a6099e7cc8983ddd43305d050ff519ee77e3c2b5fb1",
+      "77763475b3749e41f13ea28e8d7acc5c30d87d11a79441144b033e8b3c466dd8",
+      "c61f810cbb69c82c349997848f049336d43c79ef16becc3b67038b8f4397fb3d",
+      "0173a6221302dca1267b88e61d2a237711f48c849661f08026689846c2b03796",
+      "d52c3082aa259d61995ec596b084cbf056e46d7c3e17d2e6d30d4997634d8a81",
+      "ca4134086d0ac3144a4aa9e3762ffdbf4230d290184f8696a99566f565436926",
+      "6e9de896c9dc253f56a1a9f3fa5f3702b2c7bdda09cccf7dbbf3fdd8d7dd8eb8",
+      "72737d6476a1632beaa8699017505b212af3ed6f870dea716c0e8e7b9a910fd0",
+      "0520044c16073fa941fe5d51b492f11b5516470f87b79e744b462b9076038aed",
+      "eb84107bc5de20efae6340be70b56db3b2a844fc15170e2e9532e733b4ab6e03",
+      "2c261a50ba7f7874431c58c8ae20b16e6b8a23085df2241abde7a8cc359cd64e",
+      "6dc428ac129cdb384d3a8fe73ed1240123a90b88cc04edb17a4f18fea4b72a56",
+      "5abe37889e82246b248aa99d417f38c5393ead5ba0b1018021d68069ae217d89",
+      "48947c259b9c02f2f857344dffcdb498679a5949dd64332fe223febfd3933c6d",
+      "fb78e0fd751b130d1744e09b13c09c66ee48ef53c432f1fec14e9114379d32c0"
+    ]
+  },
+  "observations": {
+    "128": {
+      "previous_mean": -1.4971362240612507,
+      "revised_mean": -1.4971362240612507,
+      "paired_mean": 0.0,
+      "revised_better": 0,
+      "revised_worse": 0,
+      "component_mean_changes": {
+        "continuous": 0.0,
+        "jump": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": 0.0
+      },
+      "unitemized_mean": 0.0
+    },
+    "256": {
+      "previous_mean": -2.9428510379902804,
+      "revised_mean": -2.9428510379902804,
+      "paired_mean": 0.0,
+      "revised_better": 0,
+      "revised_worse": 0,
+      "component_mean_changes": {
+        "continuous": 0.0,
+        "jump": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": 0.0
+      },
+      "unitemized_mean": 0.0
+    },
+    "384": {
+      "previous_mean": 3.8159625440230323,
+      "revised_mean": 4.580225431632826,
+      "paired_mean": 0.7642628876097938,
+      "revised_better": 60,
+      "revised_worse": 68,
+      "component_mean_changes": {
+        "continuous": 0.0017627256662602897,
+        "jump": 0.0,
+        "qualified_contact": 1.25,
+        "cross": 0.15625,
+        "target": 0.234375,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.1875,
+        "miss_rate": 0.26249998435378075,
+        "fault": -0.703125,
+        "body": -0.625
+      },
+      "unitemized_mean": 1.7758975279225098e-07
+    },
+    "512": {
+      "previous_mean": -5.325434550861237,
+      "revised_mean": -4.698709083786852,
+      "paired_mean": 0.6267254670743846,
+      "revised_better": 51,
+      "revised_worse": 77,
+      "component_mean_changes": {
+        "continuous": -0.014681078167420869,
+        "jump": 0.0,
+        "qualified_contact": 1.25,
+        "cross": 0.15625,
+        "target": 0.234375,
+        "recovery": 0.546875,
+        "complete5_terminal": 0.0,
+        "frame": 0.1875,
+        "miss_rate": 0.649218711303547,
+        "fault": -0.8203125,
+        "body": -1.5625
+      },
+      "unitemized_mean": 3.3393825848992975e-07
+    },
+    "640": {
+      "previous_mean": -13.230878728798066,
+      "revised_mean": -13.628615053921166,
+      "paired_mean": -0.3977363251231004,
+      "revised_better": 59,
+      "revised_worse": 69,
+      "component_mean_changes": {
+        "continuous": 0.024529020900693477,
+        "jump": 0.0,
+        "qualified_contact": 1.25,
+        "cross": 0.15625,
+        "target": 0.234375,
+        "recovery": 0.3125,
+        "complete5_terminal": 0.0,
+        "frame": 0.1875,
+        "miss_rate": 1.0699218112276867,
+        "fault": -0.8203125,
+        "body": -2.8125
+      },
+      "unitemized_mean": 3.427485194551494e-07
+    }
+  },
+  "first_body_prefix": {
+    "checkpoint_manifest_chunks": 16,
+    "independently_hashed_extra_chunks": 4,
+    "scope": "First native reward-bearing body contact in TRAIN128, mixed behavior. Baseline flags are full first episodes. Unfinished baseline falls may still occur online.",
+    "ticks": 640,
+    "completed_cases": 14,
+    "observed_body_cases": 63,
+    "baseline_final_body_cases": 60,
+    "confirmed_new_falls": 13,
+    "new_falls_on_unfinished": 9,
+    "confirmed_avoided_falls": 0,
+    "possible_avoided_including_unfinished": 10,
+    "lower_bound_net_additional_falls": 3,
+    "new_by_behavior_version": {
+      "77": 4,
+      "69": 3,
+      "85": 6
+    },
+    "first_body_events": {
+      "124": {
+        "control_step": 332,
+        "policy_version": 69,
+        "supported_feet": 1,
+        "baseline_body": true
+      },
+      "105": {
+        "control_step": 338,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "62": {
+        "control_step": 339,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "79": {
+        "control_step": 339,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "73": {
+        "control_step": 341,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "88": {
+        "control_step": 343,
+        "policy_version": 69,
+        "supported_feet": 1,
+        "baseline_body": true
+      },
+      "78": {
+        "control_step": 346,
+        "policy_version": 69,
+        "supported_feet": 0,
+        "baseline_body": true
+      },
+      "87": {
+        "control_step": 346,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "30": {
+        "control_step": 349,
+        "policy_version": 69,
+        "supported_feet": 1,
+        "baseline_body": true
+      },
+      "41": {
+        "control_step": 352,
+        "policy_version": 69,
+        "supported_feet": 1,
+        "baseline_body": true
+      },
+      "29": {
+        "control_step": 354,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "40": {
+        "control_step": 359,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "117": {
+        "control_step": 362,
+        "policy_version": 69,
+        "supported_feet": 1,
+        "baseline_body": true
+      },
+      "20": {
+        "control_step": 363,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "42": {
+        "control_step": 371,
+        "policy_version": 69,
+        "supported_feet": 1,
+        "baseline_body": true
+      },
+      "48": {
+        "control_step": 371,
+        "policy_version": 69,
+        "supported_feet": 1,
+        "baseline_body": true
+      },
+      "13": {
+        "control_step": 372,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "98": {
+        "control_step": 372,
+        "policy_version": 69,
+        "supported_feet": 1,
+        "baseline_body": false
+      },
+      "18": {
+        "control_step": 374,
+        "policy_version": 69,
+        "supported_feet": 1,
+        "baseline_body": false
+      },
+      "7": {
+        "control_step": 378,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "9": {
+        "control_step": 380,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "111": {
+        "control_step": 380,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "126": {
+        "control_step": 384,
+        "policy_version": 69,
+        "supported_feet": 2,
+        "baseline_body": false
+      },
+      "56": {
+        "control_step": 389,
+        "policy_version": 77,
+        "supported_feet": 0,
+        "baseline_body": true
+      },
+      "104": {
+        "control_step": 395,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "76": {
+        "control_step": 399,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "54": {
+        "control_step": 411,
+        "policy_version": 77,
+        "supported_feet": 1,
+        "baseline_body": true
+      },
+      "8": {
+        "control_step": 421,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "46": {
+        "control_step": 436,
+        "policy_version": 77,
+        "supported_feet": 1,
+        "baseline_body": true
+      },
+      "12": {
+        "control_step": 438,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "38": {
+        "control_step": 446,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "89": {
+        "control_step": 461,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "10": {
+        "control_step": 462,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": false
+      },
+      "19": {
+        "control_step": 466,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "125": {
+        "control_step": 467,
+        "policy_version": 77,
+        "supported_feet": 1,
+        "baseline_body": true
+      },
+      "72": {
+        "control_step": 474,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": false
+      },
+      "91": {
+        "control_step": 480,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "44": {
+        "control_step": 485,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "120": {
+        "control_step": 493,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "97": {
+        "control_step": 494,
+        "policy_version": 77,
+        "supported_feet": 0,
+        "baseline_body": false
+      },
+      "96": {
+        "control_step": 500,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "86": {
+        "control_step": 504,
+        "policy_version": 77,
+        "supported_feet": 0,
+        "baseline_body": false
+      },
+      "58": {
+        "control_step": 508,
+        "policy_version": 77,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "85": {
+        "control_step": 514,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "57": {
+        "control_step": 515,
+        "policy_version": 85,
+        "supported_feet": 0,
+        "baseline_body": true
+      },
+      "99": {
+        "control_step": 516,
+        "policy_version": 85,
+        "supported_feet": 0,
+        "baseline_body": false
+      },
+      "35": {
+        "control_step": 524,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": false
+      },
+      "17": {
+        "control_step": 525,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "101": {
+        "control_step": 527,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "67": {
+        "control_step": 529,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "68": {
+        "control_step": 536,
+        "policy_version": 85,
+        "supported_feet": 0,
+        "baseline_body": true
+      },
+      "4": {
+        "control_step": 540,
+        "policy_version": 85,
+        "supported_feet": 0,
+        "baseline_body": true
+      },
+      "82": {
+        "control_step": 542,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "5": {
+        "control_step": 553,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": false
+      },
+      "114": {
+        "control_step": 567,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "15": {
+        "control_step": 568,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "95": {
+        "control_step": 568,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "65": {
+        "control_step": 578,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": false
+      },
+      "50": {
+        "control_step": 582,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "51": {
+        "control_step": 583,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": false
+      },
+      "37": {
+        "control_step": 599,
+        "policy_version": 85,
+        "supported_feet": 0,
+        "baseline_body": false
+      },
+      "31": {
+        "control_step": 620,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": true
+      },
+      "122": {
+        "control_step": 621,
+        "policy_version": 85,
+        "supported_feet": 2,
+        "baseline_body": true
+      }
+    },
+    "source_chunks": [
+      "248bc5b1e713835c6ce45b87f880c2c7b2a789ef31a40209c96d53738e51c32d",
+      "be27d577a64f1db6b49bc52d0c9dbe2da86c40ff7129bb0ecf0e41ae2ef87c7c",
+      "7a69884b3409f7c017f00bdef2d21b1a23623371c80860e1c90d9bb44bb47a8d",
+      "12d73bb0c9fa853191097ad11bace5a82102459a33cd7724bd820316614241b3",
+      "227fc67d18b8006d407aa39c38a5e4473e477338851b24bc32bb966b1af69a3b",
+      "e52e22ead5edeb3b543a1a6099e7cc8983ddd43305d050ff519ee77e3c2b5fb1",
+      "77763475b3749e41f13ea28e8d7acc5c30d87d11a79441144b033e8b3c466dd8",
+      "c61f810cbb69c82c349997848f049336d43c79ef16becc3b67038b8f4397fb3d",
+      "0173a6221302dca1267b88e61d2a237711f48c849661f08026689846c2b03796",
+      "d52c3082aa259d61995ec596b084cbf056e46d7c3e17d2e6d30d4997634d8a81",
+      "ca4134086d0ac3144a4aa9e3762ffdbf4230d290184f8696a99566f565436926",
+      "6e9de896c9dc253f56a1a9f3fa5f3702b2c7bdda09cccf7dbbf3fdd8d7dd8eb8",
+      "72737d6476a1632beaa8699017505b212af3ed6f870dea716c0e8e7b9a910fd0",
+      "0520044c16073fa941fe5d51b492f11b5516470f87b79e744b462b9076038aed",
+      "eb84107bc5de20efae6340be70b56db3b2a844fc15170e2e9532e733b4ab6e03",
+      "2c261a50ba7f7874431c58c8ae20b16e6b8a23085df2241abde7a8cc359cd64e",
+      "6dc428ac129cdb384d3a8fe73ed1240123a90b88cc04edb17a4f18fea4b72a56",
+      "5abe37889e82246b248aa99d417f38c5393ead5ba0b1018021d68069ae217d89",
+      "48947c259b9c02f2f857344dffcdb498679a5949dd64332fe223febfd3933c6d",
+      "fb78e0fd751b130d1744e09b13c09c66ee48ef53c432f1fec14e9114379d32c0"
+    ]
+  }
+}
