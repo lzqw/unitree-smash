@@ -357,7 +357,7 @@ def main():
         args.wm_approach_stage_quota=parse_quota(args.wm_approach_stage_quota,allowed={'uniform','approach_active','hit_prepare','contact_release','approach_failure','post_hit'},name='wm-approach-stage-quota')
         args.wm_contact_stage_quota=parse_quota(args.wm_contact_stage_quota,allowed={'uniform','hit_prepare','contact_release','post_hit'},name='wm-contact-stage-quota')
         args.wm_source_quota=parse_quota(args.wm_source_quota,allowed={'recent_online','older_online','initial_archive','action_identification','contact_event'},name='wm-source-quota')
-        args.wm_stage_quota=parse_quota(args.wm_stage_quota,allowed={'uniform','pre_touchdown','touchdown','post_touchdown','pre_body_ground','post_landing_support_loss','recovery_failure','stable_recovery'},name='wm-stage-quota')
+        args.wm_stage_quota=parse_quota(args.wm_stage_quota,allowed={'uniform','pre_touchdown','touchdown','post_touchdown','pre_body_ground','post_landing_support_loss','post_landing_unload','recovery_failure','stable_recovery'},name='wm-stage-quota')
         for field in ('wm_source_quota','wm_stage_quota','wm_approach_stage_quota','wm_contact_stage_quota'):
             setattr(args,field,scale_wm_quotas(getattr(args,field),args.wm_batch_size))
     except ValueError as error:
@@ -1053,7 +1053,7 @@ def run(args, *, alternating=None):
             runtime_commit=startup_identity['commit'],runtime_script_sha256=startup_identity['script_sha256'],
             scope='Native training transitions with per-row behavior identity',actor_update_budget=args.recovery_update_budget+args.approach_update_budget,
             replay_source_schema=['recent_online','older_online','initial_archive'],
-            replay_stage_schema=['uniform','pre_touchdown','touchdown','post_touchdown','recovery_failure','stable_recovery','approach_active','hit_prepare','contact_release','approach_failure','post_hit']),chunk_ticks=1000000,compact_plan_observations=True)
+            replay_stage_schema=[*STAGE_NAMES,'approach_active','hit_prepare','contact_release','approach_failure','post_hit']),chunk_ticks=1000000,compact_plan_observations=True)
         if research and os.environ.get('QUADSMASH_ZSTD_ARCHIVE','0')=='1':
             from quadsmash.rl.supermimic_archive_pipeline import ArchivePipeline
             archive.pipeline=ArchivePipeline(archive)

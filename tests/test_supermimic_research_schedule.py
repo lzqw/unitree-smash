@@ -77,7 +77,8 @@ def test_extension_launches_from_final_refresh_and_preserves_original_axes(tmp_p
     torch.save(dict(global_counters={'accepted':17},native_ticks=4990), initial)
     reg = dict(arm='G1',expected_retained_updates=256, initial={'checkpoint_sha256':digest(initial)},
                command=['train','--resume-training',str(initial),'--resume-reset-schedule','--cycles','1',
-                        '--output',str(train),'--tensorboard-dir','old'])
+                        '--output',str(train),'--tensorboard-dir','old',
+                        '--wm-stage-quota','uniform=108,post_landing_support_loss=20'])
     (parent/'registration.json').write_text(json.dumps(reg))
     (parent/'exit.json').write_text(json.dumps({'returncode':0,'wall_seconds':1000}))
     completed=dict(actor_updates=256,recovery_accepted=128,approach_accepted=128,global_accepted=273,
@@ -93,6 +94,8 @@ def test_extension_launches_from_final_refresh_and_preserves_original_axes(tmp_p
     cmd = extended['command']
     assert cmd[cmd.index('--resume-training')+1] == str(train/'latest.pt')
     assert cmd[cmd.index('--cycles')+1] == '4' and '--resume-reset-schedule' not in cmd
+    quota = dict(item.split('=') for item in cmd[cmd.index('--wm-stage-quota')+1].split(','))
+    assert quota == {'uniform':'108','post_landing_support_loss':'16','post_landing_unload':'4'}
     ck['world_updates'] -= 4
     torch.save(ck, train/'latest.pt')
     with pytest.raises(ValueError, match='post-refresh'):

@@ -11,7 +11,7 @@ SOURCE_NAMES = ('recent_online', 'older_online', 'initial_archive',
 SOURCE_CODES = {'initial_archive': 0, 'online': 1,
                 'action_identification': 3, 'contact_event': 4}
 STAGE_NAMES = ('uniform', 'pre_touchdown', 'touchdown', 'post_touchdown',
-               'recovery_failure', 'stable_recovery', 'post_landing_support_loss', 'pre_body_ground')
+               'recovery_failure', 'stable_recovery', 'post_landing_support_loss', 'pre_body_ground', 'post_landing_unload')
 
 
 def _landing_history(data, schema):
@@ -31,6 +31,21 @@ def _landing_history(data, schema):
         when = fields['auxiliary/jump/landing_time']
         landed |= (fields['rally/had_contact'] > .5) & (when > 0) & (when >= fields['rally/contact_time'])
     return landed
+
+
+def post_landing_unload_windows(data, schema, steps, valid):
+    """Mark windows containing an actual support-to-zero transition after release and landing."""
+    offset = 0
+    for field in schema.fields:
+        if field.path == 'rally/released':
+            released = (data['valid'][..., offset] > .5) & (data['values'][..., offset] > .5)
+            break
+        offset += field.width
+    else:
+        raise ValueError('Post-landing unload windows need the native release latch')
+    edge = (data['feet'].bool().any(-1) & ~data['next_feet'].bool().any(-1)
+            & _landing_history(data, schema) & released & ~data['event_state'][..., 5].bool())
+    return edge.unfold(0, steps, 1).any(-1) & valid
 
 
 def _stage_ids_from_tensors(data, schema=None):
@@ -546,6 +561,8 @@ class PhysicalLoopReplay:
                 stage_pools=approach_window_masks(meta,valid,steps)
             else:
                 stage_pools = _stage_window_masks(d, valid, steps, stage_ids=stage_ids)
+                if (stage_quota or {}).get('post_landing_unload', 0):
+                    stage_pools['post_landing_unload'] = post_landing_unload_windows(d, self.schema, steps, valid)
                 if 'pre_body_ground' in (stage_quota or {}):
                     # Label the exact start 20/40/60 ticks before a real event.
                     failure = d['next_event_state'][..., 5] > d['event_state'][..., 5]

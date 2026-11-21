@@ -1,0 +1,1629 @@
+{
+  "source": "revised_second_completed_cohort.json",
+  "models": {
+    "136": {
+      "world_updates": 136,
+      "world_sha256": "53ff939097b3500659d411ab6f6ddeb3d58a71b059368f9b67b5b2cf906acf2a",
+      "collection_policy_version": 77,
+      "checkpoint_actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+      "chunks": [
+        "0520044c16073fa941fe5d51b492f11b5516470f87b79e744b462b9076038aed",
+        "eb84107bc5de20efae6340be70b56db3b2a844fc15170e2e9532e733b4ab6e03",
+        "2c261a50ba7f7874431c58c8ae20b16e6b8a23085df2241abde7a8cc359cd64e"
+      ],
+      "excluded_from_online_fit": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        21,
+        30,
+        32,
+        34,
+        37,
+        38,
+        39,
+        40,
+        41,
+        44,
+        46,
+        48,
+        49,
+        50,
+        51,
+        53,
+        57,
+        59,
+        60,
+        61,
+        62,
+        65,
+        70,
+        73,
+        74,
+        76,
+        77,
+        81,
+        84,
+        85,
+        86,
+        87,
+        89,
+        90,
+        94,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127
+      ],
+      "scope": "Retrospective native failure windows with recorded final targets. Later WM snapshots may have fitted training lanes. Measures forward posture and support only.",
+      "horizons": {
+        "1": {
+          "metrics": {
+            "root_attitude_mae_rad": 0.0,
+            "root_attitude_p90_rad": 0.0,
+            "root_angular_mae_rad_s": 0.07494097948074341,
+            "root_height_mae_m": 0.00013681873679161072,
+            "support_count_mae": 1.0,
+            "foot_bit_error": 0.25
+          },
+          "cases": [
+            {
+              "lane": 10,
+              "start": {
+                "tilt_deg": 37.87888717651367,
+                "root_height_m": 0.16714295744895935,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 38.49275588989258,
+                "root_height_m": 0.1668217033147812,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9864985942840576,
+                0.2105301171541214,
+                0.9557322263717651,
+                0.004411595873534679
+              ],
+              "actual": {
+                "tilt_deg": 38.46831512451172,
+                "root_height_m": 0.16658970713615417,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 72,
+              "start": {
+                "tilt_deg": 37.5955924987793,
+                "root_height_m": 0.16780208051204681,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 38.22797775268555,
+                "root_height_m": 0.1677829772233963,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.992975115776062,
+                0.37076783180236816,
+                0.9606768488883972,
+                0.00493957195430994
+              ],
+              "actual": {
+                "tilt_deg": 38.21587371826172,
+                "root_height_m": 0.1677357703447342,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 86,
+              "start": {
+                "tilt_deg": 38.5191535949707,
+                "root_height_m": 0.16794700920581818,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 39.073970794677734,
+                "root_height_m": 0.16774451732635498,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9919800758361816,
+                0.35890132188796997,
+                0.9634228944778442,
+                0.004263861104846001
+              ],
+              "actual": {
+                "tilt_deg": 39.06483459472656,
+                "root_height_m": 0.1678517758846283,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 97,
+              "start": {
+                "tilt_deg": 39.308799743652344,
+                "root_height_m": 0.17064842581748962,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 39.99061965942383,
+                "root_height_m": 0.1704724282026291,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9909412264823914,
+                0.17645181715488434,
+                0.9412863254547119,
+                0.007158717140555382
+              ],
+              "actual": {
+                "tilt_deg": 39.966514587402344,
+                "root_height_m": 0.17031161487102509,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            }
+          ]
+        },
+        "4": {
+          "metrics": {
+            "root_attitude_mae_rad": 0.003364784177392721,
+            "root_attitude_p90_rad": 0.004777757450938225,
+            "root_angular_mae_rad_s": 0.14872632920742035,
+            "root_height_mae_m": 0.0010594762861728668,
+            "support_count_mae": 1.0,
+            "foot_bit_error": 0.25
+          },
+          "cases": [
+            {
+              "lane": 10,
+              "start": {
+                "tilt_deg": 36.34994125366211,
+                "root_height_m": 0.16840705275535583,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 38.63088607788086,
+                "root_height_m": 0.16852059960365295,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9690064191818237,
+                0.30444657802581787,
+                0.8949205875396729,
+                0.009999049827456474
+              ],
+              "actual": {
+                "tilt_deg": 38.46831512451172,
+                "root_height_m": 0.16658970713615417,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 72,
+              "start": {
+                "tilt_deg": 36.121238708496094,
+                "root_height_m": 0.16820983588695526,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 37.903079986572266,
+                "root_height_m": 0.1683845967054367,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9853193759918213,
+                0.42266297340393066,
+                0.8961789608001709,
+                0.013677667826414108
+              ],
+              "actual": {
+                "tilt_deg": 38.21587371826172,
+                "root_height_m": 0.1677357703447342,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 86,
+              "start": {
+                "tilt_deg": 37.034950256347656,
+                "root_height_m": 0.16845795512199402,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 39.02226638793945,
+                "root_height_m": 0.16834300756454468,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9767767786979675,
+                0.4161774218082428,
+                0.8884381651878357,
+                0.006974503397941589
+              ],
+              "actual": {
+                "tilt_deg": 39.06483459472656,
+                "root_height_m": 0.1678517758846283,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 97,
+              "start": {
+                "tilt_deg": 37.44922637939453,
+                "root_height_m": 0.17115287482738495,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 39.863033294677734,
+                "root_height_m": 0.17147856950759888,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9790186882019043,
+                0.3386315107345581,
+                0.8924970030784607,
+                0.012719228863716125
+              ],
+              "actual": {
+                "tilt_deg": 39.966514587402344,
+                "root_height_m": 0.17031161487102509,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            }
+          ]
+        },
+        "20": {
+          "metrics": {
+            "root_attitude_mae_rad": 0.06014895439147949,
+            "root_attitude_p90_rad": 0.07468073070049286,
+            "root_angular_mae_rad_s": 0.3150751292705536,
+            "root_height_mae_m": 0.005306564271450043,
+            "support_count_mae": 1.0,
+            "foot_bit_error": 0.25
+          },
+          "cases": [
+            {
+              "lane": 10,
+              "start": {
+                "tilt_deg": 28.684667587280273,
+                "root_height_m": 0.16593340039253235,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 35.74309158325195,
+                "root_height_m": 0.17199493944644928,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9712902903556824,
+                0.3295013904571533,
+                0.8865506649017334,
+                0.016507811844348907
+              ],
+              "actual": {
+                "tilt_deg": 38.46831512451172,
+                "root_height_m": 0.16658970713615417,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 72,
+              "start": {
+                "tilt_deg": 31.165456771850586,
+                "root_height_m": 0.17046530544757843,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 34.69915008544922,
+                "root_height_m": 0.1702362596988678,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.987798273563385,
+                0.4891730844974518,
+                0.8965463638305664,
+                0.022898096591234207
+              ],
+              "actual": {
+                "tilt_deg": 38.21587371826172,
+                "root_height_m": 0.1677357703447342,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 86,
+              "start": {
+                "tilt_deg": 31.466907501220703,
+                "root_height_m": 0.1708689033985138,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 36.57912063598633,
+                "root_height_m": 0.17278647422790527,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9789226055145264,
+                0.4279825985431671,
+                0.8777391910552979,
+                0.01567699760198593
+              ],
+              "actual": {
+                "tilt_deg": 39.06483459472656,
+                "root_height_m": 0.1678517758846283,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 97,
+              "start": {
+                "tilt_deg": 29.507083892822266,
+                "root_height_m": 0.1713120937347412,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 35.698646545410156,
+                "root_height_m": 0.17869745194911957,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9781723022460938,
+                0.38204702734947205,
+                0.8820202350616455,
+                0.020223163068294525
+              ],
+              "actual": {
+                "tilt_deg": 39.966514587402344,
+                "root_height_m": 0.17031161487102509,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            }
+          ]
+        },
+        "40": {
+          "metrics": {
+            "root_attitude_mae_rad": 0.12643274664878845,
+            "root_attitude_p90_rad": 0.14294768869876862,
+            "root_angular_mae_rad_s": 0.30355361104011536,
+            "root_height_mae_m": 0.007089868187904358,
+            "support_count_mae": 1.25,
+            "foot_bit_error": 0.3125
+          },
+          "cases": [
+            {
+              "lane": 10,
+              "start": {
+                "tilt_deg": 21.39049530029297,
+                "root_height_m": 0.16850429773330688,
+                "support_bits": [
+                  true,
+                  true,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 32.119503021240234,
+                "root_height_m": 0.17515073716640472,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9816615581512451,
+                0.40434539318084717,
+                0.9315724968910217,
+                0.032375480979681015
+              ],
+              "actual": {
+                "tilt_deg": 38.46831512451172,
+                "root_height_m": 0.16658970713615417,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 72,
+              "start": {
+                "tilt_deg": 26.52028465270996,
+                "root_height_m": 0.16973429918289185,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 30.6297550201416,
+                "root_height_m": 0.1681051254272461,
+                "support_bits": [
+                  true,
+                  true,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9915775060653687,
+                0.6145951747894287,
+                0.9055314660072327,
+                0.028195146471261978
+              ],
+              "actual": {
+                "tilt_deg": 38.21587371826172,
+                "root_height_m": 0.1677357703447342,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 86,
+              "start": {
+                "tilt_deg": 27.670740127563477,
+                "root_height_m": 0.17050161957740784,
+                "support_bits": [
+                  true,
+                  true,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 34.47976303100586,
+                "root_height_m": 0.1758422553539276,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9833176136016846,
+                0.48415884375572205,
+                0.9001569151878357,
+                0.019991181790828705
+              ],
+              "actual": {
+                "tilt_deg": 39.06483459472656,
+                "root_height_m": 0.1678517758846283,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 97,
+              "start": {
+                "tilt_deg": 21.734054565429688,
+                "root_height_m": 0.1725650429725647,
+                "support_bits": [
+                  true,
+                  true,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 32.37602996826172,
+                "root_height_m": 0.18175022304058075,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9831838011741638,
+                0.42163920402526855,
+                0.9095659852027893,
+                0.02955182082951069
+              ],
+              "actual": {
+                "tilt_deg": 39.966514587402344,
+                "root_height_m": 0.17031161487102509,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "168": {
+      "world_updates": 168,
+      "world_sha256": "58c2f78c1b92add62066e8f88e10f570b91a2833122fbec21978fd108c7e80b9",
+      "collection_policy_version": 77,
+      "checkpoint_actor_sha256": "fabf8a3f49c0c85105e73bae94571ffe2207b742dec03ce9fc5e92a3b94df1bf",
+      "chunks": [
+        "0520044c16073fa941fe5d51b492f11b5516470f87b79e744b462b9076038aed",
+        "eb84107bc5de20efae6340be70b56db3b2a844fc15170e2e9532e733b4ab6e03",
+        "2c261a50ba7f7874431c58c8ae20b16e6b8a23085df2241abde7a8cc359cd64e"
+      ],
+      "excluded_from_online_fit": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        11,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        21,
+        30,
+        32,
+        34,
+        37,
+        38,
+        39,
+        40,
+        41,
+        44,
+        46,
+        48,
+        49,
+        50,
+        51,
+        53,
+        57,
+        59,
+        60,
+        61,
+        62,
+        65,
+        70,
+        73,
+        74,
+        76,
+        77,
+        81,
+        84,
+        85,
+        86,
+        87,
+        89,
+        90,
+        94,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127
+      ],
+      "scope": "Retrospective native failure windows with recorded final targets. Later WM snapshots may have fitted training lanes. Measures forward posture and support only.",
+      "horizons": {
+        "1": {
+          "metrics": {
+            "root_attitude_mae_rad": 0.0,
+            "root_attitude_p90_rad": 0.0,
+            "root_angular_mae_rad_s": 0.07516074925661087,
+            "root_height_mae_m": 0.0001381300389766693,
+            "support_count_mae": 1.0,
+            "foot_bit_error": 0.25
+          },
+          "cases": [
+            {
+              "lane": 10,
+              "start": {
+                "tilt_deg": 37.87888717651367,
+                "root_height_m": 0.16714295744895935,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 38.49230194091797,
+                "root_height_m": 0.16682519018650055,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9862608313560486,
+                0.20311887562274933,
+                0.9560734033584595,
+                0.004321991000324488
+              ],
+              "actual": {
+                "tilt_deg": 38.46831512451172,
+                "root_height_m": 0.16658970713615417,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 72,
+              "start": {
+                "tilt_deg": 37.5955924987793,
+                "root_height_m": 0.16780208051204681,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 38.22758483886719,
+                "root_height_m": 0.1677847057580948,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.992886483669281,
+                0.3620176911354065,
+                0.9610176682472229,
+                0.004855993203818798
+              ],
+              "actual": {
+                "tilt_deg": 38.21587371826172,
+                "root_height_m": 0.1677357703447342,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 86,
+              "start": {
+                "tilt_deg": 38.5191535949707,
+                "root_height_m": 0.16794700920581818,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 39.073551177978516,
+                "root_height_m": 0.16774658858776093,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.991873562335968,
+                0.3498906195163727,
+                0.9637205004692078,
+                0.00418926402926445
+              ],
+              "actual": {
+                "tilt_deg": 39.06483459472656,
+                "root_height_m": 0.1678517758846283,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 97,
+              "start": {
+                "tilt_deg": 39.308799743652344,
+                "root_height_m": 0.17064842581748962,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 39.990257263183594,
+                "root_height_m": 0.17047452926635742,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.990790605545044,
+                0.17051398754119873,
+                0.9416612982749939,
+                0.007020240183919668
+              ],
+              "actual": {
+                "tilt_deg": 39.966514587402344,
+                "root_height_m": 0.17031161487102509,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            }
+          ]
+        },
+        "4": {
+          "metrics": {
+            "root_attitude_mae_rad": 0.0034229597076773643,
+            "root_attitude_p90_rad": 0.004860496614128351,
+            "root_angular_mae_rad_s": 0.1500273495912552,
+            "root_height_mae_m": 0.0010633133351802826,
+            "support_count_mae": 1.0,
+            "foot_bit_error": 0.25
+          },
+          "cases": [
+            {
+              "lane": 10,
+              "start": {
+                "tilt_deg": 36.34994125366211,
+                "root_height_m": 0.16840705275535583,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 38.62517547607422,
+                "root_height_m": 0.16853222250938416,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9682565927505493,
+                0.2955667972564697,
+                0.8957435488700867,
+                0.00985680241137743
+              ],
+              "actual": {
+                "tilt_deg": 38.46831512451172,
+                "root_height_m": 0.16658970713615417,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 72,
+              "start": {
+                "tilt_deg": 36.121238708496094,
+                "root_height_m": 0.16820983588695526,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 37.898075103759766,
+                "root_height_m": 0.16838499903678894,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9849575757980347,
+                0.4129568040370941,
+                0.8971414566040039,
+                0.013473154976963997
+              ],
+              "actual": {
+                "tilt_deg": 38.21587371826172,
+                "root_height_m": 0.1677357703447342,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 86,
+              "start": {
+                "tilt_deg": 37.034950256347656,
+                "root_height_m": 0.16845795512199402,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 39.01594543457031,
+                "root_height_m": 0.16834570467472076,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9762189984321594,
+                0.40691834688186646,
+                0.8894690871238708,
+                0.006871323101222515
+              ],
+              "actual": {
+                "tilt_deg": 39.06483459472656,
+                "root_height_m": 0.1678517758846283,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 97,
+              "start": {
+                "tilt_deg": 37.44922637939453,
+                "root_height_m": 0.17115287482738495,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 39.85874938964844,
+                "root_height_m": 0.17147919535636902,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9785668849945068,
+                0.3296504020690918,
+                0.89332115650177,
+                0.012521273456513882
+              ],
+              "actual": {
+                "tilt_deg": 39.966514587402344,
+                "root_height_m": 0.17031161487102509,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            }
+          ]
+        },
+        "20": {
+          "metrics": {
+            "root_attitude_mae_rad": 0.060846492648124695,
+            "root_attitude_p90_rad": 0.07520876079797745,
+            "root_angular_mae_rad_s": 0.31825053691864014,
+            "root_height_mae_m": 0.00539780780673027,
+            "support_count_mae": 1.0,
+            "foot_bit_error": 0.25
+          },
+          "cases": [
+            {
+              "lane": 10,
+              "start": {
+                "tilt_deg": 28.684667587280273,
+                "root_height_m": 0.16593340039253235,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 35.68387985229492,
+                "root_height_m": 0.1721487194299698,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9700834155082703,
+                0.3165222406387329,
+                0.8860582709312439,
+                0.01609659753739834
+              ],
+              "actual": {
+                "tilt_deg": 38.46831512451172,
+                "root_height_m": 0.16658970713615417,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 72,
+              "start": {
+                "tilt_deg": 31.165456771850586,
+                "root_height_m": 0.17046530544757843,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 34.648555755615234,
+                "root_height_m": 0.17034702003002167,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9872502088546753,
+                0.4750444293022156,
+                0.8960481286048889,
+                0.02224341779947281
+              ],
+              "actual": {
+                "tilt_deg": 38.21587371826172,
+                "root_height_m": 0.1677357703447342,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 86,
+              "start": {
+                "tilt_deg": 31.466907501220703,
+                "root_height_m": 0.1708689033985138,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 36.4897346496582,
+                "root_height_m": 0.1728350967168808,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9781874418258667,
+                0.4172358214855194,
+                0.8775055408477783,
+                0.015377834439277649
+              ],
+              "actual": {
+                "tilt_deg": 39.06483459472656,
+                "root_height_m": 0.1678517758846283,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 97,
+              "start": {
+                "tilt_deg": 29.507083892822266,
+                "root_height_m": 0.1713120937347412,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 35.65771484375,
+                "root_height_m": 0.17874926328659058,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9773696064949036,
+                0.3697454035282135,
+                0.881726861000061,
+                0.0197149571031332
+              ],
+              "actual": {
+                "tilt_deg": 39.966514587402344,
+                "root_height_m": 0.17031161487102509,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            }
+          ]
+        },
+        "40": {
+          "metrics": {
+            "root_attitude_mae_rad": 0.127432718873024,
+            "root_attitude_p90_rad": 0.146086648106575,
+            "root_angular_mae_rad_s": 0.3138402998447418,
+            "root_height_mae_m": 0.00745411217212677,
+            "support_count_mae": 1.25,
+            "foot_bit_error": 0.3125
+          },
+          "cases": [
+            {
+              "lane": 10,
+              "start": {
+                "tilt_deg": 21.39049530029297,
+                "root_height_m": 0.16850429773330688,
+                "support_bits": [
+                  true,
+                  true,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 31.96453857421875,
+                "root_height_m": 0.17563499510288239,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9804321527481079,
+                0.38498225808143616,
+                0.9294227361679077,
+                0.030044885352253914
+              ],
+              "actual": {
+                "tilt_deg": 38.46831512451172,
+                "root_height_m": 0.16658970713615417,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 72,
+              "start": {
+                "tilt_deg": 26.52028465270996,
+                "root_height_m": 0.16973429918289185,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 30.49354362487793,
+                "root_height_m": 0.16860386729240417,
+                "support_bits": [
+                  true,
+                  true,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.990974485874176,
+                0.5961806774139404,
+                0.9012548327445984,
+                0.025872958824038506
+              ],
+              "actual": {
+                "tilt_deg": 38.21587371826172,
+                "root_height_m": 0.1677357703447342,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 86,
+              "start": {
+                "tilt_deg": 27.670740127563477,
+                "root_height_m": 0.17050161957740784,
+                "support_bits": [
+                  true,
+                  true,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 34.192630767822266,
+                "root_height_m": 0.17607124149799347,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.9826217889785767,
+                0.47418931126594543,
+                0.8957653641700745,
+                0.018727585673332214
+              ],
+              "actual": {
+                "tilt_deg": 39.06483459472656,
+                "root_height_m": 0.1678517758846283,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            },
+            {
+              "lane": 97,
+              "start": {
+                "tilt_deg": 21.734054565429688,
+                "root_height_m": 0.1725650429725647,
+                "support_bits": [
+                  true,
+                  true,
+                  true,
+                  false
+                ]
+              },
+              "predicted": {
+                "tilt_deg": 32.21743392944336,
+                "root_height_m": 0.1819952130317688,
+                "support_bits": [
+                  true,
+                  false,
+                  true,
+                  false
+                ]
+              },
+              "predicted_foot_probabilities": [
+                0.982267439365387,
+                0.4051477015018463,
+                0.9070852398872375,
+                0.027659757062792778
+              ],
+              "actual": {
+                "tilt_deg": 39.966514587402344,
+                "root_height_m": 0.17031161487102509,
+                "support_bits": [
+                  false,
+                  false,
+                  false,
+                  false
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "online_support": {
+    "policy_version": 77,
+    "native_control_ticks": [
+      385,
+      512
+    ],
+    "source_hashes": [
+      "72737d6476a1632beaa8699017505b212af3ed6f870dea716c0e8e7b9a910fd0",
+      "0520044c16073fa941fe5d51b492f11b5516470f87b79e744b462b9076038aed",
+      "eb84107bc5de20efae6340be70b56db3b2a844fc15170e2e9532e733b4ab6e03",
+      "2c261a50ba7f7874431c58c8ae20b16e6b8a23085df2241abde7a8cc359cd64e"
+    ],
+    "eligibility": "First landing after contact and released, before prior body ground; opportunities in this behavior block, not optimizer usage. Specific pair is sensor indices 0 and 2.",
+    "counts": {
+      "training": {
+        "post_landing_steps": {
+          "steps": 4140,
+          "independent_lanes": 36
+        },
+        "supported_steps": {
+          "steps": 4135,
+          "independent_lanes": 35
+        },
+        "support_to_none": {
+          "steps": 0,
+          "independent_lanes": 0
+        },
+        "two_feet": {
+          "steps": 656,
+          "independent_lanes": 30
+        },
+        "two_to_none": {
+          "steps": 0,
+          "independent_lanes": 0
+        },
+        "specific_pair_tilt25": {
+          "steps": 190,
+          "independent_lanes": 9
+        },
+        "specific_pair_tilt25_to_none": {
+          "steps": 0,
+          "independent_lanes": 0
+        }
+      },
+      "excluded": {
+        "post_landing_steps": {
+          "steps": 6961,
+          "independent_lanes": 57
+        },
+        "supported_steps": {
+          "steps": 6959,
+          "independent_lanes": 57
+        },
+        "support_to_none": {
+          "steps": 2,
+          "independent_lanes": 2
+        },
+        "two_feet": {
+          "steps": 1167,
+          "independent_lanes": 52
+        },
+        "two_to_none": {
+          "steps": 2,
+          "independent_lanes": 2
+        },
+        "specific_pair_tilt25": {
+          "steps": 282,
+          "independent_lanes": 12
+        },
+        "specific_pair_tilt25_to_none": {
+          "steps": 2,
+          "independent_lanes": 2
+        }
+      }
+    }
+  },
+  "initial_archive": {
+    "training_support_loss_steps": 6,
+    "training_support_loss_lanes": 5,
+    "excluded_support_loss_steps": 12,
+    "excluded_support_loss_lanes": 9
+  }
+}

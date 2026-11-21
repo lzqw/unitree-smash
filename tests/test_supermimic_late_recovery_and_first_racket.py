@@ -60,3 +60,23 @@ def test_first_racket_compares_three_dimensional_parts_with_body_only_gradient(m
     assert cost[1] > cost[0]
     grads=torch.autograd.grad(cost.sum(),(like,local,impact['time']),allow_unused=True)
     assert grads[0][1].norm()>0 and all(g is None for g in grads[1:])
+
+
+def test_native_support_loss_samples_the_transition_even_before_any_unloaded_state():
+    from types import SimpleNamespace
+    from quadsmash.rl.supermimic_physical_loop_replay_v1 import post_landing_unload_windows
+    paths = ['auxiliary/contact_recovery/qualified_landing', 'rally/released']
+    schema = SimpleNamespace(fields=[SimpleNamespace(path=p,width=1) for p in paths])
+    d = dict(feet=torch.ones(3,6,4), next_feet=torch.ones(3,6,4),
+             values=torch.ones(3,6,2), valid=torch.ones(3,6,2), elapsed=torch.ones(3,6),
+             event_state=torch.zeros(3,6,8))
+    d['next_feet'][1] = 0
+    d['feet'][1,1] = 0
+    d['values'][1,2,0] = 0
+    d['values'][1,3,1] = 0
+    d['event_state'][1,4,5] = 1
+    valid = torch.ones(2,6,dtype=torch.bool)
+    valid[0,5] = False
+    actual = post_landing_unload_windows(d,schema,2,valid)
+    assert actual[0].tolist() == [True,False,False,False,False,False]
+    assert actual[1].tolist() == [True,False,False,False,False,True]
