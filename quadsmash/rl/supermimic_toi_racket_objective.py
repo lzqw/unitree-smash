@@ -135,13 +135,15 @@ def compact_intercept_preview(row, allowed, launch, template, trainer, device):
     return result
 
 
-def intercept_loss(before, after, start, end, reference, mask, survival, geometry, *, fixed_weights=None):
+def intercept_loss(before, after, start, end, reference, mask, survival, geometry, *, fixed_weights=None, detach_empty=False):
     """Sample racket kinematics at the requested sub-tick arrival. Each lane contributes once."""
     arrival = reference['intercept']['time']
     active = intercept_interval(start, end, reference, mask)
     weights = active.to(after.dtype) * (survival.detach().reshape(-1) if fixed_weights is None else fixed_weights)
     if not active.any():
-        return after[:, :1].sum() * 0, weights
+        # An empty interval contributes exactly zero at every physical state.
+        endpoint = after.detach() if detach_empty else after
+        return endpoint[:, :1].sum() * 0, weights
     alpha = ((arrival - start) / (end - start).clamp_min(1e-8)).clamp(0, 1)
     kinematics = torch.lerp(racket_features(before, geometry), racket_features(after, geometry), alpha[:, None])
     terms = intercept_terms(kinematics, reference['intercept']['position'], reference['toi_racket'])

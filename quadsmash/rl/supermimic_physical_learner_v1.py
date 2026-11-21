@@ -309,9 +309,8 @@ class PhysicalHorizonTrainer:
                     numerator,weights=intercept_loss(previous.physical,state.physical,
                         previous.clock_goal_context['elapsed'].reshape(-1),state.clock_goal_context['elapsed'].reshape(-1),
                         reference,track_mask,survival,self.adapter.physical_model.geometry,
-                        fixed_weights=None if baseline_toi_weights is None else baseline_toi_weights[tick])
-                    if baseline_toi_weights is not None:
-                        toi_coverage_preserved &= bool(((baseline_toi_weights[tick]<=0) | (weights>0)).all())
+                        fixed_weights=None if baseline_toi_weights is None else baseline_toi_weights[tick],
+                        detach_empty=True)
                 else:
                     numerator,denominator,weights=self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
                         geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival,return_components=True)
@@ -337,7 +336,11 @@ class PhysicalHorizonTrainer:
                 else:
                     task_loss=outgoing.sum()*0.
         anchor_loss=masked_lane_mean(torch.stack(anchors).sum(0),weights)
-        track_weight_sum=torch.stack(track_weights).sum() if tracks else ret.new_zeros(())
+        all_track_weights=torch.stack(track_weights) if tracks else None
+        if toi_only and baseline_toi_weights is not None and tracks:
+            baseline=baseline_toi_weights[:len(tracks)]
+            toi_coverage_preserved=bool(((baseline<=0) | (all_track_weights>0)).all())
+        track_weight_sum=all_track_weights.sum() if tracks else ret.new_zeros(())
         tracking_loss=torch.stack(tracks).sum()/track_weight_sum.clamp_min(1e-8) if tracks else ret.sum()*0.
         nonzero_lanes=0
         if tracks and torch.is_grad_enabled() and tracking_loss.requires_grad:
@@ -358,17 +361,17 @@ class PhysicalHorizonTrainer:
         coverage['selected_start_lanes']=int(selected.sum())
         coverage['gate_active_selected_start_lanes']=int((gates[0]>.25).sum())
         if reference and 'reference_digests' in reference and tracks:
-            used=torch.stack(track_weights).detach().gt(0).any(0)
+            used=all_track_weights.detach().gt(0).any(0)
             ids,counts=reference['indices'][used].unique(return_counts=True)
             coverage['reference_usage_by_sha256']={reference['reference_digests'][i]:n for i,n in zip(ids.tolist(),counts.tolist())}
         coverage.update(matched_lanes=int(reference['matched'].sum()) if reference else 0,
             effective_weight_sum=float(track_weight_sum.detach()),tracking_applied=bool(tracks and float(track_weight_sum.detach())>0))
-        return dict(toi_weights=torch.stack(track_weights).detach() if toi_only and tracks else None,
+        return dict(toi_weights=all_track_weights.detach() if toi_only and tracks else None,
                     toi_coverage_preserved=toi_coverage_preserved,reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
                     gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
                     critic_data=(torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid)),
                     tracking_steps=len(tracks),tracking_objective=getattr(self,'approach_objective','task') if self.block_name=='approach' else 'recovery_reference',
-                    tracking_active_lane_steps=int((torch.stack(track_weights)>0).sum()) if tracks else 0,
+                    tracking_active_lane_steps=int((all_track_weights>0).sum()) if tracks else 0,
                     tracking_effective_weight_sum=float(track_weight_sum.detach()),tracking_nonzero_gradient_lanes=nonzero_lanes,matched_references=int(reference['matched'].sum()) if reference else 0)
 
     def imagine_update(self,initial_state,*,update_actor=True):

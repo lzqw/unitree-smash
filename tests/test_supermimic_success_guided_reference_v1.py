@@ -136,3 +136,33 @@ def test_substep_target_joins_preceding_transition_preserves_legacy_tracking():
     data['native_toi_racket'][4,0,0] = .07
     with pytest.raises(ValueError, match='Invalid native'):
         TaskSpaceReferenceBankV1.from_packed(data, geometry, use_substep_toi=True)
+
+
+def test_empty_toi_intervals_skip_backward_only_after_last_active_state():
+    from quadsmash.rl.supermimic_toi_racket_objective import intercept_loss
+    geometry, data = fixture()
+    bank = TaskSpaceReferenceBankV1.from_packed(data, geometry)
+    outputs = []
+    for sparse in (False, True):
+        initial = data['state'][3].clone().requires_grad_()
+        state = initial
+        clock = torch.full((len(state),), .03)
+        ref = bank.bind(initial, 'approach', geometry=geometry, elapsed=clock, require_toi=True)
+        ref['intercept'] = dict(time=torch.tensor([.045, .055, .091]), valid=torch.ones(3, dtype=torch.bool),
+                                position=state.detach()[:,49:52]+.05)
+        states, losses, weights = [], [], []
+        for _ in range(5):
+            after = state + .001
+            loss, w = intercept_loss(state, after, clock, clock+.01, ref, torch.ones(3, dtype=torch.bool),
+                                     torch.ones(3), geometry, detach_empty=sparse)
+            states.append(after)
+            losses.append(loss)
+            weights.append(w)
+            state, clock = after, clock+.01
+        derivative = torch.autograd.grad(sum(losses), [initial]+states, allow_unused=True)
+        outputs.append((torch.stack(losses).detach(), torch.stack(weights), derivative))
+    dense, sparse = outputs
+    torch.testing.assert_close(dense[:2], sparse[:2], rtol=0, atol=0)
+    for a, b in zip(dense[2], sparse[2]):
+        torch.testing.assert_close(a, b if b is not None else torch.zeros_like(a), rtol=0, atol=0)
+    assert sparse[2][0].norm() > 0 and sparse[2][-1] is None

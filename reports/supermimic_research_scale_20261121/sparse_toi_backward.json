@@ -1,0 +1,113 @@
+{
+  "reference_commit": "3efd7c2",
+  "scope": "Full H64 imagined Approach rollout at tick 272 in two archived eligible lanes. Compare objective components, returns, critic input/targets data, tracking and anchor gradients at frozen R8+A8. The task scalar is detached in this warmup. The GPU benchmark shared the 5080 with live G1.",
+  "cpu": {
+    "retained": 16,
+    "actor_sha256": "06d4bfdce73720325339a34fc2c4b5548f3f4f5c72f38d8eacfcb2cb11b168c8",
+    "world_sha256": "f387e58471cfc1dd47e62f8fabd692d261680596c6d68d5e8507dac1a52a9808",
+    "tick": 272,
+    "lanes": [
+      10,
+      12
+    ],
+    "runs": [
+      {
+        "version": "before",
+        "seconds": 10.073548468993977,
+        "active_indices": [
+          6,
+          7
+        ],
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "after",
+        "seconds": 7.09177541299141,
+        "active_indices": [
+          6,
+          7
+        ],
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "after",
+        "seconds": 7.360154630005127,
+        "active_indices": [
+          6,
+          7
+        ],
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "before",
+        "seconds": 10.91572728799656,
+        "active_indices": [
+          6,
+          7
+        ],
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      }
+    ],
+    "before_median_seconds": 10.494637878495269,
+    "after_median_seconds": 7.2259650214982685
+  },
+  "gpu": {
+    "retained": 16,
+    "actor_sha256": "06d4bfdce73720325339a34fc2c4b5548f3f4f5c72f38d8eacfcb2cb11b168c8",
+    "world_sha256": "f387e58471cfc1dd47e62f8fabd692d261680596c6d68d5e8507dac1a52a9808",
+    "tick": 272,
+    "lanes": [
+      10,
+      12
+    ],
+    "runs": [
+      {
+        "version": "before",
+        "seconds": 18.611069111997494,
+        "active_indices": [
+          6,
+          7
+        ],
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "after",
+        "seconds": 13.519446251972113,
+        "active_indices": [
+          6,
+          7
+        ],
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "after",
+        "seconds": 13.708180629997514,
+        "active_indices": [
+          6,
+          7
+        ],
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      },
+      {
+        "version": "before",
+        "seconds": 19.267142313998193,
+        "active_indices": [
+          6,
+          7
+        ],
+        "max_abs_error": 0.0,
+        "responding_lanes": 2
+      }
+    ],
+    "peak_torch_allocated_bytes": 117472256,
+    "before_median_seconds": 18.939105712997844,
+    "after_median_seconds": 13.613813440984813
+  }
+}
