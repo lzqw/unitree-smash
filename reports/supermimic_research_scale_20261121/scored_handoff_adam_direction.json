@@ -1,0 +1,216 @@
+{
+  "scope": "R24+A16 frozen block entry, before subsequent online WM/Actor updates",
+  "actor": "3f3d4e17a47de7ed2874a801db97dca2cf061f82a29aba952d218e13ebfc246a",
+  "world": "a17e7d3b882b40897f31a25b6d140afea743eacb490750a0c81881dda304b543",
+  "layout": [
+    {
+      "lane_episode_tick": [
+        [
+          95,
+          1,
+          259
+        ],
+        [
+          26,
+          1,
+          259
+        ],
+        [
+          33,
+          1,
+          259
+        ],
+        [
+          35,
+          1,
+          259
+        ],
+        [
+          67,
+          1,
+          259
+        ],
+        [
+          71,
+          1,
+          259
+        ]
+      ]
+    },
+    {
+      "lane_episode_tick": [
+        [
+          9,
+          1,
+          263
+        ]
+      ]
+    },
+    {
+      "lane_episode_tick": [
+        [
+          28,
+          3,
+          270
+        ]
+      ]
+    },
+    {
+      "lane_episode_tick": [
+        [
+          9,
+          4,
+          267
+        ]
+      ]
+    },
+    {
+      "lane_episode_tick": [
+        [
+          95,
+          3,
+          260
+        ],
+        [
+          27,
+          3,
+          260
+        ],
+        [
+          33,
+          3,
+          260
+        ],
+        [
+          35,
+          3,
+          260
+        ],
+        [
+          43,
+          3,
+          260
+        ],
+        [
+          71,
+          3,
+          260
+        ]
+      ]
+    }
+  ],
+  "horizon": 64,
+  "retained_updates": 0,
+  "device": "cpu",
+  "baseline": {
+    "loss": 0.6410853862762451,
+    "tracking": 0.6109300851821899,
+    "task": 0.27466005086898804,
+    "anchor": 0.2689290940761566,
+    "strings": 11,
+    "frames": 4
+  },
+  "gradient_parts": {
+    "task_gradient_norm": 0.38330212235450745,
+    "tracking_gradient_norm": 9.280936241149902,
+    "anchor_gradient_norm": 1.4524445533752441,
+    "task_tracking_cosine": -0.3266017735004425
+  },
+  "aux_weight": 0.1,
+  "optimizer_scope": "Two disposable CPU copies, both restored with the original Approach Adam step/second moment. No changes to running weights.",
+  "proposals": {
+    "original_adam": {
+      "raw_gradient_dot_adam": 0.023501962423324585,
+      "descent_cosine": -0.06283316016197205,
+      "trials": {
+        "0.0": {
+          "loss": 0.6410853862762451,
+          "tracking": 0.6109300851821899,
+          "task": 0.27466005086898804,
+          "anchor": 0.2689290940761566,
+          "strings": 11,
+          "frames": 4,
+          "coverage": true
+        },
+        "0.0625": {
+          "loss": 0.6459454894065857,
+          "tracking": 0.6157876253128052,
+          "task": 0.2746560275554657,
+          "anchor": 0.2692283093929291,
+          "strings": 11,
+          "frames": 4,
+          "coverage": true
+        },
+        "1.0": {
+          "loss": 0.6690527200698853,
+          "tracking": 0.6388567090034485,
+          "task": 0.27459266781806946,
+          "anchor": 0.27367252111434937,
+          "strings": 11,
+          "frames": 4,
+          "coverage": true
+        }
+      }
+    },
+    "restart_first_moment": {
+      "raw_gradient_dot_adam": -0.015581670217216015,
+      "descent_cosine": 0.15914399921894073,
+      "trials": {
+        "0.0": {
+          "loss": 0.6410853862762451,
+          "tracking": 0.6109300851821899,
+          "task": 0.27466005086898804,
+          "anchor": 0.2689290940761566,
+          "strings": 11,
+          "frames": 4,
+          "coverage": true
+        },
+        "0.0625": {
+          "loss": 0.640204668045044,
+          "tracking": 0.6100479960441589,
+          "task": 0.2746703326702118,
+          "anchor": 0.2689672112464905,
+          "strings": 11,
+          "frames": 4,
+          "coverage": true
+        },
+        "1.0": {
+          "loss": 0.6229294538497925,
+          "tracking": 0.5913308262825012,
+          "task": 0.28911837935447693,
+          "anchor": 0.26868221163749695,
+          "strings": 11,
+          "frames": 4,
+          "coverage": true
+        }
+      }
+    }
+  },
+  "critic_input_parity": {
+    "horizon": 8,
+    "pre_block": "/home/autodrive/LZQW/experiments/supermimic_research_scale_20261121/paired_pause_0040_strings_retry/G1",
+    "lane_ticks": [
+      [
+        67,
+        298
+      ],
+      [
+        35,
+        300
+      ]
+    ],
+    "full_seconds": [
+      0.9619386499980465,
+      0.9697111989953555
+    ],
+    "score_seconds": [
+      1.0583981029922143,
+      0.9495882659684867
+    ],
+    "full_calls": 18,
+    "score_calls": 2,
+    "loss": -15.536587715148926,
+    "device": "cpu",
+    "actor_updates": 0
+  }
+}

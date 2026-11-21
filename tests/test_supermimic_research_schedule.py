@@ -112,6 +112,7 @@ def test_extension_launches_from_final_refresh_and_preserves_original_axes(tmp_p
     cmd = extended['command']
     assert cmd[cmd.index('--resume-training')+1] == str(train/'latest.pt')
     assert cmd[cmd.index('--cycles')+1] == '4' and '--resume-reset-schedule' not in cmd
+    assert cmd.count('--restart-uphill-approach-momentum') == 1
     quota = dict(item.split('=') for item in cmd[cmd.index('--wm-stage-quota')+1].split(','))
     assert quota == {'uniform':'108','post_landing_support_loss':'16','post_landing_unload':'4'}
     assert cmd.count('--recovery-rollout-landing') == 1

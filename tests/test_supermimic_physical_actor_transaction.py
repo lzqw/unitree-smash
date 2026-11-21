@@ -124,3 +124,68 @@ def test_recovery_approach_recovery_bptt_and_independent_adam_cpu_contract():
         assert int(next(iter(t.actor_opt.state.values()))['step'])==seen[head]
     assert seen=={'recovery':2,'approach':1}
     for name,value in t.native_accepted_snapshot.items():assert value.eq(0).all()
+
+
+def test_pooled_backtrack_keeps_bootstrap_and_skips_per_tick_critic_features():
+    t=learner()
+    t.block_name='recovery'
+    t._head_gate=lambda state: torch.ones(len(state.physical))
+    original=t.adapter.forward
+    def continuing_step(state, action):
+        new,reward,done,details=original(state,action)
+        return new,reward,torch.zeros_like(done),details
+    t.adapter.forward=continuing_step
+    t.critic.bias.data.fill_(1.5)
+    starts=(State(torch.ones(2,2)),State(torch.full((3,2),.3)))
+    calls=[]
+    def features(state):
+        calls.append(len(state.physical))
+        return state.observation
+    t.adapter.critic_input=features
+    with torch.no_grad():
+        baseline=t._rollout_objective(starts)
+        full=t._rollout_objective(starts,effective_weights=baseline['effective_weights'])
+        calls.clear()
+        score=t._rollout_objective(starts,effective_weights=baseline['effective_weights'],collect_critic_data=False)
+    assert calls == [2,3]
+    assert score['critic_data'] is None and full['critic_data'][0].shape[:2]==(2,5)
+    for key in ('loss','task','tracking','anchor','ret'):
+        torch.testing.assert_close(score[key],full[key],rtol=0,atol=0)
+    assert score['toi_coverage_preserved']==full['toi_coverage_preserved']
+
+
+def test_backtrack_records_uphill_adam_direction_against_the_unclipped_objective():
+    t=learner()
+    for param in t.actor.parameters():
+        t.actor_opt.state[param]=dict(step=torch.tensor(10.),exp_avg=torch.ones_like(param),
+                                      exp_avg_sq=torch.ones_like(param))
+    stats=t.imagine_update(t.budget_states[0])
+    assert not stats['update_accepted'] and stats['adam_proposal_loss_slope'] > 0
+    base=stats['objective_terms_before']
+    assert abs(base['task']+t.anchor_coeff*base['anchor']-stats['objective_before'])<1e-6
+    for trial in stats['backtrack_trials']:
+        assert trial['budget_ok'] and trial['toi_coverage_preserved']
+        assert trial['loss'] > stats['objective_before']
+        terms=trial['objective_terms']
+        assert abs(terms['task']+t.anchor_coeff*terms['anchor']-trial['loss'])<1e-6
+
+
+def test_restarted_uphill_momentum_advances_once_and_rejected_trial_restores_both_moments():
+    for force_rejection in (False,True):
+        t=learner()
+        t.restart_uphill_approach_momentum=True
+        t.adapter.constant_command=force_rejection
+        p=next(t.actor.parameters())
+        t.actor_opt.state[p]=dict(step=torch.tensor(10.),exp_avg=torch.ones_like(p),exp_avg_sq=torch.ones_like(p))
+        old=copy.deepcopy(t.actor_opt.state_dict())
+        stats=t.imagine_update(t.budget_states[0])
+        assert stats['adam_proposal_loss_slope']>0 and stats['restarted_adam_proposal_loss_slope']<0
+        assert stats['update_accepted'] != force_rejection
+        state=t.actor_opt.state[p]
+        if force_rejection:
+            for k,v in old['state'][0].items():
+                assert torch.equal(state[k],v)
+        else:
+            assert state['step']==11 and (state['exp_avg']<0).all()
+            beta2=t.actor_opt.param_groups[0]['betas'][1]
+            torch.testing.assert_close(state['exp_avg_sq'],beta2*old['state'][0]['exp_avg_sq']+(1-beta2)*p.grad.square())

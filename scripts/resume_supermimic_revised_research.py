@@ -162,6 +162,8 @@ def main():
     cli.add_argument('--parent', required=True, type=Path)
     cli.add_argument('--destination', required=True, type=Path)
     cli.add_argument('--tensorboard', required=True, type=Path)
+    cli.add_argument('--repaired-approach-proposals', action='store_true',
+                     help='Match both arms on interleaved start quotas and uphill-only first-moment restarts')
     cli.add_argument('--native-pause', type=Path, help='Use the scored block entry and the durable native collection at a Return pause')
     args = cli.parse_args()
     root = args.destination.resolve()
@@ -191,6 +193,10 @@ def main():
             cmd[cmd.index('--wm-stage-quota')+1] = quota
         else:
             cmd.extend(('--wm-stage-quota', quota))
+        if args.repaired_approach_proposals:
+            for flag in ('--interleaved-approach-starts','--restart-uphill-approach-momentum'):
+                if flag not in cmd:
+                    cmd.append(flag)
         before = reg['initial'].copy()
         if evidence['rollback_to_baseline']:
             before.update(checkpoint_sha256=evidence['checkpoint_sha256'], actor_sha256=evidence['starting_actor'])

@@ -148,7 +148,7 @@ def update_recovery_landing(landed, previous_task, next_feet):
     return landed | (eligible & in_flight & (next_feet > .5).any(-1))
 
 
-def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weights=None, baseline_landing_weights=None):
+def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weights=None, baseline_landing_weights=None, *, collect_critic_data=True):
     toi = trainer.block_name=='approach' and getattr(trainer,'approach_objective','task')=='toi_racket_only'
     if not starts or not (toi or trainer.block_name=='recovery'):
         raise ValueError('Pooled starts require Recovery or TOI racket supervision')
@@ -163,6 +163,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     counts={};covered={};weights=[];returns=[];data=[];usage={};by_record=[]
     for i,state in enumerate(starts):
         kwargs=dict(effective_weights=None if effective_weights is None else effective_weights[i])
+        if not collect_critic_data:
+            kwargs['collect_critic_data'] = False
         if baseline_landing_weights is not None:
             kwargs['baseline_landing_weights'] = baseline_landing_weights[i]
         if toi:
@@ -199,12 +201,13 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
             usage[digest]=usage.get(digest,0)+count
         weights.append(row['effective_weights'])
         returns.append(row['ret'][row['effective_weights'].bool()].detach())
-        x,r,d,last,mask=row['critic_data']
-        keep=mask.any(0)
-        data.append((x[:,keep],r[:,keep],d[:,keep],last[keep],mask[:,keep]))
+        if collect_critic_data:
+            x,r,d,last,mask=row['critic_data']
+            keep=mask.any(0)
+            data.append((x[:,keep],r[:,keep],d[:,keep],last[keep],mask[:,keep]))
         del row
     # Pad the LEFT side only. Recursion from the genuine tail retains the correct GAE bootstrap.
-    horizon=max(len(x[0]) for x in data)
+    horizon=max((len(x[0]) for x in data), default=0)
     def join(k):
         if k==3:
             return torch.cat([v[k] for v in data])
@@ -224,4 +227,4 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     ret=torch.cat(returns)
     return dict(**scalars,**counts, loss=loss,ret=ret if ret.numel() else loss.detach().reshape(1),
                 effective_weights=weights,landing_weights=landing_weights or None,toi_weights=toi_weights if toi else None,toi_coverage_preserved=preserved,reference_coverage=coverage,
-                critic_data=tuple(join(k) for k in range(5)),tracking_objective='toi_racket_only' if toi else 'recovery_reference')
+                critic_data=tuple(join(k) for k in range(5)) if collect_critic_data else None,tracking_objective='toi_racket_only' if toi else 'recovery_reference')

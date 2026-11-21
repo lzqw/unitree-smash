@@ -249,10 +249,11 @@ class PhysicalHorizonTrainer:
             return self.toi_racket_weight
         return self.tracking_weight
 
-    def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None, baseline_landing_weights=None, tracking_parameters=()):
+    def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None, baseline_landing_weights=None, tracking_parameters=(), collect_critic_data=True):
         if isinstance(initial_state,tuple):
             from .supermimic_recovery_batches import pooled_objective
-            return pooled_objective(self,initial_state,effective_weights,baseline_toi_weights,baseline_landing_weights)
+            return pooled_objective(self,initial_state,effective_weights,baseline_toi_weights,baseline_landing_weights,
+                                    collect_critic_data=collect_critic_data)
         from .supermimic_approach_data_v1 import masked_lane_mean
         cfg=self.timebase; state=initial_state.branch()
         states=[]; rewards=[]; dones=[]; valid=[]; anchors=[]; gates=[]; tracks=[]; track_weights=[]; track_states=[]
@@ -305,7 +306,9 @@ class PhysicalHorizonTrainer:
         for tick in range(cfg.imagination_steps):
             active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7
             if not active.any():break
-            current=self.adapter.critic_input(state)
+            if collect_critic_data:
+                states.append(self.adapter.critic_input(state).detach())
+                valid.append(active & selected)
             action=self._actor_action(state,sample=False)[0]
             gate=self._head_gate(state).reshape(-1)
             usable=selected&active
@@ -375,9 +378,9 @@ class PhysicalHorizonTrainer:
                     numerator,denominator,weights=self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
                         geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival,return_components=True)
                 tracks.append(numerator);track_weights.append(weights);track_states.append(state.physical)
-            states.append(current.detach());rewards.append(reward*active[:,None]);dones.append(done);valid.append(active&selected)
+            rewards.append(reward*active[:,None]);dones.append(done)
             survival=survival*(1-done.reshape(-1))
-        if not states:raise ValueError('No active in-episode imagination start')
+        if not rewards:raise ValueError('No active in-episode imagination start')
         final=self.adapter.critic_input(state)
         ret=bptt_return(torch.stack(rewards),torch.stack(dones),self.critic(final).clamp(max=self.v_max),cfg.gamma)
         activity=torch.stack(gates); weights=(activity.sum(0)>.25).detach()
@@ -453,7 +456,8 @@ class PhysicalHorizonTrainer:
         return dict(**aux_stats,landing_weights=landing_trace,tracking_derivatives=tracking_derivatives,toi_weights=all_track_weights.detach() if toi_only and tracks else None,
                     toi_coverage_preserved=toi_coverage_preserved,reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
                     gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
-                    critic_data=(torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid)),
+                    critic_data=((torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid))
+                                 if collect_critic_data else None),
                     tracking_steps=len(tracks),tracking_objective=getattr(self,'approach_objective','task') if self.block_name=='approach' else 'recovery_reference',
                     tracking_active_lane_steps=int((all_track_weights>0).sum()) if tracks else 0,
                     tracking_effective_weight_sum=float(track_weight_sum.detach()),tracking_nonzero_gradient_lanes=nonzero_lanes,matched_references=int(reference['matched'].sum()) if reference else 0)
@@ -499,7 +503,30 @@ class PhysicalHorizonTrainer:
                         norm=torch.sqrt(sum((p.grad.detach().square().sum() for p in parameters if p.grad is not None),rollout['loss'].new_zeros(())))
                         if not torch.isfinite(norm):raise FloatingPointError('Nonfinite actor gradient')
                         if float(norm)>1e-12:
+                            # Preserve the gradient of the scored objective before optimizer_step clips it.
+                            active_params = [(name, p) for name, p in self.actor.named_parameters()
+                                             if p.requires_grad and p.grad is not None]
+                            objective_grad = torch.cat([p.grad.detach().flatten() for _, p in active_params])
                             gradient=float(optimizer_step(self.actor_opt,parameters,element_clip=.1))
+                            def proposal_slope():
+                                displacement = torch.cat([(p.detach()-actor_before[name]).flatten()
+                                                          for name,p in active_params])
+                                return float(torch.dot(objective_grad, displacement))
+                            slope = proposal_slope()
+                            grad_stats['adam_proposal_loss_slope'] = slope
+                            if (getattr(self, 'restart_uphill_approach_momentum', False)
+                                    and self.block_name == 'approach' and slope >= 0.):
+                                self.actor.load_state_dict(actor_before, strict=True)
+                                # Loading can alias a CPU optimizer snapshot. Keep the rollback copy intact.
+                                self.actor_opt.load_state_dict(copy.deepcopy(optimizer_before))
+                                for _, p in active_params:
+                                    moment = self.actor_opt.state[p].get('exp_avg')
+                                    if moment is not None:
+                                        moment.zero_()
+                                # The first trial has already clipped this gradient. Advance from the
+                                # original step and second moment exactly once with the current direction.
+                                self.actor_opt.step()
+                                grad_stats['restarted_adam_proposal_loss_slope'] = proposal_slope()
                             proposed={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
                             proposed_opt=copy.deepcopy(self.actor_opt.state_dict())
                             for candidate_alpha in (1.,.5,.25,.125,.0625):
@@ -516,12 +543,16 @@ class PhysicalHorizonTrainer:
                                     effect=self._budget_deltas(candidate_budget,before_budget)['final_joint_target_delta_rad']
                                     restore_rng()
                                     evaluation=self._rollout_objective(initial_state,effective_weights=rollout['effective_weights'],
-                                                                      baseline_toi_weights=rollout['toi_weights'],
+                                                                      baseline_toi_weights=rollout['toi_weights'],collect_critic_data=False,
                                                                       **({'baseline_landing_weights': rollout['landing_weights']}
                                                                          if rollout.get('landing_weights') is not None else {}))
                                     candidate_loss=float(evaluation['loss'])
                                     coverage_ok=evaluation['toi_coverage_preserved']
-                                trials.append(dict(alpha=candidate_alpha,loss=candidate_loss,budget_ok=bool(bounded),
+                                trial_terms = {name: float(evaluation[name]) for name in ('task','tracking','anchor')}
+                                event_counts = {k: v for k, v in evaluation['reference_coverage'].items()
+                                                if k in ('predicted_first_string_lanes','predicted_first_frame_lanes')}
+                                trials.append(dict(alpha=candidate_alpha,loss=candidate_loss,objective_terms=trial_terms,
+                                                   first_contact_counts=event_counts,budget_ok=bool(bounded),
                                                    budget_report=report,toi_coverage_preserved=coverage_ok,final_command_change=effect))
                                 if bounded and coverage_ok and effect>0 and candidate_loss<=baseline_loss:
                                     committed_budget=candidate_budget
@@ -541,6 +572,7 @@ class PhysicalHorizonTrainer:
             if 'outgoing_impact_lanes' in rollout:
                 track_stats['outgoing_impact_lanes']=rollout['outgoing_impact_lanes']
             matched=rollout['matched_references'];coverage=rollout['reference_coverage']
+            baseline_terms = {name: float(rollout[name].detach()) for name in ('task','tracking','anchor')}
             del rollout
         except BaseException:
             self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
@@ -576,6 +608,7 @@ class PhysicalHorizonTrainer:
             update_accepted=accepted if update_actor else False,block_name=self.block_name,trainable_names=sorted(self.trainable_names),
             block_attempts=self.block_attempts,backtracked_actor_updates=self.backtracked_actor_updates,backtrack_alpha=alpha,
             rejection_reason=reason,backtrack_trials=trials,objective_before=baseline_loss,
+            objective_terms_before=baseline_terms,
             objective_after=trials[-1]['loss'] if accepted else baseline_loss,adam_scaling='full proposal moments with alpha-scaled parameters',
             command_delta_budget=self.command_delta_budget,target_delta_budget_rad=self.target_delta_budget_rad,
             critic_updates=self.critic_updates,world_updates=self.world_updates,imagined_return_mean=ret_mean,

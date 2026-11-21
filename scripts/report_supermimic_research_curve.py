@@ -32,7 +32,7 @@ def axes(row, origin, lanes):
 def scalars(row):
     head = row['block']
     metrics = {f'{head}/{key}': row[key] for key in (
-        'objective_before', 'objective_after', 'final_command_max_change', 'task_gradient_norm',
+        'objective_before', 'objective_after', 'adam_proposal_loss_slope', 'restarted_adam_proposal_loss_slope', 'final_command_max_change', 'task_gradient_norm',
         'tracking_gradient_norm', 'effective_gate_lanes', 'critic_loss', 'critic_loss_before_proposal', 'contact_aux_weight',
         'native_collect_seconds', 'bptt_seconds', 'world_update_seconds') if key in row}
     sampling = row.get('actor_start_sampling', {})
