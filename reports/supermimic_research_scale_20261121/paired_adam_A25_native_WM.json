@@ -1,0 +1,105 @@
+{
+  "behavior": 109,
+  "behavior_actor": "2617584fcf925423a226df6450e6ac5423dc10bfa29cca9a91cc6e262bb19ad5",
+  "pre_world_sha256": "5df0928a4d078f6e36771b51e6b6395c4bcbb0884a440059bcb34fd35c883e87",
+  "post_world_sha256": "05cbbbd27c8da7f75c0eacd4298586b597a829dd906f3ad4cbf8134798781677",
+  "source_chunks": [
+    {
+      "file": "chunk_00008.pt.zst",
+      "sha256": "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00009.pt.zst",
+      "sha256": "dac25f5e611a8e6c7eb58ced3e324c0d8b2faef6a15230dd8bceda9dd97f077f",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00010.pt.zst",
+      "sha256": "4512dd06824b0762bd1b74cad3e68f36809e7f946c370f088b6b3ccb76c153cd",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00011.pt.zst",
+      "sha256": "e81ebbc1fcf981fe49a00512ae264bcd3fc3692ffa707df86d78b9d66ff08cdf",
+      "ticks": 32
+    }
+  ],
+  "three_command_pre_refresh": {
+    "cases": 110,
+    "native_released": 110,
+    "predicted_racket_with_release": 110,
+    "native_below_5": 30,
+    "wm_above_native_below": 12,
+    "wm_below_native_above": 6,
+    "mean_signed_speed_error_mps": 0.19127704230221834
+  },
+  "native_verified_first_string": {
+    "cases": 71,
+    "native_released": 71,
+    "predicted_racket_with_release": 71,
+    "native_below_5": 26,
+    "wm_above_native_below": 11,
+    "wm_below_native_above": 4,
+    "mean_signed_speed_error_mps": 0.21912701700774717
+  },
+  "speed_only_cases": [
+    {
+      "case": "A-720401-007",
+      "lane": 7,
+      "native_tick": 6670,
+      "wm_first_string": true,
+      "wm_first_racket_part": 41,
+      "first_predicted_offset": 0,
+      "native_latched_mps": 4.886219501495361,
+      "wm_first_outgoing_mps": 5.447945594787598
+    },
+    {
+      "case": "A-720401-025",
+      "lane": 25,
+      "native_tick": 6672,
+      "wm_first_string": true,
+      "wm_first_racket_part": 41,
+      "first_predicted_offset": 0,
+      "native_latched_mps": 4.792954921722412,
+      "wm_first_outgoing_mps": 4.9992499351501465
+    },
+    {
+      "case": "A-720401-043",
+      "lane": 43,
+      "native_tick": 6672,
+      "wm_first_string": true,
+      "wm_first_racket_part": 30,
+      "first_predicted_offset": 0,
+      "native_latched_mps": 4.574666976928711,
+      "wm_first_outgoing_mps": 5.324326992034912
+    },
+    {
+      "case": "A-720401-039",
+      "lane": 39,
+      "native_tick": 6673,
+      "wm_first_string": true,
+      "wm_first_racket_part": 49,
+      "first_predicted_offset": 0,
+      "native_latched_mps": 4.923100471496582,
+      "wm_first_outgoing_mps": 4.935548782348633
+    }
+  ],
+  "training_window_count": 1024,
+  "new_policy_transition_uses": 2819,
+  "new_policy_racket_edge_uses": 25,
+  "contact_optimizer_steps": 4,
+  "contact_supervised_event_uses_all_sources": 240,
+  "A25": {
+    "accepted_id": 110,
+    "effective_gate_lanes": 14,
+    "backtrack_alpha": 1.0,
+    "objective_before": 0.46114251017570496,
+    "objective_after": 0.44238561391830444,
+    "task_gradient_norm": 1.606988549232483,
+    "tracking_gradient_norm": 8.15278434753418,
+    "task_tracking_cosine": -0.2322179526090622,
+    "contact_aux_weight": 0.1
+  },
+  "source_scope": "Repeated training-window and contact-event uses are counted. The three-command release audit replays executed targets from one native tick before impact and compares the first predicted outgoing speed to the latched native speed. A25 starts have different identities from the speed-loss examples."
+}

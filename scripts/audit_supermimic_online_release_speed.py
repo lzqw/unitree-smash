@@ -7,6 +7,7 @@ from statistics import mean
 
 import torch
 
+from quadsmash.physics.full_racket_v4 import load_racket, string_strips
 from quadsmash.rl.supermimic_archive_storage_v1 import read_archive_rows
 from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_physical_dataset_v1 import encode_physical
@@ -25,6 +26,7 @@ def audit(arm, checkpoint, block, flights, *, baseline=None):
     _, adapter, _, launch, _ = load_physical_loop(
         **{key.replace('-', '_'): option(key) for key in keys},
         execution_root=option('g07-execution-root'), device='cpu')
+    strip_count = len(string_strips(load_racket(option('g07-execution-root')/'configs/full_racket_v4_r3.json')))
     saved = torch.load(checkpoint, map_location='cpu', mmap=True, weights_only=False)
     checkpoint_version = saved['global_counters']['accepted']
     checkpoint_actor = tensor_digest(saved['actor'].items())
@@ -87,18 +89,21 @@ def audit(arm, checkpoint, block, flights, *, baseline=None):
             adapter.physical_model, adapter.ball_model, state, targets, previous, feet,
             present, elapsed, launch[lanes], action_model=adapter.action_ball_model, return_details=True)
         info = details['impulse_info']
-        return nxt, feet, present, info['active'] & (info['object_id'] == 0)
+        return nxt, feet, present, info['active'] & (info['object_id'] == 0), info['racket_part'].reshape(-1)
 
     state, _, _, feet, present, _, _ = batch(-1)
-    outcomes = [dict(**records[i], first_predicted_offset=None, wm_first_outgoing_mps=None) for i in usable]
+    outcomes = [dict(**records[i], first_predicted_offset=None, wm_first_outgoing_mps=None,
+                     wm_first_racket_part=None, wm_first_string=None) for i in usable]
     for offset in (-1, 0, 1):
         recorded_state, targets, previous, native_feet, native_present, elapsed, velocity = batch(offset)
-        state, feet, present, hit = step(state, targets, previous, feet, present, elapsed)
+        state, feet, present, hit, part = step(state, targets, previous, feet, present, elapsed)
         if offset == 0:
-            one, _, _, one_hit = step(recorded_state, targets, previous, native_feet, native_present, elapsed)
+            one, _, _, one_hit, _ = step(recorded_state, targets, previous, native_feet, native_present, elapsed)
         for j, out in enumerate(outcomes):
             if hit[j] and out['first_predicted_offset'] is None:
-                out.update(first_predicted_offset=offset, wm_first_outgoing_mps=float(state[j, -3:].norm()))
+                first_part = int(part[j])
+                out.update(first_predicted_offset=offset, wm_first_outgoing_mps=float(state[j, -3:].norm()),
+                           wm_first_racket_part=first_part, wm_first_string=0 <= first_part < strip_count)
             if offset == 0:
                 out.update(common_boundary_wm_mps=float(one[j, -3:].norm()),
                            common_boundary_native_mps=float(velocity[j].norm()), one_step_hit=bool(one_hit[j]))
@@ -119,11 +124,13 @@ def audit(arm, checkpoint, block, flights, *, baseline=None):
                     wm_above_native_below=sum(r['wm_first_outgoing_mps'] >= 5 > r['native_latched_mps'] for r in matched),
                     wm_below_native_above=sum(r['wm_first_outgoing_mps'] < 5 <= r['native_latched_mps'] for r in matched),
                     mean_signed_speed_error_mps=mean(r['wm_first_outgoing_mps']-r['native_latched_mps'] for r in matched) if matched else None)
+    strings = [r for r in outcomes if r['online_first_tick_string'] and r.get('online_frame_first') is False]
     result = dict(policy_version=block['policy_version'], actor_sha256=actor_sha, world_updates=updates,
                 checkpoint_policy_version=checkpoint_version, checkpoint_actor_sha256=checkpoint_actor,
                 world_sha256=world_sha, source_chunks=block['source_chunks'], native_first_contacts=len(records),
                 scope='Three recorded commands starting one tick before native first contact. Predicted body, ball and feet roll freely. Native scoring latches the last touch velocity. Common-boundary numbers use one step from the native first-contact start.',
                 all_windows=summarize(outcomes), string_first=summarize([r for r in outcomes if r['online_first_tick_string']]),
+                verified_string_first=summarize(strings),
                 sole_speed_losses=summarize([r for r in outcomes if r['sole_speed_loss']]), cases=outcomes)
 
     if baseline is not None:
