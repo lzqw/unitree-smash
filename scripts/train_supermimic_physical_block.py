@@ -452,7 +452,7 @@ def run(args, *, alternating=None):
                 return None
             finally:
                 actor.load_state_dict(current,strict=True)
-        from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache,APPROACH_TICKS,RECOVERY_TICKS,CRITIC_TICKS
+        from quadsmash.rl.supermimic_physical_start_cache_v1 import load_start_cache,training_start_mask,APPROACH_TICKS,RECOVERY_TICKS,CRITIC_TICKS
         start_cache=load_start_cache(args.archive,manifest)
         lifecycle_stage(args.output, 'START_CACHE_LOADED')
         starts=[start_cache[t] for t in APPROACH_TICKS]
@@ -519,8 +519,7 @@ def run(args, *, alternating=None):
             # a useful actor gradient. Singleton/masked batches need only their
             # own active lanes, not an impossible fixed four-lane threshold.
             from quadsmash.rl.supermimic_approach_data_v1 import active_gate
-            mask=row.get('_actor_lane_mask',torch.ones(len(gate),dtype=torch.bool)).to(gate.device).clone()
-            if wm_holdout_lanes:mask[wm_holdout_lanes]=False
+            mask=training_start_mask(row,wm_holdout_lanes).to(gate.device)
             gate=gate[mask]
             return active_gate(gate) if gate.numel() else False
 
@@ -752,14 +751,11 @@ def run(args, *, alternating=None):
                 approach=(actor.approach_gate(state.observation).reshape(-1)>.25)&(rally['had_contact'].reshape(-1)<.5)
                 return dict(critic_input=adapter.critic_input(state).detach(),head_masks=dict(recovery=recovery,approach=approach))
         def training_lane_available(row):
-            mask=row.get('_actor_lane_mask',torch.ones(128,dtype=torch.bool)).detach().cpu().clone()
-            if wm_holdout_lanes:mask[wm_holdout_lanes]=False
-            return bool(mask.any())
+            return bool(training_start_mask(row,wm_holdout_lanes).any())
         def training_state(row):
             state=as_state(row)
             if wm_holdout_lanes:
-                mask=state.clock_goal_context.get('actor_lane_mask',torch.ones(len(state.physical),dtype=torch.bool,device=state.physical.device)).clone()
-                mask[wm_holdout_lanes]=False;state.clock_goal_context['actor_lane_mask']=mask
+                state.clock_goal_context['actor_lane_mask']=training_start_mask(row,wm_holdout_lanes).to(state.physical.device)
             return state
         from quadsmash.rl.supermimic_frozen_refresh_v1 import FrozenRefresh
         from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
@@ -1274,7 +1270,21 @@ def run(args, *, alternating=None):
                 if block_name=='approach':
                     active_pool=[item for item in pool if approach_active(item)]
                     pool=active_pool if active_pool else approach_pool
-                row=pool[(attempts-1)%len(pool)];start_sampling={'source':'recovery_event_pool'}
+                if block_name=='recovery':
+                    eligible=[]
+                    for item in pool:
+                        lane_mask=training_start_mask(item,wm_holdout_lanes,recovery=True)
+                        if lane_mask.any():
+                            eligible.append((item,lane_mask))
+                    if not eligible:
+                        raise RuntimeError('No post-contact released training lanes in Recovery replay or archive starts')
+                    original,lane_mask=eligible[(attempts-1)%len(eligible)]
+                    row=dict(original,_actor_lane_mask=lane_mask)
+                    start_sampling=dict(source='recovery_event_pool' if any(original is item for item in dynamic_pool)
+                                        else 'verified_initial_archive',pool_size=len(pool),eligible_starts=len(eligible),
+                                        effective_start_lanes=int(lane_mask.sum()))
+                else:
+                    row=pool[(attempts-1)%len(pool)]
                 if block_name=='approach':
                     sampled,start_sampling=replay.actor_start_bank.sample(attempts)
                     if sampled is not None and training_lane_available(sampled):row=sampled
@@ -1307,6 +1317,8 @@ def run(args, *, alternating=None):
                 progress.update(proposal_in_flight=False,attempts=attempts,accepted=accepted,rejected=progress.get('rejected',0)+int(not stats['update_accepted']),backtracked=progress.get('backtracked',0)+backtracked)
                 with torch.no_grad():request=trainer._actor_action(state,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
                 record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_key=str(cycle_index),block_accepted_updates=accepted,block_rejected=progress['rejected'],block_backtracked=progress['backtracked'],attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=float(reward.mean()),completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
+                if block_name=='recovery':
+                    stats['imagined_start_source']=start_sampling['source']
                 if writer is not None:
                     step=int(tick*128)
                     writer.add_scalar('native/step_reward_mean',float(reward.mean()),step)

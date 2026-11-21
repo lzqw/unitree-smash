@@ -1,0 +1,1039 @@
+{
+  "refresh": {
+    "actor_sha256": "0c3ca08275fade74893ea5df7603210cbde2c1e7b9c2934bed756685774b1038",
+    "complete_episodes": 128,
+    "native_metrics": {
+      "completed_episodes": 128,
+      "qualified_airborne_string_contact": 72,
+      "qualified_airborne_string_contact_rate": 0.5625,
+      "ball_side_complete_except_recovery": 53,
+      "ball_side_complete_except_recovery_rate": 0.4140625,
+      "conditional_recovery_count": 28,
+      "conditional_recovery_denominator": 72,
+      "recovery_given_airborne_string_contact": 0.3888888888888889,
+      "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+      "complete5": 18,
+      "complete5_rate": 0.140625,
+      "native_episode_return_observed_count": 128,
+      "native_episode_return_missing_count": 0,
+      "native_episode_return_mean": -15.734056984920608,
+      "native_episode_return_std": 47.06550275003932,
+      "native_episode_return_min": -91.64898239680588,
+      "native_episode_return_max": 64.96390550782235,
+      "native_episode_return_last": -76.0993357303015,
+      "native_return_definition": "undiscounted_sum_of_native_control_step_rewards_v1"
+    },
+    "native_ticks": 1472,
+    "world_updates": 4,
+    "critic_updates": 2,
+    "actor_unchanged": true,
+    "policy_id": "recovery_frozen_v8_refresh1"
+  },
+  "frozen_forward": {
+    "r8_online_wm_frozen_squared_conservative": {
+      "windows": 959,
+      "excluded_lanes": 83,
+      "rtg_rows_reproduced": 5679,
+      "scores": {
+        "deployed": {
+          "world_sha256": "f850c9a3fdc8ddea14ba3285bf5b34ce1edabc8694b85b070ba2f2d13876ebd5",
+          "uniform_h64": {
+            "windows": 830,
+            "body_rmse": 0.5461313128471375,
+            "joint_position_mae": 0.03250543400645256,
+            "root_angular_mae": 0.18315674364566803,
+            "ball_velocity_mae": 0.4257102608680725,
+            "ball_velocity_rmse": 1.3100005388259888,
+            "ball_forward_sign_error": 0.04337349534034729,
+            "ball_position_p95": 1.2520802021026611,
+            "racket_position_mae": 0.04877297952771187,
+            "racket_velocity_mae": 0.19029782712459564,
+            "racket_angular_mae": 0.3003540337085724
+          },
+          "contact_h1": {
+            "windows": 43,
+            "body_rmse": 0.2341066300868988,
+            "joint_position_mae": 0.0016181435203179717,
+            "root_angular_mae": 0.04544232040643692,
+            "ball_velocity_mae": 1.5438377857208252,
+            "ball_velocity_rmse": 3.076023817062378,
+            "ball_forward_sign_error": 0.1627907007932663,
+            "ball_position_p95": 0.0501919761300087,
+            "racket_position_mae": 0.0009984808275476098,
+            "racket_velocity_mae": 0.16528409719467163,
+            "racket_angular_mae": 0.4499421715736389
+          }
+        },
+        "online_pre_refresh": {
+          "world_sha256": "082dbf1ff9886316f4983ce3f191873ef849b06e3561df1dc40677d40b082dfd",
+          "uniform_h64": {
+            "windows": 830,
+            "body_rmse": 0.638765811920166,
+            "joint_position_mae": 0.05077681690454483,
+            "root_angular_mae": 0.25426098704338074,
+            "ball_velocity_mae": 0.5856024622917175,
+            "ball_velocity_rmse": 1.8301254510879517,
+            "ball_forward_sign_error": 0.08192770928144455,
+            "ball_position_p95": 3.1258599758148193,
+            "racket_position_mae": 0.0866701751947403,
+            "racket_velocity_mae": 0.3459280729293823,
+            "racket_angular_mae": 0.46091917157173157
+          },
+          "contact_h1": {
+            "windows": 43,
+            "body_rmse": 0.8868903517723083,
+            "joint_position_mae": 0.007380741648375988,
+            "root_angular_mae": 0.3888157606124878,
+            "ball_velocity_mae": 1.5735641717910767,
+            "ball_velocity_rmse": 2.608509063720703,
+            "ball_forward_sign_error": 0.20930232107639313,
+            "ball_position_p95": 0.08859182149171829,
+            "racket_position_mae": 0.010875076055526733,
+            "racket_velocity_mae": 0.8510759472846985,
+            "racket_angular_mae": 1.7003439664840698
+          }
+        },
+        "online_post_refresh": {
+          "world_sha256": "acdbeae5dc48febfb2cf5964262bbdb585498c53ccd72b5b591f905897cf93f6",
+          "uniform_h64": {
+            "windows": 830,
+            "body_rmse": 0.6885472536087036,
+            "joint_position_mae": 0.05275215208530426,
+            "root_angular_mae": 0.27713829278945923,
+            "ball_velocity_mae": 0.6589734554290771,
+            "ball_velocity_rmse": 2.0446345806121826,
+            "ball_forward_sign_error": 0.09879518300294876,
+            "ball_position_p95": 3.8665387630462646,
+            "racket_position_mae": 0.10017169266939163,
+            "racket_velocity_mae": 0.3324611186981201,
+            "racket_angular_mae": 0.4672801196575165
+          },
+          "contact_h1": {
+            "windows": 43,
+            "body_rmse": 0.8602036833763123,
+            "joint_position_mae": 0.0077551379799842834,
+            "root_angular_mae": 0.42671215534210205,
+            "ball_velocity_mae": 1.3310093879699707,
+            "ball_velocity_rmse": 2.313755989074707,
+            "ball_forward_sign_error": 0.09302325546741486,
+            "ball_position_p95": 0.08322318643331528,
+            "racket_position_mae": 0.009392584674060345,
+            "racket_velocity_mae": 0.7561861872673035,
+            "racket_angular_mae": 1.679988980293274
+          }
+        },
+        "long_native_post_refresh": {
+          "world_sha256": "0187c6c3a5d4944505e7d5f492395a7bf1eea97d1181a49a03a0e89b5208d020",
+          "uniform_h64": {
+            "windows": 830,
+            "body_rmse": 0.5461431741714478,
+            "joint_position_mae": 0.032422494143247604,
+            "root_angular_mae": 0.18231569230556488,
+            "ball_velocity_mae": 0.42161962389945984,
+            "ball_velocity_rmse": 1.2975554466247559,
+            "ball_forward_sign_error": 0.039759036153554916,
+            "ball_position_p95": 1.242745041847229,
+            "racket_position_mae": 0.04862353950738907,
+            "racket_velocity_mae": 0.1901889443397522,
+            "racket_angular_mae": 0.2998238205909729
+          },
+          "contact_h1": {
+            "windows": 43,
+            "body_rmse": 0.23349380493164062,
+            "joint_position_mae": 0.0016142373206093907,
+            "root_angular_mae": 0.044634588062763214,
+            "ball_velocity_mae": 1.540850043296814,
+            "ball_velocity_rmse": 3.065488815307617,
+            "ball_forward_sign_error": 0.1627907007932663,
+            "ball_position_p95": 0.049884241074323654,
+            "racket_position_mae": 0.0009986605728045106,
+            "racket_velocity_mae": 0.16115598380565643,
+            "racket_angular_mae": 0.4427237808704376
+          }
+        }
+      }
+    },
+    "r8_online_wm_frozen_native_supervision": {
+      "windows": 959,
+      "excluded_lanes": 83,
+      "rtg_rows_reproduced": 5679,
+      "scores": {
+        "deployed": {
+          "world_sha256": "f850c9a3fdc8ddea14ba3285bf5b34ce1edabc8694b85b070ba2f2d13876ebd5",
+          "uniform_h64": {
+            "windows": 830,
+            "body_rmse": 0.5461313128471375,
+            "joint_position_mae": 0.03250543400645256,
+            "root_angular_mae": 0.18315674364566803,
+            "ball_velocity_mae": 0.4257102608680725,
+            "ball_velocity_rmse": 1.3100005388259888,
+            "ball_forward_sign_error": 0.04337349534034729,
+            "ball_position_p95": 1.2520802021026611,
+            "racket_position_mae": 0.04877297952771187,
+            "racket_velocity_mae": 0.19029782712459564,
+            "racket_angular_mae": 0.3003540337085724
+          },
+          "contact_h1": {
+            "windows": 43,
+            "body_rmse": 0.2341066300868988,
+            "joint_position_mae": 0.0016181435203179717,
+            "root_angular_mae": 0.04544232040643692,
+            "ball_velocity_mae": 1.5438377857208252,
+            "ball_velocity_rmse": 3.076023817062378,
+            "ball_forward_sign_error": 0.1627907007932663,
+            "ball_position_p95": 0.0501919761300087,
+            "racket_position_mae": 0.0009984808275476098,
+            "racket_velocity_mae": 0.16528409719467163,
+            "racket_angular_mae": 0.4499421715736389
+          }
+        },
+        "online_pre_refresh": {
+          "world_sha256": "082dbf1ff9886316f4983ce3f191873ef849b06e3561df1dc40677d40b082dfd",
+          "uniform_h64": {
+            "windows": 830,
+            "body_rmse": 0.638765811920166,
+            "joint_position_mae": 0.05077681690454483,
+            "root_angular_mae": 0.25426098704338074,
+            "ball_velocity_mae": 0.5856024622917175,
+            "ball_velocity_rmse": 1.8301254510879517,
+            "ball_forward_sign_error": 0.08192770928144455,
+            "ball_position_p95": 3.1258599758148193,
+            "racket_position_mae": 0.0866701751947403,
+            "racket_velocity_mae": 0.3459280729293823,
+            "racket_angular_mae": 0.46091917157173157
+          },
+          "contact_h1": {
+            "windows": 43,
+            "body_rmse": 0.8868903517723083,
+            "joint_position_mae": 0.007380741648375988,
+            "root_angular_mae": 0.3888157606124878,
+            "ball_velocity_mae": 1.5735641717910767,
+            "ball_velocity_rmse": 2.608509063720703,
+            "ball_forward_sign_error": 0.20930232107639313,
+            "ball_position_p95": 0.08859182149171829,
+            "racket_position_mae": 0.010875076055526733,
+            "racket_velocity_mae": 0.8510759472846985,
+            "racket_angular_mae": 1.7003439664840698
+          }
+        },
+        "online_post_refresh": {
+          "world_sha256": "acdbeae5dc48febfb2cf5964262bbdb585498c53ccd72b5b591f905897cf93f6",
+          "uniform_h64": {
+            "windows": 830,
+            "body_rmse": 0.6885472536087036,
+            "joint_position_mae": 0.05275215208530426,
+            "root_angular_mae": 0.27713829278945923,
+            "ball_velocity_mae": 0.6589734554290771,
+            "ball_velocity_rmse": 2.0446345806121826,
+            "ball_forward_sign_error": 0.09879518300294876,
+            "ball_position_p95": 3.8665387630462646,
+            "racket_position_mae": 0.10017169266939163,
+            "racket_velocity_mae": 0.3324611186981201,
+            "racket_angular_mae": 0.4672801196575165
+          },
+          "contact_h1": {
+            "windows": 43,
+            "body_rmse": 0.8602036833763123,
+            "joint_position_mae": 0.0077551379799842834,
+            "root_angular_mae": 0.42671215534210205,
+            "ball_velocity_mae": 1.3310093879699707,
+            "ball_velocity_rmse": 2.313755989074707,
+            "ball_forward_sign_error": 0.09302325546741486,
+            "ball_position_p95": 0.08322318643331528,
+            "racket_position_mae": 0.009392584674060345,
+            "racket_velocity_mae": 0.7561861872673035,
+            "racket_angular_mae": 1.679988980293274
+          }
+        },
+        "long_native_post_refresh": {
+          "world_sha256": "568291f8900c46f03d7831c7c9a5910637e088ae7320136b452813ec98601f81",
+          "uniform_h64": {
+            "windows": 830,
+            "body_rmse": 0.5476663708686829,
+            "joint_position_mae": 0.03217460215091705,
+            "root_angular_mae": 0.18450263142585754,
+            "ball_velocity_mae": 0.4082537293434143,
+            "ball_velocity_rmse": 1.2734168767929077,
+            "ball_forward_sign_error": 0.03614457696676254,
+            "ball_position_p95": 1.1732337474822998,
+            "racket_position_mae": 0.05254634842276573,
+            "racket_velocity_mae": 0.19592300057411194,
+            "racket_angular_mae": 0.3017604351043701
+          },
+          "contact_h1": {
+            "windows": 43,
+            "body_rmse": 0.23699909448623657,
+            "joint_position_mae": 0.0016530156135559082,
+            "root_angular_mae": 0.044076140969991684,
+            "ball_velocity_mae": 1.5113857984542847,
+            "ball_velocity_rmse": 3.0005879402160645,
+            "ball_forward_sign_error": 0.13953489065170288,
+            "ball_position_p95": 0.049708105623722076,
+            "racket_position_mae": 0.0010185037972405553,
+            "racket_velocity_mae": 0.15536697208881378,
+            "racket_angular_mae": 0.46781399846076965
+          }
+        }
+      }
+    }
+  },
+  "probe": {
+    "wide": {
+      "stable_path_exchange": {
+        "body_nominal_body_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.19661682844161987,
+          "gain_median": 0.09265606850385666,
+          "gain_p10": 0.04488530382514,
+          "cosine_median": -0.19970229268074036,
+          "cosine_p10": -0.29951488971710205
+        },
+        "body_nominal_native_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.24477985501289368,
+          "gain_median": 0.33820000290870667,
+          "gain_p10": 0.2076398730278015,
+          "cosine_median": -0.05760955065488815,
+          "cosine_p10": -0.6048630475997925
+        },
+        "native_nominal_body_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.17659269273281097,
+          "gain_median": 0.11519722640514374,
+          "gain_p10": 0.051284871995449066,
+          "cosine_median": -0.35431116819381714,
+          "cosine_p10": -0.8050618171691895
+        },
+        "native_nominal_native_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.17119307816028595,
+          "gain_median": 0.6464471817016602,
+          "gain_p10": 0.32477879524230957,
+          "cosine_median": 0.7208462953567505,
+          "cosine_p10": 0.13629192113876343
+        }
+      },
+      "measured_friction_exchange": {
+        "lanes": [
+          101,
+          102,
+          107,
+          118
+        ],
+        "comparison_sha256": "405c55b7745580cff655196c950a2106813f369220684e4e461e5a48016d8da0",
+        "metrics": {
+          "analytic": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.177019864320755,
+            "gain_median": 0.6491835117340088,
+            "gain_p10": 0.3276865482330322,
+            "cosine_median": 0.6939173340797424,
+            "cosine_p10": -0.009404766373336315
+          },
+          "native_strength_only": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.037218473851680756,
+            "gain_median": 1.0158729553222656,
+            "gain_p10": 0.9692779183387756,
+            "cosine_median": 0.9586828947067261,
+            "cosine_p10": 0.9152508974075317
+          },
+          "native_turn_only": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.17723526060581207,
+            "gain_median": 0.6649021506309509,
+            "gain_p10": 0.3332855999469757,
+            "cosine_median": 0.6933149695396423,
+            "cosine_p10": -0.013096881099045277
+          },
+          "native_friction": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.03690961003303528,
+            "gain_median": 1.0141886472702026,
+            "gain_p10": 0.981321394443512,
+            "cosine_median": 0.9600740075111389,
+            "cosine_p10": 0.9163295030593872
+          }
+        },
+        "signed_terms_mps": {
+          "measured_strength": [
+            [
+              -0.5236378908157349,
+              -0.23608863353729248,
+              0.06304711103439331
+            ],
+            [
+              0.12729917466640472,
+              0.0846170112490654,
+              -0.04791960120201111
+            ],
+            [
+              0.0016433479031547904,
+              -0.028895149007439613,
+              -0.0550907626748085
+            ],
+            [
+              -0.0013197793159633875,
+              -0.0014091714983806014,
+              0.010313860140740871
+            ]
+          ],
+          "measured_turn": [
+            [
+              -0.001927025499753654,
+              0.002129889093339443,
+              -0.008029463700950146
+            ],
+            [
+              -0.004184192977845669,
+              -0.005771568976342678,
+              -0.021306902170181274
+            ],
+            [
+              0.011758741922676563,
+              0.025101972743868828,
+              -0.012815311551094055
+            ],
+            [
+              0.0044064573012292385,
+              -0.02132241055369377,
+              -0.0023493908811360598
+            ]
+          ],
+          "predicted_strength": [
+            [
+              -0.010474538430571556,
+              -0.003941967152059078,
+              0.0019291217904537916
+            ],
+            [
+              -0.018227271735668182,
+              -0.009668705053627491,
+              0.008420408703386784
+            ],
+            [
+              -0.0003531406109686941,
+              0.007339742965996265,
+              0.013077164068818092
+            ],
+            [
+              -0.0013421986950561404,
+              -0.0015627268003299832,
+              0.010501004755496979
+            ]
+          ],
+          "predicted_turn": [
+            [
+              -0.0007972256862558424,
+              -0.0037775773089379072,
+              -0.012046954594552517
+            ],
+            [
+              -0.009638422168791294,
+              0.009174318984150887,
+              -0.010329388082027435
+            ],
+            [
+              0.01123442780226469,
+              0.0188453271985054,
+              -0.010273853316903114
+            ],
+            [
+              0.004313584417104721,
+              -0.02396179921925068,
+              -0.003014532383531332
+            ]
+          ]
+        },
+        "scope": "Post-hoc decomposition of the total world-frame racket friction vector at native loaded times. Other impulses and native drag are held fixed."
+      },
+      "contact_gradients_admitted": false
+    },
+    "half": {
+      "stable_path_exchange": {
+        "body_nominal_body_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.09312478452920914,
+          "gain_median": 0.07236819714307785,
+          "gain_p10": 0.05050200968980789,
+          "cosine_median": -0.29582536220550537,
+          "cosine_p10": -0.3638171851634979
+        },
+        "body_nominal_native_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.0984962210059166,
+          "gain_median": 0.22051534056663513,
+          "gain_p10": 0.19589748978614807,
+          "cosine_median": 0.04957769811153412,
+          "cosine_p10": -0.19468960165977478
+        },
+        "native_nominal_body_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.06023314967751503,
+          "gain_median": 0.03967512771487236,
+          "gain_p10": 0.03535105288028717,
+          "cosine_median": -0.30852389335632324,
+          "cosine_p10": -0.7854248881340027
+        },
+        "native_nominal_native_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.05579502880573273,
+          "gain_median": 0.6364588737487793,
+          "gain_p10": 0.4092854857444763,
+          "cosine_median": 0.725081205368042,
+          "cosine_p10": 0.18484407663345337
+        }
+      },
+      "measured_friction_exchange": {
+        "lanes": [
+          101,
+          102,
+          107,
+          118
+        ],
+        "comparison_sha256": "405c55b7745580cff655196c950a2106813f369220684e4e461e5a48016d8da0",
+        "metrics": {
+          "analytic": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.05767543613910675,
+            "gain_median": 0.6388007998466492,
+            "gain_p10": 0.41215041279792786,
+            "cosine_median": 0.6982419490814209,
+            "cosine_p10": 0.08999715000391006
+          },
+          "native_strength_only": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.016367202624678612,
+            "gain_median": 1.0405014753341675,
+            "gain_p10": 0.9988126754760742,
+            "cosine_median": 0.9593571424484253,
+            "cosine_p10": 0.945929765701294
+          },
+          "native_turn_only": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.057738371193408966,
+            "gain_median": 0.6561183929443359,
+            "gain_p10": 0.4201589822769165,
+            "cosine_median": 0.6993851661682129,
+            "cosine_p10": 0.08838366717100143
+          },
+          "native_friction": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.016134042292833328,
+            "gain_median": 1.038391351699829,
+            "gain_p10": 1.0093029737472534,
+            "cosine_median": 0.9619734883308411,
+            "cosine_p10": 0.9471778869628906
+          }
+        },
+        "signed_terms_mps": {
+          "measured_strength": [
+            [
+              -0.15854370594024658,
+              -0.07165540754795074,
+              0.018930429592728615
+            ],
+            [
+              0.05896667018532753,
+              0.0390213280916214,
+              -0.02230778895318508
+            ],
+            [
+              0.0006541433394886553,
+              -0.011065653525292873,
+              -0.021253641694784164
+            ],
+            [
+              -0.0005756035097874701,
+              -0.0006201672949828207,
+              0.004504892975091934
+            ]
+          ],
+          "measured_turn": [
+            [
+              -0.0008076793164946139,
+              0.0008194936090148985,
+              -0.003663309384137392
+            ],
+            [
+              -0.001625953009352088,
+              -0.0038778046146035194,
+              -0.011080972850322723
+            ],
+            [
+              0.0048528751358389854,
+              0.01033401396125555,
+              -0.005231025163084269
+            ],
+            [
+              0.0021580534521490335,
+              -0.01052149012684822,
+              -0.001172723132185638
+            ]
+          ],
+          "predicted_strength": [
+            [
+              -0.005143419373780489,
+              -0.001935723703354597,
+              0.0009469594224356115
+            ],
+            [
+              -0.00850615743547678,
+              -0.004512205254286528,
+              0.003929506056010723
+            ],
+            [
+              -0.00014612407539971173,
+              0.0029418286867439747,
+              0.005256908014416695
+            ],
+            [
+              -0.0006536307628266513,
+              -0.0007700556889176369,
+              0.005121460650116205
+            ]
+          ],
+          "predicted_turn": [
+            [
+              -0.00034448009682819247,
+              -0.0019971628207713366,
+              -0.005953746382147074
+            ],
+            [
+              -0.004460571799427271,
+              0.004170239437371492,
+              -0.00486708153039217
+            ],
+            [
+              0.004562248010188341,
+              0.0076726824045181274,
+              -0.004166945815086365
+            ],
+            [
+              0.002112192800268531,
+              -0.011641846969723701,
+              -0.001480860635638237
+            ]
+          ]
+        },
+        "scope": "Post-hoc decomposition of the total world-frame racket friction vector at native loaded times. Other impulses and native drag are held fixed."
+      },
+      "contact_gradients_admitted": false
+    },
+    "quarter": {
+      "stable_path_exchange": {
+        "body_nominal_body_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.02562336064875126,
+          "gain_median": 0.08431020379066467,
+          "gain_p10": 0.07908366620540619,
+          "cosine_median": -0.08562859147787094,
+          "cosine_p10": -0.12063758820295334
+        },
+        "body_nominal_native_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.0737650990486145,
+          "gain_median": 0.41575759649276733,
+          "gain_p10": 0.23770689964294434,
+          "cosine_median": 0.03679611533880234,
+          "cosine_p10": -0.027449069544672966
+        },
+        "native_nominal_body_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.02261434495449066,
+          "gain_median": 0.10758863389492035,
+          "gain_p10": 0.08466877788305283,
+          "cosine_median": -0.15374618768692017,
+          "cosine_p10": -0.7358250617980957
+        },
+        "native_nominal_native_change": {
+          "rows": 4,
+          "supported": 4,
+          "absolute_rmse": 0.017975229769945145,
+          "gain_median": 0.6851858496665955,
+          "gain_p10": 0.6104004979133606,
+          "cosine_median": 0.8096171021461487,
+          "cosine_p10": 0.31670305132865906
+        }
+      },
+      "measured_friction_exchange": {
+        "lanes": [
+          101,
+          102,
+          107,
+          118
+        ],
+        "comparison_sha256": "405c55b7745580cff655196c950a2106813f369220684e4e461e5a48016d8da0",
+        "metrics": {
+          "analytic": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.018460197374224663,
+            "gain_median": 0.6851239204406738,
+            "gain_p10": 0.6139402389526367,
+            "cosine_median": 0.7953616976737976,
+            "cosine_p10": 0.2661851644515991
+          },
+          "native_strength_only": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.0075216470286250114,
+            "gain_median": 1.0767682790756226,
+            "gain_p10": 1.0054850578308105,
+            "cosine_median": 0.9500718116760254,
+            "cosine_p10": 0.9457820057868958
+          },
+          "native_turn_only": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.01853734813630581,
+            "gain_median": 0.6478124260902405,
+            "gain_p10": 0.6074386239051819,
+            "cosine_median": 0.7921754121780396,
+            "cosine_p10": 0.26366621255874634
+          },
+          "native_friction": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.0075188856571912766,
+            "gain_median": 1.051647424697876,
+            "gain_p10": 1.009328842163086,
+            "cosine_median": 0.9505423307418823,
+            "cosine_p10": 0.9446931481361389
+          }
+        },
+        "signed_terms_mps": {
+          "measured_strength": [
+            [
+              -0.045688677579164505,
+              -0.02065582200884819,
+              0.0054495190270245075
+            ],
+            [
+              0.011358781717717648,
+              0.007477090694010258,
+              -0.004323055036365986
+            ],
+            [
+              0.0006866685580462217,
+              -0.011542365886271,
+              -0.022179650142788887
+            ],
+            [
+              -0.0002847830764949322,
+              -0.00030807784060016274,
+              0.0022301962599158287
+            ]
+          ],
+          "measured_turn": [
+            [
+              -0.0004150107270106673,
+              0.0003961465845350176,
+              -0.0019773482345044613
+            ],
+            [
+              -0.001983078196644783,
+              0.0017334508011117578,
+              -0.00221259705722332
+            ],
+            [
+              0.002795524662360549,
+              0.006590359844267368,
+              -0.0033431195188313723
+            ],
+            [
+              0.0010556174675002694,
+              -0.005138365551829338,
+              -0.0005749596166424453
+            ]
+          ],
+          "predicted_strength": [
+            [
+              -0.002669123699888587,
+              -0.0010045458329841495,
+              0.0004913891898468137
+            ],
+            [
+              -0.004139372613281012,
+              -0.002196052810177207,
+              0.0019123146776109934
+            ],
+            [
+              -8.221979078371078e-05,
+              0.001642043935135007,
+              0.002936452627182007
+            ],
+            [
+              -0.000319410115480423,
+              -0.0003780445549637079,
+              0.0025043515488505363
+            ]
+          ],
+          "predicted_turn": [
+            [
+              -0.0002283724315930158,
+              -0.0008865171112120152,
+              -0.003052410436794162
+            ],
+            [
+              -0.0021692279260605574,
+              0.002022355794906616,
+              -0.002372881630435586
+            ],
+            [
+              0.0025389529764652252,
+              0.004274918232113123,
+              -0.0023193685337901115
+            ],
+            [
+              0.0010337030980736017,
+              -0.005695604253560305,
+              -0.0007279072306118906
+            ]
+          ]
+        },
+        "scope": "Post-hoc decomposition of the total world-frame racket friction vector at native loaded times. Other impulses and native drag are held fixed."
+      },
+      "contact_gradients_admitted": false
+    }
+  },
+  "recovery_start_audit": {
+    "touchdown": {
+      "starts": 16,
+      "previously_eligible": 5,
+      "gated": 4,
+      "active_lane_counts": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+      ]
+    },
+    "post_touchdown": {
+      "starts": 16,
+      "previously_eligible": 16,
+      "gated": 16,
+      "active_lane_counts": [
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        14,
+        15,
+        15,
+        15,
+        16,
+        16,
+        13
+      ]
+    },
+    "recovery_failure": {
+      "starts": 16,
+      "previously_eligible": 10,
+      "gated": 9,
+      "active_lane_counts": [
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1
+      ]
+    },
+    "stable_recovery": {
+      "starts": 16,
+      "previously_eligible": 5,
+      "gated": 5,
+      "active_lane_counts": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        2,
+        0,
+        0,
+        3
+      ]
+    }
+  },
+  "source_sha256": {
+    "sweep_bounded_recovery32/recovery_frozen_v8_refresh1/manifest.json": "87b892e513bb629371c92ec4e13a9dd99de32c18f7194fff9232a3c11ce340b3",
+    "r8_recovery_start_audit.json": "302a56adb7eed46f8e8d580811660f7ecd04d8b41963d7c57092ac92ee7215b8",
+    "r8_online_wm_frozen_squared_conservative/fresh_r8_excluded_lanes.json": "6671546f6339afd5172b00fe6deda32c904a5da3b745f9860305c2b6589f6904",
+    "r8_online_wm_frozen_native_supervision/fresh_r8_excluded_lanes.json": "166cd244159ac060bfc1d27bda736b9eec3bfec491dea6fdb4b6037c1628c885",
+    "g07_horizon16_native/wide_spatial_exchange.json": "a0509d3ed6fb2540be4ae71dd9ff89a69a4103a070976063532a3452a0d91bfc",
+    "g07_horizon16_native/wide_friction_strength_and_turn.json": "051ce2641fd34e3aa7e50816fba7235bd535e4428d0c0229dc3a8b06e0686d2a",
+    "g07_horizon16_native/half_spatial_exchange.json": "6e2d9ab1d4b242b293efa8c214e4a3ffbfe5a19ab15a5f2bb6ca35dacdf3dc6a",
+    "g07_horizon16_native/half_friction_strength_and_turn.json": "1fbaca23d22ecda9fc36c1fff397ddce591275bb36032f43535e855ea2bfff5a",
+    "g07_horizon16_native/quarter_spatial_exchange.json": "c8f5488ca07f1f67013d2f84fea34e2c493569eb55272c39f340fb3da6397c0d",
+    "g07_horizon16_native/quarter_friction_strength_and_turn.json": "004d5bdce51c27ac0f499a353729abd78b324dc6dfe59942f513e00807e26889",
+    "origin_matched_surface_panel/friction_duration_calibration.json": "50efdd5d5ad0a99b28128331bf32919dfe174951fae28c71aff5fec918ab24e1"
+  },
+  "friction_duration": {
+    "train_search": [
+      {
+        "power": 0.0,
+        "objective": 1.0457352228562296,
+        "metrics": {
+          "absolute_rmse": 0.5418486595153809,
+          "all_signed": {
+            "rows": 896,
+            "supported": 734,
+            "absolute_rmse": 0.46161022782325745,
+            "gain_median": 0.9011879563331604,
+            "gain_p10": 0.1888178586959839,
+            "cosine_median": 0.7297078371047974,
+            "cosine_p10": -0.17624591290950775
+          },
+          "stable_signed": {
+            "rows": 176,
+            "supported": 176,
+            "absolute_rmse": 0.19760848581790924,
+            "gain_median": 1.0021328926086426,
+            "gain_p10": 0.26223474740982056,
+            "cosine_median": 0.8601810932159424,
+            "cosine_p10": 0.03714769706130028
+          }
+        }
+      },
+      {
+        "power": 0.25,
+        "objective": 1.6397330005897603,
+        "metrics": {
+          "absolute_rmse": 0.5459392070770264,
+          "all_signed": {
+            "rows": 896,
+            "supported": 734,
+            "absolute_rmse": 0.4621061384677887,
+            "gain_median": 0.9254195094108582,
+            "gain_p10": 0.20485548675060272,
+            "cosine_median": 0.730034589767456,
+            "cosine_p10": -0.1671898365020752
+          },
+          "stable_signed": {
+            "rows": 176,
+            "supported": 176,
+            "absolute_rmse": 0.2017432302236557,
+            "gain_median": 1.021680235862732,
+            "gain_p10": 0.26223474740982056,
+            "cosine_median": 0.8393298387527466,
+            "cosine_p10": -0.0038180742412805557
+          }
+        }
+      },
+      {
+        "power": 0.5,
+        "objective": 2.4079528186580537,
+        "metrics": {
+          "absolute_rmse": 0.5516731142997742,
+          "all_signed": {
+            "rows": 896,
+            "supported": 734,
+            "absolute_rmse": 0.4644626975059509,
+            "gain_median": 0.9495961666107178,
+            "gain_p10": 0.20937906205654144,
+            "cosine_median": 0.7072224617004395,
+            "cosine_p10": -0.20045293867588043
+          },
+          "stable_signed": {
+            "rows": 176,
+            "supported": 176,
+            "absolute_rmse": 0.20812653005123138,
+            "gain_median": 1.0462754964828491,
+            "gain_p10": 0.2725849151611328,
+            "cosine_median": 0.8415226936340332,
+            "cosine_p10": -0.06151518225669861
+          }
+        }
+      },
+      {
+        "power": 1.0,
+        "objective": 3.354887868682604,
+        "metrics": {
+          "absolute_rmse": 0.5634980201721191,
+          "all_signed": {
+            "rows": 896,
+            "supported": 734,
+            "absolute_rmse": 0.46896690130233765,
+            "gain_median": 0.971820592880249,
+            "gain_p10": 0.21658441424369812,
+            "cosine_median": 0.7029020190238953,
+            "cosine_p10": -0.2534405589103699
+          },
+          "stable_signed": {
+            "rows": 176,
+            "supported": 176,
+            "absolute_rmse": 0.2221108227968216,
+            "gain_median": 1.0624371767044067,
+            "gain_p10": 0.27494674921035767,
+            "cosine_median": 0.8347424268722534,
+            "cosine_p10": -0.09773331880569458
+          }
+        }
+      }
+    ],
+    "selected_exponent": 0.0,
+    "checks": {
+      "absolute": true,
+      "signed": true,
+      "stable": false,
+      "direction": false,
+      "gain": true
+    },
+    "final_holdout_opened": false
+  }
+}

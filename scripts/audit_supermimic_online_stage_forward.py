@@ -94,10 +94,13 @@ def main():
                 if abs(v-initial['metrics']['anchor'][str(h)][group][k])>1.e-5:
                     raise ValueError('Anchor does not reproduce the initial reference scores')
     names=panel.get('prospective_body_comparison',{}).get('uniform_no_regression',['body_rmse','root_angular_mae'])
+    from scripts.supermimic_online_forward_guard import compare_forward
     report=dict(head_stage_checkpoint_sha256=stage_sha,stage_actor_sha256=tensor_digest(stage['actor'].items()),
         stage_world_sha256=tensor_digest(adapter.state_dict().items()),initial_world_sha256=initial['runtime_world_sha256'],
         native_panel_sha256=digest(a.panel),native_capture_sha256=measured['data_sha256'],initial_score_sha256=digest(a.initial_score),
         native_behavior_actor_sha256=measured['actor_sha256'],horizons=panel['horizons'],world_updates=stage['world_updates'],
+        forward_guard_vs_formal_anchor=compare_forward(baseline,current,panel['horizons']),
+        forward_guard_vs_block_initial=compare_forward(before,current,panel['horizons']),
         uniform_vs_formal_anchor=body_forward_check(score['metrics'],panel['horizons'],names),
         contact_vs_formal_anchor=compare_candidate_to_anchor(event_metrics(baseline),event_metrics(current)),
         uniform_vs_block_initial=body_forward_check(dict(anchor=before,candidate=current),panel['horizons'],names),

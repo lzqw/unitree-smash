@@ -132,7 +132,8 @@ def tick(prior, ball, start, end, fitted, offset, previous_patch=None, *, measur
                 impact_geometry_fraction=fitted.get('impact_geometry_fraction', 0.), return_impact_time=True, load_trace=load_trace,
                 local_mobility=local_mobility[lane] if local_mobility is not None else None,shuttle_mass=shuttle_mass,
                 temporal_solver=fitted.get('temporal_solver'),patch_inertia=fitted.get('patch_inertia'),
-                articulation_friction_floor=fitted.get('articulation_friction_floor',False))
+                articulation_friction_floor=fitted.get('articulation_friction_floor',False),
+                friction_duration_exponent=fitted.get('friction_duration_exponent',0.))
             if event_trace is not None:
                 regime = load_trace['regime']
                 if trace_normal_impulse:

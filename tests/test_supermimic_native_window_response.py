@@ -61,3 +61,43 @@ def test_scale_reader_uses_compound_material_and_initial_shuttle_spin(tmp_path, 
     monkeypatch.setattr(audit,'signatures',lambda trace: [])
     audit.read_trial(tmp_path,16,'plus',.05,{'fitted':{},'solver':{'pair_contact_offset_m':.002}},
                      SimpleNamespace(steps=1,sub_dt=.01),material=material)
+
+
+def test_crossed_motion_transports_world_angular_velocity_and_is_quaternion_sign_invariant():
+    import torch
+    from scripts.supermimic_racket_exchange import exchange_racket_path
+
+    zero = torch.zeros(1, 3)
+    identity = torch.tensor([[1., 0., 0., 0.]])
+    quarter_turn = torch.tensor([[.5**.5, 0., 0., .5**.5]])
+    base = (zero, identity, zero, torch.tensor([[1., 0., 0.]]))
+    neutral = (zero, identity, zero, zero)
+    signed = (zero+1, -quarter_turn, zero+2, zero)
+    c, q, v, omega = exchange_racket_path(base, neutral, signed)
+    torch.testing.assert_close(c, signed[0])
+    torch.testing.assert_close(v, signed[2])
+    torch.testing.assert_close(q, quarter_turn)
+    torch.testing.assert_close(omega, torch.tensor([[0., 1., 0.]]))
+    for observed, expected in zip(exchange_racket_path(base, neutral, neutral), base, strict=True):
+        torch.testing.assert_close(observed, expected)
+
+
+def test_signed_friction_strength_and_rotation_reconstruct_reversal_and_zero_contact():
+    import torch
+    from scripts.audit_supermimic_g07_impulse_channels import signed_friction_components
+
+    minus=torch.tensor([[1.,0.,0.],[2.,0.,0.],[0.,0.,0.]])
+    plus=torch.tensor([[-1.,0.,0.],[3.,0.,0.],[0.,1.,0.]])
+    strength,turn=signed_friction_components(minus,plus)
+    torch.testing.assert_close(strength+turn,plus-minus)
+    torch.testing.assert_close(strength[0],torch.zeros(3))
+    torch.testing.assert_close(turn[1],torch.zeros(3))
+
+
+def test_substep_friction_bound_is_full_for_overlap_and_zero_at_end_of_step():
+    import torch
+    from quadsmash.rl.supermimic_compound_racket import friction_duration_factor
+
+    gaps=torch.tensor([-.001,0.,.001,.002])
+    speed=torch.full_like(gaps,-2.)
+    torch.testing.assert_close(friction_duration_factor(gaps,speed,.001,1.),torch.tensor([1.,1.,.5,0.]))

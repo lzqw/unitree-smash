@@ -199,3 +199,35 @@ def test_folded_arm_position_preserves_physical_quadrature_and_velocity():
     expected=before.clone()
     expected[:,25:31]=torch.lerp(before[:,25:31],model.dt*fraction*before[:,43:49],blend)
     torch.testing.assert_close(physical(),expected)
+
+
+def test_signed_rollout_fit_inputs_never_consume_observed_future_states(monkeypatch):
+    import torch
+    from quadsmash.rl import supermimic_ball_sequence_v1
+    from scripts.calibrate_supermimic_signed_arm_readout import rollout_inputs
+
+    state = torch.tensor([[[2.]], [[900.]], [[900.]]])
+    target = torch.tensor([[[3.]], [[4.]], [[5.]]])
+    data = dict(state=state, feet=state+10, present=state+20, targets=target,
+                elapsed=state*0, previous_action=target*0, next_state=state+100)
+    def advance(model, ball, current, command, previous, feet, present, elapsed, launch):
+        return current+command, feet+1, present+2
+    monkeypatch.setattr(supermimic_ball_sequence_v1, 'ball_transition', advance)
+    inputs = rollout_inputs(None, None, data, None)
+    for key, expected in [('state', [2.,5.,9.]), ('feet', [12.,13.,14.]), ('present', [22.,24.,26.])]:
+        torch.testing.assert_close(inputs[key].flatten(), torch.tensor(expected))
+    assert inputs['next_state'] is data['next_state']
+
+
+def test_recovery_start_requires_simultaneous_current_latches_in_training_event_lanes():
+    import torch
+    from quadsmash.rl.supermimic_physical_start_cache_v1 import training_start_mask
+
+    row=dict(observation=torch.zeros(5,2), _actor_lane_mask=torch.tensor([1,1,1,1,0]),
+             before=dict(task=dict(had_contact=torch.tensor([1,1,0,1,1]),released=torch.tensor([1,1,1,0,1]))))
+    assert training_start_mask(row,[1],recovery=True).tolist()==[True,False,False,False,False]
+    assert row['_actor_lane_mask'].tolist()==[1,1,1,1,0]
+    compact=dict(observation=torch.zeros(1,2),_lane_id=17,
+                 before=dict(task=dict(had_contact=torch.ones(1),released=torch.ones(1))))
+    assert training_start_mask(compact,[5,17],recovery=True).tolist()==[False]
+    assert training_start_mask(compact,[5,18],recovery=True).tolist()==[True]

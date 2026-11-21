@@ -50,6 +50,28 @@ class Moments:
         return (sse.clamp_min(0) / self.n).sqrt()
 
 
+@torch.no_grad()
+def rollout_inputs(model,ball,window,launch):
+    """Only the initial state and the observed command sequence enter the rollout."""
+    from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
+    state,feet,present=(window[k][0] for k in ('state','feet','present'))
+    states=[]; contacts=[]; presence=[]
+    for t,target in enumerate(window['targets']):
+        states.append(state)
+        contacts.append(feet)
+        presence.append(present)
+        state,feet,present=ball_transition(model,ball,state,target,window['previous_action'][t],
+                                          feet,present,window['elapsed'][t],launch)
+    return dict(window,state=torch.stack(states),feet=torch.stack(contacts),present=torch.stack(presence))
+
+
+def mix_absolute_moments(natural,excited):
+    # 80/20 inside the 75% pointwise term gives 60% natural, 15% excited, 25% signed.
+    for name in ('gram','cross','energy','sse'):
+        moments=getattr(natural,name)
+        moments.mul_(.8).add_(getattr(excited,name),alpha=.2*natural.n/excited.n)
+
+
 def solve(natural, signed, ridge):
     # Normalize by the calibration-only per-channel signal power. A 1% RMS floor
     # keeps a nearly unexcited paired output from overwhelming natural motion.
@@ -109,7 +131,10 @@ def main():
     for k in ('body', 'packed', 'training-collection', 'output'):
         parser.add_argument('--' + k, type=Path, required=True)
     parser.add_argument('--position-quadrature',action='store_true',help='Calibrate the physical relation between arm acceleration and displacement')
+    parser.add_argument('--rollout-ball',type=Path,help='Fit absolute and signed arm corrections on free-running 16-step Body WM states')
     args = parser.parse_args()
+    if args.position_quadrature and args.rollout_ball:
+        parser.error('Select either quadrature or the free-running readout fit')
     torch.set_num_threads(4)
     ck = torch.load(args.body, map_location='cpu', weights_only=True)
     meta = ck['calibration']
@@ -132,8 +157,18 @@ def main():
     model.load_state_dict(ck['model'])
     layer = model.body.net[-1]
     rows = list(range(25, 31)) + list(range(43, 49))
+    rollout_ball=None
+    if args.rollout_ball:
+        from quadsmash.rl.supermimic_ball_residual_v2 import load_ball_residual
+        ball_ck=torch.load(args.rollout_ball,map_location='cpu',weights_only=True)
+        if (ball_ck.get('event_calibration',{}).get('fitted_body_sha256')!=digest(args.body) or
+                ball_ck['event_calibration']['packed_sha256']!=meta['packed_sha256'] or
+                ball_ck['event_calibration']['train_lanes']!=meta['train_lanes']):
+            raise ValueError('Ball checkpoint does not bind the starting Body WM')
+        rollout_ball=load_ball_residual(ball_ck).eval()
     position_data={'natural':[],'signed':[]}
     natural, signed = [Moments(layer.in_features + 1, len(rows)) for _ in range(2)]
+    excited = Moments(layer.in_features+1,len(rows)) if rollout_ball is not None else None
     data = packed['tensors']
     eligible = torch.zeros(len(launch), dtype=torch.bool)
     eligible[sorted(lanes)] = True
@@ -145,6 +180,8 @@ def main():
             natural.add(*arm_rows(model, data, t, c, launch[c]))
     for ids, branches in windows:
         minus, plus = (branches[key] for key in ('minus', 'plus'))
+        if rollout_ball is not None:
+            minus,plus=(rollout_inputs(model,rollout_ball,d,launch[ids]) for d in (minus,plus))
         t, c = torch.where(torch.ones_like(minus['terminated'], dtype=torch.bool))
         for times, columns in zip(t.split(512), c.split(512), strict=True):
             launches = launch[torch.tensor(ids)[columns]]
@@ -154,6 +191,9 @@ def main():
                 continue
             m, p = (arm_rows(model, d, times, columns, launches) for d in (minus, plus))
             signed.add(*(y - x for y, x in zip(p, m, strict=True)))
+            if excited is not None:
+                excited.add(*m)
+                excited.add(*p)
     if args.position_quadrature:
         data={k:torch.cat(v) for k,v in position_data.items()}
         fraction,blend=fit_arm_integration(data['natural'],data['signed'],model.dt)
@@ -167,6 +207,8 @@ def main():
             info[dataset]=dict(rows=len(raw),before_rmse_rad=(raw-actual).square().mean(0).sqrt().tolist(),
                                after_rmse_rad=(revised-actual).square().mean(0).sqrt().tolist())
     else:
+        if excited is not None:
+            mix_absolute_moments(natural,excited)
         ridge = .1
         step = solve(natural, signed, ridge)
         if not torch.isfinite(step).all():
@@ -177,7 +219,10 @@ def main():
         info = dict(parent_sha256=digest(args.body), natural_rows=natural.n, paired_rows=signed.n,
                     paired_weight=.25, ridge=ridge, readout_rows=rows, training_collection=receipt,
                     physical_units=['rad']*6+['rad/s']*6, actor_updates=0)
-        for key, stats in [('natural', natural), ('paired', signed)]:
+        if excited is not None:
+            info.update(rollout_ball_sha256=digest(args.rollout_ball),excited_rows=excited.n,
+                        source_weights=dict(natural=.60,excited_absolute=.15,signed=.25))
+        for key, stats in [('absolute_mixture' if excited else 'natural', natural), ('paired', signed)]:
             scale = model.delta_scale[rows]
             info[key + '_rmse_before'] = (stats.rmse(torch.zeros_like(step)) * scale).tolist()
             info[key + '_rmse_after'] = (stats.rmse(step) * scale).tolist()

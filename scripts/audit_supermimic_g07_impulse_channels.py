@@ -28,10 +28,22 @@ def measure(run,prior,material,settings,mass):
     return sums
 
 
+def signed_friction_components(minus, plus):
+    """Exact symmetric decomposition of the signed net friction over a window."""
+    a=minus.norm(dim=-1,keepdim=True)
+    b=plus.norm(dim=-1,keepdim=True)
+    u=minus/torch.where(a>0,a,1.)
+    v=plus/torch.where(b>0,b,1.)
+    magnitude=(b-a)*.5*(u+v)
+    rotation=.5*(a+b)*(v-u)
+    return magnitude,rotation
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('collection','response','shapes','material','calibration','output'):
         p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--convergence',type=Path,help='Attribute signed friction on the frozen three-scale native cohort')
     a=p.parse_args();torch.set_num_threads(2)
     read=lambda path:json.loads(path.read_text())
     result=read(a.response);shapes=read(a.shapes);status=read(a.collection/'status.json')
@@ -75,8 +87,31 @@ def main():
                            for c,s in zip(cases,shapes['cases'],strict=True)])
         if keep.any():
             stats[name]={k:response_metrics(native[keep],v[keep],noise[keep]) for k,v in predictors.items()}
+    decomposition=None
+    if a.convergence:
+        comparison=read(a.convergence)
+        if sha(a.response) not in comparison['scale_reports_sha256']:
+            raise ValueError('Different native scales')
+        selected=comparison['groups']['native_convergent_stable']['case_ids']
+        lane_ids=[c['lane'] for c in cases]
+        ids=[lane_ids.index(lane) for lane in selected]
+        mode='analytic_at_loaded_times'
+        native_strength,native_turn=signed_friction_components(branches['minus']['measured_friction_impulse'],
+                                                               branches['plus']['measured_friction_impulse'])
+        strength,turn=signed_friction_components(branches['minus'][mode+'_tangent'],branches['plus'][mode+'_tangent'])
+        torch.testing.assert_close(native_strength+native_turn,friction)
+        torch.testing.assert_close(strength+turn,change[mode+'_tangent'])
+        base=other+change[mode+'_normal']
+        alternatives=dict(analytic=base+strength+turn,native_strength_only=base+native_strength+turn,
+                          native_turn_only=base+strength+native_turn,native_friction=base+native_strength+native_turn)
+        vectors=dict(measured_strength=native_strength,measured_turn=native_turn,
+                     predicted_strength=strength,predicted_turn=turn)
+        decomposition=dict(lanes=selected,comparison_sha256=sha(a.convergence),
+            metrics={k:response_metrics(native[ids],v[ids],noise[ids]) for k,v in alternatives.items()} if ids else {},
+            signed_terms_mps={k:v[ids].tolist() for k,v in vectors.items()},
+            scope='Post-hoc decomposition of the total world-frame racket friction vector at native loaded times. Other impulses and native drag are held fixed.')
     with a.output.open('x') as f:
-        json.dump(dict(groups=stats,raw_signed={k:v.tolist() for k,v in change.items()},lanes=[x['lane'] for x in cases],
+        json.dump(dict(groups=stats,friction_decomposition=decomposition,raw_signed={k:v.tolist() for k,v in change.items()},lanes=[x['lane'] for x in cases],
                        response_sha256=sha(a.response),shapes_sha256=sha(a.shapes),physics_sha256=sha(physics),
                        scope='Post-hoc signed impulse replacements using measured incoming states and native load times',
                        contact_gradients_admitted=False),f,indent=2,allow_nan=False)

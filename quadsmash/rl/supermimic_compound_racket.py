@@ -53,8 +53,16 @@ def solve_patch(normals, mu, restitution, velocity, spin, surface, radius, activ
     return (*total, angular) if return_spin else total
 
 
+def friction_duration_factor(gap, normal_velocity, dt, exponent):
+    """Fractional Coulomb bound for a predicted crossing inside one physics step."""
+    if not 0 < exponent <= 1 or dt<=0:
+        raise ValueError('Invalid contact interval or friction-duration exponent')
+    fraction=(1 - gap.clamp_min(0)/(-normal_velocity*dt).clamp_min(1e-12)).clamp(0,1)
+    return fraction.pow(exponent)
+
+
 def compound_step(prior, position, velocity, spin, center, rotation, linear, angular,
-                  material, offset, normal_scale, *, compound=True, separation_gain=0., impact_geometry_fraction=0., return_impact_time=False, load_trace=None, local_mobility=None, shuttle_mass=None, temporal_solver=None, patch_inertia=None, articulation_friction_floor=False):
+                  material, offset, normal_scale, *, compound=True, separation_gain=0., impact_geometry_fraction=0., return_impact_time=False, load_trace=None, local_mobility=None, shuttle_mass=None, temporal_solver=None, patch_inertia=None, articulation_friction_floor=False, friction_duration_exponent=0.):
     """Predict one native-length substep from the incoming shuttle and current racket state."""
     geometry = prior.preview
     local = _quat_rotate_inverse(rotation, position - center)
@@ -79,6 +87,9 @@ def compound_step(prior, position, velocity, spin, center, rotation, linear, ang
     surface = linear[:, None] + torch.linalg.cross(angular[:, None].expand_as(lever), lever)
     vn = ((velocity[:, None] - surface) * n).sum(-1)
     active = (gap <= offset) & (gap + prior.sub_dt * vn <= 0) & (vn < 0)
+    mu=material[ids,1]
+    if friction_duration_exponent:
+        mu=mu*friction_duration_factor(gap,vn,prior.sub_dt,friction_duration_exponent)
     if impact_geometry_fraction:
         if not 0 < impact_geometry_fraction <= 1:
             raise ValueError('Impact reconstruction fraction must be between zero and one')
@@ -124,10 +135,10 @@ def compound_step(prior, position, velocity, spin, center, rotation, linear, ang
         if local_mobility is not None or impact_geometry_fraction or separation_gain:
             raise ValueError('Temporal solve supplies its own separation dynamics on prescribed surfaces')
         from .supermimic_temporal_contact_patch import solve_temporal_patch
-        normal,tangent,spin = solve_temporal_patch(n,gap,material[ids,1],material[ids,2],velocity,spin,surface,
+        normal,tangent,spin = solve_temporal_patch(n,gap,mu,material[ids,2],velocity,spin,surface,
             geometry.radius,active,normal_scale,prior.sub_dt,**temporal_solver,load_trace=patch_trace,friction_load_floor=friction_floor)
     elif local_mobility is None:
-        normal, tangent, spin = solve_patch(n,material[ids,1],material[ids,2],velocity,spin,surface,
+        normal, tangent, spin = solve_patch(n,mu,material[ids,2],velocity,spin,surface,
                                             geometry.radius,active,normal_scale,4 if compound else 1,
                                             return_spin=True,separation_velocity=separation,load_trace=patch_trace,inertia_ratio=ratio,friction_load_floor=friction_floor)
     else:
@@ -137,7 +148,7 @@ def compound_step(prior, position, velocity, spin, center, rotation, linear, ang
         zeros = torch.zeros_like(R)
         transport = torch.cat((torch.cat((R,zeros),-1),torch.cat((zeros,R),-1)),-2)
         spatial = transport @ local_mobility @ transport.transpose(-1,-2)
-        normal,tangent,spin = solve_mobile_patch(n,material[ids,1],material[ids,2],velocity,spin,surface,
+        normal,tangent,spin = solve_mobile_patch(n,mu,material[ids,2],velocity,spin,surface,
             lever,geometry.radius,active,normal_scale,4 if compound else 1,spatial,shuttle_mass,separation,patch_trace)
     if load_trace is not None:
         load_trace['regime'].scatter_(1, ids, patch_trace['regime'])

@@ -67,10 +67,36 @@ class PairedMaterialFit:
         return torch.cat(values).double(),stats
 
 
+def fit_friction_duration(train,development,original):
+    def score(dataset, power):
+        dataset.settings=dict(dataset.settings,fitted=dict(dataset.settings['fitted'],friction_duration_exponent=power))
+        residual,stats=dataset.evaluate(original)
+        return dict(power=power,objective=float(residual.square().sum()),metrics=stats)
+    baseline=score(train,0.)
+    stable=baseline['metrics']['stable_signed']['absolute_rmse']
+    absolute=baseline['metrics']['absolute_rmse']
+    candidates=[baseline]+[score(train,p) for p in (.25,.5,1.)]
+    eligible=[r for r in candidates if r['metrics']['absolute_rmse']<=absolute and
+              r['metrics']['stable_signed']['absolute_rmse']<=stable]
+    best=min(eligible,key=lambda r:r['objective'])
+    before=score(development,0.)
+    after=score(development,best['power']) if best['power'] else before
+    a,b=before['metrics'],after['metrics']
+    signed=b['stable_signed']
+    checks=dict(absolute=b['absolute_rmse']<=a['absolute_rmse'],
+                signed=b['all_signed']['absolute_rmse']<=a['all_signed']['absolute_rmse'],
+                stable=signed['absolute_rmse']<a['stable_signed']['absolute_rmse'],
+                direction=signed['cosine_median']>=.8 and signed['cosine_p10']>=.5,
+                gain=.5<=signed['gain_median']<=2.)
+    return dict(train_search=candidates,selected_exponent=best['power'],development=dict(before=before,after=after),
+                checks=checks,eligible_for_reserved=all(checks.values()))
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for k in ('collection','material','calibration','output'):
         p.add_argument('--'+k,type=Path,required=True)
+    p.add_argument('--friction-duration',action='store_true',help='Fit the pre-impact remaining-time dependence at fixed authored material')
     a=p.parse_args();torch.set_num_threads(2)
     cfg=json.loads(a.calibration.read_text())
     provenance=json.loads((a.collection/'nominal_a/provenance.json').read_text())
@@ -87,6 +113,16 @@ def main():
     original=torch.stack([table[strings][0,2],table[~strings][0,2],table[strings][0,1],table[~strings][0,1]])
     prior=BallImpulsePriorV1().eval()
     train=PairedMaterialFit(a.collection,'train',prior,cfg,table,strings)
+    if a.friction_duration:
+        dev=PairedMaterialFit(a.collection,'development',prior,cfg,table,strings)
+        result=fit_friction_duration(train,dev,original)
+        result.update(material_sha256=sha(a.material),calibration_sha256=sha(a.calibration),
+                      split_hashes={s:sha(a.collection/(s+'.json')) for s in ('train','development')},
+                      scope='Measured racket path, causal analytic shuttle rollout; the training split selects the exponent.',
+                      final_holdout_opened=False,native_material_changed=False,policy_updates=0,contact_gradients_admitted=False)
+        with a.output.open('x') as f:
+            json.dump(result,f,indent=2,allow_nan=False)
+        return
     x=original.clone()
     residual,anchor=train.evaluate(x)
     def admissible(stats):

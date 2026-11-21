@@ -14,6 +14,25 @@ RECOVERY_TICKS=(384,400,416,448,480,576,672)
 CRITIC_TICKS=tuple(reversed(range(0,800,48)))
 
 
+def training_start_mask(row, excluded_lanes, *, recovery=False):
+    observation=row['observation']
+    if isinstance(observation,dict):
+        observation=observation['policy']
+    n=len(observation)
+    mask=row.get('_actor_lane_mask',torch.ones(n,dtype=torch.bool)).to(device=observation.device,dtype=torch.bool).reshape(-1).clone()
+    if len(mask)!=n:
+        raise ValueError('Actor start lane mask has the wrong length')
+    if n==1 and '_lane_id' in row:
+        if int(row['_lane_id']) in excluded_lanes:
+            mask.zero_()
+    elif len(excluded_lanes):
+        mask[list(excluded_lanes)]=False
+    if recovery:
+        from .supermimic_policy_execution_v1 import recovery_gate
+        mask &= recovery_gate(row['before']['task'],observation)
+    return mask
+
+
 def load_start_cache(archive,manifest):
     archive=Path(archive)
     required=sorted(set(APPROACH_TICKS+RECOVERY_TICKS+CRITIC_TICKS))

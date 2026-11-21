@@ -52,7 +52,7 @@ def window_signature(sequence, steps):
 
 
 @torch.no_grad()
-def measure(run, body, prior, material, cfg, launch, *, split_racket_path=False):
+def measure(run, body, prior, material, cfg, launch, *, split_racket_path=False, paths=None):
     spec,raw = run['spec'],run['raw']
     lanes = spec['lanes']
     ts = complete_window(raw,spec,prior.steps)
@@ -83,9 +83,12 @@ def measure(run, body, prior, material, cfg, launch, *, split_racket_path=False)
         teacher_ball,teacher_hit,teacher_spin = tick(prior,teacher_ball,*args,initial_spin=teacher_spin,
                                                     measured_path=native_path,**settings)
         body_ball,body_hit,body_spin = tick(prior,state[:,49:],*args,initial_spin=body_spin,**settings)
-        if hybrids:
+        if hybrids or paths is not None:
             interpolation=dict(rotation_hermite=cfg['fitted'].get('racket_rotation_hermite',False))
             estimate = predicted_racket_path(prior,start,end,**interpolation)
+        if paths is not None:
+            paths.append(dict(native=native_path, body=estimate))
+        if hybrids:
             keys=('racket_position_w','racket_quaternion_w','racket_linear_velocity_w','racket_angular_velocity_w')
             native_endpoints=predicted_racket_path(prior,[t[k][0] for k in keys],[t[k][-1] for k in keys],**interpolation)
             for mode,path in [('native_pose',(*native_path[:2],*estimate[2:])),
@@ -112,7 +115,11 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for key in ('collection','body','calibration','material','output'):
         p.add_argument('--'+key,type=Path,required=True)
+    p.add_argument('--exchange-reference',type=Path)
+    p.add_argument('--exchange-convergence',type=Path)
     a = p.parse_args()
+    if bool(a.exchange_reference) != bool(a.exchange_convergence):
+        p.error('Trajectory exchange requires reference and convergence reports')
     torch.set_num_threads(2)
     status_path = a.collection/'status.json'
     status = json.loads(status_path.read_text())
@@ -146,6 +153,34 @@ def main():
     prior = BallImpulsePriorV1().eval()
     body = PhysicalWorldV2(task['asset']['sha256']).eval()
     body.load_state_dict(ck['model'])
+    if a.exchange_reference:
+        from supermimic_racket_exchange import crossed_rollouts
+        reference=json.loads(a.exchange_reference.read_text())
+        for key,path in [('body',a.body),('calibration',a.calibration),('material',a.material),('status',status_path)]:
+            if reference[key+'_sha256']!=sha(path):
+                raise ValueError('Changed '+key+' for trajectory exchange')
+        comparison=json.loads(a.exchange_convergence.read_text())
+        if sha(a.exchange_reference) not in comparison['scale_reports_sha256'] or spec['lanes']!=[r['lane'] for r in reference['cases']]:
+            raise ValueError('Different convergence cohort or case identities')
+        paths={}
+        initial=None
+        for b in ('nominal_a','plus','minus'):
+            paths[b]=[]
+            measure(runs[b],body,prior,material,cfg,launches,paths=paths[b])
+            r=runs[b]['raw']
+            first_interval=(r['earlier_substep_traces'][spec['action_tick']] if spec['action_tick']!=spec['tick']
+                            else select_substep_lanes(r['substep_trace'],spec['lanes']))
+            first=first_interval['tensors']['shuttle_state_w'][0]
+            if initial is None:
+                initial=first
+            torch.testing.assert_close(first,initial,atol=0,rtol=0)
+        report=crossed_rollouts(paths,initial,prior,cfg,material,reference,comparison)
+        report.update(response_sha256=sha(a.exchange_reference),convergence_sha256=sha(a.exchange_convergence),
+                      contact_gradients_admitted=False,epsilon_request=spec['epsilon_request'])
+        with a.output.open('x') as f:
+            json.dump(report,f,indent=2,allow_nan=False)
+            f.write('\n')
+        return
     output = {b:measure(runs[b],body,prior,material,cfg,launches) for b in BRANCHES}
     ticks = list(range(spec['action_tick'],spec['tick']+1))
     by_lane = []
