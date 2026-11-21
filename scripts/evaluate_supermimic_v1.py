@@ -47,9 +47,14 @@ def main():
     AppLauncher.add_app_launcher_args(parser)
     parser.add_argument('--shutdown-diagnostic-ticks', type=int, default=None,
                         help='Lifecycle-only partial run on original 128 lanes; never writes scores/completed.json')
+    parser.add_argument('--independent-panel-batch', type=int, choices=range(4),
+                        help='Evaluate one stage-end batch of the declared independent 512 cases')
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus'),default=None)
     args = parser.parse_args()
+    if args.independent_panel_batch is not None and (args.native_action_probe_spec or args.record_physical_transitions
+            or args.shutdown_diagnostic_ticks is not None):
+        parser.error('Independent panel evaluation requires a complete score-only rollout')
     if bool(args.native_action_probe_spec)!=bool(args.native_action_probe_branch):
         parser.error('Probe spec and branch are required together')
     if args.native_action_probe_spec:
@@ -150,6 +155,10 @@ def _run_native(args, stop_request):
         if trained is not None:
             require_resume_contract(trained, contract)
         capture_contract = contract
+        if args.independent_panel_batch is not None:
+            from quadsmash.rl.supermimic_independent_panel import panel_batch
+            cases, panel_identity = panel_batch(args.independent_panel_batch, contract['protocol_sha256'], args.seed)
+            capture_contract = dict(contract, independent_evaluation=panel_identity)
         if args.native_action_probe_spec:
             from scripts.declare_supermimic_contact_training_cases import resolve_probe_cases
             spec = json.loads(args.native_action_probe_spec.read_text())
@@ -339,6 +348,8 @@ def _run_native(args, stop_request):
             elapsed_s=time.perf_counter()-start,physics=physics,
             native_step_and_observation_check_seconds=step_wall_seconds,
             evaluated_checkpoint_sha256=checkpoint_sha256)
+        if args.independent_panel_batch is not None:
+            metrics.update(task_contract=capture_contract, evaluation_scope='independent512 stage-end research evaluation')
         actor_state_after=tensor_digest(actor.state_dict().items())
         if actor_state_after!=actor_state_before:raise RuntimeError('Frozen evaluation mutated actor weights')
         head_active_lane_steps = dict(zip(("recovery", "approach"), head_counts.tolist()))

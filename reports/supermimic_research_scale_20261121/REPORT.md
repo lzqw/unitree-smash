@@ -38,3 +38,5 @@ TensorBoard 中 G1_learning 与后续 G0_learning 使用本组新增交互量、
 核对 G1 原生 Replay 清单与零更新评价的任务合同后，两者使用相同的 TRAIN128 案例文件（SHA256 前缀 `2f9bf380`），原生环境种子均为 882072。G1 原始登记的 `train_case_seed=20261114` 对应学习器初始化；续训在环境 reset 后恢复组合 checkpoint 的 CPU/CUDA 随机状态。原登记保留供追溯。固定评价运行产生单独的轨迹，128 案例结果衡量训练分布内的配对变化，阶段末独立案例才衡量泛化。[种子与案例核对](case_seed_audit.json)
 
 首个 Recovery 块的四个在线数据块已逐一校验 SHA256 并解压核对。原生 tick 4990–5117 连续，16,384 条 transition 全部标为 stream 8、mixed_v17、Recovery。原进程的归档顶层继承了初始冻结采集的策略名、Actor 哈希和旧提交，实际采集行为由当前训练登记和各行的策略版本标识。新进程把源归档身份单独保存，每行记录行为 Actor 权重哈希，顶层保存采集进程的启动提交和脚本哈希。成功轨迹索引与单策略价值校准按这一规则识别新旧在线归档。[首块逐行核验](first_block_replay_identity.json)
+
+1024／2048 阶段末的独立评价已提前固定 512 个新球路。原协议生成器的 A、B 分布各取 256 个，种子为 97124701、97124702；全部球路的初始位置与速度组合都与 TRAIN128、正式 A200 和 B200 分离。单 GPU 按四批 128 环境、每批 800 tick 评价同一 checkpoint；按全部合格触球数汇总条件恢复率。运行入口为 `scripts/evaluate_supermimic_independent512.py --checkpoint <checkpoint> --g07-execution-root <root> --output <directory>`。面板在 G1 首个 Recovery 块期间登记，目前尚未执行该评价。[固定案例](independent512.json.gz)
