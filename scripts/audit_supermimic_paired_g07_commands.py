@@ -74,7 +74,9 @@ def main():
             diff=2*(l0-l1)
             parts['kl'].append(.5*(torch.expm1(diff)-diff+(x.double()-y.double()).square()*(-2*l1).exp()))
             parts['gate'].append(recovery_gate(state.task_memory['rally'],state.observation))
-            parts['approach_gate'].append(first.approach_gate(state.observation).reshape(-1))
+            approach_gate = first.approach_gate(state.observation).reshape(-1)
+            torch.testing.assert_close(approach_gate,second.approach_gate(state.observation).reshape(-1),atol=0,rtol=0)
+            parts['approach_gate'].append(approach_gate)
             for k,old,new in zip(fields,u,v,strict=True):
                 parts[k].append(new.double()-old.double())
         parts={k:torch.cat(v) for k,v in parts.items()}
@@ -83,7 +85,9 @@ def main():
         groups={}
         for group,mask in [('all',torch.ones_like(gate)),('recovery_active',gate),('recovery_inactive',~gate),
                            ('approach_zero',approach_gate==0),('approach_up_to_quarter',(approach_gate>0)&(approach_gate<=.25)),
-                           ('approach_above_quarter',approach_gate>.25)]:
+                           ('approach_above_quarter',approach_gate>.25),
+                           ('recovery_only',gate & (approach_gate==0)),('approach_only',~gate & (approach_gate>0)),
+                           ('both_heads_active',gate & (approach_gate>0)),('both_heads_inactive',~gate & (approach_gate==0))]:
             stats=dict(rows=int(mask.sum()))
             if mask.any():
                 stats['gaussian_kl_per_dim']=float(parts['kl'][mask].mean())

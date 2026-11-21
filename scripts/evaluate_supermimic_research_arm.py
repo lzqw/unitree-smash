@@ -63,6 +63,25 @@ def paired_scalars(result):
     return metrics
 
 
+def command_scalars(report, *, before_checkpoint, after_checkpoint, before_actor, after_actor, archive_hash):
+    expected = (before_checkpoint, after_checkpoint, before_actor, after_actor, archive_hash)
+    actual = tuple(report[k] for k in ('before_checkpoint_sha256','after_checkpoint_sha256',
+                                       'before_actor_sha256','after_actor_sha256','archive_manifest_sha256'))
+    if actual != expected:
+        raise ValueError('Fixed command audit belongs to different checkpoints, policies or state archive')
+    metrics = {'actor_parameter_rms': report['parameter_delta']['rms']}
+    for window, observations in report['groups'].items():
+        for gate in ('recovery_only','approach_only','both_heads_active','both_heads_inactive'):
+            group = observations['groups'][gate]
+            prefix = f'{window}/{gate}/'
+            metrics[prefix+'rows'] = group['rows']
+            if group['rows']:
+                metrics[prefix+'final_target_rms_rad'] = group['final_target_rad']['rms']
+                metrics[prefix+'changed_rows'] = group['final_target_rad']['changed_rows']
+                metrics[prefix+'preclamp_kl_per_dim'] = group['gaussian_kl_per_dim']
+    return metrics
+
+
 def evaluate(folder, step, writer):
     reg=json.loads((folder/'registration.json').read_text())
     cmd=reg['command']
@@ -85,7 +104,8 @@ def evaluate(folder, step, writer):
         with (folder/log).open('a') as stream:
             subprocess.run([sys.executable,*map(str,args)],cwd=Path(__file__).resolve().parents[1],
                            env=dict(os.environ,PYTHONPATH='.:scripts'),stdout=stream,stderr=subprocess.STDOUT,check=True)
-    metrics=score_fixed128(folder_eval, checkpoint, digest(checkpoint), actor, execution_root, seed)
+    checkpoint_sha = digest(checkpoint)
+    metrics=score_fixed128(folder_eval, checkpoint, checkpoint_sha, actor, execution_root, seed)
     paired=folder/f'paired_{step:04d}.json'
     if not paired.exists():
         run(['scripts/compare_supermimic_fixed_stages.py','--before',baseline,'--after',folder_eval,'--stage',reg['arm']+str(step),
@@ -108,6 +128,21 @@ def evaluate(folder, step, writer):
     for name, value in paired_scalars(result).items():
         for axis, position in positions.items():
             writer.add_scalar(f'fixed128_paired/{axis}/{name}', value, position)
+    archive = Path(cmd[cmd.index('--archive')+1])
+    command_file = folder/f'fixed_commands_{step:04d}.json'
+    if not command_file.is_file():
+        with tempfile.TemporaryDirectory(dir=folder) as tmp:
+            path = Path(tmp)/'audit.json'
+            run(['scripts/audit_supermimic_paired_g07_commands.py','--before',initial_checkpoint,'--after',checkpoint,
+                 '--archive',archive,'--safety-mapping',cmd[cmd.index('--safety-mapping')+1],'--output',path],
+                f'fixed_commands_{step:04d}.log')
+            path.replace(command_file)
+    commands = command_scalars(json.loads(command_file.read_text()),before_checkpoint=reg['initial']['checkpoint_sha256'],
+                               after_checkpoint=checkpoint_sha,before_actor=old,after_actor=actor,
+                               archive_hash=digest(archive/'manifest.json'))
+    for name, value in commands.items():
+        for axis, position in positions.items():
+            writer.add_scalar(f'fixed_commands/{axis}/{name}', value, position)
     writer.flush()
 
 

@@ -88,3 +88,23 @@ def test_research_fixed128_reuses_matching_zero_and_rejects_training_suite(tmp_p
     (folder/'episodes_summary.json').write_text(json.dumps(rows))
     with pytest.raises(ValueError):
         cached('actor')
+
+
+def test_fixed_command_metrics_keep_empty_gate_groups_distinct_from_zero_motion():
+    from scripts.evaluate_supermimic_research_arm import command_scalars
+
+    report = dict(before_checkpoint_sha256='old_ck', after_checkpoint_sha256='new_ck',
+                  before_actor_sha256='old_actor', after_actor_sha256='new_actor',archive_manifest_sha256='archive',
+                  parameter_delta={'rms':.01}, groups={'recovery':{'groups':{
+                      'recovery_only':dict(rows=3, final_target_rad=dict(rms=.02,changed_rows=2),gaussian_kl_per_dim=.1),
+                      'both_heads_inactive':dict(rows=1, final_target_rad=dict(rms=0.,changed_rows=0),gaussian_kl_per_dim=0.),
+                      'both_heads_active':{'rows':0},'approach_only':{'rows':0}}}})
+    identity = dict(before_checkpoint='old_ck',after_checkpoint='new_ck',before_actor='old_actor',
+                    after_actor='new_actor',archive_hash='archive')
+    metrics=command_scalars(report,**identity)
+    assert metrics['recovery/recovery_only/changed_rows']==2
+    assert metrics['recovery/both_heads_inactive/final_target_rms_rad']==0.
+    assert metrics['recovery/approach_only/rows']==0
+    assert 'recovery/approach_only/final_target_rms_rad' not in metrics
+    with pytest.raises(ValueError,match='different checkpoints'):
+        command_scalars(report,**dict(identity,archive_hash='other'))
