@@ -265,6 +265,27 @@ class PhysicalLoopReplay:
         if policy_version is not None:
             self.current_policy_version = int(policy_version)
 
+    def _retain_body_failure_prefix(self, start, event, native_tick, policy):
+        # 20 ticks from the causal start through the observed body penalty, inclusive.
+        # The future event only selects a training example, never an Actor input.
+        lead = 20
+        identity = (self.current_stream, policy, native_tick)
+        start['_recovery_prefix_identity'] = identity
+        if not event.any() or len(self.new_starts) < lead - 1:
+            return
+        prefix = self.new_starts[-(lead - 1)]
+        if prefix.get('_recovery_prefix_identity') != (self.current_stream, policy, native_tick - lead + 1):
+            return
+        before, current = prefix['before'], start['before']
+        mask = event & (before['episode_index'] == current['episode_index']).reshape(-1)
+        mask &= (current['elapsed_tick'] - before['elapsed_tick']).reshape(-1) == lead - 1
+        mask &= before['task']['had_contact'].reshape(-1).bool() & before['task']['released'].reshape(-1).bool()
+        mask &= ~before['event_state'][:, 5].bool()
+        if mask.any():
+            pool = self.stage_starts.setdefault('pre_body_ground', [])
+            pool.append(dict(prefix, _actor_lane_mask=mask, _source_lanes=self.lanes))
+            del pool[:-16]
+
     def append(self, row, *, retain_start=True, policy_version=None, native_tick=None, approach_metadata=None, return_record=False):
         """Append one native transition.
 
@@ -314,6 +335,9 @@ class PhysicalLoopReplay:
         if gate_mask.any():
             self.stage_starts['approach_active'].append(dict(start,_actor_lane_mask=gate_mask.clone(),_source_lanes=self.lanes))
             self.stage_starts['approach_active']=self.stage_starts['approach_active'][-16:]
+        if getattr(self, 'recovery_failure_prefixes', False):
+            event = (record['next_event_state'][:, 5] > record['event_state'][:, 5]).cpu()
+            self._retain_body_failure_prefix(start, event, int(native_tick), int(self.policy_versions[index, 0]))
         self.new_starts.append(start)
         self.new_starts = self.new_starts[-32:]
         if return_record:

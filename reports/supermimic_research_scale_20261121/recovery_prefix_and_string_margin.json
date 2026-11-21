@@ -1,0 +1,639 @@
+{
+  "string_margin": {
+    "lost": {
+      "total": 13,
+      "active": 13,
+      "inward_descent": 13,
+      "zero_gradient": 0
+    },
+    "kept": {
+      "total": 61,
+      "active": 0,
+      "inward_descent": 0,
+      "zero_gradient": 61
+    }
+  },
+  "recovery_prefixes": [
+    {
+      "lane": 51,
+      "start": 518,
+      "lead_ticks": 20,
+      "online_training_lane": false
+    },
+    {
+      "lane": 101,
+      "start": 542,
+      "lead_ticks": 20,
+      "online_training_lane": false
+    },
+    {
+      "lane": 68,
+      "start": 553,
+      "lead_ticks": 20,
+      "online_training_lane": true
+    },
+    {
+      "lane": 65,
+      "start": 557,
+      "lead_ticks": 20,
+      "online_training_lane": false
+    },
+    {
+      "lane": 28,
+      "start": 560,
+      "lead_ticks": 20,
+      "online_training_lane": true
+    },
+    {
+      "lane": 99,
+      "start": 561,
+      "lead_ticks": 20,
+      "online_training_lane": false
+    },
+    {
+      "lane": 54,
+      "start": 562,
+      "lead_ticks": 20,
+      "online_training_lane": true
+    },
+    {
+      "lane": 7,
+      "start": 575,
+      "lead_ticks": 20,
+      "online_training_lane": false
+    },
+    {
+      "lane": 2,
+      "start": 599,
+      "lead_ticks": 20,
+      "online_training_lane": false
+    }
+  ],
+  "scope": "Recorded initial TRAIN128 contact projections on CUDA. Gradient is with respect to the projected contact position. Recovery starts reconstructed on CPU from one committed 128-tick block. No counterfactual native policy score.",
+  "source_chunks": [
+    "b9f2a3d1c23799ce3aca7714afb26a26e7d220511bde20e5a1f29c1402d1ac94",
+    "c2aec092c1838774c01f87993bef6ae44f903a3d3cdd2541197739418927a250",
+    "e57346e92157aaf703a235610604047a3509333537ea49640321f2c50ec27f3b",
+    "f54663590fd78a57d7dca808a12b77169b4f4cc74cbb2b3176b0c11ceb2fd1f7"
+  ],
+  "h64_approach": {
+    "cases": [
+      20,
+      28,
+      55,
+      63
+    ],
+    "weighted_margin_cost": 0.011597809381783009,
+    "edge_actor_gradient_norm": 1.1793514490127563,
+    "scope": "Frozen R16+A16, real initial training archive tick 272, H64 Approach rollout, CPU. Exact marginal term derivative with respect to this Actor. No PhysX policy score."
+  },
+  "new_body_ground_events": {
+    "97": {
+      "touchdown": 305,
+      "body_penalty_tick": 515,
+      "posture_200ms_earlier": {
+        "tilt_deg": 30.0,
+        "height_m": 0.172,
+        "angular_speed_rad_s": 0.64,
+        "feet": 2
+      },
+      "posture_pre_contact": {
+        "tilt_deg": 37.8,
+        "height_m": 0.168,
+        "angular_speed_rad_s": 1.19,
+        "feet": 0
+      },
+      "policy_version_at_penalty": 49,
+      "case_id": "B-720402-033",
+      "baseline_timeout": true,
+      "online_episode_length": 576
+    },
+    "18": {
+      "touchdown": 304,
+      "body_penalty_tick": 371,
+      "posture_200ms_earlier": {
+        "tilt_deg": 26.9,
+        "height_m": 0.2,
+        "angular_speed_rad_s": 2.26,
+        "feet": 1
+      },
+      "posture_pre_contact": {
+        "tilt_deg": 47.7,
+        "height_m": 0.192,
+        "angular_speed_rad_s": 1.36,
+        "feet": 0
+      },
+      "policy_version_at_penalty": 33,
+      "case_id": "A-720401-018",
+      "baseline_timeout": true,
+      "online_episode_length": 597
+    },
+    "65": {
+      "touchdown": 305,
+      "body_penalty_tick": 577,
+      "posture_200ms_earlier": {
+        "tilt_deg": 35.3,
+        "height_m": 0.221,
+        "angular_speed_rad_s": 0.72,
+        "feet": 1
+      },
+      "posture_pre_contact": {
+        "tilt_deg": 41.8,
+        "height_m": 0.19,
+        "angular_speed_rad_s": 2.6,
+        "feet": 1
+      },
+      "policy_version_at_penalty": 49,
+      "case_id": "B-720402-001",
+      "baseline_timeout": true,
+      "online_episode_length": 635
+    }
+  },
+  "landing_forward_holdout": {
+    "scope": "Fixed post-release landing windows from the training launch suite. Lanes excluded from online fitting. Each prediction uses actual executed targets, without state re-anchoring or policy updates.",
+    "source_chunks": [
+      {
+        "file": "chunk_00008.pt.zst",
+        "sha256": "75a143804d9e0b333ecf0224418eed89739f83a2415fee4989cd9365af241224",
+        "ticks": 32
+      },
+      {
+        "file": "chunk_00009.pt.zst",
+        "sha256": "676e42ac58209e80fd1e07768b9d9d078c737504f734b1c3ceb9a7afe9705df8",
+        "ticks": 32
+      },
+      {
+        "file": "chunk_00010.pt.zst",
+        "sha256": "2c14078d7eb06091dd2c46e5d271d22d7a276d01e38b0721630fddd3140be4f6",
+        "ticks": 32
+      },
+      {
+        "file": "chunk_00011.pt.zst",
+        "sha256": "b35b68f3b720a1716e0bd0db42ae032e11b7198dc94ba89adaed2040b37ff215",
+        "ticks": 32
+      }
+    ],
+    "behavior_actor_sha256": "06d4bfdce73720325339a34fc2c4b5548f3f4f5c72f38d8eacfcb2cb11b168c8",
+    "windows": [
+      [
+        70,
+        0,
+        5285
+      ],
+      [
+        101,
+        0,
+        5285
+      ],
+      [
+        104,
+        0,
+        5285
+      ],
+      [
+        119,
+        0,
+        5286
+      ],
+      [
+        77,
+        0,
+        5287
+      ],
+      [
+        116,
+        0,
+        5287
+      ],
+      [
+        85,
+        0,
+        5288
+      ],
+      [
+        99,
+        0,
+        5288
+      ],
+      [
+        111,
+        0,
+        5288
+      ],
+      [
+        96,
+        0,
+        5289
+      ],
+      [
+        98,
+        0,
+        5289
+      ],
+      [
+        102,
+        0,
+        5289
+      ],
+      [
+        115,
+        0,
+        5289
+      ],
+      [
+        6,
+        0,
+        5291
+      ],
+      [
+        46,
+        0,
+        5291
+      ],
+      [
+        57,
+        0,
+        5291
+      ],
+      [
+        51,
+        0,
+        5292
+      ],
+      [
+        59,
+        0,
+        5292
+      ],
+      [
+        125,
+        0,
+        5292
+      ],
+      [
+        2,
+        0,
+        5293
+      ],
+      [
+        7,
+        0,
+        5293
+      ],
+      [
+        16,
+        0,
+        5293
+      ],
+      [
+        17,
+        0,
+        5293
+      ],
+      [
+        21,
+        0,
+        5293
+      ],
+      [
+        34,
+        0,
+        5293
+      ],
+      [
+        37,
+        0,
+        5293
+      ],
+      [
+        48,
+        0,
+        5293
+      ],
+      [
+        112,
+        0,
+        5293
+      ],
+      [
+        121,
+        0,
+        5293
+      ],
+      [
+        126,
+        0,
+        5293
+      ],
+      [
+        8,
+        0,
+        5294
+      ],
+      [
+        11,
+        0,
+        5294
+      ],
+      [
+        15,
+        0,
+        5294
+      ],
+      [
+        18,
+        0,
+        5294
+      ],
+      [
+        84,
+        0,
+        5294
+      ],
+      [
+        87,
+        0,
+        5294
+      ],
+      [
+        114,
+        0,
+        5294
+      ],
+      [
+        41,
+        0,
+        5295
+      ],
+      [
+        50,
+        0,
+        5295
+      ],
+      [
+        65,
+        0,
+        5295
+      ],
+      [
+        81,
+        0,
+        5295
+      ],
+      [
+        97,
+        0,
+        5295
+      ],
+      [
+        0,
+        0,
+        5296
+      ],
+      [
+        1,
+        0,
+        5296
+      ],
+      [
+        5,
+        0,
+        5296
+      ],
+      [
+        13,
+        0,
+        5296
+      ],
+      [
+        39,
+        0,
+        5296
+      ],
+      [
+        53,
+        0,
+        5296
+      ],
+      [
+        109,
+        0,
+        5296
+      ],
+      [
+        118,
+        0,
+        5296
+      ],
+      [
+        49,
+        0,
+        5297
+      ],
+      [
+        60,
+        0,
+        5297
+      ],
+      [
+        94,
+        0,
+        5297
+      ],
+      [
+        106,
+        0,
+        5297
+      ],
+      [
+        107,
+        0,
+        5297
+      ],
+      [
+        30,
+        0,
+        5298
+      ],
+      [
+        32,
+        0,
+        5298
+      ],
+      [
+        61,
+        0,
+        5298
+      ],
+      [
+        62,
+        0,
+        5298
+      ],
+      [
+        103,
+        0,
+        5298
+      ],
+      [
+        3,
+        0,
+        5299
+      ],
+      [
+        38,
+        0,
+        5299
+      ],
+      [
+        120,
+        0,
+        5300
+      ],
+      [
+        40,
+        0,
+        5301
+      ],
+      [
+        74,
+        0,
+        5301
+      ],
+      [
+        90,
+        0,
+        5301
+      ],
+      [
+        73,
+        0,
+        5302
+      ],
+      [
+        86,
+        0,
+        5304
+      ]
+    ],
+    "models": {
+      "before_refresh": {
+        "world_sha256": "6e0fcad70ddd443269451624bf39e522b199777f19d517a01f76e7057eafa09b",
+        "world_updates": 128,
+        "observation_axes": {
+          "retained_updates": 32,
+          "new_native_env_steps": 65536,
+          "training_wall_seconds": 16426
+        },
+        "horizons": {
+          "1": {
+            "cases": 68,
+            "root_attitude_mae_rad": 0.0014533428475260735,
+            "root_attitude_p90_rad": 0.00207160203717649,
+            "root_angular_mae_rad_s": 0.13234686851501465,
+            "root_height_mae_m": 0.0007579703815281391,
+            "support_count_mae": 0.13235294818878174,
+            "foot_bit_error": 0.033088237047195435
+          },
+          "4": {
+            "cases": 68,
+            "root_attitude_mae_rad": 0.010625523515045643,
+            "root_attitude_p90_rad": 0.01708151213824749,
+            "root_angular_mae_rad_s": 0.3299925625324249,
+            "root_height_mae_m": 0.0053083039820194244,
+            "support_count_mae": 0.5882353186607361,
+            "foot_bit_error": 0.15441176295280457
+          },
+          "16": {
+            "cases": 68,
+            "root_attitude_mae_rad": 0.03859825059771538,
+            "root_attitude_p90_rad": 0.06041618436574936,
+            "root_angular_mae_rad_s": 0.20652535557746887,
+            "root_height_mae_m": 0.009582378901541233,
+            "support_count_mae": 0.19117647409439087,
+            "foot_bit_error": 0.04779411852359772
+          },
+          "32": {
+            "cases": 68,
+            "root_attitude_mae_rad": 0.07664657384157181,
+            "root_attitude_p90_rad": 0.12868399918079376,
+            "root_angular_mae_rad_s": 0.30562591552734375,
+            "root_height_mae_m": 0.011890984140336514,
+            "support_count_mae": 0.6323529481887817,
+            "foot_bit_error": 0.16544117033481598
+          },
+          "64": {
+            "cases": 68,
+            "root_attitude_mae_rad": 0.14962241053581238,
+            "root_attitude_p90_rad": 0.3042898178100586,
+            "root_angular_mae_rad_s": 0.23179243505001068,
+            "root_height_mae_m": 0.010715545155107975,
+            "support_count_mae": 0.4117647111415863,
+            "foot_bit_error": 0.11029411852359772
+          }
+        }
+      },
+      "after_refresh": {
+        "world_sha256": "53ff939097b3500659d411ab6f6ddeb3d58a71b059368f9b67b5b2cf906acf2a",
+        "world_updates": 136,
+        "observation_axes": {
+          "retained_updates": 34,
+          "new_native_env_steps": 81920,
+          "training_wall_seconds": 18036
+        },
+        "horizons": {
+          "1": {
+            "cases": 68,
+            "root_attitude_mae_rad": 0.0014133051736280322,
+            "root_attitude_p90_rad": 0.00207160203717649,
+            "root_angular_mae_rad_s": 0.13162751495838165,
+            "root_height_mae_m": 0.0007585436105728149,
+            "support_count_mae": 0.13235294818878174,
+            "foot_bit_error": 0.033088237047195435
+          },
+          "4": {
+            "cases": 68,
+            "root_attitude_mae_rad": 0.01057784166187048,
+            "root_attitude_p90_rad": 0.0168863944709301,
+            "root_angular_mae_rad_s": 0.3298729956150055,
+            "root_height_mae_m": 0.005307470913976431,
+            "support_count_mae": 0.5882353186607361,
+            "foot_bit_error": 0.15441176295280457
+          },
+          "16": {
+            "cases": 68,
+            "root_attitude_mae_rad": 0.038553714752197266,
+            "root_attitude_p90_rad": 0.060326505452394485,
+            "root_angular_mae_rad_s": 0.20637907087802887,
+            "root_height_mae_m": 0.009646196849644184,
+            "support_count_mae": 0.19117647409439087,
+            "foot_bit_error": 0.04779411852359772
+          },
+          "32": {
+            "cases": 68,
+            "root_attitude_mae_rad": 0.07555115967988968,
+            "root_attitude_p90_rad": 0.12657693028450012,
+            "root_angular_mae_rad_s": 0.3048270046710968,
+            "root_height_mae_m": 0.01215556263923645,
+            "support_count_mae": 0.6323529481887817,
+            "foot_bit_error": 0.16544117033481598
+          },
+          "64": {
+            "cases": 68,
+            "root_attitude_mae_rad": 0.14926153421401978,
+            "root_attitude_p90_rad": 0.3023779094219208,
+            "root_angular_mae_rad_s": 0.23104360699653625,
+            "root_height_mae_m": 0.010637618601322174,
+            "support_count_mae": 0.3970588147640228,
+            "foot_bit_error": 0.10661764442920685
+          }
+        }
+      }
+    },
+    "axes": {
+      "retained_updates": 34,
+      "new_native_env_steps": 81920,
+      "training_wall_seconds": 18036
+    }
+  }
+}

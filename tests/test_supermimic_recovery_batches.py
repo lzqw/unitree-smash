@@ -85,3 +85,28 @@ def test_cached_tracking_vjp_preserves_value_and_does_not_traverse_rollout_again
     assert reconstructed.item() == tracking.item()
     reconstructed.backward()
     assert param.grad == 12. and unused.grad is None
+
+
+def test_recovery_prefix_is_causal_before_body_contact_and_reset_safe():
+    from quadsmash.rl.supermimic_physical_loop_replay_v1 import PhysicalLoopReplay
+    replay = PhysicalLoopReplay.__new__(PhysicalLoopReplay)
+    replay.current_stream, replay.lanes, replay.stage_starts = 2, 4, {}
+    def start(t):
+        return dict(before=dict(elapsed_tick=torch.full((4,), t), episode_index=torch.zeros(4),
+                                task=dict(had_contact=torch.ones(4,dtype=torch.bool), released=torch.ones(4,dtype=torch.bool)),
+                                event_state=torch.zeros(4,8)), executor_before={'clock':t}, observation=t)
+    past = start(100)
+    past['before']['task']['released'][1] = False
+    past['before']['event_state'][2,5] = 1
+    current = start(119)
+    current['before']['episode_index'][3] = 1
+    replay.new_starts = []
+    replay._retain_body_failure_prefix(past, torch.zeros(4,dtype=torch.bool), 400, 9)
+    replay.new_starts = [past] + [start(t) for t in range(101,119)]
+    event = torch.ones(4,dtype=torch.bool)
+    replay._retain_body_failure_prefix(current,event,419,8)
+    assert not replay.stage_starts
+    replay._retain_body_failure_prefix(current,event,419,9)
+    stored, = replay.stage_starts['pre_body_ground']
+    assert stored['_actor_lane_mask'].tolist()==[True,False,False,False]
+    assert stored['before'] is past['before'] and stored['executor_before']=={'clock':100}

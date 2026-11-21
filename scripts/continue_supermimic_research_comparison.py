@@ -56,6 +56,7 @@ def main():
                 '--composition',cmd[cmd.index('--resume-training')+1],'--contact',cmd[cmd.index('--action-ball-checkpoint')+1],
                 '--output',control,'--tensorboard',root/'tensorboard',
                 *(['--diagnostic-critic-loss'] if '--diagnostic-critic-loss' in cmd else []),
+                *(['--recovery-prefix-and-string-margin'] if '--recovery-prefix-and-string-margin' in cmd else []),
                 *(['--continuous-approach-starts'] if '--continuous-approach-starts' in cmd else []),
                 *(['--training-seed', reg['research_training_seed']] if reg.get('research_training_seed') is not None else []))
         if not (control/'exit.json').is_file():

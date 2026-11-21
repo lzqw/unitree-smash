@@ -42,6 +42,8 @@ def extension_registration(parent, output, tensorboard, total):
         cmd.append('--diagnostic-critic-loss')
     if '--shuffle-wm-quota-groups' not in cmd:
         cmd.append('--shuffle-wm-quota-groups')
+    if '--recovery-prefix-and-string-margin' not in cmd:
+        cmd.append('--recovery-prefix-and-string-margin')
     if '--extend-completed-research' not in cmd:
         cmd.append('--extend-completed-research')
     for flag, value in (('--cycles', total//256), ('--resume-training', checkpoint),

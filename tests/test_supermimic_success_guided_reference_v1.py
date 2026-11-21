@@ -166,3 +166,31 @@ def test_empty_toi_intervals_skip_backward_only_after_last_active_state():
     for a, b in zip(dense[2], sparse[2]):
         torch.testing.assert_close(a, b if b is not None else torch.zeros_like(a), rtol=0, atol=0)
     assert sparse[2][0].norm() > 0 and sparse[2][-1] is None
+
+
+def test_string_margin_only_moves_edge_intercepts_inward():
+    from quadsmash.rl.supermimic_toi_racket_objective import string_boundary, string_margin_cost
+    yz = torch.tensor([[0., 0.], [.11, .04], [-.11, -.04]], requires_grad=True)
+    cost = string_margin_cost(yz, string_boundary('configs/full_racket_v4_r3.json', yz))
+    gradient, = torch.autograd.grad(cost.sum(), yz)
+    assert cost[0] == 0 and not gradient[0].any()
+    assert (cost[1:] > 0).all()
+    assert ((gradient[1:] * yz[1:]).sum(-1) > 0).all()
+    torch.testing.assert_close(gradient[1], -gradient[2])
+
+
+def test_toi_margin_uses_racket_pose_in_the_arrival_interval():
+    from quadsmash.rl.supermimic_toi_racket_objective import intercept_loss, racket_state, string_boundary
+    geo, data = fixture()
+    state = data['state'][3].clone().requires_grad_()
+    racket = racket_state(state.detach(), geo)
+    tangent = racket[:, 3:12].reshape(-1, 3, 3)[:, :, 1]
+    point = racket[:, :3] + .14*tangent
+    ref = dict(intercept=dict(position=point, time=torch.full((3,), .035), valid=torch.ones(3,dtype=torch.bool)),
+               matched=torch.tensor([True, False, False]), toi_racket=torch.zeros(3, 12))
+    args = state, state, torch.full((3,), .03), torch.full((3,), .04), ref, torch.ones(3,dtype=torch.bool), torch.ones(3), geo
+    base, _ = intercept_loss(*args)
+    corrected, _ = intercept_loss(*args, boundary=string_boundary('configs/full_racket_v4_r3.json', state))
+    grad, = torch.autograd.grad(corrected-base, state)
+    assert corrected > base and grad[0,:3] @ tangent[0] < 0
+    assert not grad[1:].any() and not grad[:,49:].any()

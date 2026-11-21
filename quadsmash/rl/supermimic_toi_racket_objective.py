@@ -73,7 +73,10 @@ def bind_intercept_reference(state, bank, geometry, horizon, *, plane_offset_m=0
 
 
 def racket_features(physical, geometry):
-    body = racket_state(physical, geometry)
+    return _features_from_racket(racket_state(physical, geometry))
+
+
+def _features_from_racket(body):
     normal = body[:, 3:12].reshape(-1, 3, 3)[:, :, 0]
     return torch.cat((body[:, :3], body[:, 12:15], normal, body[:, 15:18]), dim=-1)
 
@@ -135,7 +138,23 @@ def compact_intercept_preview(row, allowed, launch, template, trainer, device):
     return result
 
 
-def intercept_loss(before, after, start, end, reference, mask, survival, geometry, *, fixed_weights=None, detach_empty=False):
+def string_boundary(config_path, like):
+    from quadsmash.physics.full_racket_v4 import load_racket, string_polygon
+    vertices = like.new_tensor(string_polygon(load_racket(config_path)))
+    edge = vertices.roll(-1, 0) - vertices
+    inward = F.normalize(torch.stack((-edge[:, 1], edge[:, 0]), dim=-1), dim=-1)
+    return inward, (vertices * inward).sum(-1)
+
+
+def string_margin_cost(local_yz, boundary):
+    inward, offset = boundary
+    margin = (local_yz @ inward.T - offset).amin(-1)
+    # Same 5 cm position scale as the TOI loss. No penalty beyond 5 mm inside.
+    return F.smooth_l1_loss((.005 - margin).clamp_min(0) / .05,
+                            torch.zeros_like(margin), reduction='none')
+
+
+def intercept_loss(before, after, start, end, reference, mask, survival, geometry, *, fixed_weights=None, detach_empty=False, boundary=None):
     """Sample racket kinematics at the requested sub-tick arrival. Each lane contributes once."""
     arrival = reference['intercept']['time']
     active = intercept_interval(start, end, reference, mask)
@@ -145,10 +164,20 @@ def intercept_loss(before, after, start, end, reference, mask, survival, geometr
         endpoint = after.detach() if detach_empty else after
         return endpoint[:, :1].sum() * 0, weights
     alpha = ((arrival - start) / (end - start).clamp_min(1e-8)).clamp(0, 1)
-    kinematics = torch.lerp(racket_features(before, geometry), racket_features(after, geometry), alpha[:, None])
+    if boundary is None:
+        kinematics = torch.lerp(racket_features(before, geometry), racket_features(after, geometry), alpha[:, None])
+        edge_cost = 0.
+    else:
+        a, b = racket_state(before, geometry), racket_state(after, geometry)
+        kinematics = torch.lerp(_features_from_racket(a), _features_from_racket(b), alpha[:, None])
+        point = reference['intercept']['position'].detach()
+        def local_yz(body):
+            axes = body[:, 3:12].reshape(-1, 3, 3)[:, :, 1:]
+            return ((point - body[:, :3])[:, :, None] * axes).sum(1)
+        edge_cost = string_margin_cost(torch.lerp(local_yz(a), local_yz(b), alpha[:, None]), boundary)
     terms = intercept_terms(kinematics, reference['intercept']['position'], reference['toi_racket'])
     position, linear, normal, angular = terms.unbind(-1)
-    return ((position+linear+normal+angular)*weights).sum(), weights
+    return ((position+linear+normal+angular+edge_cost)*weights).sum(), weights
 
 
 def intercept_terms(kinematics, intercept_position, native):

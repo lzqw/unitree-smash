@@ -316,7 +316,7 @@ class PhysicalHorizonTrainer:
                         previous.clock_goal_context['elapsed'].reshape(-1),state.clock_goal_context['elapsed'].reshape(-1),
                         reference,track_mask,survival,self.adapter.physical_model.geometry,
                         fixed_weights=None if baseline_toi_weights is None else baseline_toi_weights[tick],
-                        detach_empty=True)
+                        detach_empty=True, boundary=getattr(self, 'string_boundary', None))
                 else:
                     numerator,denominator,weights=self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
                         geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival,return_components=True)

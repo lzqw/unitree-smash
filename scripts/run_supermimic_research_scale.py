@@ -27,6 +27,7 @@ def main():
                     help='Use an independent learner and replay seed with the same starting weights and native cases')
     ap.add_argument('--diagnostic-critic-loss',action='store_true',
                     help='Match a G0 control to a G1 arm with monitored minibatch critic loss')
+    ap.add_argument('--recovery-prefix-and-string-margin',action='store_true')
     ap.add_argument('--continuous-approach-starts',action='store_true',
                     help='Match a G0 control to a G1 arm with continuous Approach quotas')
     ap.add_argument('--arm',choices=('G0','G1'),required=True)
@@ -59,6 +60,8 @@ def main():
         cmd.append('--continuous-approach-starts')
     if (a.arm=='G1' or a.diagnostic_critic_loss) and '--diagnostic-critic-loss' not in cmd:
         cmd.append('--diagnostic-critic-loss')
+    if (a.arm=='G1' or a.recovery_prefix_and_string_margin) and '--recovery-prefix-and-string-margin' not in cmd:
+        cmd.append('--recovery-prefix-and-string-margin')
     if a.training_seed is not None:
         cmd.extend(['--research-training-seed',str(a.training_seed)])
     registration=dict(command=cmd,arm=a.arm,initial=composition,expected_retained_updates=256,

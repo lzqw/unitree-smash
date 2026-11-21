@@ -154,3 +154,11 @@ The first 32 retained G1 updates took 274 minutes after initial Replay reconstru
 ### Step size and command budget through retained update 33
 
 All 41 candidate comparisons satisfied the configured execution budgets. Of 16 Approach proposals, three used a reduced step to preserve TOI lane coverage and two used a reduced step after their full-step imagined objective increased. One of 17 Recovery proposals used a reduced step after its imagined objective increased. All 33 proposals retained a parameter change. The current run's `final_command_max_change` measures the executed-target preview against the pre-proposal policy. Its older `budget_report.relative_last_accepted` was computed after moving the accepted reference, which produced zero for accepted steps. New training processes retain the pre-proposal budget reference in the report and include measured budget deltas for each trial. [Trial metrics](first_33_backtracks.json)
+
+### 身体触地前的 Recovery 起点与线床边缘修正
+
+累计第 33–35 次保留更新中，在线窗口内可核对的 5 次即将身体触地的起点，全部只提前 1 个控制步。三个新增身体触地案例的罚分出现在首次落地后 0.67、2.10、2.72 s。新采样器用实际身体触地一次性罚分的上升沿挑选提前 20 个控制步的因果状态，保留当时的 G07 记忆、观测和执行时钟。回放 R16＋A16 后的 128 个原生控制步得到 9 个这样的 lane，3 个可用于在线训练，6 个属于原 WM 留出集。短块内起点不足时仍可用现有的多阶段起点。
+
+Approach 在已有 TOI 运动学损失中加入线床边缘软惩罚。使用实际注册球拍资产的线床多边形，在预测到达时刻把来球投影到拍面坐标系，内侧余量达到 5 mm 后该项为零。对实测首次接触投影进行 GPU 复算，13 个由拍线转框的案例均有向内的下降方向，61 个持续拍线命中的案例该项梯度全为零。固定 R16＋A16 权重，在 4 个训练 lane 的真实初态上进行 H64 想象，新增损失对 Approach 参数的梯度范数为 1.17935。本次为离线计算。修正后策略的原生触球率、身体触地率和 Return 仍待冻结配对评价。
+
+两项改动随新的研究主线配置注册，G0 复制对应 G1 的开关，原已注册的 256 次实验继续按其配置运行。累计扩展入口为两个 Head 对应的实验组同时启用修正。TensorBoard 记录 Recovery 实际抽中的提前起点数和原生 Return 滑动窗口的回合数。[实测样本、模型身份与梯度结果](recovery_prefix_and_string_margin.json)

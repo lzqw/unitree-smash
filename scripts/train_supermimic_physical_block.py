@@ -229,6 +229,8 @@ def main():
                         help='Approach TOI-racket-only auxiliary loss weight')
     parser.add_argument('--diagnostic-critic-loss',action='store_true',
                         help='Research only: monitor the minibatch critic MSE after warmup; retain finite-value and update checks')
+    parser.add_argument('--recovery-prefix-and-string-margin', action='store_true',
+                        help='Sample causal pre-fall starts and train a 5 mm TOI string-bed margin')
     parser.add_argument('--continuous-approach-starts',action='store_true',
                         help='Advance the four start quotas across short blocks using checkpointed Approach attempts')
     parser.add_argument('--approach-objective',choices=('task','toi_racket_only'),default='task',
@@ -639,6 +641,8 @@ def run(args, *, alternating=None):
                 args.shuffle_wm_quota_groups=True
             if research and not args.resume_reset_schedule and resumed['config'].get('diagnostic_critic_loss'):
                 args.diagnostic_critic_loss=True
+            if not args.resume_reset_schedule and resumed['config'].get('recovery_prefix_and_string_margin'):
+                args.recovery_prefix_and_string_margin = True
             saved_plane = resumed['config'].get('intercept_plane_calibration')
             if args.approach_objective=='toi_racket_only' and args.training_profile in ('bounded','research_scale'):
                 plane_calibration = saved_plane
@@ -834,6 +838,11 @@ def run(args, *, alternating=None):
                 )
             execution_root = Path(recorded_root)
         execution_root = Path(execution_root).resolve()
+        replay.recovery_failure_prefixes = args.recovery_prefix_and_string_margin
+        if args.recovery_prefix_and_string_margin:
+            from quadsmash.rl.supermimic_toi_racket_objective import string_boundary
+            trainer.string_boundary = string_boundary(execution_root/'configs/full_racket_v4_r3.json',
+                                                      next(actor.parameters()))
         contract,protocol,cases,receipt=resolve_task_contract(
             source, source_path, execution_root=execution_root, root=execution_root)
         if contract!=manifest['task_contract']:raise ValueError('Native task contract changed')
@@ -1013,7 +1022,7 @@ def run(args, *, alternating=None):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(continuous_approach_starts=args.continuous_approach_starts,toi_effective_start_lanes=args.toi_effective_start_lanes,recovery_effective_start_lanes=args.recovery_effective_start_lanes,sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
+        config=dict(recovery_prefix_and_string_margin=args.recovery_prefix_and_string_margin,continuous_approach_starts=args.continuous_approach_starts,toi_effective_start_lanes=args.toi_effective_start_lanes,recovery_effective_start_lanes=args.recovery_effective_start_lanes,sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=trainer.actor_lr,actor_anchor=trainer.anchor_coeff,world_lr=args.world_learning_rate,critic_lr=2e-4,
             wm_forward_guard_sha256=forward_guard.spec_sha256 if forward_guard else None,wm_replay_handoff=replay_handoff,
             wm_separate_supervision=args.wm_separate_supervision,wm_direct_long_body_supervision=args.wm_direct_long_body_supervision,wm_active_flight_batch=args.wm_active_flight_batch,wm_natural_flight_batch=args.wm_natural_flight_batch,wm_natural_flight_loss=args.wm_natural_flight_loss,
@@ -1429,6 +1438,8 @@ def run(args, *, alternating=None):
                     group['lr']=trainer.actor_lr
             progress['status']='training'
             dynamic_names=('touchdown','post_touchdown','recovery_failure','stable_recovery') if block_name=='recovery' else ('approach_active',)
+            if block_name=='recovery' and args.recovery_prefix_and_string_margin:
+                dynamic_names=('pre_body_ground', *dynamic_names)
             dynamic_pool=[item for name in dynamic_names for item in replay.stage_starts.get(name,[]) if training_lane_available(item)]
             if block_name=='approach': dynamic_pool=[item for item in dynamic_pool if approach_active(item)]
             block_pool=(dynamic_pool + (recovery_pool if block_name=='recovery' else approach_pool))
@@ -1627,7 +1638,14 @@ def run(args, *, alternating=None):
                     step=int(tick*128)
                     writer.add_scalar('native/step_reward_mean',block_reward_mean,step)
                     writer.add_scalar('native/completed_episodes',len(completed_returns),step)
-                    if completed_returns: writer.add_scalar('native/return_mean_128',sum(completed_returns[-128:])/len(completed_returns[-128:]),step)
+                    if completed_returns:
+                        completed_window = completed_returns[-128:]
+                        writer.add_scalar('native/return_mean_128', sum(completed_window)/len(completed_window), step)
+                        writer.add_scalar('native/return_mean_128_cases', len(completed_window), step)
+                    if block_name=='recovery' and args.recovery_prefix_and_string_margin:
+                        prefix_lanes = sum(len(group['lane_episode_tick']) for group in start_sampling.get('records', [])
+                                           if group['stage']=='pre_body_ground')
+                        writer.add_scalar('actor/recovery_pre_body_ground_lanes', prefix_lanes, global_accepted_id)
                     writer.add_scalar('actor/imagined_return',float(stats.get('imagined_return_mean',0.0)),step)
                     if 'world_loss' in world_stats:writer.add_scalar('model/world_loss',float(world_stats['world_loss']),step)
                     writer.add_scalar('critic/loss',float(stats.get('critic_loss',0.0)),step)
