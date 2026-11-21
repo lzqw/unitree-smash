@@ -69,7 +69,7 @@ class PhysicalImaginationAdapter(nn.Module):
         self.contact_bptt_mode=validate_contact_bptt_mode(mode)
         self.manifest['contact_bptt_mode']=self.contact_bptt_mode
 
-    def forward(self,state:PhysicalImaginationStateV1,actor_action,*,detach_ball=False):
+    def forward(self,state:PhysicalImaginationStateV1,actor_action,*,detach_ball=False,ball_input_grad=True):
         if int(self.task_model.fit_updates)==0:
             raise RuntimeError('Physical loop requires fitted task memory/event model')
         c=state.clock_goal_context
@@ -78,36 +78,29 @@ class PhysicalImaginationAdapter(nn.Module):
         predicted,feet,present,ball_details=ball_transition(self.physical_model,self.ball_model,
             state.physical,preview.final_joint_targets,c['final_action'],c['foot_contact'],
             c['ball_present'],c['elapsed'],c['launch'],action_model=self.action_ball_model,
-            return_details=True)
+            return_details=True,ball_input_grad=ball_input_grad)
         # Keep robot dynamics differentiable while controlling when the
         # unverified ball/contact Jacobian can reach the actor.  This only
         # affects imagination gradients.  World-model supervision continues to
         # use the complete native ball target in fit_world_window().
-        outgoing_ball=predicted[:,49:]
-        if detach_ball or self.contact_bptt_mode in ('blocked', 'detached', 'precontact'):
-            force_detach=detach_ball
-            detach_ball = torch.ones(len(predicted), dtype=torch.bool,
-                                     device=predicted.device)
-            if self.contact_bptt_mode == 'precontact' and not force_detach:
-                rally = state.task_memory.get('rally', {})
-                had_contact = rally.get('had_contact')
-                if had_contact is not None:
-                    detach_ball = had_contact.reshape(-1) > .5
-                action_info=ball_details.get('action_model_info') or {}
-                impact_probability=action_info.get('predicted_impact_probability')
-                if impact_probability is not None:
-                    # The current control step can create the first contact
-                    # even while the task latch is still false.  Precontact
-                    # mode must stop the unvalidated impulse gradient at that
-                    # causal boundary as well.
-                    detach_ball = detach_ball | (impact_probability.reshape(-1) >= .5)
-                impulse_info=ball_details.get('impulse_info') or {}
-                if impulse_info.get('active') is not None:
-                    detach_ball = detach_ball | impulse_info['active'].reshape(-1)
-            predicted = torch.cat((predicted[:, :49],
-                                   torch.where(detach_ball[:, None],
-                                               predicted[:, 49:].detach(),
-                                               predicted[:, 49:])), dim=1)
+        outgoing_ball=ball_details['predicted_ball']
+        if detach_ball or self.contact_bptt_mode in ('blocked', 'detached'):
+            # A slice of the combined output still sends zero adjoints through
+            # the whole impact integrator. Rejoin the original robot tensor so
+            # only an explicit outgoing-ball objective can traverse that graph.
+            predicted = torch.cat((ball_details['predicted_robot'], outgoing_ball.detach()), -1)
+        elif self.contact_bptt_mode == 'precontact':
+            had_contact = state.task_memory.get('rally', {}).get('had_contact')
+            stop = torch.ones_like(present, dtype=torch.bool).reshape(-1) if had_contact is None else had_contact.reshape(-1) > .5
+            action_info = ball_details.get('action_model_info') or {}
+            impact_probability = action_info.get('predicted_impact_probability')
+            if impact_probability is not None:
+                stop = stop | (impact_probability.reshape(-1) >= .5)
+            impulse_info = ball_details.get('impulse_info') or {}
+            if impulse_info.get('active') is not None:
+                stop = stop | impulse_info['active'].reshape(-1)
+            predicted = torch.cat((ball_details['predicted_robot'],
+                                   torch.where(stop[:,None], outgoing_ball.detach(), outgoing_ball)), -1)
         task=self.task_model(state.physical,predicted,preview.final_joint_targets,
                              c['final_action'],c['foot_contact'],c['elapsed'],state.task_memory)
         next_task=task['memory'];p=decode_physical(predicted)

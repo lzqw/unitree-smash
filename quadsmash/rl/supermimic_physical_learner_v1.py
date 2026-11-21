@@ -282,7 +282,10 @@ class PhysicalHorizonTrainer:
                 if 'had_contact' not in rally:track_mask=torch.zeros_like(track_mask)
                 else:track_mask=track_mask&(rally['had_contact'].reshape(-1)<.5)
             previous=state
-            state,reward,done,transition=self.adapter(state,action,**({'detach_ball': True} if toi_only or hasattr(self,'research_court') else {}))
+            gradient_options = {'detach_ball': True} if toi_only else {}
+            if hasattr(self, 'research_court'):
+                gradient_options = dict(detach_ball=True, ball_input_grad=bool(contact_weight))
+            state,reward,done,transition=self.adapter(state,action,**gradient_options)
             if contact_weight:
                 impact=transition['impulse_info']
                 first=track_mask & impact['active'].reshape(-1) & (impact['object_id'].reshape(-1)==0) & ~impacted

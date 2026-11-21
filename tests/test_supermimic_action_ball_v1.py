@@ -280,3 +280,22 @@ def test_contact_pools_cover_eligible_rows_once_and_do_not_include_holdout_lanes
     assert all(lane==0 for tick,lane in rows)
     assert (3,0) in map(tuple,pools['post_contact'].tolist())
     assert (3,0) not in map(tuple,pools['pre_contact'].tolist())
+
+
+def test_body_only_actor_keeps_command_derivative_and_skips_ball_input_graph():
+    world, ball = FakeWorld(), FakeBall()
+    sweep = ActionConditionedBallV1(preview=FakePreview()).requires_grad_(False)
+    with torch.no_grad():
+        sweep.head.net[-1].bias[3]=1.
+    state, target, *rest = inputs()
+    target.requires_grad_(True)
+    state.requires_grad_(True)
+    old, _, _, full = ball_transition(world,ball,state,target,*rest,action_model=sweep,return_details=True)
+    new, _, _, body = ball_transition(world,ball,state,target,*rest,action_model=sweep,return_details=True,
+                                      ball_input_grad=False)
+    torch.testing.assert_close(old,new,atol=0,rtol=0)
+    assert not body['predicted_ball'].requires_grad and full['predicted_ball'].requires_grad
+    g1, = torch.autograd.grad(full['predicted_robot'].sum(), target)
+    g0, = torch.autograd.grad(body['predicted_robot'].sum(), target)
+    torch.testing.assert_close(g0,g1,atol=0,rtol=0)
+    assert g0[:,12].min()>0

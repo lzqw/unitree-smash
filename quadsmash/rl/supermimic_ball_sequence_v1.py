@@ -22,10 +22,13 @@ def ball_error(predicted,target):
 
 
 def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed,launch,*,
-                    action_model=None,return_details=False):
+                    action_model=None,return_details=False,ball_input_grad=True):
     """The optional action model sees the CURRENT final command only through
     the command-conditioned robot prediction. Legacy mode is unchanged.
     """
+    body_input = state
+    if not ball_input_grad:
+        state = state.detach()
     prior,_=base.prior(state,present,elapsed,launch)
     features=ball_geometry_features(state,base.geometry)
     impulse_prior=getattr(action_model,'impulse_prior',None)
@@ -51,7 +54,12 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
             correction=present[:,None].to(response.dtype)*(probability[:,1:,None]*response).sum(1)
     else:
         correction,_=ball(features,present)
-    physical,logits,active=base(state,targets,previous_action,feet,present,elapsed,launch)
+    physical,logits,active=base(body_input,targets,previous_action,feet,present,elapsed,launch)
+    robot_prediction = physical[:,:49]
+    if not ball_input_grad:
+        physical = physical.detach()
+        targets = targets.detach()
+        previous_action = previous_action.detach()
     ball_prediction=prior[:,49:]+correction
     launch_now=(~present.bool()) & (elapsed.reshape(-1) >=
                                     getattr(base,'launch_s',2.) - 1e-6)
@@ -149,10 +157,11 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
                     deferred_mask[:,None], corrected_prediction, ball_prediction)
             else:
                 ball_prediction=ball_prediction+impulse_action_residual
-    state=torch.cat((physical[:,:49],ball_prediction),-1)
+    state=torch.cat((robot_prediction,ball_prediction),-1)
     next_feet=logits.sigmoid()
     if return_details:
         return state,next_feet,active,dict(
+            predicted_robot=robot_prediction,
             prior_ball=prior[:,49:],
             analytic_ball=None if impulse_info is None else analytic_ball,
             legacy_correction=correction,

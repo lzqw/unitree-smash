@@ -12,6 +12,7 @@ from torch.utils.tensorboard import SummaryWriter
 from compare_supermimic_fixed_stages import load_run
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
 from run_supermimic_research_scale import digest
+from report_supermimic_research_curve import arm_origin, axes
 
 
 def evaluate(folder, step, writer):
@@ -50,14 +51,13 @@ def evaluate(folder, step, writer):
     if not result['identical_initial_states'] or [r['actor_sha256'] for r in result['native_sources']]!=[old,actor]:
         raise ValueError('Paired panel has the wrong initial states or policy hashes')
     trace=[json.loads(line) for line in (train/'training_history.jsonl').read_text().splitlines()]
-    row=next((r for r in trace if r.get('update_accepted') and r['accepted_id']==trace[0]['accepted_id']-int(trace[0]['update_accepted'])+step),None)
-    axes={'retained_updates':step}
-    if row is not None:
-        axes.update(native_env_steps=row['native_transitions'],wall_seconds=int(row['research_elapsed_s']))
+    origin = arm_origin(reg)
+    row = next(r for r in trace if r['update_accepted'] and r['accepted_id'] == origin[0] + step)
+    positions = axes(row, origin, metrics['num_envs'])
     for k in ('qualified_airborne_string_contact','ball_side_complete_except_recovery','complete5',
               'conditional_recovery_count','recovery_given_airborne_string_contact','native_episode_return_mean'):
         if metrics.get(k) is not None:
-            for axis,pos in axes.items():writer.add_scalar('fixed128/'+axis+'/'+k,metrics[k],pos)
+            for axis,pos in positions.items():writer.add_scalar('fixed128/'+axis+'/'+k,metrics[k],pos)
     writer.flush()
 
 

@@ -1,0 +1,169 @@
+{
+  "block": "recovery",
+  "attempt_id": 22,
+  "accepted_id": 18,
+  "update_accepted": true,
+  "backtrack_alpha": 0.5,
+  "objective_before": 4.112380504608154,
+  "objective_after": 4.1123127937316895,
+  "final_command_max_change": 0.0007925629615783691,
+  "effective_gate_lanes": 16,
+  "native_collect_seconds": 191.80257528999937,
+  "world_update_seconds": 197.93395233500632,
+  "bptt_seconds": 487.76482529600617,
+  "critic_seconds": 9.66191264099325,
+  "parameter_max_changes": {
+    "actor.recovery.0.weight": 9.800074622035027e-05,
+    "actor.recovery.0.bias": 9.546428918838501e-05,
+    "actor.recovery.2.weight": 9.844452142715454e-05,
+    "actor.recovery.2.bias": 9.545497596263885e-05,
+    "actor.recovery.4.weight": 9.700970258563757e-05,
+    "actor.recovery.4.bias": 9.236170444637537e-05
+  },
+  "model_unchanged_during_actor": true,
+  "task_gradient_norm": 3.5976011753082275,
+  "peak_gpu_bytes": 976294912,
+  "contact_supervision": [
+    {
+      "measured_events": 49,
+      "updated": true,
+      "velocity_huber": 0.120820052921772,
+      "gradient_norm": 1.0644086599349976
+    },
+    {
+      "measured_events": 50,
+      "updated": true,
+      "velocity_huber": 0.11855661123991013,
+      "gradient_norm": 1.0360676050186157
+    },
+    {
+      "measured_events": 49,
+      "updated": true,
+      "velocity_huber": 0.12027156352996826,
+      "gradient_norm": 1.0657087564468384
+    },
+    {
+      "measured_events": 50,
+      "updated": true,
+      "velocity_huber": 0.11786097288131714,
+      "gradient_norm": 1.0407871007919312
+    }
+  ],
+  "provenance": {
+    "source": "main_02/train/training_history.jsonl first proposal",
+    "inherited_updates": 17,
+    "new_native_transitions": 16384,
+    "records": [
+      {
+        "stage": "touchdown",
+        "lane_episode_tick": [
+          [
+            19,
+            1,
+            759
+          ]
+        ]
+      },
+      {
+        "stage": "post_touchdown",
+        "lane_episode_tick": [
+          [
+            10,
+            1,
+            784
+          ],
+          [
+            22,
+            1,
+            784
+          ],
+          [
+            23,
+            2,
+            330
+          ],
+          [
+            24,
+            1,
+            784
+          ]
+        ]
+      },
+      {
+        "stage": "recovery_failure",
+        "lane_episode_tick": [
+          [
+            68,
+            1,
+            518
+          ]
+        ]
+      },
+      {
+        "stage": "stable_recovery",
+        "lane_episode_tick": [
+          [
+            25,
+            1,
+            569
+          ],
+          [
+            28,
+            1,
+            569
+          ],
+          [
+            43,
+            1,
+            569
+          ]
+        ]
+      },
+      {
+        "stage": "initial_archive",
+        "lane_episode_tick": [
+          [
+            9,
+            0,
+            384
+          ],
+          [
+            10,
+            0,
+            384
+          ],
+          [
+            12,
+            0,
+            384
+          ],
+          [
+            19,
+            0,
+            384
+          ]
+        ]
+      },
+      {
+        "stage": "post_touchdown",
+        "lane_episode_tick": [
+          [
+            26,
+            1,
+            785
+          ],
+          [
+            33,
+            1,
+            785
+          ],
+          [
+            35,
+            1,
+            785
+          ]
+        ]
+      }
+    ]
+  }
+}
