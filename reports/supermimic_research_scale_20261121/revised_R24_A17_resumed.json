@@ -1,0 +1,48 @@
+{
+  "attempt_id": 99,
+  "accepted_id": 94,
+  "block": "approach",
+  "update_accepted": true,
+  "backtrack_alpha": 1.0,
+  "world_updates": 184,
+  "critic_updates": 3888,
+  "objective_before": 2.046147108078003,
+  "objective_after": 1.9982877969741821,
+  "final_command_max_change": 0.005623817443847656,
+  "contact_aux_weight": 0.1,
+  "contact_aux_to_toi_gradient_ratio": 0.0019349158650258497,
+  "effective_gate_lanes": 16,
+  "tracking_nonzero_gradient_lanes": 16,
+  "parameter_max_changes": {
+    "actor.approach.0.weight": 0.0002046935260295868,
+    "actor.approach.0.bias": 0.00020331889390945435,
+    "actor.approach.2.weight": 0.00020541995763778687,
+    "actor.approach.2.bias": 0.00020234286785125732,
+    "actor.approach.4.weight": 0.00020509003661572933,
+    "actor.approach.4.bias": 0.0001984753180295229
+  },
+  "native_collect_seconds": 164.4735328879906,
+  "world_update_seconds": 192.37991838197922,
+  "bptt_seconds": 155.58816431998275,
+  "native_ticks": 6526,
+  "completed_native_episodes": 0,
+  "reference_coverage": {
+    "predicted_first_string_lanes": 3,
+    "predicted_first_frame_lanes": 9,
+    "selected_start_lanes": 16,
+    "matched_lanes": 16
+  },
+  "retained_in_experiment": {
+    "recovery": 24,
+    "approach": 17
+  },
+  "native_collection": {
+    "native_ticks": 6526,
+    "accepted_id": 93,
+    "completed_native_episodes": 0,
+    "first_episode_body_cases": 0
+  },
+  "world_digest": "845804918b98f070cba195c03ba777c5f57febc7ea0d289e8ce1d7cdac265651",
+  "world_passed_vs_formal_anchor": true,
+  "world_passed_vs_block_initial": false
+}
