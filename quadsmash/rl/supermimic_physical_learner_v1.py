@@ -173,9 +173,17 @@ class PhysicalHorizonTrainer:
 
     def set_budget_state_library(self,states):
         if not states: raise ValueError('Empty execution budget state library')
-        self.budget_states=[s.branch() for s in states]
+        library=[s.branch() for s in states]
+        prepare=getattr(self.adapter.executor, 'prepare_fixed_command', None)
+        bases=[] if prepare is not None else None
+        if bases is not None:
+            for state in library:
+                context=state.clock_goal_context
+                bases.append(prepare(state.observation,context['joint_default'][0],context['limits'],state.executor_memory))
+        self.budget_states=library
+        self._fixed_budget_bases=bases
 
-    def _preview_command(self,state,actor_module=None):
+    def _preview_command(self,state,actor_module=None,*,fixed_base=None):
         module=self.actor if actor_module is None else actor_module
         with torch.no_grad():
             if module is self.actor:
@@ -183,15 +191,20 @@ class PhysicalHorizonTrainer:
             else:
                 request=module(state.observation,sample=False)[0]
             context=state.clock_goal_context
-            preview,_,_=self.adapter.executor.forward(state.observation,request,context['joint_default'][0],context['limits'],state.executor_memory)
+            default,limits=context['joint_default'][0],context['limits']
+            if fixed_base is None:
+                preview,_,_=self.adapter.executor.forward(state.observation,request,default,limits,state.executor_memory)
+            else:
+                base,memory=fixed_base
+                preview=self.adapter.executor.mixer(base,request,state.observation,default,limits,memory)
         return request.detach(),preview.final_normalized.detach(),preview.final_joint_targets.detach()
 
     def _budget_snapshot(self):
-        rows=[]
-        for state in self.budget_states:
-            req,final,target=self._preview_command(state)
-            rows.append((req,final,target))
-        return rows
+        bases=getattr(self,'_fixed_budget_bases',None)
+        if bases is None:
+            return [self._preview_command(state) for state in self.budget_states]
+        return [self._preview_command(state,fixed_base=base)
+                for state,base in zip(self.budget_states,bases,strict=True)]
 
     @staticmethod
     def _max_budget_delta(now,base):

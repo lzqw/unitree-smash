@@ -60,3 +60,35 @@ def test_float_plan_rows_keep_aliases_and_branch_local_mutations():
     assert cloned is branch['used_public_observations'][1] is branch['mixed'][1]['row']
     cloned[0] = 1.
     assert row[0] == 0.
+
+
+def test_fixed_budget_command_uses_each_records_post_base_mixer_memory():
+    from quadsmash.control.full_racket_residual_v4 import ResidualActionMixerV4
+    from quadsmash.rl.supermimic_g07_memory_preview_v1 import G07MemoryPreviewV1
+
+    count = 3
+    default = torch.zeros(18)
+    limits = torch.tensor([[-2., 2.]]*18)
+    obs = torch.zeros(count, 794)
+    obs[:,775] = .3
+    mixer = ResidualActionMixerV4(count,'cpu',[.2]*18)
+    base = SimpleNamespace(offset=torch.tensor(.1), mixer=mixer)
+
+    def action(self, observation, default, limits):
+        self.mixer.arm_rate.initialized.fill_(True)
+        self.mixer.arm_rate.clock.fill_(.29)
+        self.mixer.arm_rate.target.fill_(self.offset)
+        return self.offset.expand(len(observation['policy']),18)
+
+    base.action = MethodType(action, base)
+    memory = SimpleNamespace(base=base, mixer=mixer)
+    executor = G07MemoryPreviewV1(memory)
+    for offset in (.1, -.2):
+        base.offset.fill_(offset)
+        command, before = executor.prepare_fixed_command(obs, default, limits, memory)
+        for request in (torch.zeros(count,18), torch.full((count,18),.8), torch.full((count,18),-.3)):
+            preview, _, _ = executor.forward(obs,request,default,limits,memory)
+            actual = executor.mixer(command,request,obs,default,limits,before)
+            torch.testing.assert_close(actual.final_normalized,preview.final_normalized,atol=0,rtol=0)
+            torch.testing.assert_close(actual.final_joint_targets,preview.final_joint_targets,atol=0,rtol=0)
+        assert not memory.mixer.arm_rate.initialized.any()

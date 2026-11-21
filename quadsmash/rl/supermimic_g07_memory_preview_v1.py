@@ -190,11 +190,21 @@ class G07MemoryPreviewV1:
         self.mixer = ResidualExecutionPreviewV1(mixer.scale.tolist(), mixer.arm_rate.rate,
                                                max(mixer.scale.tolist()), mixer.arm_rate.control_dt)
 
-    def forward(self, observation, residual, default, limits, memory):
+    def _base_step(self, observation, default, limits, memory):
         branch = clone_execution_graph(memory, learning=True)
         base = branch.base.action({'policy': observation}, default, limits)
         state = MixerMemory(branch.mixer.arm_rate.target, branch.mixer.arm_rate.clock,
                             branch.mixer.arm_rate.initialized, branch.mixer.nonzero_seen)
+        return branch, base, state
+
+    @torch.no_grad()
+    def prepare_fixed_command(self, observation, default, limits, memory):
+        """Fixed native start only. The actor request enters after the G07 base step."""
+        _, base, state = self._base_step(observation, default, limits, memory)
+        return base, state
+
+    def forward(self, observation, residual, default, limits, memory):
+        branch, base, state = self._base_step(observation, default, limits, memory)
         preview = self.mixer(base, residual, observation, default, limits, state)
         branch.mixer.arm_rate.target = preview.next_memory.arm_target
         branch.mixer.arm_rate.clock = preview.next_memory.arm_clock

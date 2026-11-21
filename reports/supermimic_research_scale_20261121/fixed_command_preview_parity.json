@@ -1,0 +1,76 @@
+{
+  "cpu": {
+    "preparation_seconds": 0.29305363597813994,
+    "ticks": [
+      272,
+      384
+    ],
+    "lanes_per_tick": 128,
+    "per_tick_comparisons": [
+      "residual_request",
+      "normalized_command",
+      "final_joint_targets"
+    ],
+    "trials_per_actor_and_variant": 3,
+    "device": "cpu",
+    "policies": [
+      {
+        "weights": "current",
+        "actor_sha256": "06d4bfdce73720325339a34fc2c4b5548f3f4f5c72f38d8eacfcb2cb11b168c8",
+        "median_seconds": {
+          "before": 0.18197603098815307,
+          "after": 0.0022841560130473226
+        }
+      },
+      {
+        "weights": "native_accepted",
+        "actor_sha256": "73a3194ea2e44122df13663bcad9e9b0b543b7c6429bf3b06b133bfb1244646a",
+        "median_seconds": {
+          "before": 0.18086776297423057,
+          "after": 0.0021829069883096963
+        }
+      }
+    ]
+  },
+  "gpu": {
+    "preparation_seconds": 0.19428818998858333,
+    "ticks": [
+      272,
+      384
+    ],
+    "lanes_per_tick": 128,
+    "per_tick_comparisons": [
+      "residual_request",
+      "normalized_command",
+      "final_joint_targets"
+    ],
+    "trials_per_actor_and_variant": 3,
+    "device": "cuda:0",
+    "policies": [
+      {
+        "weights": "current",
+        "actor_sha256": "06d4bfdce73720325339a34fc2c4b5548f3f4f5c72f38d8eacfcb2cb11b168c8",
+        "median_seconds": {
+          "before": 0.1807658149919007,
+          "after": 0.0034273140190634876
+        }
+      },
+      {
+        "weights": "native_accepted",
+        "actor_sha256": "73a3194ea2e44122df13663bcad9e9b0b543b7c6429bf3b06b133bfb1244646a",
+        "median_seconds": {
+          "before": 0.1808420649904292,
+          "after": 0.0037003309989813715
+        }
+      }
+    ],
+    "warmed_up": true,
+    "max_abs_delta": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "scope": "One fixed-state command budget preview across two 128-lane records per trial. G1 continued running during measurement. This does not measure the wall time of a full Actor update.",
+  "gpu_cold_comparison": "Before warmup, one comparison differed by up to 7.45e-9 in the first unequal tensor. All three outputs matched exactly on the warmed repeats."
+}
