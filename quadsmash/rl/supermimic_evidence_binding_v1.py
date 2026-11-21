@@ -56,14 +56,18 @@ def static_identity_failures(origin, current):
     return failures
 
 
-def runtime_identity(actor,adapter,task_contract,execution,policy_version):
+def execution_code_hashes():
     root=Path(__file__).parent
     code_hashes={name:hashlib.sha256((root/name).read_bytes()).hexdigest() for name in
         ('supermimic_policy_execution_v1.py','supermimic_v1.py','supermimic_physical_imagination_adapter_v1.py',
          'supermimic_probe_region_v1.py','supermimic_native_pair_capture_v1.py','supermimic_native_substep_trace_v1.py','supermimic_ball_sequence_v1.py','supermimic_action_ball_v1.py','supermimic_ball_impulse_prior_v1.py','supermimic_articulated_inertia_v1.py','supermimic_racket_material_contract_v1.py','supermimic_impact_timing_v1.py','supermimic_g07_memory_preview_v1.py','supermimic_execution_preview_v1.py')}
     for name in ('g07_shared_target_residual_v1.py','full_racket_residual_v4.py','full_racket_rally_controller_v4.py','full_racket_arm_target_rate_v4.py','persistent_recovery_assistance_v1.py'):
         code_hashes['control/'+name]=hashlib.sha256((root.parent/'control'/name).read_bytes()).hexdigest()
-    return dict(execution_code_sha256=code_hashes,schema='supermimic-runtime-identity-v1',actor_state_sha256=tensor_digest(actor.state_dict().items()),
+    return code_hashes
+
+
+def runtime_identity(actor,adapter,task_contract,execution,policy_version):
+    return dict(execution_code_sha256=execution_code_hashes(),schema='supermimic-runtime-identity-v1',actor_state_sha256=tensor_digest(actor.state_dict().items()),
         world_state_sha256=tensor_digest(adapter.state_dict().items()),task_contract_sha256=json_sha(task_contract),
         policy_execution=execution,policy_version=int(policy_version))
 

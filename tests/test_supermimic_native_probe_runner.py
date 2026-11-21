@@ -37,3 +37,14 @@ def test_resume_rejects_wrong_spec_or_corrupt_data(tmp_path):
     assert completed_probe_hash(tmp_path, 'nominal_b', spec) is None
     probe.write_bytes(b'corrupt')
     assert completed_probe_hash(tmp_path, 'nominal_a', spec) is None
+
+
+def test_resume_detects_recorded_source_drift_even_with_an_intact_archive(tmp_path):
+    import torch
+    from scripts.run_supermimic_event_aligned_native_probes import captured_source_mismatch, source_mismatch
+    expected = {'ball.py': 'new', 'executor.py': 'stable'}
+    path = tmp_path/'native_probe.pt'
+    torch.save(dict(execution_code_sha256=dict(expected)), path)
+    assert captured_source_mismatch(path, expected) is None
+    assert 'ball.py' in captured_source_mismatch(path, dict(expected, **{'ball.py':'old'}))
+    assert source_mismatch(expected, None)

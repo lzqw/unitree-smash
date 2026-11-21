@@ -51,6 +51,19 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def source_mismatch(expected, observed):
+    if not isinstance(observed, dict):
+        return 'Missing execution_code_sha256'
+    changed = sorted(key for key in expected.keys() | observed.keys() if expected.get(key) != observed.get(key))
+    return 'Different execution code: ' + ', '.join(changed) if changed else None
+
+
+def captured_source_mismatch(path, expected):
+    import torch
+    archive = torch.load(path, map_location='cpu', weights_only=True, mmap=True)
+    return source_mismatch(expected, archive.get('execution_code_sha256'))
+
+
 def completed_probe_hash(directory: Path, branch: str, spec: dict) -> str | None:
     receipt_path = directory / 'native_probe_manifest.json'
     probe = directory / 'native_probe.pt'
@@ -129,7 +142,9 @@ def main() -> int:
     if not args.output.exists():
         args.output.mkdir(parents=True)
     source_args = _parse_source(args)
-    startup = dict(
+    from quadsmash.rl.supermimic_evidence_binding_v1 import execution_code_hashes
+    pinned_source = execution_code_hashes()
+    startup = dict(execution_code_sha256=pinned_source,
         schema='event-aligned-native-probe-collection-v1',
         argv=sys.argv,
         cwd=os.getcwd(),
@@ -149,6 +164,10 @@ def main() -> int:
     startup_path = args.output / 'startup.json'
     if args.resume and startup_path.is_file():
         previous = json.loads(startup_path.read_text())
+        if 'execution_code_sha256' in previous:
+            mismatch = source_mismatch(pinned_source, previous['execution_code_sha256'])
+            if mismatch:
+                parser.error(mismatch)
         for field in ('spec_manifest_sha256', 'specs', 'seed', 'physics_device', 'g07_execution_root'):
             if previous.get(field) != startup[field]:
                 parser.error(f'Resume collection differs in {field}')
@@ -174,6 +193,9 @@ def main() -> int:
             probe_path = branch_output / 'native_probe.pt'
             digest = completed_probe_hash(branch_output, branch, spec) if args.resume else None
             if digest is not None:
+                mismatch = captured_source_mismatch(probe_path, pinned_source)
+                if mismatch:
+                    parser.error(f'{spec_name}/{branch}: {mismatch}')
                 completed.append(dict(spec=spec_name, branch=branch, command=[], exit_code=0,
                                       elapsed_s=0.0, output=str(branch_output),
                                       probe_path=str(probe_path), probe_sha256=digest,
@@ -211,14 +233,20 @@ def main() -> int:
         spec_name, branch, branch_output, command = job
         log_path = branch_output.parent / f'{branch}.launcher.log'
         started = time.time()
-        with log_path.open('w') as log:
-            result = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT,
-                                    env=child_env)
+        mismatch = source_mismatch(pinned_source, execution_code_hashes())
         probe_path = branch_output / 'native_probe.pt'
-        return dict(spec=spec_name, branch=branch, command=command,
-                    exit_code=result.returncode, elapsed_s=time.time() - started,
-                    output=str(branch_output), probe_path=str(probe_path),
-                    probe_sha256=completed_probe_hash(branch_output, branch, spec_by_name[spec_name]))
+        exit_code = None
+        digest = None
+        if not mismatch:
+            with log_path.open('w') as log:
+                result = subprocess.run(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, env=child_env)
+            exit_code = result.returncode
+            digest = completed_probe_hash(branch_output, branch, spec_by_name[spec_name])
+            if digest:
+                mismatch = captured_source_mismatch(probe_path, pinned_source)
+        return dict(spec=spec_name, branch=branch, command=command, source_error=mismatch,
+                    exit_code=exit_code, elapsed_s=time.time() - started,
+                    output=str(branch_output), probe_path=str(probe_path), probe_sha256=digest)
 
     # Each Isaac child uses roughly 3 GB on the RTX 5080.  Keep the default
     # serial mode for compatibility, while allowing a bounded two-child run
@@ -232,7 +260,7 @@ def main() -> int:
             (args.output / 'status.json').write_text(json.dumps(dict(
                 schema='event-aligned-native-probe-collection-v1', status='RUNNING',
                 workers=args.workers, total=total_branches, completed=completed), indent=2) + '\n')
-            if item['exit_code'] != 0 or item['probe_sha256'] is None:
+            if item['source_error'] or item['exit_code'] != 0 or item['probe_sha256'] is None:
                 (args.output / 'failure.json').write_text(json.dumps(item, indent=2) + '\n')
                 for other in futures:
                     other.cancel()
