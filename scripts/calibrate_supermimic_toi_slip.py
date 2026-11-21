@@ -100,7 +100,7 @@ def signed_training_capture(root, development_root, prior, mass):
         lane_counts={k:by_lane.count(k) for k in sorted(set(by_lane))}, supported_racket_lane_ticks=int((above_noise & comparable).sum()))
 
 
-def body_transfer(root, checkpoint, prior, model, groups, repeats, sequences, commands, replay=None, source_stage=None):
+def body_transfer(root, checkpoint, prior, model, groups, repeats, sequences, commands, replay=None, source_stage=None, measured=None):
     from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branch
     from quadsmash.rl.supermimic_physical_dataset_v1 import encode_physical
     from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
@@ -148,12 +148,17 @@ def body_transfer(root, checkpoint, prior, model, groups, repeats, sequences, co
         previous, feet, elapsed, present = [initial[k][lanes] for k in
                                             ('final_action', 'foot_contact', 'elapsed_s', 'ball_present')]
         first = torch.full((len(lanes),), float('inf'))
-        for i, (control, (_, label, _)) in enumerate(zip(raw['step_sequence'], seq, strict=True)):
+        for i, (control, (_, label, native_racket)) in enumerate(zip(raw['step_sequence'], seq, strict=True)):
             robot, contact, present_next = body(state, control['final_joint_targets'][lanes],
                                                 previous, feet.float(), present, elapsed, launch)
             if not present.all() or not present_next.all():
                 raise ValueError('Unexpected launch boundary in the Body oracle')
             stream = [torch.stack((v, w)) for v, w in zip(racket(state, body.geometry), racket(robot, body.geometry), strict=True)]
+            if measured:
+                # Diagnostic exchange of pose and twist independently. Only interval endpoints enter the prior.
+                replace = {'center': (0,), 'rotation': (1,), 'pose': (0,1), 'twist': (2,3), 'both': (0,1,2,3)}[measured]
+                for k in replace:
+                    stream[k] = native_racket[k]
             row = prepare(prior, state[:, 49:], label, stream)
             loaded = row['active'] & (row['object_id'] == 0)
             first = torch.where(loaded & first.isinf(), i * prior.dt + row['time'], first)
@@ -177,10 +182,11 @@ def main():
         p.add_argument('--' + arg, type=Path, required=True)
     p.add_argument('--body', type=Path, help='Compare the same ball model with a held-lane Body WM under recorded G07 targets')
     p.add_argument('--g07-training', type=Path)
+    p.add_argument('--racket-oracles', action='store_true', help='Exchange native pose and twist independently in the Body rollout')
     p.add_argument('--online-body', type=Path)
     p.add_argument('--source-stage', type=Path)
     a = p.parse_args()
-    if bool(a.source_stage) != bool(a.online_body) or (a.online_body and not a.body):
+    if bool(a.source_stage) != bool(a.online_body) or ((a.online_body or a.racket_oracles) and not a.body):
         p.error('--online-body needs its --source-stage and --body')
     torch.set_num_threads(2)
     cfg = json.loads(a.calibration.read_text())
@@ -243,6 +249,13 @@ def main():
     if a.online_body:
         report['online_body_racket'] = body_transfer(a.g07_development, a.body, prior, fitted, groups, repeats,
                                                     trajectories, commands, a.online_body, a.source_stage)
+    if a.racket_oracles:
+        report['racket_oracles'] = {k: body_transfer(a.g07_development, a.body, prior, fitted, groups, repeats, trajectories,
+                                                     commands, a.online_body, a.source_stage, measured=k)
+                                     for k in ('center','rotation','pose','twist','both')}
+        native_delta = torch.tensor([c['candidate']['delta_mps'] for c in transfer['cases']])
+        measured = torch.tensor(report['racket_oracles']['both']['predicted_delta_mps'])
+        torch.testing.assert_close(measured,native_delta,atol=1e-6,rtol=1e-6)
     if a.body:
         key = 'online_body_racket' if a.online_body else 'body_racket'
         stable = report[key]['metrics']['stable_signed']
