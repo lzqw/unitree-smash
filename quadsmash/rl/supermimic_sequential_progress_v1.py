@@ -33,6 +33,10 @@ class SequentialProgress:
                     refresh_world_updates=recovery_world+row.get('refresh_world_updates',0) if known else None,
                     refresh_critic_updates=recovery_critic+row.get('refresh_critic_updates',0) if known else None)
 
+    def head_attempts(self, head):
+        """Includes the active proposal, already recorded before start selection."""
+        return sum(row['attempts'] for key, row in self.cycles.items() if key.endswith('/'+head))
+
     def state_dict(self):return dict(schema=self.schema,cycles=copy.deepcopy(self.cycles))
     def load_state_dict(self,state):
         if state['schema']!=self.schema:raise ValueError('Sequential progress schema mismatch')

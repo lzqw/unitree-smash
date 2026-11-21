@@ -225,6 +225,8 @@ def main():
                         help='Use a training-fitted contact target plane in bounded TOI-only imagination')
     parser.add_argument('--toi-racket-weight',type=float,default=1.0,
                         help='Approach TOI-racket-only auxiliary loss weight')
+    parser.add_argument('--continuous-approach-starts',action='store_true',
+                        help='Advance the four start quotas across short blocks using checkpointed Approach attempts')
     parser.add_argument('--approach-objective',choices=('task','toi_racket_only'),default='task',
                         help='Approach auxiliary objective. toi_racket_only uses event-aligned TOI racket references while ball contact gradients stay detached.')
     parser.add_argument('--paired-evaluation-baseline',type=Path,default=None,
@@ -790,6 +792,8 @@ def run(args, *, alternating=None):
         schedule=SequentialProgress.for_run(resumed.get('sequential_progress') if args.resume_training else None,
                                             fresh=args.resume_reset_schedule or args.resume_next_cycle)
         if args.resume_training and not args.resume_next_cycle and not args.resume_reset_schedule:
+            if not args.extend_completed_research and args.continuous_approach_starts != resumed['config'].get('continuous_approach_starts',False):
+                raise ValueError('Resume changes the Approach start quota schedule')
             if alternating is None and schedule.complete():raise ValueError('Completed schedule requires explicit resume-next-cycle and native acceptance')
         if args.resume_training and not args.resume_next_cycle:
             saved_alternating=resumed.get('alternating_schedule')
@@ -999,7 +1003,7 @@ def run(args, *, alternating=None):
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
-        config=dict(toi_effective_start_lanes=args.toi_effective_start_lanes,recovery_effective_start_lanes=args.recovery_effective_start_lanes,sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
+        config=dict(continuous_approach_starts=args.continuous_approach_starts,toi_effective_start_lanes=args.toi_effective_start_lanes,recovery_effective_start_lanes=args.recovery_effective_start_lanes,sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=trainer.actor_lr,actor_anchor=trainer.anchor_coeff,world_lr=args.world_learning_rate,critic_lr=2e-4,
             wm_forward_guard_sha256=forward_guard.spec_sha256 if forward_guard else None,wm_replay_handoff=replay_handoff,
             wm_separate_supervision=args.wm_separate_supervision,wm_direct_long_body_supervision=args.wm_direct_long_body_supervision,wm_active_flight_batch=args.wm_active_flight_batch,wm_natural_flight_batch=args.wm_natural_flight_batch,wm_natural_flight_loss=args.wm_natural_flight_loss,
@@ -1521,14 +1525,16 @@ def run(args, *, alternating=None):
                                 previews[key]=toi_start_lanes(start,candidates)
                             return previews[key]
                         bank_precheck=partial(precheck,bank_only=True)
-                    sampled,start_sampling=replay.actor_start_bank.sample(attempts,eligible_lanes=bank_precheck)
+                    draw=schedule.head_attempts('approach') if args.continuous_approach_starts else attempts
+                    sampled,start_sampling=replay.actor_start_bank.sample(draw,eligible_lanes=bank_precheck)
+                    start_sampling['approach_draw_index']=draw
                     if sampled is not None and training_lane_available(sampled):
                         row=sampled
                     else:
                         start_sampling['fallback']='verified_initial_archive_or_event_pool'
                         start_sampling['excluded_holdout_only_start']=sampled is not None
                         if precheck is not None:
-                            offset=(attempts-1)%len(pool)
+                            offset=(draw-1)%len(pool)
                             for alternative in pool[offset:]+pool[:offset]:
                                 mask=precheck(alternative)
                                 if mask.any():
@@ -1542,9 +1548,9 @@ def run(args, *, alternating=None):
                         if start_sampling.get('fallback'):
                             alternatives=((alt,None) for alt in pool[offset:]+pool[:offset])
                         else:
-                            alternatives=replay.actor_start_bank.same_category_starts(start_sampling['actual'],attempts)
+                            alternatives=replay.actor_start_bank.same_category_starts(start_sampling['actual'],draw)
                         check_alternative=precheck if start_sampling.get('fallback') else bank_precheck
-                        proposal_rows,layout=pool_toi_starts(row,alternatives,check_alternative,args.toi_effective_start_lanes,attempts)
+                        proposal_rows,layout=pool_toi_starts(row,alternatives,check_alternative,args.toi_effective_start_lanes,draw)
                         row=proposal_rows[0]
                         actual=sum(len(r['lane_episode_tick']) for r in layout)
                         start_sampling.update(requested_lanes=args.toi_effective_start_lanes,effective_lanes=actual,

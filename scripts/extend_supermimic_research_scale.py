@@ -36,6 +36,8 @@ def extension_registration(parent, output, tensorboard, total):
     initial = reg.get('initial_checkpoint', cmd[cmd.index('--resume-training')+1])
     if '--resume-reset-schedule' in cmd:
         cmd.remove('--resume-reset-schedule')
+    if '--continuous-approach-starts' not in cmd:
+        cmd.append('--continuous-approach-starts')
     if '--extend-completed-research' not in cmd:
         cmd.append('--extend-completed-research')
     for flag, value in (('--cycles', total//256), ('--resume-training', checkpoint),

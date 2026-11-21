@@ -97,3 +97,25 @@ def test_extension_launches_from_final_refresh_and_preserves_original_axes(tmp_p
     torch.save(ck, train/'latest.pt')
     with pytest.raises(ValueError, match='post-refresh'):
         extension_registration(parent, tmp_path/'next', tmp_path/'tb', 1024)
+
+
+def test_approach_draws_span_short_blocks_rejections_and_resume():
+    from collections import Counter
+    from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank
+    from quadsmash.rl.supermimic_sequential_progress_v1 import SequentialProgress
+
+    schedule = SequentialProgress()
+    bank = ActorStartBank()
+    requested = []
+    for block, count in enumerate([8, 9, 3]):
+        schedule.block(block, 'recovery', 8, 16)['attempts'] = 10
+        for i in range(1, count+1):
+            progress = schedule.block(block, 'approach', 8, 16)
+            progress['attempts'] = i
+            progress['accepted'] = min(i, 8)
+            if block == 1 and i == 4:
+                schedule = SequentialProgress.for_run(schedule.state_dict(), fresh=False)
+            draw = schedule.head_attempts('approach')
+            assert draw == len(requested)+1
+            requested.append(bank.sample(draw)[1]['requested'])
+    assert Counter(requested) == {'gate_onset':5, 'pre_contact':7, 'failure_pre':5, 'success_near':3}
