@@ -213,6 +213,8 @@ def main():
     parser.add_argument('--wm-approach-stage-quota',default='uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8')
     parser.add_argument('--wm-contact-stage-quota',default='uniform=24,hit_prepare=32,contact_release=48,post_hit=24')
     parser.add_argument('--wm-stage-quota',default='uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8')
+    parser.add_argument('--wm-latest-policy-windows', type=int,
+                        help='Prefer this many whole windows from the latest native behavior within existing quotas')
     parser.add_argument('--wm-recent-policy-window',type=int,default=32)
     parser.add_argument('--wm-recent-tick-window',type=int,default=1024)
     parser.add_argument('--wm-holdout-lanes',default='',
@@ -293,6 +295,8 @@ def main():
     if args.wm_bootstrap_max_ticks < 0:
         parser.error('Native WM bootstrap budget cannot be negative')
     if args.wm_batch_size < 128 or args.wm_batch_size%128: parser.error('wm-batch-size must be a positive multiple of128')
+    if args.wm_latest_policy_windows is not None and not 0 <= args.wm_latest_policy_windows <= args.wm_batch_size:
+        parser.error('Latest-policy preference must fit within the WM batch')
     if args.wm_recent_policy_window < 0 or args.wm_recent_tick_window < 1: parser.error('WM freshness windows invalid')
     if args.approach_refresh_interval < 1: parser.error('approach-refresh-interval must be positive')
     if args.refresh_ticks not in (0,800): parser.error('Frozen refresh requires the original 800-tick task')
@@ -644,6 +648,8 @@ def run(args, *, alternating=None):
         plane_calibration = None
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
+            if args.wm_latest_policy_windows is None and not args.resume_reset_schedule:
+                args.wm_latest_policy_windows = resumed['config'].get('wm_latest_policy_windows', 0)
             if not args.resume_reset_schedule and resumed['config'].get('shuffle_wm_quota_groups'):
                 args.shuffle_wm_quota_groups=True
             if research and not args.resume_reset_schedule and resumed['config'].get('diagnostic_critic_loss'):
@@ -1081,6 +1087,7 @@ def run(args, *, alternating=None):
             wm_batch_size=args.wm_batch_size,wm_source_quota=args.wm_source_quota,wm_stage_quota=args.wm_stage_quota,
             wm_approach_stage_quota=args.wm_approach_stage_quota,wm_contact_stage_quota=args.wm_contact_stage_quota,
             approach_sampling_thresholds=dict(gate=.25,minimum_gate_steps=4,near_distance_m=.30),approach_refresh_interval=args.approach_refresh_interval,
+            wm_latest_policy_windows=args.wm_latest_policy_windows or 0,
             wm_recent_policy_window=args.wm_recent_policy_window,wm_recent_tick_window=args.wm_recent_tick_window,
             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
             action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()) if args.action_ball_checkpoint else None,
@@ -1336,7 +1343,7 @@ def run(args, *, alternating=None):
                     source_quota=sampling_source_quota,stage_quota=sampling_stage_quota,head=head,
                     recent_policy_window=args.wm_recent_policy_window,
                     recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes,report_loss_groups=True,
-                    shuffle_quota_groups=args.shuffle_wm_quota_groups)
+                    shuffle_quota_groups=args.shuffle_wm_quota_groups,latest_policy_windows=args.wm_latest_policy_windows or 0)
                 sampling['sampling_mode']=args.wm_sampling_mode
                 sampling['promotion_gate']=sampling_promotion_gate(sampling,args.wm_sampling_mode)
                 sampling['source_profile'] = {
@@ -1412,7 +1419,7 @@ def run(args, *, alternating=None):
                         source_quota=args.wm_source_quota,stage_quota=quota,head=name,
                         recent_policy_window=args.wm_recent_policy_window,
                         recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes,report_loss_groups=True,
-                        shuffle_quota_groups=args.shuffle_wm_quota_groups)
+                        shuffle_quota_groups=args.shuffle_wm_quota_groups,latest_policy_windows=args.wm_latest_policy_windows or 0)
                     reports[name] = dict(source_counts=sample['source_counts'],stage_counts=sample['stage_counts'],
                                          gate=sampling_promotion_gate(sample,'promotion'))
                 with (args.output/'wm_bootstrap.jsonl').open('a') as log:

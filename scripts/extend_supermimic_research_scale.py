@@ -40,6 +40,8 @@ def extension_registration(parent, output, tensorboard, total):
         cmd.append('--continuous-approach-starts')
     if '--diagnostic-critic-loss' not in cmd:
         cmd.append('--diagnostic-critic-loss')
+    if '--wm-latest-policy-windows' not in cmd:
+        cmd.extend(['--wm-latest-policy-windows', '6'])
     if '--shuffle-wm-quota-groups' not in cmd:
         cmd.append('--shuffle-wm-quota-groups')
     if '--recovery-prefix-and-string-margin' not in cmd:

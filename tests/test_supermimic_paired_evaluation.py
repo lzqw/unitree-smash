@@ -165,3 +165,13 @@ def test_failure_flips_require_a_frame_first_and_count_ground_on_all_cases():
     assert first_episode_failure_flips(before, after, .0000625) == dict(
         new_body_ground=['a', 'c', 'd'], avoided_body_ground=['b'],
         qualified_to_frame_first=['a'], frame_first_to_qualified=['b'])
+
+
+def test_simultaneous_and_unmeasured_frame_order_are_separate():
+    from scripts.compare_supermimic_fixed_stages import frame_before_string
+    dt = .0000625
+    hit = dict(had_contact=True, frame_hit=True, string_hit=True, contact_time_s=2.)
+    assert frame_before_string(dict(hit, first_string_time_s=2.), dt) is False
+    assert frame_before_string(dict(hit, first_string_time_s=2.+dt), dt) is True
+    assert frame_before_string(hit, dt) is None
+    assert frame_before_string(dict(hit, string_hit=False), dt) is True

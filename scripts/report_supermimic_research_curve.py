@@ -70,6 +70,10 @@ def scalars(row):
         metrics['world/contact_supervision_batches'] = len(fits)
         metrics['world/contact_optimizer_steps'] = sum(int(r['updated']) for r in fits)
         metrics['world/sampled_contact_events'] = sum(r['measured_events'] for r in fits)
+    latest = [r['sampling']['latest_policy_windows'] for r in reports if 'latest_policy_windows' in r.get('sampling', {})]
+    if latest:
+        for key in ('requested', 'sampled'):
+            metrics['world/latest_policy_windows_' + key] = sum(entry[key] for entry in latest)
     if reports and all('online_fit_by_policy' in r.get('sampling', {}) for r in reports):
         # Collection and all WM updates precede this block's first Actor proposal.
         behavior = str(row['accepted_id'] - int(row['update_accepted']))

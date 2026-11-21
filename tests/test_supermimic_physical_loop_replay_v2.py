@@ -133,3 +133,26 @@ def test_intervention_windows_respect_lane_and_stream_boundaries_and_keep_source
     assert set(window['targets'][0,:,0].tolist())=={-1.,1.}
     assert torch.equal(window['targets'][0],window['targets'][-1])
     assert not replay.new_starts
+
+
+def test_preferred_windows_use_the_entire_latest_online_policy_and_exclude_holdout():
+    t,n = 16,4
+    data = _data(t,n)
+    for key in ('state','next_state','values','valid','next_values','next_valid','targets','previous_action','torque'):
+        data[key] = torch.zeros(t,n,3)
+    for key in ('present','terminated','timeout'):
+        data[key] = torch.zeros(t,n,dtype=torch.bool)
+    data['episode'] = torch.zeros(t,n,dtype=torch.long)
+    replay = PhysicalLoopReplay({'tensors':data},None,capacity_ticks=64)
+    replay.streams[:t] = 2
+    replay.native_ticks[:t] = torch.arange(t)
+    replay.source_ids[:t] = 1
+    replay.policy_versions[:t] = 12
+    replay.policy_versions[t-3:t] = 13
+    for steps, expected in ((4, 0), (3, 3)):
+        _, lanes, stats = replay.window(steps,4,device='cpu',head='contact',
+            source_quota={'recent_online':4},stage_quota={'uniform':4},excluded_lanes=[0],
+            latest_policy_windows=4)
+        assert 0 not in lanes.tolist()
+        assert stats['latest_policy_windows'] == dict(
+            requested=4, eligible=expected, sampled=expected, policy_version=13, stream=2)

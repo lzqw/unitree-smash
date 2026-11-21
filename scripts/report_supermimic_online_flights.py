@@ -7,7 +7,7 @@ from collections import Counter
 from pathlib import Path
 
 from quadsmash.rl.supermimic_archive_storage_v1 import read_archive_rows
-from scripts.compare_supermimic_fixed_stages import load_run
+from scripts.compare_supermimic_fixed_stages import frame_before_string, load_run
 
 
 def flight_flags(shot):
@@ -49,6 +49,8 @@ def report(arm):
     import torch
     releases = {}
     finished = {}
+    frame_first = {}
+    physics_dt = manifest['task_contract']['physics_dt_s']
     native_rewards = None
     for chunk in manifest['chunks']:
         with read_archive_rows(archive,chunk,scratch=arm) as rows:
@@ -72,6 +74,11 @@ def report(arm):
                     shot = {k: bool(b[k][lane]) for k in ('had_contact','frame_hit','legal_initial_contact','string_hit','ground_seen','released','airborne_string_hit','crossed_net',
                                                           'shuttle_net_contact','landed_target')}
                     shot['outgoing_velocity_mps'] = b['outgoing_velocity'][lane].tolist()
+                    first_string = after.get('auxiliary', {}).get('environment', {}).get('first_string_time')
+                    if first_string is not None:
+                        shot['first_string_time_s'] = float(first_string[lane])
+                    shot['contact_time_s'] = float(b['contact_time'][lane])
+                    frame_first[lane] = frame_before_string(shot, physics_dt)
                     finished[lane] = flight_flags(shot)
         if len(finished)==len(cases):
             break
@@ -90,6 +97,15 @@ def report(arm):
             initial_landed_target=sum(a['landed_target'] for a,b in group),
             online_landed_target=sum(b['landed_target'] for a,b in group),
             online_frame_hit=sum(b['frame_hit'] for a,b in group),online_no_contact=sum(not b['had_contact'] for a,b in group))
+    before_frame = {i: frame_before_string(initial[i], physics_dt) for i in paired}
+    first_contact_changes = dict(
+        paired_cases=len(paired),
+        unknown_initial_frame_order=[cases[i] for i in paired if before_frame[i] is None],
+        unknown_online_frame_order=[cases[i] for i in paired if frame_first[i] is None],
+        qualified_to_frame_first=[cases[i] for i,(a,b) in paired.items()
+                                  if a['qualified_contact'] and not b['qualified_contact'] and frame_first[i]],
+        frame_first_to_qualified=[cases[i] for i,(a,b) in paired.items()
+                                  if not a['qualified_contact'] and b['qualified_contact'] and before_frame[i]])
     shooting_reward = {}
     for index,(metric,weight) in enumerate((('qualified_contact',20.),('scoring_cross',5.),('scoring_target',15.))):
         observed = float(native_rewards[list(paired),index].sum()) if paired else 0.
@@ -101,7 +117,7 @@ def report(arm):
                 manifest_env_steps=manifest['transitions'],cases=len(cases),online_resolved=len(finished),
                 paired_resolved_cases=len(paired),unresolved_online_cases=[c for i,c in enumerate(cases) if i not in finished],
                 unresolved_baseline_cases=[cases[i] for i in finished if i not in paired],
-                release_policy_versions=dict(Counter(releases[i] for i in paired if i in releases)),metrics=flags,landing_by_airborne_string_hit=contact_groups,shot_reward_totals=shooting_reward)
+                release_policy_versions=dict(Counter(releases[i] for i in paired if i in releases)),metrics=flags,first_contact_changes=first_contact_changes,landing_by_airborne_string_hit=contact_groups,shot_reward_totals=shooting_reward)
 
 
 def publish(result, folder):
@@ -114,6 +130,9 @@ def publish(result, folder):
                 writer.add_scalar(f'{metric}/{key}',len(count) if isinstance(count,list) else count,step)
         n=result['paired_resolved_cases']
         if n:
+            for key, cases in result.get('first_contact_changes', {}).items():
+                if isinstance(cases, list):
+                    writer.add_scalar('first_contact/'+key,len(cases),step)
             for metric,totals in result['shot_reward_totals'].items():
                 delta=totals['online_recorded']-totals['initial_from_native_latches']
                 writer.add_scalar('shot_reward_difference_per_case/'+metric,delta/n,step)
@@ -123,8 +142,36 @@ if __name__=='__main__':
     cli=argparse.ArgumentParser(description=__doc__)
     cli.add_argument('--arm-dir',type=Path,required=True)
     cli.add_argument('--tensorboard',type=Path)
+    cli.add_argument('--follow-pid',type=int,help='Wait for the first 512 native ticks and finish by tick 800')
+    cli.add_argument('--output',type=Path,help='Save the paired first-flight case report')
     args=cli.parse_args()
-    result=report(args.arm_dir)
-    if args.tensorboard:
-        publish(result,args.tensorboard)
-    print(json.dumps(result,indent=2,allow_nan=False))
+    def emit():
+        result=report(args.arm_dir)
+        rendered=json.dumps(result,indent=2,allow_nan=False)
+        if args.output:
+            temp=args.output.with_suffix('.tmp')
+            temp.write_text(rendered+'\n')
+            temp.replace(args.output)
+        if args.tensorboard:
+            publish(result,args.tensorboard)
+        print(rendered,flush=True)
+        return result
+    if args.follow_pid is None:
+        emit()
+    else:
+        import psutil
+        import time
+        owner=psutil.Process(args.follow_pid)
+        command=owner.cmdline()
+        if ('scripts/train_supermimic_physical_block.py' not in command or
+                Path(command[command.index('--output')+1]).resolve() != args.arm_dir.resolve()/'train'):
+            raise ValueError('Training process belongs to a different arm')
+        manifest=args.arm_dir/'train/native_transitions/manifest.json'
+        for milestone in (512,800):
+            while not manifest.is_file() or json.loads(manifest.read_text())['control_ticks'] < milestone:
+                if not owner.is_running() or owner.status()==psutil.STATUS_ZOMBIE:
+                    raise SystemExit('Training ended before the first-flight panel was complete')
+                time.sleep(20)
+            result=emit()
+            if result['online_resolved']==result['cases'] or result['manifest_env_steps']>=800*result['cases']:
+                break

@@ -1,0 +1,133 @@
+{
+  "refreshes": [
+    {
+      "phase": "recovery",
+      "behavior": 53,
+      "updates": 8,
+      "online_transition_uses_by_behavior": {
+        "8": 1984,
+        "16": 1440,
+        "17": 1280,
+        "33": 2032,
+        "49": 488,
+        "41": 744
+      },
+      "current_behavior_transition_uses": 0,
+      "wm_source_quota": {
+        "recent_online": 24,
+        "older_online": 8,
+        "initial_archive": 32,
+        "action_identification": 26,
+        "contact_event": 38
+      },
+      "contact_optimizer_steps": 4
+    },
+    {
+      "phase": "approach",
+      "behavior": 61,
+      "updates": 8,
+      "online_transition_uses_by_behavior": {
+        "8": 1408,
+        "16": 1008,
+        "17": 2272,
+        "33": 3101,
+        "9": 77,
+        "10": 51,
+        "41": 292,
+        "49": 219,
+        "25": 4
+      },
+      "current_behavior_transition_uses": 0,
+      "wm_source_quota": {
+        "recent_online": 24,
+        "older_online": 8,
+        "initial_archive": 32,
+        "action_identification": 26,
+        "contact_event": 38
+      },
+      "contact_optimizer_steps": 4
+    }
+  ],
+  "native_support": {
+    "policy_version": 61,
+    "native_ticks": [
+      5758,
+      5885
+    ],
+    "steps": 16,
+    "excluded_lanes": 83,
+    "eligible_windows": {
+      "approach_active": 2,
+      "hit_prepare": 0,
+      "contact_release": 0,
+      "approach_failure": 0,
+      "post_hit": 0,
+      "near_miss": 0,
+      "illegal_contact": 0,
+      "invalid_outgoing": 0,
+      "failed_net_crossing": 0,
+      "failed_target_landing": 0,
+      "uniform": 5085
+    },
+    "eligible_noncontact_windows": {
+      "approach_active": 2,
+      "hit_prepare": 0,
+      "contact_release": 0,
+      "approach_failure": 0,
+      "post_hit": 0,
+      "near_miss": 0,
+      "illegal_contact": 0,
+      "invalid_outgoing": 0,
+      "failed_net_crossing": 0,
+      "failed_target_landing": 0,
+      "uniform": 5085
+    },
+    "source_chunks": [
+      {
+        "file": "chunk_00004.pt.zst",
+        "sha256": "227fc67d18b8006d407aa39c38a5e4473e477338851b24bc32bb966b1af69a3b",
+        "ticks": 32
+      },
+      {
+        "file": "chunk_00005.pt.zst",
+        "sha256": "e52e22ead5edeb3b543a1a6099e7cc8983ddd43305d050ff519ee77e3c2b5fb1",
+        "ticks": 32
+      },
+      {
+        "file": "chunk_00006.pt.zst",
+        "sha256": "77763475b3749e41f13ea28e8d7acc5c30d87d11a79441144b033e8b3c466dd8",
+        "ticks": 32
+      },
+      {
+        "file": "chunk_00007.pt.zst",
+        "sha256": "c61f810cbb69c82c349997848f049336d43c79ef16becc3b67038b8f4397fb3d",
+        "ticks": 32
+      }
+    ],
+    "unique_racket_edges": 0
+  },
+  "sampler_replay": {
+    "0": [
+      14,
+      9,
+      16,
+      11,
+      16,
+      8,
+      12,
+      12
+    ],
+    "6": [
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6,
+      6
+    ],
+    "scope": "Two real behavior blocks, 24 recent-source slots; two active and 22 uniform; excludes the remaining WM sources. Offline sampler only.",
+    "latest_eligible": 5085
+  }
+}

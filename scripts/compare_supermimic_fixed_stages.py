@@ -145,18 +145,26 @@ def paired_task_outcomes(result):
                                    seed=seed, resamples=len(means)))
 
 
+def frame_before_string(row, physics_dt):
+    """A frame-only contact or a measured first frame earlier than the first string substep."""
+    if not row['had_contact'] or not row['frame_hit']:
+        return False
+    if not row['string_hit']:
+        return True
+    first_string, first_contact = row.get('first_string_time_s'), row.get('contact_time_s')
+    if first_string is None or first_contact is None or not np.isfinite([first_string, first_contact]).all():
+        return None
+    return bool(first_string > first_contact + physics_dt / 2)
+
+
 def first_episode_failure_flips(before, after, physics_dt):
     """Track body-ground changes and qualified-string/frame-first switches on matched cases."""
     if before.keys() != after.keys():
         raise ValueError('Failure comparison requires identical case IDs')
 
-    def frame_first(row):
-        return (row['had_contact'] and row['frame_hit']
-                and (not row['string_hit'] or row['first_string_time_s'] > row['contact_time_s'] + physics_dt / 2))
-
     def switched(string_case, frame_case):
         return (string_case['qualified_airborne_string_contact']
-                and not frame_case['qualified_airborne_string_contact'] and frame_first(frame_case))
+                and not frame_case['qualified_airborne_string_contact'] and frame_before_string(frame_case, physics_dt))
 
     return dict(new_body_ground=[k for k in before if after[k]['body_ground_seen'] and not before[k]['body_ground_seen']],
                 avoided_body_ground=[k for k in before if before[k]['body_ground_seen'] and not after[k]['body_ground_seen']],

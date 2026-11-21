@@ -27,14 +27,15 @@ class Flow:
             while node!=s:node0,e=parent[node];e[1]-=amount;e[2][1]+=amount;node=node0
             total+=amount
 
-def capped_allocation(sources, pattern, identities, names, sq, tq, batch, cap, source_quota, *, group_generator=None):
+def capped_allocation(sources, pattern, identities, names, sq, tq, batch, cap, source_quota, *, group_generator=None, preferred=None, preferred_count=0):
     """Integer counts per (source, membership, episode), not per-transition binaries."""
     import numpy as np
     from scipy.optimize import milp, Bounds, LinearConstraint
     from scipy.sparse import csc_matrix
     groups={}
     for i,(source,signature,episode) in enumerate(zip(sources.tolist(),pattern.tolist(),identities)):
-        groups.setdefault((source,signature,episode),[]).append(i)
+        key = (source, signature, episode, preferred[i] if preferred is not None else False)
+        groups.setdefault(key, []).append(i)
     groups=list(groups.items())
     if group_generator is not None:
         # Equivalent optimal allocations can select the same episodes on every draw.
@@ -49,7 +50,7 @@ def capped_allocation(sources, pattern, identities, names, sq, tq, batch, cap, s
     # the existing wildcard semantics and are resolved by the flow path only.
     if source_quota and sum(sq.values())!=batch:
         raise ValueError('Episode-capped source quotas must sum to batch')
-    for gi,((source,signature,episode),ids) in enumerate(groups):
+    for gi,((source,signature,episode,_),ids) in enumerate(groups):
         for j,name in enumerate(names):
             if not signature&(1<<j):continue
             col=len(variables);variables.append((gi,name))
@@ -57,18 +58,37 @@ def capped_allocation(sources, pattern, identities, names, sq, tq, batch, cap, s
                               (('group',gi),len(ids)),(('episode',episode),cap)):
                 ri.append(constraint(key,limit));ci.append(col);values.append(1.)
     if not variables:return [torch.tensor(ids) for _,ids in groups],[],0
-    matrix=csc_matrix((values,(ri,ci)),shape=(len(limits),len(variables)))
-    result=milp(-np.ones(len(variables)),integrality=np.ones(len(variables)),
-        bounds=Bounds(0,batch),constraints=LinearConstraint(matrix,0,np.asarray(limits)),
+    # A lost quota slot costs more than the entire latest-policy preference.
+    n = len(variables)
+    objective = -np.ones(n)
+    lower = np.zeros(len(limits))
+    upper = np.full(n, batch)
+    if preferred_count and any(preferred):
+        # Among maximum-coverage allocations, minimize the absolute distance
+        # to the target. Extra latest windows are still legal when events need them.
+        for sign in (1, -1):
+            row = len(limits)
+            for col, (gi, _) in enumerate(variables):
+                if groups[gi][0][3]:
+                    ri.append(row); ci.append(col); values.append(sign)
+            ri.append(row); ci.append(n); values.append(-1.)
+            limits.append(sign * preferred_count)
+        lower = np.append(lower, [-np.inf, -np.inf])
+        upper = np.append(upper, batch)
+        objective = np.append(objective * (batch + 1), 1.)
+    matrix=csc_matrix((values,(ri,ci)),shape=(len(limits),len(objective)))
+    result=milp(objective,integrality=np.ones(len(objective)),
+        bounds=Bounds(0,upper),constraints=LinearConstraint(matrix,lower,np.asarray(limits)),
         options={'time_limit':10.0,'mip_rel_gap':0.0})
     if not result.success:raise RuntimeError(f'Joint quota allocator did not establish optimum: {result.message}')
     allocation=np.rint(result.x).astype(int)
     if not np.allclose(result.x,allocation,atol=1e-6) or (matrix@allocation>np.asarray(limits)+1e-6).any():
         raise RuntimeError('Invalid integer quota allocation')
+    allocation = allocation[:n]
     return ([torch.tensor(ids,dtype=torch.long) for _,ids in groups],
             [(gi,name,int(count)) for (gi,name),count in zip(variables,allocation) if count],int(allocation.sum()))
 
-def sample_joint(stage_pools,source_labels,batch,generator,*,source_quota=None,stage_quota=None,episode_keys=None,max_per_episode=8,shuffle_quota_groups=False):
+def sample_joint(stage_pools,source_labels,batch,generator,*,source_quota=None,stage_quota=None,episode_keys=None,max_per_episode=8,shuffle_quota_groups=False,preferred_mask=None,preferred_count=0):
     if batch<1 or max_per_episode<1:raise ValueError('Positive batch and episode cap required')
     sq=dict(source_quota or {});tq=dict(stage_quota or {'uniform':batch})
     if any(v<0 for v in list(sq.values())+list(tq.values())) or sum(sq.values())>batch or sum(tq.values())>batch:raise ValueError('Invalid quotas')
@@ -87,9 +107,17 @@ def sample_joint(stage_pools,source_labels,batch,generator,*,source_quota=None,s
     pattern=(memberships.long()*(2**torch.arange(len(names)))).sum(1)
     selected=[];allocated_stage=Counter();used=set();ep_counts=Counter()
     identities=episode_keys[pairs[:,0],pairs[:,1]].tolist() if episode_keys is not None else codes.tolist()
+    if not 0 <= preferred_count <= batch:
+        raise ValueError('Latest-policy preference must fit within the batch')
+    preferred = None
+    if preferred_count:
+        if episode_keys is None or preferred_mask is None or preferred_mask.shape != source_labels.shape:
+            raise ValueError('Latest-policy preference needs window membership and episode identities')
+        preferred = preferred_mask[pairs[:,0],pairs[:,1]].tolist()
     if episode_keys is not None:
         group_rows,assignments,allocated=capped_allocation(sources,pattern,identities,names,sq,tq,batch,max_per_episode,source_quota,
-                                                            group_generator=generator if shuffle_quota_groups else None)
+                                                            group_generator=generator if shuffle_quota_groups else None,
+                                                            preferred=preferred, preferred_count=preferred_count)
     else:
         grouped=torch.stack((sources,pattern),1);unique,inverse=torch.unique(grouped,dim=0,return_inverse=True)
         flow=Flow();S=('root',);T=('sink',);links=[]
@@ -127,7 +155,7 @@ def sample_joint(stage_pools,source_labels,batch,generator,*,source_quota=None,s
     counts={int(s):int((selected_sources==s).sum()) for s in sources.unique().tolist()}
     coverage={k:int(torch.isin(chosen[:,0]*width+chosen[:,1],v[:,0]*width+v[:,1]).sum()) for k,v in dict(stage_pools,**{'uniform':pools['uniform']}).items()}
     actual_stage_counts={k:int(coverage.get(k,0)) for k in names}
-    return chosen,dict(source_counts=counts,stage_counts={k:allocated_stage[k] for k in names},
+    report=dict(source_counts=counts,stage_counts={k:allocated_stage[k] for k in names},
         stage_actual_counts=actual_stage_counts,
         source_requested=source_quota or {},stage_requested=stage_quota or tq,
         source_shortfall={k:max(0,v-counts.get(k,0)) for k,v in (source_quota or {}).items()},
@@ -139,3 +167,7 @@ def sample_joint(stage_pools,source_labels,batch,generator,*,source_quota=None,s
             'stage': {str(k): float(v)/float(batch) for k,v in actual_stage_counts.items()},
         },
         max_per_episode=max_per_episode,actual_max_per_episode=max(ep_counts.values()),unique_window_count=batch)
+    if preferred is not None:
+        report['latest_policy_windows'] = dict(requested=preferred_count, eligible=sum(preferred),
+                                              sampled=sum(preferred[i] for i in selected))
+    return chosen, report

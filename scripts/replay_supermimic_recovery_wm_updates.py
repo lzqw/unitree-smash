@@ -254,7 +254,9 @@ def main():
                     window,lanes,hist=replay.window(timebase.world_steps,cfg['world_batch'],
                         stage['attempt_id']*len(reports)+offset,device,source_quota=cfg['wm_source_quota'],
                         stage_quota=cfg['wm_stage_quota'],head='recovery',excluded_lanes=held,
-                        recent_policy_window=cfg['wm_recent_policy_window'],recent_tick_window=cfg['wm_recent_tick_window'])
+                        recent_policy_window=cfg['wm_recent_policy_window'],recent_tick_window=cfg['wm_recent_tick_window'],
+                        shuffle_quota_groups=cfg.get('shuffle_wm_quota_groups',False),
+                        latest_policy_windows=cfg.get('wm_latest_policy_windows',0))
                     for key in ('source_counts','stage_counts','stage_actual_counts','actual_event_coverage','fallback_count',
                                 'unique_episode_count','native_tick_min','native_tick_max'):
                         if hist[key]!=observed_step['sampling'][key]:

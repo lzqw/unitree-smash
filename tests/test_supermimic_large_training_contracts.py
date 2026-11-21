@@ -200,3 +200,19 @@ def test_capped_quota_ties_vary_episodes_and_resume_from_replay_rng():
     assert set(first[:, 1].tolist()) != set(second[:, 1].tolist())
     rng.set_state(state)
     assert torch.equal(draw(), second)
+
+
+@pytest.mark.parametrize('needed,expected', [(0, 0), (2, 2), (4, 4)])
+def test_latest_preference_preserves_scarce_events_and_episode_cap(needed, expected):
+    pairs = torch.cartesian_prod(torch.arange(3), torch.arange(4))
+    sources = torch.zeros(3, 4, dtype=torch.long)
+    episodes = torch.arange(4).expand_as(sources)
+    preferred = torch.zeros_like(sources, dtype=torch.bool)
+    preferred[-1] = True
+    chosen, report = sample_joint(
+        {'uniform': pairs, 'contact': pairs[:4]}, sources, 4, torch.Generator().manual_seed(31),
+        source_quota={0: 4}, stage_quota={'contact': 4-needed, 'uniform': needed},
+        episode_keys=episodes, max_per_episode=1, preferred_mask=preferred, preferred_count=4)
+    assert report['joint_flow_count'] == 4 and report['fallback_count'] == 0
+    assert report['latest_policy_windows'] == dict(requested=4, eligible=4, sampled=expected)
+    assert chosen[:, 1].unique().numel() == 4

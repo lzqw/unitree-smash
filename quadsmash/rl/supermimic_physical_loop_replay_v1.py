@@ -124,10 +124,11 @@ def replay_episode_keys(streams, episodes):
     return (stream_index[:, None] * lanes + lane) * len(unique_episodes) + episode_index
 
 
-def sample_stratified_windows(stage_pools,source_labels,batch,generator,*,source_quota=None,stage_quota=None,episode_keys=None,max_per_episode=8,shuffle_quota_groups=False):
+def sample_stratified_windows(stage_pools,source_labels,batch,generator,*,source_quota=None,stage_quota=None,episode_keys=None,max_per_episode=8,shuffle_quota_groups=False,preferred_mask=None,preferred_count=0):
     from .supermimic_joint_sampling_v1 import sample_joint
     return sample_joint(stage_pools,source_labels,batch,generator,source_quota=source_quota,
-                        stage_quota=stage_quota,episode_keys=episode_keys,max_per_episode=max_per_episode,shuffle_quota_groups=shuffle_quota_groups)
+                        stage_quota=stage_quota,episode_keys=episode_keys,max_per_episode=max_per_episode,shuffle_quota_groups=shuffle_quota_groups,
+                        preferred_mask=preferred_mask,preferred_count=preferred_count)
 
 
 def row_tensors(row, schema):
@@ -476,7 +477,7 @@ class PhysicalLoopReplay:
 
     def window(self, steps=16, batch=128, iteration=0, device='cuda:0',
                *, source_quota=None, stage_quota=None,
-               recent_policy_window=32, recent_tick_window=1024, head='recovery',excluded_lanes=(),report_loss_groups=False,shuffle_quota_groups=False):
+               recent_policy_window=32, recent_tick_window=1024, head='recovery',excluded_lanes=(),report_loss_groups=False,shuffle_quota_groups=False,latest_policy_windows=0):
         d, streams, stage_ids, source_ids_all, policy_versions, native_ticks = self._ordered()
         if self.count < steps:
             raise RuntimeError(f'Replay has {self.count} ticks; needs {steps}')
@@ -586,10 +587,25 @@ class PhysicalLoopReplay:
                             'action_identification', 'contact_event')
             }
             episode_keys = replay_episode_keys(streams, d['episode'])
+            preferred = None
+            newest_policy = newest_stream = None
+            if latest_policy_windows:
+                online_rows = source_ids_all == SOURCE_CODES['online']
+                recorded = torch.where(online_rows.any(1))[0]
+                preferred = torch.zeros_like(valid)
+                if len(recorded):
+                    last = recorded[-1]
+                    newest_stream = int(streams[last])
+                    newest_policy = int(policy_versions[last, online_rows[last]][0])
+                    same = online_rows & (streams[:, None] == newest_stream) & (policy_versions == newest_policy)
+                    preferred = valid & same.unfold(0, steps, 1).all(-1)
             chosen, counts = sample_stratified_windows(
                 pairs, source_codes, batch, self.generator,
                 source_quota=numeric_source_quota,
-                stage_quota=stage_quota or {},episode_keys=episode_keys,shuffle_quota_groups=shuffle_quota_groups)
+                stage_quota=stage_quota or {},episode_keys=episode_keys,shuffle_quota_groups=shuffle_quota_groups,
+                preferred_mask=preferred,preferred_count=latest_policy_windows)
+            if latest_policy_windows:
+                counts['latest_policy_windows'].update(policy_version=newest_policy, stream=newest_stream)
             source_names = {0: 'initial_archive', 1: 'recent_online', 2: 'older_online',
                             SOURCE_CODES['action_identification']: 'action_identification',
                             SOURCE_CODES['contact_event']: 'contact_event', 'all': 'all'}
