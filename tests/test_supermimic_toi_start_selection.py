@@ -286,3 +286,18 @@ def test_extension_interleaves_same_quota_across_adjacent_blocks_and_resume():
     assert all(a != b for a, b in zip(requested, requested[1:] + requested[:1]))
     assert all(len(set(requested[i:i+8])) == 4 for i in range(13))
     assert [bank.sample(i)[1]['requested'] for i in range(1, 21)] == list(SCHEDULE)
+
+
+def test_toi_pool_skips_preview_for_repeated_episode_but_checks_new_episode_on_same_lane():
+    from quadsmash.rl.supermimic_actor_start_bank_v1 import pool_toi_starts
+    def row(lane, episode, tick):
+        return dict(_lane_id=lane, _actor_lane_mask=torch.tensor([True]),
+                    before=dict(episode_index=torch.tensor([episode]), elapsed_tick=torch.tensor([tick])))
+    first, repeat, new = row(41, 2, 200), row(41, 2, 205), row(41, 3, 180)
+    checks = []
+    def preview(start):
+        checks.append(start)
+        return start['_actor_lane_mask']
+    _, layout = pool_toi_starts(first, [(r, r['_actor_lane_mask']) for r in (repeat,new)], preview, 2, 21)
+    assert len(checks) == 1 and checks[0] is new
+    assert [r['lane_episode_tick'] for r in layout] == [[[41,2,200]], [[41,3,180]]]

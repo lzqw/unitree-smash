@@ -159,6 +159,9 @@ def pool_toi_starts(first, alternatives, eligible_lanes, target, attempt):
     starts=[]
     layout=[]
 
+    def episode_key(row, lane):
+        return int(row.get('_lane_id', lane)), int(row['before']['episode_index'][lane])
+
     def take(row, mask):
         mask=mask.detach().cpu().bool().reshape(-1)
         keep=torch.zeros_like(mask)
@@ -167,7 +170,7 @@ def pool_toi_starts(first, alternatives, eligible_lanes, target, attempt):
         offset=(attempt-1)%max(1,len(lanes))
         records=[]
         for lane in lanes[offset:]+lanes[:offset]:
-            key=(int(row.get('_lane_id',lane)),int(before['episode_index'][lane]))
+            key=episode_key(row, lane)
             if key in seen:
                 continue
             seen.add(key)
@@ -187,6 +190,12 @@ def pool_toi_starts(first, alternatives, eligible_lanes, target, attempt):
             break
         if row['before'] is first['before']:
             continue
+        # Check only membership here. Filtering individual lanes before take()
+        # would change its rotation and bias the selected episodes.
+        if category_mask is not None:
+            lanes = category_mask.reshape(-1).nonzero().flatten().tolist()
+            if all(episode_key(row, lane) in seen for lane in lanes):
+                continue
         valid=eligible_lanes(row).detach().cpu().reshape(-1)
         if category_mask is not None:
             valid=valid & category_mask
