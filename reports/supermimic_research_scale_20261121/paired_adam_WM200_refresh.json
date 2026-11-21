@@ -1,0 +1,195 @@
+{
+  "scope": "Three recorded commands starting one tick before native first contact. Predicted body, ball and feet roll freely. Native scoring latches the last touch velocity. Common-boundary numbers use one step from the native first-contact start.",
+  "source_chunks": [
+    {
+      "file": "chunk_00008.pt.zst",
+      "sha256": "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00009.pt.zst",
+      "sha256": "dac25f5e611a8e6c7eb58ced3e324c0d8b2faef6a15230dd8bceda9dd97f077f",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00010.pt.zst",
+      "sha256": "4512dd06824b0762bd1b74cad3e68f36809e7f946c370f088b6b3ccb76c153cd",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00011.pt.zst",
+      "sha256": "e81ebbc1fcf981fe49a00512ae264bcd3fc3692ffa707df86d78b9d66ff08cdf",
+      "ticks": 32
+    }
+  ],
+  "archived_source_hashes_verified": true,
+  "behavior_actor": "2617584fcf925423a226df6450e6ac5423dc10bfa29cca9a91cc6e262bb19ad5",
+  "behavior_version": 109,
+  "milestone_actor": "3ca387f0232ad84146e7c4e098d3bba019c7a8a9b6fc4584c40ec1f9244b25c9",
+  "world_sha256": "05cbbbd27c8da7f75c0eacd4298586b597a829dd906f3ad4cbf8134798781677",
+  "world_updates": 200,
+  "paired_refresh": {
+    "baseline_world_updates": 192,
+    "baseline_world_sha256": "5df0928a4d078f6e36771b51e6b6395c4bcbb0884a440059bcb34fd35c883e87",
+    "all": {
+      "cases": 110,
+      "released": 110,
+      "matched_hits": 110,
+      "before": {
+        "predicted_hits": 110,
+        "common_hit_mae_mps": 0.3151470899581909,
+        "common_hit_bias_mps": 0.19127704230221834,
+        "common_hit_false_above": 12,
+        "common_hit_false_below": 6
+      },
+      "after": {
+        "predicted_hits": 110,
+        "common_hit_mae_mps": 0.3168789039958607,
+        "common_hit_bias_mps": 0.195056828585538,
+        "common_hit_false_above": 13,
+        "common_hit_false_below": 6
+      }
+    },
+    "excluded_lanes": {
+      "cases": 70,
+      "released": 70,
+      "matched_hits": 70,
+      "before": {
+        "predicted_hits": 70,
+        "common_hit_mae_mps": 0.3300129175186157,
+        "common_hit_bias_mps": 0.21927085944584437,
+        "common_hit_false_above": 7,
+        "common_hit_false_below": 4
+      },
+      "after": {
+        "predicted_hits": 70,
+        "common_hit_mae_mps": 0.33152014528002055,
+        "common_hit_bias_mps": 0.22298858846936906,
+        "common_hit_false_above": 7,
+        "common_hit_false_below": 4
+      }
+    },
+    "training_lanes": {
+      "cases": 40,
+      "released": 40,
+      "matched_hits": 40,
+      "before": {
+        "predicted_hits": 40,
+        "common_hit_mae_mps": 0.2891318917274475,
+        "common_hit_bias_mps": 0.1422878623008728,
+        "common_hit_false_above": 5,
+        "common_hit_false_below": 2
+      },
+      "after": {
+        "predicted_hits": 40,
+        "common_hit_mae_mps": 0.2912567317485809,
+        "common_hit_bias_mps": 0.14617624878883362,
+        "common_hit_false_above": 6,
+        "common_hit_false_below": 2
+      }
+    },
+    "sole_speed_losses": {
+      "cases": 4,
+      "released": 4,
+      "matched_hits": 4,
+      "before": {
+        "predicted_hits": 4,
+        "common_hit_mae_mps": 0.38253235816955566,
+        "common_hit_bias_mps": 0.38253235816955566,
+        "common_hit_false_above": 2,
+        "common_hit_false_below": 0
+      },
+      "after": {
+        "predicted_hits": 4,
+        "common_hit_mae_mps": 0.387060284614563,
+        "common_hit_bias_mps": 0.387060284614563,
+        "common_hit_false_above": 3,
+        "common_hit_false_below": 0
+      }
+    }
+  },
+  "sole_speed_loss_cases": [
+    {
+      "case": "A-720401-007",
+      "native_mps": 4.886219501495361,
+      "before_mps": 5.447945594787598,
+      "after_mps": 5.454629898071289
+    },
+    {
+      "case": "A-720401-025",
+      "native_mps": 4.792954921722412,
+      "before_mps": 4.9992499351501465,
+      "after_mps": 5.00251579284668
+    },
+    {
+      "case": "A-720401-043",
+      "native_mps": 4.574666976928711,
+      "before_mps": 5.324326992034912,
+      "after_mps": 5.329423904418945
+    },
+    {
+      "case": "A-720401-039",
+      "native_mps": 4.923100471496582,
+      "before_mps": 4.935548782348633,
+      "after_mps": 4.938613414764404
+    }
+  ],
+  "A25_A32": [
+    {
+      "accepted_id": 110,
+      "start_category": "success_near",
+      "effective_lanes": 14,
+      "step_fraction": 1.0,
+      "weighted_aux_to_toi_ratio": 0.019710916917832114
+    },
+    {
+      "accepted_id": 111,
+      "start_category": "pre_contact",
+      "effective_lanes": 16,
+      "step_fraction": 1.0,
+      "weighted_aux_to_toi_ratio": 0.018709279216521883
+    },
+    {
+      "accepted_id": 112,
+      "start_category": "gate_onset",
+      "effective_lanes": 16,
+      "step_fraction": 1.0,
+      "weighted_aux_to_toi_ratio": 0.01314639053149886
+    },
+    {
+      "accepted_id": 113,
+      "start_category": "failure_pre",
+      "effective_lanes": 16,
+      "step_fraction": 1.0,
+      "weighted_aux_to_toi_ratio": 0.0157545662118702
+    },
+    {
+      "accepted_id": 114,
+      "start_category": "pre_contact",
+      "effective_lanes": 16,
+      "step_fraction": 1.0,
+      "weighted_aux_to_toi_ratio": 0.029208579108666435
+    },
+    {
+      "accepted_id": 115,
+      "start_category": "gate_onset",
+      "effective_lanes": 16,
+      "step_fraction": 1.0,
+      "weighted_aux_to_toi_ratio": 0.007748989763148453
+    },
+    {
+      "accepted_id": 116,
+      "start_category": "success_near",
+      "effective_lanes": 14,
+      "step_fraction": 1.0,
+      "weighted_aux_to_toi_ratio": 0.18638348976558783
+    },
+    {
+      "accepted_id": 117,
+      "start_category": "pre_contact",
+      "effective_lanes": 16,
+      "step_fraction": 1.0,
+      "weighted_aux_to_toi_ratio": 0.0232393052261974
+    }
+  ]
+}
