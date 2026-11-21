@@ -89,14 +89,18 @@ def main():
     cli.add_argument('--device',choices=('cpu','cuda:0'),default='cuda:0')
     cli.add_argument('--paired-development',type=Path,help='Fit shared Body layers on absolute and signed trajectories and select on independent cases')
     cli.add_argument('--long-body-anchor', action='store_true', help='Add measured 32/64-step Body and racket targets to the paired shared-layer fit')
+    cli.add_argument('--arm-pose-velocity-readout',action='store_true',
+                     help='Restrict paired Body updates to the six arm position and velocity output rows each')
     cli.add_argument('--audit-center-timing',action='store_true',help='Compare fixed timing offsets on signed Body trajectories with no optimizer updates')
     cli.add_argument('--additional-training',type=Path,help='Use another independently scored native training launch panel')
     cli.add_argument('--additional-support',type=Path)
     a=cli.parse_args()
-    if bool(a.additional_training)!=bool(a.additional_support) or (a.additional_training and (not a.paired_development or a.audit_center_timing)):
-        cli.error('Additional pairs require a scored native collection and shared Body fit')
+    if bool(a.additional_training)!=bool(a.additional_support) or (a.additional_training and not a.paired_development):
+        cli.error('Additional pairs require a scored native collection and a paired development panel')
     if (a.long_body_anchor or a.audit_center_timing) and not a.paired_development:
         cli.error('The shared Body calibration and timing diagnostic require a paired development panel')
+    if a.arm_pose_velocity_readout and (not a.paired_development or a.audit_center_timing):
+        cli.error('Arm readout updates require a paired development fit')
     if a.output.exists():
         raise FileExistsError(a.output)
     torch.manual_seed(20261121)

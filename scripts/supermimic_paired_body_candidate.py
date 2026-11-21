@@ -164,9 +164,26 @@ def center_timing(world, ball, window, launches, lanes):
     """A positive offset compares a later model prediction with the native position at t."""
     centers=[]
     actual=[]
+    components={}
     for i,state in enumerate(signed_rollout(world,ball,window,launches)):
         centers.append(fields(state,world.geometry)[:,:3])
-        actual.append(fields(window['next_state'][i],world.geometry)[:,:3])
+        truth=window['next_state'][i]
+        actual.append(fields(truth,world.geometry)[:,:3])
+        if i+1 in CHECKS:
+            # Replace pose only at readout. The next tick still uses the free rollout.
+            components[i+1]={}
+            for name,parts in (('predicted',()),('native_root_position',(slice(0,3),)),
+                               ('native_root_orientation',(slice(3,7),)),('native_joints',(slice(13,31),)),
+                               ('native_root_pose',(slice(0,7),)),('native_all_poses',(slice(0,7),slice(13,31)))):
+                probe=state.clone()
+                for part in parts:
+                    probe[:,part]=truth[:,part]
+                center=fields(probe,world.geometry)[:,:3] if parts else centers[-1]
+                if name=='native_all_poses':
+                    torch.testing.assert_close(center,actual[-1],rtol=0,atol=0)
+                lo,hi=(center-actual[-1]).chunk(2)
+                components[i+1][name]=dict(midpoint_rmse_m=float(((hi+lo)/2).square().mean().sqrt()),
+                                            difference_rmse_m=float((hi-lo).square().mean().sqrt()))
     minus,plus=torch.stack(centers).chunk(2,dim=1)
     nominal_minus,nominal_plus=torch.stack(actual).chunk(2,dim=1)
     # Keep exactly the same interior native ticks and the same cases at all offsets.
@@ -179,7 +196,7 @@ def center_timing(world, ball, window, launches, lanes):
         errors=torch.stack([(prediction[ticks+offset]-target[ticks]).square().mean((0,2)) for offset in offsets])
         result[name]=dict(rmse_m_by_offset={s:float(e.mean().sqrt()) for s,e in zip(offsets,errors,strict=True)},
                          per_lane_rmse_m={lane:row for lane,row in zip(lanes,errors.sqrt().T.tolist(),strict=True)})
-    return dict(native_ticks=(ticks+1).tolist(),model_offsets=list(offsets),**result)
+    return dict(native_ticks=(ticks+1).tolist(),model_offsets=list(offsets),fk_pose_substitutions=components,**result)
 
 
 def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,task,execution):
@@ -207,15 +224,24 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
     devlaunch=launch[held].repeat(2,1).to(args.device)
     if args.audit_center_timing:
         index=torch.arange(len(lanes))
-        report=dict(training=center_timing(world,ball,merged(signed,index,args.device),launch[lanes].repeat(2,1).to(args.device),lanes),
+        # Native lane numbers repeat across independently seeded training suites.
+        case_keys=original_lanes if extra is None else (
+            [f"{receipt['status_sha256']}:{lane}" for lane in original_lanes]
+            + [f"{extra['status_sha256']}:{lane}" for lane in ids])
+        report=dict(training=center_timing(world,ball,merged(signed,index,args.device),training_launch.repeat(2,1).to(args.device),case_keys),
                     development=center_timing(world,ball,devwin,devlaunch,held),source_world_sha256=fit['online_world_sha256'],
                     training_status_sha256=receipt['status_sha256'],development_status_sha256=sha(args.paired_development/'status.json'),
+                    additional_training=extra,training_cases=len(case_keys),development_cases=len(held),
                     optimizer_updates=0,final_holdout_opened=False)
         for channel in ('midpoint','difference'):
             a=report['training'][channel]['rmse_m_by_offset']
             b=report['development'][channel]['rmse_m_by_offset']
-            offset=min(a,key=a.get)
-            report[channel+'_test']=dict(training_selected_offset=offset,dev_rmse_at_selected=b[offset],dev_rmse_at_zero=b[0])
+            offset=min(a,key=lambda o:(a[o],abs(o)))
+            offsets=report['development']['model_offsets']
+            errors=report['development'][channel]['per_lane_rmse_m'].values()
+            gains=[row[offsets.index(0)]-row[offsets.index(offset)] for row in errors]
+            report[channel+'_test']=dict(training_selected_offset=offset,dev_rmse_at_selected=b[offset],dev_rmse_at_zero=b[0],
+                                         dev_cases_improved=sum(g>0 for g in gains),dev_cases_tied=sum(g==0 for g in gains))
         args.output.mkdir(parents=True)
         (args.output/'timing.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
         return
@@ -232,8 +258,21 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
     if any(not len(v) for v in pools.values()) or any(not len(x) for x,_ in val.values()):
         raise ValueError('Missing event or recovery windows')
     args.output.mkdir(parents=True)
-    world.body.requires_grad_(True)
-    opt=torch.optim.Adam(world.body.parameters(),lr=1e-6)
+    world.body.requires_grad_(not args.arm_pose_velocity_readout)
+    readout_rows=None
+    if args.arm_pose_velocity_readout:
+        joints=parent['source_manifest']['joint_names']
+        if len(joints)!=18 or len(set(joints))!=18:
+            raise ValueError('Expected 18 unique native joint names')
+        arm=[joints.index('joint'+str(i)) for i in range(1,7)]
+        layer=world.body.net[-1]
+        layer.requires_grad_(True)
+        readout_rows=[offset+j for offset in (13,31) for j in arm]
+        frozen_rows=torch.ones_like(layer.bias,dtype=torch.bool)
+        frozen_rows[readout_rows]=False
+        original_rows=[x[frozen_rows].detach().clone() for x in (layer.weight,layer.bias)]
+    trainable=[v for v in world.body.parameters() if v.requires_grad]
+    opt=torch.optim.Adam(trainable,lr=1e-6)
     @torch.no_grad()
     def score():
         return dict(paired=paired_terms(world,ball,devwin,devlaunch,scales,training=False)[1],
@@ -245,7 +284,7 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
     def save():
         cpu_weights={k:v.detach().cpu() for k,v in world.state_dict().items()}
         atomic_torch_save(dict(parent,model=cpu_weights,calibration=dict(parent['calibration'],train_lanes=sorted(set(lanes)),additional_paired_training=extra,
-             paired_body_source_world=fit['online_world_sha256'],paired_body_update=steps),
+             paired_body_source_world=fit['online_world_sha256'],paired_body_update=steps,arm_readout_rows=readout_rows),
              policy_training_admitted=False),args.output/'world.pt')
     save()
     for epoch in range(4):
@@ -275,8 +314,14 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
                         penalty+=robot_loss(state,truth)+F.smooth_l1_loss(state[:,10:13],truth[:,10:13],beta=.1)
                         penalty+=F.smooth_l1_loss(fields(state,world.geometry)[:,:3]/.03,fields(truth,world.geometry)[:,:3]/.03)
                 (.5*penalty/2).backward()
-            torch.nn.utils.clip_grad_norm_(world.body.parameters(),1.,error_if_nonfinite=True)
+            if readout_rows is not None:
+                layer.weight.grad[frozen_rows]=0
+                layer.bias.grad[frozen_rows]=0
+            torch.nn.utils.clip_grad_norm_(trainable,1.,error_if_nonfinite=True)
             opt.step()
+        if readout_rows is not None:
+            for param,expected in zip((layer.weight,layer.bias),original_rows,strict=True):
+                torch.testing.assert_close(param[frozen_rows],expected,atol=0,rtol=0)
         result=score()
         ratios=[result['paired'][h][k]/max(1.e-12,base['paired'][h][k]) for h in CHECKS
                 for k in ('center_rmse_m','center_signed_rmse','normal_signed_rmse','linear_signed_rmse','angular_signed_rmse')]
@@ -289,6 +334,7 @@ def fit_candidate(args,world,ball,data,launch,eligible,train,receipt,parent,fit,
         (args.output/'development.json').write_text(json.dumps(history,indent=2,allow_nan=False)+'\n')
     report=dict(source_world_sha256=fit['online_world_sha256'],training=receipt,development_sha256=sha(args.paired_development/'status.json'),
         development_lanes=held,selected_update=selected,updates=steps,long_body_anchor=args.long_body_anchor,baseline=base,history=history,
+        arm_readout_rows=readout_rows,
         trained_lanes_per_epoch=original_lanes,additional_training=extra,training_pairs_per_epoch=len(training_launch),selected_sha256=sha(args.output/'world.pt'),actor_updates=0,critic_updates=0,
         ball_updates=0,final_holdout_opened=False,validation_windows={k:torch.stack(v,1).tolist() for k,v in val.items()})
     (args.output/'fit.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
