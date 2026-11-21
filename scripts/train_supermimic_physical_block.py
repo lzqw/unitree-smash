@@ -131,6 +131,8 @@ def main():
                         help='Append cycles after the final refresh of a completed research schedule')
     parser.add_argument('--research-training-seed', type=int,
                         help='Fork learner and sampler RNGs for an independent research training replicate')
+    parser.add_argument('--shuffle-wm-quota-groups', action='store_true',
+                        help='Use replay RNG to vary tied quota allocations between WM batches')
     parser.add_argument('--research-contact-weight',type=float,default=.10)
     parser.add_argument('--training-stage',choices=('wm_calibrate','shadow_policy','precontact_only','contact_detached','research_contact','full_contact'),default='full_contact')
     parser.add_argument('--contact-bptt-mode',choices=('blocked','detached','precontact','enabled'))
@@ -633,6 +635,8 @@ def run(args, *, alternating=None):
         plane_calibration = None
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
+            if not args.resume_reset_schedule and resumed['config'].get('shuffle_wm_quota_groups'):
+                args.shuffle_wm_quota_groups=True
             if research and not args.resume_reset_schedule and resumed['config'].get('diagnostic_critic_loss'):
                 args.diagnostic_critic_loss=True
             saved_plane = resumed['config'].get('intercept_plane_calibration')
@@ -1016,6 +1020,7 @@ def run(args, *, alternating=None):
             wm_action_collections=action_collections,wm_sampling_mode=args.wm_sampling_mode,
             native_return_monitor=frozen_return_monitor.config,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=None if args.diagnostic_critic_loss else 50.,
+            shuffle_wm_quota_groups=args.shuffle_wm_quota_groups,
             diagnostic_critic_loss=args.diagnostic_critic_loss,critic_mse_reference=50.,max_critic_only_blocks=32,
             command_delta_budget=args.command_delta_budget,target_delta_budget_rad=args.target_delta_budget_rad,
             native_reference_command_budget=args.native_reference_command_budget,
@@ -1279,7 +1284,8 @@ def run(args, *, alternating=None):
                     timebase.world_steps,args.wm_batch_size,iteration*total+offset,
                     source_quota=sampling_source_quota,stage_quota=sampling_stage_quota,head=head,
                     recent_policy_window=args.wm_recent_policy_window,
-                    recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes,report_loss_groups=True)
+                    recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes,report_loss_groups=True,
+                    shuffle_quota_groups=args.shuffle_wm_quota_groups)
                 sampling['sampling_mode']=args.wm_sampling_mode
                 sampling['promotion_gate']=sampling_promotion_gate(sampling,args.wm_sampling_mode)
                 sampling['source_profile'] = {
@@ -1354,7 +1360,8 @@ def run(args, *, alternating=None):
                     _,_,sample = replay.window(timebase.world_steps,args.wm_batch_size,0,
                         source_quota=args.wm_source_quota,stage_quota=quota,head=name,
                         recent_policy_window=args.wm_recent_policy_window,
-                        recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes,report_loss_groups=True)
+                        recent_tick_window=args.wm_recent_tick_window,excluded_lanes=wm_holdout_lanes,report_loss_groups=True,
+                        shuffle_quota_groups=args.shuffle_wm_quota_groups)
                     reports[name] = dict(source_counts=sample['source_counts'],stage_counts=sample['stage_counts'],
                                          gate=sampling_promotion_gate(sample,'promotion'))
                 with (args.output/'wm_bootstrap.jsonl').open('a') as log:

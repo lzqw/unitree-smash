@@ -27,7 +27,7 @@ class Flow:
             while node!=s:node0,e=parent[node];e[1]-=amount;e[2][1]+=amount;node=node0
             total+=amount
 
-def capped_allocation(sources, pattern, identities, names, sq, tq, batch, cap, source_quota):
+def capped_allocation(sources, pattern, identities, names, sq, tq, batch, cap, source_quota, *, group_generator=None):
     """Integer counts per (source, membership, episode), not per-transition binaries."""
     import numpy as np
     from scipy.optimize import milp, Bounds, LinearConstraint
@@ -35,7 +35,13 @@ def capped_allocation(sources, pattern, identities, names, sq, tq, batch, cap, s
     groups={}
     for i,(source,signature,episode) in enumerate(zip(sources.tolist(),pattern.tolist(),identities)):
         groups.setdefault((source,signature,episode),[]).append(i)
-    groups=list(groups.items()); variables=[]; rows={}; ri=[];ci=[];values=[];limits=[]
+    groups=list(groups.items())
+    if group_generator is not None:
+        # Equivalent optimal allocations can select the same episodes on every draw.
+        # Randomize variable order before solving while preserving the exact quotas.
+        order = torch.randperm(len(groups), generator=group_generator).tolist()
+        groups = [groups[index] for index in order]
+    variables=[]; rows={}; ri=[];ci=[];values=[];limits=[]
     def constraint(key,limit):
         if key not in rows:rows[key]=len(limits);limits.append(limit)
         return rows[key]
@@ -62,7 +68,7 @@ def capped_allocation(sources, pattern, identities, names, sq, tq, batch, cap, s
     return ([torch.tensor(ids,dtype=torch.long) for _,ids in groups],
             [(gi,name,int(count)) for (gi,name),count in zip(variables,allocation) if count],int(allocation.sum()))
 
-def sample_joint(stage_pools,source_labels,batch,generator,*,source_quota=None,stage_quota=None,episode_keys=None,max_per_episode=8):
+def sample_joint(stage_pools,source_labels,batch,generator,*,source_quota=None,stage_quota=None,episode_keys=None,max_per_episode=8,shuffle_quota_groups=False):
     if batch<1 or max_per_episode<1:raise ValueError('Positive batch and episode cap required')
     sq=dict(source_quota or {});tq=dict(stage_quota or {'uniform':batch})
     if any(v<0 for v in list(sq.values())+list(tq.values())) or sum(sq.values())>batch or sum(tq.values())>batch:raise ValueError('Invalid quotas')
@@ -82,7 +88,8 @@ def sample_joint(stage_pools,source_labels,batch,generator,*,source_quota=None,s
     selected=[];allocated_stage=Counter();used=set();ep_counts=Counter()
     identities=episode_keys[pairs[:,0],pairs[:,1]].tolist() if episode_keys is not None else codes.tolist()
     if episode_keys is not None:
-        group_rows,assignments,allocated=capped_allocation(sources,pattern,identities,names,sq,tq,batch,max_per_episode,source_quota)
+        group_rows,assignments,allocated=capped_allocation(sources,pattern,identities,names,sq,tq,batch,max_per_episode,source_quota,
+                                                            group_generator=generator if shuffle_quota_groups else None)
     else:
         grouped=torch.stack((sources,pattern),1);unique,inverse=torch.unique(grouped,dim=0,return_inverse=True)
         flow=Flow();S=('root',);T=('sink',);links=[]

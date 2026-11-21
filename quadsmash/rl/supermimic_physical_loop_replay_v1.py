@@ -94,10 +94,10 @@ def replay_episode_keys(streams, episodes):
     return (stream_index[:, None] * lanes + lane) * len(unique_episodes) + episode_index
 
 
-def sample_stratified_windows(stage_pools,source_labels,batch,generator,*,source_quota=None,stage_quota=None,episode_keys=None,max_per_episode=8):
+def sample_stratified_windows(stage_pools,source_labels,batch,generator,*,source_quota=None,stage_quota=None,episode_keys=None,max_per_episode=8,shuffle_quota_groups=False):
     from .supermimic_joint_sampling_v1 import sample_joint
     return sample_joint(stage_pools,source_labels,batch,generator,source_quota=source_quota,
-                        stage_quota=stage_quota,episode_keys=episode_keys,max_per_episode=max_per_episode)
+                        stage_quota=stage_quota,episode_keys=episode_keys,max_per_episode=max_per_episode,shuffle_quota_groups=shuffle_quota_groups)
 
 
 def row_tensors(row, schema):
@@ -385,7 +385,7 @@ class PhysicalLoopReplay:
 
     def window(self, steps=16, batch=128, iteration=0, device='cuda:0',
                *, source_quota=None, stage_quota=None,
-               recent_policy_window=32, recent_tick_window=1024, head='recovery',excluded_lanes=(),report_loss_groups=False):
+               recent_policy_window=32, recent_tick_window=1024, head='recovery',excluded_lanes=(),report_loss_groups=False,shuffle_quota_groups=False):
         d, streams, stage_ids, source_ids_all, policy_versions, native_ticks = self._ordered()
         if self.count < steps:
             raise RuntimeError(f'Replay has {self.count} ticks; needs {steps}')
@@ -485,7 +485,7 @@ class PhysicalLoopReplay:
             chosen, counts = sample_stratified_windows(
                 pairs, source_codes, batch, self.generator,
                 source_quota=numeric_source_quota,
-                stage_quota=stage_quota or {},episode_keys=episode_keys)
+                stage_quota=stage_quota or {},episode_keys=episode_keys,shuffle_quota_groups=shuffle_quota_groups)
             source_names = {0: 'initial_archive', 1: 'recent_online', 2: 'older_online',
                             SOURCE_CODES['action_identification']: 'action_identification',
                             SOURCE_CODES['contact_event']: 'contact_event', 'all': 'all'}

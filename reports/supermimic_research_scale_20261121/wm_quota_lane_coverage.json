@@ -1,0 +1,78 @@
+{
+  "scope": "CPU sampling of real 800x128 initialization archive only, no learner updates; episode cap 8, same RNG start per method",
+  "source_quota": {
+    "initial_archive": 90,
+    "contact_event": 38
+  },
+  "batch": 128,
+  "steps": 16,
+  "rng_seed": 20261114,
+  "recovery": {
+    "original_order": {
+      "unique_lanes_in_eight_batches": 16,
+      "lanes_in_all_eight": 16,
+      "lanes_by_batch": [
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "fallback_windows": 0,
+      "median_sampling_seconds": 0.22460013601812534
+    },
+    "seeded_group_order": {
+      "unique_lanes_in_eight_batches": 88,
+      "lanes_in_all_eight": 0,
+      "lanes_by_batch": [
+        16,
+        17,
+        17,
+        17,
+        17,
+        16,
+        17,
+        18
+      ],
+      "fallback_windows": 0,
+      "median_sampling_seconds": 0.2247096490173135
+    }
+  },
+  "contact": {
+    "original_order": {
+      "unique_lanes_in_eight_batches": 17,
+      "lanes_in_all_eight": 17,
+      "lanes_by_batch": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17
+      ],
+      "fallback_windows": 0,
+      "median_sampling_seconds": 0.15112017700448632
+    },
+    "seeded_group_order": {
+      "unique_lanes_in_eight_batches": 82,
+      "lanes_in_all_eight": 0,
+      "lanes_by_batch": [
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        16,
+        17
+      ],
+      "fallback_windows": 0,
+      "median_sampling_seconds": 0.15131597098661587
+    }
+  }
+}

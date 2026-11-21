@@ -179,3 +179,24 @@ def test_replay_episode_keys_preserve_stream_lane_episode_partitions():
                 for t, stream in enumerate(streams.tolist()) for lane in range(2)]
     for i, lhs in enumerate(expected):
         assert (keys == keys[i]).tolist() == [lhs == rhs for rhs in expected]
+
+
+def test_capped_quota_ties_vary_episodes_and_resume_from_replay_rng():
+    pairs = torch.cartesian_prod(torch.arange(5), torch.arange(32))
+    episodes = torch.arange(32).expand(5, -1)
+    sources = torch.zeros_like(episodes)
+    pools = {'uniform': pairs, 'contact': pairs[pairs[:, 0] == 0]}
+    rng = torch.Generator().manual_seed(208)
+    def draw():
+        chosen, report = sample_joint(pools, sources, 8, rng, source_quota={0: 8},
+            stage_quota={'contact': 4, 'uniform': 4}, episode_keys=episodes,
+            max_per_episode=1, shuffle_quota_groups=True)
+        assert report['joint_quota_feasible'] and report['fallback_count'] == 0
+        assert report['actual_max_per_episode'] == 1
+        return chosen
+    first = draw()
+    state = rng.get_state()
+    second = draw()
+    assert set(first[:, 1].tolist()) != set(second[:, 1].tolist())
+    rng.set_state(state)
+    assert torch.equal(draw(), second)
