@@ -47,13 +47,26 @@ def target_evidence(shot, flags):
 
 
 
-def report(arm):
+def reference_actor(registration, baseline, resumed):
+    if not resumed:
+        return registration['initial']['actor_sha256']
+    revision = registration['revision']
+    actor = revision['starting_actor']
+    metrics = json.loads((baseline/'metrics.json').read_text())
+    if (actor != revision['measured_actor'] or not revision.get('policy_prefix_retained')
+            or metrics['evaluated_checkpoint_sha256'] != revision['source_checkpoint_sha256']):
+        raise ValueError('Frozen reference does not match the scored resume checkpoint')
+    return actor
+
+
+def report(arm, resume_reference=None):
     archive = arm/'train/native_transitions'
     manifest = json.loads((archive/'manifest.json').read_text())
     reg = json.loads((arm/'registration.json').read_text())
-    baseline = Path(reg['baseline_path']).parent
+    baseline = Path(reg['baseline_path']).parent if resume_reference is None else Path(resume_reference)
+    expected_actor = reference_actor(reg, baseline, resume_reference is not None)
     _, identity, actor = load_run(baseline)
-    if (actor != reg['initial']['actor_sha256'] or identity['task'] != manifest['task_contract']
+    if (actor != expected_actor or identity['task'] != manifest['task_contract']
             or identity['execution'] != manifest['policy_execution'] or identity['seed'] != manifest['seed']):
         raise ValueError('Different TRAIN128 baseline actor, task, reset seed or execution')
     suite = identity['task']['suite']
@@ -73,6 +86,7 @@ def report(arm):
     if len(initial) != len(cases):
         raise ValueError('Missing baseline first episodes')
     import torch
+    first_contact_policy = {}
     releases = {}
     finished = {}
     frame_first = {}
@@ -92,6 +106,10 @@ def report(arm):
                 else:
                     native_rewards += tick_rewards
                 same = (before['episode_index']==0) & (after['episode_index']==0)
+                previous_touch = a['had_contact'] | a['frame_hit'] | a['string_hit']
+                current_touch = b['had_contact'] | b['frame_hit'] | b['string_hit']
+                for lane in (same & ~previous_touch & current_touch).nonzero().flatten().tolist():
+                    first_contact_policy.setdefault(lane, row['policy_version'])
                 for lane in (same & ~a['released'] & b['released']).nonzero().flatten().tolist():
                     releases.setdefault(lane,row['policy_version'])
                 ended = same & b['launched'] & ~b['in_play'] & (a['in_play'] | ~a['launched'])
@@ -147,6 +165,8 @@ def report(arm):
                                       online_from_native_latches=weight*sum(b[metric] for a,b in paired.values()),
                                       online_recorded=observed)
     return dict(scope='First flight leaving play after launch, including faults before ground contact. Compare native latches to first-episode frozen terminal records on the same resolved cases. The online prefix spans behavior versions. Episode recovery, official ball-side outcome and final Return require complete scoring.',
+                reference_scope='scored_resume' if resume_reference is not None else 'experiment_start',
+                first_contact_policy_by_case={cases[i]: first_contact_policy.get(i) for i in paired if finished[i]['had_contact'] or finished[i]['frame_hit']},
                 initial_actor_sha256=actor,seed=identity['seed'],suite_sha256=suite['sha256'],
                 manifest_env_steps=manifest['transitions'],cases=len(cases),online_resolved=len(finished),
                 paired_resolved_cases=len(paired),unresolved_online_cases=[c for i,c in enumerate(cases) if i not in finished],
@@ -182,10 +202,11 @@ if __name__=='__main__':
     cli.add_argument('--arm-dir',type=Path,required=True)
     cli.add_argument('--tensorboard',type=Path)
     cli.add_argument('--follow-pid',type=int,help='Wait for the first 512 native ticks and finish by tick 800')
+    cli.add_argument('--resume-reference',type=Path,help='Frozen 128-case evaluation bound to the retained resume checkpoint')
     cli.add_argument('--output',type=Path,help='Save the paired first-flight case report')
     args=cli.parse_args()
     def emit():
-        result=report(args.arm_dir)
+        result=report(args.arm_dir, args.resume_reference)
         rendered=json.dumps(result,indent=2,allow_nan=False)
         if args.output:
             temp=args.output.with_suffix('.tmp')

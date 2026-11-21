@@ -185,3 +185,22 @@ def test_target_score_evidence_separates_speed_margin_from_misses_and_backward_r
         assert flags['scoring_target'] == (not expected)
     missing=dict(shot,outgoing_velocity_mps=[None]*3)
     assert target_evidence(missing,flight_flags(missing)) == dict(release_speed_mps=None,failed_conditions=['measured_release'])
+
+
+def test_flight_comparison_requires_the_evaluated_resume_checkpoint(tmp_path):
+    import json
+    import pytest
+    from scripts.report_supermimic_online_flights import reference_actor
+
+    reg = dict(initial=dict(actor_sha256='initial'),
+               revision=dict(starting_actor='resume', measured_actor='resume', policy_prefix_retained=True,
+                             source_checkpoint_sha256='scored'))
+    (tmp_path/'metrics.json').write_text(json.dumps(dict(evaluated_checkpoint_sha256='scored')))
+    assert reference_actor(reg, tmp_path, False) == 'initial'
+    assert reference_actor(reg, tmp_path, True) == 'resume'
+    reg['revision']['source_checkpoint_sha256'] = 'other'
+    with pytest.raises(ValueError, match='resume checkpoint'):
+        reference_actor(reg, tmp_path, True)
+    reg['revision'].update(source_checkpoint_sha256='scored', starting_actor='rolled_back', policy_prefix_retained=False)
+    with pytest.raises(ValueError, match='resume checkpoint'):
+        reference_actor(reg, tmp_path, True)
