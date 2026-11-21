@@ -10,26 +10,32 @@ from calibrate_supermimic_toi_slip import TOISlip, body_transfer
 from evaluate_supermimic_contact_rollout import racket, sha
 from fit_supermimic_native_racket_toi_head import g07, predicted_state, racket_transition_inputs
 from quadsmash.rl.supermimic_action_identification_dataset_v1 import _load_branch
+from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
 from quadsmash.rl.supermimic_ball_impulse_prior_v1 import BallImpulsePriorV1
 from quadsmash.rl.supermimic_physical_dataset_v1 import encode_physical
-from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest, load_physical_loop
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
 
 
-def command_rollout(body,prior,slip,initial,launch,traces,lanes,alpha):
+def command_rollout(body,prior,slip,initial,launch,traces,lanes,alpha,*,adapter=None):
     state=encode_physical(initial)[lanes]
     previous,feet,elapsed,present=(initial[k][lanes] for k in ('final_action','foot_contact','elapsed_s','ball_present'))
     def command(minus,plus,key):
         return torch.lerp(minus[key][lanes],plus[key][lanes],alpha[:,None])
     for minus,plus in zip(traces['minus'],traces['plus'],strict=True):
         target=command(minus,plus,'final_joint_targets')
-        robot,contact,next_present=body(state,target,previous,feet.float(),present,elapsed,launch)
+        if adapter is None:
+            robot,contact,next_present=body(state,target,previous,feet.float(),present,elapsed,launch)
+            endpoints=[torch.stack((first,last)) for first,last in zip(racket(state,body.geometry),racket(robot,body.geometry),strict=True)]
+            row=racket_transition_inputs(prior,state[:,49:],endpoints)
+            state=torch.cat((robot[:,:49],predicted_state(slip,prior,row)),1)
+            feet=contact.sigmoid()
+        else:
+            state,feet,next_present=ball_transition(adapter.physical_model,adapter.ball_model,state,target,
+                previous,feet.float(),present,elapsed,launch,action_model=adapter.action_ball_model)
         if not (present & next_present).all():
             raise ValueError('Expected a launched shuttle throughout the tested command prefix')
-        endpoints=[torch.stack((first,last)) for first,last in zip(racket(state,body.geometry),racket(robot,body.geometry),strict=True)]
-        row=racket_transition_inputs(prior,state[:,49:],endpoints)
-        state=torch.cat((robot[:,:49],predicted_state(slip,prior,row)),1)
-        previous,feet,elapsed,present=command(minus,plus,'final_action'),contact.sigmoid(),elapsed+prior.dt,next_present
+        previous,elapsed,present=command(minus,plus,'final_action'),elapsed+prior.dt,next_present
     return state[:,52:55]
 
 
@@ -50,7 +56,12 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for k in ('body','world-replay','source-stage','physics-fit','calibration','development','output'):
         parser.add_argument('--'+k,type=Path,required=True)
+    for k in ('runtime-checkpoint','runtime-forward-guard','archive','safety-mapping'):
+        parser.add_argument('--'+k,type=Path)
     a=parser.parse_args()
+    runtime_options=(a.runtime_checkpoint,a.runtime_forward_guard,a.archive,a.safety_mapping)
+    if any(runtime_options) and not all(runtime_options):
+        parser.error('The full runtime transition requires a checkpoint, forward guard, archive and safety mapping')
     torch.set_num_threads(2)
     read=lambda p:json.loads(p.read_text())
     fit=read(a.physics_fit)
@@ -72,6 +83,26 @@ def main():
     launches=torch.tensor([c['launch']['position_m']+c['launch']['velocity_mps'] for c in read(suite)['cases']])
     prior=BallImpulsePriorV1(normal_impulse_scale=read(a.calibration)['fitted']['normal_impulse_scale']).eval()
     slip=TOISlip(fit['selected']['friction'],fit['selected']['sticking'])
+    adapter=None
+    runtime=None
+    if a.runtime_checkpoint:
+        checkpoint=torch.load(a.runtime_checkpoint,mmap=True,weights_only=False,map_location='cpu')
+        meta=checkpoint['metadata']['physical_imagination']
+        paths=meta['checkpoint_paths']
+        _,adapter,_,runtime_launch,archive=load_physical_loop(archive=a.archive,safety_mapping=a.safety_mapping,
+            physical_checkpoint=paths['physical'],ball_checkpoint=paths['ball'],task_checkpoint=paths['task'],
+            action_ball_checkpoint=paths.get('action_ball'),execution_root=meta['g07_execution_root'],device='cpu')
+        world=tensor_digest(checkpoint['world'].items())
+        guards=[json.loads(line) for line in a.runtime_forward_guard.read_text().splitlines()]
+        if (not any(r['passed'] and r['world_sha256']==world and r['world_updates']==checkpoint['world_updates'] for r in guards)
+                or meta['checkpoint_sha256']!=adapter.manifest['checkpoint_sha256'] or archive['task_contract']!=task
+                or set(checkpoint['config']['wm_holdout_lanes'])!=set(replay['excluded_lanes'])):
+            raise ValueError('The requested online WM or its development split is not verified')
+        torch.testing.assert_close(runtime_launch,launches,rtol=0,atol=0)
+        adapter.load_state_dict(checkpoint['world'],strict=True)
+        adapter.eval().requires_grad_(False)
+        runtime=dict(world_sha256=world,world_updates=checkpoint['world_updates'],checkpoint_sha256=sha(a.runtime_checkpoint),
+                     actor_sha256=tensor_digest(checkpoint['actor'].items()),action_ball_schema=getattr(adapter.action_ball_model,'schema',None))
     scales={}
     scope=None
     for divisor,name in ((1,'wide'),(2,'half'),(4,'quarter')):
@@ -93,7 +124,7 @@ def main():
         traces={b:r['raw']['step_sequence'] for b,r in runs.items()}
         initial=runs['minus']['raw']['start']['before']['physical']
         def velocity(x):
-            return command_rollout(body,prior,slip,initial,launches[lanes],traces,lanes,x)
+            return command_rollout(body,prior,slip,initial,launches[lanes],traces,lanes,x,adapter=adapter)
         alpha=torch.full((len(lanes),),.5,requires_grad=True)
         out=velocity(alpha)
         gradients=[]
@@ -101,11 +132,28 @@ def main():
             gradients.append(torch.autograd.grad(out[:,component].sum(),alpha,retain_graph=component<2)[0])
         with torch.no_grad():
             derivative=torch.stack(gradients,1)
-            secant=velocity(torch.ones_like(alpha))-velocity(torch.zeros_like(alpha))
+            upper=velocity(torch.ones_like(alpha))
+            lower=velocity(torch.zeros_like(alpha))
+            secant=upper-lower
             near=(velocity(torch.full_like(alpha,.55))-velocity(torch.full_like(alpha,.45)))/.10
-            check=body_transfer(folder,a.body,prior,slip,groups,repeat,seq,commands,a.world_replay,a.source_stage)
-            torch.testing.assert_close(secant,torch.tensor(check['predicted_delta_mps']),rtol=1e-4,atol=1e-5)
-            native=torch.tensor(check['native_delta_mps'])
+            if adapter is None:
+                check=body_transfer(folder,a.body,prior,slip,groups,repeat,seq,commands,a.world_replay,a.source_stage)
+                torch.testing.assert_close(secant,torch.tensor(check['predicted_delta_mps']),rtol=1e-4,atol=1e-5)
+                native=torch.tensor(check['native_delta_mps'])
+                forward=check['metrics']
+            else:
+                from fit_supermimic_native_probe_response import response
+                pairs=dict(state=encode_physical(initial)[lanes],feet=initial['foot_contact'][lanes].float(),
+                    previous_action=initial['final_action'][lanes],present=initial['ball_present'][lanes],
+                    elapsed=initial['elapsed_s'][lanes],launch=launches[lanes])
+                for branch,ticks in traces.items():
+                    for dest,key in [('step_targets_','final_joint_targets'),('step_final_actions_','final_action')]:
+                        pairs[dest+branch]=torch.stack([t[key][lanes] for t in ticks],dim=1)
+                independent=response(adapter.action_ball_model,adapter.physical_model,adapter.ball_model,pairs)
+                torch.testing.assert_close(secant,independent,rtol=1e-4,atol=1e-5)
+                minus,plus=(seq[b][-1][1] for b in ('minus','plus'))
+                native=plus-minus
+                forward=dict(final_ball_velocity_rmse_mps=float(torch.cat((upper-plus,lower-minus)).square().mean().sqrt()))
             noise=repeat[-len(lanes):]
             stable=torch.tensor([g=='racket_stable' for g in groups])
             signals=dict(autograd=derivative,central_difference=near,model_signed=secant)
@@ -115,9 +163,11 @@ def main():
                 return v.tolist() if torch.isfinite(v).all() else None
             cases=[dict(lane=lane,mode=groups[i],native=vector(native[i]),noise=vector(noise[i]),
                         **{k:vector(v[i]) for k,v in signals.items()}) for i,lane in enumerate(lanes)]
-            scales[name]=dict(stats=stats,cases=cases,expected_forward=check['metrics'])
+            scales[name]=dict(stats=stats,cases=cases,expected_forward=forward)
     with a.output.open('x') as f:
-        json.dump(dict(scales=scales,world_sha256=replay['online_world_sha256'],physics_fit_sha256=sha(a.physics_fit),
+        json.dump(dict(scales=scales,world_sha256=runtime['world_sha256'] if runtime else replay['online_world_sha256'],
+                       transition='checkpoint_full' if runtime else 'body_plus_calibrated_toi',runtime=runtime,
+                       physics_fit_sha256=sha(a.physics_fit),
                        source_status_sha256=design,actor_updates=0,v13_updates=0,contact_receipt=False,
                        units='m/s per full signed executed interval at alpha=0.5; both executed targets and previous final-action context follow their recorded paths'),
                   f,indent=2,allow_nan=False)
