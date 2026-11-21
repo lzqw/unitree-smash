@@ -13,7 +13,7 @@ from .supermimic_v1 import MLP,load_ppo_initialized_actor
 from .supermimic_physical_loop_loading_v1 import APPROACH_NAMES,RECOVERY_NAMES,HEAD_NAMES,set_actor_trainable,tensor_digest
 from .supermimic_ball_sequence_v1 import ball_transition,ball_error
 from .supermimic_physical_dataset_v1 import valid_windows
-from .supermimic_racket_dynamics_v1 import racket_loss_components, racket_state
+from .supermimic_racket_dynamics_v1 import racket_loss_components, racket_state, robot_loss
 
 
 class PhysicalHorizonTrainer:
@@ -396,7 +396,7 @@ class PhysicalHorizonTrainer:
             no_effective_gradient=reason in ('zero_total_gradient','no_task_or_tracking_gradient'),
             frozen_base_recovery_unchanged=True,model_unchanged_during_actor=True)
 
-    def fit_world_window(self,window,launch,*,loss_groups=None):
+    def fit_world_window(self,window,launch,*,loss_groups=None,separate_supervision=False):
         """One actual WM optimizer step on 16 native transitions per sample.
 
         Physical state, contact probability and task numeric memory propagate
@@ -422,7 +422,13 @@ class PhysicalHorizonTrainer:
                 action_model=self.adapter.action_ball_model)
             out=task.forward_values(state,prediction,window['targets'][i],window['previous_action'][i],feet,
                 window['elapsed'][i],values,validity)
-            physical_rows=world.state_loss(prediction,window['next_state'][i],per_row=True)
+            if separate_supervision:
+                truth=window['next_state'][i]
+                robot_rows=robot_loss(prediction,truth,per_row=True)
+                gyro_rows=torch.nn.functional.smooth_l1_loss(prediction[:,10:13],truth[:,10:13],beta=.1,reduction='none').mean(-1)
+                physical_rows=robot_rows+gyro_rows
+            else:
+                physical_rows=world.state_loss(prediction,window['next_state'][i],per_row=True)
             contact_rows=torch.nn.functional.binary_cross_entropy(newfeet,window['next_feet'][i].float(),reduction='none').mean(-1)
             physical_i,contact_i=physical_rows.mean(),contact_rows.mean()
             ball_i=ball_error(prediction[:,49:],window['next_state'][i][:,49:])
@@ -462,7 +468,23 @@ class PhysicalHorizonTrainer:
             values,validity=task.memory_schema.feedback_values(out['numeric'],out['valid_logits'].sigmoid())
         loss=loss/cfg.world_steps
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite physical multistep model loss')
-        self.world_opt.zero_grad(set_to_none=True);loss.backward()
+        self.world_opt.zero_grad(set_to_none=True)
+        if separate_supervision:
+            # Each module receives its own measured targets. In particular a sharp
+            # shuttle collision or a task label cannot train the robot trunk to
+            # change the racket pose simply to fit an outgoing ball velocity.
+            ball_modules=[ball]+([self.adapter.action_ball_model] if self.adapter.action_ball_model is not None else [])
+            body_objective=physical_loss+contact_loss+self.racket_loss_weight*racket_loss_value
+            objectives=[(body_objective,[world]),(action_ball_loss,ball_modules),(task_loss,[task])]
+            active=[(value,[p for module in modules for p in module.parameters() if p.requires_grad])
+                    for value,modules in objectives]
+            active=[(value,params) for value,params in active if params and value.requires_grad]
+            if not active:
+                raise ValueError('No trainable supervised world component')
+            for j,(value,params) in enumerate(active):
+                (value/cfg.world_steps).backward(inputs=params,retain_graph=j+1<len(active))
+        else:
+            loss.backward()
         physical_loss=physical_loss/cfg.world_steps;contact_loss=contact_loss/cfg.world_steps
         ball_loss_value=ball_loss_value/cfg.world_steps;task_loss=task_loss/cfg.world_steps
         action_ball_loss=action_ball_loss/cfg.world_steps
@@ -484,7 +506,7 @@ class PhysicalHorizonTrainer:
         if loss_groups is not None:
             from .supermimic_training_audit_v1 import grouped_world_loss
             diagnostics['loss_by_group'] = grouped_world_loss(row_loss_sum.detach().cpu(),cfg.world_steps,loss_groups)
-        return dict(**diagnostics,world_loss=float(loss.detach()),world_gradient=float(norm),world_updates=self.world_updates,
+        return dict(**diagnostics,world_supervision='separate' if separate_supervision else 'joint',world_loss=float(loss.detach()),world_gradient=float(norm),world_updates=self.world_updates,
                     world_physical_loss=float(physical_loss.detach()),
                     world_contact_loss=float(contact_loss.detach()),
                     world_ball_loss=float(ball_loss_value.detach()),

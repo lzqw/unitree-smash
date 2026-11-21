@@ -39,12 +39,13 @@ def racket_loss(predicted, target):
     return sum(components.values())/len(components)
 
 
-def robot_loss(predicted,target):
+def robot_loss(predicted,target,*,per_row=False):
     # Ball predictions must not directly dominate a robot-specific fit.
     same=(predicted[:,3:7]*target[:,3:7]).sum(-1,keepdim=True)>=0
     aligned=torch.cat((target[:,:3],torch.where(same,target[:,3:7],-target[:,3:7]),target[:,7:49]),-1)
     scales=predicted.new_tensor([.05]*3+[.1]*4+[1.]*3+[3.]*3+[.1]*18+[3.]*18)
-    return ((predicted[:,:49]-aligned)/scales).square().mean()
+    error=((predicted[:,:49]-aligned)/scales).square()
+    return error.mean(-1) if per_row else error.mean()
 
 
 def approach_window_pools(data,masks,lanes,steps=32):

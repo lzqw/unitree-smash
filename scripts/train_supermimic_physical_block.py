@@ -139,6 +139,8 @@ def main():
                         help='Optional cumulative joint-target budget relative to the accepted native reference')
     parser.add_argument('--world-updates-per-actor-update',type=int,default=4,
                         help='World-model optimizer steps before each actor proposal')
+    parser.add_argument('--wm-separate-supervision',action='store_true',help='Fit robot, ball and task parameters to their respective native targets')
+    parser.add_argument('--wm-forward-guard',type=Path,help='Fixed native launch panel and verified block-initial WM score for every online refresh')
     parser.add_argument('--world-learning-rate',type=float,default=2e-4)
     parser.add_argument('--wm-calibration-updates',type=int,default=256,
                         help='GPU world-model updates for wm_calibrate stage')
@@ -347,6 +349,10 @@ def run(args, *, alternating=None):
                     raise ValueError('Explicit --wm-holdout-lanes disagrees with contact receipt lanes')
                 wm_holdout_lanes=receipt_lanes
                 runtime_wm_bounds=dual_quality['wm_upper_bounds']
+        forward_guard=None
+        if args.wm_forward_guard:
+            from scripts.supermimic_online_forward_guard import OnlineForwardGuard
+            forward_guard=OnlineForwardGuard(args.wm_forward_guard,adapter,manifest['task_contract'])
         write(args.output/'model_manifest.json',adapter.manifest)
         packed_sha=hashlib.sha256(args.packed_data.read_bytes()).hexdigest()
         expected=json.loads((args.packed_data.parent/'completed.json').read_text())
@@ -505,6 +511,9 @@ def run(args, *, alternating=None):
         refresh_world_updates=0;refresh_critic_updates=0
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
+            previous_guard=resumed.get('config',{}).get('wm_forward_guard_sha256')
+            if previous_guard is not None and (forward_guard is None or forward_guard.spec_sha256!=previous_guard):
+                raise ValueError('Cannot drop or replace a checkpoint-bound native forward panel')
             old_collections = resumed['metadata'].get('wm_action_collections', [])
             if any(item['spec_branches'] not in [r['spec_branches'] for r in action_collections]
                    for item in old_collections):
@@ -533,6 +542,11 @@ def run(args, *, alternating=None):
                 if args.approach_objective!=saved_objective:
                     raise ValueError('An Approach objective change requires a fresh schedule; inherited updates cannot count toward the new objective')
             actor.load_state_dict(resumed['actor'],strict=True);adapter.load_state_dict(resumed['world'],strict=True)
+            if forward_guard is not None:
+                resume_check=forward_guard.check(adapter)
+                write(args.output/'resumed_forward_validation.json',resume_check)
+                if not resume_check['passed']:
+                    raise ValueError('Restored online WM failed fixed native forward validation')
             if reference_bank is None and resumed.get('reference_bank') is not None:
                 from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
                 trainer.reference_bank=TaskSpaceReferenceBankV1.from_payload(resumed['reference_bank']).to('cuda:0')
@@ -781,6 +795,8 @@ def run(args, *, alternating=None):
         bad_meta=dict(path=str(args.bad_policy_checkpoint.resolve()),sha256=file_sha(args.bad_policy_checkpoint)) if args.bad_policy_checkpoint else None
         config=dict(sequential_layout=args.sequential_layout,head_block_size=args.head_block_size,refresh_mode=args.refresh_mode,alternating_plan=alternating.plan if alternating is not None else None,dual_head_quality=dual_quality,wm_holdout_lanes=wm_holdout_lanes,runtime_wm_bounds=runtime_wm_bounds,training_profile=args.training_profile,contact_validation=contact_validation,resume_next_cycle=args.resume_next_cycle,resume_reset_schedule=args.resume_reset_schedule,resume_without_replay=args.resume_without_replay,update_mode=args.update_mode,resume_start_block=args.resume_start_block,ball_side_mode=args.ball_side_mode,cycles=args.cycles,recovery_proposal_budget=args.recovery_proposal_budget,approach_proposal_budget=args.approach_proposal_budget,refresh_ticks=args.refresh_ticks,refresh_world_updates=args.refresh_world_updates,refresh_critic_updates=args.refresh_critic_updates,replay_capacity_ticks=args.replay_capacity_ticks,actor_update_budget=(args.recovery_update_budget+args.approach_update_budget if args.update_mode=='sequential' else args.joint_update_budget),joint_update_budget=args.joint_update_budget,recovery_update_budget=args.recovery_update_budget,approach_update_budget=args.approach_update_budget,native_ticks_per_actor_update=args.native_ticks_per_actor_update,world_updates_per_actor_update=args.world_updates_per_actor_update,
             world_batch=args.wm_batch_size,imagination_batch=128,timebase=timebase.manifest(),actor_lr=5e-5,world_lr=args.world_learning_rate,critic_lr=2e-4,
+            wm_forward_guard_sha256=forward_guard.spec_sha256 if forward_guard else None,
+            wm_separate_supervision=args.wm_separate_supervision,
             wm_action_collections=action_collections,wm_sampling_mode=args.wm_sampling_mode,
             native_return_monitor=frozen_return_monitor.config,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=50.,max_critic_only_blocks=32,
@@ -991,6 +1007,21 @@ def run(args, *, alternating=None):
             while critic_coverage_blocks<len(critic_starts):cover_critic()
             ensure_critic()
         cursor=0;completed_returns=[];completed_discounted=[];completed_records=[];phase='LEARNING'
+        def verify_online_forward(head,attempt):
+            if forward_guard is None:
+                return None
+            result=forward_guard.check(adapter)
+            result.update(head=head,attempt=attempt,world_updates=trainer.world_updates)
+            with (args.output/'online_forward_guard.jsonl').open('a') as log:
+                log.write(json.dumps(result,allow_nan=False)+'\n')
+            if writer is not None:
+                writer.add_scalar('quality/fixed_native_forward_passed',float(result['passed']),trainer.world_updates)
+            metadata['online_forward_validation']=dict(passed=result['passed'],world_sha256=result['world_sha256'],
+                                                       spec_sha256=forward_guard.spec_sha256)
+            if not result['passed']:
+                write(args.output/'online_forward_rejected.json',result)
+                raise RuntimeError('Online WM failed fixed native forward validation before downstream updates')
+            return result
         def run_world_updates(iteration, count=None, head=None):
             """Fit WM with explicit source×event quotas and return audit totals."""
             head=head or trainer.block_name
@@ -1035,7 +1066,8 @@ def run(args, *, alternating=None):
                     raise RuntimeError('WM promotion sampling contract failed: '+json.dumps(sampling['promotion_gate'],sort_keys=True))
                 sampling_seconds=time.perf_counter()-sampling_started
                 fit_started=time.perf_counter()
-                stats=trainer.fit_world_window(window,launch[lanes],loss_groups=sampling.pop('loss_groups')); del window
+                stats=trainer.fit_world_window(window,launch[lanes],loss_groups=sampling.pop('loss_groups'),
+                                               separate_supervision=args.wm_separate_supervision); del window
                 stats.update(sampling_seconds=sampling_seconds,fit_wall_seconds=time.perf_counter()-fit_started)
                 stats['sampling']=sampling; reports.append(stats)
                 if calibration_fast_path and ((offset + 1) == total or (offset + 1) % 16 == 0):
@@ -1065,6 +1097,8 @@ def run(args, *, alternating=None):
                 if values: aggregate[key]=sum(values)/len(values)
             aggregate.update(world_updates=len(reports),world_update_reports=reports,
                              world_update_seconds=time.perf_counter()-started)
+            if total and forward_guard is not None:
+                aggregate['fixed_native_forward']=verify_online_forward(head,iteration)
             return aggregate
         if args.wm_bootstrap_max_ticks and args.training_stage != 'wm_calibrate':
             from quadsmash.rl.supermimic_training_audit_v1 import collect_until_quota
@@ -1610,7 +1644,8 @@ def run(args, *, alternating=None):
             collect_s=time.perf_counter()-started
             check_stop()
             window,lanes,sampling=replay.window(timebase.world_steps,128,trainer.actor_updates)
-            world_stats=trainer.fit_world_window(window,launch[lanes]);del window
+            world_stats=trainer.fit_world_window(window,launch[lanes],separate_supervision=args.wm_separate_supervision);del window
+            verify_online_forward(trainer.block_name,trainer.actor_attempts+1)
             pool=replay.new_starts if replay.new_starts and trainer.actor_updates%2 else starts
             row=pool[trainer.actor_updates%len(pool)];state=as_state(row)
             check_stop()

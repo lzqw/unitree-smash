@@ -1,0 +1,86 @@
+{
+  "initial": {
+    "world_sha256": "f850c9a3fdc8ddea14ba3285bf5b34ce1edabc8694b85b070ba2f2d13876ebd5",
+    "spec_sha256": "4c6cf88bd7eb18fb79ed989fc471417ebb148a6b8c9b2b60619934ab976851dc",
+    "formal": {
+      "body": true,
+      "contact": true,
+      "flight": true
+    },
+    "deployed": {
+      "body": true,
+      "contact": true,
+      "flight": true
+    },
+    "h64_velocity_rmse": {
+      "horizon": 64,
+      "metric": "ball_velocity_rmse",
+      "anchor": 1.0967111587524414,
+      "candidate": 1.038353681564331,
+      "passed": true
+    }
+  },
+  "native_optimizer": {
+    "world_sha256": "082dbf1ff9886316f4983ce3f191873ef849b06e3561df1dc40677d40b082dfd",
+    "spec_sha256": "4c6cf88bd7eb18fb79ed989fc471417ebb148a6b8c9b2b60619934ab976851dc",
+    "formal": {
+      "body": false,
+      "contact": true,
+      "flight": false
+    },
+    "deployed": {
+      "body": false,
+      "contact": false,
+      "flight": false
+    },
+    "h64_velocity_rmse": {
+      "horizon": 64,
+      "metric": "ball_velocity_rmse",
+      "anchor": 1.0967111587524414,
+      "candidate": 1.9385701417922974,
+      "passed": false
+    }
+  },
+  "reduced_rate": {
+    "world_sha256": "c7e5f156a0347d1f83bff66098f81e84c34d050aaa9f45745f1970ebed7535d9",
+    "spec_sha256": "4c6cf88bd7eb18fb79ed989fc471417ebb148a6b8c9b2b60619934ab976851dc",
+    "formal": {
+      "body": true,
+      "contact": true,
+      "flight": false
+    },
+    "deployed": {
+      "body": false,
+      "contact": false,
+      "flight": false
+    },
+    "h64_velocity_rmse": {
+      "horizon": 64,
+      "metric": "ball_velocity_rmse",
+      "anchor": 1.0967111587524414,
+      "candidate": 1.3431408405303955,
+      "passed": false
+    }
+  },
+  "separate": {
+    "world_sha256": "4a630770cb13e72474edd4375352b736feaab4efa964cf3a22c9ae653d271f32",
+    "spec_sha256": "4c6cf88bd7eb18fb79ed989fc471417ebb148a6b8c9b2b60619934ab976851dc",
+    "formal": {
+      "body": true,
+      "contact": true,
+      "flight": false
+    },
+    "deployed": {
+      "body": false,
+      "contact": false,
+      "flight": false
+    },
+    "h64_velocity_rmse": {
+      "horizon": 64,
+      "metric": "ball_velocity_rmse",
+      "anchor": 1.0967111587524414,
+      "candidate": 1.2619978189468384,
+      "passed": false
+    }
+  }
+}

@@ -92,7 +92,7 @@ class TransitionRecorder:
 
 
 @torch.no_grad()
-def assess(data, cases, anchor, adapter, horizons, device, *, contact_step=None):
+def assess(data, cases, anchor, adapter, horizons, device, *, contact_step=None, predictors=('anchor','candidate')):
     from quadsmash.rl.supermimic_ball_sequence_v1 import ball_transition
     from quadsmash.rl.supermimic_toi_racket_objective import racket_features
 
@@ -120,7 +120,9 @@ def assess(data, cases, anchor, adapter, horizons, device, *, contact_step=None)
     buffer={k:v[ticks[None]+torch.arange(horizon)[:,None],lanes].to(device)
             for k,v in data.items() if k in ('state','next_state','targets','previous_action','feet','present','elapsed')}
     metrics={}
-    for name in ('anchor','candidate'):
+    if not predictors or set(predictors)-{'anchor','candidate'}:
+        raise ValueError('Unknown WM predictor')
+    for name in predictors:
         s=buffer['state'][0];feet=buffer['feet'][0].float();present=buffer['present'][0]
         metrics[name]={}
         patch = torch.zeros_like(present, dtype=torch.bool)

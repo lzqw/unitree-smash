@@ -95,6 +95,7 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     --wm-bootstrap-max-ticks "${SM_WM_BOOTSTRAP_MAX_TICKS:-0}"
     --replay-capacity-ticks 16384 --refresh-ticks 800
     --refresh-world-updates 32 --refresh-critic-updates 20
+    --world-learning-rate "${SM_WORLD_LEARNING_RATE:-0.0002}"
     --world-updates-per-actor-update 4 --wm-batch-size "${SM_WM_BATCH_SIZE:-512}"
     --wm-stage-quota uniform=32,pre_touchdown=24,touchdown=24,post_touchdown=24,recovery_failure=16,stable_recovery=8
     --wm-approach-stage-quota uniform=24,approach_active=32,hit_prepare=24,contact_release=24,approach_failure=16,post_hit=8
@@ -106,6 +107,12 @@ for ((cycle=1; cycle<=CYCLES; cycle++)); do
     --output "$OUT" --headless --device cuda:0
     --rendering_mode performance --kit_args=--renderer/multiGpu/enabled=false
   )
+  if [[ "${SM_WM_SEPARATE_SUPERVISION:-0}" == 1 ]]; then
+    TRAIN_ARGS+=(--wm-separate-supervision)
+  fi
+  if [[ -n "${SM_WM_FORWARD_GUARD:-}" ]]; then
+    TRAIN_ARGS+=(--wm-forward-guard "$SM_WM_FORWARD_GUARD")
+  fi
   if [[ -n "${SM_ACTION_BALL_CHECKPOINT:-}" ]]; then
     [[ -f "$SM_ACTION_BALL_CHECKPOINT" ]] || { echo "Missing opt-in action-ball candidate: $SM_ACTION_BALL_CHECKPOINT" >&2; exit 13; }
     TRAIN_ARGS+=(--action-ball-checkpoint "$SM_ACTION_BALL_CHECKPOINT")

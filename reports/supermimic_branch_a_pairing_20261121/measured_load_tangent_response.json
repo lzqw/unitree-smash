@@ -1,0 +1,133 @@
+{
+  "scales": {
+    "wide": {
+      "report_sha256": "d1ccd4238e4350aa70da716f9acaa6e58ba17386c1e975f02b2dc17c9e401122",
+      "source_sha256": "0d77a53104f34f0c544a8410fea4612d9e0e3d6992c7ac3bfe0bc4f9f005528b",
+      "groups": {
+        "all": {
+          "patch": {
+            "rows": 32,
+            "supported": 20,
+            "absolute_rmse": 0.12662424647426723,
+            "gain_median": 0.4380770292897928,
+            "gain_p10": 0.08239641075783752,
+            "cosine_median": 0.735935296908,
+            "cosine_p10": -0.7397448363663965
+          },
+          "row_single": {
+            "rows": 32,
+            "supported": 20,
+            "absolute_rmse": 0.12931536054922022,
+            "gain_median": 0.4380770292897496,
+            "gain_p10": 0.08423482206553587,
+            "cosine_median": 0.728312566414467,
+            "cosine_p10": -0.7543297072277421
+          },
+          "row_iterated": {
+            "rows": 32,
+            "supported": 20,
+            "absolute_rmse": 0.12668371945324644,
+            "gain_median": 0.4380770292897926,
+            "gain_p10": 0.0830012903468206,
+            "cosine_median": 0.7338026832819843,
+            "cosine_p10": -0.7397448349558217
+          }
+        },
+        "racket_stable": {
+          "patch": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.1730789306385477,
+            "gain_median": 0.17285611492940528,
+            "gain_p10": 0.07244670451051982,
+            "cosine_median": -0.07317979445324574,
+            "cosine_p10": -0.539248643863485
+          },
+          "row_single": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.17307893065829563,
+            "gain_median": 0.17285611495007258,
+            "gain_p10": 0.07244670451717264,
+            "cosine_median": -0.07317979427052593,
+            "cosine_p10": -0.5392486436927402
+          },
+          "row_iterated": {
+            "rows": 4,
+            "supported": 4,
+            "absolute_rmse": 0.17307893063854776,
+            "gain_median": 0.1728561149294013,
+            "gain_p10": 0.07244670451051811,
+            "cosine_median": -0.07317979445324507,
+            "cosine_p10": -0.5392486438634884
+          }
+        }
+      }
+    },
+    "half": {
+      "report_sha256": "e8aff5a063fb8f48df3cb55f551270b64e2c5dc653b4192e1fc1e8342d4bd9b1",
+      "source_sha256": "4117f71a15c649ef7734ecf35b122fec5564455d089e6d36b1f5875cb281e098",
+      "groups": {
+        "all": {
+          "patch": {
+            "rows": 32,
+            "supported": 20,
+            "absolute_rmse": 0.0672452118726281,
+            "gain_median": 0.46559927058678047,
+            "gain_p10": 0.09272325428548335,
+            "cosine_median": 0.7332360575124195,
+            "cosine_p10": -0.7264291953744751
+          },
+          "row_single": {
+            "rows": 32,
+            "supported": 20,
+            "absolute_rmse": 0.06870786808221,
+            "gain_median": 0.46611377849202723,
+            "gain_p10": 0.09273104698443058,
+            "cosine_median": 0.716131119974228,
+            "cosine_p10": -0.7500276021517153
+          },
+          "row_iterated": {
+            "rows": 32,
+            "supported": 20,
+            "absolute_rmse": 0.06720264057459498,
+            "gain_median": 0.46559938283739594,
+            "gain_p10": 0.09272402095510075,
+            "cosine_median": 0.7332360575124623,
+            "cosine_p10": -0.7264291953744171
+          }
+        },
+        "racket_stable": {
+          "patch": {
+            "rows": 6,
+            "supported": 6,
+            "absolute_rmse": 0.0607431780510706,
+            "gain_median": 0.17284733572857644,
+            "gain_p10": 0.07075563210888955,
+            "cosine_median": -0.04024365923874609,
+            "cosine_p10": -0.790138271196027
+          },
+          "row_single": {
+            "rows": 6,
+            "supported": 6,
+            "absolute_rmse": 0.06074317928083658,
+            "gain_median": 0.17284733571505898,
+            "gain_p10": 0.07075996134674191,
+            "cosine_median": -0.04024365945944567,
+            "cosine_p10": -0.7901382712428024
+          },
+          "row_iterated": {
+            "rows": 6,
+            "supported": 6,
+            "absolute_rmse": 0.060743178149792056,
+            "gain_median": 0.1728473357285888,
+            "gain_p10": 0.07075605803645436,
+            "cosine_median": -0.040243659238795165,
+            "cosine_p10": -0.7901382711959877
+          }
+        }
+      }
+    }
+  },
+  "scope": "Measured normal loads and friction anchors. Signed friction response under prescribed racket motion; diagnostic only."
+}

@@ -53,6 +53,16 @@ def verify_native_promotion(metrics_path,checkpoint_path,*,expected_execution=No
     if m.get('num_envs')!=128 or m.get('control_ticks')!=800:raise ValueError('Incomplete native evaluation protocol')
     if not math.isfinite(n['native_episode_return_mean']):raise ValueError('Nonfinite native return')
     if not (n['native_episode_return_mean']>-12.52678435 and n['ball_side_complete_except_recovery']>=53 and n['complete5']>=27 and m['numerical_failures']==0):raise ValueError('Native candidate not accepted')
+    if expected_execution is not None:
+        import torch
+        from .supermimic_physical_loop_loading_v1 import tensor_digest
+        checkpoint=torch.load(checkpoint_path,map_location='cpu',weights_only=False,mmap=True)
+        spec=checkpoint.get('config',{}).get('wm_forward_guard_sha256')
+        if spec:
+            check=checkpoint['metadata'].get('online_forward_validation',{})
+            if (check.get('passed') is not True or check.get('spec_sha256')!=spec
+                or check.get('world_sha256')!=tensor_digest(checkpoint['world'].items())):
+                raise ValueError('Checkpoint lacks passing online native forward validation for its deployed WM')
     return dict(checkpoint_sha256=sha256(checkpoint_path),evaluation_sha256=sha256(metrics_path))
 
 def verify_runtime_limits(receipt):

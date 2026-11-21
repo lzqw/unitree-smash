@@ -23,6 +23,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('panel','capture','initial-score','checkpoint','archive','safety-mapping','output'):
         p.add_argument('--'+name,required=True,type=Path)
+    p.add_argument('--replayed-world',type=Path,help='Offline optimizer replay directory, bound to the same original run checkpoint')
     p.add_argument('--compare-components',action='store_true',help='Replay the panel with only body or ball weights from the online stage')
     a = p.parse_args()
     torch.set_num_threads(3)
@@ -59,7 +60,18 @@ def main():
             module = getattr(adapter,name)
             if module is not None:
                 initial_components[name] = {k:v.clone() for k,v in module.state_dict().items()}
-    adapter.load_state_dict(stage['world'],strict=True)
+    stage_sha = digest(a.checkpoint)
+    trained = stage['world']
+    replay_fit = None
+    if a.replayed_world:
+        replay_fit = read(a.replayed_world/'fit.json')
+        trained = torch.load(a.replayed_world/'online_world.pt',weights_only=True,map_location='cpu',mmap=True)
+        if (replay_fit['stage_checkpoint_sha256']!=stage_sha or replay_fit['updates']!=stage['world_updates'] or
+                replay_fit['initial_world_sha256']!=initial['runtime_world_sha256'] or
+                replay_fit['original_online_world_sha256']!=tensor_digest(stage['world'].items()) or
+                replay_fit['online_world_sha256']!=tensor_digest(trained.items())):
+            raise ValueError('Offline fit does not match this original online stage')
+    adapter.load_state_dict(trained,strict=True)
     adapter.eval()
     anchor = PhysicalWorldV1().eval()
     anchor.load_state_dict(torch.load(anchor_path,weights_only=True,map_location='cpu')['model'])
@@ -75,8 +87,8 @@ def main():
             for k,v in row.items():
                 if abs(v-initial['metrics']['anchor'][str(h)][group][k])>1.e-5:
                     raise ValueError('Anchor does not reproduce the initial reference scores')
-    names=panel['prospective_body_comparison']['uniform_no_regression']
-    report=dict(head_stage_checkpoint_sha256=digest(a.checkpoint),stage_actor_sha256=tensor_digest(stage['actor'].items()),
+    names=panel.get('prospective_body_comparison',{}).get('uniform_no_regression',['body_rmse','root_angular_mae'])
+    report=dict(head_stage_checkpoint_sha256=stage_sha,stage_actor_sha256=tensor_digest(stage['actor'].items()),
         stage_world_sha256=tensor_digest(adapter.state_dict().items()),initial_world_sha256=initial['runtime_world_sha256'],
         native_panel_sha256=digest(a.panel),native_capture_sha256=measured['data_sha256'],initial_score_sha256=digest(a.initial_score),
         native_behavior_actor_sha256=measured['actor_sha256'],horizons=panel['horizons'],world_updates=stage['world_updates'],
@@ -86,11 +98,17 @@ def main():
         contact_vs_block_initial=compare_candidate_to_anchor(event_metrics(before),event_metrics(current)),
         metrics=current,scope='Offline monitoring on the same native launch panel with recorded executed targets. The online weights were generated after the initial panel declaration.',
         formal_promotion=False)
+    if replay_fit is not None:
+        report.update(replayed_world_sha256=report.pop('stage_world_sha256'),
+                      stage_world_sha256=replay_fit['original_online_world_sha256'],
+                      replay_fit_sha256=digest(a.replayed_world/'fit.json'),
+                      learning_rate=replay_fit['learning_rate'],
+                      scope='Offline training replay candidate evaluated on identical native launches and recorded targets.')
     if a.compare_components:
         report['component_comparisons'] = {}
         for group, restored in [('online_body_only',('ball_model','action_ball_model')),
                                 ('online_ball_only',('physical_model',))]:
-            adapter.load_state_dict(stage['world'],strict=True)
+            adapter.load_state_dict(trained,strict=True)
             for name in restored:
                 if name in initial_components:
                     getattr(adapter,name).load_state_dict(initial_components[name],strict=True)
