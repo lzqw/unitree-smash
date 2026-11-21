@@ -64,7 +64,7 @@ def main():
     fields=('request','final_normalized','final_target_rad')
     result={}
     for head,ticks in [('approach',APPROACH_TICKS),('recovery',RECOVERY_TICKS)]:
-        parts={key:[] for key in (*fields,'kl','gate')}
+        parts={key:[] for key in (*fields,'kl','gate','approach_gate')}
         for tick in ticks:
             state=PhysicalImaginationStateV1.from_record(states[tick],executor_template=template,launch=launch,device='cpu')
             x,*u=preview(first,adapter.executor,state.branch())
@@ -73,12 +73,16 @@ def main():
             diff=2*(l0-l1)
             parts['kl'].append(.5*(torch.expm1(diff)-diff+(x.double()-y.double()).square()*(-2*l1).exp()))
             parts['gate'].append(recovery_gate(state.task_memory['rally'],state.observation))
+            parts['approach_gate'].append(first.approach_gate(state.observation).reshape(-1))
             for k,old,new in zip(fields,u,v,strict=True):
                 parts[k].append(new.double()-old.double())
         parts={k:torch.cat(v) for k,v in parts.items()}
         gate=parts['gate']
+        approach_gate=parts['approach_gate']
         groups={}
-        for group,mask in [('all',torch.ones_like(gate)),('recovery_active',gate),('recovery_inactive',~gate)]:
+        for group,mask in [('all',torch.ones_like(gate)),('recovery_active',gate),('recovery_inactive',~gate),
+                           ('approach_zero',approach_gate==0),('approach_up_to_quarter',(approach_gate>0)&(approach_gate<=.25)),
+                           ('approach_above_quarter',approach_gate>.25)]:
             stats=dict(rows=int(mask.sum()))
             if mask.any():
                 stats['gaussian_kl_per_dim']=float(parts['kl'][mask].mean())
