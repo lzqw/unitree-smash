@@ -10,7 +10,7 @@ class FrozenReturnMonitor:
         self.config=dict(drop_tolerance=drop_tolerance,flat_tolerance=flat_tolerance,patience=patience)
         self.rows=[];self.decline=0;self.flat=0;self.stop_reason=None
 
-    def observe(self,records,*,policy_id,actor_sha256,contract_sha256):
+    def observe(self,records,*,policy_id,actor_sha256,contract_sha256,stop_on_plateau=True):
         if self.stop_reason:raise RuntimeError('Native return monitor already stopped: '+self.stop_reason)
         if not policy_id or not actor_sha256 or not contract_sha256:raise ValueError('Missing frozen policy/contract identity')
         if len(records)!=128 or {r['env_id'] for r in records}!=set(range(128)):
@@ -25,7 +25,7 @@ class FrozenReturnMonitor:
         if not all(isinstance(v,(int,float)) and math.isfinite(v) for v in returns):raise ValueError('Nonfinite native return')
         mean=sum(returns)/128
         row=dict(policy_id=policy_id,actor_sha256=actor_sha256,contract_sha256=contract_sha256,
-                 mean=mean,episodes=128,case_ids=sorted(r['case_id'] for r in records))
+                 mean=mean,episodes=128,stop_on_plateau=stop_on_plateau,case_ids=sorted(r['case_id'] for r in records))
         if self.rows:
             previous=self.rows[-1]
             if previous['contract_sha256']!=contract_sha256 or previous['case_ids']!=row['case_ids']:
@@ -37,7 +37,7 @@ class FrozenReturnMonitor:
             if not repeated:
                 self.flat=self.flat+1 if abs(delta)<=self.config['flat_tolerance'] else 0
             if self.decline>=self.config['patience']:self.stop_reason='native-frozen-return-declining'
-            elif self.flat>=self.config['patience']:self.stop_reason='native-frozen-return-plateau'
+            elif stop_on_plateau and self.flat>=self.config['patience']:self.stop_reason='native-frozen-return-plateau'
         self.rows.append(row)
         return dict(row,decline_streak=self.decline,flat_streak=self.flat,stop_reason=self.stop_reason,
                     config=self.config,formal_promotion=False,

@@ -1041,6 +1041,10 @@ def run(args, *, alternating=None):
             frozen_return_monitor.load_state_dict(resumed['frozen_return_monitor'])
         elif args.resume_training and args.training_profile=='large':
             raise ValueError('Large resume requires saved native-return monitoring state; do not reset trend history')
+        # Extensions retain the measured streak and continue through a flat
+        # curve. A previously stopped checkpoint still goes through check_stop().
+        frozen_plateau_is_diagnostic = research and bool(args.extend_completed_research or
+            (args.resume_training and resumed['config'].get('frozen_plateau_is_diagnostic', False)))
         bootstrap_actor=None
         refresh_collector=None; frozen_policy_id=None; refresh_serial=int(resumed.get('refresh_serial',0)) if args.resume_training else 0
         archive_flush_rows=max(32,int(os.environ.get('QUADSMASH_ARCHIVE_FLUSH_ROWS','32')))
@@ -1124,7 +1128,7 @@ def run(args, *, alternating=None):
             wm_forward_guard_sha256=forward_guard.spec_sha256 if forward_guard else None,wm_replay_handoff=replay_handoff,
             wm_separate_supervision=args.wm_separate_supervision,wm_direct_long_body_supervision=args.wm_direct_long_body_supervision,wm_active_flight_batch=args.wm_active_flight_batch,wm_natural_flight_batch=args.wm_natural_flight_batch,wm_natural_flight_loss=args.wm_natural_flight_loss,
             wm_action_collections=action_collections,wm_sampling_mode=args.wm_sampling_mode,
-            native_return_monitor=frozen_return_monitor.config,
+            native_return_monitor=frozen_return_monitor.config, frozen_plateau_is_diagnostic=frozen_plateau_is_diagnostic,
             policy_anchor=.05,critic_warmup_updates=200,critic_max_loss=None if args.diagnostic_critic_loss else 50.,
             shuffle_wm_quota_groups=args.shuffle_wm_quota_groups,
             continuous_recovery_starts=continuous_recovery_starts,
@@ -1926,7 +1930,8 @@ def run(args, *, alternating=None):
             atomic_torch_save(dict(tensors=packed,policy_id=policy_id,receipt=receipt),refresh_dir/'complete_episodes.pt')
             runtime_validation_path=str(refresh_dir/'complete_episodes.pt')
             native_contract_sha=hashlib.sha256(json.dumps(dict(task=manifest['task_contract'],execution=policy_execution),sort_keys=True).encode()).hexdigest()
-            trend=frozen_return_monitor.observe(native_records,policy_id=policy_id,actor_sha256=actor_hash,contract_sha256=native_contract_sha)
+            trend=frozen_return_monitor.observe(native_records,policy_id=policy_id,actor_sha256=actor_hash,
+                                                contract_sha256=native_contract_sha,stop_on_plateau=not frozen_plateau_is_diagnostic)
             receipt['native_return_trend']=trend
             write(refresh_dir/'native_return_trend.json',trend)
             if writer is not None:

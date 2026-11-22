@@ -52,3 +52,26 @@ def test_repeated_frozen_validation_does_not_consume_plateau_patience():
     assert observe(resumed,-10,'next')['flat_streak']==1
     assert observe(resumed,-10,'next')['stop_reason'] is None
     assert observe(resumed,-10,'third')['stop_reason']=='native-frozen-return-plateau'
+
+
+def test_extension_records_flat_curve_and_resumes_decline_detection():
+    parent = FrozenReturnMonitor()
+    observe(parent, -10)
+    observe(parent, -10, 'p1')
+    monitor = FrozenReturnMonitor()
+    monitor.load_state_dict(parent.state_dict())
+
+    def refresh(value, policy):
+        return monitor.observe(records(value, policy), policy_id=policy, actor_sha256=policy,
+                               contract_sha256='fixed-task', stop_on_plateau=False)
+
+    flat = refresh(-10, 'p2')
+    assert flat['flat_streak'] == 2 and flat['stop_reason'] is None
+    assert flat['stop_on_plateau'] is False
+    assert refresh(-11, 'p3')['decline_streak'] == 1
+    saved = monitor.state_dict()
+    monitor = FrozenReturnMonitor()
+    monitor.load_state_dict(saved)
+    assert refresh(-12, 'p4')['stop_reason'] == 'native-frozen-return-declining'
+    with pytest.raises(RuntimeError, match='already stopped'):
+        refresh(-10, 'p5')
