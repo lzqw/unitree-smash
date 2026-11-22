@@ -7,12 +7,13 @@ from collections.abc import Mapping
 import torch
 
 POSTHIT = 'causal-contact-release-recovery-v1'
+POSTHIT_OR_GROUNDED_MISS = 'causal-release-or-grounded-miss-recovery-v1'
 LEGACY = 'exported-phase-recovery-v1'
 PHYSICAL_SCHEMA = 'g07-physical-task-observation-loop-v1'
 
 
 def contract(mode=POSTHIT):
-    if mode not in (POSTHIT, LEGACY):
+    if mode not in (POSTHIT, POSTHIT_OR_GROUNDED_MISS, LEGACY):
         raise ValueError('Unknown policy execution mode: '+str(mode))
     return dict(schema='supermimic-policy-execution-v1', recovery_gate=mode,
                 request='original-normalized-residual', final_transform='unchanged-G07-mixer-and-native-limiter')
@@ -34,24 +35,32 @@ def resolve_contract(checkpoint):
     return contract(LEGACY),'legacy-nonphysical-export'
 
 
-def recovery_gate(rally, observation):
-    values=[]
-    for name in ('had_contact','released'):
-        value=rally.get(name) if isinstance(rally,Mapping) else getattr(rally,name,None)
-        if not torch.is_tensor(value) or value.numel()!=len(observation):
+def recovery_gate(rally, observation, *, mode=POSTHIT):
+    def latch(name):
+        value = rally.get(name) if isinstance(rally, Mapping) else getattr(rally, name, None)
+        if not torch.is_tensor(value) or value.numel() != len(observation):
             raise ValueError('Missing or wrong-sized causal latch: '+name)
-        value=value.to(device=observation.device).reshape(-1)
+        value = value.to(device=observation.device).reshape(-1)
         if value.is_floating_point() and not torch.isfinite(value).all():
             raise ValueError('Nonfinite causal latch: '+name)
-        values.append(value>.5)
-    return values[0]&values[1]
+        return value > .5
+
+    hit = latch('had_contact')
+    released = hit & latch('released')
+    if mode == POSTHIT:
+        return released
+    if mode != POSTHIT_OR_GROUNDED_MISS:
+        raise ValueError('Unknown causal recovery gate: '+str(mode))
+    missed = (latch('launched') & ~latch('in_play') & latch('ground_seen')
+              & ~hit & ~latch('frame_hit') & ~latch('string_hit'))
+    return released | missed
 
 
 def policy_forward(actor,observation,rally,*,mode=POSTHIT,sample=False):
     if mode==LEGACY:
         return actor(observation,sample=sample)
-    if mode!=POSTHIT:
+    if mode not in (POSTHIT, POSTHIT_OR_GROUNDED_MISS):
         raise ValueError('Unknown policy execution mode: '+str(mode))
     if not hasattr(actor,'forward_with_recovery_gate'):
         raise ValueError('Causal recovery contract requires explicit gate forward; no silent fallback')
-    return actor.forward_with_recovery_gate(observation,recovery_gate(rally,observation),sample=sample)
+    return actor.forward_with_recovery_gate(observation,recovery_gate(rally,observation,mode=mode),sample=sample)

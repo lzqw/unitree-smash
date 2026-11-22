@@ -190,3 +190,35 @@ def test_promotion_rejects_correct_weights_evaluated_with_wrong_gate(tmp_path):
     metrics=tmp_path/'metrics.json';metrics.write_text(json.dumps(dict(evaluated_checkpoint_sha256=sha256(checkpoint),
         policy_execution=contract(LEGACY),native_episode_return_mean=-10,ball_side_complete_except_recovery=53,complete5=27,numerical_failures=0)))
     with pytest.raises(ValueError,match='execution contract mismatch'):verify_native_promotion(metrics,checkpoint,expected_execution=contract(POSTHIT))
+
+
+def test_grounded_miss_policy_uses_only_confirmed_first_miss_or_released_hit():
+    from types import SimpleNamespace
+    from quadsmash.rl.supermimic_policy_execution_v1 import POSTHIT_OR_GROUNDED_MISS, recovery_gate, resolve_contract
+    obs = torch.zeros(8, 1)
+    keys = ('launched', 'in_play', 'ground_seen', 'had_contact', 'released', 'frame_hit', 'string_hit')
+    rows = torch.tensor([
+        [0, 0, 1, 0, 0, 0, 0], [1, 1, 1, 0, 0, 0, 0], [1, 0, .49, 0, 0, 0, 0],
+        [1, 0, 1, 1, 0, 0, 0], [1, 0, 1, 0, 0, 1, 0], [1, 0, 1, 0, 0, 0, 1],
+        [1, 0, 1, 0, 0, 0, 0], [1, 0, 1, 1, 1, 0, 1],
+    ])
+    flags = dict(zip(keys, rows.T))
+    for rally in (flags, SimpleNamespace(**flags)):
+        assert recovery_gate(rally, obs).nonzero().flatten().tolist() == [7]
+        assert recovery_gate(rally, obs, mode=POSTHIT_OR_GROUNDED_MISS).nonzero().flatten().tolist() == [6, 7]
+    del flags['launched']
+    with pytest.raises(ValueError, match='launched'):
+        recovery_gate(flags, obs, mode=POSTHIT_OR_GROUNDED_MISS)
+    declared = contract(POSTHIT_OR_GROUNDED_MISS)
+    assert resolve_contract(dict(metadata=dict(policy_execution=declared)))[0] == declared
+
+
+def test_diagnostic_gate_cannot_promote_original_checkpoint_even_without_expected_execution(tmp_path):
+    import json
+    from quadsmash.rl.supermimic_policy_execution_v1 import POSTHIT_OR_GROUNDED_MISS
+    from quadsmash.rl.supermimic_long_run_contract_v1 import verify_native_promotion
+    scores = tmp_path/'scores.json'
+    scores.write_text(json.dumps(dict(checkpoint_policy_execution=contract(POSTHIT),
+                                      policy_execution=contract(POSTHIT_OR_GROUNDED_MISS))))
+    with pytest.raises(ValueError, match='execution contract mismatch'):
+        verify_native_promotion(scores, tmp_path/'unread')

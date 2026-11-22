@@ -48,6 +48,8 @@ def verify_contact_receipt(path,model_paths,task_contract):
 
 def verify_native_promotion(metrics_path,checkpoint_path,*,expected_execution=None):
     m=json.loads(Path(metrics_path).read_text());n=m.get('native_episode_metrics',m)
+    if 'checkpoint_policy_execution' in m and m['checkpoint_policy_execution'] != m.get('policy_execution'):
+        raise ValueError('Native evaluation policy execution contract mismatch with checkpoint')
     if 'independent_evaluation' in m.get('task_contract',{}):
         raise ValueError('TRAIN128 promotion cannot use a stage-end independent evaluation batch')
     if expected_execution is not None and m.get('policy_execution')!=expected_execution:raise ValueError('Native evaluation policy execution contract mismatch')

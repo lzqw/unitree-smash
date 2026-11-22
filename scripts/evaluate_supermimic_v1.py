@@ -35,6 +35,8 @@ def main():
                               help='Zero-update native source evaluation, no world model or optimizers')
     parser.add_argument('--init-policy-recovery-gate',choices=('legacy','causal'),default='legacy',
                         help='Explicit zero-update execution contract; causal matches physical training')
+    parser.add_argument('--diagnostic-grounded-miss', action='store_true',
+                        help='Frozen TRAIN128 comparison: also activate Recovery after a confirmed grounded miss')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--g07-execution-root', type=Path)
     parser.add_argument('--precision-receipt', type=Path)
@@ -58,6 +60,10 @@ def main():
     if (args.independent_panel_batch is not None or args.research_fixed128) and (args.native_action_probe_spec or args.record_physical_transitions
             or args.shutdown_diagnostic_ticks is not None):
         parser.error('Independent panel evaluation requires a complete score-only rollout')
+    if args.diagnostic_grounded_miss and (not args.checkpoint or args.independent_panel_batch is not None
+            or args.research_fixed128 or args.native_action_probe_spec or args.record_physical_transitions
+            or args.shutdown_diagnostic_ticks is not None):
+        parser.error('The grounded-miss diagnostic uses a learned checkpoint and a full TRAIN128 score')
     if bool(args.native_action_probe_spec)!=bool(args.native_action_probe_branch):
         parser.error('Probe spec and branch are required together')
     if args.native_action_probe_spec:
@@ -192,12 +198,17 @@ def _run_native(args, stop_request):
         if trained is not None:
             actor.load_state_dict(trained['actor'], strict=True)
         actor.eval()
-        from quadsmash.rl.supermimic_policy_execution_v1 import resolve_contract,policy_forward,contract as execution_contract,POSTHIT
+        from quadsmash.rl.supermimic_policy_execution_v1 import resolve_contract,policy_forward,recovery_gate,contract as execution_contract,POSTHIT,POSTHIT_OR_GROUNDED_MISS
         from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
         actor_state_before=tensor_digest(actor.state_dict().items())
         policy_execution,execution_provenance=resolve_contract(trained)
         if trained is None and args.init_policy_recovery_gate=='causal':
             policy_execution=execution_contract(POSTHIT);execution_provenance='explicit frozen initialization under training causal gate'
+        if args.diagnostic_grounded_miss:
+            if policy_execution != execution_contract(POSTHIT):
+                raise ValueError('Grounded-miss comparison requires a post-hit checkpoint')
+            policy_execution = execution_contract(POSTHIT_OR_GROUNDED_MISS)
+            execution_provenance = 'frozen TRAIN128 grounded-miss gate comparison, same checkpoint weights'
         write_json(args.output/'policy_execution.json',dict(contract=policy_execution,provenance=execution_provenance))
         if args.record_physical_transitions:
             from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive
@@ -227,6 +238,10 @@ def _run_native(args, stop_request):
         write_json(args.output/'actuator_contract.json', actuator_contract(env, contract))
         first, cursor, numerical = {}, 0, 0
         head_counts = torch.zeros(2, dtype=torch.long, device=env.device)
+        if args.diagnostic_grounded_miss:
+            gate_first_tick = torch.full((128,), -1, device=env.device, dtype=torch.long)
+            gate_ticks = torch.zeros_like(gate_first_tick)
+            first_active = torch.ones_like(gate_ticks, dtype=torch.bool)
         mapping = dict(max_final_target_error_rad=0., tolerance_rad=2e-6,
                        phase_samples={str(i):0 for i in range(5)}, phase_max_error={str(i):0. for i in range(5)},
                        checked_native_ticks=0, scope='Independent old controller versus new actor+executor on the SAME live observations; not a separate old physics rollout')
@@ -249,7 +264,15 @@ def _run_native(args, stop_request):
                 old_target = None
                 action = policy_forward(actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
                 if probe_capture is not None:action=probe_capture.before(tick,env,before,action)
-                head_counts[0].add_((env.rally.had_contact & env.rally.released).sum())
+                if policy_execution['recovery_gate'] == POSTHIT_OR_GROUNDED_MISS:
+                    active_gate = recovery_gate(env.rally,before,mode=POSTHIT_OR_GROUNDED_MISS)
+                    head_counts[0].add_(active_gate.sum())
+                    if args.diagnostic_grounded_miss:
+                        extra = first_active & active_gate & ~env.rally.had_contact
+                        gate_first_tick.masked_fill_(extra & (gate_first_tick < 0), tick)
+                        gate_ticks.add_(extra)
+                else:
+                    head_counts[0].add_((env.rally.had_contact & env.rally.released).sum())
                 head_counts[1].add_((actor.actor.gate(before) > .25).sum())
                 if reference is not None:
                     if policy_execution['recovery_gate']==POSTHIT:
@@ -290,6 +313,8 @@ def _run_native(args, stop_request):
                         if measured['episode_index'] != 0:
                             raise RuntimeError('Missing first episode; refusing later episode substitution')
                         first[lane]=measured
+                        if args.diagnostic_grounded_miss:
+                            first_active[lane] = False
                         with (args.output/'episodes.jsonl').open('a') as stream:
                             stream.write(json.dumps(record)+'\n')
                     else:
@@ -359,6 +384,11 @@ def _run_native(args, stop_request):
             elapsed_s=time.perf_counter()-start,physics=physics,
             native_step_and_observation_check_seconds=step_wall_seconds,
             evaluated_checkpoint_sha256=checkpoint_sha256)
+        if args.diagnostic_grounded_miss:
+            metrics.update(evaluation_scope='frozen TRAIN128 grounded-miss gate comparison',
+                           checkpoint_policy_execution=execution_contract(POSTHIT),
+                           first_episode_extra_gate_ticks=gate_ticks.tolist(),
+                           first_episode_extra_gate_onset=gate_first_tick.tolist())
         if args.independent_panel_batch is not None:
             metrics.update(task_contract=capture_contract, evaluation_scope='independent512 stage-end research evaluation')
         if args.research_fixed128:

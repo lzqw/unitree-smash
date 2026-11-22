@@ -129,3 +129,31 @@ def test_recovery_prefix_is_causal_before_body_contact_and_reset_safe():
     stored, = replay.stage_starts['pre_body_ground']
     assert stored['_actor_lane_mask'].tolist()==[True,False,False,False]
     assert stored['before'] is past['before'] and stored['executor_before']=={'clock':100}
+
+
+def test_start_cache_roundtrip_keeps_only_current_state_and_native_identity(tmp_path, monkeypatch):
+    import hashlib
+    import pytest
+    from quadsmash.rl import supermimic_physical_start_cache_v1 as cache
+
+    for key in ('APPROACH_TICKS', 'RECOVERY_TICKS', 'CRITIC_TICKS'):
+        monkeypatch.setattr(cache, key, (0, 1))
+    archive = tmp_path/'archive'
+    archive.mkdir()
+    common = dict(before={}, executor_before={}, observation=torch.zeros(1, 3))
+    new = dict(common, policy_version=17, native_tick=320, stream_id=3,
+               collection_mode='mixed_training', actor_state_sha256='recorded')
+    path = archive/'chunk.pt'
+    torch.save(dict(rows=[dict(common, after={}), dict(new, reward=1.)]), path)
+    manifest = dict(chunks=[dict(file=path.name, ticks=2, sha256=hashlib.sha256(path.read_bytes()).hexdigest())])
+    for _ in range(2):
+        starts = cache.load_start_cache(archive, manifest)
+        assert starts[0].keys() == common.keys() and starts[1].keys() == new.keys()
+        assert starts[1]['policy_version'] == 17
+
+    saved_path = tmp_path/'physical_current_starts_v4.pt'
+    saved = torch.load(saved_path, weights_only=True)
+    saved['starts'][1]['after'] = {}
+    torch.save(saved, saved_path)
+    with pytest.raises(ValueError, match='unexpected fields'):
+        cache.load_start_cache(archive, manifest)

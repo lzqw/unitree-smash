@@ -2,7 +2,8 @@
 import hashlib,json
 from pathlib import Path
 import torch
-from .supermimic_physical_loop_replay_v1 import current_start
+from .supermimic_archive_storage_v1 import read_archive_rows
+from .supermimic_physical_loop_replay_v1 import NATIVE_START_ID_FIELDS, current_start
 from .supermimic_physical_run_guard_v1 import atomic_torch_save
 
 APPROACH_TICKS=(224,240,256,272)
@@ -43,20 +44,19 @@ def load_start_cache(archive,manifest):
         saved=torch.load(path,map_location='cpu',weights_only=True)
         if saved['archive_signature']!=signature or sorted(saved['starts'])!=required:
             raise ValueError('Current-start cache belongs to a different archive')
+        required_fields = {'before', 'executor_before', 'observation'}
+        allowed_fields = required_fields.union(NATIVE_START_ID_FIELDS)
         for row in saved['starts'].values():
-            if set(row)!={'before','executor_before','observation'}:
-                raise ValueError('Future labels leaked into imagination start cache')
+            if not required_fields <= row.keys() <= allowed_fields:
+                raise ValueError('Missing current state or unexpected fields in imagination start cache')
         return saved['starts']
     starts={};offset=0
     for entry in manifest['chunks']:
-        source=archive/entry['file']
-        if hashlib.sha256(source.read_bytes()).hexdigest()!=entry['sha256']:
-            raise ValueError('Imagination-start source chunk hash mismatch')
-        rows=torch.load(source,map_location='cpu',weights_only=True)['rows']
-        for i,row in enumerate(rows):
-            if offset+i in required:starts[offset+i]=current_start(row)
-        offset+=len(rows)
-        del rows
+        with read_archive_rows(archive, entry, scratch=archive.parent) as rows:
+            for i, row in enumerate(rows, start=offset):
+                if i in required:
+                    starts[i] = current_start(row)
+            offset += len(rows)
     if sorted(starts)!=required:raise ValueError('Incomplete full-episode current-state coverage')
     atomic_torch_save(dict(archive_signature=signature,starts=starts),path)
     return starts
