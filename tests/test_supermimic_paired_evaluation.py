@@ -175,3 +175,20 @@ def test_simultaneous_and_unmeasured_frame_order_are_separate():
     assert frame_before_string(dict(hit, first_string_time_s=2.+dt), dt) is True
     assert frame_before_string(hit, dt) is None
     assert frame_before_string(dict(hit, string_hit=False), dt) is True
+
+
+def test_fixed_ball_side_flips_report_all_failed_scoring_conditions_on_the_losing_side():
+    from scripts.compare_supermimic_fixed_stages import ball_side_flip_conditions
+
+    def case(key, *reasons):
+        return dict(case_id=key, rejection_reasons=list(reasons),
+                    ball_side_complete_except_recovery=all(r == 'same_flight_stable_recovery' for r in reasons))
+
+    before = [case('a', 'speed_threshold', 'same_flight_stable_recovery'), case('b'), case('c')]
+    after = [case('c', 'same_flight_stable_recovery'), case('b', 'actual_net_and_target', 'speed_threshold'), case('a')]
+    outcomes = dict(binary=dict(ball_side=dict(improved_cases=['a'], regressed_cases=['b'])))
+    result = ball_side_flip_conditions(before, after, outcomes)
+    assert result['improved_cases'] == dict(cases={'a': ['speed_threshold']}, sole_condition_counts={'speed_threshold': 1})
+    assert result['regressed_cases'] == dict(cases={'b': ['actual_net_and_target', 'speed_threshold']}, sole_condition_counts={})
+    del before[0]['rejection_reasons']
+    assert not ball_side_flip_conditions(before, after, outcomes)['available']

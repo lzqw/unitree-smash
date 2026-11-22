@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Attribute policy changes using complete native runs at identical initial states."""
 import argparse
+from collections import Counter
 import json
 import numpy as np
 from statistics import median
@@ -157,6 +158,26 @@ def frame_before_string(row, physics_dt):
     return bool(first_string > first_contact + physics_dt / 2)
 
 
+def ball_side_flip_conditions(pre, post, outcomes):
+    """Report official failed ball-side criteria on the losing side of each paired flip."""
+    binary = outcomes['binary']['ball_side']
+    if any('rejection_reasons' not in row for stage in (pre, post) for row in stage):
+        return dict(available=False, reason='Historical panel lacks independent rejection reasons')
+    report = dict(available=True)
+    for group, stage in [('improved_cases', pre), ('regressed_cases', post)]:
+        rows = {r['case_id']: r for r in stage}
+        cases = {}
+        for case in binary[group]:
+            row = rows[case]
+            reasons = [r for r in row['rejection_reasons'] if r != 'same_flight_stable_recovery']
+            if row['ball_side_complete_except_recovery'] or not reasons:
+                raise ValueError('Ball-side flip disagrees with scored failure conditions')
+            cases[case] = reasons
+        counts = Counter(reasons[0] for reasons in cases.values() if len(reasons) == 1)
+        report[group] = dict(cases=cases, sole_condition_counts=dict(counts))
+    return report
+
+
 def first_episode_failure_flips(before, after, physics_dt):
     """Track body-ground changes and qualified-string/frame-first switches on matched cases."""
     if before.keys() != after.keys():
@@ -233,6 +254,7 @@ def main():
         raise ValueError(f'Incompatible frozen comparisons: {mismatched}, actual actors {old} and {new}')
     result = paired_evaluation(pre,post,stage=a.stage)
     result['paired_task_outcomes'] = paired_task_outcomes(result)
+    result['ball_side_flip_conditions'] = ball_side_flip_conditions(pre, post, result['paired_task_outcomes'])
     result['landing_diagnostics'] = discordant_landing_evidence(a.before, a.after, result)
     result.update(native_sources=[dict(actor_sha256=h, seed=first['seed'], path=str(folder),
                                        metrics_sha256=digest(folder/'metrics.json'),

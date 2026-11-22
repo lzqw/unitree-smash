@@ -58,6 +58,12 @@ def paired_scalars(result):
         metrics['common_contact_recovery/'+field] = recovery[field]
     for name, cases in result.get('landing_diagnostics', {}).get('failure_flips', {}).items():
         metrics['native_failure_flips/'+name] = len(cases)
+    conditions = result.get('ball_side_flip_conditions', {})
+    if conditions.get('available'):
+        for group in ('improved_cases', 'regressed_cases'):
+            counts = conditions[group]['sole_condition_counts']
+            for reason in ('speed_threshold', 'released_downward_forward', 'actual_net_and_target'):
+                metrics[f'ball_side/{group}/sole_{reason}'] = counts.get(reason, 0)
     change = outcomes['native_return']
     low, high = change['descriptive_paired_case_bootstrap_95']
     metrics.update({'native_return/mean_delta': change['mean'], 'native_return/median_delta': change['median'],

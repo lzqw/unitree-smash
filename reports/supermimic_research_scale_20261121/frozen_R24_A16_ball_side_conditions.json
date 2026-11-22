@@ -1,0 +1,170 @@
+{
+  "case_count": 128,
+  "stage": "frozen_R24_A16",
+  "identical_initial_states": true,
+  "native_sources": [
+    {
+      "actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+      "seed": 882072,
+      "path": "/home/autodrive/LZQW/experiments/supermimic_branch_a_audit_20261121/post_r16_toi_one_start_fix_fixed128",
+      "metrics_sha256": "2953935f7aaed2d5389a2a1e79bee0fdbf08ec404c69e2072c9b1c6aad2850de",
+      "episodes_sha256": "ca896da027ace7f940261c7b04b41ca8f10a4269acbb15be44a901aa727173e3"
+    },
+    {
+      "actor_sha256": "3f3d4e17a47de7ed2874a801db97dca2cf061f82a29aba952d218e13ebfc246a",
+      "seed": 882072,
+      "path": "/home/autodrive/LZQW/experiments/supermimic_research_scale_20261121/revised_0036/G1/pause_fixed128_R24_A16",
+      "metrics_sha256": "53d407662f910d8f175948eb57ca322f351004eac0b669f9c581b678c7f694c0",
+      "episodes_sha256": "124b2253a9c1c5a676fa83fe3fefd0bedd7110188856a0c0a564961d8d840108"
+    }
+  ],
+  "ball_side_flip_conditions": {
+    "available": true,
+    "improved_cases": {
+      "cases": {
+        "A-720401-007": [
+          "speed_threshold"
+        ],
+        "A-720401-031": [
+          "legal_airborne_strings",
+          "no_rule_fault",
+          "actual_net_and_target",
+          "event_order"
+        ],
+        "A-720401-056": [
+          "legal_airborne_strings",
+          "no_rule_fault",
+          "actual_net_and_target",
+          "event_order"
+        ],
+        "A-720401-059": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "B-720402-011": [
+          "legal_airborne_strings",
+          "no_rule_fault",
+          "actual_net_and_target",
+          "event_order"
+        ]
+      },
+      "sole_condition_counts": {
+        "speed_threshold": 1
+      },
+      "sole_speed_before_after_mps": {
+        "A-720401-007": [
+          4.905868640924862,
+          5.08232695885192
+        ]
+      }
+    },
+    "regressed_cases": {
+      "cases": {
+        "A-720401-009": [
+          "speed_threshold"
+        ],
+        "A-720401-010": [
+          "legal_airborne_strings",
+          "actual_net_and_target",
+          "speed_threshold"
+        ],
+        "A-720401-012": [
+          "released_downward_forward",
+          "actual_net_and_target"
+        ],
+        "A-720401-020": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "A-720401-023": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "A-720401-026": [
+          "speed_threshold"
+        ],
+        "A-720401-028": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "A-720401-035": [
+          "speed_threshold"
+        ],
+        "A-720401-037": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "A-720401-040": [
+          "speed_threshold"
+        ],
+        "A-720401-042": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "A-720401-049": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "A-720401-052": [
+          "legal_airborne_strings",
+          "released_downward_forward",
+          "actual_net_and_target",
+          "speed_threshold"
+        ],
+        "A-720401-054": [
+          "speed_threshold"
+        ],
+        "A-720401-055": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "A-720401-063": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "B-720402-013": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "B-720402-026": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "B-720402-051": [
+          "actual_net_and_target"
+        ],
+        "B-720402-057": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ]
+      },
+      "sole_condition_counts": {
+        "speed_threshold": 5,
+        "actual_net_and_target": 1
+      },
+      "sole_speed_before_after_mps": {
+        "A-720401-009": [
+          5.699094326668695,
+          4.6416764368161685
+        ],
+        "A-720401-026": [
+          5.189668270201939,
+          4.822545524213619
+        ],
+        "A-720401-035": [
+          5.165947329211371,
+          4.840950162704972
+        ],
+        "A-720401-040": [
+          5.1811699705076135,
+          4.807086267134546
+        ],
+        "A-720401-054": [
+          5.523323499122793,
+          4.853495931955485
+        ]
+      }
+    }
+  },
+  "scope": "Historical TRAIN128 common-prefix comparison of experiment start and R24+A16. Frozen policies. Full ball-side endpoint and independent rejection reasons from the native scorer."
+}
