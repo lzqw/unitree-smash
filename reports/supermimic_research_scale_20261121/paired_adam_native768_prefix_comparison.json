@@ -1,0 +1,252 @@
+{
+  "comparison": "Revised versus previous mixed-policy G1 research runs, 128 identical initial physical states with different starting Actors and update histories. Sum actual native rewards until equal control tick or first episode termination; reset episodes excluded. Describes the combined behavior in each run. It does not isolate a repair or score the latest checkpoint.",
+  "starting_actor_sha256": {
+    "previous": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+    "current": "3f3d4e17a47de7ed2874a801db97dca2cf061f82a29aba952d218e13ebfc246a"
+  },
+  "seed": 882072,
+  "completed_return_crosschecks": {
+    "previous": 16,
+    "revised": 3
+  },
+  "chunks_by_arm": {
+    "previous": [
+      "248bc5b1e713835c6ce45b87f880c2c7b2a789ef31a40209c96d53738e51c32d",
+      "be27d577a64f1db6b49bc52d0c9dbe2da86c40ff7129bb0ecf0e41ae2ef87c7c",
+      "7a69884b3409f7c017f00bdef2d21b1a23623371c80860e1c90d9bb44bb47a8d",
+      "12d73bb0c9fa853191097ad11bace5a82102459a33cd7724bd820316614241b3",
+      "227fc67d18b8006d407aa39c38a5e4473e477338851b24bc32bb966b1af69a3b",
+      "e52e22ead5edeb3b543a1a6099e7cc8983ddd43305d050ff519ee77e3c2b5fb1",
+      "77763475b3749e41f13ea28e8d7acc5c30d87d11a79441144b033e8b3c466dd8",
+      "c61f810cbb69c82c349997848f049336d43c79ef16becc3b67038b8f4397fb3d",
+      "0173a6221302dca1267b88e61d2a237711f48c849661f08026689846c2b03796",
+      "d52c3082aa259d61995ec596b084cbf056e46d7c3e17d2e6d30d4997634d8a81",
+      "ca4134086d0ac3144a4aa9e3762ffdbf4230d290184f8696a99566f565436926",
+      "6e9de896c9dc253f56a1a9f3fa5f3702b2c7bdda09cccf7dbbf3fdd8d7dd8eb8",
+      "72737d6476a1632beaa8699017505b212af3ed6f870dea716c0e8e7b9a910fd0",
+      "0520044c16073fa941fe5d51b492f11b5516470f87b79e744b462b9076038aed",
+      "eb84107bc5de20efae6340be70b56db3b2a844fc15170e2e9532e733b4ab6e03",
+      "2c261a50ba7f7874431c58c8ae20b16e6b8a23085df2241abde7a8cc359cd64e",
+      "6dc428ac129cdb384d3a8fe73ed1240123a90b88cc04edb17a4f18fea4b72a56",
+      "5abe37889e82246b248aa99d417f38c5393ead5ba0b1018021d68069ae217d89",
+      "48947c259b9c02f2f857344dffcdb498679a5949dd64332fe223febfd3933c6d",
+      "fb78e0fd751b130d1744e09b13c09c66ee48ef53c432f1fec14e9114379d32c0",
+      "c5033e4b5d618a527623a25ffcb4865f6421bf24a348ca3b680f51b5a2d6d185",
+      "ad690d39ef20284b13960c997ca47460d674f7b8f9002bcd1afa6a83db858d9a",
+      "e1caf8922da761bd5bdd542d69b4d19a2cfde784b653e041fb1490b5cdbd0040",
+      "4702827e6a6ac36acf5286ac9d68bf973b01a041e7540be8dce156ed63706769"
+    ],
+    "revised": [
+      "230f161b8d199fab7ff79be91bd50c99d1bcbad0dfae8b2bb1d90b72ac2b0869",
+      "2fc5362bc3eb4f45a16894e7231e8685e534d59b05d036de224842d03aa521b0",
+      "5973de6641980689ce5702dfb45f7e3530dbb3012561b66bc9954c881b916f46",
+      "75b81f38e434ca0ca550958a3a196ea72f8a341fbe5f58a6b2470a87dd54f72c",
+      "8289271697e4c49074663a1e7471e3e5747fbb46b991987b18ffe9c5bf0a4984",
+      "1f06e9db902914947d1a125c11a6b78db9cb7bbb89615457b51db398b63efd3a",
+      "762ec5594349f15c7e71430772a0a70134925bf31a8357dd0f60cc2fc975bd9d",
+      "8c9dd2a0fe14f09504dacc8878ab840c2a6ac98311c47a5602e7a2c290f867dd",
+      "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494",
+      "dac25f5e611a8e6c7eb58ced3e324c0d8b2faef6a15230dd8bceda9dd97f077f",
+      "4512dd06824b0762bd1b74cad3e68f36809e7f946c370f088b6b3ccb76c153cd",
+      "e81ebbc1fcf981fe49a00512ae264bcd3fc3692ffa707df86d78b9d66ff08cdf",
+      "6822731657212a22aa3b55786bd9f3d8144d09453c2800b093d8baabe79a4b12",
+      "1352ec849e1fc8823fba0d7cafacfcba188257434cf49358f4891cbdc1d079c8",
+      "656cc498dfafb26a042c07d09f824c87bbee20f9d5fee3072df1100c7085e9e6",
+      "8bc82068965d2fb588a53d977212ded436d9591138c984ef992fb2a48b57e301",
+      "bae3e40c9a7c2cb4327dcadec287f9e867651bd6e8664d749b52a20621798f64",
+      "e12e639f434e58bdffef0a033bc0cb1942f91d900f416847dc368cb5baad2c02",
+      "f339902fe7445a6565be140efe52707658ffe1db6355a1dc2525f052c39a240c",
+      "097e5313eb48fd3f216095fcf53fd9cbad80e6eca6e740b6ffe01e9b7263338c",
+      "a5bf0069ea974072ea0ff64f6476bb10e1382a8770dbee688dd21c18fca75e5e",
+      "f143d862ef080083d7466a30b4b2889d158628e3401e21fdb024dc38cd61c649",
+      "6eaa8fcd2b287c95b915263036bf51b51e67948fef67f40e13615fe9684567b4",
+      "d5a16681b130da93da0915f63cbd2dad6efdc626f1bc99e1ff93376879290db3"
+    ]
+  },
+  "observations": {
+    "128": {
+      "previous_mean": -1.4971362240612507,
+      "revised_mean": -1.4971362240612507,
+      "paired_mean": 0.0,
+      "revised_better": 0,
+      "revised_worse": 0,
+      "paired_median": 0.0,
+      "paired_mean_descriptive_bootstrap_95": [
+        0.0,
+        0.0
+      ],
+      "body_ground_penalty_cases": [
+        0,
+        0
+      ],
+      "component_mean_changes": {
+        "continuous": 0.0,
+        "jump": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": 0.0
+      },
+      "unitemized_mean": 0.0
+    },
+    "256": {
+      "previous_mean": -2.9428510379902804,
+      "revised_mean": -2.942853015163365,
+      "paired_mean": -1.9771730848106017e-06,
+      "revised_better": 44,
+      "revised_worse": 45,
+      "paired_median": 0.0,
+      "paired_mean_descriptive_bootstrap_95": [
+        -5.93855192114745e-06,
+        7.059854830515633e-07
+      ],
+      "body_ground_penalty_cases": [
+        0,
+        0
+      ],
+      "component_mean_changes": {
+        "continuous": -1.9771172716787078e-06,
+        "jump": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 0.0,
+        "fault": 0.0,
+        "body": 0.0
+      },
+      "unitemized_mean": -5.581313189395587e-11
+    },
+    "384": {
+      "previous_mean": 4.580225431632826,
+      "revised_mean": 5.925661278231878,
+      "paired_mean": 1.345435846599052,
+      "revised_better": 52,
+      "revised_worse": 76,
+      "paired_median": -0.005198365067030863,
+      "paired_mean_descriptive_bootstrap_95": [
+        -2.8163667062585196,
+        5.4857263593730465
+      ],
+      "body_ground_penalty_cases": [
+        23,
+        15
+      ],
+      "component_mean_changes": {
+        "continuous": -0.0030015070876622807,
+        "jump": 0.0,
+        "qualified_contact": -0.3125,
+        "cross": -0.2734375,
+        "target": -0.9375,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": -0.03125,
+        "miss_rate": -0.06562499608844519,
+        "fault": 0.46875,
+        "body": 2.5
+      },
+      "unitemized_mean": -1.5022484056714802e-07
+    },
+    "512": {
+      "previous_mean": -4.698709083786852,
+      "revised_mean": -1.4943408273957677,
+      "paired_mean": 3.204368256391084,
+      "revised_better": 62,
+      "revised_worse": 66,
+      "paired_median": -0.002099483195479479,
+      "paired_mean_descriptive_bootstrap_95": [
+        -1.7544933168402725,
+        8.094877397079511
+      ],
+      "body_ground_penalty_cases": [
+        43,
+        26
+      ],
+      "component_mean_changes": {
+        "continuous": -0.03391270824953313,
+        "jump": 0.0,
+        "qualified_contact": -0.3125,
+        "cross": -0.2734375,
+        "target": -0.9375,
+        "recovery": -0.9375,
+        "complete5_terminal": 0.0,
+        "frame": -0.03125,
+        "miss_rate": -0.16796873998828232,
+        "fault": 0.5859375,
+        "body": 5.3125
+      },
+      "unitemized_mean": -2.9537110046717885e-07
+    },
+    "640": {
+      "previous_mean": -13.628615053921166,
+      "revised_mean": -5.383474298878404,
+      "paired_mean": 8.245140755042762,
+      "revised_better": 68,
+      "revised_worse": 60,
+      "paired_median": 0.03539054317184309,
+      "paired_mean_descriptive_bootstrap_95": [
+        2.2962610150037754,
+        14.28860763018762
+      ],
+      "body_ground_penalty_cases": [
+        63,
+        29
+      ],
+      "component_mean_changes": {
+        "continuous": -0.17829645975449399,
+        "jump": 0.0,
+        "qualified_contact": -0.3125,
+        "cross": -0.2734375,
+        "target": -0.9375,
+        "recovery": -0.9375,
+        "complete5_terminal": 0.0,
+        "frame": -0.03125,
+        "miss_rate": -0.29531248239800334,
+        "fault": 0.5859375,
+        "body": 10.625
+      },
+      "unitemized_mean": -3.0280474128119295e-07
+    },
+    "768": {
+      "previous_mean": -18.648910085840903,
+      "revised_mean": -9.296998199786735,
+      "paired_mean": 9.351911886054168,
+      "revised_better": 71,
+      "revised_worse": 57,
+      "paired_median": 0.06394692150001902,
+      "paired_mean_descriptive_bootstrap_95": [
+        2.7811056635003264,
+        15.976947866367984
+      ],
+      "body_ground_penalty_cases": [
+        67,
+        30
+      ],
+      "component_mean_changes": {
+        "continuous": -0.3562909405013905,
+        "jump": 0.0,
+        "qualified_contact": -0.3125,
+        "cross": -0.2734375,
+        "target": -0.9375,
+        "recovery": -0.390625,
+        "complete5_terminal": 0.0,
+        "frame": -0.03125,
+        "miss_rate": -0.49492184550035745,
+        "fault": 0.5859375,
+        "body": 11.5625
+      },
+      "unitemized_mean": -3.2794408433289846e-07
+    }
+  },
+  "previous_run": "revised_0036/G1",
+  "current_run": "paired_adam_direction_0040/G1",
+  "tensorboard_run": "G1_first_episode_prefix_vs_paused_run",
+  "descriptive_interval": "Paired lane bootstrap of the mean, 12,000 resamples of the 128 cases, seed 882072. One training run per configuration."
+}
