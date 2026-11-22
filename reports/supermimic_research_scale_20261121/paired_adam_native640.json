@@ -1,0 +1,388 @@
+{
+  "collection": {
+    "native_ticks": 7038,
+    "accepted_id": 125,
+    "completed_native_episodes": 3,
+    "first_episode_body_cases": 29
+  },
+  "local_control_ticks": 640,
+  "local_transitions": 81920,
+  "new_collection_transitions": 16384,
+  "head_updates": {
+    "recovery": 40,
+    "approach": 32
+  },
+  "recovery_block": [
+    {
+      "accepted_id": 118,
+      "backtrack_alpha": 1.0,
+      "effective_gate_lanes": 16,
+      "objective_before": -10.783400535583496,
+      "objective_after": -11.173789024353027,
+      "bptt_seconds": 394.23976283700904
+    },
+    {
+      "accepted_id": 119,
+      "backtrack_alpha": 0.5,
+      "effective_gate_lanes": 16,
+      "objective_before": -9.475547790527344,
+      "objective_after": -9.629498481750488,
+      "bptt_seconds": 521.9637955980143
+    },
+    {
+      "accepted_id": 120,
+      "backtrack_alpha": 0.5,
+      "effective_gate_lanes": 16,
+      "objective_before": -7.553255558013916,
+      "objective_after": -7.631350994110107,
+      "bptt_seconds": 526.6056325550308
+    },
+    {
+      "accepted_id": 121,
+      "backtrack_alpha": 0.5,
+      "effective_gate_lanes": 16,
+      "objective_before": -6.335288047790527,
+      "objective_after": -6.551041126251221,
+      "bptt_seconds": 490.28416689299047
+    },
+    {
+      "accepted_id": 122,
+      "backtrack_alpha": 0.5,
+      "effective_gate_lanes": 16,
+      "objective_before": -7.494061470031738,
+      "objective_after": -7.70290994644165,
+      "bptt_seconds": 530.7385219879798
+    },
+    {
+      "accepted_id": 123,
+      "backtrack_alpha": 0.5,
+      "effective_gate_lanes": 16,
+      "objective_before": -7.785284996032715,
+      "objective_after": -7.938510894775391,
+      "bptt_seconds": 486.119881039951
+    },
+    {
+      "accepted_id": 124,
+      "backtrack_alpha": 0.5,
+      "effective_gate_lanes": 16,
+      "objective_before": -0.7481784224510193,
+      "objective_after": -1.1388992071151733,
+      "bptt_seconds": 492.1571620500181
+    },
+    {
+      "accepted_id": 125,
+      "backtrack_alpha": 0.5,
+      "effective_gate_lanes": 16,
+      "objective_before": -0.831012487411499,
+      "objective_after": -0.9542036056518555,
+      "bptt_seconds": 485.3902389740106
+    }
+  ],
+  "baselines": {
+    "experiment_start": {
+      "new": {
+        "samples": 1,
+        "observed": -55.51281284213701,
+        "baseline": -31.6944983345835,
+        "mean_delta": -23.81831450755351,
+        "counts": {
+          "body_ground": [
+            0,
+            1
+          ],
+          "qualified_contact": [
+            0,
+            0
+          ],
+          "ball_side": [
+            0,
+            0
+          ],
+          "physical_recovery": [
+            0,
+            0
+          ],
+          "complete5": [
+            0,
+            0
+          ],
+          "timeout": [
+            1,
+            0
+          ]
+        }
+      },
+      "cumulative": {
+        "samples": 3,
+        "observed": -37.62736685147047,
+        "baseline": -29.99393881968418,
+        "mean_delta": -7.63342803178629,
+        "counts": {
+          "body_ground": [
+            1,
+            3
+          ],
+          "qualified_contact": [
+            1,
+            1
+          ],
+          "ball_side": [
+            1,
+            1
+          ],
+          "physical_recovery": [
+            0,
+            0
+          ],
+          "complete5": [
+            0,
+            0
+          ],
+          "timeout": [
+            3,
+            0
+          ]
+        }
+      }
+    },
+    "scored_resume": {
+      "new": {
+        "samples": 1,
+        "observed": -55.51281284213701,
+        "baseline": -56.752177263872,
+        "mean_delta": 1.2393644217349902,
+        "counts": {
+          "body_ground": [
+            1,
+            1
+          ],
+          "qualified_contact": [
+            0,
+            0
+          ],
+          "ball_side": [
+            0,
+            0
+          ],
+          "physical_recovery": [
+            0,
+            0
+          ],
+          "complete5": [
+            0,
+            0
+          ],
+          "timeout": [
+            0,
+            0
+          ]
+        }
+      },
+      "cumulative": {
+        "samples": 3,
+        "observed": -37.62736685147047,
+        "baseline": -38.6886538430202,
+        "mean_delta": 1.061286991549726,
+        "counts": {
+          "body_ground": [
+            3,
+            3
+          ],
+          "qualified_contact": [
+            1,
+            1
+          ],
+          "ball_side": [
+            1,
+            1
+          ],
+          "physical_recovery": [
+            0,
+            0
+          ],
+          "complete5": [
+            0,
+            0
+          ],
+          "timeout": [
+            0,
+            0
+          ]
+        }
+      }
+    }
+  },
+  "paired_rewards_against_scored_resume": {
+    "scope": "First completed same-case TRAIN128 episodes. Baseline body, qualified contact, cross and target use native terminal latches and one-shot weights. Online terms are summed from the archive. Other baseline terms cannot be individually reconstructed. Mixed behavior, termination order, no frozen-policy comparison.",
+    "reference_scope": "scored_resume",
+    "reference_checkpoint_sha256": "5149e7f8ead491c45725dd80dc2a478ebca104dc9d70faca78921078d0893e66",
+    "baseline_actor_sha256": "3f3d4e17a47de7ed2874a801db97dca2cf061f82a29aba952d218e13ebfc246a",
+    "source_chunk_sha256": [
+      "230f161b8d199fab7ff79be91bd50c99d1bcbad0dfae8b2bb1d90b72ac2b0869",
+      "2fc5362bc3eb4f45a16894e7231e8685e534d59b05d036de224842d03aa521b0",
+      "5973de6641980689ce5702dfb45f7e3530dbb3012561b66bc9954c881b916f46",
+      "75b81f38e434ca0ca550958a3a196ea72f8a341fbe5f58a6b2470a87dd54f72c",
+      "8289271697e4c49074663a1e7471e3e5747fbb46b991987b18ffe9c5bf0a4984",
+      "1f06e9db902914947d1a125c11a6b78db9cb7bbb89615457b51db398b63efd3a",
+      "762ec5594349f15c7e71430772a0a70134925bf31a8357dd0f60cc2fc975bd9d",
+      "8c9dd2a0fe14f09504dacc8878ab840c2a6ac98311c47a5602e7a2c290f867dd",
+      "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494",
+      "dac25f5e611a8e6c7eb58ced3e324c0d8b2faef6a15230dd8bceda9dd97f077f",
+      "4512dd06824b0762bd1b74cad3e68f36809e7f946c370f088b6b3ccb76c153cd",
+      "e81ebbc1fcf981fe49a00512ae264bcd3fc3692ffa707df86d78b9d66ff08cdf",
+      "6822731657212a22aa3b55786bd9f3d8144d09453c2800b093d8baabe79a4b12",
+      "1352ec849e1fc8823fba0d7cafacfcba188257434cf49358f4891cbdc1d079c8",
+      "656cc498dfafb26a042c07d09f824c87bbee20f9d5fee3072df1100c7085e9e6",
+      "8bc82068965d2fb588a53d977212ded436d9591138c984ef992fb2a48b57e301",
+      "bae3e40c9a7c2cb4327dcadec287f9e867651bd6e8664d749b52a20621798f64"
+    ],
+    "cases": 3,
+    "mean_before": -38.6886538430202,
+    "mean_after": -37.62736685147047,
+    "mean_difference_by_term": {
+      "body": 0.0,
+      "qualified_contact": 0.0,
+      "cross": 0.0,
+      "target": 0.0,
+      "other_terms_combined": 1.061286991549726
+    },
+    "records": [
+      {
+        "case_id": "A-720401-030",
+        "env_id": 30,
+        "before": -4.105036265038962,
+        "after": -3.2133483878301377,
+        "difference": 0.8916878772088239,
+        "baseline_reconstructed_terms": {
+          "body": -40.0,
+          "qualified_contact": 20.0,
+          "cross": 5.0,
+          "target": 15.0
+        },
+        "online_measured_terms": {
+          "continuous": -5.213346440492842,
+          "jump": 2.0,
+          "qualified_contact": 20.0,
+          "cross": 5.0,
+          "target": 15.0,
+          "recovery": 0.0,
+          "complete5_terminal": 0.0,
+          "frame": 0.0,
+          "miss_rate": 0.0,
+          "fault": 0.0,
+          "body": -40.0
+        },
+        "difference_by_term": {
+          "body": 0.0,
+          "qualified_contact": 0.0,
+          "cross": 0.0,
+          "target": 0.0,
+          "other_terms_combined": 0.8916878772088239
+        },
+        "first_body_penalty": {
+          "episode_tick": 416,
+          "native_tick": 6814,
+          "policy_version": 117,
+          "actor_sha256": "3ca387f0232ad84146e7c4e098d3bba019c7a8a9b6fc4584c40ec1f9244b25c9",
+          "recovery_gate": true
+        },
+        "behavior_at_terminal": {
+          "policy_version": 117,
+          "actor_sha256": "3ca387f0232ad84146e7c4e098d3bba019c7a8a9b6fc4584c40ec1f9244b25c9",
+          "native_tick": 6877
+        }
+      },
+      {
+        "case_id": "B-720402-059",
+        "env_id": 123,
+        "before": -55.208748000149626,
+        "after": -54.15593932444426,
+        "difference": 1.0528086757053643,
+        "baseline_reconstructed_terms": {
+          "body": -40.0,
+          "qualified_contact": 0.0,
+          "cross": 0.0,
+          "target": 0.0
+        },
+        "online_measured_terms": {
+          "continuous": -5.605938651869565,
+          "jump": 2.0,
+          "qualified_contact": 0.0,
+          "cross": 0.0,
+          "target": 0.0,
+          "recovery": 0.0,
+          "complete5_terminal": 0.0,
+          "frame": 0.0,
+          "miss_rate": -10.549999371170998,
+          "fault": 0.0,
+          "body": -40.0
+        },
+        "difference_by_term": {
+          "body": 0.0,
+          "qualified_contact": 0.0,
+          "cross": 0.0,
+          "target": 0.0,
+          "other_terms_combined": 1.0528086757053643
+        },
+        "first_body_penalty": {
+          "episode_tick": 453,
+          "native_tick": 6851,
+          "policy_version": 117,
+          "actor_sha256": "3ca387f0232ad84146e7c4e098d3bba019c7a8a9b6fc4584c40ec1f9244b25c9",
+          "recovery_gate": false
+        },
+        "behavior_at_terminal": {
+          "policy_version": 117,
+          "actor_sha256": "3ca387f0232ad84146e7c4e098d3bba019c7a8a9b6fc4584c40ec1f9244b25c9",
+          "native_tick": 6909
+        }
+      },
+      {
+        "case_id": "B-720402-049",
+        "env_id": 113,
+        "before": -56.752177263872,
+        "after": -55.51281284213701,
+        "difference": 1.2393644217349902,
+        "baseline_reconstructed_terms": {
+          "body": -40.0,
+          "qualified_contact": 0.0,
+          "cross": 0.0,
+          "target": 0.0
+        },
+        "online_measured_terms": {
+          "continuous": -5.862814061945301,
+          "jump": 2.0,
+          "qualified_contact": 0.0,
+          "cross": 0.0,
+          "target": 0.0,
+          "recovery": 0.0,
+          "complete5_terminal": 0.0,
+          "frame": 0.0,
+          "miss_rate": -11.649999305605888,
+          "fault": 0.0,
+          "body": -40.0
+        },
+        "difference_by_term": {
+          "body": 0.0,
+          "qualified_contact": 0.0,
+          "cross": 0.0,
+          "target": 0.0,
+          "other_terms_combined": 1.2393644217349902
+        },
+        "first_body_penalty": {
+          "episode_tick": 477,
+          "native_tick": 6875,
+          "policy_version": 117,
+          "actor_sha256": "3ca387f0232ad84146e7c4e098d3bba019c7a8a9b6fc4584c40ec1f9244b25c9",
+          "recovery_gate": false
+        },
+        "behavior_at_terminal": {
+          "policy_version": 125,
+          "actor_sha256": "c244be4f63e492e0e2a9bfc072666d6ddeb8b8aae892c6c47027f2fe298382d2",
+          "native_tick": 6931
+        }
+      }
+    ],
+    "writer_manifest_chunks_at_analysis": 16
+  }
+}
