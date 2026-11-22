@@ -48,6 +48,14 @@ def scalars(row):
         if n:
             metrics['approach/predicted_first_margin_mm'] = 1000 * coverage['predicted_first_margin_sum_m'] / n
             metrics['approach/predicted_first_frame_fraction'] = coverage['predicted_first_frame_lanes'] / n
+    if head == 'approach' and row['update_accepted'] and row.get('backtrack_trials'):
+        chosen = row['backtrack_trials'][-1]
+        if chosen.get('alpha') == row.get('backtrack_alpha'):
+            counts = chosen.get('first_contact_counts', {})
+            for part in ('string', 'frame'):
+                key = 'predicted_first_' + part + '_lanes'
+                if key in coverage and key in counts:
+                    metrics['approach/' + key + '_change'] = counts[key] - coverage[key]
     if head == 'approach' and row.get('contact_aux_weight', 0) > 0:
         for key in ('outgoing_impact_lanes', 'task_tracking_cosine'):
             if key in row:

@@ -127,6 +127,21 @@ def test_contact_contribution_separates_weighted_gradient_from_coverage():
     assert 'approach/outgoing_to_tracking_gradient_ratio' not in legacy
 
 
+def test_accepted_first_contact_changes_use_the_retained_trial_on_the_same_starts():
+    before = dict(predicted_first_string_lanes=8, predicted_first_frame_lanes=4)
+    full = dict(predicted_first_string_lanes=5, predicted_first_frame_lanes=9)
+    half = dict(predicted_first_string_lanes=7, predicted_first_frame_lanes=7)
+    row = dict(block='approach', update_accepted=True, peak_gpu_bytes=0,
+               reference_coverage=before, backtrack_alpha=.5,
+               backtrack_trials=[dict(alpha=1., first_contact_counts=full),
+                                 dict(alpha=.5, first_contact_counts=half)])
+    result = scalars(row)
+    assert result['approach/predicted_first_string_lanes_change'] == -1
+    assert result['approach/predicted_first_frame_lanes_change'] == 3
+    for older in (dict(row, update_accepted=False), dict(row, backtrack_trials=[])):
+        assert 'approach/predicted_first_string_lanes_change' not in scalars(older)
+
+
 def test_mixed_case_returns_use_only_first_online_episode_and_matching_frozen_case(tmp_path, monkeypatch):
     import json
     from types import SimpleNamespace
