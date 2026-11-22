@@ -95,13 +95,21 @@ def run_registered_arm(output, tensorboard, registration):
                 resources = subprocess.Popen([sys.executable,'scripts/monitor_supermimic_research_gpu.py',
                     '--pid',str(trainer.pid),'--output',str((tensorboard/(arm+'_resources')).resolve())],
                     cwd=repo,env=env,stdout=resource_log,stderr=subprocess.STDOUT)
+                panels = None
+                if registration['expected_retained_updates'] == 256:
+                    with (output/'fixed_panels.log').open('a') as panel_log:
+                        panels = subprocess.Popen([sys.executable, 'scripts/evaluate_supermimic_research_arm.py',
+                            '--arm-dir', str(output.resolve()), '--follow-trainer', str(trainer.pid),
+                            '--tensorboard', str((tensorboard/(arm+'_evaluation')).resolve())],
+                            cwd=repo, env=env, stdout=panel_log, stderr=subprocess.STDOUT)
                 result = trainer.wait()
                 resource_result = resources.wait()
                 monitor_result = monitor.wait()
                 watch_result = return_watch.wait()
+                panel_result = panels.wait() if panels is not None else None
     (output/'exit.json').write_text(json.dumps(dict(returncode=result,curve_export_returncode=monitor_result,
         resource_monitor_returncode=resource_result, native_return_watch_returncode=watch_result,
-        wall_seconds=time.time()-started))+'\n')
+        concurrent_fixed_panel_returncode=panel_result, wall_seconds=time.time()-started))+'\n')
     return result
 
 

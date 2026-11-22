@@ -1,6 +1,21 @@
 from scripts.report_supermimic_research_curve import axes, read_new, scalars
 
 
+def test_midpoint_watcher_waits_for_atomic_checkpoint_and_stops_with_trainer(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from scripts import evaluate_supermimic_research_arm as scorer
+
+    checkpoint = tmp_path/'research_0128.pt'
+    pending = tmp_path/'research_0128.pt.pending'
+    pending.touch()
+    stopped = SimpleNamespace(is_running=lambda: False)
+    assert not scorer.wait_for_milestone(tmp_path, 128, stopped)
+    live = SimpleNamespace(is_running=lambda: True, status=lambda: 'running')
+    monkeypatch.setattr(scorer.time, 'sleep', lambda _: pending.replace(checkpoint))
+    assert scorer.wait_for_milestone(tmp_path, 128, live)
+    assert scorer.wait_for_milestone(tmp_path, 128, stopped)
+
+
 def test_native_axis_excludes_inherited_replay_and_repeated_proposals():
     row = dict(accepted_id=18, native_ticks=5118, native_transitions=5118*128, research_elapsed_s=321.9)
     assert axes(row,(17,4990),128) == dict(retained_updates=1,new_native_env_steps=16384,training_wall_seconds=321)

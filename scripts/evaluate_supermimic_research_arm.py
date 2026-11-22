@@ -7,7 +7,9 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 
+import psutil
 import torch
 from torch.utils.tensorboard import SummaryWriter
 
@@ -134,6 +136,11 @@ def log_fixed_scores(writer, metrics, positions):
         if metrics.get(name) is not None:
             for axis, position in positions.items():
                 writer.add_scalar(f'fixed128/{axis}/{name}', metrics[name], position)
+    if metrics.get('elapsed_s', 0.) > 0:
+        steps = metrics['num_envs'] * metrics['control_ticks']
+        for axis, position in positions.items():
+            writer.add_scalar(f'fixed128/{axis}/evaluation_seconds', metrics['elapsed_s'], position)
+            writer.add_scalar(f'fixed128/{axis}/evaluation_env_steps_per_second', steps / metrics['elapsed_s'], position)
 
 
 def evaluate(folder, step, writer):
@@ -222,11 +229,41 @@ def evaluate(folder, step, writer):
     writer.flush()
 
 
+def wait_for_milestone(train, step, owner):
+    # The trainer fsyncs and renames each checkpoint before starting the frozen collection.
+    path = train / f'research_{step:04d}.pt'
+    while not path.is_file():
+        try:
+            live = owner.is_running() and owner.status() != psutil.STATUS_ZOMBIE
+        except psutil.NoSuchProcess:
+            live = False
+        if not live:
+            return path.is_file()
+        time.sleep(5)
+    return True
+
+
 if __name__=='__main__':
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--arm-dir',type=Path,required=True)
     ap.add_argument('--tensorboard',type=Path,required=True)
     ap.add_argument('--steps',nargs='+',type=int,default=[128,256])
+    ap.add_argument('--follow-trainer', type=int, help='Score each atomic checkpoint as soon as the live trainer publishes it')
     args=ap.parse_args()
+    folder = args.arm_dir.resolve()
+    owner = None
+    if args.follow_trainer is not None:
+        owner = psutil.Process(args.follow_trainer)
+        cmd = owner.cmdline()
+        if ('scripts/train_supermimic_physical_block.py' not in cmd or '--output' not in cmd
+                or Path(cmd[cmd.index('--output') + 1]).resolve() != folder/'train'
+                or not set(args.steps) <= {128, 256}):
+            ap.error('Expected the matching fixed-panel training process and a 128 or 256 update milestone')
     with SummaryWriter(str(args.tensorboard)) as w:
-        for step in args.steps:evaluate(args.arm_dir.resolve(),step,w)
+        for step in args.steps:
+            if owner is not None and not wait_for_milestone(folder/'train', step, owner):
+                break
+            # The terminal scorer can read the same milestone to add final interaction accounting.
+            with (folder/f'fixed_report_{step:04d}.lock').open('a') as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX)
+                evaluate(folder,step,w)
