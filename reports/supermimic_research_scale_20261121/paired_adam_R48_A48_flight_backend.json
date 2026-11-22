@@ -1,0 +1,136 @@
+{
+  "scope": "Active registered G1 and a separate RTX 5080 H64 shadow. No shadow optimizer steps. Timings include contention from native training.",
+  "retained_updates": 96,
+  "recovery": 48,
+  "approach": 48,
+  "completed_native_episodes": 128,
+  "new_native_env_steps": 229376,
+  "approach_updates": [
+    {
+      "accepted": 89,
+      "backtrack_alpha": 0.25,
+      "bptt_s": 128.9032130050473,
+      "aux_to_toi_gradient_ratio": 0.05402611539312066
+    },
+    {
+      "accepted": 90,
+      "backtrack_alpha": 0.5,
+      "bptt_s": 157.64602875697892,
+      "aux_to_toi_gradient_ratio": 0.026119496615189915
+    },
+    {
+      "accepted": 91,
+      "backtrack_alpha": 1.0,
+      "bptt_s": 81.44514920999063,
+      "aux_to_toi_gradient_ratio": 0.018339661146173126
+    },
+    {
+      "accepted": 92,
+      "backtrack_alpha": 1.0,
+      "bptt_s": 79.10508153098635,
+      "aux_to_toi_gradient_ratio": 0.033955829452755576
+    },
+    {
+      "accepted": 93,
+      "backtrack_alpha": 1.0,
+      "bptt_s": 161.81717947201105,
+      "aux_to_toi_gradient_ratio": 0.11650296121163885
+    },
+    {
+      "accepted": 94,
+      "backtrack_alpha": 1.0,
+      "bptt_s": 197.3244655530434,
+      "aux_to_toi_gradient_ratio": 0.021067914279857932
+    },
+    {
+      "accepted": 95,
+      "backtrack_alpha": 1.0,
+      "bptt_s": 116.42482352699153,
+      "aux_to_toi_gradient_ratio": 0.024409958037573794
+    },
+    {
+      "accepted": 96,
+      "backtrack_alpha": 1.0,
+      "bptt_s": 156.4431047590333,
+      "aux_to_toi_gradient_ratio": 0.013668289464749649
+    }
+  ],
+  "shadow": {
+    "checkpoint_retained": 96,
+    "actor_sha256": "eed087c368790231413cb93f886925ccf216f74175ef34e3a7cf8e9909ada30a",
+    "world_sha256": "1f7db7edba04f74f31e07a6b31c429cfc2dbdb645b698a5c8fd4843082cd106f",
+    "head": "approach",
+    "lanes": [
+      10,
+      12,
+      19,
+      20
+    ],
+    "backend": {
+      "schema": "research-fp32-flight-v1",
+      "source_sha256": "6403b695a0f33d568a8f4294bd524c97350f9234ba7f606c3965381af3ca8566",
+      "torch": "2.7.0+cu128",
+      "triton": "3.3.0"
+    },
+    "result": [
+      {
+        "backward": false,
+        "trials": [
+          {
+            "fused": false,
+            "seconds": 8.064649004023522,
+            "loss": 0.9128664135932922,
+            "verified_gradient_tensors": 0
+          },
+          {
+            "fused": true,
+            "seconds": 6.748451271036174,
+            "loss": 0.9128664135932922,
+            "verified_gradient_tensors": 0
+          },
+          {
+            "fused": true,
+            "seconds": 6.275511501997244,
+            "loss": 0.9128664135932922,
+            "verified_gradient_tensors": 0
+          },
+          {
+            "fused": false,
+            "seconds": 7.944849837978836,
+            "loss": 0.9128664135932922,
+            "verified_gradient_tensors": 0
+          }
+        ]
+      },
+      {
+        "backward": true,
+        "trials": [
+          {
+            "fused": false,
+            "seconds": 21.106059669982642,
+            "loss": 0.9128664135932922,
+            "verified_gradient_tensors": 6
+          },
+          {
+            "fused": true,
+            "seconds": 21.439587161992677,
+            "loss": 0.9128664135932922,
+            "verified_gradient_tensors": 6
+          },
+          {
+            "fused": true,
+            "seconds": 21.066694619017653,
+            "loss": 0.9128664135932922,
+            "verified_gradient_tensors": 6
+          },
+          {
+            "fused": false,
+            "seconds": 21.118033842998557,
+            "loss": 0.9128664135932922,
+            "verified_gradient_tensors": 6
+          }
+        ]
+      }
+    ]
+  }
+}

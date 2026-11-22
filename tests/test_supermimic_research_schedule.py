@@ -163,6 +163,7 @@ def test_extension_launches_from_final_refresh_and_preserves_original_axes(tmp_p
     quota = dict(item.split('=') for item in cmd[cmd.index('--wm-stage-quota')+1].split(','))
     assert quota == {'uniform':'108','post_landing_support_loss':'16','post_landing_unload':'4'}
     assert cmd.count('--recovery-rollout-landing') == cmd.count('--score-downward-release') == 1
+    assert cmd.count('--fused-research-flight') == 1
     ck['world_updates'] -= 4
     torch.save(ck, train/'latest.pt')
     with pytest.raises(ValueError, match='post-refresh'):
