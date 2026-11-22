@@ -1,0 +1,477 @@
+{
+  "stage": "G1_0128",
+  "fixed_case_seed": 882072,
+  "retained_by_head": {
+    "recovery": 64,
+    "approach": 64
+  },
+  "raw_episode_sha256": [
+    "2a0d22a38163f5754d54ec2948c2fc6d52862970bb1f11aa717a1e18cfaf27af",
+    "b5b13de4ce7300d679a7794b60ad143ed482ee66235c14ceb78f551ab4ddb2f4"
+  ],
+  "paired_comparison_sha256": "5d4324891d54ec87cfb775ae268b2829051c1a86af38517baaa859f5527a38f9",
+  "evaluation_inputs_sha256": {
+    "actuator_contract.json": "9e0406f1d7bb6a1a56fb4155f3ff55705aa91019097f4fb083c51ede3009522e",
+    "initial_states.json": "5eb3cdf9c4adf48c467d0e804c0f50a22097726cb8e78431ea583813776c0f66",
+    "physics.json": "5449aa74ee01c72fa94677c6b530b4dc9d94a78001be4a6862425c1be2f93377",
+    "task_contract.json": "f05c10348955bd862805c8e6f83af11627c08a30fa9a5a7a7faebbacf679301d",
+    "policy_execution.json": "02fceb486df09585b3548dc2b1136a695f9589240b64d05bcf93973bc58cb4b6"
+  },
+  "stages": [
+    {
+      "actor_state_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+      "evaluated_checkpoint_sha256": "5fd0e117d8ac40bcb9e034ea38d600ca0092f3740d4071cccc8bd2c3f3c3d217",
+      "qualified_airborne_string_contact": 72,
+      "body_ground_seen": 76,
+      "conditional_recovery_count": 26,
+      "conditional_recovery_denominator": 72,
+      "ball_side_complete_except_recovery": 48,
+      "complete5": 21,
+      "native_episode_return_mean": -17.6748850427411,
+      "elapsed_s": 1912.5292575369822,
+      "native_step_and_observation_check_seconds": 1911.2124087361444,
+      "control_ticks": 800,
+      "num_envs": 128
+    },
+    {
+      "actor_state_sha256": "0d47b6108a5440f4e944d0df1e1bacec04eb00bf002fffba3ff95ca7c953244f",
+      "evaluated_checkpoint_sha256": "6b07bc4d9e85a305ee277a71ae72fb79548fe6028ead922ed0109b10b8e12cd0",
+      "qualified_airborne_string_contact": 78,
+      "body_ground_seen": 48,
+      "conditional_recovery_count": 10,
+      "conditional_recovery_denominator": 78,
+      "ball_side_complete_except_recovery": 33,
+      "complete5": 3,
+      "native_episode_return_mean": -14.294629764222515,
+      "elapsed_s": 2342.551354416006,
+      "native_step_and_observation_check_seconds": 2341.017149697349,
+      "control_ticks": 800,
+      "num_envs": 128
+    }
+  ],
+  "mean_return_change_by_term": {
+    "body": 8.75,
+    "qualified_contact": 0.9375,
+    "cross": -0.7421875,
+    "target": -1.7578125,
+    "other_combined": -3.807244721481421
+  },
+  "attribution": "Four one-shot terms reconstructed from native latches using their registered reward weights. All remaining reward terms are combined.",
+  "paired_outcomes": {
+    "binary": {
+      "contact": {
+        "improved_cases": [
+          "A-97124801-000",
+          "A-97124801-008",
+          "A-97124801-009",
+          "A-97124801-028",
+          "A-97124801-033",
+          "A-97124801-034",
+          "A-97124801-051",
+          "B-97124802-005",
+          "B-97124802-006",
+          "B-97124802-029",
+          "B-97124802-049",
+          "B-97124802-052",
+          "B-97124802-055"
+        ],
+        "regressed_cases": [
+          "A-97124801-001",
+          "A-97124801-005",
+          "A-97124801-019",
+          "A-97124801-031",
+          "B-97124802-010",
+          "B-97124802-022",
+          "B-97124802-061"
+        ],
+        "paired_two_sided_p": 0.26317596435546875
+      },
+      "ball_side": {
+        "improved_cases": [
+          "A-97124801-009",
+          "A-97124801-011",
+          "A-97124801-028",
+          "A-97124801-033",
+          "A-97124801-034",
+          "A-97124801-038",
+          "A-97124801-054",
+          "B-97124802-006",
+          "B-97124802-028",
+          "B-97124802-049"
+        ],
+        "regressed_cases": [
+          "A-97124801-001",
+          "A-97124801-007",
+          "A-97124801-013",
+          "A-97124801-014",
+          "A-97124801-017",
+          "A-97124801-019",
+          "A-97124801-024",
+          "A-97124801-025",
+          "A-97124801-026",
+          "A-97124801-029",
+          "A-97124801-030",
+          "A-97124801-031",
+          "A-97124801-035",
+          "A-97124801-036",
+          "A-97124801-041",
+          "A-97124801-052",
+          "A-97124801-057",
+          "A-97124801-062",
+          "B-97124802-004",
+          "B-97124802-010",
+          "B-97124802-012",
+          "B-97124802-017",
+          "B-97124802-020",
+          "B-97124802-031",
+          "B-97124802-048"
+        ],
+        "paired_two_sided_p": 0.01667384780012071
+      },
+      "complete5": {
+        "improved_cases": [
+          "A-97124801-050",
+          "B-97124802-003"
+        ],
+        "regressed_cases": [
+          "A-97124801-017",
+          "A-97124801-018",
+          "A-97124801-022",
+          "A-97124801-025",
+          "A-97124801-027",
+          "A-97124801-029",
+          "A-97124801-036",
+          "A-97124801-039",
+          "A-97124801-040",
+          "A-97124801-052",
+          "A-97124801-057",
+          "A-97124801-058",
+          "A-97124801-060",
+          "A-97124801-062",
+          "A-97124801-063",
+          "B-97124802-012",
+          "B-97124802-020",
+          "B-97124802-030",
+          "B-97124802-034",
+          "B-97124802-048"
+        ],
+        "paired_two_sided_p": 0.00012111663818359375
+      }
+    },
+    "native_return": {
+      "mean": 3.380255278518579,
+      "median": 0.012121487831947775,
+      "descriptive_paired_case_bootstrap_95": [
+        -3.9718205493449443,
+        10.733484463597682
+      ],
+      "seed": 882072,
+      "resamples": 20000
+    }
+  },
+  "common_contact_recovery": {
+    "common_contacts": 65,
+    "improved_cases": [
+      "A-97124801-024",
+      "A-97124801-035",
+      "A-97124801-048",
+      "A-97124801-050",
+      "B-97124802-003",
+      "B-97124802-013",
+      "B-97124802-042"
+    ],
+    "regressed_cases": [
+      "A-97124801-017",
+      "A-97124801-018",
+      "A-97124801-022",
+      "A-97124801-025",
+      "A-97124801-027",
+      "A-97124801-029",
+      "A-97124801-036",
+      "A-97124801-038",
+      "A-97124801-039",
+      "A-97124801-040",
+      "A-97124801-052",
+      "A-97124801-057",
+      "A-97124801-058",
+      "A-97124801-060",
+      "A-97124801-062",
+      "A-97124801-063",
+      "B-97124802-002",
+      "B-97124802-012",
+      "B-97124802-020",
+      "B-97124802-028",
+      "B-97124802-030",
+      "B-97124802-034",
+      "B-97124802-048"
+    ],
+    "paired_two_sided_p": 0.005222879350185394,
+    "recovered_before": 26,
+    "recovered_after": 10,
+    "gained_contacts": [
+      "A-97124801-000",
+      "A-97124801-008",
+      "A-97124801-009",
+      "A-97124801-028",
+      "A-97124801-033",
+      "A-97124801-034",
+      "A-97124801-051",
+      "B-97124802-005",
+      "B-97124802-006",
+      "B-97124802-029",
+      "B-97124802-049",
+      "B-97124802-052",
+      "B-97124802-055"
+    ],
+    "lost_contacts": [
+      "A-97124801-001",
+      "A-97124801-005",
+      "A-97124801-019",
+      "A-97124801-031",
+      "B-97124802-010",
+      "B-97124802-022",
+      "B-97124802-061"
+    ]
+  },
+  "landing_flips": {
+    "new_body_ground": [
+      "A-97124801-040",
+      "A-97124801-052",
+      "A-97124801-062",
+      "B-97124802-001",
+      "B-97124802-012",
+      "B-97124802-024",
+      "B-97124802-028",
+      "B-97124802-033",
+      "B-97124802-039",
+      "B-97124802-048",
+      "B-97124802-050",
+      "B-97124802-051"
+    ],
+    "avoided_body_ground": [
+      "A-97124801-047",
+      "A-97124801-048",
+      "A-97124801-021",
+      "A-97124801-053",
+      "A-97124801-044",
+      "B-97124802-010",
+      "A-97124801-015",
+      "B-97124802-049",
+      "B-97124802-037",
+      "A-97124801-012",
+      "B-97124802-061",
+      "B-97124802-018",
+      "A-97124801-001",
+      "A-97124801-007",
+      "A-97124801-009",
+      "A-97124801-013",
+      "A-97124801-016",
+      "A-97124801-024",
+      "A-97124801-030",
+      "A-97124801-031",
+      "A-97124801-032",
+      "A-97124801-034",
+      "A-97124801-035",
+      "A-97124801-037",
+      "A-97124801-042",
+      "A-97124801-051",
+      "A-97124801-059",
+      "A-97124801-061",
+      "B-97124802-006",
+      "B-97124802-009",
+      "B-97124802-021",
+      "B-97124802-022",
+      "B-97124802-031",
+      "B-97124802-038",
+      "B-97124802-047",
+      "B-97124802-053",
+      "B-97124802-054",
+      "B-97124802-056",
+      "B-97124802-058",
+      "B-97124802-060"
+    ],
+    "qualified_to_frame_first": [
+      "B-97124802-010",
+      "B-97124802-061",
+      "A-97124801-001",
+      "A-97124801-019",
+      "A-97124801-031"
+    ],
+    "frame_first_to_qualified": [
+      "B-97124802-049",
+      "A-97124801-000",
+      "A-97124801-008",
+      "A-97124801-009",
+      "A-97124801-028",
+      "A-97124801-033",
+      "A-97124801-034",
+      "A-97124801-051",
+      "B-97124802-005",
+      "B-97124802-006",
+      "B-97124802-029",
+      "B-97124802-052",
+      "B-97124802-055"
+    ]
+  },
+  "ball_side_flip_conditions": {
+    "available": true,
+    "improved_cases": {
+      "cases": {
+        "A-97124801-009": [
+          "legal_airborne_strings",
+          "released_downward_forward",
+          "actual_net_and_target"
+        ],
+        "A-97124801-011": [
+          "actual_net_and_target"
+        ],
+        "A-97124801-028": [
+          "legal_airborne_strings",
+          "no_rule_fault",
+          "actual_net_and_target",
+          "event_order"
+        ],
+        "A-97124801-033": [
+          "legal_airborne_strings",
+          "no_rule_fault",
+          "actual_net_and_target",
+          "event_order"
+        ],
+        "A-97124801-034": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ],
+        "A-97124801-038": [
+          "actual_net_and_target",
+          "speed_threshold"
+        ],
+        "A-97124801-054": [
+          "speed_threshold"
+        ],
+        "B-97124802-006": [
+          "legal_airborne_strings",
+          "no_rule_fault",
+          "released_downward_forward",
+          "actual_net_and_target",
+          "event_order"
+        ],
+        "B-97124802-028": [
+          "speed_threshold"
+        ],
+        "B-97124802-049": [
+          "legal_airborne_strings",
+          "actual_net_and_target"
+        ]
+      },
+      "sole_condition_counts": {
+        "actual_net_and_target": 1,
+        "speed_threshold": 2
+      }
+    },
+    "regressed_cases": {
+      "cases": {
+        "A-97124801-001": [
+          "legal_airborne_strings",
+          "released_downward_forward",
+          "actual_net_and_target"
+        ],
+        "A-97124801-007": [
+          "speed_threshold"
+        ],
+        "A-97124801-013": [
+          "speed_threshold"
+        ],
+        "A-97124801-014": [
+          "speed_threshold"
+        ],
+        "A-97124801-017": [
+          "speed_threshold"
+        ],
+        "A-97124801-019": [
+          "legal_airborne_strings",
+          "no_rule_fault",
+          "released_downward_forward",
+          "actual_net_and_target",
+          "event_order"
+        ],
+        "A-97124801-024": [
+          "speed_threshold"
+        ],
+        "A-97124801-025": [
+          "no_rule_fault",
+          "actual_net_and_target",
+          "event_order"
+        ],
+        "A-97124801-026": [
+          "no_rule_fault",
+          "released_downward_forward",
+          "actual_net_and_target",
+          "event_order"
+        ],
+        "A-97124801-029": [
+          "speed_threshold"
+        ],
+        "A-97124801-030": [
+          "released_downward_forward",
+          "speed_threshold"
+        ],
+        "A-97124801-031": [
+          "legal_airborne_strings",
+          "actual_net_and_target",
+          "speed_threshold"
+        ],
+        "A-97124801-035": [
+          "speed_threshold"
+        ],
+        "A-97124801-036": [
+          "speed_threshold"
+        ],
+        "A-97124801-041": [
+          "speed_threshold"
+        ],
+        "A-97124801-052": [
+          "speed_threshold"
+        ],
+        "A-97124801-057": [
+          "speed_threshold"
+        ],
+        "A-97124801-062": [
+          "no_rule_fault",
+          "actual_net_and_target",
+          "event_order"
+        ],
+        "B-97124802-004": [
+          "speed_threshold"
+        ],
+        "B-97124802-010": [
+          "legal_airborne_strings",
+          "no_rule_fault",
+          "released_downward_forward",
+          "actual_net_and_target",
+          "event_order",
+          "speed_threshold"
+        ],
+        "B-97124802-012": [
+          "speed_threshold"
+        ],
+        "B-97124802-017": [
+          "no_rule_fault",
+          "actual_net_and_target",
+          "event_order"
+        ],
+        "B-97124802-020": [
+          "speed_threshold"
+        ],
+        "B-97124802-031": [
+          "speed_threshold"
+        ],
+        "B-97124802-048": [
+          "speed_threshold"
+        ]
+      },
+      "sole_condition_counts": {
+        "speed_threshold": 16
+      }
+    }
+  }
+}
