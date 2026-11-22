@@ -10,7 +10,8 @@ from pathlib import Path
 import torch
 from .supermimic_horizon_learner_v2 import frozen,optimizer_step
 from .supermimic_timebase_v2 import bptt_return,gae_returns
-from .supermimic_v1 import MLP,load_ppo_initialized_actor
+from .supermimic_v1 import MLP,ResidualPPOInitializedActor,load_ppo_initialized_actor
+from .supermimic_policy_execution_v1 import recovery_gate
 from .supermimic_physical_loop_loading_v1 import APPROACH_NAMES,RECOVERY_NAMES,HEAD_NAMES,set_actor_trainable,tensor_digest
 from .supermimic_ball_sequence_v1 import ball_transition,ball_error
 from .supermimic_physical_dataset_v1 import valid_windows
@@ -145,6 +146,21 @@ class PhysicalHorizonTrainer:
         if hasattr(self.reference,'forward_with_recovery_gate'):
             return policy_forward(self.reference,state.observation,state.task_memory.get('rally',{}),sample=sample)
         return self.reference(state.observation,sample=sample)
+
+    def _rollout_requests(self, state):
+        if type(self.actor) is ResidualPPOInitializedActor and type(self.reference) is ResidualPPOInitializedActor:
+            observation = state.observation
+            latch = recovery_gate(state.task_memory.get('rally', {}), observation)
+            action = self.actor.gated_request(observation, latch)
+            with torch.no_grad():
+                anchor = self.reference.gated_request(observation, latch)
+            gate = latch.float() if self.block_name == 'recovery' else self._head_gate(state)
+        else:
+            action = self._actor_action(state, sample=False)[0]
+            gate = self._head_gate(state)
+            with torch.no_grad():
+                anchor = self._reference_action(state, sample=False)[0]
+        return action, anchor, gate.reshape(-1)
 
     def _head_gate(self, state):
         """Return the actual exported gate used by the active trainable head."""
@@ -320,11 +336,9 @@ class PhysicalHorizonTrainer:
             if collect_critic_data:
                 states.append(self.adapter.critic_input(state).detach())
                 valid.append(active & selected)
-            action=self._actor_action(state,sample=False)[0]
-            gate=self._head_gate(state).reshape(-1)
+            action, ref_action, gate = self._rollout_requests(state)
             usable=selected&active
             gates.append((gate.detach()*survival.detach()*usable).detach())
-            with torch.no_grad(): ref_action=self._reference_action(state,sample=False)[0]
             anchors.append((action-ref_action).square().mean(-1)*active*survival.detach())
             track_mask=usable&(gate.detach()>.25)
             rally=state.task_memory.get('rally',{})

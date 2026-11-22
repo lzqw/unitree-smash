@@ -183,6 +183,17 @@ class ResidualPPOInitializedActor(nn.Module):
         with the caller's per-lane ``had_contact & released`` latch.  The
         ordinary ``forward`` path remains byte-compatible for legacy callers.
         """
+        dist = self._gated_distribution(obs, recovery_gate)
+        raw = dist.rsample() if sample else dist.loc
+        action = raw.clamp(-1.0, 1.0)
+        log_prob = dist.log_prob(raw).sum(-1, keepdim=True)
+        return action, log_prob, dist.entropy().sum(-1, keepdim=True)
+
+    def gated_request(self, obs: torch.Tensor, recovery_gate: torch.Tensor):
+        """Deterministic imagined control uses the validated mean of the native request."""
+        return self._gated_distribution(obs, recovery_gate).loc.clamp(-1., 1.)
+
+    def _gated_distribution(self, obs: torch.Tensor, recovery_gate: torch.Tensor):
         if recovery_gate.ndim == 1:
             recovery_gate = recovery_gate[:, None]
         if recovery_gate.shape != (obs.shape[0], 1):
@@ -197,11 +208,7 @@ class ResidualPPOInitializedActor(nn.Module):
                 + recovery_gate.to(obs.dtype) * module.recovery(normalized) * module.recovery_scale
                 + module.gate(obs) * module.approach(normalized) * module.approach_scale)
         std = self.log_std.clamp(-8.0, 1.0).exp().expand_as(mean)
-        dist = Normal(mean, std)
-        raw = dist.rsample() if sample else mean
-        action = raw.clamp(-1.0, 1.0)
-        log_prob = dist.log_prob(raw).sum(-1, keepdim=True)
-        return action, log_prob, dist.entropy().sum(-1, keepdim=True)
+        return Normal(mean, std)
 
     def approach_gate(self, obs: torch.Tensor) -> torch.Tensor:
         """Return the exported causal Approach gate for start selection/diagnostics."""

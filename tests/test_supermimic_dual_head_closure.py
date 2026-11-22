@@ -23,6 +23,31 @@ class Export(nn.Module):
         return self.base(obs)+obs[:,774:775]*self.recovery(obs)*self.recovery_scale+self.gate(obs)*self.approach(obs)*self.approach_scale
 
 
+@pytest.mark.parametrize('head', ['recovery', 'approach'])
+def test_deterministic_rollout_matches_native_requests_and_derivatives(head):
+    from quadsmash.rl.supermimic_physical_learner_v1 import PhysicalHorizonTrainer
+
+    actor = ResidualPPOInitializedActor(Export())
+    reference = copy.deepcopy(actor)
+    with torch.no_grad():
+        actor.actor.recovery.bias.add_(.08)
+        actor.actor.approach.weight[:, 0].fill_(.15)
+    trainer = object.__new__(PhysicalHorizonTrainer)
+    trainer.actor, trainer.reference, trainer.block_name = actor, reference, head
+    obs = torch.randn(4, 794, requires_grad=True)
+    rally = dict(had_contact=torch.tensor([0., 1., 1., 0.]), released=torch.tensor([0., 1., 0., 1.]))
+    state = SimpleNamespace(observation=obs, task_memory={'rally': rally})
+    expected = trainer._actor_action(state)[0]
+    params = (obs, actor.actor.recovery.bias, actor.actor.approach.weight)
+    expected_grad = torch.autograd.grad(expected.sum(), params)
+    action, anchor, gate = trainer._rollout_requests(state)
+    assert torch.equal(action, expected) and not anchor.requires_grad
+    assert torch.equal(anchor, trainer._reference_action(state)[0])
+    assert torch.equal(gate, trainer._head_gate(state).reshape(-1))
+    for actual, old in zip(torch.autograd.grad(action.sum(), params), expected_grad, strict=True):
+        assert torch.equal(actual, old)
+
+
 def test_train_eval_deployment_requests_and_final_targets_share_memory_contract():
     actor=ResidualPPOInitializedActor(Export());mixers=[ResidualActionMixerV4(4,'cpu',[.2]*18) for _ in range(3)]
     preview=ResidualExecutionPreviewV1([.2]*18);memory=MixerMemory.capture(mixers[0])

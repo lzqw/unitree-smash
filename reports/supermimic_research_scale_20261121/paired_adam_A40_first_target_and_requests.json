@@ -1,0 +1,614 @@
+{
+  "native_flights": {
+    "scope": "First online flight per TRAIN128 case, two mixed-policy training runs. Hierarchical first unmet score condition, several criteria can fail together. No estimate of current frozen Actor performance.",
+    "previous": "revised_0036/G1",
+    "current": "paired_adam_direction_0040/G1",
+    "release_versions": [
+      {
+        "69": 111
+      },
+      {
+        "109": 110
+      }
+    ],
+    "seed": 882072,
+    "source_flight_reports": [
+      "10763a56cb30b380be999e081b26f38910cf2f8ce5aa4186a638d34f5130474f",
+      "97013bf5a89b33f24b1e7defe6d26977b7167d86bea3f8688c26eb862066076b"
+    ],
+    "flips": {
+      "lost": [
+        {
+          "case": "A-720401-010",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": false,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "A-720401-026",
+          "first_unmet_score_condition": "release_missing_or_below_5_mps",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": false,
+            "qualified_contact": true,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": true,
+            "crossed_net": true,
+            "shuttle_net_contact": false,
+            "landed_target": true,
+            "released_at_least_5_mps": false
+          }
+        },
+        {
+          "case": "A-720401-033",
+          "first_unmet_score_condition": "landing_outside_scored_target",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": false,
+            "qualified_contact": true,
+            "scoring_cross": true,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": true,
+            "crossed_net": true,
+            "shuttle_net_contact": false,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "A-720401-039",
+          "first_unmet_score_condition": "release_missing_or_below_5_mps",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": false,
+            "qualified_contact": true,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": true,
+            "crossed_net": true,
+            "shuttle_net_contact": false,
+            "landed_target": true,
+            "released_at_least_5_mps": false
+          }
+        },
+        {
+          "case": "A-720401-042",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": false,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "A-720401-043",
+          "first_unmet_score_condition": "release_missing_or_below_5_mps",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": false,
+            "qualified_contact": true,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": true,
+            "crossed_net": true,
+            "shuttle_net_contact": false,
+            "landed_target": true,
+            "released_at_least_5_mps": false
+          }
+        },
+        {
+          "case": "A-720401-049",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": false,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": true,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "A-720401-052",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": false,
+            "frame_hit": false,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": false,
+            "landed_target": false,
+            "released_at_least_5_mps": false
+          }
+        },
+        {
+          "case": "A-720401-054",
+          "first_unmet_score_condition": "release_missing_or_below_5_mps",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": false,
+            "qualified_contact": true,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": true,
+            "crossed_net": true,
+            "shuttle_net_contact": false,
+            "landed_target": true,
+            "released_at_least_5_mps": false
+          }
+        },
+        {
+          "case": "A-720401-058",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": false,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "B-720402-003",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": false,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "B-720402-010",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": false,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": true,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "B-720402-026",
+          "first_unmet_score_condition": "landing_outside_scored_target",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": false,
+            "qualified_contact": true,
+            "scoring_cross": true,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": true,
+            "crossed_net": true,
+            "shuttle_net_contact": true,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "B-720402-030",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": false,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "B-720402-057",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": false,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        }
+      ],
+      "gained": [
+        {
+          "case": "A-720401-011",
+          "first_unmet_score_condition": "release_missing_or_below_5_mps",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": false,
+            "qualified_contact": true,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": false,
+            "airborne_string_hit": true,
+            "crossed_net": false,
+            "shuttle_net_contact": true,
+            "landed_target": false,
+            "released_at_least_5_mps": false
+          }
+        },
+        {
+          "case": "A-720401-031",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": false,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": true,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "A-720401-046",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": false,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": true,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "A-720401-050",
+          "first_unmet_score_condition": "release_missing_or_below_5_mps",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": false,
+            "qualified_contact": true,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": true,
+            "crossed_net": true,
+            "shuttle_net_contact": false,
+            "landed_target": true,
+            "released_at_least_5_mps": false
+          }
+        },
+        {
+          "case": "A-720401-056",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": false,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "A-720401-059",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": true,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": false,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        },
+        {
+          "case": "B-720402-011",
+          "first_unmet_score_condition": "unqualified_contact",
+          "failed_flight": {
+            "had_contact": true,
+            "frame_hit": true,
+            "qualified_contact": false,
+            "scoring_cross": false,
+            "scoring_target": false,
+            "ground_seen": false,
+            "airborne_string_hit": false,
+            "crossed_net": false,
+            "shuttle_net_contact": true,
+            "landed_target": false,
+            "released_at_least_5_mps": true
+          }
+        }
+      ]
+    },
+    "breakdown": {
+      "lost": {
+        "unqualified_contact": 9,
+        "release_missing_or_below_5_mps": 4,
+        "landing_outside_scored_target": 2
+      },
+      "gained": {
+        "release_missing_or_below_5_mps": 2,
+        "unqualified_contact": 5
+      }
+    },
+    "both_scoring_cross": {
+      "cases": 36,
+      "prior_target": 32,
+      "current_target": 30
+    }
+  },
+  "measured_request_timing": {
+    "actor_sha256": "b85a5fc786a9a79304f4e482b6927af3b8442cbe348fa66361f7d6b4189f0d15",
+    "rows": [
+      {
+        "head": "recovery",
+        "lanes": 1,
+        "repeats_per_group": 32,
+        "measured_ms": {
+          "tuple": [
+            7.004115874224226,
+            2.705761813558638
+          ],
+          "request": [
+            2.3482292199332733,
+            2.2152147812448675
+          ]
+        },
+        "gate_active": 0,
+        "request_max_difference": 0.0,
+        "max_abs_difference": 0.0
+      },
+      {
+        "head": "recovery",
+        "lanes": 16,
+        "repeats_per_group": 32,
+        "measured_ms": {
+          "tuple": [
+            2.6316337189200567,
+            2.705042435991345
+          ],
+          "request": [
+            2.416720311885001,
+            2.2405452491511824
+          ]
+        },
+        "gate_active": 13,
+        "request_max_difference": 0.0,
+        "max_abs_difference": 2.9103830456733704e-11
+      },
+      {
+        "head": "recovery",
+        "lanes": 128,
+        "repeats_per_group": 32,
+        "measured_ms": {
+          "tuple": [
+            2.90707659223699,
+            2.8898473119625123
+          ],
+          "request": [
+            2.563226937127183,
+            2.4564871873735683
+          ]
+        },
+        "gate_active": 110,
+        "request_max_difference": 0.0,
+        "max_abs_difference": 2.9103830456733704e-11
+      },
+      {
+        "head": "approach",
+        "lanes": 1,
+        "repeats_per_group": 32,
+        "measured_ms": {
+          "tuple": [
+            2.7768444997491315,
+            2.713008563659969
+          ],
+          "request": [
+            2.3713083119218936,
+            2.517221655580215
+          ]
+        },
+        "gate_active": 0,
+        "request_max_difference": 0.0,
+        "max_abs_difference": 0.0
+      },
+      {
+        "head": "approach",
+        "lanes": 16,
+        "repeats_per_group": 32,
+        "measured_ms": {
+          "tuple": [
+            2.7733187798730796,
+            2.787691375488066
+          ],
+          "request": [
+            2.4858859051164472,
+            2.518301938835066
+          ]
+        },
+        "gate_active": 0,
+        "request_max_difference": 0.0,
+        "max_abs_difference": 0.0
+      },
+      {
+        "head": "approach",
+        "lanes": 128,
+        "repeats_per_group": 32,
+        "measured_ms": {
+          "tuple": [
+            3.039976874788408,
+            3.0215308124752482
+          ],
+          "request": [
+            2.735771780862706,
+            2.6722199690993875
+          ]
+        },
+        "gate_active": 0,
+        "request_max_difference": 0.0,
+        "max_abs_difference": 0.0
+      }
+    ]
+  },
+  "H64_CPU": {
+    "actor_sha256": "b85a5fc786a9a79304f4e482b6927af3b8442cbe348fa66361f7d6b4189f0d15",
+    "world_sha256": "a749fee2e996e050243337302b19f2fc06b9de9ab5cfae388f26bc5f5c955d97",
+    "horizon": 64,
+    "recovery_starts": [
+      {
+        "lane": 56,
+        "tick": 403
+      },
+      {
+        "lane": 78,
+        "tick": 364
+      }
+    ],
+    "device": "cpu",
+    "records": [
+      {
+        "mode": "native_tuple",
+        "backward": false,
+        "seconds": 5.143930997990537,
+        "full_fk_calls": 514,
+        "max_abs_differences": {
+          "loss": 0.0,
+          "task": 0.0,
+          "tracking": 0.0,
+          "anchor": 0.0,
+          "ret": 0.0
+        },
+        "matching_lanes": 2,
+        "tracking": 0.09565561264753342
+      },
+      {
+        "mode": "request_only",
+        "backward": false,
+        "seconds": 5.112159107986372,
+        "full_fk_calls": 514,
+        "max_abs_differences": {
+          "loss": 0.0,
+          "task": 0.0,
+          "tracking": 0.0,
+          "anchor": 0.0,
+          "ret": 0.0
+        },
+        "matching_lanes": 2,
+        "tracking": 0.09565561264753342
+      },
+      {
+        "mode": "native_tuple",
+        "backward": true,
+        "seconds": 16.04639529902488,
+        "full_fk_calls": 642,
+        "max_abs_differences": {
+          "loss": 0.0,
+          "task": 0.0,
+          "tracking": 0.0,
+          "anchor": 0.0,
+          "ret": 0.0,
+          "loss_gradient": 0.0,
+          "tracking_gradient": 0.0
+        },
+        "matching_lanes": 2,
+        "tracking": 0.09565561264753342,
+        "tracking_gradient_norm": 0.5409534573554993
+      },
+      {
+        "mode": "request_only",
+        "backward": true,
+        "seconds": 16.443258323997725,
+        "full_fk_calls": 642,
+        "max_abs_differences": {
+          "loss": 0.0,
+          "task": 0.0,
+          "tracking": 0.0,
+          "anchor": 0.0,
+          "ret": 0.0,
+          "loss_gradient": 0.0,
+          "tracking_gradient": 0.0
+        },
+        "matching_lanes": 2,
+        "tracking": 0.09565561264753342,
+        "tracking_gradient_norm": 0.5409534573554993
+      }
+    ]
+  },
+  "benchmark_scope": "GPU timings include Actor, frozen reference, active gate and one request VJP; concurrent training on the same RTX 5080. H64 CPU timings are single runs per method. Neither measures end-to-end accelerated training."
+}
