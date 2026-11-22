@@ -1,0 +1,187 @@
+{
+  "native_label_policy_id": "approach_frozen_v17_refresh3",
+  "label_actor_sha256": "fd4b8542e9e70122db283b11676ba17773590a43728a08f38d4a12fd47b78a90",
+  "source_sha256": "4db9db0d1dcea4c96e1b246928c1c3c3260a4a277e9ed3810f11da471dfb2541",
+  "bank_tensor_sha256": "79983ab7b3443279b023fab51bc68b223df6c69a968b0c1d22964675e5529fbe",
+  "bank_identity_sha256": "386d10bc5ab4f146337313f75b900efc49e28d462ca7b0b04e721b71938b359a",
+  "holdout_lanes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    11,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    21,
+    30,
+    32,
+    34,
+    37,
+    38,
+    39,
+    40,
+    41,
+    44,
+    46,
+    48,
+    49,
+    50,
+    51,
+    53,
+    57,
+    59,
+    60,
+    61,
+    62,
+    65,
+    70,
+    73,
+    74,
+    76,
+    77,
+    81,
+    84,
+    85,
+    86,
+    87,
+    89,
+    90,
+    94,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110,
+    111,
+    112,
+    113,
+    114,
+    115,
+    116,
+    117,
+    118,
+    119,
+    120,
+    121,
+    122,
+    123,
+    124,
+    125,
+    126,
+    127
+  ],
+  "stages": {
+    "40": {
+      "actor": "3f3d4e17a47de7ed2874a801db97dca2cf061f82a29aba952d218e13ebfc246a",
+      "critic": "c90eedb802484fef3444385664d64bba59955adcfdb01ca3d6fddabdbfe32240",
+      "critic_updates": 3848,
+      "metrics": {
+        "approach": {
+          "rows": 165,
+          "episodes": 73,
+          "metrics": {
+            "mae": 20.823205947875977,
+            "rmse": 24.682804107666016,
+            "bias": -2.019132614135742,
+            "rtg_ordering_accuracy": 0.5857952849895554,
+            "rtg_ordering_pairs": 3351
+          },
+          "matches_policy": false
+        },
+        "recovery": {
+          "rows": 1918,
+          "episodes": 68,
+          "metrics": {
+            "mae": 9.991351127624512,
+            "rmse": 12.983688354492188,
+            "bias": -2.69762921333313,
+            "rtg_ordering_accuracy": 0.7375567077122489,
+            "rtg_ordering_pairs": 61720
+          },
+          "matches_policy": false
+        }
+      }
+    },
+    "64": {
+      "actor": "3ca387f0232ad84146e7c4e098d3bba019c7a8a9b6fc4584c40ec1f9244b25c9",
+      "critic": "d442876c62cfd33b783af06157677648050239fe0816a51b7eb209bfd9516d2b",
+      "critic_updates": 4388,
+      "metrics": {
+        "approach": {
+          "rows": 165,
+          "episodes": 73,
+          "metrics": {
+            "mae": 17.617544174194336,
+            "rmse": 22.8789119720459,
+            "bias": 7.547288417816162,
+            "rtg_ordering_accuracy": 0.6520441659206208,
+            "rtg_ordering_pairs": 3351
+          },
+          "matches_policy": false
+        },
+        "recovery": {
+          "rows": 1918,
+          "episodes": 68,
+          "metrics": {
+            "mae": 11.854012489318848,
+            "rmse": 15.490357398986816,
+            "bias": 5.043514728546143,
+            "rtg_ordering_accuracy": 0.7175955930006481,
+            "rtg_ordering_pairs": 61720
+          },
+          "matches_policy": false
+        }
+      }
+    },
+    "96": {
+      "actor": "eed087c368790231413cb93f886925ccf216f74175ef34e3a7cf8e9909ada30a",
+      "critic": "19fb8988a59f344257cbf7fb9666483568378d3373e9724bd07404927e3d4a17",
+      "critic_updates": 5108,
+      "metrics": {
+        "approach": {
+          "rows": 165,
+          "episodes": 73,
+          "metrics": {
+            "mae": 19.303359985351562,
+            "rmse": 25.16082191467285,
+            "bias": 6.468260288238525,
+            "rtg_ordering_accuracy": 0.5893763055804238,
+            "rtg_ordering_pairs": 3351
+          },
+          "matches_policy": false
+        },
+        "recovery": {
+          "rows": 1918,
+          "episodes": 68,
+          "metrics": {
+            "mae": 9.876607894897461,
+            "rmse": 15.424443244934082,
+            "bias": 8.580831527709961,
+            "rtg_ordering_accuracy": 0.7335547634478289,
+            "rtg_ordering_pairs": 61720
+          },
+          "matches_policy": false
+        }
+      }
+    }
+  }
+}

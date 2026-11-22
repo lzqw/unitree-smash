@@ -1972,6 +1972,19 @@ def run(args, *, alternating=None):
             if wm_holdout_lanes:
                 permitted,_=split_native_value_rows(native_value_bank,wm_holdout_lanes)
                 train_mask &= permitted
+            def frozen_value_holdout():
+                return {
+                    head: critic_holdout(
+                        trainer.critic, native_value_bank, head, wm_holdout_lanes,
+                        current_actor_sha256=actor_hash, current_execution=policy_execution,
+                        limits=dual_quality['critic_upper_bounds'][head] if dual_quality is not None else None,
+                        accepted_updates=global_accepted_id,
+                    )
+                    for head in ('recovery', 'approach')
+                }
+
+            if wm_holdout_lanes:
+                receipt['critic_holdout_before_calibration'] = frozen_value_holdout()
             native_rows=torch.where(train_mask)[0]
             visited=torch.zeros(len(y),dtype=torch.bool)
             order=native_rows[torch.randperm(len(native_rows),generator=replay.generator)]
@@ -1984,10 +1997,10 @@ def run(args, *, alternating=None):
             receipt['critic_stage_coverage']={str(t):dict(eligible=int((phase_ids==t).sum()),used=int(((phase_ids==t)&visited).sum())) for t in sorted(set(native_stage))}
             atomic_torch_save(dict(native_value_bank,stage=phase_ids),refresh_dir/'native_critic_labels.pt')
             if wm_holdout_lanes:
-                receipt['critic_holdout']={h:critic_holdout(trainer.critic,native_value_bank,h,wm_holdout_lanes,current_actor_sha256=actor_hash,current_execution=policy_execution,limits=dual_quality['critic_upper_bounds'][h] if dual_quality is not None else None) for h in ('recovery','approach')}
+                receipt['critic_holdout'] = frozen_value_holdout()
             if trainer.reference_bank is not None:
                 from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
-                source_hash=hashlib.sha256((refresh_dir/'complete_episodes.pt').read_bytes()).hexdigest()
+                source_hash=native_value_bank['source_sha256']
                 with torch.no_grad():
                     device=next(adapter.parameters()).device
                     additions=TaskSpaceReferenceBankV1.from_packed({k:v.to(device) for k,v in packed.items()},
@@ -2040,7 +2053,13 @@ def run(args, *, alternating=None):
                     writer.add_scalar('native_frozen/'+key,timing[key],tick*128)
                 for key,value in (timing['archive'] or {}).items():
                     writer.add_scalar('native_frozen/archive_'+key,value,tick*128)
-                writer.add_scalar('native_frozen/episode_return_mean',sum(receipt['returns'])/128,tick*128)
+                for phase, key in (('before', 'critic_holdout_before_calibration'), ('after', 'critic_holdout')):
+                    for head, check in receipt.get(key, {}).items():
+                        prefix = f'native_frozen/critic/{head}/{phase}/'
+                        writer.add_scalar(prefix+'held_states', check['sample_count'], tick*128)
+                        for metric, value in check.get('metrics', {}).items():
+                            if value is not None:
+                                writer.add_scalar(prefix+metric, value, tick*128)
                 writer.flush()
             print('PHYSICAL_REFRESH='+json.dumps(receipt),flush=True)
             if dual_quality is not None and any(not receipt['wm_quality'][h]['passed'] or not receipt['critic_holdout'][h]['passed'] for h in ('recovery','approach')):
