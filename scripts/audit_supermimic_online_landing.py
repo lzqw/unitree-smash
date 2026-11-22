@@ -53,11 +53,16 @@ def landing_starts(data, excluded_lanes):
 def errors(state, feet, truth, native_feet):
     angle = 2*torch.acos(torch.nn.functional.cosine_similarity(state[:,3:7], truth[:,3:7]).abs().clamp(max=1))
     support = feet >= .5
+    count_difference = support.sum(1) - native_feet.sum(1)
+    wrong_feet = support != native_feet
     return dict(root_attitude_mae_rad=float(angle.mean()), root_attitude_p90_rad=float(angle.quantile(.9)),
                 root_angular_mae_rad_s=float((state[:,10:13]-truth[:,10:13]).abs().mean()),
                 root_height_mae_m=float((state[:,2]-truth[:,2]).abs().mean()),
-                support_count_mae=float((support.sum(1)-native_feet.sum(1)).abs().float().mean()),
-                foot_bit_error=float((support != native_feet).float().mean()))
+                support_count_mae=float(count_difference.abs().float().mean()),
+                support_count_accuracy=float((count_difference == 0).float().mean()),
+                support_pattern_accuracy=float((~wrong_feet.any(1)).float().mean()),
+                foot_bit_error=float(wrong_feet.float().mean()),
+                **{f'foot_{i}_bit_error': value for i, value in enumerate(wrong_feet.float().mean(0).tolist())})
 
 
 @torch.no_grad()

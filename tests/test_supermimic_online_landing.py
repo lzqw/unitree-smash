@@ -29,3 +29,14 @@ def test_landing_pose_handles_quaternion_sign_and_counts_individual_support_erro
     assert result['root_attitude_p90_rad'] == 0
     assert result['root_height_mae_m'] == .125
     assert result['foot_bit_error'] == .25 and result['support_count_mae'] == 1
+
+
+def test_correct_number_of_supporting_feet_can_hide_wrong_contact_pattern():
+    state = torch.zeros(2, 55)
+    state[:, 3] = 1
+    actual = torch.tensor([[0, 1, 0, 1], [0, 1, 0, 1]], dtype=torch.bool)
+    predicted = torch.tensor([[.8, .6, .1, .4], [.1, .6, .1, .8]])
+    result = errors(state, predicted, state, actual)
+    assert result['support_count_accuracy'] == 1
+    assert result['support_pattern_accuracy'] == .5
+    assert [result[f'foot_{i}_bit_error'] for i in range(4)] == [.5, 0, 0, .5]
