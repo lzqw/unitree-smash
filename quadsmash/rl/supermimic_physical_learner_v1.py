@@ -4,6 +4,7 @@ This task adaptation is not a claim of reproducing SuperMimic's G1 model.
 No PPO objective or demonstration target is used for actor gradients.
 """
 import copy
+import math
 import time
 from pathlib import Path
 import torch
@@ -536,7 +537,8 @@ class PhysicalHorizonTrainer:
                                 grad_stats['restarted_adam_proposal_loss_slope'] = proposal_slope()
                             proposed={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
                             proposed_opt=copy.deepcopy(self.actor_opt.state_dict())
-                            for candidate_alpha in (1.,.5,.25,.125,.0625):
+                            step_sizes = (1., .5, .25, .125, .0625)
+                            for candidate_alpha in step_sizes:
                                 candidate={k:(v+(proposed[k]-v)*candidate_alpha if k in self.trainable_names else v) for k,v in actor_before.items()}
                                 self.actor.load_state_dict(candidate,strict=True)
                                 with torch.no_grad():
@@ -548,6 +550,14 @@ class PhysicalHorizonTrainer:
                                         bounded &= (native['final_normalized_command_delta']<=self.native_reference_command_budget and native['final_joint_target_delta_rad']<=self.native_reference_target_budget_rad)
                                     # Measure final executable commands on identical real states/memory.
                                     effect=self._budget_deltas(candidate_budget,before_budget)['final_joint_target_delta_rad']
+                                    if (not bounded and candidate_alpha != step_sizes[-1]
+                                            and all(math.isfinite(x) for deltas in report.values() for x in deltas.values())):
+                                        # The fixed-command budget has already ruled out this step.
+                                        # Keep the final trial scored even if every step is rejected.
+                                        trials.append(dict(alpha=candidate_alpha, budget_ok=False, budget_report=report,
+                                                           final_command_change=effect, loss=None,
+                                                           scoring_skipped='command_or_target_budget'))
+                                        continue
                                     restore_rng()
                                     evaluation=self._rollout_objective(initial_state,effective_weights=rollout['effective_weights'],
                                                                       baseline_toi_weights=rollout['toi_weights'],collect_critic_data=False,

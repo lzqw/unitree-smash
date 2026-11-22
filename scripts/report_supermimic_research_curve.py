@@ -108,13 +108,18 @@ def read_new(path, offset):
 
 class FirstEpisodeReturns:
     """Match the first completed online episode per initial lane to its frozen TRAIN128 case."""
-    def __init__(self, arm, registration, manifest):
+    def __init__(self, arm, registration, manifest, resume_reference=None):
         from scripts.compare_supermimic_fixed_stages import load_run
-        path = Path(registration['baseline_path'])
-        rows, identity, actor = load_run(path.parent)
-        if (actor != registration['initial']['actor_sha256'] or identity['seed'] != manifest['seed']
+        from scripts.report_supermimic_online_flights import reference_actor
+        resumed = resume_reference is not None
+        folder = Path(resume_reference) if resumed else Path(registration['baseline_path']).parent
+        expected_actor = reference_actor(registration, folder, resumed)
+        rows, identity, actor = load_run(folder)
+        if (actor != expected_actor or identity['seed'] != manifest['seed']
                 or identity['task'] != manifest['task_contract'] or identity['execution'] != manifest['policy_execution']):
             raise ValueError('Online return comparison has incompatible baseline identity')
+        self.tag = 'first_completed_vs_scored_resume' if resumed else 'first_completed_mixed_cases'
+        self.baseline_mean_key = 'resume_same_cases_mean' if resumed else 'initial_same_cases_mean'
         self.baseline = {(row['case_id'], row['env_id']): row for row in rows}
         self.path = arm/'train/native_episodes.jsonl'
         self.offset = 0
@@ -141,10 +146,11 @@ class FirstEpisodeReturns:
             self.initial_total += baseline['native_episode_return']
             for metric in self.flips:
                 self.flips[metric] += int(row[metric]) - int(baseline[metric])
-            metrics = dict(online_mean=self.online_total/n, initial_same_cases_mean=self.initial_total/n,
+            metrics = dict(online_mean=self.online_total/n,
                            mean_difference=(self.online_total-self.initial_total)/n,
                            latest_case_difference=row['native_episode_return']-baseline['native_episode_return'],
                            **{name+'_net_cases': count for name,count in self.flips.items()})
+            metrics[self.baseline_mean_key] = self.initial_total/n
             if all(r.get('native_episode_length_steps') is not None and
                    isinstance(r.get('episode_timeout'), bool) for r in (row, baseline)):
                 self.duration_pairs += 1
@@ -155,7 +161,7 @@ class FirstEpisodeReturns:
                                mean_episode_length_delta_ticks=self.duration_delta/self.duration_pairs,
                                baseline_timeout_to_online_early=self.early_after_timeout,
                                baseline_early_to_online_timeout=self.timeout_after_early)
-            values = [Summary.Value(tag='first_completed_mixed_cases/'+k,simple_value=v) for k,v in metrics.items()]
+            values = [Summary.Value(tag=self.tag+'/'+k,simple_value=v) for k,v in metrics.items()]
             writer.add_event(Event(wall_time=time.time(),step=n,summary=Summary(value=values)))
         if rows:
             writer.flush()
@@ -168,6 +174,8 @@ def main():
     parser.add_argument('--tensorboard', type=Path, required=True)
     parser.add_argument('--follow-pid', type=int)
     parser.add_argument('--online-returns-only', action='store_true')
+    parser.add_argument('--resume-reference', type=Path,
+                        help='Frozen evaluation directory of the scored resume checkpoint')
     args = parser.parse_args()
     owner = psutil.Process(args.follow_pid) if args.follow_pid else None
     arm = args.arm_dir.resolve()
@@ -179,10 +187,12 @@ def main():
         time.sleep(5)
     manifest = json.loads(manifest_path.read_text())
     reference_path = Path(reg['baseline_path']) if reg.get('baseline_path') else None
-    matched = (FirstEpisodeReturns(arm,reg,manifest) if reference_path is not None
+    if args.resume_reference is not None:
+        reference_path = args.resume_reference/'episodes_summary.json'
+    matched = (FirstEpisodeReturns(arm,reg,manifest,args.resume_reference) if reference_path is not None
                and reference_path.name == 'episodes_summary.json' and (reference_path.parent/'completed.json').exists()
                else None)
-    if args.online_returns_only and matched is None:
+    if (args.online_returns_only or args.resume_reference is not None) and matched is None:
         raise ValueError('A complete registered frozen baseline is required for online return comparison')
     origin = None if args.online_returns_only else arm_origin(reg)
     from scripts.report_supermimic_native_contact_counts import NativeContactCounts

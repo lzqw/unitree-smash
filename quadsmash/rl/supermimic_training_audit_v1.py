@@ -74,7 +74,7 @@ def rollback_audit(*, phase, update_index, proposal_checkpoint,
             reasons.append("lost_toi_lane")
         if not bool(trial.get("budget_ok", True)):
             reasons.append("command_or_target_budget")
-        if float(trial.get("loss", stats.get("objective_before", 0.0))) > float(stats.get("objective_before", 0.0)):
+        if trial.get("loss") is not None and float(trial["loss"]) > float(stats.get("objective_before", 0.0)):
             reasons.append("objective_increase")
     if backtracked:
         reasons.append("accepted_with_reduced_step")

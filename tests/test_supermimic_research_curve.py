@@ -204,3 +204,32 @@ def test_flight_comparison_requires_the_evaluated_resume_checkpoint(tmp_path):
     reg['revision'].update(source_checkpoint_sha256='scored', starting_actor='rolled_back', policy_prefix_retained=False)
     with pytest.raises(ValueError, match='resume checkpoint'):
         reference_actor(reg, tmp_path, True)
+
+
+def test_paired_return_resumed_baseline_reads_the_scored_checkpoint_and_its_cases(tmp_path, monkeypatch):
+    import json
+    from types import SimpleNamespace
+    from scripts import compare_supermimic_fixed_stages as fixed
+    from scripts.report_supermimic_research_curve import FirstEpisodeReturns
+
+    frozen = tmp_path/'frozen_resume'
+    frozen.mkdir()
+    (frozen/'metrics.json').write_text(json.dumps({'evaluated_checkpoint_sha256':'scored'}))
+    row = dict(case_id='case', env_id=1, scoring_schema='v1', native_episode_return=3.,
+               complete5=False, physical_recovery_success=False, ball_side_complete_except_recovery=False)
+    reg = dict(initial={'actor_sha256':'initial'}, baseline_path='unrelated/episodes_summary.json',
+               revision=dict(starting_actor='resumed', measured_actor='resumed',
+                             policy_prefix_retained=True, source_checkpoint_sha256='scored'))
+    def load(folder):
+        assert folder == frozen
+        return [row], dict(seed=42,task='t',execution='e'), 'resumed'
+    monkeypatch.setattr(fixed, 'load_run', load)
+    report = FirstEpisodeReturns(tmp_path, reg, dict(seed=42,task_contract='t',policy_execution='e'), frozen)
+    report.path.parent.mkdir()
+    report.path.write_text(json.dumps(dict(row, episode_index=0, native_episode_return=1.,
+        scope='mixed-policy monitoring, not frozen score'))+'\n')
+    events = []
+    report.update(SimpleNamespace(add_event=events.append, flush=lambda: None))
+    metrics = {s.tag:s.simple_value for s in events[0].summary.value}
+    assert metrics['first_completed_vs_scored_resume/resume_same_cases_mean'] == 3.
+    assert metrics['first_completed_vs_scored_resume/mean_difference'] == -2.

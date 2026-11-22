@@ -76,6 +76,33 @@ def test_zero_final_command_response_rolls_back_parameters_and_adam():
     for k,v in before.items():assert torch.equal(v,t.actor.state_dict()[k])
 
 
+def test_budget_rejected_step_skips_rescoring_but_scores_the_committed_step_or_last_rejection():
+    for budget, accepted, expected_alpha in ((.000075, True, .5), (0., False, .0625)):
+        t = learner()
+        t.command_delta_budget = budget
+        initial = copy.deepcopy(t.actor.state_dict())
+        score_calls = []
+        objective = t._rollout_objective
+        def counted(*args, **kwargs):
+            if kwargs.get('collect_critic_data') is False:
+                score_calls.append(t.actor.approach.weight.detach().clone())
+            return objective(*args, **kwargs)
+        t._rollout_objective = counted
+        stats = t.imagine_update(t.budget_states[0])
+        trials = stats['backtrack_trials']
+        assert stats['update_accepted'] is accepted
+        assert len(score_calls) == 1
+        assert all(r['scoring_skipped'] == 'command_or_target_budget' and
+                   not r['budget_ok'] and r['loss'] is None for r in trials[:-1])
+        assert trials[-1]['alpha'] == expected_alpha and trials[-1]['loss'] is not None
+        if accepted:
+            assert torch.equal(t.actor.approach.weight, score_calls[0])
+            assert stats['objective_after'] == trials[-1]['loss']
+        else:
+            assert torch.equal(t.actor.approach.weight, initial['approach.weight'])
+            assert t.actor_opt.state_dict()['state'] == {}
+
+
 def test_tracking_normalizes_global_lane_time_mass_not_mean_of_time_means():
     t=learner();state=t.budget_states[0]
     t.adapter.physical_model=SimpleNamespace(geometry=None)

@@ -1,0 +1,96 @@
+{
+  "scope": "Paired Adam G1 physical trainer; elapsed pairs refer to R25\u201332 and A25\u201332 only. Includes block entry work; excludes independent evaluation and periodic full-episode refresh. R34 used the old implementation, which scored both candidates. There is no in-training timing of the new shortcut yet.",
+  "previous_complete_pair": {
+    "recovery": {
+      "accepted": 8,
+      "elapsed_s": 3289.2935082680197,
+      "bptt_and_rescore_s": 2846.3408789219684,
+      "native_collect_s": 165.1157352309674,
+      "wm_refresh_s": 202.90282810101053
+    },
+    "approach": {
+      "accepted": 8,
+      "elapsed_s": 1989.4921771729714,
+      "bptt_and_rescore_s": 1336.0894430140033,
+      "native_collect_s": 188.34170013997937,
+      "wm_refresh_s": 198.8564001530176
+    }
+  },
+  "r34": {
+    "accepted_id": 119,
+    "attempt_id": 124,
+    "block": "recovery",
+    "update_accepted": true,
+    "backtrack_alpha": 0.5,
+    "bptt_seconds": 521.9637955980143,
+    "command_delta_budget": 0.02,
+    "target_delta_budget_rad": 0.08,
+    "objective_before": -9.475547790527344,
+    "objective_after": -9.629498481750488,
+    "backtrack_trials": [
+      {
+        "alpha": 1.0,
+        "loss": -9.781479835510254,
+        "objective_terms": {
+          "task": -9.878324508666992,
+          "tracking": 0.0517611987888813,
+          "anchor": 4.508392333984375
+        },
+        "first_contact_counts": {},
+        "budget_ok": false,
+        "budget_report": {
+          "relative_block_start": {
+            "residual_request_delta": 0.0978250503540039,
+            "final_normalized_command_delta": 0.04031053185462952,
+            "final_joint_target_delta_rad": 0.03799152374267578
+          },
+          "relative_last_accepted": {
+            "residual_request_delta": 0.050045788288116455,
+            "final_normalized_command_delta": 0.02070865035057068,
+            "final_joint_target_delta_rad": 0.01951742172241211
+          },
+          "relative_native_accepted": {
+            "residual_request_delta": 0.7123821377754211,
+            "final_normalized_command_delta": 0.28573736548423767,
+            "final_joint_target_delta_rad": 0.269298791885376
+          }
+        },
+        "toi_coverage_preserved": true,
+        "final_command_change": 0.01951742172241211
+      },
+      {
+        "alpha": 0.5,
+        "loss": -9.629498481750488,
+        "objective_terms": {
+          "task": -9.724225997924805,
+          "tracking": 0.05215863138437271,
+          "anchor": 4.256891250610352
+        },
+        "first_contact_counts": {},
+        "budget_ok": true,
+        "budget_report": {
+          "relative_block_start": {
+            "residual_request_delta": 0.07253926992416382,
+            "final_normalized_command_delta": 0.029841840267181396,
+            "final_joint_target_delta_rad": 0.02812504768371582
+          },
+          "relative_last_accepted": {
+            "residual_request_delta": 0.024760007858276367,
+            "final_normalized_command_delta": 0.010239958763122559,
+            "final_joint_target_delta_rad": 0.009650945663452148
+          },
+          "relative_native_accepted": {
+            "residual_request_delta": 0.687096357345581,
+            "final_normalized_command_delta": 0.27536556124687195,
+            "final_joint_target_delta_rad": 0.259523868560791
+          }
+        },
+        "toi_coverage_preserved": true,
+        "final_command_change": 0.009650945663452148
+      }
+    ],
+    "effective_gate_lanes": 16,
+    "completed_native_episodes": 2,
+    "native_ticks": 6910
+  }
+}
