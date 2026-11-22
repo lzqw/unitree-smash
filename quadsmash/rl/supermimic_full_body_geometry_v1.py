@@ -65,10 +65,19 @@ class FullBodyGeometryV1(nn.Module):
                               JOINT_NAMES.index(j['name']) if j['name'] in JOINT_NAMES else None))
                 seen.add(j['child']); pending.remove(j)
         self.edges = tuple(edges)
+        # Preserve the asset's joint order and the original buffer indices.
+        # Off-chain links cannot affect the world pose or twist of the racket.
+        ancestor = self.ids.get('Racket')
+        chain = []
+        for i, edge in reversed(tuple(enumerate(self.edges))):
+            if edge[1] == ancestor:
+                chain.append((i, edge))
+                ancestor = edge[0]
+        self.racket_chain = tuple(reversed(chain))
         for i,name in enumerate(('parent_offset','child_offset','parent_rotation','child_rotation','axis','skew')):
             self.register_buffer(name, torch.stack([torch.as_tensor(c[i],dtype=dtype) for c in constants]))
 
-    def forward(self, joints, velocities, root_position, root_quaternion, root_velocity, root_omega):
+    def _link_kinematics(self, edges, joints, velocities, root_position, root_quaternion, root_velocity, root_omega):
         n = joints.shape[0]
         if joints.shape != (n,18) or velocities.shape != joints.shape:
             raise ValueError('Expected named18 joint positions and velocities')
@@ -81,7 +90,7 @@ class FullBodyGeometryV1(nn.Module):
         p, r, v, w = {}, {}, {}, {}
         p[self.root_id], r[self.root_id] = root_position, rotation(root_quaternion)
         v[self.root_id], w[self.root_id] = root_velocity, root_omega
-        for i,(parent,child,joint) in enumerate(self.edges):
+        for i,(parent,child,joint) in edges:
             joint_rotation = r[parent] @ self.parent_rotation[i]
             offset0 = rotate(r[parent],self.parent_offset[i])
             if joint is None:
@@ -96,6 +105,11 @@ class FullBodyGeometryV1(nn.Module):
             p[child] = p[parent] + offset0 - offset1
             w[child] = w[parent] + added_omega
             v[child] = v[parent] + torch.linalg.cross(w[parent],offset0) - torch.linalg.cross(w[child],offset1)
+        return p, r, v, w
+
+    def forward(self, joints, velocities, root_position, root_quaternion, root_velocity, root_omega):
+        p, r, v, w = self._link_kinematics(enumerate(self.edges), joints, velocities, root_position,
+                                            root_quaternion, root_velocity, root_omega)
         positions, rotations = torch.stack([p[i] for i in range(len(self.names))],1), torch.stack([r[i] for i in range(len(self.names))],1)
         linear, angular = torch.stack([v[i] for i in range(len(self.names))],1), torch.stack([w[i] for i in range(len(self.names))],1)
         offset = rotate(rotations,self.local_com)
@@ -104,3 +118,15 @@ class FullBodyGeometryV1(nn.Module):
                     feet=positions[:,self.feet], head_origins=positions[:,self.heads],
                     center=((positions+offset)*weights).sum(1),
                     center_velocity=((linear+torch.linalg.cross(angular,offset))*weights).sum(1))
+
+
+def racket_kinematics(fields, geometry):
+    """Return world racket position, rotation, linear and angular velocity."""
+    inputs = (fields['joint_position'], fields['joint_velocity'], fields['root_position_w'],
+              fields['root_quaternion_w'], fields['root_link_velocity_w'], fields['root_angular_velocity_w'])
+    i = geometry.ids['Racket']
+    if type(geometry) is FullBodyGeometryV1 and hasattr(geometry, 'racket_chain'):
+        positions, rotations, velocities, omegas = geometry._link_kinematics(geometry.racket_chain, *inputs)
+        return positions[i], rotations[i], velocities[i], omegas[i]
+    bodies = geometry(*inputs)
+    return tuple(bodies[name][:, i] for name in ('position', 'rotation', 'velocity', 'angular_velocity'))

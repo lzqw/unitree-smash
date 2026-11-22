@@ -7,21 +7,20 @@ import torch
 from torch import nn
 
 from .supermimic_physical_dataset_v1 import decode_physical
+from .supermimic_full_body_geometry_v1 import racket_kinematics
 from .supermimic_v1 import MLP
 
 
 def ball_geometry_features(state,geometry):
     p=decode_physical(state)
-    body=geometry(p['joint_position'],p['joint_velocity'],p['root_position_w'],
-        p['root_quaternion_w'],p['root_link_velocity_w'],p['root_angular_velocity_w'])
-    i=geometry.ids['Racket'];r=body['rotation'][:,i];center=body['position'][:,i]
+    center,r,velocity,omega=racket_kinematics(p,geometry)
     delta=p['ball_position_w']-center
     local=(r.transpose(-1,-2)@delta.unsqueeze(-1)).squeeze(-1)
-    surface=body['velocity'][:,i]+torch.linalg.cross(body['angular_velocity'][:,i],delta)
+    surface=velocity+torch.linalg.cross(omega,delta)
     relative=(r.transpose(-1,-2)@(p['ball_velocity_w']-surface).unsqueeze(-1)).squeeze(-1)
     net=p['ball_position_w']-state.new_tensor([1.5,0.,1.16])
     return torch.cat((p['ball_position_w'],p['ball_velocity_w'],local,relative,r[:,:,0],
-        body['velocity'][:,i],body['angular_velocity'][:,i],p['ball_position_w'][:,2:3]-.025,net),-1)
+        velocity,omega,p['ball_position_w'][:,2:3]-.025,net),-1)
 
 
 class BallResidualV1(nn.Module):

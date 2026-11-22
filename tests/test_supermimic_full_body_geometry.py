@@ -31,6 +31,27 @@ def test_all_body_geometry_matches_pinned_loaded_model():
     assert actual['head_origins'].shape==(3,2,3)
 
 
+def test_racket_only_chain_preserves_ball_features_and_input_gradients():
+    from quadsmash.rl.supermimic_ball_residual_v1 import ball_geometry_features
+    from quadsmash.rl.supermimic_racket_dynamics_v1 import racket_state
+    model = FullBodyGeometryV1(ASSET, dtype=torch.float64)
+    class FullGeometry:
+        ids = model.ids
+        def __call__(self, *args):
+            return model(*args)
+    generator = torch.Generator().manual_seed(81)
+    state = torch.randn(9, 55, dtype=torch.float64, generator=generator, requires_grad=True)
+    assert 0 < len(model.racket_chain) < len(model.edges)
+    for feature in (racket_state, ball_geometry_features):
+        expected = feature(state, FullGeometry())
+        actual = feature(state, model)
+        weights = torch.randn(actual.shape, dtype=actual.dtype, generator=generator)
+        torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+        reference_grad, = torch.autograd.grad(expected, state, weights)
+        actual_grad, = torch.autograd.grad(actual, state, weights)
+        torch.testing.assert_close(actual_grad, reference_grad, rtol=1e-13, atol=1e-13)
+
+
 def test_world_pose_and_velocity_transform_consistently():
     m=FullBodyGeometryV1(ASSET,dtype=torch.float64)
     q,qd,p,quat,v,w=inputs()

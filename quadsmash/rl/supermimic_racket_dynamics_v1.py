@@ -1,15 +1,12 @@
 """Task-space supervision for robot dynamics; no changes to native physics."""
 import torch
+from .supermimic_full_body_geometry_v1 import racket_kinematics
 from .supermimic_physical_dataset_v1 import decode_physical, valid_windows
 
 
 def racket_state(state, geometry):
-    p=decode_physical(state)
-    b=geometry(p['joint_position'],p['joint_velocity'],p['root_position_w'],p['root_quaternion_w'],
-               p['root_link_velocity_w'],p['root_angular_velocity_w'])
-    i=geometry.ids['Racket']
-    return torch.cat((b['position'][:,i],b['rotation'][:,i].flatten(1),
-                      b['velocity'][:,i],b['angular_velocity'][:,i]),-1)
+    center, rotation, velocity, omega = racket_kinematics(decode_physical(state), geometry)
+    return torch.cat((center, rotation.flatten(1), velocity, omega), -1)
 
 
 def racket_loss_components(predicted, target, *, per_row=False):

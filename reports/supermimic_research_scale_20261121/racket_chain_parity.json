@@ -1,0 +1,67 @@
+{
+  "scope": "CUDA microbenchmark of concatenated racket state and ball geometry features plus one VJP, on native states, interleaved median of 8 measurements per path; GPU shared with live trainer. Separate CPU 3-step autoregressive Hybrid WM test checks collection-executed targets. No new Actor updates or standalone end-to-end training speed measurement.",
+  "full_asset_edges": 27,
+  "racket_chain_edges": 9,
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "cuda_feature_and_vjp": {
+    "1": {
+      "full_ms": 19.229772500693798,
+      "chain_ms": 7.148987962864339,
+      "max_feature_delta": 0.0,
+      "max_gradient_delta": 0.0
+    },
+    "16": {
+      "full_ms": 19.89506999962032,
+      "chain_ms": 7.488287490559742,
+      "max_feature_delta": 0.0,
+      "max_gradient_delta": 0.0
+    },
+    "128": {
+      "full_ms": 19.989404507214203,
+      "chain_ms": 7.477825507521629,
+      "max_feature_delta": 0.0,
+      "max_gradient_delta": 0.0
+    }
+  },
+  "physics_chunk_sha256": "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494",
+  "world_sha256": "05cbbbd27c8da7f75c0eacd4298586b597a829dd906f3ad4cbf8134798781677",
+  "wm_updates": 200,
+  "cpu_three_step": {
+    "lanes": [
+      70,
+      71,
+      101,
+      104,
+      77,
+      119,
+      76,
+      89,
+      111,
+      46,
+      85,
+      95
+    ],
+    "native_hit_global_ticks": [
+      6660,
+      6661,
+      6661,
+      6661,
+      6663,
+      6663,
+      6664,
+      6664,
+      6664,
+      6665,
+      6665,
+      6665
+    ],
+    "model_racket_hit_by_step": [
+      0,
+      12,
+      0
+    ],
+    "max_state_difference": 0.0,
+    "max_target_gradient_difference": 0.0,
+    "maximum_absolute_target_gradient": 16.85919952392578
+  }
+}
