@@ -1,0 +1,604 @@
+{
+  "arm": "G1",
+  "accepted_by_head": {
+    "recovery": 50,
+    "approach": 48
+  },
+  "global_attempt_id": 157,
+  "history_prefix_sha256": "6f9f6014fae17d0db8e97faa54149bd2d3c46e5017b444afd26917f1f70f77ef",
+  "post_resume_timing": {
+    "recovery": {
+      "attempts": 27,
+      "retained": 26,
+      "median_records": 14,
+      "median_proposal_seconds": 491.8971959000337
+    },
+    "approach": {
+      "attempts": 32,
+      "retained": 32,
+      "median_records": 4.0,
+      "median_proposal_seconds": 156.4786942084902
+    }
+  },
+  "actor_start_sampling": {
+    "effective_start_lanes": 16,
+    "actual_by_family": {
+      "risk": 8,
+      "landing": 4,
+      "stable": 4,
+      "initial_archive": 0
+    },
+    "records": [
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            82,
+            0,
+            522
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 82,
+            "episode": 0,
+            "tick": 522,
+            "since_landing_s": 2.1280415058135986,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 2,
+            "tilt_rad": 0.5408241748809814,
+            "failure_window_ticks": 20
+          }
+        ]
+      },
+      {
+        "stage": "post_landing_support_loss",
+        "lane_episode_tick": [
+          [
+            56,
+            0,
+            402
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 56,
+            "episode": 0,
+            "tick": 402,
+            "since_landing_s": 0.9590394496917725,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 1,
+            "tilt_rad": 0.5831328630447388,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "recovery_failure",
+        "lane_episode_tick": [
+          [
+            67,
+            0,
+            528
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 67,
+            "episode": 0,
+            "tick": 528,
+            "since_landing_s": 2.2920339107513428,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 2,
+            "tilt_rad": 0.6844415664672852,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            95,
+            0,
+            528
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 95,
+            "episode": 0,
+            "tick": 528,
+            "since_landing_s": 2.3000333309173584,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 3,
+            "tilt_rad": 0.4240962862968445,
+            "failure_window_ticks": 40
+          }
+        ]
+      },
+      {
+        "stage": "recovery_failure",
+        "lane_episode_tick": [
+          [
+            68,
+            0,
+            535
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 68,
+            "episode": 0,
+            "tick": 535,
+            "since_landing_s": 2.253041982650757,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 0,
+            "tilt_rad": 0.9822200536727905,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            31,
+            0,
+            600
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 31,
+            "episode": 0,
+            "tick": 600,
+            "since_landing_s": 2.977036714553833,
+            "landing_clock_source": "latest_observed_jump_landing",
+            "support_feet": 2,
+            "tilt_rad": 0.5437857508659363,
+            "failure_window_ticks": 20
+          }
+        ]
+      },
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            26,
+            0,
+            701
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 26,
+            "episode": 0,
+            "tick": 701,
+            "since_landing_s": 3.9660379886627197,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 3,
+            "tilt_rad": 0.44932442903518677,
+            "failure_window_ticks": 40
+          }
+        ]
+      },
+      {
+        "stage": "pre_body_ground",
+        "lane_episode_tick": [
+          [
+            79,
+            0,
+            318
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 79,
+            "episode": 0,
+            "tick": 318,
+            "since_landing_s": 0.03604531288146973,
+            "landing_clock_source": "latest_observed_jump_landing",
+            "support_feet": 2,
+            "tilt_rad": 0.6568394303321838,
+            "failure_window_ticks": 20
+          }
+        ]
+      },
+      {
+        "stage": "touchdown",
+        "lane_episode_tick": [
+          [
+            78,
+            0,
+            299
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 78,
+            "episode": 0,
+            "tick": 299,
+            "since_landing_s": null,
+            "landing_clock_source": null,
+            "support_feet": 0,
+            "tilt_rad": 0.7257827520370483,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "post_touchdown",
+        "lane_episode_tick": [
+          [
+            22,
+            0,
+            786
+          ],
+          [
+            23,
+            0,
+            786
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 22,
+            "episode": 0,
+            "tick": 786,
+            "since_landing_s": 4.7870399951934814,
+            "landing_clock_source": "latest_observed_jump_landing",
+            "support_feet": 3,
+            "tilt_rad": 0.21786633133888245,
+            "failure_window_ticks": null
+          },
+          {
+            "lane": 23,
+            "episode": 0,
+            "tick": 786,
+            "since_landing_s": 4.818037748336792,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 4,
+            "tilt_rad": 0.14076067507266998,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "touchdown",
+        "lane_episode_tick": [
+          [
+            42,
+            0,
+            300
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 42,
+            "episode": 0,
+            "tick": 300,
+            "since_landing_s": null,
+            "landing_clock_source": null,
+            "support_feet": 0,
+            "tilt_rad": 0.5819637775421143,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "stable_recovery",
+        "lane_episode_tick": [
+          [
+            93,
+            0,
+            458
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 93,
+            "episode": 0,
+            "tick": 458,
+            "since_landing_s": 1.5170395374298096,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 4,
+            "tilt_rad": 0.13784945011138916,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "stable_recovery",
+        "lane_episode_tick": [
+          [
+            55,
+            0,
+            544
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 55,
+            "episode": 0,
+            "tick": 544,
+            "since_landing_s": 2.3850390911102295,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 3,
+            "tilt_rad": 0.13927869498729706,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "stable_recovery",
+        "lane_episode_tick": [
+          [
+            45,
+            0,
+            562
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 45,
+            "episode": 0,
+            "tick": 562,
+            "since_landing_s": 2.57403826713562,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 4,
+            "tilt_rad": 0.12012487649917603,
+            "failure_window_ticks": null
+          }
+        ]
+      },
+      {
+        "stage": "stable_recovery",
+        "lane_episode_tick": [
+          [
+            43,
+            0,
+            611
+          ]
+        ],
+        "samples": [
+          {
+            "lane": 43,
+            "episode": 0,
+            "tick": 611,
+            "since_landing_s": 3.06703782081604,
+            "landing_clock_source": "first_qualified_landing",
+            "support_feet": 4,
+            "tilt_rad": 0.10192713141441345,
+            "failure_window_ticks": null
+          }
+        ]
+      }
+    ]
+  },
+  "pre_objective": -6.992673873901367,
+  "pre_terms": {
+    "task": -7.140379905700684,
+    "tracking": 0.061458341777324677,
+    "anchor": 8.624778747558594
+  },
+  "adam_directional_derivative": -0.17207388579845428,
+  "proposal_seconds": 858.3485776369926,
+  "backtrack_trials": [
+    {
+      "alpha": 1.0,
+      "loss": -6.88281774520874,
+      "objective_terms": {
+        "task": -7.038377285003662,
+        "tracking": 0.06169389560818672,
+        "anchor": 9.38654613494873
+      },
+      "first_contact_counts": {},
+      "budget_ok": false,
+      "budget_report": {
+        "relative_block_start": {
+          "residual_request_delta": 0.11794286966323853,
+          "final_normalized_command_delta": 0.050056904554367065,
+          "final_joint_target_delta_rad": 0.04717731475830078
+        },
+        "relative_last_accepted": {
+          "residual_request_delta": 0.05996423959732056,
+          "final_normalized_command_delta": 0.025384992361068726,
+          "final_joint_target_delta_rad": 0.023924827575683594
+        },
+        "relative_native_accepted": {
+          "residual_request_delta": 1.0169312953948975,
+          "final_normalized_command_delta": 0.4275229275226593,
+          "final_joint_target_delta_rad": 0.4029275178909302
+        }
+      },
+      "toi_coverage_preserved": true,
+      "final_command_change": 0.023924827575683594
+    },
+    {
+      "alpha": 0.5,
+      "loss": -6.844334602355957,
+      "objective_terms": {
+        "task": -6.995873928070068,
+        "tracking": 0.06159842759370804,
+        "anchor": 8.994114875793457
+      },
+      "first_contact_counts": {},
+      "budget_ok": true,
+      "budget_report": {
+        "relative_block_start": {
+          "residual_request_delta": 0.0876970887184143,
+          "final_normalized_command_delta": 0.03722009062767029,
+          "final_joint_target_delta_rad": 0.035079002380371094
+        },
+        "relative_last_accepted": {
+          "residual_request_delta": 0.029665589332580566,
+          "final_normalized_command_delta": 0.012548178434371948,
+          "final_joint_target_delta_rad": 0.011826515197753906
+        },
+        "relative_native_accepted": {
+          "residual_request_delta": 1.0169312953948975,
+          "final_normalized_command_delta": 0.4275229275226593,
+          "final_joint_target_delta_rad": 0.4029275178909302
+        }
+      },
+      "toi_coverage_preserved": true,
+      "final_command_change": 0.011826515197753906
+    },
+    {
+      "alpha": 0.25,
+      "loss": -6.920418739318848,
+      "objective_terms": {
+        "task": -7.069979667663574,
+        "tracking": 0.061497338116168976,
+        "anchor": 8.806346893310547
+      },
+      "first_contact_counts": {},
+      "budget_ok": true,
+      "budget_report": {
+        "relative_block_start": {
+          "residual_request_delta": 0.07282447814941406,
+          "final_normalized_command_delta": 0.030907899141311646,
+          "final_joint_target_delta_rad": 0.029129981994628906
+        },
+        "relative_last_accepted": {
+          "residual_request_delta": 0.014749288558959961,
+          "final_normalized_command_delta": 0.006235986948013306,
+          "final_joint_target_delta_rad": 0.005877494812011719
+        },
+        "relative_native_accepted": {
+          "residual_request_delta": 1.0169312953948975,
+          "final_normalized_command_delta": 0.4275229275226593,
+          "final_joint_target_delta_rad": 0.4029275178909302
+        }
+      },
+      "toi_coverage_preserved": true,
+      "final_command_change": 0.005877494812011719
+    },
+    {
+      "alpha": 0.125,
+      "loss": -6.976001262664795,
+      "objective_terms": {
+        "task": -7.124652862548828,
+        "tracking": 0.06148802489042282,
+        "anchor": 8.716353416442871
+      },
+      "first_contact_counts": {},
+      "budget_ok": true,
+      "budget_report": {
+        "relative_block_start": {
+          "residual_request_delta": 0.06682252883911133,
+          "final_normalized_command_delta": 0.0277804434299469,
+          "final_joint_target_delta_rad": 0.026729106903076172
+        },
+        "relative_last_accepted": {
+          "residual_request_delta": 0.00735396146774292,
+          "final_normalized_command_delta": 0.0031085312366485596,
+          "final_joint_target_delta_rad": 0.0029296875
+        },
+        "relative_native_accepted": {
+          "residual_request_delta": 1.0169312953948975,
+          "final_normalized_command_delta": 0.4275229275226593,
+          "final_joint_target_delta_rad": 0.4029275178909302
+        }
+      },
+      "toi_coverage_preserved": true,
+      "final_command_change": 0.0029296875
+    },
+    {
+      "alpha": 0.0625,
+      "loss": -6.975705146789551,
+      "objective_terms": {
+        "task": -7.123880386352539,
+        "tracking": 0.06147608160972595,
+        "anchor": 8.669940948486328
+      },
+      "first_contact_counts": {},
+      "budget_ok": true,
+      "budget_report": {
+        "relative_block_start": {
+          "residual_request_delta": 0.06361842155456543,
+          "final_normalized_command_delta": 0.02622389793395996,
+          "final_joint_target_delta_rad": 0.025447368621826172
+        },
+        "relative_last_accepted": {
+          "residual_request_delta": 0.0038105249404907227,
+          "final_normalized_command_delta": 0.001551985740661621,
+          "final_joint_target_delta_rad": 0.001524209976196289
+        },
+        "relative_native_accepted": {
+          "residual_request_delta": 1.0169312953948975,
+          "final_normalized_command_delta": 0.4275229275226593,
+          "final_joint_target_delta_rad": 0.4029275178909302
+        }
+      },
+      "toi_coverage_preserved": true,
+      "final_command_change": 0.001524209976196289
+    }
+  ],
+  "rollback": {
+    "phase": "recovery",
+    "update_index": 3,
+    "proposal_checkpoint": "/home/autodrive/LZQW/experiments/supermimic_research_scale_20261121/paired_adam_direction_0040/G1/train/pre_block.pt",
+    "rollback_reason": "command_or_target_budget,objective_increase,objective_budget_or_zero_final_command_response",
+    "rollback_mode": "full_snapshot_restore",
+    "pre_metrics": {
+      "completed_episodes": 128,
+      "qualified_airborne_string_contact": 71,
+      "qualified_airborne_string_contact_rate": 0.5546875,
+      "ball_side_complete_except_recovery": 35,
+      "ball_side_complete_except_recovery_rate": 0.2734375,
+      "conditional_recovery_count": 29,
+      "conditional_recovery_denominator": 71,
+      "recovery_given_airborne_string_contact": 0.4084507042253521,
+      "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+      "complete5": 16,
+      "complete5_rate": 0.125,
+      "native_episode_return_observed_count": 128,
+      "native_episode_return_missing_count": 0,
+      "native_episode_return_mean": -7.750328791384215,
+      "native_episode_return_std": 44.47213711046121,
+      "native_episode_return_min": -91.79250727099952,
+      "native_episode_return_max": 64.83451446559727,
+      "native_episode_return_last": -35.85271865936602,
+      "native_return_definition": "undiscounted_sum_of_native_control_step_rewards_v1"
+    },
+    "post_metrics": {
+      "completed_episodes": 128,
+      "qualified_airborne_string_contact": 71,
+      "qualified_airborne_string_contact_rate": 0.5546875,
+      "ball_side_complete_except_recovery": 35,
+      "ball_side_complete_except_recovery_rate": 0.2734375,
+      "conditional_recovery_count": 29,
+      "conditional_recovery_denominator": 71,
+      "recovery_given_airborne_string_contact": 0.4084507042253521,
+      "conditional_recovery_scope": "actual_qualified_contacts_in_these_completed_episodes",
+      "complete5": 16,
+      "complete5_rate": 0.125,
+      "native_episode_return_observed_count": 128,
+      "native_episode_return_missing_count": 0,
+      "native_episode_return_mean": -7.750328791384215,
+      "native_episode_return_std": 44.47213711046121,
+      "native_episode_return_min": -91.79250727099952,
+      "native_episode_return_max": 64.83451446559727,
+      "native_episode_return_last": -35.85271865936602,
+      "native_return_definition": "undiscounted_sum_of_native_control_step_rewards_v1"
+    },
+    "native_metric_scope": "mixed-policy collection through this proposal; updated actor evaluated at next frozen refresh",
+    "pre_actor_loss": -6.992673873901367,
+    "post_actor_loss": -6.992673873901367,
+    "kl": null,
+    "kl_available": false,
+    "restored_checkpoint": null,
+    "checkpoint_restored": false,
+    "parameter_snapshot_restored": true,
+    "rollback_reference_checkpoint": "/home/autodrive/LZQW/experiments/supermimic_research_scale_20261121/paired_adam_direction_0040/G1/train/pre_block.pt",
+    "replay_stream": 10,
+    "replay_reused_after_rollback": true
+  },
+  "native": {
+    "completed_episodes": 128,
+    "mixed_behavior_mean": -7.750328791384213,
+    "new_episodes_on_this_attempt": 0
+  }
+}
