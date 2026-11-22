@@ -165,9 +165,18 @@ def row_tensors(row, schema):
         complete_reward=row['reward_components']['complete5_terminal'] > 0)
 
 
+NATIVE_START_ID_FIELDS = ('stream_id', 'native_tick', 'policy_version', 'actor_state_sha256', 'collection_mode')
+
+
+def _current_start_view(row):
+    start = {key: row[key] for key in ('before', 'executor_before', 'observation')}
+    start.update((key, row[key]) for key in NATIVE_START_ID_FIELDS if key in row)
+    return start
+
+
 def current_start(row):
     """Keep only current state and executor memory; never future labels."""
-    return tensor_tree_copy({key: row[key] for key in ('before', 'executor_before', 'observation')}, cpu=True)
+    return tensor_tree_copy(_current_start_view(row), cpu=True)
 
 
 def online_fit_coverage(data, recorded_sources, versions, at, lanes):
@@ -372,7 +381,7 @@ class PhysicalLoopReplay:
             if not retain_start:
                 # Keep at most one short history of references into the mapped chunks;
                 # clone only the starts that survive for a future proposal.
-                start = {key: row[key] for key in ('before', 'executor_before', 'observation')}
+                start = _current_start_view(row)
                 start['_native_stream'] = (self.current_stream, row.get('stream_id'))
                 self._retain_body_failure_prefix(start, event, int(row.get('native_tick', native_tick)),
                                                  int(self.policy_versions[index, 0]), self.restore_prefix)

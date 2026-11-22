@@ -1,5 +1,6 @@
 """Pool causal Recovery starts without mixing G07 plans or per-record controller clocks."""
 import torch
+from .supermimic_physical_loop_replay_v1 import NATIVE_START_ID_FIELDS
 
 
 def recovery_batch(pools, target, attempt):
@@ -37,7 +38,8 @@ def recovery_batch(pools, target, attempt):
                     break
             if keys:
                 batches.append(dict(original,_actor_lane_mask=selected))
-                metadata.append(dict(stage=stage, lane_episode_tick=keys))
+                native_origin = {key: original[key] for key in NATIVE_START_ID_FIELDS if key in original}
+                metadata.append(dict(stage=stage, lane_episode_tick=keys, native_origin=native_origin or None))
             if len(seen)==target:
                 return batches,metadata
     # Fill unused capacity from denser records after sparse phases received a turn.

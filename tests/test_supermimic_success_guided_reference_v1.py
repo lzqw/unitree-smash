@@ -18,6 +18,25 @@ def fixture():
               elapsed=torch.arange(t)[:,None].expand(t,n)*.01,terminated=torch.zeros_like(done),timeout=done)
     return geometry,data
 
+def test_recovery_features_reuse_the_next_state_fk_with_its_input_gradient(monkeypatch):
+    from quadsmash.rl.supermimic_physical_dataset_v1 import decode_physical
+
+    geometry, data = fixture()
+    state = data['state'][4].clone().requires_grad_()
+    expected = task_space_features(state, geometry, 'recovery')
+    reference_grad, = torch.autograd.grad(expected.square().sum(), state)
+    p = decode_physical(state)
+    fk = geometry(p['joint_position'], p['joint_velocity'], p['root_position_w'],
+                  p['root_quaternion_w'], p['root_link_velocity_w'], p['root_angular_velocity_w'])
+    def unexpected(*args):
+        raise AssertionError('Repeated full-body FK')
+    monkeypatch.setattr(geometry, 'forward', unexpected)
+    actual = task_space_features(state, geometry, 'recovery', fk=fk)
+    grad, = torch.autograd.grad(actual.square().sum(), state)
+    torch.testing.assert_close(actual, expected, rtol=0, atol=0)
+    assert reference_grad.abs().max() > 0
+    torch.testing.assert_close(grad, reference_grad, rtol=0, atol=0)
+
 def test_terminal_evidence_and_event_selection():
     g,d=fixture();bank=TaskSpaceReferenceBankV1.from_packed(d,g,source_sha256='fixture',policy_id='p0')
     assert bank.manifest['approach_count']==1 and bank.manifest['recovery_count']==1

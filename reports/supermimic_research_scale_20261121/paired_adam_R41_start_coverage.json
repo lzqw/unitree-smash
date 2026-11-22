@@ -1,0 +1,442 @@
+{
+  "scope": "First Recovery proposal after the 768-tick native collection. Fingerprints compare lane, episode, elapsed tick, foot support count, tilt and landing clock against local ticks 640–767. Agreement is evidence of matching state; older or duplicate stream provenance cannot be resolved from the Actor log alone.",
+  "actor_accepted": true,
+  "global_accepted": 134,
+  "backtrack_alpha": 0.5,
+  "world_updates": 224,
+  "window_count": 1024,
+  "wm_batches": 8,
+  "window_stage_counts": {
+    "uniform": 1024,
+    "pre_touchdown": 565,
+    "touchdown": 282,
+    "post_touchdown": 382,
+    "post_landing_support_loss": 322,
+    "post_landing_unload": 55,
+    "pre_body_ground": 130,
+    "recovery_failure": 312,
+    "stable_recovery": 68
+  },
+  "event_coverage": {
+    "post_landing_support_loss": 322,
+    "pre_touchdown": 565,
+    "touchdown": 282,
+    "post_touchdown": 382,
+    "recovery_failure": 312,
+    "stable_recovery": 68,
+    "post_landing_unload": 55,
+    "pre_body_ground": 130,
+    "uniform": 1024
+  },
+  "online_transition_uses_by_policy": {
+    "8": 1200,
+    "16": 848,
+    "33": 471,
+    "41": 57,
+    "69": 1581,
+    "109": 2224,
+    "117": 624,
+    "17": 1056,
+    "77": 19,
+    "125": 234,
+    "133": 150
+  },
+  "actor_family_counts": {
+    "risk": 8,
+    "landing": 4,
+    "stable": 4,
+    "initial_archive": 0
+  },
+  "actor_samples": [
+    {
+      "lane": 58,
+      "episode": 0,
+      "tick": 468,
+      "since_landing_s": 1.593041181564331,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 3,
+      "tilt_rad": 0.47892892360687256,
+      "failure_window_ticks": 40,
+      "stage": "pre_body_ground"
+    },
+    {
+      "lane": 56,
+      "episode": 0,
+      "tick": 400,
+      "since_landing_s": 0.9390394687652588,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 1,
+      "tilt_rad": 0.5703962445259094,
+      "failure_window_ticks": null,
+      "stage": "post_landing_support_loss"
+    },
+    {
+      "lane": 68,
+      "episode": 0,
+      "tick": 516,
+      "since_landing_s": 2.063041925430298,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 2,
+      "tilt_rad": 0.6310142278671265,
+      "failure_window_ticks": 20,
+      "stage": "pre_body_ground"
+    },
+    {
+      "lane": 35,
+      "episode": 0,
+      "tick": 523,
+      "since_landing_s": 2.2290351390838623,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 2,
+      "tilt_rad": 0.6922115087509155,
+      "failure_window_ticks": null,
+      "stage": "recovery_failure"
+    },
+    {
+      "lane": 82,
+      "episode": 0,
+      "tick": 522,
+      "since_landing_s": 2.1280415058135986,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 2,
+      "tilt_rad": 0.5408241748809814,
+      "failure_window_ticks": 20,
+      "stage": "pre_body_ground"
+    },
+    {
+      "lane": 67,
+      "episode": 0,
+      "tick": 528,
+      "since_landing_s": 2.2920339107513428,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 2,
+      "tilt_rad": 0.6844415664672852,
+      "failure_window_ticks": null,
+      "stage": "recovery_failure"
+    },
+    {
+      "lane": 95,
+      "episode": 0,
+      "tick": 528,
+      "since_landing_s": 2.3000333309173584,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 3,
+      "tilt_rad": 0.4240962862968445,
+      "failure_window_ticks": 40,
+      "stage": "pre_body_ground"
+    },
+    {
+      "lane": 31,
+      "episode": 0,
+      "tick": 580,
+      "since_landing_s": 2.777036428451538,
+      "landing_clock_source": "latest_observed_jump_landing",
+      "support_feet": 3,
+      "tilt_rad": 0.4584271013736725,
+      "failure_window_ticks": 40,
+      "stage": "pre_body_ground"
+    },
+    {
+      "lane": 20,
+      "episode": 1,
+      "tick": 308,
+      "since_landing_s": null,
+      "landing_clock_source": null,
+      "support_feet": 0,
+      "tilt_rad": 0.5590618848800659,
+      "failure_window_ticks": null,
+      "stage": "touchdown"
+    },
+    {
+      "lane": 10,
+      "episode": 0,
+      "tick": 752,
+      "since_landing_s": 4.448040246963501,
+      "landing_clock_source": "latest_observed_jump_landing",
+      "support_feet": 3,
+      "tilt_rad": 0.1908242255449295,
+      "failure_window_ticks": null,
+      "stage": "post_touchdown"
+    },
+    {
+      "lane": 12,
+      "episode": 0,
+      "tick": 752,
+      "since_landing_s": 4.435041189193726,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 4,
+      "tilt_rad": 0.17386865615844727,
+      "failure_window_ticks": null,
+      "stage": "post_touchdown"
+    },
+    {
+      "lane": 71,
+      "episode": 0,
+      "tick": 294,
+      "since_landing_s": null,
+      "landing_clock_source": null,
+      "support_feet": 0,
+      "tilt_rad": 0.7405586242675781,
+      "failure_window_ticks": null,
+      "stage": "touchdown"
+    },
+    {
+      "lane": 25,
+      "episode": 0,
+      "tick": 569,
+      "since_landing_s": 2.643038511276245,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 4,
+      "tilt_rad": 0.07743926346302032,
+      "failure_window_ticks": null,
+      "stage": "stable_recovery"
+    },
+    {
+      "lane": 55,
+      "episode": 0,
+      "tick": 572,
+      "since_landing_s": 2.664038896560669,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 4,
+      "tilt_rad": 0.08554711937904358,
+      "failure_window_ticks": null,
+      "stage": "stable_recovery"
+    },
+    {
+      "lane": 36,
+      "episode": 0,
+      "tick": 452,
+      "since_landing_s": 1.4570395946502686,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 4,
+      "tilt_rad": 0.10966075956821442,
+      "failure_window_ticks": null,
+      "stage": "stable_recovery"
+    },
+    {
+      "lane": 93,
+      "episode": 0,
+      "tick": 458,
+      "since_landing_s": 1.5170395374298096,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 4,
+      "tilt_rad": 0.13784945011138916,
+      "failure_window_ticks": null,
+      "stage": "stable_recovery"
+    }
+  ],
+  "online_state_matches": [
+    {
+      "lane": 10,
+      "episode": 0,
+      "tick": 752,
+      "since_landing_s": 4.448040246963501,
+      "landing_clock_source": "latest_observed_jump_landing",
+      "support_feet": 3,
+      "tilt_rad": 0.1908242255449295,
+      "failure_window_ticks": null,
+      "stage": "post_touchdown",
+      "native_behavior": 133
+    },
+    {
+      "lane": 12,
+      "episode": 0,
+      "tick": 752,
+      "since_landing_s": 4.435041189193726,
+      "landing_clock_source": "first_qualified_landing",
+      "support_feet": 4,
+      "tilt_rad": 0.17386865615844727,
+      "failure_window_ticks": null,
+      "stage": "post_touchdown",
+      "native_behavior": 133
+    }
+  ],
+  "source_chunk_sha256": [
+    "a5bf0069ea974072ea0ff64f6476bb10e1382a8770dbee688dd21c18fca75e5e",
+    "f143d862ef080083d7466a30b4b2889d158628e3401e21fdb024dc38cd61c649",
+    "6eaa8fcd2b287c95b915263036bf51b51e67948fef67f40e13615fe9684567b4",
+    "d5a16681b130da93da0915f63cbd2dad6efdc626f1bc99e1ff93376879290db3"
+  ],
+  "retained_actor_updates": 81,
+  "origin_replay_check": {
+    "chunk": "chunk_00023.pt.zst",
+    "sha256": "d5a16681b130da93da0915f63cbd2dad6efdc626f1bc99e1ff93376879290db3",
+    "scope": "offline replay of recorded native start, independent of online Actor sampling",
+    "layout": [
+      {
+        "stage": "post_touchdown",
+        "lane_episode_tick": [
+          [
+            1,
+            0,
+            767
+          ]
+        ],
+        "native_origin": {
+          "stream_id": 10,
+          "native_tick": 7165,
+          "policy_version": 133,
+          "actor_state_sha256": "b85a5fc786a9a79304f4e482b6927af3b8442cbe348fa66361f7d6b4189f0d15",
+          "collection_mode": "mixed_training"
+        }
+      }
+    ]
+  },
+  "timing": {
+    "cpu": {
+      "checkpoint_actor_sha256": "b85a5fc786a9a79304f4e482b6927af3b8442cbe348fa66361f7d6b4189f0d15",
+      "checkpoint_world_sha256": "a749fee2e996e050243337302b19f2fc06b9de9ab5cfae388f26bc5f5c955d97",
+      "horizon": 64,
+      "starts": [
+        {
+          "lane": 56,
+          "tick": 403
+        },
+        {
+          "lane": 78,
+          "tick": 364
+        }
+      ],
+      "scores": [
+        {
+          "mode": "separate",
+          "backward": false,
+          "seconds": 5.257527520996518,
+          "full_fk_calls": 642,
+          "max_abs_differences": {
+            "loss": 0.0,
+            "task": 0.0,
+            "tracking": 0.0,
+            "anchor": 0.0,
+            "ret": 0.0
+          },
+          "matching_lanes": 2,
+          "tracking": 0.09565561264753342
+        },
+        {
+          "mode": "shared",
+          "backward": false,
+          "seconds": 5.105530720029492,
+          "full_fk_calls": 514,
+          "max_abs_differences": {
+            "loss": 0.0,
+            "task": 0.0,
+            "tracking": 0.0,
+            "anchor": 0.0,
+            "ret": 0.0
+          },
+          "matching_lanes": 2,
+          "tracking": 0.09565561264753342
+        },
+        {
+          "mode": "shared",
+          "backward": false,
+          "seconds": 5.101032127044164,
+          "full_fk_calls": 514,
+          "max_abs_differences": {
+            "loss": 0.0,
+            "task": 0.0,
+            "tracking": 0.0,
+            "anchor": 0.0,
+            "ret": 0.0
+          },
+          "matching_lanes": 2,
+          "tracking": 0.09565561264753342
+        },
+        {
+          "mode": "separate",
+          "backward": false,
+          "seconds": 5.226556567009538,
+          "full_fk_calls": 642,
+          "max_abs_differences": {
+            "loss": 0.0,
+            "task": 0.0,
+            "tracking": 0.0,
+            "anchor": 0.0,
+            "ret": 0.0
+          },
+          "matching_lanes": 2,
+          "tracking": 0.09565561264753342
+        }
+      ]
+    },
+    "cuda:0": {
+      "checkpoint_actor_sha256": "b85a5fc786a9a79304f4e482b6927af3b8442cbe348fa66361f7d6b4189f0d15",
+      "checkpoint_world_sha256": "a749fee2e996e050243337302b19f2fc06b9de9ab5cfae388f26bc5f5c955d97",
+      "horizon": 64,
+      "starts": [
+        {
+          "lane": 56,
+          "tick": 403
+        },
+        {
+          "lane": 78,
+          "tick": 364
+        }
+      ],
+      "scores": [
+        {
+          "mode": "separate",
+          "backward": false,
+          "seconds": 11.973857262986712,
+          "full_fk_calls": 642,
+          "max_abs_differences": {
+            "loss": 0.0,
+            "task": 0.0,
+            "tracking": 0.0,
+            "anchor": 0.0,
+            "ret": 0.0
+          },
+          "matching_lanes": 2,
+          "tracking": 0.09565563499927521
+        },
+        {
+          "mode": "shared",
+          "backward": false,
+          "seconds": 11.095937345991842,
+          "full_fk_calls": 514,
+          "max_abs_differences": {
+            "loss": 0.0,
+            "task": 0.0,
+            "tracking": 0.0,
+            "anchor": 0.0,
+            "ret": 0.0
+          },
+          "matching_lanes": 2,
+          "tracking": 0.09565563499927521
+        },
+        {
+          "mode": "shared",
+          "backward": false,
+          "seconds": 11.060220510000363,
+          "full_fk_calls": 514,
+          "max_abs_differences": {
+            "loss": 0.0,
+            "task": 0.0,
+            "tracking": 0.0,
+            "anchor": 0.0,
+            "ret": 0.0
+          },
+          "matching_lanes": 2,
+          "tracking": 0.09565563499927521
+        },
+        {
+          "mode": "separate",
+          "backward": false,
+          "seconds": 11.55884450202575,
+          "full_fk_calls": 642,
+          "max_abs_differences": {
+            "loss": 0.0,
+            "task": 0.0,
+            "tracking": 0.0,
+            "anchor": 0.0,
+            "ret": 0.0
+          },
+          "matching_lanes": 2,
+          "tracking": 0.09565563499927521
+        }
+      ]
+    }
+  },
+  "timing_scope": "Interleaved H64 no-grad candidate scoring on two matching recorded Recovery starts. GPU shared with the live trainer. Training throughput was not measured."
+}

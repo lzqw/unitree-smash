@@ -14,6 +14,8 @@ from .supermimic_v1 import MLP,load_ppo_initialized_actor
 from .supermimic_physical_loop_loading_v1 import APPROACH_NAMES,RECOVERY_NAMES,HEAD_NAMES,set_actor_trainable,tensor_digest
 from .supermimic_ball_sequence_v1 import ball_transition,ball_error
 from .supermimic_physical_dataset_v1 import valid_windows
+from .supermimic_physical_imagination_adapter_v1 import PhysicalImaginationAdapter
+from .supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
 from .supermimic_racket_dynamics_v1 import racket_loss_components, racket_state, robot_loss
 
 
@@ -309,6 +311,9 @@ class PhysicalHorizonTrainer:
             if reference is not None:
                 reference['matched'] = reference['matched'] & selected
         toi_coverage_preserved=True
+        reuse_geometry = (not torch.is_grad_enabled() and reference is not None and not toi_only
+                          and type(self.reference_bank) is TaskSpaceReferenceBankV1
+                          and type(self.adapter) is PhysicalImaginationAdapter)
         for tick in range(cfg.imagination_steps):
             active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7
             if not active.any():break
@@ -337,6 +342,8 @@ class PhysicalHorizonTrainer:
                 gradient_options = dict(detach_ball=True, ball_input_grad=bool(contact_weight))
             if scoring_step is not None:
                 gradient_options['scoring_step'] = scoring_step
+            if reuse_geometry:
+                gradient_options['return_geometry'] = True
             state,reward,done,transition=self.adapter(state,action,**gradient_options)
             if revised and self.block_name == 'recovery':
                 # Train on post-landing correction while the Critic keeps its original return target.
@@ -384,7 +391,8 @@ class PhysicalHorizonTrainer:
                         detach_empty=True, boundary=getattr(self, 'string_boundary', None))
                 else:
                     numerator,denominator,weights=self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
-                        geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival,return_components=True)
+                        geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival,return_components=True,
+                        **({'fk':transition['next_geometry']} if reuse_geometry else {}))
                 tracks.append(numerator);track_weights.append(weights);track_states.append(state.physical)
             rewards.append(reward*active[:,None]);dones.append(done)
             survival=survival*(1-done.reshape(-1))

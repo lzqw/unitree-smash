@@ -70,7 +70,7 @@ class PhysicalImaginationAdapter(nn.Module):
         self.manifest['contact_bptt_mode']=self.contact_bptt_mode
 
     def forward(self,state:PhysicalImaginationStateV1,actor_action,*,detach_ball=False,ball_input_grad=True,
-                scoring_step=None):
+                scoring_step=None, return_geometry=False):
         if int(self.task_model.fit_updates)==0:
             raise RuntimeError('Physical loop requires fitted task memory/event model')
         c=state.clock_goal_context
@@ -176,12 +176,15 @@ class PhysicalImaginationAdapter(nn.Module):
         if not torch.isfinite(reward).all():raise FloatingPointError('Nonfinite physical imagined reward')
         self.calls+=1
         next_state=PhysicalImaginationStateV1(predicted,executor,next_task,history,observation,next_context)
-        return next_state,reward[:,None],done[:,None],dict(
+        transition=dict(
             outgoing_ball=outgoing_ball,impulse_info=ball_details.get('impulse_info'),
             requested_action=actor_action,base_action=base,
             final_joint_targets=preview.final_joint_targets,event_delta=event_delta,
             task_prediction=task,continuous_reward=continuous,
             terminal_complete_proxy=terminal_complete,model_call=self.calls)
+        if return_geometry:
+            transition['next_geometry'] = geometry
+        return next_state,reward[:,None],done[:,None],transition
 
     def critic_input(self,state):
         numeric,valid=self.task_model.memory_schema.encode(state.task_memory)

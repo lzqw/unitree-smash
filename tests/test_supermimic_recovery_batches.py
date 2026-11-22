@@ -3,6 +3,25 @@ import torch
 from quadsmash.rl.supermimic_recovery_batches import recovery_batch, pooled_objective
 
 
+def test_recovery_layout_preserves_recorded_start_identity_after_archive_restore():
+    from quadsmash.rl.supermimic_physical_loop_replay_v1 import _current_start_view, current_start
+
+    causal = dict(before=dict(elapsed_tick=torch.tensor([700]), episode_index=torch.tensor([0])),
+                  executor_before={}, observation=torch.zeros(1, 3))
+    origin = dict(native_tick=7098, stream_id=12, policy_version=133, actor_state_sha256='actor',
+                  collection_mode='mixed_training')
+    raw = dict(causal, **origin, reward=4., after={'event': True})
+    live = current_start(raw)
+    restored = current_start(_current_start_view(raw))
+    for record in (live, restored):
+        assert set(record) == set(causal) | set(origin)
+        _, layout = recovery_batch({'touchdown': [(record, torch.tensor([True]))]}, 1, 1)
+        assert layout[0]['native_origin'] == origin
+        assert layout[0]['lane_episode_tick'] == [[0, 0, 700]]
+    _, legacy = recovery_batch({'initial_archive': [(causal, torch.tensor([True]))]}, 1, 1)
+    assert legacy[0]['native_origin'] is None
+
+
 def test_sparse_starts_preserve_episode_context_and_do_not_repeat():
     def row(tick):
         return {'before':{'elapsed_tick':torch.full((4,),tick),'episode_index':torch.tensor([1,2,3,4])},

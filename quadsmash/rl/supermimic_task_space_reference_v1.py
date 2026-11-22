@@ -10,10 +10,11 @@ import torch
 from .supermimic_physical_dataset_v1 import decode_physical
 
 
-def task_space_features(state, geometry, mode):
+def task_space_features(state, geometry, mode, *, fk=None):
     p=decode_physical(state)
-    fk=geometry(p['joint_position'],p['joint_velocity'],p['root_position_w'],p['root_quaternion_w'],
-                p['root_link_velocity_w'],p['root_angular_velocity_w'])
+    if fk is None:
+        fk=geometry(p['joint_position'],p['joint_velocity'],p['root_position_w'],p['root_quaternion_w'],
+                    p['root_link_velocity_w'],p['root_angular_velocity_w'])
     rid=geometry.ids['Racket']
     normal=fk['rotation'][:,rid,:,0]  # string plane is YZ in the pinned asset
     orientation=fk['rotation'][:,geometry.root_id,:,2]
@@ -238,8 +239,8 @@ class TaskSpaceReferenceBankV1:
         if return_components:return value,w.sum(),w
         return value/w.sum().clamp_min(1e-8)
 
-    def loss(self,predicted_physical,elapsed,reference,mode,geometry=None,valid_mask=None,weights=None,return_components=False):
-        actual=task_space_features(predicted_physical,geometry,mode)
+    def loss(self,predicted_physical,elapsed,reference,mode,geometry=None,valid_mask=None,weights=None,return_components=False,*,fk=None):
+        actual=task_space_features(predicted_physical,geometry,mode,fk=fk)
         if reference is None:
             zero=actual.sum()*0.
             return (zero,zero.detach(),actual.new_zeros(len(actual))) if return_components else zero
