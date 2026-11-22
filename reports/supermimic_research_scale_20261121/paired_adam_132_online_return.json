@@ -1,0 +1,1039 @@
+{
+  "scope": "Mixed behavior only. Pair first and second recorded episodes on the same lane up to their common elapsed control tick. No substitution of a partial reward sum for a completed episode Return. Launches and native solver resets need not be identical. The compared elapsed horizons vary as live collection advances.",
+  "control_dt_s": 0.01,
+  "num_envs": 128,
+  "actor_versions_seen": 11,
+  "chunk_sha256": [
+    "230f161b8d199fab7ff79be91bd50c99d1bcbad0dfae8b2bb1d90b72ac2b0869",
+    "2fc5362bc3eb4f45a16894e7231e8685e534d59b05d036de224842d03aa521b0",
+    "5973de6641980689ce5702dfb45f7e3530dbb3012561b66bc9954c881b916f46",
+    "75b81f38e434ca0ca550958a3a196ea72f8a341fbe5f58a6b2470a87dd54f72c",
+    "8289271697e4c49074663a1e7471e3e5747fbb46b991987b18ffe9c5bf0a4984",
+    "1f06e9db902914947d1a125c11a6b78db9cb7bbb89615457b51db398b63efd3a",
+    "762ec5594349f15c7e71430772a0a70134925bf31a8357dd0f60cc2fc975bd9d",
+    "8c9dd2a0fe14f09504dacc8878ab840c2a6ac98311c47a5602e7a2c290f867dd",
+    "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494",
+    "dac25f5e611a8e6c7eb58ced3e324c0d8b2faef6a15230dd8bceda9dd97f077f",
+    "4512dd06824b0762bd1b74cad3e68f36809e7f946c370f088b6b3ccb76c153cd",
+    "e81ebbc1fcf981fe49a00512ae264bcd3fc3692ffa707df86d78b9d66ff08cdf",
+    "6822731657212a22aa3b55786bd9f3d8144d09453c2800b093d8baabe79a4b12",
+    "1352ec849e1fc8823fba0d7cafacfcba188257434cf49358f4891cbdc1d079c8",
+    "656cc498dfafb26a042c07d09f824c87bbee20f9d5fee3072df1100c7085e9e6",
+    "8bc82068965d2fb588a53d977212ded436d9591138c984ef992fb2a48b57e301",
+    "bae3e40c9a7c2cb4327dcadec287f9e867651bd6e8664d749b52a20621798f64",
+    "e12e639f434e58bdffef0a033bc0cb1942f91d900f416847dc368cb5baad2c02",
+    "f339902fe7445a6565be140efe52707658ffe1db6355a1dc2525f052c39a240c",
+    "097e5313eb48fd3f216095fcf53fd9cbad80e6eca6e740b6ffe01e9b7263338c",
+    "a5bf0069ea974072ea0ff64f6476bb10e1382a8770dbee688dd21c18fca75e5e",
+    "f143d862ef080083d7466a30b4b2889d158628e3401e21fdb024dc38cd61c649",
+    "6eaa8fcd2b287c95b915263036bf51b51e67948fef67f40e13615fe9684567b4",
+    "d5a16681b130da93da0915f63cbd2dad6efdc626f1bc99e1ff93376879290db3",
+    "08fe250d743218abc32a6a9719b10c6f193f60358fd2d76f8fa53e33ba478eb5",
+    "bc1d7793b43fe10dfe627443ab6ed010f438b3d0dc544132a7ad7ca537b2f216",
+    "8fad0c6e23251e29a922a344b8137dddde7e2084ccadbbeed6e38cf5bdfb5929",
+    "516793894d7f8f55908c31e9b95a2d98d023b9973d05a75a89b8fd9ee2c53c33",
+    "a64ae7168dfaae96cce0020338b3aac3c9c06a856f9f2224f6ffac12ef38cb29",
+    "210bbd30b33e997fa71b4390ca716b8fb60ce8941dfec4ccfc8f38c946e57d9d",
+    "65ea36a3c1621312c91cd4554cf6f3e5d65418818b288fd40c200185f7802454",
+    "c8da062c1519d0718a9aafbab5d9a698fea3414098d6106dcaa0f558ff3a3c7c",
+    "aa6c328c9a97240fba896e51290d1a74015d97cddb844cc483bf588ee18b21ed",
+    "f5a5e4bcfed54beccd4a7718b4e48ea4b9d58721a399cdd5f7b8e6992ec77ad5",
+    "fbe8ea61e1032d13defa27f3b9bb55128aec0745d66667d0d05c441277f0fe56",
+    "67dcfe0945f6a33b6f8a44e9fbdbdcc9f9e2e54b1a8956bf1382391ddbc87e64",
+    "51adb9fc70f06b52b5e0c105a94f246f45009ea10b4dfba8375e87ee79888c9a",
+    "dfbdb2a06a8b439c9502a43c7d4b07d9ac561f2a22ca812073c93545dbd17b63",
+    "f25284616b2ed71be74325ba341634bda9bbf84e09da6838b4053a7abda1f9d3",
+    "475a74334369406a1e7d8ae71965831d706fca6235d0740d3728caf9f3ea29ed",
+    "4d0be158b84b985ea62aa167b7ba0f8d7ac24d51e6c3a8482f763836c7918aad",
+    "783d19cdd98dfa9b25fb0c13a62732b27b2d5a2af188f18d7d2098aef9f503d0",
+    "20ab0cda4bb57f2baee2c3e299f697c591943c575adaf23b1fd3d71c231fd4d4",
+    "6d45891426baa7dc755821bae7e059ba943ddd555c94c96e2daac04f510c26e0"
+  ],
+  "snapshots": [
+    {
+      "local_control_ticks": 896,
+      "matched": {
+        "lanes": 128,
+        "matched_steps_min_median_max": [
+          96,
+          96.0,
+          417
+        ],
+        "first_mean": -1.1979317140885186,
+        "second_mean": -0.9622617838315901,
+        "mean_change": 0.2356699302569285,
+        "median_change": -2.05235555768013e-05,
+        "difference_by_reward": {
+          "continuous": -0.0006581978695341384,
+          "jump": 0.0,
+          "qualified_contact": 0.15625,
+          "cross": 0.0,
+          "target": -0.1171875,
+          "recovery": 0.0,
+          "complete5_terminal": 0.0,
+          "frame": -0.03125,
+          "miss_rate": 0.03320312302093953,
+          "fault": -0.1171875,
+          "body": 0.3125
+        },
+        "event_reward_changes": {
+          "body": {
+            "first_lanes": 1,
+            "second_lanes": 0,
+            "new": 0,
+            "lost": 1
+          },
+          "qualified_contact": {
+            "first_lanes": 1,
+            "second_lanes": 2,
+            "new": 1,
+            "lost": 0
+          },
+          "cross": {
+            "first_lanes": 1,
+            "second_lanes": 1,
+            "new": 1,
+            "lost": 1
+          },
+          "target": {
+            "first_lanes": 1,
+            "second_lanes": 0,
+            "new": 0,
+            "lost": 1
+          },
+          "frame": {
+            "first_lanes": 0,
+            "second_lanes": 1,
+            "new": 1,
+            "lost": 0
+          },
+          "fault": {
+            "first_lanes": 0,
+            "second_lanes": 1,
+            "new": 1,
+            "lost": 0
+          }
+        },
+        "verified_terminal_episodes": 128,
+        "maximum_terminal_sum_error": 0.0
+      }
+    },
+    {
+      "local_control_ticks": 1024,
+      "matched": {
+        "lanes": 128,
+        "matched_steps_min_median_max": [
+          224,
+          224.0,
+          511
+        ],
+        "first_mean": -3.418326971646785,
+        "second_mean": -2.819711511575687,
+        "mean_change": 0.5986154600710978,
+        "median_change": 6.0335732996463776e-06,
+        "difference_by_reward": {
+          "continuous": 0.000568586937397253,
+          "jump": 0.0,
+          "qualified_contact": 0.15625,
+          "cross": 0.0,
+          "target": -0.1171875,
+          "recovery": 0.0,
+          "complete5_terminal": 0.0,
+          "frame": -0.03125,
+          "miss_rate": 0.08242187008727342,
+          "fault": -0.1171875,
+          "body": 0.625
+        },
+        "event_reward_changes": {
+          "body": {
+            "first_lanes": 3,
+            "second_lanes": 1,
+            "new": 0,
+            "lost": 2
+          },
+          "qualified_contact": {
+            "first_lanes": 1,
+            "second_lanes": 2,
+            "new": 1,
+            "lost": 0
+          },
+          "cross": {
+            "first_lanes": 1,
+            "second_lanes": 1,
+            "new": 1,
+            "lost": 1
+          },
+          "target": {
+            "first_lanes": 1,
+            "second_lanes": 0,
+            "new": 0,
+            "lost": 1
+          },
+          "frame": {
+            "first_lanes": 0,
+            "second_lanes": 1,
+            "new": 1,
+            "lost": 0
+          },
+          "fault": {
+            "first_lanes": 0,
+            "second_lanes": 1,
+            "new": 1,
+            "lost": 0
+          }
+        },
+        "verified_terminal_episodes": 128,
+        "maximum_terminal_sum_error": 0.0
+      }
+    },
+    {
+      "local_control_ticks": 1152,
+      "matched": {
+        "lanes": 128,
+        "matched_steps_min_median_max": [
+          352,
+          352.0,
+          533
+        ],
+        "first_mean": 8.401909723323065,
+        "second_mean": 11.481231850889381,
+        "mean_change": 3.079322127566315,
+        "median_change": -0.00331597102059078,
+        "difference_by_reward": {
+          "continuous": -0.0015372654109122585,
+          "jump": 0.0,
+          "qualified_contact": 1.40625,
+          "cross": 0.078125,
+          "target": 0.3515625,
+          "recovery": 0.0,
+          "complete5_terminal": 0.0,
+          "frame": 0.0625,
+          "miss_rate": 0.24492186040151864,
+          "fault": 0.0,
+          "body": 0.9375
+        },
+        "event_reward_changes": {
+          "body": {
+            "first_lanes": 10,
+            "second_lanes": 7,
+            "new": 5,
+            "lost": 8
+          },
+          "qualified_contact": {
+            "first_lanes": 71,
+            "second_lanes": 80,
+            "new": 20,
+            "lost": 11
+          },
+          "cross": {
+            "first_lanes": 45,
+            "second_lanes": 47,
+            "new": 17,
+            "lost": 15
+          },
+          "target": {
+            "first_lanes": 37,
+            "second_lanes": 40,
+            "new": 18,
+            "lost": 15
+          },
+          "frame": {
+            "first_lanes": 39,
+            "second_lanes": 37,
+            "new": 17,
+            "lost": 19
+          },
+          "fault": {
+            "first_lanes": 13,
+            "second_lanes": 13,
+            "new": 10,
+            "lost": 10
+          }
+        },
+        "verified_terminal_episodes": 128,
+        "maximum_terminal_sum_error": 0.0
+      }
+    },
+    {
+      "local_control_ticks": 1280,
+      "matched": {
+        "lanes": 128,
+        "matched_steps_min_median_max": [
+          479,
+          480.0,
+          533
+        ],
+        "first_mean": -0.5244666546296277,
+        "second_mean": 3.3333974503666837,
+        "mean_change": 3.857864104996311,
+        "median_change": -0.014435516970308981,
+        "difference_by_reward": {
+          "continuous": -0.013620315098047175,
+          "jump": 0.0,
+          "qualified_contact": 1.40625,
+          "cross": 0.078125,
+          "target": 0.3515625,
+          "recovery": 0.078125,
+          "complete5_terminal": 0.0,
+          "frame": 0.0625,
+          "miss_rate": 0.6449218365596607,
+          "fault": 0.0,
+          "body": 1.25
+        },
+        "event_reward_changes": {
+          "body": {
+            "first_lanes": 26,
+            "second_lanes": 22,
+            "new": 12,
+            "lost": 16
+          },
+          "qualified_contact": {
+            "first_lanes": 71,
+            "second_lanes": 80,
+            "new": 20,
+            "lost": 11
+          },
+          "cross": {
+            "first_lanes": 45,
+            "second_lanes": 47,
+            "new": 17,
+            "lost": 15
+          },
+          "target": {
+            "first_lanes": 37,
+            "second_lanes": 40,
+            "new": 18,
+            "lost": 15
+          },
+          "frame": {
+            "first_lanes": 39,
+            "second_lanes": 37,
+            "new": 17,
+            "lost": 19
+          },
+          "fault": {
+            "first_lanes": 13,
+            "second_lanes": 13,
+            "new": 10,
+            "lost": 10
+          }
+        },
+        "verified_terminal_episodes": 129,
+        "maximum_terminal_sum_error": 0.0
+      }
+    },
+    {
+      "local_control_ticks": 1408,
+      "matched": {
+        "lanes": 128,
+        "matched_steps_min_median_max": [
+          479,
+          608.0,
+          608
+        ],
+        "first_mean": -4.940324567835027,
+        "second_mean": -7.1208141753695235,
+        "mean_change": -2.180489607534496,
+        "median_change": -0.07136846125587226,
+        "difference_by_reward": {
+          "continuous": -0.045723907973903355,
+          "jump": 0.0,
+          "qualified_contact": 1.40625,
+          "cross": 0.078125,
+          "target": 0.3515625,
+          "recovery": -0.078125,
+          "complete5_terminal": 0.0,
+          "frame": 0.0625,
+          "miss_rate": 1.0449218127178028,
+          "fault": 0.0,
+          "body": -5.0
+        },
+        "event_reward_changes": {
+          "body": {
+            "first_lanes": 29,
+            "second_lanes": 45,
+            "new": 28,
+            "lost": 12
+          },
+          "qualified_contact": {
+            "first_lanes": 71,
+            "second_lanes": 80,
+            "new": 20,
+            "lost": 11
+          },
+          "cross": {
+            "first_lanes": 45,
+            "second_lanes": 47,
+            "new": 17,
+            "lost": 15
+          },
+          "target": {
+            "first_lanes": 37,
+            "second_lanes": 40,
+            "new": 18,
+            "lost": 15
+          },
+          "frame": {
+            "first_lanes": 39,
+            "second_lanes": 37,
+            "new": 17,
+            "lost": 19
+          },
+          "fault": {
+            "first_lanes": 13,
+            "second_lanes": 13,
+            "new": 10,
+            "lost": 10
+          }
+        },
+        "verified_terminal_episodes": 132,
+        "maximum_terminal_sum_error": 0.0
+      }
+    }
+  ],
+  "first_ball_present_comparison": {
+    "lanes": 128,
+    "identical_clock_and_position_velocity_lanes": 128,
+    "max_abs_tick_diff": 0.0,
+    "max_position_difference_m": 0.0,
+    "max_speed_vector_difference_mps": 0.0
+  },
+  "reset_max_abs_difference_by_state_field": {
+    "root_position_w": 0.0,
+    "root_quaternion_w": 0.0,
+    "root_link_velocity_w": 0.0,
+    "root_angular_velocity_w": 0.0,
+    "joint_position": 0.0,
+    "joint_velocity": 0.0
+  },
+  "three_finished_pairs": [
+    {
+      "lane": 123,
+      "case": "B-720402-059",
+      "episodes": [
+        {
+          "episode_index": 0,
+          "score": -54.15593932444426,
+          "length": 511,
+          "terms": {
+            "continuous": -5.605938651869565,
+            "jump": 2.0,
+            "qualified_contact": 0.0,
+            "cross": 0.0,
+            "target": 0.0,
+            "recovery": 0.0,
+            "complete5_terminal": 0.0,
+            "frame": 0.0,
+            "miss_rate": -10.549999371170998,
+            "fault": 0.0,
+            "body": -40.0
+          },
+          "common_tick_sum": -54.15593932444426,
+          "tail_after_common_ticks": 0.0,
+          "task_failures": [
+            "legal_airborne_strings",
+            "same_flight_stable_recovery",
+            "released_downward_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "policy_at_end": {
+            "policy_version": 117,
+            "actor_sha256": "3ca387f0232ad84146e7c4e098d3bba019c7a8a9b6fc4584c40ec1f9244b25c9",
+            "native_tick": 6909
+          },
+          "physical_recovery": false,
+          "timeout": false,
+          "outgoing_velocity": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "episode_index": 1,
+          "score": -22.82573968243196,
+          "length": 800,
+          "terms": {
+            "continuous": -9.82573785733166,
+            "jump": 2.0,
+            "qualified_contact": 20.0,
+            "cross": 5.0,
+            "target": 0.0,
+            "recovery": 0.0,
+            "complete5_terminal": 0.0,
+            "frame": 0.0,
+            "miss_rate": 0.0,
+            "fault": 0.0,
+            "body": -40.0
+          },
+          "common_tick_sum": -18.66107145116075,
+          "tail_after_common_ticks": -4.164668231271207,
+          "task_failures": [
+            "same_flight_stable_recovery",
+            "actual_net_and_target"
+          ],
+          "policy_at_end": {
+            "policy_version": 173,
+            "actor_sha256": "826c7ab3b4036f46e850a1c170cda021ef28b6198d87274a938212afad5649ae",
+            "native_tick": 7709
+          },
+          "physical_recovery": false,
+          "timeout": true,
+          "outgoing_velocity": [
+            6.438914775848389,
+            0.9978796243667603,
+            -1.2541004419326782
+          ]
+        }
+      ],
+      "term_deltas": {
+        "continuous": -4.219799205462095,
+        "jump": 0.0,
+        "qualified_contact": 20.0,
+        "cross": 5.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 0.0,
+        "miss_rate": 10.549999371170998,
+        "fault": 0.0,
+        "body": 0.0
+      }
+    },
+    {
+      "lane": 113,
+      "case": "B-720402-049",
+      "episodes": [
+        {
+          "episode_index": 0,
+          "score": -55.51281284213701,
+          "length": 533,
+          "terms": {
+            "continuous": -5.862814061945301,
+            "jump": 2.0,
+            "qualified_contact": 0.0,
+            "cross": 0.0,
+            "target": 0.0,
+            "recovery": 0.0,
+            "complete5_terminal": 0.0,
+            "frame": 0.0,
+            "miss_rate": -11.649999305605888,
+            "fault": 0.0,
+            "body": -40.0
+          },
+          "common_tick_sum": -55.51281284213701,
+          "tail_after_common_ticks": 0.0,
+          "task_failures": [
+            "legal_airborne_strings",
+            "same_flight_stable_recovery",
+            "released_downward_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "policy_at_end": {
+            "policy_version": 125,
+            "actor_sha256": "c244be4f63e492e0e2a9bfc072666d6ddeb8b8aae892c6c47027f2fe298382d2",
+            "native_tick": 6931
+          },
+          "physical_recovery": false,
+          "timeout": false,
+          "outgoing_velocity": [
+            null,
+            null,
+            null
+          ]
+        },
+        {
+          "episode_index": 1,
+          "score": -50.92618008016166,
+          "length": 800,
+          "terms": {
+            "continuous": -8.926181430644874,
+            "jump": 2.0,
+            "qualified_contact": 0.0,
+            "cross": 0.0,
+            "target": 0.0,
+            "recovery": 0.0,
+            "complete5_terminal": 0.0,
+            "frame": -4.0,
+            "miss_rate": -24.99999850988388,
+            "fault": -15.0,
+            "body": 0.0
+          },
+          "common_tick_sum": -34.411075275973644,
+          "tail_after_common_ticks": -16.515104804188013,
+          "task_failures": [
+            "legal_airborne_strings",
+            "same_flight_stable_recovery",
+            "no_rule_fault",
+            "released_downward_forward",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "policy_at_end": {
+            "policy_version": 173,
+            "actor_sha256": "826c7ab3b4036f46e850a1c170cda021ef28b6198d87274a938212afad5649ae",
+            "native_tick": 7731
+          },
+          "physical_recovery": false,
+          "timeout": true,
+          "outgoing_velocity": [
+            4.669910430908203,
+            4.02349853515625,
+            3.5310115814208984
+          ]
+        }
+      ],
+      "term_deltas": {
+        "continuous": -3.0633673686995735,
+        "jump": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": -4.0,
+        "miss_rate": -13.349999204277992,
+        "fault": -15.0,
+        "body": 40.0
+      }
+    },
+    {
+      "lane": 120,
+      "case": "B-720402-056",
+      "episodes": [
+        {
+          "episode_index": 0,
+          "score": -50.83351123438342,
+          "length": 800,
+          "terms": {
+            "continuous": -8.833513156172103,
+            "jump": 2.0,
+            "qualified_contact": 0.0,
+            "cross": 0.0,
+            "target": 0.0,
+            "recovery": 0.0,
+            "complete5_terminal": 0.0,
+            "frame": -4.0,
+            "miss_rate": -24.99999850988388,
+            "fault": -15.0,
+            "body": 0.0
+          },
+          "common_tick_sum": -35.977111497084934,
+          "tail_after_common_ticks": -14.856399737298489,
+          "task_failures": [
+            "legal_airborne_strings",
+            "same_flight_stable_recovery",
+            "no_rule_fault",
+            "released_downward_forward",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "policy_at_end": {
+            "policy_version": 141,
+            "actor_sha256": "d2baf28a927def0c6bdcabea52b6c881b42bf5fe271955155b95d303bccca07a",
+            "native_tick": 7198
+          },
+          "physical_recovery": false,
+          "timeout": true,
+          "outgoing_velocity": [
+            -0.030746623873710632,
+            4.344751834869385,
+            -3.054689645767212
+          ]
+        },
+        {
+          "episode_index": 1,
+          "score": -57.112255177086354,
+          "length": 559,
+          "terms": {
+            "continuous": -6.162256320605138,
+            "jump": 2.0,
+            "qualified_contact": 0.0,
+            "cross": 0.0,
+            "target": 0.0,
+            "recovery": 0.0,
+            "complete5_terminal": 0.0,
+            "frame": 0.0,
+            "miss_rate": -12.94999922811985,
+            "fault": 0.0,
+            "body": -40.0
+          },
+          "common_tick_sum": -57.112255177086354,
+          "tail_after_common_ticks": 0.0,
+          "task_failures": [
+            "legal_airborne_strings",
+            "same_flight_stable_recovery",
+            "released_downward_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "policy_at_end": {
+            "policy_version": 173,
+            "actor_sha256": "826c7ab3b4036f46e850a1c170cda021ef28b6198d87274a938212afad5649ae",
+            "native_tick": 7757
+          },
+          "physical_recovery": false,
+          "timeout": false,
+          "outgoing_velocity": [
+            null,
+            null,
+            null
+          ]
+        }
+      ],
+      "term_deltas": {
+        "continuous": 2.6712568355669646,
+        "jump": 0.0,
+        "qualified_contact": 0.0,
+        "cross": 0.0,
+        "target": 0.0,
+        "recovery": 0.0,
+        "complete5_terminal": 0.0,
+        "frame": 4.0,
+        "miss_rate": 12.04999928176403,
+        "fault": 15.0,
+        "body": -40.0
+      }
+    }
+  ],
+  "late_second_episode_body_contacts": {
+    "events": [
+      {
+        "lane": 81,
+        "tick": 484,
+        "case": "B-720402-017",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 35.79363119778898,
+        "policy": 173,
+        "support_feet": 2
+      },
+      {
+        "lane": 44,
+        "tick": 491,
+        "case": "A-720401-044",
+        "had_contact": false,
+        "released": false,
+        "tilt_deg": 40.04015104004921,
+        "policy": 173,
+        "support_feet": 2
+      },
+      {
+        "lane": 86,
+        "tick": 499,
+        "case": "B-720402-022",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 11.783296492493838,
+        "policy": 173,
+        "support_feet": 4
+      },
+      {
+        "lane": 39,
+        "tick": 503,
+        "case": "A-720401-039",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 13.509689720091734,
+        "policy": 173,
+        "support_feet": 3
+      },
+      {
+        "lane": 74,
+        "tick": 503,
+        "case": "B-720402-010",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 14.080140127828223,
+        "policy": 173,
+        "support_feet": 3
+      },
+      {
+        "lane": 120,
+        "tick": 503,
+        "case": "B-720402-056",
+        "had_contact": false,
+        "released": false,
+        "tilt_deg": 39.62527967006267,
+        "policy": 173,
+        "support_feet": 2
+      },
+      {
+        "lane": 1,
+        "tick": 515,
+        "case": "A-720401-001",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 13.335838615336296,
+        "policy": 173,
+        "support_feet": 3
+      },
+      {
+        "lane": 104,
+        "tick": 521,
+        "case": "B-720402-040",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 15.009900497972323,
+        "policy": 173,
+        "support_feet": 3
+      },
+      {
+        "lane": 102,
+        "tick": 522,
+        "case": "B-720402-038",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 15.092393970448672,
+        "policy": 173,
+        "support_feet": 3
+      },
+      {
+        "lane": 112,
+        "tick": 526,
+        "case": "B-720402-048",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 13.710354770397917,
+        "policy": 173,
+        "support_feet": 4
+      },
+      {
+        "lane": 70,
+        "tick": 527,
+        "case": "B-720402-006",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 15.483892879468678,
+        "policy": 173,
+        "support_feet": 3
+      },
+      {
+        "lane": 58,
+        "tick": 530,
+        "case": "A-720401-058",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 11.60114025691559,
+        "policy": 173,
+        "support_feet": 4
+      },
+      {
+        "lane": 85,
+        "tick": 530,
+        "case": "B-720402-021",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 15.724226312762301,
+        "policy": 173,
+        "support_feet": 4
+      },
+      {
+        "lane": 42,
+        "tick": 532,
+        "case": "A-720401-042",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 14.905570329871153,
+        "policy": 173,
+        "support_feet": 3
+      },
+      {
+        "lane": 98,
+        "tick": 532,
+        "case": "B-720402-034",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 15.562256965577644,
+        "policy": 173,
+        "support_feet": 3
+      },
+      {
+        "lane": 82,
+        "tick": 536,
+        "case": "B-720402-018",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 13.886560980628992,
+        "policy": 173,
+        "support_feet": 4
+      },
+      {
+        "lane": 63,
+        "tick": 539,
+        "case": "A-720401-063",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 13.200311722071653,
+        "policy": 173,
+        "support_feet": 4
+      },
+      {
+        "lane": 2,
+        "tick": 545,
+        "case": "A-720401-002",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 15.025390435859304,
+        "policy": 173,
+        "support_feet": 3
+      },
+      {
+        "lane": 9,
+        "tick": 551,
+        "case": "A-720401-009",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 15.083303450301413,
+        "policy": 173,
+        "support_feet": 3
+      },
+      {
+        "lane": 25,
+        "tick": 576,
+        "case": "A-720401-025",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 14.161516838060681,
+        "policy": 173,
+        "support_feet": 4
+      },
+      {
+        "lane": 95,
+        "tick": 581,
+        "case": "B-720402-031",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 15.07544639240488,
+        "policy": 173,
+        "support_feet": 4
+      },
+      {
+        "lane": 53,
+        "tick": 586,
+        "case": "A-720401-053",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 13.95295916802197,
+        "policy": 173,
+        "support_feet": 4
+      },
+      {
+        "lane": 125,
+        "tick": 586,
+        "case": "B-720402-061",
+        "had_contact": true,
+        "released": true,
+        "tilt_deg": 14.621705263754802,
+        "policy": 173,
+        "support_feet": 3
+      }
+    ],
+    "chunk_sha256": [
+      "4d0be158b84b985ea62aa167b7ba0f8d7ac24d51e6c3a8482f763836c7918aad",
+      "783d19cdd98dfa9b25fb0c13a62732b27b2d5a2af188f18d7d2098aef9f503d0",
+      "20ab0cda4bb57f2baee2c3e299f697c591943c575adaf23b1fd3d71c231fd4d4",
+      "6d45891426baa7dc755821bae7e059ba943ddd555c94c96e2daac04f510c26e0"
+    ]
+  },
+  "window_means": {
+    "128": {
+      "rolling128": -7.750328791384213,
+      "global_mean": -7.750328791384213
+    },
+    "129": {
+      "rolling128": -7.622308099345431,
+      "global_mean": -7.588130117085623
+    },
+    "132": {
+      "rolling128": -7.54056156390195,
+      "global_mean": -8.407067879119131
+    }
+  },
+  "rolling_evicted": [
+    {
+      "case": "B-720402-059",
+      "score": -54.15593932444426
+    },
+    {
+      "case": "B-720402-049",
+      "score": -55.51281284213701
+    },
+    {
+      "case": "A-720401-000",
+      "score": -31.658979309864208
+    }
+  ],
+  "rolling_inserted_mean": -43.62139164655999,
+  "first128_against_frozen_training_baselines": {
+    "experiment_start": {
+      "samples": 128,
+      "observed": -7.750328791384213,
+      "baseline": -12.088589213086447,
+      "mean_delta": 4.338260421702234,
+      "counts": {
+        "body_ground": [
+          60,
+          30
+        ],
+        "qualified_contact": [
+          74,
+          71
+        ],
+        "ball_side": [
+          51,
+          35
+        ],
+        "physical_recovery": [
+          36,
+          29
+        ],
+        "complete5": [
+          22,
+          16
+        ],
+        "timeout": [
+          116,
+          125
+        ]
+      }
+    },
+    "scored_resume": {
+      "samples": 128,
+      "observed": -7.750328791384213,
+      "baseline": -14.88721890533002,
+      "mean_delta": 7.136890113945807,
+      "counts": {
+        "body_ground": [
+          49,
+          30
+        ],
+        "qualified_contact": [
+          65,
+          71
+        ],
+        "ball_side": [
+          36,
+          35
+        ],
+        "physical_recovery": [
+          24,
+          29
+        ],
+        "complete5": [
+          16,
+          16
+        ],
+        "timeout": [
+          117,
+          125
+        ]
+      }
+    }
+  }
+}
