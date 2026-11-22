@@ -227,5 +227,80 @@
   ],
   "retained_actor_update": 105,
   "contact_aux_to_toi_gradient_ratio": 0.03206806890605975,
-  "outgoing_impact_lanes": 14
+  "outgoing_impact_lanes": 14,
+  "post_refresh_errors": {
+    "held": {
+      "first_contacts": 71,
+      "released": 71,
+      "common_predictions": 71,
+      "control_end": {
+        "mae_mps": 0.5047864007278228,
+        "bias_mps": 0.36116507691396793,
+        "false_above": 9,
+        "false_below": 7
+      },
+      "impact": {
+        "mae_mps": 0.5032481656635431,
+        "bias_mps": 0.34968469758729254,
+        "false_above": 9,
+        "false_below": 7
+      }
+    },
+    "train": {
+      "first_contacts": 43,
+      "released": 43,
+      "common_predictions": 43,
+      "control_end": {
+        "mae_mps": 0.3536787143973417,
+        "bias_mps": 0.19940490500871524,
+        "false_above": 10,
+        "false_below": 0
+      },
+      "impact": {
+        "mae_mps": 0.3525299614156555,
+        "bias_mps": 0.1871934565814685,
+        "false_above": 10,
+        "false_below": 0
+      }
+    }
+  },
+  "paired_held_control_end": {
+    "cases": 71,
+    "released": 71,
+    "matched_hits": 71,
+    "before": {
+      "predicted_hits": 71,
+      "common_hit_mae_mps": 0.5049356608323647,
+      "common_hit_bias_mps": 0.3623530495334679,
+      "common_hit_false_above": 9,
+      "common_hit_false_below": 7
+    },
+    "after": {
+      "predicted_hits": 71,
+      "common_hit_mae_mps": 0.5047864007278228,
+      "common_hit_bias_mps": 0.36116507691396793,
+      "common_hit_false_above": 9,
+      "common_hit_false_below": 7
+    }
+  },
+  "held_predictions": [
+    {
+      "world_updates": 240,
+      "held": 71,
+      "same_contact_tick": 70,
+      "same_string_or_frame": 71,
+      "downward_velocity_cutoff_errors": 4,
+      "common_boundary_native_endpoint_speed_mae_mps": 0.3825726106133259,
+      "oracle_measured_robot_endpoint_speed_mae_mps": 0.2323571762568514
+    },
+    {
+      "world_updates": 248,
+      "held": 71,
+      "same_contact_tick": 70,
+      "same_string_or_frame": 71,
+      "downward_velocity_cutoff_errors": 4,
+      "common_boundary_native_endpoint_speed_mae_mps": 0.3822228169777024,
+      "oracle_measured_robot_endpoint_speed_mae_mps": 0.23252827013042612
+    }
+  ]
 }
