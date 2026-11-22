@@ -235,6 +235,8 @@ def main():
                         help='Research only: monitor the minibatch critic MSE after warmup; retain finite-value and update checks')
     parser.add_argument('--landing-and-first-contact-objectives', action='store_true',
                         help='Revised post-landing and first-racket research objectives and sampling')
+    parser.add_argument('--depth-batched-fk', action='store_true',
+                        help='Batch sibling links in differentiable full-body research kinematics')
     parser.add_argument('--fused-research-body-flight', action='store_true',
                         help='Fuse the Body WM native-force prior for detached FP32 CUDA inputs')
     parser.add_argument('--fused-research-flight', action='store_true',
@@ -923,6 +925,12 @@ def run(args, *, alternating=None):
                 raise ValueError('The fused Body flight backend requires research-scale training')
             from quadsmash.rl.supermimic_research_body_flight_cuda import enable_body_flight
             body_flight_backend = enable_body_flight(adapter.physical_model, previous_body_backend)
+        previous_fk = resumed['config'].get('research_full_body_fk_backend') if args.resume_training else None
+        fk_backend = None
+        if args.depth_batched_fk or previous_fk:
+            if not research:
+                raise ValueError('Depth-batched full-body FK requires research-scale training')
+            fk_backend = adapter.physical_model.geometry.enable_depth_batches(previous_fk)
         trainer.score_downward_release = args.score_downward_release
         trainer.recovery_rollout_landing = args.recovery_rollout_landing
         trainer.landing_and_first_contact_objectives = args.landing_and_first_contact_objectives
@@ -1159,6 +1167,7 @@ def run(args, *, alternating=None):
             global_rejected=int(resumed_global.get('rejected',0));global_backtracked=int(resumed_global.get('backtracked',0))
         research_origin=(global_accepted_id if args.resume_reset_schedule else resumed.get('config',{}).get('research_origin',global_accepted_id)) if research and args.resume_training else 0
         config['research_body_flight_backend'] = body_flight_backend
+        config['research_full_body_fk_backend'] = fk_backend
         config['research_flight_backend'] = flight_backend
         config['research_origin']=research_origin
         if research: config['research_training_seed']=training_seed

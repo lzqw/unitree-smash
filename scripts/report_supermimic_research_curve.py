@@ -100,6 +100,48 @@ def scalars(row):
     return metrics
 
 
+class BlockTiming:
+    """Measure completed proposal blocks between consecutive trainer observations."""
+    def __init__(self, plan, lanes, collection_ticks):
+        self.targets = {(event['block_key'], event['head']): event['target']
+                        for event in plan if event['kind'] == 'train'}
+        self.lanes = lanes
+        self.collection_ticks = collection_ticks
+        self.previous = self.start = self.key = None
+
+    def observe(self, row):
+        key = row['block_key'], row['block']
+        end = row['research_elapsed_s'], row['native_ticks'], row['accepted_id']
+        if key != self.key:
+            self.key, self.start = key, self.previous
+            self.attempts = self.retained = 0
+            self.seconds = dict(collection=0., world_refresh=0., actor_proposal=0., critic=0.)
+        self.previous = end
+        self.attempts += 1
+        self.retained += int(row['update_accepted'])
+        for label, field in (('collection','native_collect_seconds'), ('world_refresh','world_update_seconds'),
+                             ('actor_proposal','bptt_seconds'), ('critic','critic_seconds')):
+            self.seconds[label] += row.get(field, 0.)
+        # A resumed file can begin mid-block or after an inherited research clock.
+        if (self.start is None or not row['update_accepted'] or self.retained != self.targets.get(key)
+                or row['block_accepted_updates'] != self.retained):
+            return {}
+        wall = end[0] - self.start[0]
+        if wall <= 0 or end[2] - self.start[2] != self.retained:
+            return {}
+        timing = dict(wall_seconds=wall, attempts=self.attempts,
+                      retained_updates_per_hour=3600*self.retained/wall)
+        for name, seconds in self.seconds.items():
+            timing[name+'_wall_fraction'] = seconds/wall
+        timing['remaining_wall_fraction'] = (wall-sum(self.seconds.values()))/wall
+        # A preceding asynchronous frozen refresh can also advance the native clock.
+        # Its collection time is outside the regular proposal timers.
+        if end[1] - self.start[1] == self.collection_ticks and self.seconds['collection'] > 0:
+            timing['regular_native_env_steps_per_collect_second'] = (
+                self.collection_ticks*self.lanes/self.seconds['collection'])
+        return {f'timing/{key[1]}/{name}': value for name,value in timing.items()}
+
+
 def read_new(path, offset):
     if not path.exists():
         return [], offset
@@ -181,7 +223,10 @@ def main():
     parser.add_argument('--arm-dir', type=Path, required=True)
     parser.add_argument('--tensorboard', type=Path, required=True)
     parser.add_argument('--follow-pid', type=int)
-    parser.add_argument('--online-returns-only', action='store_true')
+    scope = parser.add_mutually_exclusive_group()
+    scope.add_argument('--online-returns-only', action='store_true')
+    scope.add_argument('--block-timing-only', action='store_true',
+                       help='Publish measured block costs separately for an already-running exporter')
     parser.add_argument('--resume-reference', type=Path,
                         help='Frozen evaluation directory of the scored resume checkpoint')
     args = parser.parse_args()
@@ -198,13 +243,14 @@ def main():
     if args.resume_reference is not None:
         reference_path = args.resume_reference/'episodes_summary.json'
     matched = (FirstEpisodeReturns(arm,reg,manifest,args.resume_reference) if reference_path is not None
-               and reference_path.name == 'episodes_summary.json' and (reference_path.parent/'completed.json').exists()
+               and not args.block_timing_only and reference_path.name == 'episodes_summary.json' and (reference_path.parent/'completed.json').exists()
                else None)
     if (args.online_returns_only or args.resume_reference is not None) and matched is None:
         raise ValueError('A complete registered frozen baseline is required for online return comparison')
     origin = None if args.online_returns_only else arm_origin(reg)
     from scripts.report_supermimic_native_contact_counts import NativeContactCounts
-    contacts = None if args.online_returns_only else NativeContactCounts(arm)
+    contacts = None if args.online_returns_only or args.block_timing_only else NativeContactCounts(arm)
+    timing = None
     writer = EventFileWriter(str(args.tensorboard))
     offset = 0
     heads = dict(reg.get('previous_heads', {'recovery': 0, 'approach': 0}))
@@ -217,25 +263,36 @@ def main():
             rows = []
             if contacts is not None:
                 contacts.update(writer)
+            if not args.online_returns_only:
                 rows, offset = read_new(arm/'train/training_history.jsonl', offset)
+            if rows and timing is None:
+                config = json.loads((arm/'train/config.json').read_text())
+                timing = BlockTiming(config.get('alternating_plan') or [], manifest['num_envs'],
+                                     config['native_ticks_per_actor_update'])
             for row in rows:
                 pos = axes(row, origin, manifest['num_envs'])
-                metrics = scalars(row)
-                heads[row['block']] += int(row['update_accepted'])
-                attempts += 1
-                if sum(heads.values()) != pos['retained_updates']:
-                    raise ValueError('Recorded proposals do not account for every retained step')
-                if row['update_accepted'] and pos['retained_updates'] == 16:
-                    from scripts.report_supermimic_first_pair_budget import write_budget
-                    budget = write_budget(arm)
-                    if budget is not None:
-                        metrics['timing/first_pair_wall_seconds'] = budget['first_pair_wall_seconds']
-                        metrics['timing/estimated_remaining_hours_after_first_pair'] = budget['estimated_remaining_hours_after_first_pair']
+                metrics = timing.observe(row)
+                if args.block_timing_only:
+                    if not metrics:
+                        continue
+                else:
+                    metrics.update(scalars(row))
+                    heads[row['block']] += int(row['update_accepted'])
+                    attempts += 1
+                    if sum(heads.values()) != pos['retained_updates']:
+                        raise ValueError('Recorded proposals do not account for every retained step')
+                    if row['update_accepted'] and pos['retained_updates'] == 16:
+                        from scripts.report_supermimic_first_pair_budget import write_budget
+                        budget = write_budget(arm)
+                        if budget is not None:
+                            metrics['timing/first_pair_wall_seconds'] = budget['first_pair_wall_seconds']
+                            metrics['timing/estimated_remaining_hours_after_first_pair'] = budget['estimated_remaining_hours_after_first_pair']
                 for axis, step in pos.items():
                     values = [Summary.Value(tag=axis+'/'+k, simple_value=v) for k,v in metrics.items()]
                     writer.add_event(Event(wall_time=time.time(), step=step, summary=Summary(value=values)))
             if rows:
                 writer.flush()
+            if rows and not args.block_timing_only:
                 status = dict(arm=reg['arm'], **pos, accepted=dict(heads), proposals=attempts,
                               inherited_native_ticks=origin[1], inherited_updates=origin[0],
                               note='Training wall time starts after initial replay reconstruction.')

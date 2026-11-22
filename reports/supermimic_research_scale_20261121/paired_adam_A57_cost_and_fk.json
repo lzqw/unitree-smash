@@ -1,0 +1,695 @@
+{
+  "block_costs": {
+    "scope": "Adjacent proposal completion timestamps. Includes rejected proposals, Critic time and unassigned time. Actor proposal includes scored backtracking. World refresh includes its inline forward diagnostic. Concurrent independent evaluation is outside these timers. Wall time spans an intervening frozen refresh, if any; collection throughput only uses blocks with exactly one regular native-tick interval.",
+    "g1_shared_initial_actor_origin": 53,
+    "block_timing": [
+      {
+        "head": "recovery",
+        "cycle": "cycle000_pair003",
+        "retained": 56,
+        "measured": {
+          "timing/recovery/wall_seconds": 3289.2935082680197,
+          "timing/recovery/attempts": 8,
+          "timing/recovery/retained_updates_per_hour": 8.755679579097416,
+          "timing/recovery/collection_wall_fraction": 0.05019796891064784,
+          "timing/recovery/world_refresh_wall_fraction": 0.0616858384911504,
+          "timing/recovery/actor_proposal_wall_fraction": 0.8653350246085858,
+          "timing/recovery/critic_wall_fraction": 6.0381857559111914e-05,
+          "timing/recovery/remaining_wall_fraction": 0.022720786132056827,
+          "timing/recovery/regular_native_env_steps_per_collect_second": 99.22729814200326
+        }
+      },
+      {
+        "head": "approach",
+        "cycle": "cycle000_pair003",
+        "retained": 64,
+        "measured": {
+          "timing/approach/wall_seconds": 1989.4921771729714,
+          "timing/approach/attempts": 8,
+          "timing/approach/retained_updates_per_hour": 14.476055915396573,
+          "timing/approach/collection_wall_fraction": 0.09466829077483865,
+          "timing/approach/world_refresh_wall_fraction": 0.09995334610241523,
+          "timing/approach/actor_proposal_wall_fraction": 0.6715731071195061,
+          "timing/approach/critic_wall_fraction": 9.863108142863799e-05,
+          "timing/approach/remaining_wall_fraction": 0.1337066249218114,
+          "timing/approach/regular_native_env_steps_per_collect_second": 86.99076848012756
+        }
+      },
+      {
+        "head": "recovery",
+        "cycle": "cycle000_pair004",
+        "retained": 72,
+        "measured": {
+          "timing/recovery/wall_seconds": 4407.3034564779955,
+          "timing/recovery/attempts": 8,
+          "timing/recovery/retained_updates_per_hour": 6.534607903539939,
+          "timing/recovery/collection_wall_fraction": 0.04378320514178359,
+          "timing/recovery/world_refresh_wall_fraction": 0.04726037407882516,
+          "timing/recovery/actor_proposal_wall_fraction": 0.8911342730807973,
+          "timing/recovery/critic_wall_fraction": 4.529998852709611e-05,
+          "timing/recovery/remaining_wall_fraction": 0.01777684771006684,
+          "timing/recovery/regular_native_env_steps_per_collect_second": 84.9062058734869
+        }
+      },
+      {
+        "head": "approach",
+        "cycle": "cycle000_pair004",
+        "retained": 80,
+        "measured": {
+          "timing/approach/wall_seconds": 1837.7609894910129,
+          "timing/approach/attempts": 8,
+          "timing/approach/retained_updates_per_hour": 15.671243521159115,
+          "timing/approach/collection_wall_fraction": 0.10584650470835862,
+          "timing/approach/world_refresh_wall_fraction": 0.10901455412461995,
+          "timing/approach/actor_proposal_wall_fraction": 0.6782219024549174,
+          "timing/approach/critic_wall_fraction": 0.00010691038285152948,
+          "timing/approach/remaining_wall_fraction": 0.10681012832925248,
+          "timing/approach/regular_native_env_steps_per_collect_second": 84.22759295475707
+        }
+      },
+      {
+        "head": "recovery",
+        "cycle": "cycle000_pair005",
+        "retained": 88,
+        "measured": {
+          "timing/recovery/wall_seconds": 4533.665389824018,
+          "timing/recovery/attempts": 8,
+          "timing/recovery/retained_updates_per_hour": 6.352475871872388,
+          "timing/recovery/collection_wall_fraction": 0.04349310290023677,
+          "timing/recovery/world_refresh_wall_fraction": 0.046124329627488345,
+          "timing/recovery/actor_proposal_wall_fraction": 0.8918846997894608,
+          "timing/recovery/critic_wall_fraction": 4.894163747076854e-05,
+          "timing/recovery/remaining_wall_fraction": 0.018448926045343247,
+          "timing/recovery/regular_native_env_steps_per_collect_second": 83.09025338413565
+        }
+      },
+      {
+        "head": "approach",
+        "cycle": "cycle000_pair005",
+        "retained": 96,
+        "measured": {
+          "timing/approach/wall_seconds": 1662.160551922978,
+          "timing/approach/attempts": 8,
+          "timing/approach/retained_updates_per_hour": 17.326846053879006,
+          "timing/approach/collection_wall_fraction": 0.11188616238596395,
+          "timing/approach/world_refresh_wall_fraction": 0.12040283952382971,
+          "timing/approach/actor_proposal_wall_fraction": 0.6492207052836415,
+          "timing/approach/critic_wall_fraction": 0.00011698338269303589,
+          "timing/approach/remaining_wall_fraction": 0.11837330942387182,
+          "timing/approach/regular_native_env_steps_per_collect_second": 88.09892116539889
+        }
+      },
+      {
+        "head": "recovery",
+        "cycle": "cycle000_pair006",
+        "retained": 104,
+        "measured": {
+          "timing/recovery/wall_seconds": 5125.697260522982,
+          "timing/recovery/attempts": 9,
+          "timing/recovery/retained_updates_per_hour": 5.6187477598045845,
+          "timing/recovery/collection_wall_fraction": 0.0436856486637603,
+          "timing/recovery/world_refresh_wall_fraction": 0.04124312031909679,
+          "timing/recovery/actor_proposal_wall_fraction": 0.896259779890767,
+          "timing/recovery/critic_wall_fraction": 4.693280674020523e-05,
+          "timing/recovery/remaining_wall_fraction": 0.01876451831963573,
+          "timing/recovery/regular_native_env_steps_per_collect_second": 73.1691818204314
+        }
+      },
+      {
+        "head": "approach",
+        "cycle": "cycle000_pair006",
+        "retained": 112,
+        "measured": {
+          "timing/approach/wall_seconds": 2133.609279318014,
+          "timing/approach/attempts": 8,
+          "timing/approach/retained_updates_per_hour": 13.498254005159566,
+          "timing/approach/collection_wall_fraction": 0.0913666959774294,
+          "timing/approach/world_refresh_wall_fraction": 0.09435139233288517,
+          "timing/approach/actor_proposal_wall_fraction": 0.6947813069194115,
+          "timing/approach/critic_wall_fraction": 9.323383198230376e-05,
+          "timing/approach/remaining_wall_fraction": 0.11940737093829157,
+          "timing/approach/regular_native_env_steps_per_collect_second": 84.04601524424379
+        }
+      },
+      {
+        "head": "recovery",
+        "cycle": "cycle000_pair007",
+        "retained": 120,
+        "measured": {
+          "timing/recovery/wall_seconds": 4373.033164485998,
+          "timing/recovery/attempts": 8,
+          "timing/recovery/retained_updates_per_hour": 6.585817878969853,
+          "timing/recovery/collection_wall_fraction": 0.04595543365688463,
+          "timing/recovery/world_refresh_wall_fraction": 0.048397662848255564,
+          "timing/recovery/actor_proposal_wall_fraction": 0.8861519924380623,
+          "timing/recovery/critic_wall_fraction": 4.645489077327499e-05,
+          "timing/recovery/remaining_wall_fraction": 0.01944845616602426,
+          "timing/recovery/regular_native_env_steps_per_collect_second": 81.52678187229894
+        }
+      }
+    ]
+  },
+  "fk_on_native_states": {
+    "device": "NVIDIA GeForce RTX 5080",
+    "precision": "fp32",
+    "source_chunk_sha256": "475a74334369406a1e7d8ae71965831d706fca6235d0740d3728caf9f3ea29ed",
+    "backend": {
+      "schema": "full-body-depth-batches-v1",
+      "model_sha256": "8c8997368ab98b3f2befa9908f537d76990dc2a1099ca30d8e6c1823de814e88",
+      "source_sha256": "c5bfeabce5fac1132461755fe66327346560c680c4c133ef33d664114e651ddb"
+    },
+    "repetitions_per_method": 8,
+    "scope": "Full-body geometry forward plus one scalar VJP on archived PhysX states. Interleaved wall times on the GPU shared with the live trainer.",
+    "results": {
+      "1": {
+        "difference": [
+          0.0,
+          2.8870999813079834e-08
+        ],
+        "median_ms": {
+          "serial": 9.958560520317405,
+          "depth": 5.017210001824424
+        }
+      },
+      "16": {
+        "difference": [
+          1.1920928955078125e-07,
+          7.450580596923828e-09
+        ],
+        "median_ms": {
+          "serial": 10.349871503422037,
+          "depth": 5.180654989089817
+        }
+      },
+      "128": {
+        "difference": [
+          3.5762786865234375e-07,
+          1.1175870895385742e-08
+        ],
+        "median_ms": {
+          "serial": 10.427050525322556,
+          "depth": 5.2748894959222525
+        }
+      }
+    }
+  },
+  "fk_on_recovery_rollouts": [
+    {
+      "device": "cpu",
+      "actor": "826c7ab3b4036f46e850a1c170cda021ef28b6198d87274a938212afad5649ae",
+      "world": "b58511fa1a6e2c27c48baafa2c9643036b2e13c4835e5c27bdd305c381b557e3",
+      "backend": {
+        "schema": "full-body-depth-batches-v1",
+        "model_sha256": "8c8997368ab98b3f2befa9908f537d76990dc2a1099ca30d8e6c1823de814e88",
+        "source_sha256": "c5bfeabce5fac1132461755fe66327346560c680c4c133ef33d664114e651ddb"
+      },
+      "starts": [
+        [
+          71,
+          416
+        ],
+        [
+          78,
+          320
+        ]
+      ],
+      "seconds": [
+        16.015477623965126,
+        14.21468807302881
+      ],
+      "tracking_nonzero_lanes": [
+        2,
+        2
+      ],
+      "differences": {
+        "task": {
+          "max_abs": 0.0,
+          "reference_norm": 9.452666282653809,
+          "rel_l2": 0.0
+        },
+        "tracking": {
+          "max_abs": 0.0,
+          "reference_norm": 0.09350588172674179,
+          "rel_l2": 0.0
+        },
+        "anchor": {
+          "max_abs": 0.0,
+          "reference_norm": 15.852378845214844,
+          "rel_l2": 0.0
+        },
+        "loss": {
+          "max_abs": 0.0,
+          "reference_norm": 9.704695701599121,
+          "rel_l2": 0.0
+        },
+        "ret": {
+          "max_abs": 1.9073486328125e-06,
+          "reference_norm": 13.396313667297363,
+          "rel_l2": 2.0135377098995377e-07
+        },
+        "loss_gradient": {
+          "max_abs": 1.52587890625e-05,
+          "reference_norm": 193.2748565673828,
+          "rel_l2": 4.7362232180603314e-07
+        },
+        "tracking_gradient": {
+          "max_abs": 2.2351741790771484e-08,
+          "reference_norm": 0.3701421320438385,
+          "rel_l2": 2.7744059138967714e-07
+        },
+        "task_gradient": {
+          "max_abs": 1.52587890625e-05,
+          "reference_norm": 194.28256225585938,
+          "rel_l2": 4.7113826440181583e-07
+        }
+      }
+    },
+    {
+      "device": "NVIDIA GeForce RTX 5080",
+      "flight_backends": [
+        {
+          "schema": "research-fp32-flight-v1",
+          "source_sha256": "6403b695a0f33d568a8f4294bd524c97350f9234ba7f606c3965381af3ca8566",
+          "torch": "2.7.0+cu128",
+          "triton": "3.3.0"
+        },
+        {
+          "schema": "research-body-force-fp32-v1",
+          "source_sha256": "dcd0ef6fed934ed374f4f741978f90c5b6329a48456f00b6a133ec8592c4b2fa",
+          "helpers_sha256": "6403b695a0f33d568a8f4294bd524c97350f9234ba7f606c3965381af3ca8566",
+          "torch": "2.7.0+cu128",
+          "triton": "3.3.0"
+        }
+      ],
+      "actor": "826c7ab3b4036f46e850a1c170cda021ef28b6198d87274a938212afad5649ae",
+      "world": "b58511fa1a6e2c27c48baafa2c9643036b2e13c4835e5c27bdd305c381b557e3",
+      "backend": {
+        "schema": "full-body-depth-batches-v1",
+        "model_sha256": "8c8997368ab98b3f2befa9908f537d76990dc2a1099ca30d8e6c1823de814e88",
+        "source_sha256": "c5bfeabce5fac1132461755fe66327346560c680c4c133ef33d664114e651ddb"
+      },
+      "starts": [
+        [
+          71,
+          416
+        ],
+        [
+          78,
+          320
+        ]
+      ],
+      "seconds": [
+        26.837609676003922,
+        22.03395825799089
+      ],
+      "tracking_nonzero_lanes": [
+        2,
+        2
+      ],
+      "differences": {
+        "task": {
+          "max_abs": 0.0,
+          "reference_norm": 9.452668190002441,
+          "rel_l2": 0.0
+        },
+        "tracking": {
+          "max_abs": 0.0,
+          "reference_norm": 0.09350588172674179,
+          "rel_l2": 0.0
+        },
+        "anchor": {
+          "max_abs": 0.0,
+          "reference_norm": 15.852377891540527,
+          "rel_l2": 0.0
+        },
+        "loss": {
+          "max_abs": 0.0,
+          "reference_norm": 9.704697608947754,
+          "rel_l2": 0.0
+        },
+        "ret": {
+          "max_abs": 4.76837158203125e-06,
+          "reference_norm": 13.396317481994629,
+          "rel_l2": 4.558338559945696e-07
+        },
+        "loss_gradient": {
+          "max_abs": 1.9073486328125e-05,
+          "reference_norm": 193.27484130859375,
+          "rel_l2": 5.170059012016281e-07
+        },
+        "tracking_gradient": {
+          "max_abs": 2.9802322387695312e-08,
+          "reference_norm": 0.37014201283454895,
+          "rel_l2": 3.838385396193189e-07
+        },
+        "task_gradient": {
+          "max_abs": 1.9073486328125e-05,
+          "reference_norm": 194.2825469970703,
+          "rel_l2": 5.131064426677767e-07
+        }
+      }
+    }
+  ],
+  "scope": "FK comparison applies to the optional extension backend. R64 late native starts use the same checkpoint and two H64 rollouts for each backend. Single rollout timing per method includes gradient diagnostics; wall times can vary with concurrent training.",
+  "A57": {
+    "behavior": 173,
+    "attempt": 180,
+    "accepted": 174,
+    "wm_update": 264,
+    "world_sha256": "427fde7e608828d43e4110c917dd3b4198e81ed6d1328576d92ae9bc0f673b62",
+    "fresh_replay": {
+      "world/contact_supervision_batches": 4,
+      "world/contact_optimizer_steps": 4,
+      "world/sampled_contact_events": 243,
+      "world/online_transition_uses": 8352,
+      "world/collection_policy_transition_uses": 0,
+      "world/collection_policy_racket_edge_uses": 0,
+      "world/collection_policy_contact_fit_edge_uses": 0
+    },
+    "batches": [
+      {
+        "transition_and_edge_uses_by_behavior": {
+          "16": {
+            "transition_uses": 192,
+            "racket_edge_uses": 9
+          },
+          "17": {
+            "transition_uses": 128,
+            "racket_edge_uses": 6
+          },
+          "33": {
+            "transition_uses": 176,
+            "racket_edge_uses": 8
+          },
+          "69": {
+            "transition_uses": 128,
+            "racket_edge_uses": 8
+          },
+          "141": {
+            "transition_uses": 128,
+            "racket_edge_uses": 0
+          },
+          "157": {
+            "transition_uses": 368,
+            "racket_edge_uses": 7
+          }
+        },
+        "fallback_count": 0,
+        "contact_fit": {
+          "measured_events": 60,
+          "updated": true,
+          "velocity_huber": 0.19471228122711182,
+          "gradient_norm": 0.9595360159873962
+        }
+      },
+      {
+        "transition_and_edge_uses_by_behavior": {
+          "8": {
+            "transition_uses": 256,
+            "racket_edge_uses": 16
+          },
+          "16": {
+            "transition_uses": 64,
+            "racket_edge_uses": 3
+          },
+          "17": {
+            "transition_uses": 160,
+            "racket_edge_uses": 8
+          },
+          "33": {
+            "transition_uses": 48,
+            "racket_edge_uses": 0
+          },
+          "69": {
+            "transition_uses": 16,
+            "racket_edge_uses": 0
+          },
+          "109": {
+            "transition_uses": 32,
+            "racket_edge_uses": 1
+          },
+          "157": {
+            "transition_uses": 512,
+            "racket_edge_uses": 8
+          }
+        },
+        "fallback_count": 0,
+        "contact_fit": null
+      },
+      {
+        "transition_and_edge_uses_by_behavior": {
+          "8": {
+            "transition_uses": 128,
+            "racket_edge_uses": 3
+          },
+          "16": {
+            "transition_uses": 224,
+            "racket_edge_uses": 14
+          },
+          "17": {
+            "transition_uses": 192,
+            "racket_edge_uses": 10
+          },
+          "101": {
+            "transition_uses": 1,
+            "racket_edge_uses": 0
+          },
+          "109": {
+            "transition_uses": 15,
+            "racket_edge_uses": 0
+          },
+          "141": {
+            "transition_uses": 256,
+            "racket_edge_uses": 0
+          },
+          "157": {
+            "transition_uses": 160,
+            "racket_edge_uses": 2
+          }
+        },
+        "fallback_count": 0,
+        "contact_fit": {
+          "measured_events": 59,
+          "updated": true,
+          "velocity_huber": 0.11769989877939224,
+          "gradient_norm": 0.9242386817932129
+        }
+      },
+      {
+        "transition_and_edge_uses_by_behavior": {
+          "8": {
+            "transition_uses": 128,
+            "racket_edge_uses": 8
+          },
+          "16": {
+            "transition_uses": 256,
+            "racket_edge_uses": 16
+          },
+          "17": {
+            "transition_uses": 144,
+            "racket_edge_uses": 1
+          },
+          "33": {
+            "transition_uses": 128,
+            "racket_edge_uses": 8
+          },
+          "69": {
+            "transition_uses": 64,
+            "racket_edge_uses": 1
+          },
+          "157": {
+            "transition_uses": 400,
+            "racket_edge_uses": 1
+          }
+        },
+        "fallback_count": 0,
+        "contact_fit": null
+      },
+      {
+        "transition_and_edge_uses_by_behavior": {
+          "16": {
+            "transition_uses": 128,
+            "racket_edge_uses": 8
+          },
+          "17": {
+            "transition_uses": 160,
+            "racket_edge_uses": 10
+          },
+          "33": {
+            "transition_uses": 128,
+            "racket_edge_uses": 8
+          },
+          "69": {
+            "transition_uses": 48,
+            "racket_edge_uses": 3
+          },
+          "93": {
+            "transition_uses": 48,
+            "racket_edge_uses": 0
+          },
+          "101": {
+            "transition_uses": 40,
+            "racket_edge_uses": 0
+          },
+          "109": {
+            "transition_uses": 168,
+            "racket_edge_uses": 8
+          },
+          "141": {
+            "transition_uses": 128,
+            "racket_edge_uses": 0
+          },
+          "157": {
+            "transition_uses": 272,
+            "racket_edge_uses": 1
+          }
+        },
+        "fallback_count": 0,
+        "contact_fit": {
+          "measured_events": 61,
+          "updated": true,
+          "velocity_huber": 0.14830800890922546,
+          "gradient_norm": 1.3869915008544922
+        }
+      },
+      {
+        "transition_and_edge_uses_by_behavior": {
+          "8": {
+            "transition_uses": 144,
+            "racket_edge_uses": 1
+          },
+          "16": {
+            "transition_uses": 48,
+            "racket_edge_uses": 3
+          },
+          "17": {
+            "transition_uses": 144,
+            "racket_edge_uses": 9
+          },
+          "33": {
+            "transition_uses": 16,
+            "racket_edge_uses": 1
+          },
+          "141": {
+            "transition_uses": 48,
+            "racket_edge_uses": 0
+          },
+          "149": {
+            "transition_uses": 16,
+            "racket_edge_uses": 0
+          },
+          "157": {
+            "transition_uses": 320,
+            "racket_edge_uses": 0
+          }
+        },
+        "fallback_count": 0,
+        "contact_fit": null
+      },
+      {
+        "transition_and_edge_uses_by_behavior": {
+          "8": {
+            "transition_uses": 144,
+            "racket_edge_uses": 9
+          },
+          "16": {
+            "transition_uses": 160,
+            "racket_edge_uses": 2
+          },
+          "33": {
+            "transition_uses": 128,
+            "racket_edge_uses": 8
+          },
+          "61": {
+            "transition_uses": 14,
+            "racket_edge_uses": 0
+          },
+          "69": {
+            "transition_uses": 114,
+            "racket_edge_uses": 8
+          },
+          "109": {
+            "transition_uses": 112,
+            "racket_edge_uses": 7
+          },
+          "141": {
+            "transition_uses": 112,
+            "racket_edge_uses": 0
+          },
+          "157": {
+            "transition_uses": 304,
+            "racket_edge_uses": 2
+          }
+        },
+        "fallback_count": 0,
+        "contact_fit": {
+          "measured_events": 63,
+          "updated": true,
+          "velocity_huber": 0.10163561999797821,
+          "gradient_norm": 0.8293247818946838
+        }
+      },
+      {
+        "transition_and_edge_uses_by_behavior": {
+          "8": {
+            "transition_uses": 16,
+            "racket_edge_uses": 1
+          },
+          "16": {
+            "transition_uses": 176,
+            "racket_edge_uses": 11
+          },
+          "17": {
+            "transition_uses": 352,
+            "racket_edge_uses": 14
+          },
+          "33": {
+            "transition_uses": 112,
+            "racket_edge_uses": 7
+          },
+          "69": {
+            "transition_uses": 32,
+            "racket_edge_uses": 2
+          },
+          "109": {
+            "transition_uses": 16,
+            "racket_edge_uses": 1
+          },
+          "157": {
+            "transition_uses": 400,
+            "racket_edge_uses": 1
+          }
+        },
+        "fallback_count": 0,
+        "contact_fit": null
+      }
+    ],
+    "aux_to_tracking": 0.06395290768159548,
+    "native_ticks": 7806,
+    "actual_target_max_change_rad": 0.001915574073791504,
+    "forward_comparison": {
+      "256": {
+        "world": "b58511fa1a6e2c27c48baafa2c9643036b2e13c4835e5c27bdd305c381b557e3",
+        "spec": "6b6eb41966776eff5ed83cbf33cbec397d35e0ea98d5b3e5b0424c9526da8203",
+        "passed": true,
+        "metrics": {
+          "body/body_rmse": 0.5513841509819031,
+          "body/root_angular_mae": 0.16716459393501282,
+          "flight/ball_velocity_rmse": 0.9783615469932556,
+          "contact/event_aligned/0/1/ball_velocity_rmse": 0.3011258840560913
+        }
+      },
+      "264": {
+        "world": "427fde7e608828d43e4110c917dd3b4198e81ed6d1328576d92ae9bc0f673b62",
+        "spec": "6b6eb41966776eff5ed83cbf33cbec397d35e0ea98d5b3e5b0424c9526da8203",
+        "passed": true,
+        "metrics": {
+          "body/body_rmse": 0.551214873790741,
+          "body/root_angular_mae": 0.16755717992782593,
+          "flight/ball_velocity_rmse": 0.926252543926239,
+          "contact/event_aligned/0/1/ball_velocity_rmse": 0.3007388710975647
+        }
+      }
+    }
+  }
+}

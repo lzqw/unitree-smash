@@ -96,3 +96,25 @@ def test_asset_identity_and_joint_shape_cannot_silently_change():
     q,qd,*rest=inputs()
     with pytest.raises(ValueError,match='named18'):
         m(q[:,:12],qd,*rest)
+
+
+def test_depth_batch_preserves_all_links_and_derivatives_across_checkpoint_load():
+    serial = FullBodyGeometryV1(ASSET, dtype=torch.float64)
+    batched = FullBodyGeometryV1(ASSET).double()
+    receipt = batched.enable_depth_batches()
+    batched.load_state_dict(serial.state_dict(), strict=True)
+    assert batched.enable_depth_batches(receipt) == receipt
+    with pytest.raises(ValueError, match='differs'):
+        batched.enable_depth_batches(dict(receipt, source_sha256='old'))
+    assert set(batched.state_dict()) == set(serial.state_dict())
+
+    args = tuple(v.requires_grad_() for v in inputs(5))
+    expected, actual = serial(*args), batched(*args)
+    generator = torch.Generator().manual_seed(41)
+    weights = {k: torch.randn(v.shape, generator=generator, dtype=v.dtype) for k,v in expected.items()}
+    for k in expected:
+        torch.testing.assert_close(expected[k], actual[k], rtol=1e-12, atol=1e-12)
+    grads = [torch.autograd.grad(sum((v * weights[k]).sum() for k,v in outputs.items()), args)
+             for outputs in (expected, actual)]
+    for first, second in zip(*grads, strict=True):
+        torch.testing.assert_close(first, second, rtol=1e-11, atol=1e-11)

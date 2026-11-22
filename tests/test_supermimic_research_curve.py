@@ -248,3 +248,28 @@ def test_paired_return_resumed_baseline_reads_the_scored_checkpoint_and_its_case
     metrics = {s.tag:s.simple_value for s in events[0].summary.value}
     assert metrics['first_completed_vs_scored_resume/resume_same_cases_mean'] == 3.
     assert metrics['first_completed_vs_scored_resume/mean_difference'] == -2.
+
+
+def test_block_cost_counts_rejected_work_and_excludes_frozen_steps_from_collection_rate():
+    from scripts.report_supermimic_research_curve import BlockTiming
+    plan = [dict(kind='train', block_key=str(i), head='approach', target=2) for i in range(3)]
+    clock = BlockTiming(plan, lanes=8, collection_ticks=10)
+
+    def update(block, retained, accepted, total, seconds, ticks, collection=0.):
+        return clock.observe(dict(block_key=str(block), block='approach', update_accepted=accepted,
+            block_accepted_updates=retained, accepted_id=total, research_elapsed_s=seconds,
+            native_ticks=ticks, native_collect_seconds=collection, bptt_seconds=2., critic_seconds=.5))
+
+    assert not update(0, 2, True, 22, 100, 50)  # resumed file, no comparable start time
+    assert not update(1, 0, False, 22, 109, 60, collection=4.)
+    assert not update(1, 1, True, 23, 116, 60)
+    cost = update(1, 2, True, 24, 120, 60)
+    assert cost['timing/approach/attempts'] == 3
+    assert cost['timing/approach/retained_updates_per_hour'] == 360
+    assert cost['timing/approach/regular_native_env_steps_per_collect_second'] == 20
+    assert cost['timing/approach/actor_proposal_wall_fraction'] == .3
+    assert abs(sum(v for k,v in cost.items() if k.endswith('_wall_fraction')) - 1) < 1e-12
+    assert not update(2, 1, True, 25, 170, 100, collection=4.)
+    with_refresh = update(2, 2, True, 26, 180, 100)
+    assert with_refresh['timing/approach/retained_updates_per_hour'] == 120
+    assert 'timing/approach/regular_native_env_steps_per_collect_second' not in with_refresh

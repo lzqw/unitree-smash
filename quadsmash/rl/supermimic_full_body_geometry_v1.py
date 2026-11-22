@@ -77,7 +77,8 @@ class FullBodyGeometryV1(nn.Module):
         for i,name in enumerate(('parent_offset','child_offset','parent_rotation','child_rotation','axis','skew')):
             self.register_buffer(name, torch.stack([torch.as_tensor(c[i],dtype=dtype) for c in constants]))
 
-    def _link_kinematics(self, edges, joints, velocities, root_position, root_quaternion, root_velocity, root_omega):
+    @staticmethod
+    def _validate_inputs(joints, velocities, root_position, root_quaternion, root_velocity, root_omega):
         n = joints.shape[0]
         if joints.shape != (n,18) or velocities.shape != joints.shape:
             raise ValueError('Expected named18 joint positions and velocities')
@@ -85,6 +86,68 @@ class FullBodyGeometryV1(nn.Module):
             raise ValueError('Expected world root link position and wxyz quaternion')
         if root_velocity.shape != (n,3) or root_omega.shape != (n,3):
             raise ValueError('Expected root LINK velocity and world angular velocity')
+
+    def enable_depth_batches(self, expected_backend=None):
+        """Batch sibling links for full-body FK while preserving recorded body and joint order."""
+        backend = dict(schema='full-body-depth-batches-v1', model_sha256=self.model_sha256,
+                       source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
+        if expected_backend is not None and backend != expected_backend:
+            raise ValueError('Resumed full-body FK backend differs from checkpoint')
+        if hasattr(self, '_depth_ranges'):
+            return backend
+
+        def indices(name, values):
+            self.register_buffer(name, torch.tensor(values, dtype=torch.long, device=self.mass.device),
+                                 persistent=False)
+
+        # The asset loader emits all joints at the current depth before their children.
+        parents = [self.root_id]
+        order = parents.copy()
+        ranges = []
+        start = 0
+        while start < len(self.edges):
+            end = start
+            parent_rows = []
+            while end < len(self.edges) and self.edges[end][0] in parents:
+                parent_rows.append(parents.index(self.edges[end][0]))
+                end += 1
+            if end == start:
+                raise ValueError('Joint order does not form consecutive tree depths')
+            name = f'_parents_at_depth_{len(ranges)}'
+            indices(name, parent_rows)
+            ranges.append((slice(start, end), name))
+            parents = [child for _, child, _ in self.edges[start:end]]
+            order.extend(parents)
+            start = end
+        indices('_named_body_order', [order.index(link) for link in range(len(self.names))])
+        # Fixed joints use the appended zero angle and zero relative speed.
+        indices('_edge_joint', [len(JOINT_NAMES) if j is None else j for _, _, j in self.edges])
+        self._depth_ranges = tuple(ranges)
+        return backend
+
+    def _depth_kinematics(self, joints, velocities, root_position, root_quaternion, root_velocity, root_omega):
+        self._validate_inputs(joints, velocities, root_position, root_quaternion, root_velocity, root_omega)
+        zero = joints.new_zeros(len(joints), 1)
+        angle = torch.cat((joints, zero), 1).index_select(1, self._edge_joint)[:, :, None, None]
+        rate = torch.cat((velocities, zero), 1).index_select(1, self._edge_joint)[:, :, None]
+        motion = self.eye + angle.sin()*self.skew + (1-angle.cos())*(self.skew @ self.skew)
+        layers = [(root_position[:, None], rotation(root_quaternion)[:, None],
+                   root_velocity[:, None], root_omega[:, None])]
+        for edges, parent_buffer in self._depth_ranges:
+            parents = getattr(self, parent_buffer)
+            p, r, v, w = (field.index_select(1, parents) for field in layers[-1])
+            joint_rotation = r @ self.parent_rotation[edges]
+            offset0 = rotate(r, self.parent_offset[edges])
+            child_rotation = joint_rotation @ motion[:, edges] @ self.child_rotation[edges].transpose(1, 2)
+            offset1 = rotate(child_rotation, self.child_offset[edges])
+            child_omega = w + rotate(joint_rotation, self.axis[edges])*rate[:, edges]
+            layers.append((p + offset0 - offset1, child_rotation,
+                           v + torch.linalg.cross(w, offset0) - torch.linalg.cross(child_omega, offset1),
+                           child_omega))
+        return tuple(torch.cat(parts, 1).index_select(1, self._named_body_order) for parts in zip(*layers))
+
+    def _link_kinematics(self, edges, joints, velocities, root_position, root_quaternion, root_velocity, root_omega):
+        self._validate_inputs(joints, velocities, root_position, root_quaternion, root_velocity, root_omega)
         # Each body's tensors have their own storage/graph. Avoid writing views
         # of a shared FK output while autograd still needs an earlier body.
         p, r, v, w = {}, {}, {}, {}
@@ -108,10 +171,13 @@ class FullBodyGeometryV1(nn.Module):
         return p, r, v, w
 
     def forward(self, joints, velocities, root_position, root_quaternion, root_velocity, root_omega):
-        p, r, v, w = self._link_kinematics(enumerate(self.edges), joints, velocities, root_position,
-                                            root_quaternion, root_velocity, root_omega)
-        positions, rotations = torch.stack([p[i] for i in range(len(self.names))],1), torch.stack([r[i] for i in range(len(self.names))],1)
-        linear, angular = torch.stack([v[i] for i in range(len(self.names))],1), torch.stack([w[i] for i in range(len(self.names))],1)
+        inputs = (joints, velocities, root_position, root_quaternion, root_velocity, root_omega)
+        if hasattr(self, '_depth_ranges'):
+            positions, rotations, linear, angular = self._depth_kinematics(*inputs)
+        else:
+            links = self._link_kinematics(enumerate(self.edges), *inputs)
+            positions, rotations, linear, angular = (
+                torch.stack([field[i] for i in range(len(self.names))], 1) for field in links)
         offset = rotate(rotations,self.local_com)
         weights = self.mass[None,:,None] / self.mass.sum()
         return dict(position=positions, rotation=rotations, velocity=linear, angular_velocity=angular,
