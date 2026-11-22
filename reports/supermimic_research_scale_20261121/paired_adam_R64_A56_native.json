@@ -1,0 +1,481 @@
+{
+  "stage": {
+    "retained_recovery": 64,
+    "retained_approach": 56,
+    "total_budget": 256,
+    "collection_native_ticks": 7806,
+    "native_env_steps_relative_to_experiment_start": 278528
+  },
+  "native_collection": {
+    "scope": "Mixed-policy native completions at the first collection following R64+A56. The same-lane previous episode is descriptive and can differ in start conditions.",
+    "before": {
+      "native_ticks": 7678,
+      "accepted_id": 165,
+      "completed_native_episodes": 129,
+      "first_episode_body_cases": null
+    },
+    "after": {
+      "native_ticks": 7806,
+      "accepted_id": 173,
+      "completed_native_episodes": 132,
+      "first_episode_body_cases": null
+    },
+    "before_scores": {
+      "count": 129,
+      "return_mean": -7.588130117085623,
+      "completed128_mean": -7.622308099345431,
+      "totals": {
+        "qualified_airborne_string_contact": 72,
+        "ball_side_complete_except_recovery": 35,
+        "physical_recovery_success": 29,
+        "complete5": 16,
+        "body_ground_seen": 30
+      }
+    },
+    "through_scores": {
+      "count": 132,
+      "return_mean": -8.407067879119131,
+      "completed128_mean": -7.54056156390195,
+      "totals": {
+        "qualified_airborne_string_contact": 73,
+        "ball_side_complete_except_recovery": 35,
+        "physical_recovery_success": 29,
+        "complete5": 16,
+        "body_ground_seen": 32
+      }
+    },
+    "new_scores": {
+      "count": 3,
+      "return_mean": -43.62139164655999,
+      "completed128_mean": -43.62139164655999,
+      "totals": {
+        "qualified_airborne_string_contact": 1,
+        "ball_side_complete_except_recovery": 0,
+        "physical_recovery_success": 0,
+        "complete5": 0,
+        "body_ground_seen": 2
+      }
+    },
+    "same_lane_previous_episode": [
+      {
+        "lane": 123,
+        "episode": 1,
+        "case": "B-720402-059",
+        "previous_case": "B-720402-059",
+        "score": -22.82573968243196,
+        "prior_score": -54.15593932444426,
+        "len": 800,
+        "prior_len": 511,
+        "body": true,
+        "previous_body": true
+      },
+      {
+        "lane": 113,
+        "episode": 1,
+        "case": "B-720402-049",
+        "previous_case": "B-720402-049",
+        "score": -50.92618008016166,
+        "prior_score": -55.51281284213701,
+        "len": 800,
+        "prior_len": 533,
+        "body": false,
+        "previous_body": true
+      },
+      {
+        "lane": 120,
+        "episode": 1,
+        "case": "B-720402-056",
+        "previous_case": "B-720402-056",
+        "score": -57.112255177086354,
+        "prior_score": -50.83351123438342,
+        "len": 559,
+        "prior_len": 800,
+        "body": true,
+        "previous_body": false
+      }
+    ]
+  },
+  "matched_prefix": {
+    "scope": "Mixed behavior only. Pair first and second recorded episodes on the same lane up to their common elapsed control tick. No substitution of a partial reward sum for a completed episode Return. Launches and native solver resets need not be identical. The compared elapsed horizons vary as live collection advances.",
+    "control_dt_s": 0.01,
+    "num_envs": 128,
+    "actor_versions_seen": 10,
+    "chunk_sha256": [
+      "230f161b8d199fab7ff79be91bd50c99d1bcbad0dfae8b2bb1d90b72ac2b0869",
+      "2fc5362bc3eb4f45a16894e7231e8685e534d59b05d036de224842d03aa521b0",
+      "5973de6641980689ce5702dfb45f7e3530dbb3012561b66bc9954c881b916f46",
+      "75b81f38e434ca0ca550958a3a196ea72f8a341fbe5f58a6b2470a87dd54f72c",
+      "8289271697e4c49074663a1e7471e3e5747fbb46b991987b18ffe9c5bf0a4984",
+      "1f06e9db902914947d1a125c11a6b78db9cb7bbb89615457b51db398b63efd3a",
+      "762ec5594349f15c7e71430772a0a70134925bf31a8357dd0f60cc2fc975bd9d",
+      "8c9dd2a0fe14f09504dacc8878ab840c2a6ac98311c47a5602e7a2c290f867dd",
+      "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494",
+      "dac25f5e611a8e6c7eb58ced3e324c0d8b2faef6a15230dd8bceda9dd97f077f",
+      "4512dd06824b0762bd1b74cad3e68f36809e7f946c370f088b6b3ccb76c153cd",
+      "e81ebbc1fcf981fe49a00512ae264bcd3fc3692ffa707df86d78b9d66ff08cdf",
+      "6822731657212a22aa3b55786bd9f3d8144d09453c2800b093d8baabe79a4b12",
+      "1352ec849e1fc8823fba0d7cafacfcba188257434cf49358f4891cbdc1d079c8",
+      "656cc498dfafb26a042c07d09f824c87bbee20f9d5fee3072df1100c7085e9e6",
+      "8bc82068965d2fb588a53d977212ded436d9591138c984ef992fb2a48b57e301",
+      "bae3e40c9a7c2cb4327dcadec287f9e867651bd6e8664d749b52a20621798f64",
+      "e12e639f434e58bdffef0a033bc0cb1942f91d900f416847dc368cb5baad2c02",
+      "f339902fe7445a6565be140efe52707658ffe1db6355a1dc2525f052c39a240c",
+      "097e5313eb48fd3f216095fcf53fd9cbad80e6eca6e740b6ffe01e9b7263338c",
+      "a5bf0069ea974072ea0ff64f6476bb10e1382a8770dbee688dd21c18fca75e5e",
+      "f143d862ef080083d7466a30b4b2889d158628e3401e21fdb024dc38cd61c649",
+      "6eaa8fcd2b287c95b915263036bf51b51e67948fef67f40e13615fe9684567b4",
+      "d5a16681b130da93da0915f63cbd2dad6efdc626f1bc99e1ff93376879290db3",
+      "08fe250d743218abc32a6a9719b10c6f193f60358fd2d76f8fa53e33ba478eb5",
+      "bc1d7793b43fe10dfe627443ab6ed010f438b3d0dc544132a7ad7ca537b2f216",
+      "8fad0c6e23251e29a922a344b8137dddde7e2084ccadbbeed6e38cf5bdfb5929",
+      "516793894d7f8f55908c31e9b95a2d98d023b9973d05a75a89b8fd9ee2c53c33",
+      "a64ae7168dfaae96cce0020338b3aac3c9c06a856f9f2224f6ffac12ef38cb29",
+      "210bbd30b33e997fa71b4390ca716b8fb60ce8941dfec4ccfc8f38c946e57d9d",
+      "65ea36a3c1621312c91cd4554cf6f3e5d65418818b288fd40c200185f7802454",
+      "c8da062c1519d0718a9aafbab5d9a698fea3414098d6106dcaa0f558ff3a3c7c",
+      "aa6c328c9a97240fba896e51290d1a74015d97cddb844cc483bf588ee18b21ed",
+      "f5a5e4bcfed54beccd4a7718b4e48ea4b9d58721a399cdd5f7b8e6992ec77ad5",
+      "fbe8ea61e1032d13defa27f3b9bb55128aec0745d66667d0d05c441277f0fe56",
+      "67dcfe0945f6a33b6f8a44e9fbdbdcc9f9e2e54b1a8956bf1382391ddbc87e64",
+      "51adb9fc70f06b52b5e0c105a94f246f45009ea10b4dfba8375e87ee79888c9a",
+      "dfbdb2a06a8b439c9502a43c7d4b07d9ac561f2a22ca812073c93545dbd17b63",
+      "f25284616b2ed71be74325ba341634bda9bbf84e09da6838b4053a7abda1f9d3",
+      "475a74334369406a1e7d8ae71965831d706fca6235d0740d3728caf9f3ea29ed"
+    ],
+    "snapshots": [
+      {
+        "local_control_ticks": 896,
+        "matched": {
+          "lanes": 128,
+          "matched_steps_min_median_max": [
+            96,
+            96.0,
+            417
+          ],
+          "first_mean": -1.1979317140885186,
+          "second_mean": -0.9622617838315901,
+          "mean_change": 0.2356699302569285,
+          "median_change": -2.05235555768013e-05,
+          "difference_by_reward": {
+            "continuous": -0.0006581978695341384,
+            "jump": 0.0,
+            "qualified_contact": 0.15625,
+            "cross": 0.0,
+            "target": -0.1171875,
+            "recovery": 0.0,
+            "complete5_terminal": 0.0,
+            "frame": -0.03125,
+            "miss_rate": 0.03320312302093953,
+            "fault": -0.1171875,
+            "body": 0.3125
+          },
+          "event_reward_changes": {
+            "body": {
+              "first_lanes": 1,
+              "second_lanes": 0,
+              "new": 0,
+              "lost": 1
+            },
+            "qualified_contact": {
+              "first_lanes": 1,
+              "second_lanes": 2,
+              "new": 1,
+              "lost": 0
+            },
+            "cross": {
+              "first_lanes": 1,
+              "second_lanes": 1,
+              "new": 1,
+              "lost": 1
+            },
+            "target": {
+              "first_lanes": 1,
+              "second_lanes": 0,
+              "new": 0,
+              "lost": 1
+            },
+            "frame": {
+              "first_lanes": 0,
+              "second_lanes": 1,
+              "new": 1,
+              "lost": 0
+            },
+            "fault": {
+              "first_lanes": 0,
+              "second_lanes": 1,
+              "new": 1,
+              "lost": 0
+            }
+          },
+          "verified_terminal_episodes": 128,
+          "maximum_terminal_sum_error": 0.0
+        }
+      },
+      {
+        "local_control_ticks": 1024,
+        "matched": {
+          "lanes": 128,
+          "matched_steps_min_median_max": [
+            224,
+            224.0,
+            511
+          ],
+          "first_mean": -3.418326971646785,
+          "second_mean": -2.819711511575687,
+          "mean_change": 0.5986154600710978,
+          "median_change": 6.0335732996463776e-06,
+          "difference_by_reward": {
+            "continuous": 0.000568586937397253,
+            "jump": 0.0,
+            "qualified_contact": 0.15625,
+            "cross": 0.0,
+            "target": -0.1171875,
+            "recovery": 0.0,
+            "complete5_terminal": 0.0,
+            "frame": -0.03125,
+            "miss_rate": 0.08242187008727342,
+            "fault": -0.1171875,
+            "body": 0.625
+          },
+          "event_reward_changes": {
+            "body": {
+              "first_lanes": 3,
+              "second_lanes": 1,
+              "new": 0,
+              "lost": 2
+            },
+            "qualified_contact": {
+              "first_lanes": 1,
+              "second_lanes": 2,
+              "new": 1,
+              "lost": 0
+            },
+            "cross": {
+              "first_lanes": 1,
+              "second_lanes": 1,
+              "new": 1,
+              "lost": 1
+            },
+            "target": {
+              "first_lanes": 1,
+              "second_lanes": 0,
+              "new": 0,
+              "lost": 1
+            },
+            "frame": {
+              "first_lanes": 0,
+              "second_lanes": 1,
+              "new": 1,
+              "lost": 0
+            },
+            "fault": {
+              "first_lanes": 0,
+              "second_lanes": 1,
+              "new": 1,
+              "lost": 0
+            }
+          },
+          "verified_terminal_episodes": 128,
+          "maximum_terminal_sum_error": 0.0
+        }
+      },
+      {
+        "local_control_ticks": 1152,
+        "matched": {
+          "lanes": 128,
+          "matched_steps_min_median_max": [
+            352,
+            352.0,
+            533
+          ],
+          "first_mean": 8.401909723323065,
+          "second_mean": 11.481231850889381,
+          "mean_change": 3.079322127566315,
+          "median_change": -0.00331597102059078,
+          "difference_by_reward": {
+            "continuous": -0.0015372654109122585,
+            "jump": 0.0,
+            "qualified_contact": 1.40625,
+            "cross": 0.078125,
+            "target": 0.3515625,
+            "recovery": 0.0,
+            "complete5_terminal": 0.0,
+            "frame": 0.0625,
+            "miss_rate": 0.24492186040151864,
+            "fault": 0.0,
+            "body": 0.9375
+          },
+          "event_reward_changes": {
+            "body": {
+              "first_lanes": 10,
+              "second_lanes": 7,
+              "new": 5,
+              "lost": 8
+            },
+            "qualified_contact": {
+              "first_lanes": 71,
+              "second_lanes": 80,
+              "new": 20,
+              "lost": 11
+            },
+            "cross": {
+              "first_lanes": 45,
+              "second_lanes": 47,
+              "new": 17,
+              "lost": 15
+            },
+            "target": {
+              "first_lanes": 37,
+              "second_lanes": 40,
+              "new": 18,
+              "lost": 15
+            },
+            "frame": {
+              "first_lanes": 39,
+              "second_lanes": 37,
+              "new": 17,
+              "lost": 19
+            },
+            "fault": {
+              "first_lanes": 13,
+              "second_lanes": 13,
+              "new": 10,
+              "lost": 10
+            }
+          },
+          "verified_terminal_episodes": 128,
+          "maximum_terminal_sum_error": 0.0
+        }
+      },
+      {
+        "local_control_ticks": 1280,
+        "matched": {
+          "lanes": 128,
+          "matched_steps_min_median_max": [
+            479,
+            480.0,
+            533
+          ],
+          "first_mean": -0.5244666546296277,
+          "second_mean": 3.3333974503666837,
+          "mean_change": 3.857864104996311,
+          "median_change": -0.014435516970308981,
+          "difference_by_reward": {
+            "continuous": -0.013620315098047175,
+            "jump": 0.0,
+            "qualified_contact": 1.40625,
+            "cross": 0.078125,
+            "target": 0.3515625,
+            "recovery": 0.078125,
+            "complete5_terminal": 0.0,
+            "frame": 0.0625,
+            "miss_rate": 0.6449218365596607,
+            "fault": 0.0,
+            "body": 1.25
+          },
+          "event_reward_changes": {
+            "body": {
+              "first_lanes": 26,
+              "second_lanes": 22,
+              "new": 12,
+              "lost": 16
+            },
+            "qualified_contact": {
+              "first_lanes": 71,
+              "second_lanes": 80,
+              "new": 20,
+              "lost": 11
+            },
+            "cross": {
+              "first_lanes": 45,
+              "second_lanes": 47,
+              "new": 17,
+              "lost": 15
+            },
+            "target": {
+              "first_lanes": 37,
+              "second_lanes": 40,
+              "new": 18,
+              "lost": 15
+            },
+            "frame": {
+              "first_lanes": 39,
+              "second_lanes": 37,
+              "new": 17,
+              "lost": 19
+            },
+            "fault": {
+              "first_lanes": 13,
+              "second_lanes": 13,
+              "new": 10,
+              "lost": 10
+            }
+          },
+          "verified_terminal_episodes": 129,
+          "maximum_terminal_sum_error": 0.0
+        }
+      }
+    ],
+    "first_ball_present_comparison": {
+      "lanes": 128,
+      "identical_clock_and_position_velocity_lanes": 128,
+      "max_abs_tick_diff": 0.0,
+      "max_position_difference_m": 0.0,
+      "max_speed_vector_difference_mps": 0.0
+    },
+    "reset_max_abs_difference_by_state_field": {
+      "root_position_w": 0.0,
+      "root_quaternion_w": 0.0,
+      "root_link_velocity_w": 0.0,
+      "root_angular_velocity_w": 0.0,
+      "joint_position": 0.0,
+      "joint_velocity": 0.0
+    }
+  },
+  "recovery_start_usage": {
+    "counts_by_family": {
+      "risk": 64,
+      "landing": 32,
+      "stable": 32,
+      "initial_archive": 0
+    },
+    "shortfalls": {
+      "risk": 0,
+      "landing": 0,
+      "stable": 0
+    },
+    "counts_by_stage": {
+      "pre_body_ground": 31,
+      "post_landing_support_loss": 16,
+      "recovery_failure": 17,
+      "touchdown": 16,
+      "post_touchdown": 16,
+      "stable_recovery": 32
+    },
+    "sample_uses": 128,
+    "between_1_and_3_s_after_landing": 29,
+    "between_20_and_60_ticks_before_body_ground": 31,
+    "window_unit": "sample uses across accepted proposals; independent episodes can recur",
+    "step_sizes": [
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5,
+      0.5
+    ],
+    "attempt_ids": [
+      172,
+      173,
+      174,
+      175,
+      176,
+      177,
+      178,
+      179
+    ],
+    "all_world_parameters_unchanged_within_actor": true
+  }
+}
