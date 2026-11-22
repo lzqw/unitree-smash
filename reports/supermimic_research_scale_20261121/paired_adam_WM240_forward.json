@@ -1,0 +1,188 @@
+{
+  "scope": "Repeated forward measurements on fixed native windows under recorded commands. No new native evaluation or optimizer step for this report.",
+  "panel_examples": 32,
+  "panel_sha256": "f0537192e0c6af950a33391b0ae757571679733055ce388e3ad5fa5521f7acbc",
+  "native_data_sha256": "ef98e9531ed61d5bae670569ab114ea56bf3248d90e591a4573f0155f3c1f4d2",
+  "windows_by_group": {
+    "uniform": 320,
+    "contact-1": 16,
+    "contact+0": 16,
+    "contact+1": 16
+  },
+  "world_history": [
+    {
+      "world_updates": 184,
+      "head": "approach",
+      "world_sha256": "845804918b98f070cba195c03ba777c5f57febc7ea0d289e8ce1d7cdac265651",
+      "passed": true,
+      "h64": {
+        "body_rmse": 0.5510543584823608,
+        "root_angular_mae": 0.1668347418308258,
+        "ball_velocity_rmse": 0.9591202735900879
+      },
+      "contact_step_ball_velocity_rmse": 0.3065641224384308
+    },
+    {
+      "world_updates": 192,
+      "head": "recovery",
+      "world_sha256": "5df0928a4d078f6e36771b51e6b6395c4bcbb0884a440059bcb34fd35c883e87",
+      "passed": true,
+      "h64": {
+        "body_rmse": 0.5500328540802002,
+        "root_angular_mae": 0.16558174788951874,
+        "ball_velocity_rmse": 0.9946404695510864
+      },
+      "contact_step_ball_velocity_rmse": 0.3049111068248749
+    },
+    {
+      "world_updates": 200,
+      "head": "approach",
+      "world_sha256": "05cbbbd27c8da7f75c0eacd4298586b597a829dd906f3ad4cbf8134798781677",
+      "passed": true,
+      "h64": {
+        "body_rmse": 0.5511844754219055,
+        "root_angular_mae": 0.16599179804325104,
+        "ball_velocity_rmse": 0.9190158843994141
+      },
+      "contact_step_ball_velocity_rmse": 0.30588147044181824
+    },
+    {
+      "world_updates": 208,
+      "head": "recovery",
+      "world_sha256": "4caf7e7c226c2bbe70a2826c52be6fc841fab51232e56223ac95da41a4b589a0",
+      "passed": true,
+      "h64": {
+        "body_rmse": 0.5508414506912231,
+        "root_angular_mae": 0.16537247598171234,
+        "ball_velocity_rmse": 0.9836153984069824
+      },
+      "contact_step_ball_velocity_rmse": 0.30688589811325073
+    },
+    {
+      "world_updates": 216,
+      "head": "approach",
+      "world_sha256": "a749fee2e996e050243337302b19f2fc06b9de9ab5cfae388f26bc5f5c955d97",
+      "passed": true,
+      "h64": {
+        "body_rmse": 0.5519388914108276,
+        "root_angular_mae": 0.166579008102417,
+        "ball_velocity_rmse": 0.9571349620819092
+      },
+      "contact_step_ball_velocity_rmse": 0.30673250555992126
+    },
+    {
+      "world_updates": 224,
+      "head": "recovery",
+      "world_sha256": "b6970821f8d0c4567b456923d8645fa62dadf018e356db15220e450be4a5f70d",
+      "passed": true,
+      "h64": {
+        "body_rmse": 0.5507071018218994,
+        "root_angular_mae": 0.16603213548660278,
+        "ball_velocity_rmse": 1.0262821912765503
+      },
+      "contact_step_ball_velocity_rmse": 0.3061153292655945
+    },
+    {
+      "world_updates": 232,
+      "head": "approach",
+      "world_sha256": "1f7db7edba04f74f31e07a6b31c429cfc2dbdb645b698a5c8fd4843082cd106f",
+      "passed": true,
+      "h64": {
+        "body_rmse": 0.551276445388794,
+        "root_angular_mae": 0.16620875895023346,
+        "ball_velocity_rmse": 0.971605122089386
+      },
+      "contact_step_ball_velocity_rmse": 0.30434471368789673
+    },
+    {
+      "world_updates": 240,
+      "head": "recovery",
+      "world_sha256": "975a1ebf083eeffdd29167385a24e30dde94faaf2df4c7984fda10ad690c3c8e",
+      "passed": true,
+      "h64": {
+        "body_rmse": 0.5529120564460754,
+        "root_angular_mae": 0.1666654795408249,
+        "ball_velocity_rmse": 1.0014063119888306
+      },
+      "contact_step_ball_velocity_rmse": 0.3019162714481354
+    }
+  ],
+  "recovery_h64_shadow": {
+    "checkpoint_retained": 96,
+    "actor_sha256": "eed087c368790231413cb93f886925ccf216f74175ef34e3a7cf8e9909ada30a",
+    "world_sha256": "1f7db7edba04f74f31e07a6b31c429cfc2dbdb645b698a5c8fd4843082cd106f",
+    "head": "recovery",
+    "lanes": [
+      10,
+      12,
+      19,
+      20
+    ],
+    "backend": {
+      "schema": "research-fp32-flight-v1",
+      "source_sha256": "6403b695a0f33d568a8f4294bd524c97350f9234ba7f606c3965381af3ca8566",
+      "torch": "2.7.0+cu128",
+      "triton": "3.3.0"
+    },
+    "result": [
+      {
+        "backward": false,
+        "trials": [
+          {
+            "fused": false,
+            "seconds": 6.863922298012767,
+            "loss": -5.59079647064209,
+            "verified_gradient_tensors": 0
+          },
+          {
+            "fused": true,
+            "seconds": 5.298579925962258,
+            "loss": -5.59079647064209,
+            "verified_gradient_tensors": 0
+          },
+          {
+            "fused": true,
+            "seconds": 5.090929081023205,
+            "loss": -5.59079647064209,
+            "verified_gradient_tensors": 0
+          },
+          {
+            "fused": false,
+            "seconds": 6.868498335999902,
+            "loss": -5.59079647064209,
+            "verified_gradient_tensors": 0
+          }
+        ]
+      },
+      {
+        "backward": true,
+        "trials": [
+          {
+            "fused": false,
+            "seconds": 14.034277082944755,
+            "loss": -5.59079647064209,
+            "verified_gradient_tensors": 6
+          },
+          {
+            "fused": true,
+            "seconds": 12.531251578999218,
+            "loss": -5.59079647064209,
+            "verified_gradient_tensors": 6
+          },
+          {
+            "fused": true,
+            "seconds": 12.459570266015362,
+            "loss": -5.59079647064209,
+            "verified_gradient_tensors": 6
+          },
+          {
+            "fused": false,
+            "seconds": 14.083401814976241,
+            "loss": -5.59079647064209,
+            "verified_gradient_tensors": 6
+          }
+        ]
+      }
+    ]
+  }
+}
