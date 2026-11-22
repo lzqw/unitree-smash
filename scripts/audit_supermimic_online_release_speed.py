@@ -100,14 +100,17 @@ def audit(arm, checkpoint, block, flights, *, baseline=None, robot_endpoint_orac
             present, elapsed, launch[lanes], action_model=adapter.action_ball_model, return_details=True)
         info = details['impulse_info']
         racket_hit = info['active'] & (info['object_id'] == 0)
-        return nxt, feet, present, racket_hit, info['racket_part'].reshape(-1), details.get('impact_outgoing_velocity')
+        return nxt, feet, present, racket_hit, info['racket_part'].reshape(-1), details
 
     state, _, _, feet, present, _, _ = batch(-1)
     outcomes = [dict(**records[i], first_predicted_offset=None, wm_first_outgoing_mps=None,
                      wm_first_racket_part=None, wm_first_string=None, wm_impact_velocity_mps=None) for i in usable]
     for offset in (-1, 0, 1):
         recorded_state, targets, previous, native_feet, native_present, elapsed, velocity = batch(offset)
-        state, feet, present, hit, part, toi_velocity = step(state, targets, previous, feet, present, elapsed)
+        state, feet, present, hit, part, details = step(state, targets, previous, feet, present, elapsed)
+        toi_velocity = details.get('impact_outgoing_velocity')
+        impulse = details['impulse_info']
+        action_info = details.get('action_model_info') or {}
         if offset == 0:
             boundary = (recorded_state, targets, previous, native_feet, native_present, elapsed)
             one, _, _, one_hit, one_part, _ = step(*boundary)
@@ -126,6 +129,14 @@ def audit(arm, checkpoint, block, flights, *, baseline=None, robot_endpoint_orac
                 out.update(first_predicted_offset=offset, wm_first_outgoing_mps=float(state[j, -3:].norm()),
                            wm_first_racket_part=first_part, wm_first_string=0 <= first_part < strip_count,
                            wm_impact_velocity_mps=None if toi_velocity is None else toi_velocity[j].tolist())
+                if toi_velocity is not None and 'analytic_tangent_dv' in action_info and 'learned_racket_dv' in action_info:
+                    normal = impulse['pre_velocity'][j] + impulse['impulse_dv'][j]
+                    tangent = action_info['analytic_tangent_dv'][j]
+                    residual = action_info['learned_racket_dv'][j]
+                    torch.testing.assert_close(normal + (tangent + residual), toi_velocity[j],
+                                               rtol=1e-5, atol=1e-6)
+                    out['wm_impact_components_mps'] = dict(after_normal=normal.tolist(),
+                                                          tangent_dv=tangent.tolist(), residual_dv=residual.tolist())
             if offset == 0:
                 out.update(common_boundary_wm_mps=float(one[j, -3:].norm()),
                            common_boundary_native_mps=float(velocity[j].norm()), one_step_hit=bool(one_hit[j]))
@@ -167,8 +178,34 @@ def audit(arm, checkpoint, block, flights, *, baseline=None, robot_endpoint_orac
         held=release_clock_errors([r for r in outcomes if r['lane'] in held]),
         train=release_clock_errors([r for r in outcomes if r['lane'] not in held]),
     )
+    result['impact_components'] = dict(
+        held=impact_component_errors([r for r in outcomes if r['lane'] in held]),
+        train=impact_component_errors([r for r in outcomes if r['lane'] not in held]),
+    )
     if baseline is not None:
         result['paired_refresh'] = compare_refresh(baseline, outcomes, held)
+    return result
+
+
+def impact_component_errors(rows):
+    """Velocity at one predicted TOI compared with the native latched release on the same lane."""
+    released = [r for r in rows if r['native_release_velocity_mps'] is not None]
+    matched = [r for r in released if r.get('wm_impact_components_mps') is not None]
+    result = dict(first_contacts=len(rows), released=len(released), component_cases=len(matched))
+    if not matched:
+        return result
+    terms = [r['wm_impact_components_mps'] for r in matched]
+    normal = torch.tensor([t['after_normal'] for t in terms], dtype=torch.float64)
+    tangent = torch.tensor([t['tangent_dv'] for t in terms], dtype=torch.float64)
+    final = torch.tensor([r['wm_impact_velocity_mps'] for r in matched], dtype=torch.float64)
+    native = torch.tensor([r['native_release_velocity_mps'] for r in matched], dtype=torch.float64)
+    native_speed = native.norm(dim=-1)
+    for key, velocity in [('normal', normal), ('normal_plus_tangent', normal + tangent), ('full', final)]:
+        speed = velocity.norm(dim=-1)
+        result[key] = dict(component_rmse_mps=float((velocity - native).square().mean().sqrt()),
+                           speed_mae_mps=float((speed - native_speed).abs().mean()),
+                           false_above_5=int(((speed >= 5) & (native_speed < 5)).sum()),
+                           false_below_5=int(((speed < 5) & (native_speed >= 5)).sum()))
     return result
 
 

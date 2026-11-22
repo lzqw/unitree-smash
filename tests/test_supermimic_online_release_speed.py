@@ -1,6 +1,6 @@
 import pytest
 
-from scripts.audit_supermimic_online_release_speed import compare_refresh
+from scripts.audit_supermimic_online_release_speed import compare_refresh, impact_component_errors
 
 
 def test_paired_errors_require_identical_native_labels_and_count_missed_contacts():
@@ -36,3 +36,17 @@ def test_speed_clocks_use_the_same_released_predictions_and_include_observed_mis
     assert values['control_end']['false_below'] == 0
     assert (values['impact']['false_above'], values['impact']['false_below']) == (1, 1)
     assert release_clock_errors(rows[2:])['impact']['mae_mps'] is None
+
+
+def test_impulse_terms_compare_vector_and_speed_on_identical_released_hits():
+    row = dict(native_release_velocity_mps=[0., 5., 0.], wm_impact_velocity_mps=[0., 5., 0.],
+               wm_impact_components_mps=dict(after_normal=[5., 0., 0.], tangent_dv=[-5., 4., 0.],
+                                              residual_dv=[0., 1., 0.]))
+    result = impact_component_errors([row, dict(native_release_velocity_mps=None),
+                                      dict(native_release_velocity_mps=[1., 2., 3.])])
+    assert (result['first_contacts'], result['released'], result['component_cases']) == (3, 2, 1)
+    assert result['normal']['speed_mae_mps'] == 0.
+    assert result['normal']['component_rmse_mps'] == pytest.approx((50/3)**.5)
+    assert result['normal_plus_tangent']['false_below_5'] == 1
+    assert result['full']['component_rmse_mps'] == 0.
+    assert impact_component_errors([])['component_cases'] == 0

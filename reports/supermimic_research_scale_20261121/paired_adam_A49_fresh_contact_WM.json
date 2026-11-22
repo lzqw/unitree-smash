@@ -302,5 +302,55 @@
       "common_boundary_native_endpoint_speed_mae_mps": 0.3822228169777024,
       "oracle_measured_robot_endpoint_speed_mae_mps": 0.23252827013042612
     }
-  ]
+  ],
+  "first_impact_component_errors_wm248": {
+    "world_sha256": "c17c8c7623fe3682d7292440bf861eb527319291bd954d334126d9732f53d1bd",
+    "scope": "Components of the same predicted first racket impact compared with the PhysX release latch on the same lane. Earlier free rollout states are identical. This is an absolute velocity comparison, not a separately simulated policy or an action sensitivity test.",
+    "held": {
+      "first_contacts": 71,
+      "released": 71,
+      "component_cases": 71,
+      "normal": {
+        "component_rmse_mps": 0.8458050044671583,
+        "speed_mae_mps": 0.9071557692476739,
+        "false_above_5": 15,
+        "false_below_5": 0
+      },
+      "normal_plus_tangent": {
+        "component_rmse_mps": 0.5307632686028773,
+        "speed_mae_mps": 0.44664041677608496,
+        "false_above_5": 8,
+        "false_below_5": 3
+      },
+      "full": {
+        "component_rmse_mps": 0.5463240142348389,
+        "speed_mae_mps": 0.5032482068351873,
+        "false_above_5": 9,
+        "false_below_5": 7
+      }
+    },
+    "train": {
+      "first_contacts": 43,
+      "released": 43,
+      "component_cases": 43,
+      "normal": {
+        "component_rmse_mps": 0.7775768502007653,
+        "speed_mae_mps": 0.8173782823447533,
+        "false_above_5": 17,
+        "false_below_5": 1
+      },
+      "normal_plus_tangent": {
+        "component_rmse_mps": 0.38311822625536246,
+        "speed_mae_mps": 0.3387634504021821,
+        "false_above_5": 5,
+        "false_below_5": 1
+      },
+      "full": {
+        "component_rmse_mps": 0.38369383068922186,
+        "speed_mae_mps": 0.3525299577146594,
+        "false_above_5": 10,
+        "false_below_5": 0
+      }
+    }
+  }
 }
