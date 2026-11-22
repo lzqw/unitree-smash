@@ -1,0 +1,382 @@
+{
+  "live_proposal": {
+    "attempt_id": 158,
+    "accepted_id": 152,
+    "update_accepted": true,
+    "objective_before": -7.2653889656066895,
+    "objective_after": -7.388629913330078,
+    "backtrack_alpha": 0.5,
+    "backtrack_trials": [
+      {
+        "alpha": 1.0,
+        "loss": -7.535783290863037,
+        "objective_terms": {
+          "task": -7.680912494659424,
+          "tracking": 0.05949131026864052,
+          "anchor": 8.56379222869873
+        },
+        "first_contact_counts": {},
+        "budget_ok": false,
+        "budget_report": {
+          "relative_block_start": {
+            "residual_request_delta": 0.11945605278015137,
+            "final_normalized_command_delta": 0.0506991446018219,
+            "final_joint_target_delta_rad": 0.04778242111206055
+          },
+          "relative_last_accepted": {
+            "residual_request_delta": 0.06132477521896362,
+            "final_normalized_command_delta": 0.02602723240852356,
+            "final_joint_target_delta_rad": 0.02452993392944336
+          },
+          "relative_native_accepted": {
+            "residual_request_delta": 1.0169312953948975,
+            "final_normalized_command_delta": 0.4275229275226593,
+            "final_joint_target_delta_rad": 0.4029275178909302
+          }
+        },
+        "toi_coverage_preserved": true,
+        "final_command_change": 0.02452993392944336
+      },
+      {
+        "alpha": 0.5,
+        "loss": -7.388629913330078,
+        "objective_terms": {
+          "task": -7.530156135559082,
+          "tracking": 0.05952221527695656,
+          "anchor": 8.200396537780762
+        },
+        "first_contact_counts": {},
+        "budget_ok": true,
+        "budget_report": {
+          "relative_block_start": {
+            "residual_request_delta": 0.08843976259231567,
+            "final_normalized_command_delta": 0.03753530979156494,
+            "final_joint_target_delta_rad": 0.03537607192993164
+          },
+          "relative_last_accepted": {
+            "residual_request_delta": 0.03030848503112793,
+            "final_normalized_command_delta": 0.012863397598266602,
+            "final_joint_target_delta_rad": 0.012123584747314453
+          },
+          "relative_native_accepted": {
+            "residual_request_delta": 1.0169312953948975,
+            "final_normalized_command_delta": 0.4275229275226593,
+            "final_joint_target_delta_rad": 0.4029275178909302
+          }
+        },
+        "toi_coverage_preserved": true,
+        "final_command_change": 0.012123584747314453
+      }
+    ],
+    "bptt_seconds": 460.362230322964,
+    "completed_native_episodes": 128,
+    "tracking_nonzero_gradient_lanes": 16,
+    "native_return_mean": -7.750328791384213,
+    "retained": {
+      "recovery": 51,
+      "approach": 48
+    },
+    "shared_lane_episode_ticks_with_rejected": 5,
+    "selected_lane_episode_ticks": [
+      [
+        9,
+        0,
+        300
+      ],
+      [
+        23,
+        0,
+        787
+      ],
+      [
+        24,
+        0,
+        787
+      ],
+      [
+        26,
+        0,
+        681
+      ],
+      [
+        27,
+        0,
+        621
+      ],
+      [
+        31,
+        0,
+        580
+      ],
+      [
+        35,
+        0,
+        300
+      ],
+      [
+        42,
+        0,
+        356
+      ],
+      [
+        43,
+        0,
+        611
+      ],
+      [
+        45,
+        0,
+        562
+      ],
+      [
+        55,
+        0,
+        544
+      ],
+      [
+        56,
+        0,
+        403
+      ],
+      [
+        68,
+        0,
+        535
+      ],
+      [
+        79,
+        0,
+        298
+      ],
+      [
+        82,
+        0,
+        541
+      ],
+      [
+        95,
+        0,
+        528
+      ]
+    ],
+    "new_native_episodes": 0
+  },
+  "benchmark": {
+    "baseline_commit": "14047caa",
+    "device": "RTX 5080 shared with active training",
+    "checkpoint_retained": 96,
+    "actor_sha256": "eed087c368790231413cb93f886925ccf216f74175ef34e3a7cf8e9909ada30a",
+    "world_sha256": "1f7db7edba04f74f31e07a6b31c429cfc2dbdb645b698a5c8fd4843082cd106f",
+    "control_dt_seconds": 0.01,
+    "horizon": 64,
+    "body_backend": {
+      "schema": "research-body-force-fp32-v1",
+      "source_sha256": "dcd0ef6fed934ed374f4f741978f90c5b6329a48456f00b6a133ec8592c4b2fa",
+      "helpers_sha256": "6403b695a0f33d568a8f4294bd524c97350f9234ba7f606c3965381af3ca8566",
+      "torch": "2.7.0+cu128",
+      "triton": "3.3.0"
+    },
+    "contact_backend": {
+      "schema": "research-fp32-flight-v1",
+      "source_sha256": "6403b695a0f33d568a8f4294bd524c97350f9234ba7f606c3965381af3ca8566",
+      "torch": "2.7.0+cu128",
+      "triton": "3.3.0"
+    },
+    "native_start_tick": {
+      "approach": 272,
+      "recovery": 448
+    },
+    "scope": "First four eligible archived training lanes for each head. Identical scalar loss, task, tracking and anchor values and every trainable Actor gradient checked with zero tolerance. Measurements exclude native simulation and do not measure full proposal throughput.",
+    "task_memory_roundtrip": {
+      "schema_width": 141,
+      "schema_fields": 101,
+      "batch": 4,
+      "result": [
+        {
+          "backward": false,
+          "trials": [
+            {
+              "optimized": false,
+              "milliseconds_per_decode_encode": 1.7728606006130576
+            },
+            {
+              "optimized": true,
+              "milliseconds_per_decode_encode": 0.589233199134469
+            },
+            {
+              "optimized": true,
+              "milliseconds_per_decode_encode": 0.5900374404154718
+            },
+            {
+              "optimized": false,
+              "milliseconds_per_decode_encode": 1.7809009994380176
+            }
+          ]
+        },
+        {
+          "backward": true,
+          "trials": [
+            {
+              "optimized": false,
+              "milliseconds_per_decode_encode": 6.09507636167109
+            },
+            {
+              "optimized": true,
+              "milliseconds_per_decode_encode": 3.25116076041013
+            },
+            {
+              "optimized": true,
+              "milliseconds_per_decode_encode": 3.249431401491165
+            },
+            {
+              "optimized": false,
+              "milliseconds_per_decode_encode": 5.616991680581123
+            }
+          ]
+        }
+      ]
+    },
+    "heads": {
+      "recovery": {
+        "lanes": [
+          10,
+          12,
+          19,
+          20
+        ],
+        "stages": {
+          "candidate_scoring": {
+            "trials": [
+              {
+                "packed_decode": false,
+                "seconds": 4.696388011972886,
+                "objective": -5.59079647064209,
+                "verified_actor_gradient_tensors": 0
+              },
+              {
+                "packed_decode": true,
+                "seconds": 4.2528403010219336,
+                "objective": -5.59079647064209,
+                "verified_actor_gradient_tensors": 0
+              },
+              {
+                "packed_decode": true,
+                "seconds": 4.265186113014352,
+                "objective": -5.59079647064209,
+                "verified_actor_gradient_tensors": 0
+              },
+              {
+                "packed_decode": false,
+                "seconds": 4.336388398020063,
+                "objective": -5.59079647064209,
+                "verified_actor_gradient_tensors": 0
+              }
+            ],
+            "original_mean_seconds": 4.516388204996474,
+            "packed_mean_seconds": 4.259013207018143
+          },
+          "score_and_backward": {
+            "trials": [
+              {
+                "packed_decode": false,
+                "seconds": 11.992388341983315,
+                "objective": -5.59079647064209,
+                "verified_actor_gradient_tensors": 6
+              },
+              {
+                "packed_decode": true,
+                "seconds": 11.994162553048227,
+                "objective": -5.59079647064209,
+                "verified_actor_gradient_tensors": 6
+              },
+              {
+                "packed_decode": true,
+                "seconds": 12.03942124400055,
+                "objective": -5.59079647064209,
+                "verified_actor_gradient_tensors": 6
+              },
+              {
+                "packed_decode": false,
+                "seconds": 12.17319286300335,
+                "objective": -5.59079647064209,
+                "verified_actor_gradient_tensors": 6
+              }
+            ],
+            "original_mean_seconds": 12.082790602493333,
+            "packed_mean_seconds": 12.016791898524389
+          }
+        }
+      },
+      "approach": {
+        "lanes": [
+          10,
+          12,
+          19,
+          20
+        ],
+        "stages": {
+          "candidate_scoring": {
+            "trials": [
+              {
+                "packed_decode": false,
+                "seconds": 5.4936223609838635,
+                "objective": 0.9128664135932922,
+                "verified_actor_gradient_tensors": 0
+              },
+              {
+                "packed_decode": true,
+                "seconds": 5.185727448028047,
+                "objective": 0.9128664135932922,
+                "verified_actor_gradient_tensors": 0
+              },
+              {
+                "packed_decode": true,
+                "seconds": 5.171591649996117,
+                "objective": 0.9128664135932922,
+                "verified_actor_gradient_tensors": 0
+              },
+              {
+                "packed_decode": false,
+                "seconds": 5.297531240968965,
+                "objective": 0.9128664135932922,
+                "verified_actor_gradient_tensors": 0
+              }
+            ],
+            "original_mean_seconds": 5.395576800976414,
+            "packed_mean_seconds": 5.178659549012082
+          },
+          "score_and_backward": {
+            "trials": [
+              {
+                "packed_decode": false,
+                "seconds": 20.333438354020473,
+                "objective": 0.9128664135932922,
+                "verified_actor_gradient_tensors": 6
+              },
+              {
+                "packed_decode": true,
+                "seconds": 20.15944674302591,
+                "objective": 0.9128664135932922,
+                "verified_actor_gradient_tensors": 6
+              },
+              {
+                "packed_decode": true,
+                "seconds": 20.360010168980807,
+                "objective": 0.9128664135932922,
+                "verified_actor_gradient_tensors": 6
+              },
+              {
+                "packed_decode": false,
+                "seconds": 20.569409889983945,
+                "objective": 0.9128664135932922,
+                "verified_actor_gradient_tensors": 6
+              }
+            ],
+            "original_mean_seconds": 20.45142412200221,
+            "packed_mean_seconds": 20.25972845600336
+          }
+        }
+      }
+    }
+  }
+}

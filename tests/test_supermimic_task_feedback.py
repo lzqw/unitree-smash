@@ -50,3 +50,20 @@ def test_finite_boolean_and_counter_use_existing_decode_validity_semantics():
 def test_wrong_feedback_shape_is_rejected(values,valid):
     with pytest.raises(ValueError,match='feedback width'):
         schema().feedback_values(values,valid)
+
+
+def test_decoded_branch_owns_unmodeled_nested_memory_and_preserves_inputs():
+    contract = schema()
+    template = {'rally': {'count': torch.tensor([15]), 'clock': [torch.tensor([3.])]},
+                'auxiliary': {'timing': {'step': torch.tensor([11])}}}
+    values = torch.tensor([[1., 2., 3., 1.1, 8.]], requires_grad=True)
+    decoded = contract.decode_surrogate(values, torch.ones_like(values), template)
+    decoded['auxiliary']['timing']['step'].add_(1)
+    decoded['rally']['clock'][0].add_(2)
+    assert template['auxiliary']['timing']['step'].item() == 11
+    assert template['rally']['clock'][0].item() == 3.
+    assert template['rally']['count'].item() == 15
+    assert decoded['rally']['count'].item() == 8
+    assert decoded['rally']['contact'].item() == 1.
+    grad, = torch.autograd.grad(decoded['rally']['velocity'].sum() + decoded['rally']['contact'], values)
+    assert grad.tolist() == [[0., 1., 1., 0., 0.]]

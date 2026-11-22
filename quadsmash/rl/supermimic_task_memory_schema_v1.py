@@ -111,18 +111,30 @@ class TaskMemorySchemaV1:
         never native contact labels or formal score inputs.
         """
         from .supermimic_physical_imagination_state_v1 import tensor_copy
-        result=tensor_copy(template,values.device)
         if values.shape!=validity.shape or values.shape[-1]!=self.width:
             raise ValueError('Task surrogate width mismatch')
-        offset=0
-        for f in self.fields:
-            piece=values[:,offset:offset+f.width].reshape(len(values),*f.shape)
-            valid=validity[:,offset:offset+f.width].reshape_as(piece)
-            if f.kind=='bool':piece=piece.clamp(0.,1.)
-            elif f.kind=='float':piece=torch.where(valid>.5,piece,torch.full_like(piece,float('nan')))
-            target=result
-            parts=f.path.split('/')
-            for name in parts[:-1]:target=target[name]
-            target[parts[-1]]=piece
-            offset+=f.width
-        return result
+        # Transform whole columns together. Each named field still receives
+        # its original slice and only floating fields use a validity mask.
+        sources = {'bool': values.clamp(0., 1.),
+                   'float': torch.where(validity > .5, values, float('nan'))}
+        predictions = {}
+        offset = 0
+        for field in self.fields:
+            source = sources.get(field.kind, values)
+            parents = predictions
+            parts = field.path.split('/')
+            for name in parts[:-1]:
+                parents = parents.setdefault(name, {})
+            parents[parts[-1]] = source[:, offset:offset+field.width].reshape(len(values), *field.shape)
+            offset += field.width
+
+        def overlay(current, changes):
+            result = dict(current)
+            for name, value in current.items():
+                if name not in changes:
+                    result[name] = tensor_copy(value, values.device)
+            for name, value in changes.items():
+                result[name] = overlay(current[name], value) if isinstance(value, dict) else value
+            return result
+
+        return overlay(template, predictions)
