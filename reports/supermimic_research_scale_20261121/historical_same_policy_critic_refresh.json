@@ -1,0 +1,100 @@
+[
+  {
+    "policy_id": "recovery_frozen_v8_refresh1",
+    "actor_sha256": "0c3ca08275fade74893ea5df7603210cbde2c1e7b9c2934bed756685774b1038",
+    "critic_before_sha256": "39302c226b9ca4f67bd23345b39d978edcd457cae3df1adac619d58eb54ef785",
+    "source_sha256": "b9b551efcfc988138ba3c0a049fbbb2546f68caa66e1eabe1f423c5483c573ae",
+    "start_tick": 128,
+    "end_tick": 1600,
+    "completed_episodes": 128,
+    "critic_updates": 2,
+    "retained_updates": 8,
+    "metrics": {
+      "approach": {
+        "before": {
+          "mae": 23.08226776123047,
+          "rmse": 27.531705856323242,
+          "bias": -2.3795788288116455,
+          "rtg_ordering_accuracy": 0.5394574599260172,
+          "rtg_ordering_pairs": 3244
+        },
+        "after": {
+          "mae": 23.041345596313477,
+          "rmse": 27.351289749145508,
+          "bias": -1.885655164718628,
+          "rtg_ordering_accuracy": 0.5406905055487053,
+          "rtg_ordering_pairs": 3244
+        },
+        "held_states": 167,
+        "held_episodes": 72
+      },
+      "recovery": {
+        "before": {
+          "mae": 9.485710144042969,
+          "rmse": 12.586254119873047,
+          "bias": -0.2674466371536255,
+          "rtg_ordering_accuracy": 0.7730482883384359,
+          "rtg_ordering_pairs": 57488
+        },
+        "after": {
+          "mae": 9.432241439819336,
+          "rmse": 12.626646995544434,
+          "bias": 0.06530388444662094,
+          "rtg_ordering_accuracy": 0.7711348455329808,
+          "rtg_ordering_pairs": 57488
+        },
+        "held_states": 1852,
+        "held_episodes": 67
+      }
+    }
+  },
+  {
+    "policy_id": "recovery_frozen_v16_refresh2",
+    "actor_sha256": "d93b80b584aa8103f577c65e7ded69bf5e9ede2372ac4a9ec70bd37ce04681e3",
+    "critic_before_sha256": "1f737e677dc1c4d3f6f4f9c136e6fabf31ae3d3c30e9ba9b37146f2260de85d2",
+    "source_sha256": "18103da22a5bf406a7e23c62ddeff89bd62647565112a0ae3ff3e1ff82de9519",
+    "start_tick": 1744,
+    "end_tick": 3342,
+    "completed_episodes": 128,
+    "critic_updates": 2,
+    "retained_updates": 16,
+    "metrics": {
+      "approach": {
+        "before": {
+          "mae": 22.480337142944336,
+          "rmse": 27.180377960205078,
+          "bias": -6.332535266876221,
+          "rtg_ordering_accuracy": 0.5427151289220254,
+          "rtg_ordering_pairs": 3219
+        },
+        "after": {
+          "mae": 22.45777702331543,
+          "rmse": 27.139453887939453,
+          "bias": -6.206948757171631,
+          "rtg_ordering_accuracy": 0.5473749611680646,
+          "rtg_ordering_pairs": 3219
+        },
+        "held_states": 160,
+        "held_episodes": 71
+      },
+      "recovery": {
+        "before": {
+          "mae": 14.163690567016602,
+          "rmse": 15.994181632995605,
+          "bias": -7.795079231262207,
+          "rtg_ordering_accuracy": 0.6495737350966042,
+          "rtg_ordering_pairs": 62989
+        },
+        "after": {
+          "mae": 14.144808769226074,
+          "rmse": 15.969472885131836,
+          "bias": -7.784173965454102,
+          "rtg_ordering_accuracy": 0.6642429630570417,
+          "rtg_ordering_pairs": 62989
+        },
+        "held_states": 1938,
+        "held_episodes": 69
+      }
+    }
+  }
+]
