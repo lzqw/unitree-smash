@@ -1,0 +1,249 @@
+{
+  "scope": "Native ticks 896 through 1023 since this stream started. Training counts apply the held lane exclusion. Valid H16 starts count overlapping windows and respect observed episode boundaries.",
+  "chunks": [
+    {
+      "file": "chunk_00028.pt.zst",
+      "sha256": "a64ae7168dfaae96cce0020338b3aac3c9c06a856f9f2224f6ffac12ef38cb29",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00029.pt.zst",
+      "sha256": "210bbd30b33e997fa71b4390ca716b8fb60ce8941dfec4ccfc8f38c946e57d9d",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00030.pt.zst",
+      "sha256": "65ea36a3c1621312c91cd4554cf6f3e5d65418818b288fd40c200185f7802454",
+      "ticks": 32
+    },
+    {
+      "file": "chunk_00031.pt.zst",
+      "sha256": "c8da062c1519d0718a9aafbab5d9a698fea3414098d6106dcaa0f558ff3a3c7c",
+      "ticks": 32
+    }
+  ],
+  "versions": [
+    149
+  ],
+  "actor_sha256": [
+    "eed087c368790231413cb93f886925ccf216f74175ef34e3a7cf8e9909ada30a"
+  ],
+  "native": {
+    "all": {
+      "lanes": 128,
+      "transitions": 16384,
+      "valid_h16": 14464,
+      "episode_indices": [
+        1
+      ],
+      "transitions_with_shuttle": 3259,
+      "post_contact_released_ticks": 384,
+      "events": {
+        "qualified": 0,
+        "frame": 0,
+        "body_ground": 1,
+        "landing": 0
+      }
+    },
+    "training": {
+      "lanes": 45,
+      "transitions": 5760,
+      "valid_h16": 5085,
+      "episode_indices": [
+        1
+      ],
+      "transitions_with_shuttle": 1035,
+      "post_contact_released_ticks": 0,
+      "events": {
+        "qualified": 0,
+        "frame": 0,
+        "body_ground": 0,
+        "landing": 0
+      }
+    },
+    "held": {
+      "lanes": 83,
+      "transitions": 10624,
+      "valid_h16": 9379,
+      "episode_indices": [
+        1
+      ],
+      "transitions_with_shuttle": 2224,
+      "post_contact_released_ticks": 384,
+      "events": {
+        "qualified": 0,
+        "frame": 0,
+        "body_ground": 1,
+        "landing": 0
+      }
+    }
+  },
+  "latest_policy_transition_uses": 0,
+  "online_uses": {
+    "8": 1120,
+    "16": 1184,
+    "17": 864,
+    "33": 192,
+    "69": 1040,
+    "109": 627,
+    "117": 1533,
+    "125": 753,
+    "133": 605,
+    "141": 194,
+    "77": 80,
+    "49": 32,
+    "41": 32
+  },
+  "training_h16_windows": 1024,
+  "contact_steps": 4,
+  "sampled_contact_events": 129,
+  "shadow_note": "Four native starts per head on the RTX 5080. Both paths use the fused impulse prior, only the Body flight backend changes. Concurrent main training; exact score and six actor tensor gradients checked; no shadow optimizer step.",
+  "body_flight_shadow": [
+    {
+      "checkpoint_retained": 96,
+      "actor_sha256": "eed087c368790231413cb93f886925ccf216f74175ef34e3a7cf8e9909ada30a",
+      "world_sha256": "1f7db7edba04f74f31e07a6b31c429cfc2dbdb645b698a5c8fd4843082cd106f",
+      "head": "recovery",
+      "lanes": [
+        10,
+        12,
+        19,
+        20
+      ],
+      "backend": {
+        "schema": "research-body-force-fp32-v1",
+        "source_sha256": "dcd0ef6fed934ed374f4f741978f90c5b6329a48456f00b6a133ec8592c4b2fa",
+        "helpers_sha256": "6403b695a0f33d568a8f4294bd524c97350f9234ba7f606c3965381af3ca8566",
+        "torch": "2.7.0+cu128",
+        "triton": "3.3.0"
+      },
+      "contact_backend": {
+        "schema": "research-fp32-flight-v1",
+        "source_sha256": "6403b695a0f33d568a8f4294bd524c97350f9234ba7f606c3965381af3ca8566",
+        "torch": "2.7.0+cu128",
+        "triton": "3.3.0"
+      },
+      "result": [
+        {
+          "backward": false,
+          "trials": [
+            {
+              "fused": false,
+              "seconds": 5.568664485996123,
+              "loss": -5.59079647064209,
+              "verified_gradient_tensors": 0
+            },
+            {
+              "fused": true,
+              "seconds": 5.127765052951872,
+              "loss": -5.59079647064209,
+              "verified_gradient_tensors": 0
+            },
+            {
+              "fused": true,
+              "seconds": 4.91058847005479,
+              "loss": -5.59079647064209,
+              "verified_gradient_tensors": 0
+            },
+            {
+              "fused": false,
+              "seconds": 5.2870380930253305,
+              "loss": -5.59079647064209,
+              "verified_gradient_tensors": 0
+            }
+          ]
+        },
+        {
+          "backward": true,
+          "trials": [
+            {
+              "fused": false,
+              "seconds": 12.334271356987301,
+              "loss": -5.59079647064209,
+              "verified_gradient_tensors": 6
+            },
+            {
+              "fused": true,
+              "seconds": 12.003387209028006,
+              "loss": -5.59079647064209,
+              "verified_gradient_tensors": 6
+            },
+            {
+              "fused": true,
+              "seconds": 12.090043265023269,
+              "loss": -5.59079647064209,
+              "verified_gradient_tensors": 6
+            },
+            {
+              "fused": false,
+              "seconds": 12.397347938036546,
+              "loss": -5.59079647064209,
+              "verified_gradient_tensors": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "checkpoint_retained": 96,
+      "actor_sha256": "eed087c368790231413cb93f886925ccf216f74175ef34e3a7cf8e9909ada30a",
+      "world_sha256": "1f7db7edba04f74f31e07a6b31c429cfc2dbdb645b698a5c8fd4843082cd106f",
+      "head": "approach",
+      "lanes": [
+        10,
+        12,
+        19,
+        20
+      ],
+      "backend": {
+        "schema": "research-body-force-fp32-v1",
+        "source_sha256": "dcd0ef6fed934ed374f4f741978f90c5b6329a48456f00b6a133ec8592c4b2fa",
+        "helpers_sha256": "6403b695a0f33d568a8f4294bd524c97350f9234ba7f606c3965381af3ca8566",
+        "torch": "2.7.0+cu128",
+        "triton": "3.3.0"
+      },
+      "contact_backend": {
+        "schema": "research-fp32-flight-v1",
+        "source_sha256": "6403b695a0f33d568a8f4294bd524c97350f9234ba7f606c3965381af3ca8566",
+        "torch": "2.7.0+cu128",
+        "triton": "3.3.0"
+      },
+      "result": [
+        {
+          "backward": false,
+          "trials": [
+            {
+              "fused": false,
+              "seconds": 6.504016056947876,
+              "loss": 0.9128664135932922,
+              "verified_gradient_tensors": 0
+            },
+            {
+              "fused": true,
+              "seconds": 5.9566215090453625,
+              "loss": 0.9128664135932922,
+              "verified_gradient_tensors": 0
+            }
+          ]
+        },
+        {
+          "backward": true,
+          "trials": [
+            {
+              "fused": false,
+              "seconds": 20.542940697981976,
+              "loss": 0.9128664135932922,
+              "verified_gradient_tensors": 6
+            },
+            {
+              "fused": true,
+              "seconds": 20.600414424028713,
+              "loss": 0.9128664135932922,
+              "verified_gradient_tensors": 6
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
