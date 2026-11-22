@@ -305,6 +305,8 @@ class PhysicalHorizonTrainer:
             if dynamic_landing:
                 from .supermimic_recovery_batches import update_recovery_landing
                 initial_landing = landed
+        score_release = contact_weight and getattr(self, 'score_downward_release', False)
+        release_velocity = state.physical.new_zeros((len(selected), 3)) if score_release else None
         if contact_weight or first_geometry:
             outgoing=state.physical.new_zeros((len(selected),6))
             impacted=torch.zeros_like(selected)
@@ -382,6 +384,11 @@ class PhysicalHorizonTrainer:
                 candidate = (usable & (survival.detach() > 0)) if first_geometry else track_mask
                 first=candidate & impact['active'].reshape(-1) & (impact['object_id'].reshape(-1)==0) & ~impacted
                 if first_geometry and first.any():
+                    if score_release:
+                        velocity = transition['impact_outgoing_velocity']
+                        if velocity is None:
+                            raise ValueError('First-impact release scoring requires the TOI impulse velocity')
+                        release_velocity = torch.where(first[:, None], velocity, release_velocity)
                     from .supermimic_toi_racket_objective import first_racket_cost
                     details = {key: impact[key][first] for key in ('time', 'pre_position', 'local')}
                     cost = first_racket_cost(previous.physical[first], state.physical[first], details,
@@ -427,7 +434,9 @@ class PhysicalHorizonTrainer:
                 impact_lanes = impacted & weights.bool().reshape(-1)
                 prior = self.adapter.action_ball_model.impulse_prior
                 if revised:
-                    task_loss = first_string_flight_loss(outgoing, weights, first_string, prior, self.research_court)
+                    task_loss = first_string_flight_loss(
+                        outgoing, weights, first_string, prior, self.research_court,
+                        release_velocity=release_velocity)
                 elif impact_lanes.any():
                     cost = outgoing_cost(outgoing[impact_lanes], prior, self.research_court)
                     task_loss = cost.sum() / weights.sum().clamp_min(1.)

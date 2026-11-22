@@ -101,6 +101,7 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
     action_residual=torch.zeros_like(ball_prediction)
     impulse_action_residual=None
     action_model_info=None
+    impact_outgoing_velocity = impulse_info.get('post_velocity') if impulse_info is not None else None
     if action_model is not None:
         # V4 preserves its historical string-only contract. V5 explicitly
         # includes the learned frame-contact mode as a second causal impact
@@ -157,9 +158,9 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
                 # The transition and diagnostics discard the second flight for every lane.
                 corrected_ball = analytic_ball
             else:
+                impact_outgoing_velocity = impulse_info['pre_velocity'] + impulse_info['impulse_dv'] + residual_dv
                 corrected_position, corrected_velocity = impulse_prior.advance(
-                    impulse_info['pre_position'],
-                    impulse_info['pre_velocity'] + impulse_info['impulse_dv'] + residual_dv,
+                    impulse_info['pre_position'], impact_outgoing_velocity,
                     impulse_info['remaining_time'])
                 corrected_ball=torch.cat((corrected_position, corrected_velocity),-1)
             impulse_action_residual=corrected_ball-analytic_ball
@@ -187,6 +188,7 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
             action_residual=action_residual,
             impulse_action_residual=impulse_action_residual,
             predicted_ball=ball_prediction,
+            impact_outgoing_velocity=impact_outgoing_velocity,
             impulse_info=impulse_info,
             action_model_info=action_model_info,
             launch_now=launch_now,

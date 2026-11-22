@@ -177,6 +177,7 @@ class PhysicalImaginationAdapter(nn.Module):
         self.calls+=1
         next_state=PhysicalImaginationStateV1(predicted,executor,next_task,history,observation,next_context)
         transition=dict(
+            impact_outgoing_velocity=ball_details.get('impact_outgoing_velocity'),
             outgoing_ball=outgoing_ball,impulse_info=ball_details.get('impulse_info'),
             requested_action=actor_action,base_action=base,
             final_joint_targets=preview.final_joint_targets,event_delta=event_delta,

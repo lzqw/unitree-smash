@@ -49,6 +49,39 @@ def test_only_first_string_flight_can_earn_outgoing_credit():
     assert no_strings.item() == 1. and torch.autograd.grad(no_strings, ball)[0].count_nonzero() == 0
 
 
+def test_downward_release_uses_native_threshold_and_only_legal_string_lanes():
+    from quadsmash.rl.supermimic_outgoing_flight import first_string_flight_loss
+    prior = SimpleNamespace(gravity=torch.tensor([0., 0., -9.81]), wind=torch.zeros(3),
+                            drag=.02, preview=SimpleNamespace(radius=.025))
+    court = dict(net_plane_x_m=1.5, target_x_limits_m=[2., 4.], target_y_half_width_m=1.,
+                 net_side_top_m=1.55, net_center_top_m=1.524, post_y_center_abs_m=3.075)
+    ball = torch.tensor([[1., 0., 2., 6., 0., vz] for vz in (-.75, -1., -1.25, -.75)],
+                        requires_grad=True)
+    old = outgoing_cost(ball, prior, court, scoring_margins=True)
+    new = outgoing_cost(ball, prior, court, scoring_margins=True, release_velocity=ball[:, 3:])
+    torch.testing.assert_close(new - old, torch.tensor([.05, 0., 0., .05]))
+    g, = torch.autograd.grad((new - old).sum(), ball)
+    expected = torch.zeros_like(g)
+    expected[[0, 3], 5] = .2
+    torch.testing.assert_close(g, expected)
+    # A shallow release can become steep enough by the next control boundary.
+    endpoint = ball.detach().clone()
+    endpoint[:, 5] = -1.25
+    release = endpoint[:, 3:].clone().requires_grad_()
+    with torch.no_grad():
+        release[0, 2] = -.75
+        release[1, 0] = 2.
+    matched = outgoing_cost(endpoint, prior, court, scoring_margins=True, release_velocity=release)
+    direct = (5.25 - release.norm(dim=-1)).relu()/5 + (release[:, 2]+1.).relu()/5
+    torch.testing.assert_close(matched-outgoing_cost(endpoint, prior, court, scoring_margins=True), direct)
+    assert torch.autograd.grad(matched.sum(), release)[0][0, 2] > 0
+    legal = torch.tensor([True, True, True, False])
+    cost = first_string_flight_loss(ball, torch.ones_like(legal), legal, prior, court,
+                                    release_velocity=ball[:, 3:])
+    torch.testing.assert_close(cost, ((-torch.expm1(-new[legal])).sum()+1.)/4)
+    assert torch.autograd.grad(cost, ball)[0][3].count_nonzero() == 0
+
+
 def test_flight_cost_keeps_airborne_lanes_after_other_lanes_land():
     prior = SimpleNamespace(gravity=torch.tensor([0., 0., -9.81]), wind=torch.zeros(3), drag=.02)
     court = dict(net_plane_x_m=1.5, target_x_limits_m=[2., 4.], target_y_half_width_m=1.,
@@ -129,7 +162,7 @@ def test_extension_launches_from_final_refresh_and_preserves_original_axes(tmp_p
     assert cmd.count('--restart-uphill-approach-momentum') == 1
     quota = dict(item.split('=') for item in cmd[cmd.index('--wm-stage-quota')+1].split(','))
     assert quota == {'uniform':'108','post_landing_support_loss':'16','post_landing_unload':'4'}
-    assert cmd.count('--recovery-rollout-landing') == 1
+    assert cmd.count('--recovery-rollout-landing') == cmd.count('--score-downward-release') == 1
     ck['world_updates'] -= 4
     torch.save(ck, train/'latest.pt')
     with pytest.raises(ValueError, match='post-refresh'):

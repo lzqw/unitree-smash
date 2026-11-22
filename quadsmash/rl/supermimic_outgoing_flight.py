@@ -2,7 +2,7 @@
 import torch
 
 
-def outgoing_cost(ball, prior, court, *, dt=.02, steps=100, scoring_margins=False):
+def outgoing_cost(ball, prior, court, *, dt=.02, steps=100, scoring_margins=False, release_velocity=None):
     """Free flight in court coordinates. Interpolate net/ground crossings when reached."""
     p,v=ball.split(3,-1)
     radius = prior.preview.radius if scoring_margins else 0.
@@ -38,18 +38,23 @@ def outgoing_cost(ball, prior, court, *, dt=.02, steps=100, scoring_margins=Fals
     if scoring_margins:
         top = top + prior.preview.radius + .02
         xmin, xmax, width = xmin + .03, xmax - .03, width - .03
-        extra = ((5.25 - ball[:, 3:].norm(dim=-1)).relu() + (.1 - ball[:, 3]).relu()) / 5.
+        scored_velocity = ball[:, 3:] if release_velocity is None else release_velocity
+        extra = ((5.25 - scored_velocity.norm(dim=-1)).relu() + (.1 - scored_velocity[:, 0]).relu()) / 5.
+        if release_velocity is not None:
+            # Native scoring latches velocity at release. Subsequent flight keeps the full WM endpoint.
+            extra = extra + (scored_velocity[:, 2] + 1.).relu() / 5.
     clearance=torch.where(crossed,(top-net[:,2]).relu(),(net_x-max_x).relu())
     return (extra+clearance+(xmin-landing[:,0]).relu()+(landing[:,0]-xmax).relu()
             +(landing[:,1].abs()-width).relu())
 
 
-def first_string_flight_loss(ball, selected, first_string, prior, court):
+def first_string_flight_loss(ball, selected, first_string, prior, court, *, release_velocity=None):
     """Score flight only after a legal first racket impact, on a fixed lane denominator."""
     selected = selected.reshape(-1).bool()
     legal = selected & first_string.reshape(-1)
     if not legal.any():
         return ball.sum() * 0. + selected.any().to(ball.dtype)
-    cost = outgoing_cost(ball[legal], prior, court, scoring_margins=True)
+    velocity = None if release_velocity is None else release_velocity[legal]
+    cost = outgoing_cost(ball[legal], prior, court, scoring_margins=True, release_velocity=velocity)
     bounded_cost = -torch.expm1(-cost)
     return (bounded_cost.sum() + (selected & ~legal).sum()) / selected.sum()

@@ -303,6 +303,7 @@ def test_deferred_no_grad_flight_matches_differentiable_path(objects):
 
         def advance(self, position, velocity, duration):
             self.calls += 1
+            self.impact_velocity = velocity
             return position + duration[:, None]*velocity, velocity
 
     model = TemporalCausalRacketModeImpulseResidualBallV13(preview=FakePreview())
@@ -314,6 +315,9 @@ def test_deferred_no_grad_flight_matches_differentiable_path(objects):
     with torch.no_grad():
         actual = ball_transition(world, ball, *args, action_model=model, return_details=True)
     assert prior.calls == 1 + int(0 in objects)
+    if 0 in objects:
+        torch.testing.assert_close(actual[3]['impact_outgoing_velocity'], prior.impact_velocity, rtol=0, atol=0)
+        torch.testing.assert_close(expected[3]['impact_outgoing_velocity'], prior.impact_velocity, rtol=0, atol=0)
     for before, after in zip(expected[:3], actual[:3]):
         torch.testing.assert_close(before, after, rtol=0, atol=0)
     torch.testing.assert_close(expected[3]['impulse_action_residual'], actual[3]['impulse_action_residual'], rtol=0, atol=0)

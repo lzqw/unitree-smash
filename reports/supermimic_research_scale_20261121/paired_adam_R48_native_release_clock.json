@@ -1,0 +1,1556 @@
+{
+  "scope": "First episode for each of 128 TRAIN128 lanes, mixed policies, native release vs first-contact control endpoint. Measured timing audit: step-end native ball state vs native release velocity under the proposed score, not WM predictions. Counterfactual training cost only, no policy/WM updates.",
+  "baselines": {
+    "experiment_start": {
+      "A-720401-010": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "A-720401-011": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "event_order",
+          "no_rule_fault"
+        ]
+      },
+      "A-720401-012": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "released_downward_forward"
+        ]
+      },
+      "A-720401-018": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "A-720401-025": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-026": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-028": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "A-720401-031": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "event_order",
+          "legal_airborne_strings",
+          "no_rule_fault"
+        ]
+      },
+      "A-720401-033": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target"
+        ]
+      },
+      "A-720401-035": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-039": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-040": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-042": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "A-720401-043": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-046": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "event_order",
+          "legal_airborne_strings",
+          "no_rule_fault"
+        ]
+      },
+      "A-720401-049": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "event_order",
+          "legal_airborne_strings",
+          "no_rule_fault"
+        ]
+      },
+      "A-720401-052": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "event_order",
+          "legal_airborne_strings",
+          "released_downward_forward",
+          "speed_threshold"
+        ]
+      },
+      "A-720401-054": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-055": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "speed_threshold"
+        ]
+      },
+      "A-720401-056": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "event_order",
+          "legal_airborne_strings",
+          "no_rule_fault"
+        ]
+      },
+      "A-720401-058": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings",
+          "released_downward_forward"
+        ]
+      },
+      "A-720401-059": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "A-720401-063": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings",
+          "released_downward_forward"
+        ]
+      },
+      "B-720402-003": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "B-720402-011": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "event_order",
+          "legal_airborne_strings",
+          "no_rule_fault"
+        ]
+      },
+      "B-720402-026": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target"
+        ]
+      },
+      "B-720402-030": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "B-720402-057": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      }
+    },
+    "scored_resume": {
+      "A-720401-007": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-009": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-011": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "speed_threshold"
+        ]
+      },
+      "A-720401-018": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "A-720401-020": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "A-720401-023": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "A-720401-025": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-033": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target"
+        ]
+      },
+      "A-720401-037": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "A-720401-039": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-043": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "speed_threshold"
+        ]
+      },
+      "A-720401-046": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "event_order",
+          "legal_airborne_strings",
+          "no_rule_fault"
+        ]
+      },
+      "A-720401-058": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings",
+          "released_downward_forward"
+        ]
+      },
+      "B-720402-003": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "B-720402-013": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "B-720402-030": {
+        "flip": "lost",
+        "failed_native_conditions": [
+          "actual_net_and_target",
+          "legal_airborne_strings"
+        ]
+      },
+      "B-720402-051": {
+        "flip": "gained",
+        "failed_native_conditions": [
+          "actual_net_and_target"
+        ]
+      }
+    }
+  },
+  "chunks": [
+    "230f161b8d199fab7ff79be91bd50c99d1bcbad0dfae8b2bb1d90b72ac2b0869",
+    "2fc5362bc3eb4f45a16894e7231e8685e534d59b05d036de224842d03aa521b0",
+    "5973de6641980689ce5702dfb45f7e3530dbb3012561b66bc9954c881b916f46",
+    "75b81f38e434ca0ca550958a3a196ea72f8a341fbe5f58a6b2470a87dd54f72c",
+    "8289271697e4c49074663a1e7471e3e5747fbb46b991987b18ffe9c5bf0a4984",
+    "1f06e9db902914947d1a125c11a6b78db9cb7bbb89615457b51db398b63efd3a",
+    "762ec5594349f15c7e71430772a0a70134925bf31a8357dd0f60cc2fc975bd9d",
+    "8c9dd2a0fe14f09504dacc8878ab840c2a6ac98311c47a5602e7a2c290f867dd",
+    "e06625fe4270e72b4acb1d1791216dfca7e25fdfee263456d54cbd5f74ceb494"
+  ],
+  "gpu_check": {
+    "device": "NVIDIA GeForce RTX 5080",
+    "qualified_cases": 71,
+    "step_end_vertical_cost_count": 4,
+    "native_shallow_count": 5,
+    "same_threshold_side": 70,
+    "finite_ball_state_gradients": true,
+    "behavior_versions": [
+      109
+    ],
+    "mean_loss_before": 0.07033202797174454,
+    "measured_release_velocity_in_auxiliary_score_mean_loss": 0.07388201355934143
+  },
+  "cases": [
+    {
+      "lane": 1,
+      "case": "A-720401-001",
+      "end_vz": -1.7845354080200195,
+      "release_vz": -1.7194454669952393,
+      "native_release_speed": 5.726917299251483,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 2,
+      "case": "A-720401-002",
+      "end_vz": -1.4614496231079102,
+      "release_vz": -1.3934134244918823,
+      "native_release_speed": 4.855675635841112,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0032186508178710938,
+      "failures": [
+        "actual_net_and_target",
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 3,
+      "case": "A-720401-003",
+      "end_vz": -2.528208017349243,
+      "release_vz": -2.4696714878082275,
+      "native_release_speed": 5.48708636379518,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 6,
+      "case": "A-720401-006",
+      "end_vz": -1.6975113153457642,
+      "release_vz": -1.623407244682312,
+      "native_release_speed": 5.868270189547707,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": [
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "lane": 7,
+      "case": "A-720401-007",
+      "end_vz": -1.4471700191497803,
+      "release_vz": -1.4044252634048462,
+      "native_release_speed": 4.886219628971043,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0019999518990516663,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 8,
+      "case": "A-720401-008",
+      "end_vz": -2.229001760482788,
+      "release_vz": -2.1370413303375244,
+      "native_release_speed": 5.700092022550356,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 9,
+      "case": "A-720401-009",
+      "end_vz": -1.8782094717025757,
+      "release_vz": -1.7837191820144653,
+      "native_release_speed": 5.168229424272845,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.005499077029526234,
+      "failures": []
+    },
+    {
+      "lane": 11,
+      "case": "A-720401-011",
+      "end_vz": -2.24311900138855,
+      "release_vz": -2.157996892929077,
+      "native_release_speed": 5.088727398332582,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.006375981494784355,
+      "failures": []
+    },
+    {
+      "lane": 12,
+      "case": "A-720401-012",
+      "end_vz": -1.011721134185791,
+      "release_vz": -0.9344689249992371,
+      "native_release_speed": 6.198347195249148,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.013106214813888073,
+      "combined_cost_delta": 0.013106214813888073,
+      "failures": [
+        "released_downward_forward"
+      ]
+    },
+    {
+      "lane": 16,
+      "case": "A-720401-016",
+      "end_vz": -1.7882641553878784,
+      "release_vz": -1.7205982208251953,
+      "native_release_speed": 5.12142615268806,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0037921909242868423,
+      "failures": []
+    },
+    {
+      "lane": 17,
+      "case": "A-720401-017",
+      "end_vz": -1.8890372514724731,
+      "release_vz": -1.8741436004638672,
+      "native_release_speed": 5.807886640729824,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": [
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "lane": 20,
+      "case": "A-720401-020",
+      "end_vz": -2.3849291801452637,
+      "release_vz": -2.337517261505127,
+      "native_release_speed": 5.445227099406426,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 21,
+      "case": "A-720401-021",
+      "end_vz": -1.8322267532348633,
+      "release_vz": -1.7694896459579468,
+      "native_release_speed": 5.450470395113228,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": [
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "lane": 23,
+      "case": "A-720401-023",
+      "end_vz": -1.805561900138855,
+      "release_vz": -1.7310633659362793,
+      "native_release_speed": 6.08792202901316,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 24,
+      "case": "A-720401-024",
+      "end_vz": -1.746750831604004,
+      "release_vz": -1.7335532903671265,
+      "native_release_speed": 4.782285148405713,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0008206367492675781,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 25,
+      "case": "A-720401-025",
+      "end_vz": -1.7252641916275024,
+      "release_vz": -1.6658461093902588,
+      "native_release_speed": 4.79295463869722,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0035573989152908325,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 26,
+      "case": "A-720401-026",
+      "end_vz": -1.9474451541900635,
+      "release_vz": -1.9235199689865112,
+      "native_release_speed": 4.870530974076787,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.001643940806388855,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 27,
+      "case": "A-720401-027",
+      "end_vz": -2.133704662322998,
+      "release_vz": -2.1104886531829834,
+      "native_release_speed": 5.285373988412841,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 30,
+      "case": "A-720401-030",
+      "end_vz": -2.3152236938476562,
+      "release_vz": -2.312252998352051,
+      "native_release_speed": 5.145628435106177,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.00023336522281169891,
+      "failures": []
+    },
+    {
+      "lane": 31,
+      "case": "A-720401-031",
+      "end_vz": -2.3012235164642334,
+      "release_vz": -2.262021064758301,
+      "native_release_speed": 5.275781350075872,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 32,
+      "case": "A-720401-032",
+      "end_vz": -1.4763230085372925,
+      "release_vz": -1.4034430980682373,
+      "native_release_speed": 4.714352542833849,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.003662109375,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 33,
+      "case": "A-720401-033",
+      "end_vz": -2.142624855041504,
+      "release_vz": -2.1082119941711426,
+      "native_release_speed": 5.851465024844233,
+      "contact_to_release_ms": 0.37479400634765625,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": [
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "lane": 34,
+      "case": "A-720401-034",
+      "end_vz": -2.508467197418213,
+      "release_vz": -2.4569592475891113,
+      "native_release_speed": 5.3287983177045595,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 35,
+      "case": "A-720401-035",
+      "end_vz": -1.234842300415039,
+      "release_vz": -1.1568208932876587,
+      "native_release_speed": 4.361542337003299,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.003543287515640259,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 36,
+      "case": "A-720401-036",
+      "end_vz": -1.9223484992980957,
+      "release_vz": -1.9104113578796387,
+      "native_release_speed": 5.338648827679146,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 37,
+      "case": "A-720401-037",
+      "end_vz": -2.2071993350982666,
+      "release_vz": -2.134028673171997,
+      "native_release_speed": 5.272604883291817,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 38,
+      "case": "A-720401-038",
+      "end_vz": -2.2432844638824463,
+      "release_vz": -2.179666757583618,
+      "native_release_speed": 5.271907434380952,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 39,
+      "case": "A-720401-039",
+      "end_vz": -1.8409793376922607,
+      "release_vz": -1.775694727897644,
+      "native_release_speed": 4.923100469939194,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.00405912846326828,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 40,
+      "case": "A-720401-040",
+      "end_vz": -1.9732646942138672,
+      "release_vz": -1.9505269527435303,
+      "native_release_speed": 4.731619495440474,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0016599670052528381,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 43,
+      "case": "A-720401-043",
+      "end_vz": -1.312990427017212,
+      "release_vz": -1.3087655305862427,
+      "native_release_speed": 4.574666801919711,
+      "contact_to_release_ms": 0.5621910095214844,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.00019942224025726318,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 45,
+      "case": "A-720401-045",
+      "end_vz": -1.8973032236099243,
+      "release_vz": -1.8161426782608032,
+      "native_release_speed": 5.530094082634115,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 46,
+      "case": "A-720401-046",
+      "end_vz": -1.8629032373428345,
+      "release_vz": -1.8527884483337402,
+      "native_release_speed": 6.137379101759527,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 50,
+      "case": "A-720401-050",
+      "end_vz": -2.0735175609588623,
+      "release_vz": -2.0030956268310547,
+      "native_release_speed": 5.023404669168232,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.004904747009277344,
+      "failures": []
+    },
+    {
+      "lane": 51,
+      "case": "A-720401-051",
+      "end_vz": -1.493735671043396,
+      "release_vz": -1.4229252338409424,
+      "native_release_speed": 5.615975072391068,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 53,
+      "case": "A-720401-053",
+      "end_vz": -1.6156325340270996,
+      "release_vz": -1.5300347805023193,
+      "native_release_speed": 4.113657652753156,
+      "contact_to_release_ms": 0.5621910095214844,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.005863934755325317,
+      "failures": [
+        "actual_net_and_target",
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 54,
+      "case": "A-720401-054",
+      "end_vz": -1.6410380601882935,
+      "release_vz": -1.5677108764648438,
+      "native_release_speed": 4.726706333377688,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.004197694361209869,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 55,
+      "case": "A-720401-055",
+      "end_vz": -1.9517220258712769,
+      "release_vz": -1.8595504760742188,
+      "native_release_speed": 4.806154225152497,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.006321534514427185,
+      "failures": [
+        "actual_net_and_target",
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 56,
+      "case": "A-720401-056",
+      "end_vz": -1.9851558208465576,
+      "release_vz": -1.916050672531128,
+      "native_release_speed": 5.598872762723479,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 57,
+      "case": "A-720401-057",
+      "end_vz": -1.4312885999679565,
+      "release_vz": -1.42288339138031,
+      "native_release_speed": 5.615963473276358,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 59,
+      "case": "A-720401-059",
+      "end_vz": -1.8638132810592651,
+      "release_vz": -1.7759850025177002,
+      "native_release_speed": 5.398609038154911,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 60,
+      "case": "A-720401-060",
+      "end_vz": -1.440772533416748,
+      "release_vz": -1.432354211807251,
+      "native_release_speed": 5.166158970788883,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.00035781972110271454,
+      "failures": []
+    },
+    {
+      "lane": 61,
+      "case": "A-720401-061",
+      "end_vz": -2.280033588409424,
+      "release_vz": -2.1955549716949463,
+      "native_release_speed": 5.102585289551786,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.006432533264160156,
+      "failures": []
+    },
+    {
+      "lane": 62,
+      "case": "A-720401-062",
+      "end_vz": -2.2558231353759766,
+      "release_vz": -2.252265453338623,
+      "native_release_speed": 5.62121683956889,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": [
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "lane": 64,
+      "case": "B-720402-000",
+      "end_vz": -1.6164168119430542,
+      "release_vz": -1.568366289138794,
+      "native_release_speed": 4.929178136747842,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.002543836832046509,
+      "failures": [
+        "actual_net_and_target",
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 65,
+      "case": "B-720402-001",
+      "end_vz": -1.4603137969970703,
+      "release_vz": -1.4145320653915405,
+      "native_release_speed": 4.691875532088143,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0023202896118164062,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 68,
+      "case": "B-720402-004",
+      "end_vz": -0.7911121845245361,
+      "release_vz": -0.7510351538658142,
+      "native_release_speed": 4.8093089660166335,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.041777558624744415,
+      "release_vertical_cost": 0.04979297146201134,
+      "combined_cost_delta": 0.05060292035341263,
+      "failures": [
+        "released_downward_forward",
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 70,
+      "case": "B-720402-006",
+      "end_vz": -1.9317995309829712,
+      "release_vz": -1.9051270484924316,
+      "native_release_speed": 6.684785161922314,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 71,
+      "case": "B-720402-007",
+      "end_vz": -2.0709609985351562,
+      "release_vz": -2.0263586044311523,
+      "native_release_speed": 5.652421161414615,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 72,
+      "case": "B-720402-008",
+      "end_vz": -1.5301690101623535,
+      "release_vz": -1.4451099634170532,
+      "native_release_speed": 4.15939832147374,
+      "contact_to_release_ms": 0.5621910095214844,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.005382239818572998,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 75,
+      "case": "B-720402-011",
+      "end_vz": -2.107949733734131,
+      "release_vz": -2.0430243015289307,
+      "native_release_speed": 5.284721754597033,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 77,
+      "case": "B-720402-013",
+      "end_vz": -1.6092588901519775,
+      "release_vz": -1.6086595058441162,
+      "native_release_speed": 5.353518174898801,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 80,
+      "case": "B-720402-016",
+      "end_vz": -1.4870946407318115,
+      "release_vz": -1.4376721382141113,
+      "native_release_speed": 4.470824426279175,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.002758890390396118,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 81,
+      "case": "B-720402-017",
+      "end_vz": -1.0493327379226685,
+      "release_vz": -1.0329774618148804,
+      "native_release_speed": 4.454058123635351,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0006031990051269531,
+      "failures": [
+        "actual_net_and_target",
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 82,
+      "case": "B-720402-018",
+      "end_vz": -0.9874382615089417,
+      "release_vz": -0.9203622341156006,
+      "native_release_speed": 5.824286259910735,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.002512347651645541,
+      "release_vertical_cost": 0.015927553176879883,
+      "combined_cost_delta": 0.015927553176879883,
+      "failures": [
+        "released_downward_forward"
+      ]
+    },
+    {
+      "lane": 83,
+      "case": "B-720402-019",
+      "end_vz": -1.4135372638702393,
+      "release_vz": -1.3384723663330078,
+      "native_release_speed": 5.75591000252264,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": [
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "lane": 84,
+      "case": "B-720402-020",
+      "end_vz": -1.9936381578445435,
+      "release_vz": -1.9238166809082031,
+      "native_release_speed": 5.24275390439124,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0014492034679278731,
+      "failures": []
+    },
+    {
+      "lane": 85,
+      "case": "B-720402-021",
+      "end_vz": -1.5012166500091553,
+      "release_vz": -1.4694805145263672,
+      "native_release_speed": 6.064052142931322,
+      "contact_to_release_ms": 0.37479400634765625,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 86,
+      "case": "B-720402-022",
+      "end_vz": -0.9176596403121948,
+      "release_vz": -0.8594174981117249,
+      "native_release_speed": 4.5526239206325,
+      "contact_to_release_ms": 0.5621910095214844,
+      "step_end_vertical_cost": 0.016468077898025513,
+      "release_vertical_cost": 0.028116500005126,
+      "combined_cost_delta": 0.029778853058815002,
+      "failures": [
+        "released_downward_forward",
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 87,
+      "case": "B-720402-023",
+      "end_vz": -2.4025158882141113,
+      "release_vz": -2.3551652431488037,
+      "native_release_speed": 5.609103279366688,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 90,
+      "case": "B-720402-026",
+      "end_vz": -2.59466552734375,
+      "release_vz": -2.5641732215881348,
+      "native_release_speed": 6.514307061957362,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": [
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "lane": 93,
+      "case": "B-720402-029",
+      "end_vz": -2.5015532970428467,
+      "release_vz": -2.461231231689453,
+      "native_release_speed": 5.100379661950013,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0034857764840126038,
+      "failures": [
+        "actual_net_and_target"
+      ]
+    },
+    {
+      "lane": 95,
+      "case": "B-720402-031",
+      "end_vz": -2.1559951305389404,
+      "release_vz": -2.1093294620513916,
+      "native_release_speed": 6.608395087803712,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 96,
+      "case": "B-720402-032",
+      "end_vz": -2.034336805343628,
+      "release_vz": -1.9515831470489502,
+      "native_release_speed": 5.598870941298559,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 97,
+      "case": "B-720402-033",
+      "end_vz": -1.89924156665802,
+      "release_vz": -1.8537542819976807,
+      "native_release_speed": 4.888075779365485,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0029921531677246094,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 98,
+      "case": "B-720402-034",
+      "end_vz": -1.6428382396697998,
+      "release_vz": -1.564489722251892,
+      "native_release_speed": 5.893303284543369,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 103,
+      "case": "B-720402-039",
+      "end_vz": -1.5553244352340698,
+      "release_vz": -1.5270812511444092,
+      "native_release_speed": 4.9776148423964806,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0014142990112304688,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 107,
+      "case": "B-720402-043",
+      "end_vz": -1.808258056640625,
+      "release_vz": -1.7782398462295532,
+      "native_release_speed": 4.470232806810951,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0021388977766036987,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 109,
+      "case": "B-720402-045",
+      "end_vz": -1.9505547285079956,
+      "release_vz": -1.8870929479599,
+      "native_release_speed": 4.717354658900468,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.004521183669567108,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 114,
+      "case": "B-720402-050",
+      "end_vz": -1.5074527263641357,
+      "release_vz": -1.4373383522033691,
+      "native_release_speed": 3.7002919954260642,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.005132555961608887,
+      "failures": [
+        "speed_threshold"
+      ]
+    },
+    {
+      "lane": 115,
+      "case": "B-720402-051",
+      "end_vz": -2.202326536178589,
+      "release_vz": -2.1262152194976807,
+      "native_release_speed": 5.365221802765411,
+      "contact_to_release_ms": 0.499725341796875,
+      "step_end_vertical_cost": 0.0,
+      "release_vertical_cost": 0.0,
+      "combined_cost_delta": 0.0,
+      "failures": []
+    },
+    {
+      "lane": 125,
+      "case": "B-720402-061",
+      "end_vz": -0.6968638300895691,
+      "release_vz": -0.617128312587738,
+      "native_release_speed": 4.263909073794248,
+      "contact_to_release_ms": 0.4372596740722656,
+      "step_end_vertical_cost": 0.06062722206115723,
+      "release_vertical_cost": 0.07657434046268463,
+      "combined_cost_delta": 0.07829084992408752,
+      "failures": [
+        "released_downward_forward",
+        "speed_threshold"
+      ]
+    }
+  ],
+  "frozen_shadows": {
+    "first_four_eligible": {
+      "scope": "One H64 imagined Approach rollout on four training lanes, checkpoint R48+A40, no optimizer step. TOI impulse release cost.",
+      "world_sha256": "b6970821f8d0c4567b456923d8645fa62dadf018e356db15220e450be4a5f70d",
+      "task_cost": 0.25,
+      "actor_sha256": "d2baf28a927def0c6bdcabea52b6c881b42bf5fe271955155b95d303bccca07a",
+      "optimizer_steps": 0,
+      "head": "approach",
+      "lanes": [
+        10,
+        12,
+        19,
+        20
+      ],
+      "H": 64,
+      "coverage": {
+        "head": "approach",
+        "reference_count": 22,
+        "verified_reference_count": 22,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 4,
+        "gate_active_selected_start_lanes": 4,
+        "reference_usage_by_sha256": {
+          "a9dc734f4c29488e6528c21dcc5490f1da62a576ff70e9d9619a22339b1621ef": 1,
+          "677210e7ba0e2b1c55ca214cc9c8f4e83294acebe49b89748c9a4a7a4755e7be": 1,
+          "6ce449537b0336bc050f954e27486825204287648ac488efaffcd9df59182621": 1,
+          "95e601d9c0f7b7f72820e29d12d285fdcc3ac69e552848cd25ca45e7070f591b": 1
+        },
+        "matched_lanes": 4,
+        "effective_weight_sum": 3.9999985694885254,
+        "tracking_applied": true,
+        "predicted_first_margin_sum_m": 0.07654454559087753,
+        "predicted_first_string_lanes": 3,
+        "predicted_first_frame_lanes": 1
+      },
+      "gradients": {
+        "task_gradient_norm": 0.0,
+        "tracking_gradient_norm": 9.917399406433105,
+        "anchor_gradient_norm": 3.83211612701416,
+        "task_tracking_cosine": 0.0
+      },
+      "loss": 0.8357484340667725
+    },
+    "native_speed_or_direction_failures": {
+      "scope": "One H64 imagined Approach rollout on up to 12 eligible training lanes whose first recorded hit failed speed or direction, checkpoint R48+A40, no optimizer step. TOI impulse release cost.",
+      "world_sha256": "b6970821f8d0c4567b456923d8645fa62dadf018e356db15220e450be4a5f70d",
+      "task_cost": 0.06350664794445038,
+      "flight_cases": [
+        {
+          "lane": 12,
+          "selected": true,
+          "predicted_legal_first": true,
+          "end_v": [
+            5.965524196624756,
+            1.9777582883834839,
+            -1.0215643644332886
+          ],
+          "toi_v": [
+            5.965786933898926,
+            1.9778447151184082,
+            -1.0189802646636963
+          ]
+        },
+        {
+          "lane": 24,
+          "selected": true,
+          "predicted_legal_first": true,
+          "end_v": [
+            4.678038597106934,
+            1.3517500162124634,
+            -1.7591547966003418
+          ],
+          "toi_v": [
+            4.681893825531006,
+            1.3528567552566528,
+            -1.6993714570999146
+          ]
+        },
+        {
+          "lane": 25,
+          "selected": true,
+          "predicted_legal_first": true,
+          "end_v": [
+            3.8373219966888428,
+            -0.7076435685157776,
+            -2.2141804695129395
+          ],
+          "toi_v": [
+            3.840851068496704,
+            -0.7082939147949219,
+            -2.136852502822876
+          ]
+        },
+        {
+          "lane": 26,
+          "selected": true,
+          "predicted_legal_first": true,
+          "end_v": [
+            4.489513397216797,
+            0.9343234896659851,
+            -2.1254334449768066
+          ],
+          "toi_v": [
+            4.491966247558594,
+            0.9348320960998535,
+            -2.085055351257324
+          ]
+        },
+        {
+          "lane": 43,
+          "selected": true,
+          "predicted_legal_first": true,
+          "end_v": [
+            4.905539512634277,
+            0.9032174944877625,
+            -1.7894141674041748
+          ],
+          "toi_v": [
+            4.9073405265808105,
+            0.9035487174987793,
+            -1.7634440660476685
+          ]
+        },
+        {
+          "lane": 55,
+          "selected": true,
+          "predicted_legal_first": true,
+          "end_v": [
+            4.904017925262451,
+            1.004317045211792,
+            -1.5660357475280762
+          ],
+          "toi_v": [
+            4.9041290283203125,
+            1.0043396949768066,
+            -1.5644077062606812
+          ]
+        },
+        {
+          "lane": 64,
+          "selected": true,
+          "predicted_legal_first": true,
+          "end_v": [
+            4.69957971572876,
+            2.3510026931762695,
+            -1.34562087059021
+          ],
+          "toi_v": [
+            4.70253324508667,
+            2.3524794578552246,
+            -1.3017749786376953
+          ]
+        },
+        {
+          "lane": 68,
+          "selected": true,
+          "predicted_legal_first": true,
+          "end_v": [
+            4.938815593719482,
+            1.1105740070343018,
+            -1.1589916944503784
+          ],
+          "toi_v": [
+            4.941939830780029,
+            1.11127769947052,
+            -1.112708568572998
+          ]
+        },
+        {
+          "lane": 72,
+          "selected": true,
+          "predicted_legal_first": true,
+          "end_v": [
+            4.706702709197998,
+            0.8686431050300598,
+            -1.6803514957427979
+          ],
+          "toi_v": [
+            4.706879138946533,
+            0.8686755895614624,
+            -1.6775782108306885
+          ]
+        },
+        {
+          "lane": 80,
+          "selected": true,
+          "predicted_legal_first": true,
+          "end_v": [
+            4.065080165863037,
+            0.2688036262989044,
+            -1.9396309852600098
+          ],
+          "toi_v": [
+            4.068325996398926,
+            0.2690187096595764,
+            -1.8727335929870605
+          ]
+        },
+        {
+          "lane": 82,
+          "selected": true,
+          "predicted_legal_first": true,
+          "end_v": [
+            4.809719562530518,
+            1.0898171663284302,
+            -0.9820947647094727
+          ],
+          "toi_v": [
+            4.814722061157227,
+            1.0909442901611328,
+            -0.9036572575569153
+          ]
+        }
+      ],
+      "actor_sha256": "d2baf28a927def0c6bdcabea52b6c881b42bf5fe271955155b95d303bccca07a",
+      "optimizer_steps": 0,
+      "head": "approach",
+      "lanes": [
+        12,
+        24,
+        25,
+        26,
+        43,
+        55,
+        64,
+        68,
+        72,
+        80,
+        82
+      ],
+      "H": 64,
+      "coverage": {
+        "head": "approach",
+        "reference_count": 22,
+        "verified_reference_count": 22,
+        "tracking_weight": 1.0,
+        "success_guided_available": true,
+        "mode": "success-guided",
+        "reason": null,
+        "selected_start_lanes": 11,
+        "gate_active_selected_start_lanes": 11,
+        "reference_usage_by_sha256": {
+          "677210e7ba0e2b1c55ca214cc9c8f4e83294acebe49b89748c9a4a7a4755e7be": 2,
+          "54b688868bb1d1395dc39ccc2cbff9321d40fb7d72bd84d7d81281d881f5ae5a": 1,
+          "fdba947d7b7b37696d0934e108a31952a89793d731348ea0a3681d2c739be40a": 1,
+          "6ce449537b0336bc050f954e27486825204287648ac488efaffcd9df59182621": 1,
+          "bbf2fcb1d1d4d2934de44a749640ae1eadbbc128b54f44bd1f3488ff5434fb2b": 1,
+          "95e601d9c0f7b7f72820e29d12d285fdcc3ac69e552848cd25ca45e7070f591b": 1,
+          "6834fde2670d7946c0a069aeda292d919f05788cce194cd723bdf50363c0afae": 1,
+          "7f2b95576761e3cff53418d3ef56f435b42c97e690d288295ad7e23cfbb4503d": 1,
+          "01acb0c8f5f728a14636531da507ce84102c990f75e47e22488ab89f35771f60": 1,
+          "d53b867bbdd699cf4b64ee94a6ff3289f6560389ed45bebe842969fbba161939": 1
+        },
+        "matched_lanes": 11,
+        "effective_weight_sum": 10.999996185302734,
+        "tracking_applied": true,
+        "predicted_first_margin_sum_m": 0.47935131192207336,
+        "predicted_first_string_lanes": 11,
+        "predicted_first_frame_lanes": 0
+      },
+      "gradients": {
+        "task_gradient_norm": 1.4679687023162842,
+        "tracking_gradient_norm": 6.002009868621826,
+        "anchor_gradient_norm": 4.113803863525391,
+        "task_tracking_cosine": 0.6234147548675537
+      },
+      "loss": 0.7057138085365295
+    }
+  }
+}
