@@ -93,3 +93,23 @@ def test_rollout_landing_activates_on_first_post_release_support_and_persists():
     landed = update_recovery_landing(landed, task, feet)
     assert landed.tolist() == [True,False,False,False]
     assert torch.equal(update_recovery_landing(landed, task, torch.zeros_like(feet)), landed)
+def test_recovery_stability_cost_covers_native_speed_limits_and_has_finite_gradients():
+    import math
+    import torch
+    from quadsmash.rl.supermimic_recovery_batches import recovery_stability_cost
+
+    limits = dict(maximum_abs_roll_pitch_deg=15., maximum_horizontal_root_speed_m_s=.3,
+                  maximum_root_angular_speed_rad_s=1., maximum_abs_joint_velocity_rad_s=1.)
+    state = torch.zeros(6, 55, dtype=torch.float64)
+    state[:, 3] = 1.
+    state[1, 3:5] = torch.tensor([math.cos(math.pi/12), math.sin(math.pi/12)])
+    state[2, 7] = .6
+    state[3, 12] = 2.
+    state[4, 48] = -2.
+    state[5, 3] = state[5, 5] = math.sqrt(.5)
+    state.requires_grad_()
+    cost = recovery_stability_cost(state, limits)
+    torch.testing.assert_close(cost[:5], cost.new_tensor([0., .25, .25, .25, .25]), atol=1e-7, rtol=1e-6)
+    cost.sum().backward()
+    assert torch.isfinite(state.grad).all()
+    assert state.grad[2, 7] > 0 and state.grad[3, 12] > 0 and state.grad[4, 48] < 0

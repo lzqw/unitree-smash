@@ -243,6 +243,8 @@ def main():
                         help='Fuse FP32 CUDA substeps when flight gradients are unnecessary')
     parser.add_argument('--score-downward-release', action='store_true',
                         help='Score speed and direction at the TOI impulse, including the native downward release criterion')
+    parser.add_argument('--recovery-stability-limits', action='store_true',
+                        help='Penalize post-landing motion above the native Recovery scoring thresholds')
     parser.add_argument('--interleaved-approach-starts',action='store_true',
                         help='Spread the four Approach start families across each 20-draw quota period')
     parser.add_argument('--restart-uphill-approach-momentum', action='store_true',
@@ -772,6 +774,8 @@ def run(args, *, alternating=None):
             if trainer.frozen_hash()!=trainer.frozen_actor_hash:raise ValueError('Resume changed frozen actor parameters')
             if resumed['config'].get('score_downward_release'):
                 args.score_downward_release = True
+            if resumed['config'].get('recovery_stability_limits'):
+                args.recovery_stability_limits = True
             if resumed['config'].get('landing_and_first_contact_objectives') and not args.landing_and_first_contact_objectives:
                 raise ValueError('Resume must preserve the revised research objective')
             if args.landing_and_first_contact_objectives:
@@ -944,6 +948,11 @@ def run(args, *, alternating=None):
         contract,protocol,cases,receipt=resolve_task_contract(
             source, source_path, execution_root=execution_root, root=execution_root)
         if contract!=manifest['task_contract']:raise ValueError('Native task contract changed')
+        if args.recovery_stability_limits:
+            if not (research and args.landing_and_first_contact_objectives):
+                raise ValueError('Recovery stability limits require the revised research objective')
+            from quadsmash.tasks.stand.jump_env import PROTOCOL as jump_protocol
+            trainer.recovery_stability_limits = jump_protocol['recovery']
         cfg=make_task_cfg(128,contract,protocol,receipt);cfg.seed=NATIVE_TRAIN128_SEED;cfg.sim.device='cuda:0'
         class TrainingEnv(SuperMimicEnvV1,FrozenPanelEnv):pass
         phase='ENV';stage(args.output,'BEFORE_ENV')
@@ -1170,6 +1179,7 @@ def run(args, *, alternating=None):
         config['research_full_body_fk_backend'] = fk_backend
         config['research_flight_backend'] = flight_backend
         config['research_origin']=research_origin
+        config['recovery_stability_limits'] = args.recovery_stability_limits
         if research: config['research_training_seed']=training_seed
         write(args.output/'config.json',config)
         elapsed_offset = 0.

@@ -294,6 +294,7 @@ class PhysicalHorizonTrainer:
             first_cost = state.physical.new_ones(len(selected))
             first_margin = state.physical.new_zeros(len(selected))
         dynamic_landing = revised and self.block_name == 'recovery' and getattr(self, 'recovery_rollout_landing', False)
+        stability_limits = getattr(self, 'recovery_stability_limits', None)
         landing_weights = []
         if revised and self.block_name == 'recovery':
             recovery_costs = []
@@ -369,6 +370,9 @@ class PhysicalHorizonTrainer:
                 support = state.clock_goal_context['foot_contact'].clamp(0, 1).sum(-1)
                 height_deficit = (.18 - state.physical[:, 2]).relu()
                 cost = tilt + (tilt - old_tilt).relu() + .05 * roll_pitch_rate + height_deficit + (.5 - support).relu()
+                if stability_limits is not None:
+                    from .supermimic_recovery_batches import recovery_stability_cost
+                    cost = cost + recovery_stability_cost(state.physical, stability_limits)
                 if dynamic_landing:
                     landed = update_recovery_landing(landed, previous.task_memory, state.clock_goal_context['foot_contact'])
                     weight = landed * track_mask * survival.detach()

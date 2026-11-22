@@ -1,6 +1,31 @@
 """Pool causal Recovery starts without mixing G07 plans or per-record controller clocks."""
+import math
+
 import torch
+from .supermimic_physical_dataset_v1 import decode_physical
 from .supermimic_physical_loop_replay_v1 import NATIVE_START_ID_FIELDS
+
+
+def recovery_stability_cost(physical, limits):
+    """Per-step normalized excess over the scored Recovery motion limits."""
+    fields = decode_physical(physical)
+    w, x, y, z = fields['root_quaternion_w'].unbind(-1)
+    roll_sin = 2 * (w*x + y*z)
+    roll_cos = 1 - 2 * (x*x + y*y)
+    singular = (roll_sin.square() + roll_cos.square()) < 1e-12
+    roll = torch.atan2(torch.where(singular, 0., roll_sin), torch.where(singular, 1., roll_cos))
+    pitch = torch.asin((2 * (w*y - z*x)).clamp(-1 + 1e-6, 1 - 1e-6))
+    tilt = torch.maximum(roll.abs(), pitch.abs())
+    horizontal_speed = fields['root_link_velocity_w'][..., :2].norm(dim=-1)
+    angular_speed = fields['root_angular_velocity_w'].norm(dim=-1)
+    joint_speed = fields['joint_velocity'].abs().amax(dim=-1)
+    ratios = torch.stack((
+        tilt / math.radians(limits['maximum_abs_roll_pitch_deg']),
+        horizontal_speed / limits['maximum_horizontal_root_speed_m_s'],
+        angular_speed / limits['maximum_root_angular_speed_rad_s'],
+        joint_speed / limits['maximum_abs_joint_velocity_rad_s'],
+    ), dim=-1)
+    return (ratios - 1).relu().mean(dim=-1)
 
 
 def recovery_batch(pools, target, attempt):
