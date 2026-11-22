@@ -50,3 +50,22 @@ def test_impulse_terms_compare_vector_and_speed_on_identical_released_hits():
     assert result['normal_plus_tangent']['false_below_5'] == 1
     assert result['full']['component_rmse_mps'] == 0.
     assert impact_component_errors([])['component_cases'] == 0
+
+
+def test_refresh_chart_uses_common_hits_and_preserves_native_denominator():
+    from scripts.audit_supermimic_online_release_speed import common_release_scalars
+
+    def row(lane, predicted):
+        return dict(lane=lane, native_tick=2, native_release_tick=3,
+                    native_release_velocity_mps=[5., 0., 0.], native_latched_mps=5.,
+                    common_boundary_native_mps=4.9, wm_first_outgoing_mps=predicted,
+                    wm_impact_velocity_mps=None if predicted is None else [predicted, 0., 0.])
+    before = dict(cases=[row(1, 4.), row(2, None), row(3, 2.)])
+    after = dict(cases=[row(3, 2.), row(2, 7.), row(1, 5.)])
+    scalars = common_release_scalars(before, after, {1, 2})
+    assert (scalars['native_releases'], scalars['common_hits'], scalars['after/predicted_hits_with_release']) == (2, 1, 2)
+    assert (scalars['before/impact/mae_mps'], scalars['after/impact/mae_mps']) == (1., 0.)
+    assert scalars['native/first_contact_step_end_vs_release_threshold_flips'] == 2
+    after['cases'][2]['native_release_velocity_mps'] = [-5., 0., 0.]
+    with pytest.raises(ValueError, match='Different native release targets'):
+        common_release_scalars(before, after, {1, 2})

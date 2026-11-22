@@ -254,17 +254,84 @@ def compare_refresh(baseline, outcomes, holdout):
                 sole_speed_losses=cohort([r for r in outcomes if r['sole_speed_loss']]))
 
 
+def common_release_scalars(baseline, result, excluded_lanes):
+    held = {r['lane']: r for r in baseline['cases'] if r['lane'] in excluded_lanes}
+    after = {r['lane']: r for r in result['cases'] if r['lane'] in excluded_lanes}
+    if held.keys() != after.keys():
+        raise ValueError('Different held-out first-contact lanes')
+    common = []
+    for lane, prior in held.items():
+        current = after[lane]
+        if any(prior[k] != current[k] for k in ('native_tick', 'native_release_tick', 'native_release_velocity_mps')):
+            raise ValueError('Different native release targets')
+        if (prior['native_release_velocity_mps'] is not None
+                and all(r['wm_impact_velocity_mps'] is not None for r in (prior, current))):
+            common.append(lane)
+    released = [r for r in held.values() if r['native_release_velocity_mps'] is not None]
+    metrics = dict(common_hits=len(common), native_releases=len(released))
+    if released:
+        metrics['native/first_contact_step_end_vs_release_speed_mae_mps'] = mean(
+            abs(r['common_boundary_native_mps'] - r['native_latched_mps']) for r in released)
+        metrics['native/first_contact_step_end_vs_release_threshold_flips'] = sum(
+            (r['common_boundary_native_mps'] >= 5) != (r['native_latched_mps'] >= 5) for r in released)
+    for stage, rows in [('before', held), ('after', after)]:
+        metrics[stage+'/predicted_hits_with_release'] = sum(r['wm_impact_velocity_mps'] is not None
+                    and r['native_release_velocity_mps'] is not None for r in rows.values())
+        for name, value in release_clock_errors([rows[i] for i in common])['impact'].items():
+            if value is not None:
+                metrics[stage+'/impact/'+name] = value
+    components = impact_component_errors([after[i] for i in common])
+    metrics['after/component_cases'] = components['component_cases']
+    for component in ('normal', 'normal_plus_tangent', 'full'):
+        for name, value in components.get(component, {}).items():
+            metrics['after/components/'+component+'/'+name] = value
+    return metrics
+
+
+def publish_refresh(arm, result, baseline, directory):
+    """Log the two WMs on the same native contact panel at its first post-refresh proposal."""
+    from torch.utils.tensorboard import SummaryWriter
+    from scripts.report_supermimic_research_curve import arm_origin, axes
+    if baseline is None or any(result[k] != baseline[k] for k in ('source_chunks', 'actor_sha256', 'episode_index')):
+        raise ValueError('Expected matching native releases before and after the refresh')
+    pair = result['paired_refresh']
+    if (pair['baseline_world_sha256'], pair['baseline_world_updates']) != (baseline['world_sha256'], baseline['world_updates']):
+        raise ValueError('Baseline differs from the paired refresh audit')
+    last_contact = max(c['native_tick'] for c in result['cases'])
+    with (arm/'train/training_history.jsonl').open() as stream:
+        row = next((r for r in map(json.loads, stream) if r['world_updates'] == result['world_updates']
+                    and r['model_runtime_state_sha256'] == result['world_sha256']
+                    and r['native_ticks'] > last_contact), None)
+    if row is None:
+        raise ValueError('No recorded training proposal used this refreshed WM after the measured contacts')
+    origin = arm_origin(json.loads((arm/'registration.json').read_text()))
+    manifest = json.loads((arm/'train/native_transitions/manifest.json').read_text())
+    positions = axes(row, origin, manifest['num_envs'])
+    config = json.loads((arm/'train/config.json').read_text())
+    metrics = common_release_scalars(baseline, result, set(config['wm_holdout_lanes']))
+    with SummaryWriter(str(directory)) as writer:
+        for axis, step in positions.items():
+            for name, value in metrics.items():
+                writer.add_scalar(f'held_release/{axis}/{name}', value, step)
+    return positions
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for arg in ('arm', 'checkpoint', 'block', 'flights', 'output'):
         parser.add_argument('--' + arg, required=True, type=Path)
     parser.add_argument('--baseline-audit', type=Path, help='Replay exactly the same commands with a later guarded WM')
+    parser.add_argument('--tensorboard', type=Path, help='Log the paired native release panel on the three training axes')
     parser.add_argument('--robot-endpoint-oracle', action='store_true',
                         help='Repeat the first-contact step with the measured 49-channel robot endpoint')
     args = parser.parse_args()
+    if args.tensorboard and not args.baseline_audit:
+        parser.error('--tensorboard requires --baseline-audit')
     torch.set_num_threads(2)
+    baseline = json.loads(args.baseline_audit.read_text()) if args.baseline_audit else None
     result = audit(args.arm, args.checkpoint, json.loads(args.block.read_text()), json.loads(args.flights.read_text()),
-                   baseline=json.loads(args.baseline_audit.read_text()) if args.baseline_audit else None,
-                   robot_endpoint_oracle=args.robot_endpoint_oracle)
+                   baseline=baseline, robot_endpoint_oracle=args.robot_endpoint_oracle)
+    if args.tensorboard:
+        result['axes'] = publish_refresh(args.arm, result, baseline, args.tensorboard)
     args.output.write_text(json.dumps(result, indent=2, allow_nan=False) + '\n')
     print({key: result[key] for key in ('all_windows', 'string_first', 'sole_speed_losses')})
