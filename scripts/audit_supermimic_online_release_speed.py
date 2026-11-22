@@ -2,6 +2,7 @@
 import argparse
 import json
 from collections import defaultdict
+from math import hypot
 from pathlib import Path
 from statistics import mean
 
@@ -31,6 +32,9 @@ def audit(arm, checkpoint, block, flights, *, baseline=None, robot_endpoint_orac
     checkpoint_version = saved['global_counters']['accepted']
     checkpoint_actor = tensor_digest(saved['actor'].items())
     actor_sha = block['actor_sha256']
+    episode = block.get('episode_index', 0)
+    if flights.get('episode_index', 0) != episode or (baseline and baseline.get('episode_index', 0) != episode):
+        raise ValueError('Contact and release evidence must use the same episode index')
     if baseline is None:
         if checkpoint_version != block['policy_version'] or checkpoint_actor != actor_sha:
             raise ValueError('Checkpoint and recorded behavior differ')
@@ -60,9 +64,10 @@ def audit(arm, checkpoint, block, flights, *, baseline=None, robot_endpoint_orac
                     raise ValueError('Mixed behavior in audited window')
                 before, after = row['before'], row['after']
                 current, following = before['task'], after['task']
-                released = (~current['released'] & following['released'] & (before['episode_index'] == 0))
+                released = (~current['released'] & following['released']
+                            & (before['episode_index'] == episode) & (after['episode_index'] == episode))
                 for lane in released.nonzero().flatten().tolist():
-                    releases[lane] = (tick, float(following['outgoing_velocity'][lane].norm()))
+                    releases[lane] = (tick, following['outgoing_velocity'][lane].clone())
                 if tick not in wanted:
                     continue
                 phys = before['physical']
@@ -71,7 +76,7 @@ def audit(arm, checkpoint, block, flights, *, baseline=None, robot_endpoint_orac
                     next_robot = encode_physical(after['physical'])[:, :49]
                 for i, offset in wanted[tick]:
                     lane = records[i]['lane']
-                    if before['episode_index'][lane] != 0 or after['episode_index'][lane] != 0:
+                    if before['episode_index'][lane] != episode or after['episode_index'][lane] != episode:
                         continue
                     if offset == 0 and (current['had_contact'][lane] or not following['had_contact'][lane]):
                         raise ValueError('First-contact label and archive disagree')
@@ -94,31 +99,33 @@ def audit(arm, checkpoint, block, flights, *, baseline=None, robot_endpoint_orac
             adapter.physical_model, adapter.ball_model, state, targets, previous, feet,
             present, elapsed, launch[lanes], action_model=adapter.action_ball_model, return_details=True)
         info = details['impulse_info']
-        return nxt, feet, present, info['active'] & (info['object_id'] == 0), info['racket_part'].reshape(-1)
+        racket_hit = info['active'] & (info['object_id'] == 0)
+        return nxt, feet, present, racket_hit, info['racket_part'].reshape(-1), details.get('impact_outgoing_velocity')
 
     state, _, _, feet, present, _, _ = batch(-1)
     outcomes = [dict(**records[i], first_predicted_offset=None, wm_first_outgoing_mps=None,
-                     wm_first_racket_part=None, wm_first_string=None) for i in usable]
+                     wm_first_racket_part=None, wm_first_string=None, wm_impact_velocity_mps=None) for i in usable]
     for offset in (-1, 0, 1):
         recorded_state, targets, previous, native_feet, native_present, elapsed, velocity = batch(offset)
-        state, feet, present, hit, part = step(state, targets, previous, feet, present, elapsed)
+        state, feet, present, hit, part, toi_velocity = step(state, targets, previous, feet, present, elapsed)
         if offset == 0:
             boundary = (recorded_state, targets, previous, native_feet, native_present, elapsed)
-            one, _, _, one_hit, one_part = step(*boundary)
+            one, _, _, one_hit, one_part, _ = step(*boundary)
             if robot_endpoint_oracle:
                 endpoints = torch.stack([measured_endpoints[i] for i in usable])
                 def replace_robot(_module, _inputs, output):
                     physical, logits, available = output
                     return torch.cat((endpoints, physical[:, 49:]), -1), logits, available
                 with adapter.physical_model.register_forward_hook(replace_robot):
-                    oracle, _, _, oracle_hit, oracle_part = step(*boundary)
+                    oracle, _, _, oracle_hit, oracle_part, _ = step(*boundary)
                 if not torch.equal(oracle[:, :49], endpoints):
                     raise ValueError('Measured robot endpoint did not reach the ball transition')
         for j, out in enumerate(outcomes):
             if hit[j] and out['first_predicted_offset'] is None:
                 first_part = int(part[j])
                 out.update(first_predicted_offset=offset, wm_first_outgoing_mps=float(state[j, -3:].norm()),
-                           wm_first_racket_part=first_part, wm_first_string=0 <= first_part < strip_count)
+                           wm_first_racket_part=first_part, wm_first_string=0 <= first_part < strip_count,
+                           wm_impact_velocity_mps=None if toi_velocity is None else toi_velocity[j].tolist())
             if offset == 0:
                 out.update(common_boundary_wm_mps=float(one[j, -3:].norm()),
                            common_boundary_native_mps=float(velocity[j].norm()), one_step_hit=bool(one_hit[j]))
@@ -130,8 +137,11 @@ def audit(arm, checkpoint, block, flights, *, baseline=None, robot_endpoint_orac
              if not f['gained'] and f['online']['failed_conditions'] == ['release_speed']}
     for out in outcomes:
         lane = out['lane']
-        tick, speed = releases.get(lane, (None, None))
-        out.update(native_release_tick=tick, native_latched_mps=speed, sole_speed_loss=lane in flips)
+        tick, velocity = releases.get(lane, (None, None))
+        speed = float(velocity.norm()) if velocity is not None else None
+        out.update(native_release_tick=tick, native_latched_mps=speed,
+                   native_release_velocity_mps=None if velocity is None else velocity.tolist(),
+                   sole_speed_loss=lane in flips)
         if lane in flips and (speed is None or abs(speed - flips[lane]['online']['release_speed_mps']) > 1e-5):
             raise ValueError('Native scoring speed does not reproduce the flight report')
 
@@ -144,7 +154,7 @@ def audit(arm, checkpoint, block, flights, *, baseline=None, robot_endpoint_orac
                     wm_below_native_above=sum(r['wm_first_outgoing_mps'] < 5 <= r['native_latched_mps'] for r in matched),
                     mean_signed_speed_error_mps=mean(r['wm_first_outgoing_mps']-r['native_latched_mps'] for r in matched) if matched else None)
     strings = [r for r in outcomes if r['online_first_tick_string'] and r.get('online_frame_first') is False]
-    result = dict(policy_version=block['policy_version'], actor_sha256=actor_sha, world_updates=updates,
+    result = dict(episode_index=episode, policy_version=block['policy_version'], actor_sha256=actor_sha, world_updates=updates,
                 checkpoint_policy_version=checkpoint_version, checkpoint_actor_sha256=checkpoint_actor,
                 world_sha256=world_sha, source_chunks=block['source_chunks'], native_first_contacts=len(records),
                 scope='Three recorded commands starting one tick before native first contact. Predicted body, ball and feet roll freely. Native scoring latches the last touch velocity. Common-boundary numbers use one step from the native first-contact start.',
@@ -152,10 +162,29 @@ def audit(arm, checkpoint, block, flights, *, baseline=None, robot_endpoint_orac
                 verified_string_first=summarize(strings),
                 sole_speed_losses=summarize([r for r in outcomes if r['sole_speed_loss']]), cases=outcomes)
 
+    held = set(saved['config']['wm_holdout_lanes'])
+    result['release_clock'] = dict(
+        held=release_clock_errors([r for r in outcomes if r['lane'] in held]),
+        train=release_clock_errors([r for r in outcomes if r['lane'] not in held]),
+    )
     if baseline is not None:
-        holdout = set(json.loads((arm / 'train/config.json').read_text())['wm_holdout_lanes'])
-        result['paired_refresh'] = compare_refresh(baseline, outcomes, holdout)
+        result['paired_refresh'] = compare_refresh(baseline, outcomes, held)
     return result
+
+
+def release_clock_errors(rows):
+    released = [r for r in rows if r['native_latched_mps'] is not None]
+    matched = [r for r in released if r['wm_impact_velocity_mps'] is not None]
+
+    def score(values):
+        errors = [v-r['native_latched_mps'] for v, r in zip(values, matched, strict=True)]
+        return dict(mae_mps=mean(map(abs, errors)) if errors else None,
+                    bias_mps=mean(errors) if errors else None,
+                    false_above=sum(v >= 5 > r['native_latched_mps'] for v, r in zip(values, matched, strict=True)),
+                    false_below=sum(v < 5 <= r['native_latched_mps'] for v, r in zip(values, matched, strict=True)))
+    return dict(first_contacts=len(rows), released=len(released), common_predictions=len(matched),
+                control_end=score([r['wm_first_outgoing_mps'] for r in matched]),
+                impact=score([hypot(*r['wm_impact_velocity_mps']) for r in matched]))
 
 
 def compare_refresh(baseline, outcomes, holdout):
