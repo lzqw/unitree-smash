@@ -39,6 +39,56 @@ class PublicAerialProximityGate(nn.Module):
         return aerial * proximity * raw[:, 67:68].clamp(0., 1.)
 
 
+class EarlyArmApproachGate(nn.Module):
+    """Causal swing preview from the current public ball and racket frame."""
+    def __init__(self, preparation_seconds=.25):
+        super().__init__()
+        self.preparation_seconds = _positive_scale(preparation_seconds, 'preparation_seconds')
+
+    def forward(self, raw, legacy):
+        displacement = raw[:, 61:64] - raw[:, 45:48]
+        relative = raw[:, 64:67] - raw[:, 51:54]
+        closing = -(displacement * relative).sum(-1, keepdim=True)
+        closest_time = closing / relative.square().sum(-1, keepdim=True).clamp_min(1e-6)
+        closest = displacement + closest_time.clamp(0., self.preparation_seconds) * relative
+        # Fade into the preparation interval, retaining the old aerial gate
+        # through contact. A receding shuttle cannot start a new early swing.
+        ramp = ((self.preparation_seconds - closest_time) / .05).clamp(0., 1.)
+        ramp = ramp.square() * (3. - 2. * ramp)
+        proximity = torch.exp(-(closest.norm(p=2, dim=-1, keepdim=True) / .6).square())
+        post_hit = (raw[:, 773:774] > .5) | (raw[:, 774:775] > .5)
+        early = ramp * proximity * (closing > 0.) * raw[:, 67:68].clamp(0., 1.) * ~post_hit
+        return torch.cat((legacy.expand(-1, 12), torch.maximum(legacy, early).expand(-1, 6)), -1)
+
+
+class CausalApproachActorExport(nn.Module):
+    """Deterministic residual request with the two native Recovery latches as inputs."""
+
+    def __init__(self, actor):
+        super().__init__()
+        self.policy = deepcopy(actor.actor).eval()
+        self.early_arm_gate = deepcopy(actor.early_arm_gate)
+
+    @torch.jit.export
+    def action_gate(self, observation: torch.Tensor) -> torch.Tensor:
+        legacy = self.policy.gate(observation)
+        if self.early_arm_gate is None:
+            return legacy.expand(-1, 18)
+        return self.early_arm_gate(observation, legacy)
+
+    def forward(self, observation: torch.Tensor, had_contact: torch.Tensor,
+                released: torch.Tensor) -> torch.Tensor:
+        torch._assert(observation.ndim == 2 and observation.size(1) == 794, 'Expected [batch,794] observation')
+        torch._assert(had_contact.numel() == observation.size(0)
+                      and released.numel() == observation.size(0), 'Expected one causal latch per lane')
+        normalized = self.policy.normalizer(observation)
+        recovery = (had_contact.reshape(-1, 1) > .5) & (released.reshape(-1, 1) > .5)
+        raw = (self.policy.base(normalized)
+               + recovery.to(observation.dtype) * self.policy.recovery(normalized) * self.policy.recovery_scale
+               + self.action_gate(observation) * self.policy.approach(normalized) * self.policy.approach_scale)
+        return raw.clamp(-1., 1.)
+
+
 class _FrozenV2ApproachExport(nn.Module):
     def __init__(self, normalizer, base, recovery, approach, gate, recovery_scale, approach_scale):
         super().__init__()

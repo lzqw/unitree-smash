@@ -101,3 +101,48 @@ def test_substep_friction_bound_is_full_for_overlap_and_zero_at_end_of_step():
     gaps=torch.tensor([-.001,0.,.001,.002])
     speed=torch.full_like(gaps,-2.)
     torch.testing.assert_close(friction_duration_factor(gaps,speed,.001,1.),torch.tensor([1.,1.,.5,0.]))
+
+
+def test_face_speed_uses_measured_substep_and_angular_lever_arm():
+    import torch
+    from scripts.audit_supermimic_approach_response import contact_face_speed
+
+    zero = torch.zeros(3, 1, 3)
+    shuttle = torch.zeros(3, 1, 13)
+    shuttle[..., 0] = 1.
+    shuttle[..., 7] = -2.
+    force = zero.clone()
+    force[2, 0, 0] = 1.
+    point = zero.clone()
+    point[2, 0, 1] = .25
+    native_angular = zero.clone()
+    native_angular[..., 2] = 4.
+    trace = dict(tensors=dict(racket_force_w=force, racket_friction_force_w=zero,
+                              racket_contact_position_valid=torch.tensor([[False], [False], [True]]),
+                              racket_position_w=zero, shuttle_state_w=shuttle,
+                              racket_quaternion_w=torch.tensor([1., 0., 0., 0.]).expand(3, 1, 4),
+                              racket_contact_position_w=point, racket_linear_velocity_w=zero,
+                              racket_angular_velocity_w=native_angular))
+    onset, endpoint = torch.zeros(1, 12), torch.zeros(1, 12)
+    endpoint[0, 11] = 4.
+    speed, valid = contact_face_speed(trace, onset, endpoint)
+    assert valid.tolist() == [True]
+    torch.testing.assert_close(speed, torch.tensor([[1., 1.5]]))
+
+
+def test_approach_release_comparison_uses_common_cases_and_fixed_bias():
+    from scripts.audit_supermimic_approach_response import compare_e1_release_reports
+
+    def row(lane, expected, predicted):
+        return dict(lane=lane, episode=0, native=[expected, 0., 0.], predicted=[predicted, 0., 0.])
+
+    parent = {8: dict(cases=[row(1, 4., 5.), row(2, 5., 5.)])}
+    candidate = {8: dict(cases=[row(1, 4., 4.5), row(3, 6., 6.)])}
+    comparison = compare_e1_release_reports(parent, candidate, 4.5,
+                                             biases=dict(reference={8: dict(bias_mps=.2)}, candidate={}))
+    data = comparison[8]
+    assert data['common_cases'] == [[1, 0]]
+    assert data['reference']['matched'] == data['candidate']['matched'] == 1
+    assert data['reference']['bias_mps'] == .2
+    assert data['candidate']['bias_mps'] == 0.
+    assert data['candidate']['corrected_false_pass'] == 1

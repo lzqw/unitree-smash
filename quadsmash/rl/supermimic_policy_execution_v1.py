@@ -4,6 +4,7 @@ This does not perform the G07 mixer/PD transform: callers retain the original
 executor and its history. Task latches must be current, causal, per lane.
 """
 from collections.abc import Mapping
+import math
 import torch
 
 POSTHIT = 'causal-contact-release-recovery-v1'
@@ -12,11 +13,18 @@ LEGACY = 'exported-phase-recovery-v1'
 PHYSICAL_SCHEMA = 'g07-physical-task-observation-loop-v1'
 
 
-def contract(mode=POSTHIT):
+def contract(mode=POSTHIT, *, arm_preparation_seconds=None):
     if mode not in (POSTHIT, POSTHIT_OR_GROUNDED_MISS, LEGACY):
         raise ValueError('Unknown policy execution mode: '+str(mode))
-    return dict(schema='supermimic-policy-execution-v1', recovery_gate=mode,
-                request='original-normalized-residual', final_transform='unchanged-G07-mixer-and-native-limiter')
+    result = dict(schema='supermimic-policy-execution-v1', recovery_gate=mode,
+                  request='original-normalized-residual', final_transform='unchanged-G07-mixer-and-native-limiter')
+    if arm_preparation_seconds is not None:
+        if (mode != POSTHIT or not isinstance(arm_preparation_seconds, (float, int))
+                or isinstance(arm_preparation_seconds, bool) or not math.isfinite(arm_preparation_seconds)
+                or arm_preparation_seconds <= 0):
+            raise ValueError('Invalid causal early-arm execution window')
+        result['arm_preparation_seconds'] = arm_preparation_seconds
+    return result
 
 
 def resolve_contract(checkpoint):
@@ -24,7 +32,7 @@ def resolve_contract(checkpoint):
         return contract(LEGACY), 'initial-export-default; historical contract'
     declared=checkpoint.get('metadata',{}).get('policy_execution')
     if declared is not None:
-        expected=contract(declared.get('recovery_gate'))
+        expected=contract(declared.get('recovery_gate'), arm_preparation_seconds=declared.get('arm_preparation_seconds'))
         if declared!=expected:
             raise ValueError('Policy execution contract fields differ')
         return expected,'explicit-checkpoint-contract'

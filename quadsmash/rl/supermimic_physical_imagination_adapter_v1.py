@@ -123,8 +123,10 @@ class PhysicalImaginationAdapter(nn.Module):
             if key!='_jump_metric_stride':timing[key]=old_timing[key]+self.physical_model.flight.steps
         launched=(~c['ball_present'].bool())&present.bool()
         env_memory['launch_done']=present
-        env_memory['launch_frame']=torch.where(launched,
-            torch.full_like(old_env['launch_frame'],old_timing['_sim_step_counter']),old_env['launch_frame'])
+        launch_frame = old_env['launch_frame']
+        sim_clock = torch.as_tensor(old_timing['_sim_step_counter'], device=launch_frame.device,
+                                    dtype=launch_frame.dtype).reshape(-1)
+        env_memory['launch_frame']=torch.where(launched, sim_clock.expand_as(launch_frame), launch_frame)
         env_memory['launch_signals_ready']=torch.where(launched,torch.ones_like(present),
                                                      old_env['launch_signals_ready'].bool())
         rec=next_task['recovery'];rally=next_task['rally']

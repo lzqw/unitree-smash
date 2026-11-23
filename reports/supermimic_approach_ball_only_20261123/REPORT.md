@@ -1,5 +1,7 @@
 # SuperMimic Approach-only 进展
 
+**2026-11-23 16:12 CST 最新进展。修订版 E1 A8 为 50/128，续训 A16 已启动。** [最新程序与评估报告](A08_FLIGHT_PRIORITY.md)
+
 2026-11-23 14:37 CST。阶段任务使用 `approach_ball_only_v1`。完整回球要求合格空中拍线触球、出球速度达标、合法越网并落入目标区。策略训练仅更新 Approach。此次上报包含 E1 原生复评、Body WM 修订的对照结果及 E0 的运行状态。
 
 ## 策略结果

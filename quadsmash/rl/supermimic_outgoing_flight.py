@@ -1,5 +1,115 @@
 """Differentiable research cost from the shared transition's outgoing ball state."""
+from math import ceil, isclose
+
 import torch
+from torch.nn import functional as F
+
+
+def predict_flight_events(release_position, release_velocity, prior, court, *,
+                          duration=8., dt=.01, radius=None, sample_times=()):
+    """Advance free flight to the first ground event or explicit time limit.
+
+    Positions and times for absent events are masked as NaN at the API boundary.
+    Net clearance is signed against the local net height and shuttle radius.
+    """
+    if not 0 < dt <= duration:
+        raise ValueError('Invalid flight integration interval')
+    sample_ticks = {round(time / dt): time for time in sample_times}
+    if any(not 0 < time <= duration or not isclose(time, tick * dt)
+           for tick, time in sample_ticks.items()):
+        raise ValueError('Flight samples must be positive integration boundaries within duration')
+    samples = {}
+    radius = prior.preview.radius if radius is None else radius
+    p, v = release_position, release_velocity
+    landed = p[:, 2] <= radius
+    crossed = torch.zeros_like(landed)
+    net_contact = torch.zeros_like(landed)
+    landing = p
+    landing_time = torch.zeros_like(p[:, 0])
+    crossing_time = torch.zeros_like(landing_time)
+    clearance = torch.zeros_like(landing_time)
+    net_y = torch.zeros_like(landing_time)
+    furthest_x = p[:, 0]
+    net_x = court['net_plane_x_m'] + radius
+    net_front = court['net_plane_x_m'] - radius - court.get('net_equivalent_thickness_m', 0.) / 2
+    for index in range(ceil(duration / dt)):
+        start = index * dt
+        step = min(dt, duration - start)
+        relative = v - prior.wind
+        v = v + step * (prior.gravity - prior.drag * relative.norm(dim=-1, keepdim=True) * relative)
+        q = p + step * v
+        # Sweep the incoming segment against the front of the net band. The
+        # free-flight target must never pass through a blocking net event.
+        if 'net_width_m' in court:
+            front = ~landed & ~net_contact & (p[:, 0] <= net_front) & (q[:, 0] >= net_front)
+            u = ((net_front - p[:, 0]) / (q[:, 0] - p[:, 0]).clamp_min(1e-8)).clamp(0, 1)
+            entry = torch.lerp(p, q, u[:, None])
+            top = court['net_center_top_m'] + (court['net_side_top_m'] - court['net_center_top_m']) * (
+                entry[:, 1] / court['post_y_center_abs_m']).square().clamp_max(1)
+            contact = (front & (entry[:, 1].abs() <= court['net_width_m'] / 2 + radius)
+                       & (entry[:, 2] <= top + radius) & (entry[:, 2] >= top - court['net_depth_m'] - radius))
+            face_velocity = torch.cat((-prior.restitution * v[:, :1], v[:, 1:]), dim=-1)
+            q = torch.where(contact[:, None], entry + step * (1 - u[:, None]) * face_velocity, q)
+            v = torch.where(contact[:, None], face_velocity, v)
+            net_contact |= contact
+            clearance = torch.where(contact, entry[:, 2] - top - radius, clearance)
+            net_y = torch.where(contact, entry[:, 1], net_y)
+        ground = ~landed & (q[:, 2] <= radius)
+        ground_fraction = ((p[:, 2] - radius) / (p[:, 2] - q[:, 2]).clamp_min(1e-8)).clamp(0, 1)
+        end = torch.where(ground[:, None], torch.lerp(p, q, ground_fraction[:, None]), q)
+        furthest_x = torch.where(landed, furthest_x, torch.maximum(furthest_x, end[:, 0]))
+        crossing = ~landed & ~crossed & (p[:, 0] <= net_x) & (end[:, 0] >= net_x)
+        fraction = ((net_x - p[:, 0]) / (end[:, 0] - p[:, 0]).clamp_min(1e-8)).clamp(0, 1)
+        witness = torch.lerp(p, end, fraction[:, None])
+        crossing_time = torch.where(crossing, start + step * fraction * torch.where(ground, ground_fraction, 1.),
+                                    crossing_time)
+        top = court['net_center_top_m'] + (court['net_side_top_m'] - court['net_center_top_m']) * (
+            witness[:, 1] / court['post_y_center_abs_m']).square().clamp_max(1)
+        clearance = torch.where(crossing, witness[:, 2] - top - radius, clearance)
+        net_y = torch.where(crossing, witness[:, 1], net_y)
+        landing = torch.where(ground[:, None], end, landing)
+        landing_time = torch.where(ground, start + step * ground_fraction, landing_time)
+        landed = landed | ground
+        crossed = crossed | crossing
+        p = end
+        if index + 1 in sample_ticks:
+            samples[sample_ticks[index + 1]] = dict(position=p, velocity=v, airborne=~landed,
+                                                     net_contact=net_contact.clone())
+        if (index + 1) % 16 == 0 and landed.all():
+            break
+    return dict(release_position=release_position, release_velocity=release_velocity,
+                crossed_net=crossed, net_contact=net_contact, samples=samples,
+                crossing_time=crossing_time.masked_fill(~crossed, float('nan')),
+                net_clearance=clearance.masked_fill(~(crossed | net_contact), float('nan')),
+                net_lateral_position=net_y.masked_fill(~(crossed | net_contact), float('nan')), furthest_x=furthest_x,
+                landed=landed, landing_position=landing.masked_fill(~landed[:, None], float('nan')),
+                landing_time=landing_time.masked_fill(~landed, float('nan')), timeout=~landed)
+
+
+def calibrated_speed_loss(velocity, bias, *, minimum=4.5, task_margin=0., temperature=.15):
+    """Keep the prediction correction fixed while differentiating the speed deficit."""
+    speed = velocity.norm(dim=-1)
+    calibrated = speed - torch.as_tensor(bias, dtype=speed.dtype, device=speed.device).detach()
+    return temperature * F.softplus((minimum + task_margin - calibrated) / temperature)
+
+
+def ball_only_flight_terms(position, velocity, prior, court, *, speed_bias, minimum=4.5):
+    """Separate speed, direction, net and landing costs on actual predicted events."""
+    events = predict_flight_events(position, velocity, prior, court)
+    # Replace absent witnesses before computing penalties to keep backward finite.
+    clearance = events['net_clearance'].nan_to_num()
+    landing = events['landing_position'].nan_to_num()
+    low, high = court['target_x_limits_m']
+    width = court['target_y_half_width_m']
+    width_cost = (events['net_lateral_position'].nan_to_num().abs() - court['net_width_m'] / 2).relu()
+    shortfall = (court['net_plane_x_m'] + prior.preview.radius - events['furthest_x']).relu()
+    net = torch.where(events['crossed_net'] | events['net_contact'],
+                      (.02 - clearance).relu() + width_cost, .1 + shortfall)
+    lane_landing = ((low + .03 - landing[:, 0]).relu() + (landing[:, 0] - high + .03).relu()
+                    + (landing[:, 1].abs() - width + .03).relu())
+    lane_landing = torch.where(events['landed'], lane_landing, torch.ones_like(lane_landing))
+    return dict(speed=calibrated_speed_loss(velocity, speed_bias, minimum=minimum),
+                direction=(.1 - velocity[:, 0]).relu(), net=net, landing=lane_landing)
 
 
 def outgoing_cost(ball, prior, court, *, dt=.02, steps=100, scoring_margins=False,

@@ -80,6 +80,30 @@ def select_launch_for_start(row, launch):
     return launch[lane_id:lane_id+1]
 
 
+def restore_approach_phase_anchor(checkpoint, checkpoint_path):
+    from zipfile import is_zipfile
+    import torch
+    from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+
+    anchor = checkpoint.get('actor_references', {}).get('approach_anchor')
+    expected = checkpoint['metadata'].get('phase_anchor_actor_sha256')
+    if anchor is None and expected is None:
+        # A legacy milestone from the initial A-only invocation still has
+        # the original launch command and its verified starting Actor hash.
+        directory = Path(checkpoint_path).parent
+        startup = json.loads((directory / 'startup.json').read_text())
+        args = startup['argv']
+        if '--resume-reset-schedule' not in args or '--resume-training' not in args:
+            raise ValueError('Legacy Approach checkpoint lacks recoverable A0 anchor provenance')
+        source = Path(startup['cwd']) / args[args.index('--resume-training') + 1]
+        expected = json.loads((directory / 'loaded_runtime_identity.json').read_text())['identity']['actor_state_sha256']
+        recovered = torch.load(source, map_location='cpu', weights_only=False, mmap=is_zipfile(source))
+        anchor = recovered['actor']
+    if anchor is None or expected is None or tensor_digest(anchor.items()) != expected:
+        raise ValueError('Approach phase anchor differs from the recorded A0 policy')
+    return anchor
+
+
 def research_learner_rng(requested_seed, saved_config, *, fresh, replay, natural_flight):
     """Fork training randomness once; an ordinary continuation keeps the restored RNG cursors."""
     inherited = saved_config.get('research_training_seed')
@@ -160,6 +184,17 @@ def main():
     parser.add_argument('--joint-update-budget',type=int,default=16)
     parser.add_argument('--update-mode',choices=('sequential','joint'),default='sequential')
     parser.add_argument('--sequential-layout',choices=('short-alternating','legacy-blocks'),default='short-alternating')
+    parser.add_argument('--approach-ball-only', action='store_true',
+                        help='Run a ball-only Approach schedule with frozen Base and Recovery')
+    parser.add_argument('--prioritize-approach-flight', action='store_true',
+                        help='Preserve flight merit on the same releases during Approach-only backtracking')
+    parser.add_argument('--early-arm-seconds', type=float, default=None)
+    parser.add_argument('--approach-stop-at', type=int, default=None,
+                        help='End cleanly at an A-only block boundary for frozen evaluation')
+    parser.add_argument('--approach-contact-updates', type=int, default=32,
+                        help='Maximum measured-motion contact batches between A-only Actor blocks')
+    parser.add_argument('--approach-initial-ticks', type=int, default=512,
+                        help='First native collection after each scene start, through shot settlement')
     parser.add_argument('--head-block-size',type=int,default=8)
     parser.add_argument('--refresh-mode',choices=('pair','per-head'),default='pair',
                         help='pair: R8/A8 then one combined refresh; per-head: integration diagnostic only')
@@ -334,6 +369,22 @@ def main():
     if args.approach_objective=='toi_racket_only' and args.task_reference_bank is None:
         parser.error('toi_racket_only requires a validated event-aligned task reference bank')
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
+    if (args.early_arm_seconds is not None or args.approach_stop_at is not None) and not args.approach_ball_only:
+        parser.error('Early arm control and evaluation boundaries require the Approach-only phase')
+    if args.prioritize_approach_flight and not args.approach_ball_only:
+        parser.error('Flight priority requires the Approach-only phase')
+    if args.approach_ball_only:
+        if (not research or args.training_stage != 'research_contact' or args.update_mode != 'sequential'
+                or args.sequential_layout != 'short-alternating' or args.cycles != 1 or args.relaxed_scoring
+                or args.resume_next_cycle or args.actor_update_budget is not None
+                or args.approach_objective != 'toi_racket_only' or args.action_ball_checkpoint is None):
+            parser.error('The ball-only phase uses one research-contact Approach schedule and its own scoring protocol')
+        args.recovery_update_budget = args.recovery_proposal_budget = 0
+        if args.approach_contact_updates < 1 or args.approach_initial_ticks < args.native_ticks_per_actor_update:
+            parser.error('Invalid Approach contact or initial native collection budget')
+        args.landing_and_first_contact_objectives = True
+        args.refresh_ticks = args.refresh_world_updates = args.refresh_critic_updates = 0
+        args.continuous_approach_starts = args.shuffle_wm_quota_groups = True
     if args.actor_update_budget is not None:
         args.recovery_update_budget=0;args.approach_update_budget=args.actor_update_budget
     from quadsmash.rl.supermimic_long_run_contract_v1 import validate_budgets
@@ -356,10 +407,28 @@ def main():
         parser.error('Fresh schedule requires a bounded non-promotable checkpoint continuation')
     if args.resume_without_replay and (args.resume_training is None or args.training_profile=='large' or args.training_stage=='full_contact'):
         parser.error('resume-without-replay is restricted to bounded non-promotable diagnostics')
-    from quadsmash.rl.supermimic_alternating_schedule_v1 import make_plan,AlternatingSchedule,refresh_world_budgets,run_schedule
+    from quadsmash.rl.supermimic_alternating_schedule_v1 import (
+        make_approach_plan, make_plan, AlternatingSchedule, refresh_world_budgets, run_schedule)
     from quadsmash.rl.supermimic_training_audit_v1 import sampling_promotion_gate, rollback_audit
     alternating=None
-    if args.update_mode=='sequential' and args.sequential_layout=='short-alternating' and args.training_stage!='wm_calibrate':
+    if args.approach_ball_only:
+        from quadsmash.rl.supermimic_policy_execution_v1 import contract as execution_contract
+        try:
+            execution = execution_contract(arm_preparation_seconds=args.early_arm_seconds)
+            alternating = AlternatingSchedule(make_approach_plan(
+                args.approach_update_budget, args.approach_proposal_budget, block_size=args.head_block_size),
+                execution_config=dict(phase='approach_ball_only_v1', policy_execution=execution,
+                    native_ticks_per_block=args.native_ticks_per_actor_update,
+                    world_updates_per_block=args.world_updates_per_actor_update, wm_batch_size=args.wm_batch_size,
+                    contact_updates_per_block=args.approach_contact_updates,
+                    initial_native_ticks=args.approach_initial_ticks))
+            if args.approach_stop_at is not None and not (
+                    0 < args.approach_stop_at < args.approach_update_budget
+                    and args.approach_stop_at % args.head_block_size == 0):
+                raise ValueError('Evaluation stop must be an interior A-only block boundary')
+        except ValueError as error:
+            parser.error(str(error))
+    elif args.update_mode=='sequential' and args.sequential_layout=='short-alternating' and args.training_stage!='wm_calibrate':
         if (not args.resume_reset_schedule and args.resume_start_block!='recovery') or args.actor_update_budget is not None:
             parser.error('Short alternating resumes its saved event cursor, not resume-start-block/legacy actor budget')
         if args.refresh_ticks!=800:parser.error('Short alternating requires full frozen refresh; cannot disable it')
@@ -451,6 +520,7 @@ def run(args, *, alternating=None):
             physical_checkpoint=args.physical_checkpoint,ball_checkpoint=args.ball_checkpoint,
             task_checkpoint=args.task_checkpoint,safety_mapping=args.safety_mapping,
             action_ball_checkpoint=args.action_ball_checkpoint,execution_root=args.g07_execution_root)
+        actor.configure_approach_gate(args.early_arm_seconds)
         action_ball_trainable=bool(args.train_action_ball_in_wm or args.training_stage!='wm_calibrate')
         if adapter.action_ball_model is not None and not action_ball_trainable:
             adapter.action_ball_model.requires_grad_(False)
@@ -524,6 +594,9 @@ def run(args, *, alternating=None):
         labeler = partial(recorded_approach_metadata, schema=adapter.task_model.memory_schema,
                           actor=actor, geometry=adapter.physical_model.geometry)
         replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema,capacity_ticks=args.replay_capacity_ticks,approach_labeler=labeler)
+        if args.approach_ball_only:
+            from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank
+            replay.actor_start_bank = ActorStartBank(ball_phase=True)
         from quadsmash.rl.supermimic_physical_loop_replay_v1 import ActiveFlightWindows, NaturalFlightWindows, sample_long_native
         natural_flight=NaturalFlightWindows(package['tensors'],wm_holdout_lanes) if args.wm_natural_flight_batch else None
         active_flight=None
@@ -544,12 +617,15 @@ def run(args, *, alternating=None):
         # until the later environment setup caused a startup-only
         # UnboundLocalError on valid TOI-racket canary runs.
         from quadsmash.rl.supermimic_policy_execution_v1 import contract as execution_contract
-        policy_execution = execution_contract()
+        policy_execution = execution_contract(arm_preparation_seconds=args.early_arm_seconds)
+        # Both arms may use the same historical measured trajectories and
+        # actual executed commands. Their policy distributions stay separate.
+        physical_data_execution = execution_contract() if args.approach_ball_only else policy_execution
         from quadsmash.rl.supermimic_training_probe_replay import import_training_collection
         action_collections = []
         used_branches = set()
         for path in args.wm_action_collection:
-            receipt = import_training_collection(replay,path,manifest['task_contract'],policy_execution,wm_holdout_lanes)
+            receipt = import_training_collection(replay,path,manifest['task_contract'],physical_data_execution,wm_holdout_lanes)
             branches = {h for group in receipt['spec_branches'].values() for h in group.values()}
             if used_branches & branches:
                 raise ValueError('Duplicate native action-identification data')
@@ -569,7 +645,7 @@ def run(args, *, alternating=None):
             if not reference_bank.manifest['protocol_verified']:raise ValueError('Tracking requires independently scored complete native references')
             if reference_bank.geometry_sha256 and reference_bank.geometry_sha256 != adapter.physical_model.geometry.model_sha256:
                 raise ValueError('Task reference bank geometry hash mismatch')
-            execution_contract_sha256=hashlib.sha256(json.dumps(policy_execution,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+            execution_contract_sha256=hashlib.sha256(json.dumps(physical_data_execution,sort_keys=True,separators=(',',':')).encode()).hexdigest()
             if (args.tracking_weight>0 or (args.approach_objective=='toi_racket_only' and args.toi_racket_weight>0)) and reference_bank.execution_contract_sha256 != execution_contract_sha256:
                 raise ValueError('Task reference bank execution contract hash does not match current policy execution')
             reference_bank=reference_bank.to(torch.device('cuda:0'))
@@ -690,6 +766,16 @@ def run(args, *, alternating=None):
         replay_handoff=None
         relaxed_transition = False
         relaxed_bootstrap = False
+        if args.approach_ball_only:
+            from quadsmash.rl.supermimic_terminal_scoring import approach_ball_scoring_protocol
+            from quadsmash.tasks.stand.ball_env import PHYSICS
+            phase_scoring = approach_ball_scoring_protocol()
+            contract = dict(contract, approach_ball_scoring=phase_scoring)
+            protocol = dict(protocol, approach_ball_scoring=phase_scoring)
+            trainer.approach_ball_protocol = phase_scoring
+            trainer.prioritize_approach_flight = args.prioritize_approach_flight
+            trainer.approach_separation_m = PHYSICS['separation_hysteresis_m']
+            trainer.reference.configure_approach_gate(args.early_arm_seconds)
         plane_calibration = None
         def start_native_env():
             class TrainingEnv(SuperMimicEnvV1, FrozenPanelEnv):
@@ -700,7 +786,8 @@ def run(args, *, alternating=None):
                 reset_noise=zero_panel_reset_noise(128, NATIVE_TRAIN128_SEED),
                 residual_policy_checkpoint=native_source_checkpoint, g07_execution_root=execution_root,
                 native_return_gamma=timebase.gamma, contact_flight_recovery=contract['contact_flight_recovery'],
-                relaxed_protocol=contract.get('relaxed_scoring'))
+                relaxed_protocol=contract.get('relaxed_scoring'),
+                approach_ball_protocol=contract.get('approach_ball_scoring'))
             try:
                 native_wrapper = RslRlVecEnvWrapper(native_env, clip_actions=None)
                 initial_obs, _ = native_wrapper.reset()
@@ -712,7 +799,9 @@ def run(args, *, alternating=None):
 
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
-            had_relaxed = 'relaxed_scoring' in resumed['metadata']['task_contract']
+            if args.approach_ball_only and not args.resume_reset_schedule and resumed['metadata']['task_contract'] != contract:
+                raise ValueError('A ball-only continuation requires the saved phase task contract')
+            had_relaxed = not args.approach_ball_only and 'relaxed_scoring' in resumed['metadata']['task_contract']
             args.relaxed_scoring |= had_relaxed
             relaxed_transition = args.relaxed_scoring and not had_relaxed
             relaxed_bootstrap = args.relaxed_scoring and not resumed['config'].get('relaxed_calibration_complete', False)
@@ -788,6 +877,8 @@ def run(args, *, alternating=None):
                 saved_objective=resumed['config'].get('approach_objective','task')
                 if args.approach_objective!=saved_objective:
                     raise ValueError('An Approach objective change requires a fresh schedule; inherited updates cannot count toward the new objective')
+                if args.prioritize_approach_flight != resumed['config'].get('prioritize_approach_flight', False):
+                    raise ValueError('An Approach flight priority change requires a fresh schedule')
             world=resumed['world']
             world_optimizer=resumed['world_optimizer']
             natural_rng=resumed.get('natural_flight_rng')
@@ -804,6 +895,11 @@ def run(args, *, alternating=None):
                 natural_rng=wm_state['natural_flight_rng']
             actor.load_state_dict(resumed['actor'],strict=True)
             adapter.load_state_dict(world,strict=True)
+            if args.approach_ball_only and not args.resume_reset_schedule:
+                calibration = resumed.get('approach_speed_calibration')
+                if calibration is not None and calibration['world_sha256'] != tensor_digest(adapter.state_dict().items()):
+                    raise ValueError('Saved release-speed calibration belongs to another WM')
+                trainer.approach_speed_calibration = calibration
             if forward_guard is not None:
                 resume_check=forward_guard.check(adapter)
                 write(args.output/'resumed_forward_validation.json',resume_check)
@@ -816,12 +912,21 @@ def run(args, *, alternating=None):
             for attr,key in (('accepted_snapshot','step'),('block_start_snapshot','block'),('native_accepted_snapshot','native')):
                 if key in resumed.get('actor_references',{}):setattr(trainer,attr,resumed['actor_references'][key])
             trainer.critic.load_state_dict(resumed['critic'],strict=True)
-            if 'actor_optimizers' in resumed:
-                trainer._pending_actor_optimizer_states=dict(resumed['actor_optimizers'])
-                if 'joint' in trainer._pending_actor_optimizer_states:
-                    trainer._actor_optimizers['joint'].load_state_dict(trainer._pending_actor_optimizer_states.pop('joint'))
-            else:
-                trainer.actor_opt.load_state_dict(resumed['actor_optimizer'])
+            if args.approach_ball_only:
+                anchor = (actor.state_dict() if args.resume_reset_schedule
+                          else restore_approach_phase_anchor(resumed, args.resume_training))
+                frozen_anchor = tensor_digest((k, v) for k, v in anchor.items() if k not in APPROACH_NAMES)
+                frozen_actor = tensor_digest((k, v) for k, v in actor.state_dict().items() if k not in APPROACH_NAMES)
+                if frozen_anchor != frozen_actor:
+                    raise ValueError('Approach A0 anchor changes Base, Recovery or normalization')
+                trainer.reference.load_state_dict(anchor, strict=True)
+            if not (args.approach_ball_only and args.resume_reset_schedule):
+                if 'actor_optimizers' in resumed:
+                    trainer._pending_actor_optimizer_states=dict(resumed['actor_optimizers'])
+                    if 'joint' in trainer._pending_actor_optimizer_states:
+                        trainer._actor_optimizers['joint'].load_state_dict(trainer._pending_actor_optimizer_states.pop('joint'))
+                else:
+                    trainer.actor_opt.load_state_dict(resumed['actor_optimizer'])
             args.world_learning_rate=trainer.world_lr=restore_world_optimizer(
                 trainer.world_opt,world_optimizer,args.requested_world_lr)
             if natural_flight is not None and natural_rng is not None:
@@ -841,7 +946,7 @@ def run(args, *, alternating=None):
                 args.recovery_stability_limits = True
             if resumed['config'].get('landing_and_first_contact_objectives') and not args.landing_and_first_contact_objectives:
                 raise ValueError('Resume must preserve the revised research objective')
-            if args.landing_and_first_contact_objectives:
+            if args.landing_and_first_contact_objectives and not args.approach_ball_only:
                 replay.recovery_failure_prefixes = True
                 replay.recovery_training_mask = torch.ones(replay.lanes, dtype=torch.bool)
                 replay.recovery_training_mask[list(wm_holdout_lanes)] = False
@@ -875,6 +980,13 @@ def run(args, *, alternating=None):
                 json.loads((Path(directory) / 'manifest.json').read_text()) for directory in replay_archives]
             total_replay_chunks = sum(len(receipt['chunks']) for receipt in archive_receipts)
             rebuilt_chunks = 0
+            cache_hits = 0
+            if args.approach_ball_only:
+                from quadsmash.rl.supermimic_replay_restore_v1 import (
+                    append_packed_archive, packing_identity, read_packed_chunk)
+                cache = args.output.parent / '.native_replay_cache'
+                cache_identity = packing_identity(replay.schema)
+            from quadsmash.rl.supermimic_archive_storage_v1 import read_archive_rows
             for archive_index,directory in enumerate(replay_archives):
                 replay.new_stream(source='online',policy_version=int(resumed_global.get('accepted',0)))
                 directory=Path(directory)
@@ -882,21 +994,32 @@ def run(args, *, alternating=None):
                 for item in receipt['chunks']:
                     if args.stop_request['signal'] is not None:
                         raise InterruptedError(args.stop_request['signal'])
-                    from quadsmash.rl.supermimic_archive_storage_v1 import read_archive_rows
-                    with read_archive_rows(directory,item,scratch=args.output) as rows:
-                        for row in rows:
-                            replay.append(row,retain_start=False,policy_version=row.get('policy_version',0))
-                    del rows
+                    if args.approach_ball_only:
+                        payload, hit = read_packed_chunk(directory, item, schema=replay.schema, cache=cache,
+                                                         identity=cache_identity, scratch=args.output)
+                        append_packed_archive(replay, payload)
+                        cache_hits += int(hit)
+                    else:
+                        with read_archive_rows(directory,item,scratch=args.output) as rows:
+                            for row in rows:
+                                replay.append(row,retain_start=False,policy_version=row.get('policy_version',0))
+                        del rows
                     rebuilt_chunks += 1
                     if rebuilt_chunks % 32 == 0 or rebuilt_chunks == total_replay_chunks:
                         print(f'REPLAY_RESTORE {rebuilt_chunks}/{total_replay_chunks} chunks', flush=True)
-            if 'actor_start_bank' in resumed:
+            if args.approach_ball_only:
+                lifecycle_stage(args.output, 'APPROACH_REPLAY_RESTORED', verified_chunks=rebuilt_chunks,
+                                cache_hits=cache_hits, replay_ticks=replay.count)
+            if args.approach_ball_only and args.resume_reset_schedule:
+                lifecycle_stage(args.output, 'APPROACH_START_BANK_INITIALIZED',
+                                historical_entries_inherited=0, capacity=replay.actor_start_bank.capacity)
+            elif 'actor_start_bank' in resumed:
                 replay.actor_start_bank.load_state_dict(tensor_tree_copy(resumed['actor_start_bank'],cpu=True))
             elif args.resume_start_block=='approach':
                 raise ValueError('Approach continuation lacks persisted dynamic actor starts; rebuild audited starts from native archives first')
             if 'dynamic_stage_starts' in resumed:
                 rebuilt = {}
-                if args.landing_and_first_contact_objectives:
+                if getattr(replay, 'recovery_failure_prefixes', False):
                     for name in ('post_touchdown','touchdown','recovery_failure','stable_recovery','post_landing_support_loss'):
                         rebuilt[name] = [dict(record, _actor_lane_mask=mask, _source_lanes=replay.lanes)
                                          for record,mask in replay.restore_stages.get(name, ())]
@@ -1039,7 +1162,8 @@ def run(args, *, alternating=None):
                 fresh=not args.resume_training or args.resume_reset_schedule, replay=replay, natural_flight=natural_flight)
         stage(args.output,'AFTER_RESET')
         from quadsmash.rl.supermimic_policy_execution_v1 import policy_forward,resolve_contract
-        if args.resume_training and resolve_contract(resumed)[0]!=policy_execution:
+        if (args.resume_training and resolve_contract(resumed)[0]!=policy_execution
+                and not (args.approach_ball_only and args.resume_reset_schedule)):
             raise ValueError('Resume would change trained recovery gate')
         def applicable_probe(head,current):
             from quadsmash.rl.supermimic_evidence_binding_v1 import probe_applicability
@@ -1120,10 +1244,15 @@ def run(args, *, alternating=None):
             return preview_intercept_lanes(state,reference,allowed.to(state.physical.device),trainer).cpu()
 
         from quadsmash.rl.supermimic_frozen_refresh_v1 import FrozenRefresh
-        from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
+        from quadsmash.rl.supermimic_approach_data_v1 import (
+            NativeArmIdentification, early_approach_start, gate_on_actor_device, native_approach_metadata)
+        arm_identification = (NativeArmIdentification(128, env.device, wm_holdout_lanes)
+                              if args.approach_ball_only else None)
         from quadsmash.rl.supermimic_frozen_return_monitor_v1 import FrozenReturnMonitor
         frozen_return_monitor=FrozenReturnMonitor(args.native_return_drop_tolerance,args.native_return_flat_tolerance,args.native_return_patience)
-        if args.resume_training and not relaxed_transition and resumed.get('frozen_return_monitor') is not None:
+        if (args.resume_training and not relaxed_transition
+                and not (args.approach_ball_only and args.resume_reset_schedule)
+                and resumed.get('frozen_return_monitor') is not None):
             frozen_return_monitor.load_state_dict(resumed['frozen_return_monitor'])
         elif args.resume_training and args.training_profile=='large':
             raise ValueError('Large resume requires saved native-return monitoring state; do not reset trend history')
@@ -1143,6 +1272,11 @@ def run(args, *, alternating=None):
                 super().finish_record(*values)
                 row=self.rows[-1]
                 sampling_metadata=native_approach_metadata(row,actor,adapter.physical_model.geometry)
+                if args.approach_ball_only:
+                    sampling_metadata['approach_start_eligible'] = early_approach_start(
+                        row['observation'], sampling_metadata['approach_gate']).cpu() & ~arm_identification.excited.cpu()
+                    row['arm_identification_active'] = arm_identification.active.detach().cpu().clone()
+                    row['arm_identification_episode'] = arm_identification.excited.detach().cpu().clone()
                 row['sampling_metadata']=sampling_metadata
                 row['policy_version']=global_accepted_id
                 row['actor_state_sha256']=behavior_actor_hash
@@ -1234,11 +1368,20 @@ def run(args, *, alternating=None):
             task_reference_bank=str(args.task_reference_bank.resolve()) if args.task_reference_bank else None,
             action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()) if args.action_ball_checkpoint else None,
             tracking_weight=args.tracking_weight,approach_objective=args.approach_objective,toi_racket_weight=args.toi_racket_weight,
+            prioritize_approach_flight=args.prioritize_approach_flight,
             use_substep_toi_references=args.use_substep_toi_references,intercept_plane_calibration=plane_calibration,
             paired_evaluation_baseline=str(args.paired_evaluation_baseline.resolve()) if args.paired_evaluation_baseline else None,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         metadata=dict(wm_action_collections=action_collections,policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
+        if args.approach_ball_only:
+            frozen_phase_hash = tensor_digest((k, v) for k, v in actor.state_dict().items()
+                                              if k not in APPROACH_NAMES)
+            if (args.resume_training and not args.resume_reset_schedule
+                    and resumed['metadata'].get('phase_frozen_actor_sha256') != frozen_phase_hash):
+                raise ValueError('Frozen Base, Recovery or normalization changed across the phase continuation')
+            metadata['phase_frozen_actor_sha256'] = frozen_phase_hash
+            metadata['phase_anchor_actor_sha256'] = tensor_digest(trainer.reference.state_dict().items())
         global_attempt_id=0;global_accepted_id=0;global_rejected=0;global_backtracked=0
         if args.resume_training:
             global_attempt_id=int(resumed_global.get('attempts',0));global_accepted_id=int(resumed_global.get('accepted',0))
@@ -1252,6 +1395,7 @@ def run(args, *, alternating=None):
         config['relaxed_speed_margin'] = args.relaxed_speed_margin
         config['relaxed_impulse_residual_scale'] = args.relaxed_impulse_residual_scale
         config['relaxed_calibration_complete'] = args.relaxed_scoring and not relaxed_bootstrap
+        config['approach_ball_only'] = args.approach_ball_only
         if research: config['research_training_seed']=training_seed
         write(args.output/'config.json',config)
         elapsed_offset = 0.
@@ -1285,11 +1429,16 @@ def run(args, *, alternating=None):
         write(args.output/'loaded_fit_provenance.json',loaded_fit)
         def save(name):
             archive.flush()  # Checkpoint never points beyond durable replay.
+            actor_references = dict(step=trainer.accepted_snapshot, block=trainer.block_start_snapshot,
+                                    native=trainer.native_accepted_snapshot)
+            if args.approach_ball_only:
+                actor_references['approach_anchor'] = trainer.reference.state_dict()
             atomic_torch_save(dict(algorithm='supermimic_v1',adapter_schema=adapter.schema,actor=actor.state_dict(),
                 critic=trainer.critic.state_dict(),world=adapter.state_dict(),actor_optimizer=trainer.actor_opt.state_dict(),
                 actor_optimizers=dict(getattr(trainer,'_pending_actor_optimizer_states',{}),**{name:opt.state_dict() for name,opt in trainer._actor_optimizers.items()}),
                 world_optimizer=trainer.world_opt.state_dict(),critic_optimizer=trainer.critic_opt.state_dict(),
                 actor_updates=trainer.actor_updates,actor_attempts=trainer.actor_attempts,
+                approach_speed_calibration=getattr(trainer, 'approach_speed_calibration', None),
                 rejected_actor_updates=trainer.rejected_actor_updates,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
                 research_elapsed_s=time.monotonic()-research_started,
                 native_ticks=tick,metadata=metadata,config=config,last_critic_loss=trainer.last_critic_loss,
@@ -1310,7 +1459,7 @@ def run(args, *, alternating=None):
                 frozen_return_monitor=frozen_return_monitor.state_dict(),
                 native_value_bank=native_value_bank,sequential_progress=schedule.state_dict(),actor_start_bank=replay.actor_start_bank.state_dict(),dynamic_stage_starts=replay.stage_starts,
                 reference_bank=trainer.reference_bank.payload() if trainer.reference_bank else None,
-                actor_references=dict(step=trainer.accepted_snapshot,block=trainer.block_start_snapshot,native=trainer.native_accepted_snapshot),
+                actor_references=actor_references,
                 replay_metadata=dict(approach_metadata=replay.approach_metadata,
                     streams=replay.streams.cpu(), stage_ids=replay.stage_ids.cpu(),
                     source_ids=replay.source_ids.cpu(), policy_versions=replay.policy_versions.cpu(),
@@ -1345,7 +1494,7 @@ def run(args, *, alternating=None):
         from quadsmash.rl.supermimic_dual_head_quality_v1 import split_native_value_rows,critic_holdout,reference_coverage
         from scripts.index_supermimic_success_archive import archive_actor_sha256
         label_actor_sha256=archive_actor_sha256(manifest)
-        if args.training_stage == 'wm_calibrate' or relaxed_bootstrap:
+        if args.training_stage == 'wm_calibrate' or relaxed_bootstrap or args.approach_ball_only:
             native_value_bank=dict(
                 inputs=torch.empty((0, 0)), rtg=torch.empty((0,)), identity=[],
                 head_masks={'recovery':torch.empty((0,),dtype=torch.bool),
@@ -1355,7 +1504,8 @@ def run(args, *, alternating=None):
                 policy_execution=manifest.get('policy_execution'), accepted_updates=0,
                 label_actor_state=None)
             write(args.output/'native_critic_stage_audit.json',dict(
-                skipped=True, reason='awaiting_new_scoring_native_rtg' if relaxed_bootstrap else 'wm_calibrate_actor_critic_blocked',
+                skipped=True, reason=('ball_only_objective' if args.approach_ball_only else
+                    'awaiting_new_scoring_native_rtg' if relaxed_bootstrap else 'wm_calibrate_actor_critic_blocked'),
                 source='packed_loop/data.pt', horizon_steps=int(rtg.shape[0])))
         else:
             stage_states=[as_state(start_cache[t]) for t in stage_ticks]
@@ -1378,7 +1528,7 @@ def run(args, *, alternating=None):
                     head_masks={h:torch.cat(v) for h,v in value_masks.items()},policy_id=manifest.get('policy_id','initial_archive_unknown_policy'),
                     actor_sha256=label_actor_sha256,source_sha256=packed_sha,policy_execution=manifest.get('policy_execution'),accepted_updates=0,
                     label_actor_state={k:v.detach().cpu().clone() for k,v in trainer.reference.state_dict().items()} if label_actor_sha256==tensor_digest(trainer.reference.state_dict().items()) else None)
-        if args.training_stage != 'wm_calibrate' and not args.resume_training:
+        if args.training_stage != 'wm_calibrate' and not args.resume_training and not args.approach_ball_only:
             from quadsmash.rl.supermimic_dual_head_quality_v1 import native_calibration_rows
             initial_ids,calibration_contract=native_calibration_rows(native_value_bank,policy_execution,wm_holdout_lanes,CRITIC_TICKS,expected_actor_sha256=tensor_digest(actor.state_dict().items()))
             if len(initial_ids):
@@ -1519,8 +1669,9 @@ def run(args, *, alternating=None):
                 sampling_seconds=time.perf_counter()-sampling_started
                 fit_started=time.perf_counter()
                 stats=trainer.fit_world_window(window,launch[lanes],loss_groups=sampling.pop('loss_groups'),
-                                               separate_supervision=args.wm_separate_supervision,long_native=sample_long_flight() if not research or offset%4==0 else None)
-                if research and offset%2==0:
+                                               separate_supervision=args.wm_separate_supervision or args.approach_ball_only,
+                                               long_native=sample_long_flight() if not research or offset%4==0 else None)
+                if research and not args.approach_ball_only and offset%2==0:
                     stats['contact_supervision']=trainer.fit_research_contact(window,launch[lanes])
                 del window
                 stats.update(sampling_seconds=sampling_seconds,fit_wall_seconds=time.perf_counter()-fit_started)
@@ -1634,6 +1785,8 @@ def run(args, *, alternating=None):
             if progress.get('proposal_in_flight',False):raise ValueError('Interrupted proposal: resume its pre_proposal checkpoint, not partial optimizer state')
             continuing=progress['status']!='new'
             trainer.set_trainable_names(names,block_name,reset_block=not continuing)
+            if args.approach_ball_only and trainer.frozen_actor_hash != metadata['phase_frozen_actor_sha256']:
+                raise ValueError('Approach-only block changed the frozen actor or trainable parameter set')
             if research:
                 for group in trainer.actor_opt.param_groups:
                     group['lr']=trainer.actor_lr
@@ -1669,16 +1822,29 @@ def run(args, *, alternating=None):
                 trainer.actor_updates=accepted
                 trainer.actor_attempts=attempts
                 check_stop()
-                if not args.landing_and_first_contact_objectives or collect_block:
-                    cover_critic()
-                ensure_critic()
+                if not args.approach_ball_only:
+                    if not args.landing_and_first_contact_objectives or collect_block:
+                        cover_critic()
+                    ensure_critic()
                 critic_loss_before_proposal=trainer.last_critic_loss
                 if shutil.disk_usage(args.output).free<8*1024**3:raise RuntimeError('Disk guard: less than8GiB free')
                 started=time.perf_counter()
                 replay_tick_before_collect = replay._native_tick_counter
+                collection_ticks = args.native_ticks_per_actor_update if collect_block else 0
+                # Milestone evaluation closes PhysX. A continuation creates a
+                # fresh scene whose first 128 ticks are entirely pre-launch.
+                first_scene_collection = args.approach_ball_only and collect_block and tick == first_mixed_tick
+                if first_scene_collection:
+                    collection_ticks = args.approach_initial_ticks
                 with torch.inference_mode():
-                    for _ in range(args.native_ticks_per_actor_update if collect_block else 0):
-                        check_stop();action=native_actor_action(obs);obs,reward,done,info=wrapper.step(action);tick+=1
+                    for _ in range(collection_ticks):
+                        check_stop()
+                        action = native_actor_action(obs)
+                        if arm_identification is not None:
+                            env.record_approach_gate(actor.approach_action_gate(obs['policy']))
+                            action = arm_identification.apply(action, obs['policy'], env.episode_index, env.rally.had_contact)
+                        obs,reward,done,info=wrapper.step(action)
+                        tick+=1
                         if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite native observation')
                         for raw in env.rally_records[cursor:]:
                             record=score_terminal_episode(raw,dict(protocol,_root=str(ROOT)))
@@ -1691,7 +1857,11 @@ def run(args, *, alternating=None):
                             completed_returns.append(record['native_episode_return'])
                             completed_discounted.append(record['native_episode_discounted_return'])
                             episode_stats.add(record)
-                            replay.actor_start_bank.label_terminal(record,replay.current_stream)
+                            if arm_identification is not None:
+                                record['arm_identification_episode'] = bool(arm_identification.excited[raw['env_id']])
+                                record['first_approach_contact_motion'] = raw['first_approach_contact_motion']
+                            if not record.get('arm_identification_episode', False):
+                                replay.actor_start_bank.label_terminal(record,replay.current_stream)
                             with (args.output/'native_episodes.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                             if writer is not None:
                                 step=int(tick*128)
@@ -1734,6 +1904,46 @@ def run(args, *, alternating=None):
                             stream.write(json.dumps(sample)+'\n')
                 block_reward_mean=progress['collection_reward_mean']
                 world_stats=run_world_updates(global_attempt_id,head=block_name) if collect_block else {}
+                if args.approach_ball_only and collect_block:
+                    from quadsmash.rl.supermimic_release_calibration import (
+                        calibrate_release_speed, measured_contact_batches, measured_contact_pairs)
+                    contact_started = time.perf_counter()
+                    contact_pairs = measured_contact_pairs(
+                        replay, launch, offset=global_attempt_id, limit=min(4, args.approach_contact_updates))
+                    pair_fits = []
+                    for minus, plus, pair_launch in contact_pairs:
+                        check_stop()
+                        pair_fits.append(trainer.fit_ball_only_contact_pair(minus, plus, pair_launch))
+                    support, contact_batches = measured_contact_batches(
+                        replay, launch, excluded_lanes=wm_holdout_lanes,
+                        updates=args.approach_contact_updates - len(pair_fits))
+                    contact_fits = []
+                    for window, contact_launch in contact_batches:
+                        check_stop()
+                        contact_fits.append(trainer.fit_ball_only_contact(window, contact_launch))
+                    world_stats['phase_contact_supervision'] = dict(
+                        independent_releases=support, requested_batches=args.approach_contact_updates,
+                        completed_batches=len(contact_fits)+len(pair_fits),
+                        effective_updates=sum(fit['updated'] for fit in contact_fits+pair_fits),
+                        fits=contact_fits, paired_fits=pair_fits, seconds=time.perf_counter() - contact_started)
+                    check_stop()
+                    calibration_started = time.perf_counter()
+                    calibration = calibrate_release_speed(
+                        adapter, replay, launch, excluded_lanes=wm_holdout_lanes,
+                        string_strips=trainer.string_strips, separation_m=trainer.approach_separation_m,
+                        threshold=phase_scoring['minimum_outgoing_speed_mps'])
+                    calibration.update(world_sha256=tensor_digest(adapter.state_dict().items()),
+                                       first_attempt=global_attempt_id, native_ticks=tick,
+                                       seconds=time.perf_counter() - calibration_started)
+                    trainer.approach_speed_calibration = calibration
+                    if wm_holdout_lanes and (global_accepted_id - research_origin) % 64 == 0:
+                        training_lanes = [lane for lane in range(replay.lanes) if lane not in wm_holdout_lanes]
+                        calibration['holdout'] = calibrate_release_speed(
+                            adapter, replay, launch, excluded_lanes=training_lanes,
+                            string_strips=trainer.string_strips, separation_m=trainer.approach_separation_m,
+                            threshold=phase_scoring['minimum_outgoing_speed_mps'], max_cases=32,
+                            training_calibration=calibration, flight_court=trainer.research_court)
+                    write(args.output/f'{cycle_index}_speed_calibration.json', calibration)
                 quality=check_head_quality(block_name,global_attempt_id)
                 # Rebuild the start pool for every proposal.  Recovery starts
                 # therefore follow fresh event-aligned native data as it
@@ -1797,7 +2007,22 @@ def run(args, *, alternating=None):
                             effective_start_lanes=sum(len(r['lane_episode_tick']) for r in layout))
                 else:
                     row=pool[(attempts-1)%len(pool)]
-                if block_name=='approach':
+                if block_name=='approach' and args.approach_ball_only:
+                    def ball_start_lanes(start):
+                        observation = start['observation']
+                        activity = gate_on_actor_device(actor, observation).cpu()
+                        precontact = ~start['before']['task']['had_contact'].reshape(-1).bool().cpu()
+                        allowed = training_start_mask(start, wm_holdout_lanes).cpu()
+                        if 'arm_identification_episode' in start:
+                            allowed &= ~start['arm_identification_episode'].cpu().reshape(-1)
+                        return allowed & precontact & early_approach_start(observation, activity).cpu()
+                    draw = schedule.head_attempts('approach')
+                    proposal_rows, start_sampling = replay.actor_start_bank.sample_ball_phase(
+                        ball_start_lanes, draw, fallback=pool)
+                    if not proposal_rows:
+                        raise RuntimeError('No causal pre-contact state available for the ball-only proposal')
+                    row = proposal_rows[0]
+                elif block_name=='approach':
                     precheck=bank_precheck=None
                     if args.approach_objective=='toi_racket_only':
                         previews={}
@@ -1842,11 +2067,19 @@ def run(args, *, alternating=None):
                                               missing_episodes=args.toi_effective_start_lanes-actual,records=layout)
                 state=training_state(row,compact=research);check_stop();trainer.actor_attempts=attempts-1
                 actor_start=(tuple([state]+[training_state(r,compact=research) for r in proposal_rows[1:]]) if proposal_rows else state)
+                if args.approach_ball_only and isinstance(actor_start, tuple):
+                    from quadsmash.rl.supermimic_compact_starts import batch_approach_starts
+                    actor_start = batch_approach_starts(
+                        actor_start, max_steps=timebase.imagination_steps, dt=timebase.control_dt_s,
+                        followthrough_ticks=phase_scoring['minimum_followthrough_ticks'],
+                        plane_offset_m=trainer.toi_plane_offset_m)
+                    start_sampling['packed_rollout_lane_counts'] = [len(s.physical) for s in actor_start]
                 if research:
                     retained=global_accepted_id-research_origin
-                    trainer.contact_aux_weight=(args.research_contact_weight if block_name=='approach'
+                    trainer.contact_aux_weight=(args.research_contact_weight if not args.approach_ball_only and block_name=='approach'
                         and args.research_contact_gradient=='G1' and retained>=32 else 0.)
-                    adapter.action_ball_model.detach_residual_for_actor=True
+                    adapter.action_ball_model.detach_residual_for_actor=not args.approach_ball_only
+                trainer.diagnose_ball_gradients = args.approach_ball_only and collect_block
                 try:
                     stats=trainer.imagine_update(actor_start)
                 finally:
@@ -2234,7 +2467,23 @@ def run(args, *, alternating=None):
                 save('cycle_%02d_candidate_%04d.pt' % (event['cycle']+1,total))
                 write(args.output/('cycle_%02d.json' % (event['cycle']+1)),result)
                 return result
-            run_schedule(alternating,train=train_short,refresh=refresh_pair,finalize=finalize_cycle,checkpoint=save)
+            def stop_for_evaluation(event, cursor):
+                return (event['kind'] == 'train'
+                        and cursor.head_totals()['approach']['accepted'] == args.approach_stop_at)
+
+            completed = run_schedule(
+                alternating, train=train_short, refresh=refresh_pair, finalize=finalize_cycle, checkpoint=save,
+                stop_after=stop_for_evaluation if args.approach_stop_at is not None else None)
+            if not completed:
+                totals = alternating.head_totals()
+                retained = totals['approach']['accepted']
+                save(f'approach_A{retained:03d}.pt')
+                write(args.output/'evaluation_boundary.json', dict(
+                    approach_accepted=retained, recovery_accepted=0, native_ticks=tick,
+                    head_counters=totals, invocation=invocation_receipt(),
+                    pending_event=alternating.current['id'], actor_training_complete=False))
+                stage(args.output, 'APPROACH_EVALUATION_BOUNDARY', actor_updates=retained)
+                return
             cycle_results=[r['result'] for r in alternating.results if r['event']['kind']=='finalize']
             totals=alternating.head_totals();total=sum(x['accepted'] for x in totals.values())
             write(args.output/'training_completed.json',dict(update_mode='sequential',invocation=invocation_receipt(),sequential_layout='short-alternating',

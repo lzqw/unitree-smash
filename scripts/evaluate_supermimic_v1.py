@@ -39,6 +39,10 @@ def main():
                         help='Frozen TRAIN128 comparison: also activate Recovery after a confirmed grounded miss')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--relaxed-scoring', action='store_true')
+    parser.add_argument('--approach-ball-only', action='store_true',
+                        help='Score the complete measured ball outcome independently of robot recovery')
+    parser.add_argument('--early-arm-seconds', type=float, default=None,
+                        help='Zero-update early-arm execution window for the Approach-only A0 panel')
     parser.add_argument('--relaxed-survival-diagnostic', action='store_true',
                         help='Continue successful lanes for post-success survival and uncensored strict scoring')
     parser.add_argument('--g07-execution-root', type=Path)
@@ -60,6 +64,10 @@ def main():
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus'),default=None)
     args = parser.parse_args()
+    if args.early_arm_seconds is not None and not args.approach_ball_only:
+        parser.error('Early-arm override requires the ball-only A0 evaluation protocol')
+    if args.approach_ball_only and (args.relaxed_scoring or args.relaxed_survival_diagnostic):
+        parser.error('Choose a single evaluation termination protocol')
     if (args.independent_panel_batch is not None or args.research_fixed128) and (args.native_action_probe_spec or args.record_physical_transitions
             or args.shutdown_diagnostic_ticks is not None):
         parser.error('Independent panel evaluation requires a complete score-only rollout')
@@ -136,7 +144,8 @@ def _run_native(args, stop_request):
         from quadsmash.rl.supermimic_task_contract import (
             resolve_task_contract, make_task_cfg, require_resume_contract,
             zero_panel_reset_noise, validate_sweep_contract)
-        from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode, relaxed_scoring_protocol, STRICT_SCORING
+        from quadsmash.rl.supermimic_terminal_scoring import (
+            score_terminal_episode, relaxed_scoring_protocol, approach_ball_scoring_protocol, STRICT_SCORING)
         from quadsmash.rl.supermimic_timebase_v2 import full_range_targets
         from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1
         from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
@@ -169,9 +178,17 @@ def _run_native(args, stop_request):
             stored = trained.get('metadata', {}).get('task_contract', {})
             if 'relaxed_scoring' in stored:
                 contract = dict(contract, relaxed_scoring=relaxed_scoring_protocol())
+            if 'approach_ball_scoring' in stored:
+                contract = dict(contract, approach_ball_scoring=approach_ball_scoring_protocol())
+                if args.early_arm_seconds is not None:
+                    raise ValueError('A trained ball-only checkpoint retains its recorded gate')
             require_resume_contract(trained, contract)
         if args.relaxed_scoring:
             contract = dict(contract, relaxed_scoring=relaxed_scoring_protocol())
+        if args.approach_ball_only:
+            contract.pop('relaxed_scoring', None)
+            contract['approach_ball_scoring'] = approach_ball_scoring_protocol()
+        scoring_protocol['approach_ball_scoring'] = contract.get('approach_ball_scoring')
         scoring_protocol['relaxed_scoring'] = contract.get('relaxed_scoring')
         if args.relaxed_survival_diagnostic and scoring_protocol['relaxed_scoring'] is None:
             raise ValueError('Post-success survival requires relaxed scoring')
@@ -201,6 +218,7 @@ def _run_native(args, stop_request):
             residual_policy_checkpoint=source, g07_execution_root=execution_root,
             contact_flight_recovery=contract['contact_flight_recovery'],
             relaxed_protocol=contract.get('relaxed_scoring'),
+            approach_ball_protocol=contract.get('approach_ball_scoring'),
             relaxed_survival_diagnostic=args.relaxed_survival_diagnostic)
         stage = 'AFTER_ENV'
         wrapper = RslRlVecEnvWrapper(env, clip_actions=None)
@@ -217,6 +235,11 @@ def _run_native(args, stop_request):
         policy_execution,execution_provenance=resolve_contract(trained)
         if trained is None and args.init_policy_recovery_gate=='causal':
             policy_execution=execution_contract(POSTHIT);execution_provenance='explicit frozen initialization under training causal gate'
+        if args.early_arm_seconds is not None:
+            policy_execution = execution_contract(POSTHIT, arm_preparation_seconds=args.early_arm_seconds)
+            execution_provenance = 'explicit early-arm zero-update baseline'
+        if policy_execution.get('arm_preparation_seconds') is not None:
+            actor.configure_approach_gate(policy_execution['arm_preparation_seconds'])
         if args.diagnostic_grounded_miss:
             if policy_execution != execution_contract(POSTHIT):
                 raise ValueError('Grounded-miss comparison requires a post-hit checkpoint')
@@ -268,6 +291,10 @@ def _run_native(args, stop_request):
             probe_capture=NativePairCapture(spec,args.native_action_probe_branch)
         start = time.perf_counter()
         step_wall_seconds = 0.
+        phase_timing = None
+        if scoring_protocol['approach_ball_scoring'] is not None:
+            from quadsmash.rl.supermimic_native_phase_timing import NativePhaseTiming
+            phase_timing = NativePhaseTiming(env)
         stage = 'EVALUATING'
         with torch.inference_mode():
             for tick in range(args.shutdown_diagnostic_ticks or 800):
@@ -276,6 +303,8 @@ def _run_native(args, stop_request):
                 before = obs['policy'] if reference is None and probe_capture is None else obs['policy'].clone()
                 old_target = None
                 action = policy_forward(actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
+                if env.approach_ball_termination is not None:
+                    env.record_approach_gate(actor.approach_action_gate(before))
                 if probe_capture is not None:action=probe_capture.before(tick,env,before,action)
                 if policy_execution['recovery_gate'] == POSTHIT_OR_GROUNDED_MISS:
                     active_gate = recovery_gate(env.rally,before,mode=POSTHIT_OR_GROUNDED_MISS)
@@ -286,7 +315,7 @@ def _run_native(args, stop_request):
                         gate_ticks.add_(extra)
                 else:
                     head_counts[0].add_((env.rally.had_contact & env.rally.released).sum())
-                head_counts[1].add_((actor.actor.gate(before) > .25).sum())
+                head_counts[1].add_((actor.approach_gate(before) > .25).sum())
                 if reference is not None:
                     if policy_execution['recovery_gate']==POSTHIT:
                         old_final=reference.apply_residual(obs,action,env._sm_residual_default,env._sm_residual_limits)
@@ -296,7 +325,8 @@ def _run_native(args, stop_request):
                 if not torch.isfinite(action).all():
                     raise FloatingPointError('Nonfinite evaluation action')
                 step_start = time.perf_counter()
-                obs, _, done, _ = wrapper.step(action)
+                obs, _, done, _ = (wrapper.step(action) if phase_timing is None else
+                                   phase_timing.step(wrapper.step, action, before, tick))
                 if probe_capture is not None:probe_capture.after(tick,env,done)
                 ticks_completed += 1
                 if not torch.isfinite(obs['policy']).all():
@@ -347,6 +377,8 @@ def _run_native(args, stop_request):
                     write_json(args.output/'progress.json',progress)
                     write_json(args.output/'command_consistency.json',mapping)
                     print('SUPERMIMIC_EVAL_PROGRESS='+json.dumps(progress),flush=True)
+                if scoring_protocol['approach_ball_scoring'] is not None and len(first) == 128:
+                    break
         if env.physical_transition_archive is not None:
             env.physical_transition_archive.flush()
         if probe_capture is not None:
@@ -368,25 +400,31 @@ def _run_native(args, stop_request):
             if any(first[i]['case_id'] != cases[i]['case_id'] for i in range(128)):
                 raise ValueError('Terminal case differs from the declared lane assignment')
         rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(128)]
+        if scoring_protocol['approach_ball_scoring'] is not None:
+            contacts = [event for event in env.contact_records if event['episode_index'] == 0]
+            write_json(args.output/'native_contact_motion.json', contacts)
+            write_json(args.output/'native_phase_timing.json', phase_timing.report())
         from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
         native_summary = summarize_native_episodes(rows)
-        n=native_summary['conditional_recovery_denominator']
+        n=native_summary['qualified_airborne_string_contact']
         recovery=native_summary['conditional_recovery_count']
+        recovery_observed=native_summary['conditional_recovery_denominator']
         with (args.checkpoint or source_path).open('rb') as checkpoint_stream:
             digest = hashlib.sha256()
             for chunk in iter(lambda: checkpoint_stream.read(8 << 20), b''):
                 digest.update(chunk)
             checkpoint_sha256 = digest.hexdigest()
         metrics=dict(policy_execution=policy_execution,policy_execution_provenance=execution_provenance,evaluation_scope='TRAIN128 development, not A/B acceptance',
-            num_envs=128,control_ticks=800,episode_seconds=8.,
+            num_envs=128,control_ticks=ticks_completed,episode_seconds=8.,
             qualified_airborne_string_contact=n,
             ball_side_complete_except_recovery=sum(r['ball_side_complete_except_recovery'] for r in rows),
-            recovery_success=sum(r['recovery_success'] for r in rows),
-            physical_recovery_success=sum(r['physical_recovery_success'] for r in rows),
+            recovery_success=recovery if recovery_observed or scoring_protocol['approach_ball_scoring'] is None else None,
+            physical_recovery_success=sum(r['physical_recovery_success'] is True for r in rows)
+                if any(r['physical_recovery_success'] is not None for r in rows) else None,
             scoring_schema=rows[0].get('scoring_schema', STRICT_SCORING),
-            conditional_recovery_count=recovery,conditional_recovery_denominator=n,
-            recovery_given_airborne_string_contact=recovery/n if n else None,
-            complete5=sum(r['complete5'] for r in rows),
+            conditional_recovery_count=recovery,conditional_recovery_denominator=recovery_observed,
+            recovery_given_airborne_string_contact=native_summary['recovery_given_airborne_string_contact'],
+            complete5=native_summary['complete5'],
             body_ground_seen=sum(r['body_ground_seen'] for r in rows),
             no_head_contact_recovery=None,no_independent_nonfoot_contact_recovery=None,
             missing_contact_audit_reason='No independent paired head/all-body contact labels in this environment; never default to false',

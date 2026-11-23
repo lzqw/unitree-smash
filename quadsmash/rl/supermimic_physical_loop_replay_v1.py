@@ -171,6 +171,8 @@ NATIVE_START_ID_FIELDS = ('stream_id', 'native_tick', 'policy_version', 'actor_s
 def _current_start_view(row):
     start = {key: row[key] for key in ('before', 'executor_before', 'observation')}
     start.update((key, row[key]) for key in NATIVE_START_ID_FIELDS if key in row)
+    if 'arm_identification_episode' in row:
+        start['arm_identification_episode'] = row['arm_identification_episode']
     return start
 
 
@@ -284,6 +286,7 @@ class PhysicalLoopReplay:
         self.initial_stage_ids=_stage_ids_from_tensors(package['tensors'], schema)
         self._ordered_cache=None
         self.training_probes=[]
+        self.training_probe_pairs=[]
         self.approach_labeler = approach_labeler
         self.initial_approach = approach_labeler(package['tensors']) if approach_labeler else {}
         for key, tensor in self.data.items():
@@ -364,6 +367,11 @@ class PhysicalLoopReplay:
         stage_ids = _stage_ids_from_tensors(record, self.schema).reshape(-1).cpu()
         self.stage_ids[index].copy_(stage_ids)
         self.source_ids[index].fill_(SOURCE_CODES[self.current_source])
+        if 'arm_identification_active' in row:
+            lanes = row['arm_identification_active'].detach().cpu().bool().reshape(-1)
+            if len(lanes) != self.lanes:
+                raise ValueError('Native arm identification mask must match the replay layout')
+            self.source_ids[index].masked_fill_(lanes, SOURCE_CODES['action_identification'])
         self.policy_versions[index].fill_(int(self.current_policy_version if policy_version is None else policy_version))
         if native_tick is None:
             native_tick = int(self._native_tick_counter)

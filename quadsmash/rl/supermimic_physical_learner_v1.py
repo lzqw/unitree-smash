@@ -268,11 +268,16 @@ class PhysicalHorizonTrainer:
             return self.toi_racket_weight
         return self.tracking_weight
 
-    def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None, baseline_landing_weights=None, tracking_parameters=(), collect_critic_data=True):
+    def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None,
+                           baseline_landing_weights=None, baseline_ball_scored=None,
+                           tracking_parameters=(), collect_critic_data=True):
+        ball_protocol = getattr(self, 'approach_ball_protocol', None)
+        if ball_protocol is not None:
+            collect_critic_data = False
         if isinstance(initial_state,tuple):
             from .supermimic_recovery_batches import pooled_objective
             return pooled_objective(self,initial_state,effective_weights,baseline_toi_weights,baseline_landing_weights,
-                                    collect_critic_data=collect_critic_data)
+                                    baseline_ball_scored=baseline_ball_scored, collect_critic_data=collect_critic_data)
         from .supermimic_approach_data_v1 import masked_lane_mean
         cfg=self.timebase; state=initial_state.branch()
         scoring_step = None
@@ -288,6 +293,18 @@ class PhysicalHorizonTrainer:
         contact_weight=getattr(self,'contact_aux_weight',0.) if toi_only else 0.
         revised = getattr(self, 'landing_and_first_contact_objectives', False)
         first_geometry = revised and toi_only
+        if ball_protocol is not None:
+            if not first_geometry:
+                raise ValueError('Ball-only Actor requires the revised TOI geometry objective')
+            from .supermimic_outgoing_flight import ball_only_flight_terms
+            from .supermimic_release_calibration import racket_release_boundary, speed_bias_at_lead
+            released = torch.zeros_like(selected)
+            after_release = torch.zeros_like(selected, dtype=torch.long)
+            resolved = torch.zeros_like(selected)
+            release_ball = state.physical.new_zeros((len(selected), 6))
+            closest_approach = state.physical.new_full((len(selected),), 2.)
+            impact_lead = torch.zeros_like(after_release)
+            approach_speed = state.physical.new_full((len(selected),), torch.nan)
         if first_geometry:
             swing_started = torch.zeros_like(selected)
             first_string = torch.zeros_like(selected)
@@ -334,10 +351,25 @@ class PhysicalHorizonTrainer:
                     elapsed=state.clock_goal_context['elapsed'],event_time=event_time)
             if reference is not None:
                 reference['matched'] = reference['matched'] & selected
+                if ball_protocol is not None and self.actor.early_arm_gate is not None:
+                    from .supermimic_toi_racket_objective import search_outgoing_target
+                    cache = getattr(self, '_proposal_ball_targets', {})
+                    key = id(initial_state)
+                    if key not in cache:
+                        cache[key] = search_outgoing_target(
+                            reference, self.adapter.action_ball_model.impulse_prior, self.research_court,
+                            minimum_speed=ball_protocol['minimum_outgoing_speed_mps'])
+                    reference['ball_only_contact'] = cache[key]
         toi_coverage_preserved=True
         reuse_geometry = (not torch.is_grad_enabled() and reference is not None and not toi_only
                           and type(self.reference_bank) is TaskSpaceReferenceBankV1
                           and type(self.adapter) is PhysicalImaginationAdapter)
+        planned_steps = cfg.imagination_steps
+        if ball_protocol is not None:
+            from .supermimic_toi_racket_objective import approach_horizon
+            planned_steps = approach_horizon(reference, selected, state.clock_goal_context['elapsed'],
+                                             maximum=cfg.imagination_steps, dt=cfg.control_dt_s,
+                                             followthrough_ticks=ball_protocol['minimum_followthrough_ticks'])
         for tick in range(cfg.imagination_steps):
             active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7
             if not active.any():break
@@ -346,6 +378,17 @@ class PhysicalHorizonTrainer:
                 valid.append(active & selected)
             action, ref_action, gate = self._rollout_requests(state)
             usable=selected&active
+            if ball_protocol is not None:
+                usable = usable & ~resolved
+                if not usable.any():
+                    break
+                if tick >= planned_steps:
+                    # An unsettled contact overrides the short horizon.
+                    # An unresolved miss retains the measured geometry objective.
+                    settling = usable & impacted
+                    if not settling.any():
+                        break
+                    usable = settling
             gates.append((gate.detach()*survival.detach()*usable).detach())
             anchors.append((action-ref_action).square().mean(-1)*active*survival.detach())
             track_mask=usable&(gate.detach()>.25)
@@ -368,6 +411,8 @@ class PhysicalHorizonTrainer:
                 gradient_options['scoring_step'] = scoring_step
             if reuse_geometry:
                 gradient_options['return_geometry'] = True
+            if ball_protocol is not None:
+                gradient_options.update(detach_ball=False, ball_input_grad=True, return_geometry=True)
             state,reward,done,transition=self.adapter(state,action,**gradient_options)
             if revised and self.block_name == 'recovery':
                 # Train on post-landing correction while the Critic keeps its original return target.
@@ -425,23 +470,57 @@ class PhysicalHorizonTrainer:
                 if contact_weight:
                     outgoing=torch.where(first[:,None],transition['outgoing_ball'],outgoing)
                 impacted=impacted|first
+            if ball_protocol is not None:
+                tool = transition['next_geometry']['position'][:, self.adapter.physical_model.geometry.ids['Racket']]
+                ball = transition['outgoing_ball']
+                distance = (tool - ball[:, :3].detach()).norm(dim=-1)
+                near = usable & ~impacted & state.clock_goal_context['ball_present'].reshape(-1).bool()
+                closest_approach = torch.where(near, torch.minimum(closest_approach, distance), closest_approach)
+                events = state.task_memory['rally']
+                impact_lead = torch.where(first, tick, impact_lead)
+                approach_speed = torch.where(first, -impact['normal_speed'].detach(), approach_speed)
+                release_candidate = usable & impacted & ~released
+                release_edge = release_candidate & racket_release_boundary(
+                    ball, transition['next_geometry'], self.adapter.physical_model.geometry.ids['Racket'],
+                    self.adapter.action_ball_model.impulse_prior.preview, separation_m=self.approach_separation_m)
+                release_ball = torch.where(release_edge[:, None], ball, release_ball)
+                recontact = released & usable & impact['active'] & (impact['object_id'] == 0)
+                after_release = after_release + (released & usable).long()
+                released = released | release_edge
+                # A subsequent racket contact invalidates the single-stroke flight estimate.
+                faulted = (events['double_hit_fault'].reshape(-1) > .5) | recontact
+                first_string = first_string & ~(usable & faulted)
+                pending = (events['followthrough_crossed'].reshape(-1) > .5) & (
+                    events['followthrough_finished'].reshape(-1) <= .5)
+                resolved = resolved | (usable & released & ~pending
+                    & (after_release >= ball_protocol['minimum_followthrough_ticks']))
             if reference is not None:
                 if toi_only:
+                    fixed_weights = None
+                    if baseline_toi_weights is not None:
+                        fixed_weights = (baseline_toi_weights[tick] if tick < len(baseline_toi_weights)
+                                         else torch.zeros_like(baseline_toi_weights[0]))
                     numerator,weights=intercept_loss(previous.physical,state.physical,
                         previous.clock_goal_context['elapsed'].reshape(-1),state.clock_goal_context['elapsed'].reshape(-1),
                         reference,track_mask,survival,self.adapter.physical_model.geometry,
-                        fixed_weights=None if baseline_toi_weights is None else baseline_toi_weights[tick],
-                        detach_empty=True, boundary=getattr(self, 'string_boundary', None))
+                        fixed_weights=fixed_weights,
+                        detach_empty=True, boundary=getattr(self, 'string_boundary', None),
+                        **({'relative_face_speed': True} if getattr(self, 'prioritize_approach_flight', False) else {}))
                 else:
                     numerator,denominator,weights=self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
                         geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival,return_components=True,
                         **({'fk':transition['next_geometry']} if reuse_geometry else {}))
                 tracks.append(numerator);track_weights.append(weights);track_states.append(state.physical)
             rewards.append(reward*active[:,None]);dones.append(done)
-            survival=survival*(1-done.reshape(-1))
+            if ball_protocol is None:
+                survival=survival*(1-done.reshape(-1))
         if not rewards:raise ValueError('No active in-episode imagination start')
-        final=self.adapter.critic_input(state)
-        ret=bptt_return(torch.stack(rewards),torch.stack(dones),self.critic(final).clamp(max=self.v_max),cfg.gamma)
+        final = None
+        if ball_protocol is None:
+            final=self.adapter.critic_input(state)
+            ret=bptt_return(torch.stack(rewards),torch.stack(dones),self.critic(final).clamp(max=self.v_max),cfg.gamma)
+        else:
+            ret = state.physical.new_zeros(len(selected))
         activity=torch.stack(gates); weights=(activity.sum(0)>.25).detach()
         # Backtracking must not improve a loss merely by dropping the lanes
         # that were selected by the original proposal's gate/survival trace.
@@ -449,7 +528,44 @@ class PhysicalHorizonTrainer:
         task_loss=-masked_lane_mean(ret,weights)
         if revised and self.block_name == 'recovery':
             task_loss = task_loss + masked_lane_mean(torch.stack(recovery_costs).sum(0), weights)
-        if toi_only:
+        flight_metrics = {}
+        flight_losses = {}
+        flight_cost_by_lane = None
+        flight_priority_loss = None
+        scored = None
+        if ball_protocol is not None:
+            scored = resolved & first_string & weights.bool().reshape(-1)
+            denominator = weights.sum().clamp_min(1.)
+            # Unresolved starts keep continuous pre-contact geometry supervision.
+            task_loss = (closest_approach * (~impacted) * weights).sum() / denominator
+            if getattr(self, 'prioritize_approach_flight', False):
+                flight_cost_by_lane = ret.new_full(ret.shape, torch.nan)
+            if scored.any():
+                terms = ball_only_flight_terms(
+                    release_ball[scored, :3], release_ball[scored, 3:],
+                    self.adapter.action_ball_model.impulse_prior, self.research_court,
+                    speed_bias=speed_bias_at_lead(impact_lead[scored], getattr(self, 'approach_speed_calibration', None)),
+                    minimum=ball_protocol['minimum_outgoing_speed_mps'])
+                flight_metrics['ball_speed_loss_supported_lanes'] = int((terms['speed'].detach() > 1e-6).sum())
+                if flight_cost_by_lane is not None:
+                    flight_cost_by_lane[scored] = sum(value.detach() for value in terms.values())
+                terms = {name: value.sum() / denominator for name, value in terms.items()}
+                ball_loss = sum(terms.values())
+                task_loss = task_loss + ball_loss
+                if flight_cost_by_lane is not None:
+                    flight_priority_loss = ball_loss
+                flight_losses = terms
+                flight_metrics.update({f'ball_loss_{name}': float(value.detach()) for name, value in flight_losses.items()})
+            if getattr(self, 'diagnose_ball_gradients', False):
+                geometry = (closest_approach * (~impacted) + first_cost * impacted) * weights
+                flight_losses['geometry'] = geometry.sum() / denominator
+            flight_metrics.setdefault('ball_speed_loss_supported_lanes', 0)
+            flight_metrics['resolved_ball_lanes'] = int(scored.sum())
+            flight_metrics['planned_imagination_steps'] = planned_steps
+            flight_metrics['model_rollout_steps'] = len(rewards)
+            target = reference.get('ball_only_contact') if reference is not None else None
+            flight_metrics['demand_racket_target_lanes'] = int(target['valid'].sum()) if target is not None else 0
+        elif toi_only:
             task_loss=task_loss.detach()
             if contact_weight:
                 from .supermimic_outgoing_flight import first_string_flight_loss, outgoing_cost
@@ -467,8 +583,12 @@ class PhysicalHorizonTrainer:
         anchor_loss=masked_lane_mean(torch.stack(anchors).sum(0),weights)
         all_track_weights=torch.stack(track_weights) if tracks else None
         if toi_only and baseline_toi_weights is not None and tracks:
-            baseline=baseline_toi_weights[:len(tracks)]
-            toi_coverage_preserved=bool(((baseline<=0) | (all_track_weights>0)).all())
+            overlap = min(len(tracks), len(baseline_toi_weights))
+            toi_coverage_preserved = bool(
+                ((baseline_toi_weights[:overlap] <= 0) | (all_track_weights[:overlap] > 0)).all()
+                & (baseline_toi_weights[overlap:] <= 0).all())
+        if baseline_ball_scored is not None:
+            toi_coverage_preserved = toi_coverage_preserved and bool((~baseline_ball_scored | scored).all())
         track_weight_sum=all_track_weights.sum() if tracks else ret.new_zeros(())
         tracking_loss=torch.stack(tracks).sum()/track_weight_sum.clamp_min(1e-8) if tracks else ret.sum()*0.
         if first_geometry and tracks:
@@ -490,7 +610,7 @@ class PhysicalHorizonTrainer:
                 if g is not None:responding|=(g.detach().abs().sum(-1)>0)&(w>0)
             nonzero_lanes=int(responding.sum())
         loss=tracking_coeff*tracking_loss+self.anchor_coeff*anchor_loss
-        if not toi_only:
+        if not toi_only or ball_protocol is not None:
             loss=loss+task_loss
         elif contact_weight:
             loss=loss+contact_weight*task_loss
@@ -505,7 +625,7 @@ class PhysicalHorizonTrainer:
             coverage['reference_usage_by_sha256']={reference['reference_digests'][i]:n for i,n in zip(ids.tolist(),counts.tolist())}
         coverage.update(matched_lanes=int(reference['matched'].sum()) if reference else 0,
             effective_weight_sum=float(track_weight_sum.detach()),tracking_applied=bool(tracks and float(track_weight_sum.detach())>0))
-        aux_stats={'outgoing_impact_lanes': int(impact_lanes.sum())} if contact_weight and torch.is_grad_enabled() else {}
+        aux_stats={'outgoing_impact_lanes': int(impact_lanes.sum())} if ball_protocol is None and contact_weight and torch.is_grad_enabled() else {}
         if first_geometry:
             coverage.update(predicted_first_margin_sum_m=float((first_margin * impacted * weights).sum()),
                             predicted_first_string_lanes=int((first_string & weights).sum()),
@@ -514,7 +634,10 @@ class PhysicalHorizonTrainer:
         if landing_trace is not None and baseline_landing_weights is None:
             added = (landing_trace > 0) & ~initial_landing
             coverage.update(newly_landed_lanes=int(added.any(0).sum()), newly_landed_lane_steps=int(added.sum()))
-        return dict(**aux_stats,landing_weights=landing_trace,tracking_derivatives=tracking_derivatives,toi_weights=all_track_weights.detach() if toi_only and tracks else None,
+        return dict(**aux_stats, **flight_metrics, ball_scored=scored, flight_losses=flight_losses,
+                    flight_cost_by_lane=flight_cost_by_lane, flight_priority_loss=flight_priority_loss,
+                    ball_approach_speed=approach_speed if ball_protocol is not None else None,
+                    landing_weights=landing_trace,tracking_derivatives=tracking_derivatives,toi_weights=all_track_weights.detach() if toi_only and tracks else None,
                     toi_coverage_preserved=toi_coverage_preserved,reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
                     gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
                     critic_data=((torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid))
@@ -524,7 +647,7 @@ class PhysicalHorizonTrainer:
                     tracking_effective_weight_sum=float(track_weight_sum.detach()),tracking_nonzero_gradient_lanes=nonzero_lanes,matched_references=int(reference['matched'].sum()) if reference else 0)
 
     def imagine_update(self,initial_state,*,update_actor=True):
-        from .supermimic_approach_data_v1 import gradient_parts
+        from .supermimic_approach_data_v1 import comparable_flight_merit, gradient_parts, prioritize_flight_gradient
         cfg=self.timebase; started=time.perf_counter()
         actor_before={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
         optimizer_before=copy.deepcopy(self.actor_opt.state_dict())
@@ -540,15 +663,20 @@ class PhysicalHorizonTrainer:
             if cuda_rng is not None:torch.cuda.set_rng_state_all(cuda_rng)
         accepted=False; alpha=0.; gradient=0.; reason=None; grad_stats={}; trials=[]
         if update_actor:self.actor_attempts+=1
+        self._proposal_ball_targets = {}
         try:
             with frozen(self.adapter,self.critic),torch.set_grad_enabled(update_actor):
                 rollout=self._rollout_objective(initial_state)
                 baseline_loss=float(rollout['loss'].detach())
                 if update_actor and rollout['gate_lanes']:
                     grad_stats=gradient_parts({k:rollout[k] for k in ('task','tracking','anchor')},parameters)
+                    if getattr(self, 'diagnose_ball_gradients', False) and rollout.get('flight_losses'):
+                        grad_stats.update(gradient_parts(
+                            {f'ball_{name}': value for name, value in rollout['flight_losses'].items()}, parameters))
                     # Anchor-only momentum is not an effective task update.
                     tracking_coeff=self.tracking_coefficient(self.block_name)
-                    if (getattr(self, 'landing_and_first_contact_objectives', False)
+                    if (getattr(self, 'approach_ball_protocol', None) is None
+                            and getattr(self, 'landing_and_first_contact_objectives', False)
                             and getattr(self, 'contact_aux_weight', 0.) > 0 and self.block_name == 'approach'):
                         requested = self.contact_aux_weight
                         main = tracking_coeff * grad_stats['tracking_gradient_norm']
@@ -560,7 +688,13 @@ class PhysicalHorizonTrainer:
                         grad_stats.update(contact_aux_requested=requested,
                                           contact_aux_to_toi_gradient_ratio=self.contact_aux_weight*aux/max(main, 1e-12))
                     if grad_stats['task_gradient_norm']+tracking_coeff*grad_stats['tracking_gradient_norm']>1e-12:
+                        flight = rollout.get('flight_priority_loss')
+                        flight_gradients = (torch.autograd.grad(flight, parameters, retain_graph=True, allow_unused=True)
+                                            if flight is not None and flight.requires_grad else ())
                         rollout['loss'].backward()
+                        if flight_gradients:
+                            grad_stats['flight_gradient_correction'] = prioritize_flight_gradient(
+                                parameters, flight_gradients)
                         norm=torch.sqrt(sum((p.grad.detach().square().sum() for p in parameters if p.grad is not None),rollout['loss'].new_zeros(())))
                         if not torch.isfinite(norm):raise FloatingPointError('Nonfinite actor gradient')
                         if float(norm)>1e-12:
@@ -568,13 +702,24 @@ class PhysicalHorizonTrainer:
                             active_params = [(name, p) for name, p in self.actor.named_parameters()
                                              if p.requires_grad and p.grad is not None]
                             objective_grad = torch.cat([p.grad.detach().flatten() for _, p in active_params])
+                            flight_grad = None
+                            if flight_gradients:
+                                by_id = dict(zip(map(id, parameters), flight_gradients, strict=True))
+                                flight_grad = torch.cat([
+                                    (g.detach() if (g := by_id[id(p)]) is not None else torch.zeros_like(p)).flatten()
+                                    for _, p in active_params])
+                                if float(flight_grad.square().sum()) <= 1e-20:
+                                    flight_grad = None
                             gradient=float(optimizer_step(self.actor_opt,parameters,element_clip=.1))
-                            def proposal_slope():
+                            def proposal_slope(reference):
                                 displacement = torch.cat([(p.detach()-actor_before[name]).flatten()
                                                           for name,p in active_params])
-                                return float(torch.dot(objective_grad, displacement))
-                            slope = proposal_slope()
+                                return float(torch.dot(reference, displacement))
+                            slope = proposal_slope(objective_grad)
                             grad_stats['adam_proposal_loss_slope'] = slope
+                            if flight_grad is not None:
+                                slope = proposal_slope(flight_grad)
+                                grad_stats['adam_proposal_flight_slope'] = slope
                             if (getattr(self, 'restart_uphill_approach_momentum', False)
                                     and self.block_name == 'approach' and slope >= 0.):
                                 self.actor.load_state_dict(actor_before, strict=True)
@@ -587,7 +732,9 @@ class PhysicalHorizonTrainer:
                                 # The first trial has already clipped this gradient. Advance from the
                                 # original step and second moment exactly once with the current direction.
                                 self.actor_opt.step()
-                                grad_stats['restarted_adam_proposal_loss_slope'] = proposal_slope()
+                                grad_stats['restarted_adam_proposal_loss_slope'] = proposal_slope(objective_grad)
+                                if flight_grad is not None:
+                                    grad_stats['restarted_adam_proposal_flight_slope'] = proposal_slope(flight_grad)
                             proposed={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
                             proposed_opt=copy.deepcopy(self.actor_opt.state_dict())
                             step_sizes = (1., .5, .25, .125, .0625)
@@ -614,6 +761,8 @@ class PhysicalHorizonTrainer:
                                     restore_rng()
                                     evaluation=self._rollout_objective(initial_state,effective_weights=rollout['effective_weights'],
                                                                       baseline_toi_weights=rollout['toi_weights'],collect_critic_data=False,
+                                                                      **({'baseline_ball_scored': rollout['ball_scored']}
+                                                                         if rollout.get('ball_scored') is not None else {}),
                                                                       **({'baseline_landing_weights': rollout['landing_weights']}
                                                                          if rollout.get('landing_weights') is not None else {}))
                                     candidate_loss=float(evaluation['loss'])
@@ -624,14 +773,31 @@ class PhysicalHorizonTrainer:
                                 trials.append(dict(alpha=candidate_alpha,loss=candidate_loss,objective_terms=trial_terms,
                                                    first_contact_counts=event_counts,budget_ok=bool(bounded),
                                                    budget_report=report,toi_coverage_preserved=coverage_ok,final_command_change=effect))
-                                if bounded and coverage_ok and effect>0 and candidate_loss<=baseline_loss:
+                                before_speed = rollout.get('ball_approach_speed')
+                                after_speed = evaluation.get('ball_approach_speed')
+                                if before_speed is not None and after_speed is not None:
+                                    common = (before_speed.isfinite() & after_speed.isfinite())
+                                    trials[-1]['predicted_normal_approach_speed'] = dict(
+                                        matched=int(common.sum()), before_mps=float(before_speed[common].mean()) if common.any() else None,
+                                        after_mps=float(after_speed[common].mean()) if common.any() else None)
+                                merit_ok = candidate_loss <= baseline_loss
+                                if rollout.get('flight_cost_by_lane') is not None:
+                                    merit_ok, flight_report = comparable_flight_merit(
+                                        rollout['flight_cost_by_lane'], evaluation['flight_cost_by_lane'],
+                                        baseline_loss, candidate_loss)
+                                    trials[-1]['baseline_release_flight'] = flight_report
+                                    trials[-1]['flight_priority_merit_ok'] = merit_ok
+                                if bounded and coverage_ok and effect>0 and merit_ok:
                                     committed_budget=candidate_budget
                                     alpha=candidate_alpha;accepted=True;break
                             if accepted:
                                 # Adam moments correspond to the original same-gradient proposal;
                                 # alpha scales only the committed parameter displacement.
                                 self.actor_opt.load_state_dict(proposed_opt)
-                            else:reason='objective_budget_or_zero_final_command_response'
+                            else:
+                                reason = ('flight_priority_budget_or_zero_final_command_response'
+                                          if rollout.get('flight_cost_by_lane') is not None
+                                          else 'objective_budget_or_zero_final_command_response')
                         else:reason='zero_total_gradient'
                     else:reason='no_task_or_tracking_gradient'
                 elif update_actor:reason='no_effective_gate'
@@ -641,27 +807,35 @@ class PhysicalHorizonTrainer:
             track_stats={k:rollout[k] for k in ('tracking_active_lane_steps','tracking_effective_weight_sum','tracking_nonzero_gradient_lanes')}
             if 'outgoing_impact_lanes' in rollout:
                 track_stats['outgoing_impact_lanes']=rollout['outgoing_impact_lanes']
+            track_stats.update({k: v for k, v in rollout.items() if k.startswith('ball_loss_')
+                                or k in ('resolved_ball_lanes', 'demand_racket_target_lanes',
+                                         'planned_imagination_steps', 'model_rollout_steps',
+                                         'ball_speed_loss_supported_lanes')})
             matched=rollout['matched_references'];coverage=rollout['reference_coverage']
             baseline_terms = {name: float(rollout[name].detach()) for name in ('task','tracking','anchor')}
             del rollout
         except BaseException:
             self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
             raise
+        finally:
+            self._proposal_ball_targets.clear()
         if model_hash!=tensor_digest(self.adapter.state_dict().items()):raise RuntimeError('Actor update changed model')
         if self.frozen_hash()!=self.frozen_actor_hash:raise RuntimeError('Frozen actor state changed')
         # Critic updates only AFTER all fixed-objective comparisons finish.
         bptt_seconds=time.perf_counter()-started;started=time.perf_counter()
+        losses = []
         try:
-            states,rewards,dones,final,valid=critic_data
-            with torch.no_grad():targets=gae_returns(self.critic(states),self.critic(final),rewards,dones,cfg.gamma,cfg.lam).clamp(max=self.v_max)
-            x,y=states[valid],targets[valid]; losses=[]
-            if not len(y):raise ValueError('No valid critic data')
-            for _ in range(5):
-                for ids in torch.tensor_split(torch.randperm(len(y),device=y.device),4):
-                    if not ids.numel():continue
-                    self.critic_opt.zero_grad(set_to_none=True); loss=(self.critic(x[ids])-y[ids]).square().mean()
-                    if not torch.isfinite(loss):raise FloatingPointError('Nonfinite GAE critic loss')
-                    loss.backward();optimizer_step(self.critic_opt,self.critic.parameters());self.critic_updates+=1;losses.append(float(loss.detach()))
+            if critic_data is not None:
+                states,rewards,dones,final,valid=critic_data
+                with torch.no_grad():targets=gae_returns(self.critic(states),self.critic(final),rewards,dones,cfg.gamma,cfg.lam).clamp(max=self.v_max)
+                x,y=states[valid],targets[valid]
+                if not len(y):raise ValueError('No valid critic data')
+                for _ in range(5):
+                    for ids in torch.tensor_split(torch.randperm(len(y),device=y.device),4):
+                        if not ids.numel():continue
+                        self.critic_opt.zero_grad(set_to_none=True); loss=(self.critic(x[ids])-y[ids]).square().mean()
+                        if not torch.isfinite(loss):raise FloatingPointError('Nonfinite GAE critic loss')
+                        loss.backward();optimizer_step(self.critic_opt,self.critic.parameters());self.critic_updates+=1;losses.append(float(loss.detach()))
         except BaseException:
             self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
             raise
@@ -671,9 +845,14 @@ class PhysicalHorizonTrainer:
             else:
                 self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
                 self.rejected_actor_updates+=1
-        self.last_critic_loss=sum(losses)/len(losses)
+        if losses:
+            self.last_critic_loss=sum(losses)/len(losses)
         changes={k:float((p.detach()-actor_before[k]).abs().max()) for k,p in self.actor.named_parameters() if p.requires_grad}
         command_delta=self._budget_deltas(committed_budget,before_budget)
+        if getattr(self, 'approach_ball_protocol', None) is not None:
+            arm_deltas = [(after[2][:, 12:] - before[2][:, 12:]).abs().amax()
+                          for after, before in zip(committed_budget, before_budget, strict=True)]
+            track_stats['arm_final_joint_target_delta_rad'] = float(torch.stack(arm_deltas).amax())
         return dict(reference_coverage=coverage,actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,rejected_actor_updates=self.rejected_actor_updates,
             update_accepted=accepted if update_actor else False,block_name=self.block_name,trainable_names=sorted(self.trainable_names),
             block_attempts=self.block_attempts,backtracked_actor_updates=self.backtracked_actor_updates,backtrack_alpha=alpha,
@@ -687,7 +866,8 @@ class PhysicalHorizonTrainer:
             tracking_steps=track_steps,matched_references=matched,**grad_stats,**track_stats,
             final_command_max_change=command_delta['final_joint_target_delta_rad'],request_max_change=command_delta['residual_request_delta'],
             budget_report=self._relative_budget_report(committed_budget,budget_references),critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,
-            critic_seconds=time.perf_counter()-started,model_runtime_state_sha256=model_hash,imagined_steps=len(rewards),
+            critic_seconds=time.perf_counter()-started,model_runtime_state_sha256=model_hash,
+            imagined_steps=track_stats.get('model_rollout_steps', track_steps) if critic_data is None else len(rewards),
             effective_gate_steps=gate_steps,effective_gate_lanes=gate_lanes,no_effective_gate=gate_lanes==0,
             no_effective_gradient=reason in ('zero_total_gradient','no_task_or_tracking_gradient'),
             frozen_base_recovery_unchanged=True,model_unchanged_during_actor=True)
@@ -716,6 +896,98 @@ class PhysicalHorizonTrainer:
         if norm>0:
             self.world_opt.step()
         return dict(measured_events=len(t),updated=bool(norm>0),velocity_huber=float(loss.detach()),gradient_norm=float(norm))
+
+    def _measured_contact_terms(self, window, launch):
+        """Supervise contact-to-release with measured robot motion in every tick."""
+        columns = {}
+        offset = 0
+        for field in self.adapter.task_model.memory_schema.fields:
+            columns[field.path] = slice(offset, offset + field.width)
+            offset += field.width
+        had = columns['rally/had_contact']
+        released = columns['rally/released']
+        outgoing = columns['rally/outgoing_velocity']
+        before, after = window['values'], window['next_values']
+        touch = (before[..., had].squeeze(-1) <= .5) & (after[..., had].squeeze(-1) > .5)
+        release = (before[..., released].squeeze(-1) <= .5) & (after[..., released].squeeze(-1) > .5)
+        release &= window['next_valid'][..., outgoing].bool().all(-1)
+        lanes = (touch.any(0) & release.any(0)).nonzero().flatten()
+        if not len(lanes):
+            return None
+        begin = touch[:, lanes].int().argmax(0)
+        end = release[:, lanes].int().argmax(0)
+        if (begin > end).any():
+            raise ValueError('Contact supervision windows contain reversed contact and release')
+        ball = window['state'][begin, lanes, 49:]
+        model = self.adapter.action_ball_model
+        trajectory, position, velocity = [], [], []
+        for tick in range(int(begin.min()), int(end.max()) + 1):
+            participating = (begin <= tick) & (end >= tick)
+            j = participating.nonzero().flatten()
+            if not len(j):
+                continue
+            native = lanes[j]
+            state = torch.cat((window['state'][tick, native, :49], ball[j]), dim=-1)
+            prediction, _, _ = ball_transition(
+                self.adapter.physical_model, self.adapter.ball_model, state, window['targets'][tick, native],
+                window['previous_action'][tick, native], window['feet'][tick, native].float(),
+                window['present'][tick, native], window['elapsed'][tick, native], launch[native],
+                action_model=model, native_robot_endpoint=window['next_state'][tick, native, :49])
+            next_ball = prediction[:, 49:]
+            ball = ball.index_copy(0, j, next_ball)
+            target = window['next_state'][tick, native, 49:]
+            trajectory.append(torch.nn.functional.smooth_l1_loss(next_ball, target, beta=.1))
+            terminal = end[j] == tick
+            if terminal.any():
+                position.append(torch.nn.functional.smooth_l1_loss(next_ball[terminal, :3], target[terminal, :3], beta=.02))
+                velocity.append(torch.nn.functional.smooth_l1_loss(
+                    next_ball[terminal, 3:], after[tick, native[terminal], outgoing], beta=.1))
+        parts = dict(trajectory=torch.stack(trajectory).mean(), release_position=torch.stack(position).mean(),
+                     release_velocity=torch.stack(velocity).mean())
+        return parts, lanes, ball[:, 3:], after[end, lanes, outgoing]
+
+    def _step_measured_contact(self, parts, measured_events):
+        params = list(self.adapter.action_ball_model.impulse_residual_head.parameters())
+        loss = sum(parts.values())
+        if not torch.isfinite(loss):
+            raise FloatingPointError('Nonfinite native-motion contact supervision')
+        self.world_opt.zero_grad(set_to_none=True)
+        grads = (torch.autograd.grad(loss, params, allow_unused=True) if loss.requires_grad
+                 else [None] * len(params))
+        for parameter, grad in zip(params, grads, strict=True):
+            parameter.grad = grad
+        norm = torch.nn.utils.clip_grad_norm_(params, 1., error_if_nonfinite=True)
+        if norm > 0:
+            self.world_opt.step()
+        return dict(measured_events=measured_events, updated=bool(norm > 0), gradient_norm=float(norm),
+                    **{name: float(value.detach()) for name, value in parts.items()})
+
+    def fit_ball_only_contact(self, window, launch):
+        result = self._measured_contact_terms(window, launch)
+        if result is None:
+            return dict(measured_events=0, updated=False)
+        parts, lanes, _, _ = result
+        return self._step_measured_contact(parts, len(lanes))
+
+    def fit_ball_only_contact_pair(self, minus, plus, launch):
+        low = self._measured_contact_terms(minus, launch)
+        high = self._measured_contact_terms(plus, launch)
+        if low is None or high is None:
+            return dict(measured_events=0, updated=False)
+        low_parts, low_lanes, low_pred, low_truth = low
+        high_parts, high_lanes, high_pred, high_truth = high
+        left, right = (low_lanes[:, None] == high_lanes).nonzero(as_tuple=True)
+        if not len(left):
+            return dict(measured_events=0, updated=False)
+        response = high_truth[right] - low_truth[left]
+        predicted = high_pred[right] - low_pred[left]
+        parts = {name: .5 * (value + high_parts[name]) for name, value in low_parts.items()}
+        parts['paired_velocity_response'] = torch.nn.functional.smooth_l1_loss(
+            predicted, response, beta=.1)
+        result = self._step_measured_contact(parts, len(left))
+        # Record weak responses separately. They still contribute to the loss.
+        result['measurable_response_pairs'] = int((response.norm(dim=-1) >= .01).sum())
+        return result
 
     def fit_world_window(self,window,launch,*,loss_groups=None,separate_supervision=False,long_native=None):
         """One actual WM optimizer step on 16 native transitions per sample.
@@ -810,7 +1082,7 @@ class PhysicalHorizonTrainer:
             body_objective=physical_loss+contact_loss+self.racket_loss_weight*racket_loss_value
             # In direct mode the long robot objective uses actual robot/FK
             # measurements. Only the ball parameters fit long flight error.
-            long_robot_objective=long_body if direct_body else long_flight
+            long_robot_objective=long_body if direct_body or getattr(self, 'approach_ball_protocol', None) else long_flight
             objectives=[(body_objective+cfg.world_steps*long_robot_objective,[world]),
                         (action_ball_loss+cfg.world_steps*long_flight,ball_modules),(task_loss,[task])]
             active=[(value,[p for module in modules for p in module.parameters() if p.requires_grad])

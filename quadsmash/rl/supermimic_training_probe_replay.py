@@ -97,11 +97,15 @@ def import_training_collection(replay, directory, task_contract, policy_executio
     pairs, receipt = training_windows(directory, task_contract, policy_execution, reserved,
                                       expected_schema=replay.schema.manifest())
     streams = []
+    signed_pairs = []
     for lanes, signed in pairs:
         local = lanes if lane_map is None else [lane_map[lane] for lane in lanes]
         for branch in ('minus', 'plus'):
             streams.append(replay.training_probe_stream(local, signed[branch]))
+        signed_pairs.append((tuple(local), signed['minus'], signed['plus']))
     replay.training_probes.extend(streams)
+    if hasattr(replay, 'training_probe_pairs'):
+        replay.training_probe_pairs.extend(signed_pairs)
     replay._ordered_cache = None
     if lane_map is not None:
         receipt['original_lane_by_replay_lane'] = list(original_lanes)

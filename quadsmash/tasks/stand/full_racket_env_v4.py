@@ -44,11 +44,13 @@ def full_racket_cfg(num_envs=16,physics_dt=.0000625):
 class FullRacketEnvV4(BallEnv):
     action_family='absolute-joint-limits-full-racket-v4'
     def __init__(self,cfg,*,cases=None,contact_flight_recovery=None,relaxed_protocol=None,
-                 relaxed_survival_diagnostic=False,**kwargs):
+                 relaxed_survival_diagnostic=False,approach_ball_protocol=None,**kwargs):
         self.contact_recovery=None
+        self.approach_ball_termination = None
         self.relaxed_protocol = relaxed_protocol
         self.relaxed_survival_diagnostic = relaxed_survival_diagnostic
-        self.minimum_outgoing_speed = 5. if relaxed_protocol is None else relaxed_protocol['minimum_outgoing_speed_mps']
+        speed_protocol = approach_ball_protocol or relaxed_protocol
+        self.minimum_outgoing_speed = 5. if speed_protocol is None else speed_protocol['minimum_outgoing_speed_mps']
         if relaxed_protocol is not None and contact_flight_recovery is None:
             raise ValueError('Relaxed scoring requires contact-flight association')
         if contact_flight_recovery not in (None,'contact-flight-recovery-v1'):
@@ -111,7 +113,17 @@ class FullRacketEnvV4(BallEnv):
         self.terminated_success = torch.zeros(n, dtype=torch.bool, device=device)
         self.relaxed_success_time = torch.full((n,), -1., device=device)
         self.relaxed_survived_one_second = torch.zeros_like(self.terminated_success)
+        if approach_ball_protocol is not None:
+            from .approach_ball_terminal import ApproachBallTermination
+            self.approach_ball_termination = ApproachBallTermination(n, device, approach_ball_protocol, self.step_dt)
+            self.arm_gate_onset_tick = torch.full((n,), -1, dtype=torch.long, device=device)
+            self.first_approach_contact_motion = {}
         self._v4_ready=True
+
+    def record_approach_gate(self, gate):
+        active = gate[..., -1] > .25
+        onset = active & (self.arm_gate_onset_tick < 0)
+        torch.where(onset, self.episode_length_buf, self.arm_gate_onset_tick, out=self.arm_gate_onset_tick)
 
     def _consume_jump_frame(self,frame):
         previous=getattr(self,'_jump_physics_frame',-1)
@@ -143,6 +155,17 @@ class FullRacketEnvV4(BallEnv):
 
     def _get_dones(self):
         terminated, timeout = super()._get_dones()
+        tracker = self.approach_ball_termination
+        if tracker is not None:
+            robot, shuttle = self.robot.data, self.shuttle.data
+            numerical = (((self.sweep_misses + self.sweep_unresolved) > 0)
+                         | ~torch.isfinite(robot.root_state_w).all(-1)
+                         | ~torch.isfinite(robot.joint_pos).all(-1)
+                         | ~torch.isfinite(robot.joint_vel).all(-1)
+                         | ~torch.isfinite(shuttle.root_state_w).all(-1))
+            stop = tracker.step(self.rally, self.episode_length_buf, self.ball_clock,
+                                terminated | self.body_ground_seen, numerical, timeout)
+            return stop, timeout & ~numerical
         if self.relaxed_protocol is not None and self._v4_ready:
             success = (
                 self.rally.complete5(self.rally_recovery_success, self.minimum_outgoing_speed)
@@ -243,6 +266,7 @@ class FullRacketEnvV4(BallEnv):
     def _consume_physics_frame(self,frame):
         if self.contact_events is None or frame<=self._last_physics_frame:return
         previous=self.previous_ball_position.clone();counts=self.contact_events.count.clone()
+        incoming_velocity = (self.previous_ball_velocity.clone() if self.approach_ball_termination is not None else None)
         super()._consume_physics_frame(frame)
         if not self._v4_ready or frame==0:return
         fresh=self.launch_done&(~self.launch_signals_ready)&(frame>self.launch_frame)
@@ -295,6 +319,10 @@ class FullRacketEnvV4(BallEnv):
             racket_over_net=racket_over,body_over_net=body_over,engineering_body_crossing=engineering,
             racket_fully_own_side=racket_fully_own,
             same_stroke_frame_string=same_stroke)
+        if self.approach_ball_termination is not None:
+            self.approach_ball_termination.observe_ground(
+                launched=self.rally.launched, had_contact=self.rally.had_contact,
+                touching_ground=self.rally.ground_seen | (ground_force.norm(dim=-1) > .001))
         record_events=events.any()
         if self.contact_recovery is not None:
             recovery_bind=(recovery_active&touching&string&self.observed_airborne&self.rally.legal_initial_contact&(~self.contact_recovery.bound))
@@ -330,6 +358,32 @@ class FullRacketEnvV4(BallEnv):
                     legal_initial_contact=bool(self.rally.legal_initial_contact[i]),
                     fault_flags={name:bool(getattr(self.rally,name)[i]) for name in self.rally.flags
                                  if name.endswith('_fault') or name=='engineering_body_crossing'}))
+                if self.approach_ball_termination is not None:
+                    lever = point[i] - d.root_link_pos_w[i]
+                    translation = d.root_link_lin_vel_w[i]
+                    rotation_speed = torch.linalg.cross(d.root_ang_vel_w[i], lever)
+                    arm_speed = contact_velocity[i] - translation - rotation_speed
+                    # Orient the face normal toward the incoming shuttle.
+                    face = normal[i]
+                    face = torch.where(((previous[i] - point[i]) * face).sum() >= 0, face, -face)
+                    approach_speed = ((contact_velocity[i] - incoming_velocity[i]) * face).sum()
+                    onset = int(self.arm_gate_onset_tick[i])
+                    self.contact_records[-1].update(
+                        arm_gate_onset_tick=onset if onset >= 0 else None,
+                        arm_joint_velocity_at_toi=d.joint_vel[i,self.joint_ids[-6:]].cpu().tolist(),
+                        incoming_ball_velocity_mps=incoming_velocity[i].cpu().tolist(),
+                        incoming_oriented_face_normal=face.cpu().tolist(),
+                        normal_relative_velocity_at_toi=float(approach_speed),
+                        root_transport_mps=translation.cpu().tolist(),
+                        root_rotation_at_contact_mps=rotation_speed.cpu().tolist(),
+                        arm_contact_velocity_mps=arm_speed.cpu().tolist())
+                    requested = getattr(self, '_sm_requested_action', None)
+                    final = getattr(self, '_sm_final_action', None)
+                    if requested is not None and final is not None:
+                        self.contact_records[-1].update(residual_request=requested[i].cpu().tolist(),
+                                                       final_normalized_action=final[i].cpu().tolist())
+                    if bool(first[i]):
+                        self.first_approach_contact_motion[i] = self.contact_records[-1]
 
     def _reset_idx(self,ids):
         if self._v4_ready:
@@ -365,6 +419,9 @@ class FullRacketEnvV4(BallEnv):
                     active_rally_launch_count=int(self.launch_count[i]),hit_velocity_error_mps=float(self.hit_velocity_error[i]))
                 if self.contact_recovery is not None:
                     row['contact_flight_recovery']=self.contact_recovery.record(self,i,self.robot.data.root_pos_w[i,2])
+                if self.approach_ball_termination is not None:
+                    row['approach_ball_terminal'] = self.approach_ball_termination.record(i, self.episode_length_buf[i])
+                    row['first_approach_contact_motion'] = self.first_approach_contact_motion.pop(i, None)
                 if self.relaxed_protocol is not None:
                     row['relaxed_recovery'] = self.contact_recovery.relaxed_record(i)
                     row['terminated_success'] = bool(self.terminated_success[i])
@@ -385,6 +442,9 @@ class FullRacketEnvV4(BallEnv):
             self.first_string_point[ids]=float('nan');self.first_string_time[ids]=float('nan')
         super()._reset_idx(ids)
         if self.contact_recovery is not None:self.contact_recovery.reset(ids)
+        if self.approach_ball_termination is not None:
+            self.approach_ball_termination.reset(ids)
+            self.arm_gate_onset_tick[ids] = -1
         if self._v4_ready:
             self.terminated_success[ids] = False
             self.relaxed_success_time[ids] = -1.

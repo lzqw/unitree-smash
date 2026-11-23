@@ -62,6 +62,7 @@ class NativeEpisodeStatistics:
     """O(1) streaming summary; each input is one independently scored terminal."""
     def __init__(self):
         self.episodes = self.contacts = self.recoveries = self.ball_ok = self.complete = 0
+        self.recovery_observed_contacts = self.complete_observed = 0
         self.body_observed = self.body_contacts = 0
         self.return_count = 0
         self.return_mean = self.return_m2 = 0.
@@ -70,7 +71,10 @@ class NativeEpisodeStatistics:
     def add(self, row):
         required=('qualified_airborne_string_contact','recovery_success',
                   'ball_side_complete_except_recovery','complete5')
-        if any(k not in row or row[k] is None for k in required):
+        from .supermimic_terminal_scoring import APPROACH_BALL_SCORING
+        ball_only = row.get('scoring_schema') == APPROACH_BALL_SCORING
+        if (any(k not in row for k in required)
+                or any(row[k] is None for k in (required[::2] if ball_only else required))):
             raise ValueError('Missing measured terminal task evidence')
         value=row.get('native_episode_return')
         if value is not None:
@@ -84,8 +88,10 @@ class NativeEpisodeStatistics:
             self.body_contacts += int(bool(row['body_ground_seen']))
         self.contacts += int(contact)
         self.recoveries += int(contact and bool(row['recovery_success']))
+        self.recovery_observed_contacts += int(contact and row['recovery_success'] is not None)
         self.ball_ok += int(bool(row['ball_side_complete_except_recovery']))
         self.complete += int(bool(row['complete5']))
+        self.complete_observed += int(row['complete5'] is not None)
         if value is not None:
             value=float(value);self.return_count += 1
             delta=value-self.return_mean;self.return_mean += delta/self.return_count
@@ -95,17 +101,20 @@ class NativeEpisodeStatistics:
             self.last_return=value
 
     def snapshot(self):
-        n=self.episodes;c=self.contacts
+        n=self.episodes;c=self.contacts;rc=self.recovery_observed_contacts
         return dict(completed_episodes=n,
             qualified_airborne_string_contact=self.contacts,
             qualified_airborne_string_contact_rate=self.contacts/n if n else None,
             ball_side_complete_except_recovery=self.ball_ok,
             ball_side_complete_except_recovery_rate=self.ball_ok/n if n else None,
             conditional_recovery_count=self.recoveries,
-            conditional_recovery_denominator=c,
-            recovery_given_airborne_string_contact=self.recoveries/c if c else None,
-            conditional_recovery_scope='actual_qualified_contacts_in_these_completed_episodes',
-            complete5=self.complete,complete5_rate=self.complete/n if n else None,
+            conditional_recovery_denominator=rc,
+            recovery_given_airborne_string_contact=self.recoveries/rc if rc else None,
+            conditional_recovery_scope=('observed_recovery_tail_qualified_contacts' if rc != c
+                                        else 'actual_qualified_contacts_in_these_completed_episodes'),
+            complete5=self.complete if self.complete_observed else (0 if not n else None),
+            complete5_rate=self.complete/self.complete_observed if self.complete_observed else None,
+            complete5_observed_count=self.complete_observed,
             native_episode_return_observed_count=self.return_count,
             native_episode_return_missing_count=n-self.return_count,
             native_episode_return_mean=self.return_mean if self.return_count else None,

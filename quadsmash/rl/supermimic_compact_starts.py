@@ -1,4 +1,4 @@
-"""Compact one archived controller clock at a time, retaining its lane-local state."""
+"""Compact and batch native starts while preserving controller clocks."""
 import torch
 
 
@@ -30,3 +30,57 @@ def compact_start(row, selected, launch):
     snapshot=dict(executor,tensors=tensors,values=values)
     return dict(row,before=gather(row['before']),observation=gather(row['observation']),
                 executor_before=snapshot,_actor_lane_mask=torch.ones(len(ids),dtype=torch.bool)),gather(launch)
+
+
+def merge_physical_starts(states):
+    from .supermimic_g07_memory_preview_v1 import G07BatchMemory
+    from .supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
+
+    if len(states) == 1:
+        return states[0]
+    counts = tuple(len(state.physical) for state in states)
+    device = states[0].physical.device
+
+    def merge(items, path=()):
+        first = items[0]
+        name = path[-1] if path else ''
+        if isinstance(first, dict):
+            if any(item.keys() != first.keys() for item in items[1:]):
+                raise ValueError(f'Incompatible start fields at {path}')
+            return {key: merge([item[key] for item in items], path + (key,)) for key in first}
+        if name not in ('limits', 'command_limits') and isinstance(first, torch.Tensor):
+            if all(item.ndim and len(item) == n for item, n in zip(items, counts, strict=True)):
+                return torch.cat(items)
+        if 'timing' in path and name != '_jump_metric_stride':
+            clocks = [value for value, n in zip(items, counts, strict=True) for _ in range(n)]
+            return torch.as_tensor(clocks, device=device, dtype=torch.long)
+        for item in items[1:]:
+            same = torch.equal(first, item) if isinstance(first, torch.Tensor) else first == item
+            if not same:
+                raise ValueError(f'Incompatible shared physical contract at {path}')
+        return first
+
+    return PhysicalImaginationStateV1(
+        physical=torch.cat([state.physical for state in states]),
+        executor_memory=G07BatchMemory(tuple(state.executor_memory for state in states), counts),
+        task_memory=merge([state.task_memory for state in states]),
+        observation_history=torch.cat([state.observation_history for state in states]),
+        observation=torch.cat([state.observation for state in states]),
+        clock_goal_context=merge([state.clock_goal_context for state in states]))
+
+
+def batch_approach_starts(states, *, max_steps, dt, followthrough_ticks, plane_offset_m):
+    from .supermimic_toi_racket_objective import approach_horizon, flight_intercept
+
+    groups = {}
+    for state in states:
+        clock = state.clock_goal_context
+        forecast = flight_intercept(state, max_steps * dt, plane_offset_m=plane_offset_m)
+        horizon = approach_horizon(dict(intercept=forecast), clock['actor_lane_mask'], clock['elapsed'],
+                                   maximum=max_steps, dt=dt, followthrough_ticks=followthrough_ticks)
+        # Historical relaxed archives add recovery labels that the new phase
+        # does not collect. Keep each archive's real auxiliary state.
+        recovery = tuple(sorted(state.task_memory['recovery']))
+        capture = tuple(state.task_memory['auxiliary']['not_captured'])
+        groups.setdefault((horizon, recovery, capture), []).append(state)
+    return tuple(merge_physical_starts(groups[key]) for key in sorted(groups))

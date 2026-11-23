@@ -165,6 +165,10 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         event_target = target & ~self._sm_target
         event_recovery = recover & ~self._sm_recovery
         event_body = body & ~self._sm_body
+        ball_only = self.approach_ball_termination is not None
+        if ball_only:
+            event_recovery = torch.zeros_like(event_recovery)
+            event_body &= ~rally.had_contact
         faulted = rally.faulted()
         event_fault = faulted & ~self._sm_fault
         event_frame = rally.frame_hit & ~event_contact & ~self._sm_frame
@@ -180,11 +184,16 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         stable_quality = recover.float() * torch.exp(-4.0 * d.projected_gravity_b[:, :2].square().sum(1)
             -0.4 * d.root_com_lin_vel_w[:, :2].square().sum(1)
             -0.2 * d.root_com_ang_vel_w.square().sum(1))
+        if ball_only:
+            stable_quality = torch.zeros_like(stable_quality)
+            risk = risk * ~rally.had_contact
         continuous = (0.5 * stable_quality - 2.0 * risk - 0.05 * self.action_delta
                       - 0.02 * d.applied_torque.square().sum(1) / 1000.0
                       + 0.8 * approach) * self.step_dt
         settled = (self.reset_time_outs & ~self.reset_terminated) | self.terminated_success
         complete5 = target & self.rally_recovery_success & (~faulted) & settled
+        if ball_only:
+            complete5 = torch.zeros_like(complete5)
         reward = continuous + 2.0 * event_jump.float() + 20.0 * event_contact.float() + 5.0 * event_cross.float()
         reward = reward + 15.0 * event_target.float() + 10.0 * event_recovery.float() + 20.0 * complete5.float()
         reward = reward - 4.0 * event_frame.float() - 5.0 * ((~contact) & (phase > 3.0)).float() * self.step_dt

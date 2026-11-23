@@ -226,15 +226,17 @@ def test_advanced_intercept_recomputes_both_position_and_time_for_original_valid
     state=SimpleNamespace(observation=torch.zeros(2,794),executor_memory=SimpleNamespace(reference_controller=controller),
         clock_goal_context=dict(elapsed=torch.tensor([2.,2.]),ball_present=torch.ones(2,dtype=torch.bool)))
     monkeypatch.setattr(toi,'predict_height_intercept',lambda *args,**kw:dict(valid=np.array([True,False]),
-        position_m=np.array([[1.,2.,3.],[1.,2.,3.]]),arrival_time_s=np.array([.2,.2])))
+        position_m=np.array([[1.,2.,3.],[1.,2.,3.]]),arrival_time_s=np.array([.2,.2]),
+        incoming_velocity_mps=np.array([[-3.,0.,-1.],[-3.,0.,-1.]])))
     def shifted(obs,position,normal,plane,physics,**kw):
         np.testing.assert_allclose(plane,1.05)
         return dict(valid=np.array([True,True]),position_m=np.array([[1.05,1.9,3.1],[1.05,1.9,3.1]]),
-                    arrival_time_s=np.array([.19,.19]))
+                    arrival_time_s=np.array([.19,.19]),incoming_velocity_mps=np.array([[-3.1,0.,-.9],[-3.1,0.,-.9]]))
     monkeypatch.setattr(toi,'predict_initial_intercept',shifted)
     result=toi.flight_intercept(state,.64,plane_offset_m=.05)
     torch.testing.assert_close(result['position'],torch.tensor([[1.05,1.9,3.1],[0.,0.,0.]]))
     torch.testing.assert_close(result['time'],torch.tensor([2.19,torch.inf]))
+    torch.testing.assert_close(result['incoming_velocity'],torch.tensor([[-3.1,0.,-.9],[0.,0.,0.]]))
 
 
 def test_compact_preview_maps_sparse_results_to_original_lanes(monkeypatch):

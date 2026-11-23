@@ -56,9 +56,64 @@ def flight_intercept(state, horizon, *, plane_offset_m=0.):
     valid = torch.as_tensor(forecast['valid'], device=elapsed.device) & state.clock_goal_context['ball_present'].reshape(-1).bool()
     duration = torch.as_tensor(forecast['arrival_time_s']).to(elapsed)
     position = torch.as_tensor(forecast['position_m']).to(elapsed)
+    incoming = torch.as_tensor(forecast['incoming_velocity_mps']).to(elapsed)
     valid &= torch.isfinite(duration) & (duration >= 0) & (duration <= horizon) & position.isfinite().all(-1)
     return dict(time=torch.where(valid, elapsed + duration, torch.full_like(elapsed, float('inf'))),
-                position=torch.where(valid[:, None], position, torch.zeros_like(position)), valid=valid)
+                position=torch.where(valid[:, None], position, torch.zeros_like(position)),
+                incoming_velocity=torch.where(valid[:, None], incoming, torch.zeros_like(incoming)), valid=valid)
+
+
+@torch.no_grad()
+def search_outgoing_target(reference, prior, court, *, minimum_speed):
+    """Choose a court-feasible outgoing shot and invert the normal impulse."""
+    from .supermimic_outgoing_flight import predict_flight_events
+
+    forecast = reference['intercept']
+    point, incoming = forecast['position'], forecast['incoming_velocity']
+    native = reference['toi_racket']
+    normal_target = torch.zeros_like(point)
+    surface_target = torch.zeros_like(point[:, 0])
+    valid = torch.zeros_like(forecast['valid'])
+    lanes = (reference['matched'] & forecast['valid'] & incoming.isfinite().all(-1)).nonzero().flatten()
+    if not len(lanes):
+        return dict(valid=valid, normal=normal_target, surface_speed=surface_target)
+    p, v = point[lanes], incoming[lanes]
+    center_x = sum(court['target_x_limits_m']) / 2
+    yaw = torch.atan2(-p[:, 1], center_x - p[:, 0])
+    levels = p.new_tensor([.15, .6, 1.2, 2., 3., 4.])
+    yaw_offsets = p.new_tensor([-.12, 0., .12])
+    pitch = p.new_tensor([-.20, -.06, .08, .20, .34])
+    grid = torch.cartesian_prod(levels, yaw_offsets, pitch)
+    azimuth = yaw[:, None] + grid[:, 1]
+    elevation = grid[:, 2].expand_as(azimuth)
+    direction = torch.stack((azimuth.cos() * elevation.cos(), azimuth.sin() * elevation.cos(), elevation.sin()), -1)
+    outgoing = direction * (minimum_speed + grid[:, 0])[None, :, None]
+    count = len(grid)
+    launch = p[:, None].expand_as(outgoing)
+    results = predict_flight_events(launch.flatten(0, 1), outgoing.flatten(0, 1), prior, court, dt=.02)
+    landing = results['landing_position'].reshape(len(lanes), count, 3)
+    low, high = court['target_x_limits_m']
+    feasible = (results['crossed_net'].reshape(-1, count) & results['landed'].reshape(-1, count)
+                & (results['net_clearance'].reshape(-1, count) > .02)
+                & (results['net_lateral_position'].reshape(-1, count).abs() < court['net_width_m']/2)
+                & (landing[..., 0] >= low + .03) & (landing[..., 0] <= high - .03)
+                & (landing[..., 1].abs() <= court['target_y_half_width_m'] - .03))
+    change = outgoing - v[:, None]
+    normal = F.normalize(change, dim=-1)
+    face = native[lanes, 6:9]
+    face_alignment = (normal * face[:, None]).sum(-1)
+    required = (normal * v[:, None]).sum(-1) + change.norm(dim=-1) / (
+        prior.normal_impulse_scale * (1. + prior.restitution))
+    historic_speed = (normal * native[lanes, None, 3:6]).sum(-1)
+    feasible &= (face_alignment.abs() >= .5) & ((required - historic_speed).abs() <= 3.)
+    score = ((landing[..., 0] - center_x).square() + landing[..., 1].square()
+             + .25 * (required - historic_speed).square() + 1 - face_alignment.abs())
+    choice = score.masked_fill(~feasible, torch.inf).argmin(-1)
+    row = torch.arange(len(lanes), device=point.device)
+    valid[lanes] = feasible[row, choice]
+    normal_target[lanes] = normal[row, choice]
+    surface_target[lanes] = required[row, choice]
+    return dict(valid=valid, normal=normal_target, surface_speed=surface_target)
 
 
 def bind_intercept_reference(state, bank, geometry, horizon, *, plane_offset_m=0.):
@@ -70,6 +125,18 @@ def bind_intercept_reference(state, bank, geometry, horizon, *, plane_offset_m=0
         reference['intercept'] = forecast
         reference['matched'] = reference['matched'] & forecast['valid'] & (forecast['time'] > elapsed)
     return reference
+
+
+def approach_horizon(reference, selected, elapsed, *, maximum, dt, followthrough_ticks):
+    """Pick the shortest bucket covering causal arrival, separation and followthrough."""
+    if reference is None:
+        return maximum
+    forecast = reference['intercept']
+    if not selected.any() or not forecast['valid'][selected].all():
+        return maximum
+    duration = (forecast['time'][selected] - elapsed.reshape(-1)[selected]).max()
+    required = math.ceil(float(duration) / dt) + 2 + followthrough_ticks
+    return next((bucket for bucket in (16, 32, 64) if required <= bucket <= maximum), maximum)
 
 
 def racket_features(physical, geometry):
@@ -181,7 +248,8 @@ def first_racket_cost(before, after, impact, geometry, preview, strips, boundary
     return 1 - torch.exp(-error)
 
 
-def intercept_loss(before, after, start, end, reference, mask, survival, geometry, *, fixed_weights=None, detach_empty=False, boundary=None):
+def intercept_loss(before, after, start, end, reference, mask, survival, geometry, *,
+                   fixed_weights=None, detach_empty=False, boundary=None, relative_face_speed=False):
     """Sample racket kinematics at the requested sub-tick arrival. Each lane contributes once."""
     arrival = reference['intercept']['time']
     active = intercept_interval(start, end, reference, mask)
@@ -204,6 +272,24 @@ def intercept_loss(before, after, start, end, reference, mask, survival, geometr
         edge_cost = string_margin_cost(torch.lerp(local_yz(a), local_yz(b), alpha[:, None]), boundary)
     terms = intercept_terms(kinematics, reference['intercept']['position'], reference['toi_racket'])
     position, linear, normal, angular = terms.unbind(-1)
+    target = reference.get('ball_only_contact')
+    if target is not None:
+        axis = target['normal']
+        point_arm = reference['intercept']['position'] - kinematics[:, :3]
+        surface = kinematics[:, 3:6] + torch.linalg.cross(kinematics[:, 9:12], point_arm)
+        if relative_face_speed:
+            incoming = reference['intercept']['incoming_velocity']
+            face = F.normalize(kinematics[:, 6:9], dim=-1)
+            face = torch.where((face * axis).sum(-1, keepdim=True) >= 0., face, -face)
+            along = ((surface - incoming) * face).sum(-1)
+            desired = target['surface_speed'] - (incoming * axis).sum(-1)
+        else:
+            along = (surface * axis).sum(-1)
+            desired = target['surface_speed']
+        speed = F.smooth_l1_loss(along, desired, reduction='none')
+        facing = 1 - F.cosine_similarity(kinematics[:, 6:9], axis, dim=-1).abs()
+        linear = torch.where(target['valid'], speed, linear)
+        normal = torch.where(target['valid'], .5 * (normal + facing), normal)
     return ((position+linear+normal+angular+edge_cost)*weights).sum(), weights
 
 

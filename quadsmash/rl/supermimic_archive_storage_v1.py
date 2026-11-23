@@ -40,17 +40,20 @@ def write_archive_chunk(path,payload,*,compress=False,reserve_bytes=RESERVE_BYTE
         for block in iter(lambda:stream.read(1<<20),b''):digest.update(block)
     return dict(sha256=digest.hexdigest(),serialized_bytes=len(payload),bytes=path.stat().st_size,storage_guard=budget)
 
+def verify_archive_chunk(directory, receipt):
+    path = Path(directory) / receipt['file']
+    with path.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    if digest != receipt['sha256']:
+        raise ValueError('Resume archive hash mismatch: '+str(path))
+    return path
+
+
 @contextmanager
 def read_archive_rows(directory, receipt, *, scratch):
     """Hash compressed bytes, then map the serialized CPU tensors one chunk at a time."""
     import torch
-    path = Path(directory) / receipt['file']
-    digest = hashlib.sha256()
-    with path.open('rb') as stream:
-        for block in iter(lambda:stream.read(8 << 20), b''):
-            digest.update(block)
-    if digest.hexdigest() != receipt['sha256']:
-        raise ValueError('Resume archive hash mismatch: '+str(path))
+    path = verify_archive_chunk(directory, receipt)
     with tempfile.TemporaryDirectory(dir=scratch, prefix='replay_read_') as temp:
         if path.suffix == '.zst':
             require_archive_space(scratch, receipt.get('serialized_bytes', 0))

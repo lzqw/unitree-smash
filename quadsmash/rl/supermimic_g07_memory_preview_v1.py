@@ -10,6 +10,7 @@ import ast
 import inspect
 import textwrap
 import types
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -181,6 +182,23 @@ def restore_captured_execution(template, snapshot, *, device='cpu'):
     return root
 
 
+@dataclass
+class G07BatchMemory:
+    """Independent controller clocks and plan histories sharing a tensor rollout."""
+    branches: tuple
+    lane_counts: tuple
+
+    @property
+    def reference_controller(self):
+        controllers = [branch.reference_controller for branch in self.branches]
+        first = controllers[0]
+        return types.SimpleNamespace(
+            parameters=torch.cat([branch.parameters for branch in controllers]),
+            event_time=torch.cat([branch.event_time for branch in controllers]),
+            planned=torch.cat([branch.planned for branch in controllers]),
+            nominal_target=first.nominal_target, physics=first.physics, height_intercept=first.height_intercept)
+
+
 class G07MemoryPreviewV1:
     schema = 'g07-branch-owned-execution-preview-experimental-v1'
 
@@ -191,6 +209,13 @@ class G07MemoryPreviewV1:
                                                max(mixer.scale.tolist()), mixer.arm_rate.control_dt)
 
     def _base_step(self, observation, default, limits, branch):
+        if isinstance(branch, G07BatchMemory):
+            inputs = observation.split(branch.lane_counts, dim=0)
+            bases, memories = zip(*(self._base_step(obs, default, limits, memory)
+                                    for obs, memory in zip(inputs, branch.branches, strict=True)))
+            state = MixerMemory(*(torch.cat([getattr(memory, key) for memory in memories])
+                                for key in ('arm_target', 'arm_clock', 'arm_initialized', 'nonzero_seen')))
+            return torch.cat(bases), state
         base = branch.base.action({'policy': observation}, default, limits)
         state = MixerMemory(branch.mixer.arm_rate.target, branch.mixer.arm_rate.clock,
                             branch.mixer.arm_rate.initialized, branch.mixer.nonzero_seen)
@@ -218,8 +243,20 @@ class G07MemoryPreviewV1:
     def _advance(self, observation, residual, default, limits, branch):
         base, state = self._base_step(observation, default, limits, branch)
         preview = self.mixer(base, residual, observation, default, limits, state)
-        branch.mixer.arm_rate.target = preview.next_memory.arm_target
-        branch.mixer.arm_rate.clock = preview.next_memory.arm_clock
-        branch.mixer.arm_rate.initialized = preview.next_memory.arm_initialized
-        branch.mixer.nonzero_seen = preview.next_memory.nonzero_seen
+        next_state = preview.next_memory
+        if isinstance(branch, G07BatchMemory):
+            lanes = branch.lane_counts
+            states = zip(next_state.arm_target.split(lanes), next_state.arm_clock.split(lanes),
+                         next_state.arm_initialized.split(lanes), next_state.nonzero_seen.split(lanes), strict=True)
+            for memory, values in zip(branch.branches, states, strict=True):
+                self._advance_mixer(memory, MixerMemory(*values))
+        else:
+            self._advance_mixer(branch, next_state)
         return preview, branch, base
+
+    @staticmethod
+    def _advance_mixer(branch, next_state):
+        branch.mixer.arm_rate.target = next_state.arm_target
+        branch.mixer.arm_rate.clock = next_state.arm_clock
+        branch.mixer.arm_rate.initialized = next_state.arm_initialized
+        branch.mixer.nonzero_seen = next_state.nonzero_seen

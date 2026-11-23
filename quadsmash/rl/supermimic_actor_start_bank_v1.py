@@ -1,7 +1,7 @@
 """Bounded full-executor snapshots; future outcome labels are sampling-only."""
 import torch
 
-from .supermimic_terminal_scoring import SCORING_SCHEMAS
+from .supermimic_terminal_scoring import APPROACH_BALL_SCORING, SCORING_SCHEMAS
 
 CATEGORIES=('gate_onset','pre_contact','failure_pre','success_near')
 SCHEDULE=('gate_onset',)*5+('pre_contact',)*7+('failure_pre',)*5+('success_near',)*3
@@ -13,11 +13,24 @@ INTERLEAVED_SCHEDULE = (
     'success_near', 'pre_contact', 'failure_pre', 'gate_onset', 'pre_contact',
     'failure_pre', 'success_near', 'pre_contact', 'gate_onset', 'failure_pre',
 )
+BALL_START_QUOTAS = dict(contact_failure=4, low_speed=6, flight_failure=3, success=3)
+
+
+def ball_start_outcome(record):
+    if record['approach_ball_terminal']['numerical_abort']:
+        return None
+    speed = record['outgoing_speed_mps']
+    if not record['qualified_airborne_string_contact'] or speed is None:
+        return 'contact_failure'
+    if 'speed_threshold' in record['rejection_reasons']:
+        return 'low_speed'
+    return 'success' if record['ball_side_complete_except_recovery'] else 'flight_failure'
 
 class ActorStartBank:
     schema='causal-full-executor-start-bank-v1'
-    def __init__(self,capacity=32,seed=20261117):
+    def __init__(self,capacity=32,seed=20261117,*,ball_phase=False):
         self.capacity=capacity;self.entries=[];self.seen=0;self.last_gate={};self.last_tick={}
+        self.ball_phase=bool(ball_phase)
         self.generator=torch.Generator().manual_seed(seed)
         self.sampling_history=[]
     def append(self,start,metadata,*,stream,policy_version,native_tick):
@@ -26,7 +39,8 @@ class ActorStartBank:
         pre=metadata['had_contact'].detach().cpu().reshape(-1)<.5
         prior=self.last_gate.get(stream,torch.zeros_like(gate));self.last_gate[stream]=gate.clone()
         onset=pre&(((gate>0)&(gate<=.25))|((gate>.25)&(prior<=.25)))
-        active=pre&(gate>.25)
+        window = metadata.get('approach_start_eligible', gate > .25)
+        active=pre&window.detach().cpu().reshape(-1).bool()
         # Native collection runs under inference mode.  Tensors created by
         # boolean operations there are inference tensors and cannot later be
         # updated when terminal labels arrive.  Materialize ordinary CPU
@@ -42,7 +56,7 @@ class ActorStartBank:
         onset=mutable_mask(onset)
         active=mutable_mask(active)
         if not (onset|active).any():return
-        if not onset.any() and native_tick-self.last_tick.get(stream,-100)<4:return
+        if (self.ball_phase or not onset.any()) and native_tick-self.last_tick.get(stream,-100)<4:return
         self.last_tick[stream]=native_tick;self.seen+=1
         entry=dict(start=start,stream=int(stream),policy_version=int(policy_version),native_tick=int(native_tick),
                    masks=dict(gate_onset=onset,pre_contact=active,
@@ -50,7 +64,12 @@ class ActorStartBank:
                               success_near=mutable_mask(torch.zeros_like(active))))
         # Reservoir avoids "last 8 lanes" and retains pre-event snapshots until
         # terminal labels arrive. No snapshot is synthesized by mixing G07 trees.
-        if len(self.entries)<self.capacity:self.entries.append(entry)
+        if self.ball_phase:
+            # Approach outcome labels arrive after the flight. Preserve a
+            # recent, time-spaced set of full starts for the current phase.
+            self.entries.append(entry)
+            del self.entries[:-self.capacity]
+        elif len(self.entries)<self.capacity:self.entries.append(entry)
         else:
             slot=int(torch.randint(self.seen,(1,),generator=self.generator))
             if slot<self.capacity:self.entries[slot]=entry
@@ -77,6 +96,76 @@ class ActorStartBank:
                     mutable.copy_(target)
                 entry['masks'][name]=target=mutable
             target[lane]=bool(eligible)
+            if eligible and record['scoring_schema'] == APPROACH_BALL_SCORING:
+                label = ball_start_outcome(record)
+                contact = record['contact_time_s']
+                elapsed = float(before['physical']['elapsed_s'][lane])
+                lead = None if contact is None else round((contact - elapsed) / .01)
+                if label is not None and (lead is None or 8 <= lead <= 40):
+                    entry.setdefault('ball_outcomes', {})[lane] = (label, lead)
+
+    def sample_ball_phase(self, eligible_lanes, attempt, *, fallback=()):
+        """Draw outcome and time margins over the same 16 independent starts."""
+        order = torch.randperm(len(self.entries), generator=self.generator).tolist()
+        groups = {name: [] for name in BALL_START_QUOTAS}
+        unlabeled = []
+        for index in order:
+            entry = self.entries[index]
+            start = entry['start']
+            valid = eligible_lanes(start).cpu() & entry['masks']['pre_contact']
+            for lane in valid.nonzero().flatten().tolist():
+                outcome, lead = entry.get('ball_outcomes', {}).get(lane, ('unlabeled', None))
+                group = groups.get(outcome, unlabeled)
+                group.append((start, lane, outcome, lead))
+        for start in fallback:
+            for lane in eligible_lanes(start).cpu().nonzero().flatten().tolist():
+                unlabeled.append((start, lane, 'unlabeled', None))
+
+        # These lead-time preferences share the same batch as the outcome quotas.
+        timing = (('early',) * 5 + ('middle',) * 8 + ('late',) * 3)
+        timing = timing[attempt % len(timing):] + timing[:attempt % len(timing)]
+        seen, selected = set(), {}
+        actual = {name: 0 for name in (*BALL_START_QUOTAS, 'unlabeled')}
+        times = dict(early=0, middle=0, late=0, unknown=0)
+
+        def time_group(lead):
+            return 'unknown' if lead is None else 'early' if lead >= 24 else 'middle' if lead >= 12 else 'late'
+
+        def episode_identity(start, lane):
+            return (int(start.get('stream_id', start.get('_native_stream', 0))),
+                    int(start.get('_lane_id', lane)), int(start['before']['episode_index'][lane]))
+
+        def take(candidates, count):
+            for _ in range(count):
+                desired = timing[len(seen)]
+                remaining = [row for row in candidates
+                             if episode_identity(row[0], row[1]) not in seen]
+                if not remaining:
+                    return
+                start, lane, outcome, lead = next(
+                    (row for row in remaining if time_group(row[3]) == desired), remaining[0])
+                before = start['before']
+                key = episode_identity(start, lane)
+                seen.add(key)
+                if id(start) not in selected:
+                    mask = torch.zeros(len(before['episode_index']), dtype=torch.bool)
+                    selected[id(start)] = (dict(start, _actor_lane_mask=mask), [])
+                row, details = selected[id(start)]
+                row['_actor_lane_mask'][lane] = True
+                details.append([key[1], key[2], int(before['elapsed_tick'][lane]), outcome, lead, key[0]])
+                actual[outcome] += 1
+                times[time_group(lead)] += 1
+
+        for name, count in BALL_START_QUOTAS.items():
+            take(groups[name], count)
+        take([row for group in groups.values() for row in group] + unlabeled, len(timing) - len(seen))
+        report = dict(requested_by_outcome=BALL_START_QUOTAS, actual_by_outcome=actual,
+                      outcome_shortfall={name:max(0, count-actual[name]) for name,count in BALL_START_QUOTAS.items()},
+                      lead_time_counts=times, effective_lanes=len(seen), missing_episodes=len(timing)-len(seen),
+                      records=[dict(lane_episode_tick=details) for _, details in selected.values()])
+        if self.ball_phase:
+            self.sampling_history.append(report)
+        return [row for row, _ in selected.values()], report
     def sample(self, attempt, *, eligible_lanes=None, interleaved=False):
         schedule = INTERLEAVED_SCHEDULE if interleaved else SCHEDULE
         requested = schedule[(attempt - 1) % len(schedule)]
@@ -140,15 +229,22 @@ class ActorStartBank:
 
     def sampling_report(self, since=0):
         rows=self.sampling_history[since:]
+        if self.ball_phase:
+            return dict(samples=len(rows),
+                requested_by_outcome={name:sum(row['requested_by_outcome'][name] for row in rows) for name in BALL_START_QUOTAS},
+                actual_by_outcome={name:sum(row['actual_by_outcome'][name] for row in rows) for name in (*BALL_START_QUOTAS,'unlabeled')},
+                shortfall_by_outcome={name:sum(row['outcome_shortfall'][name] for row in rows) for name in BALL_START_QUOTAS},
+                lead_time_counts={name:sum(row['lead_time_counts'][name] for row in rows) for name in ('early','middle','late','unknown')})
         return dict(samples=len(rows),actual_counts={c:sum(r['actual']==c for r in rows) for c in CATEGORIES},
             requested_counts={c:sum(r['requested']==c for r in rows) for c in CATEGORIES},
             shortfall=sum(r['shortfall'] for r in rows),
             unlabeled_lane_snapshots=sum(int((e['masks']['pre_contact']&~e['masks']['failure_pre']&~e['masks']['success_near']).sum()) for e in self.entries))
     def state_dict(self):
         return dict(schema=self.schema,capacity=self.capacity,entries=self.entries,seen=self.seen,
-                    sampling_history=self.sampling_history,last_gate=self.last_gate,last_tick=self.last_tick,rng=self.generator.get_state())
+                    ball_phase=self.ball_phase,sampling_history=self.sampling_history,last_gate=self.last_gate,last_tick=self.last_tick,rng=self.generator.get_state())
     def load_state_dict(self,state):
         if state['schema']!=self.schema or state['capacity']!=self.capacity:raise ValueError('Actor start bank schema/capacity mismatch')
+        if bool(state.get('ball_phase',False))!=self.ball_phase:raise ValueError('Actor start bank phase differs; a new phase requires its own start library')
         if len(state['entries'])>self.capacity:raise ValueError('Actor start bank exceeds capacity')
         self.entries=state['entries'];self.seen=int(state['seen']);self.last_gate=state['last_gate'];self.last_tick=state['last_tick']
         self.sampling_history=list(state.get('sampling_history',[]))

@@ -58,6 +58,53 @@ def native_approach_metadata(row, actor, geometry):
     return result
 
 
+def early_approach_start(observation, lane_activity):
+    """Include causal early starts that can reach the swing within the rollout."""
+    if isinstance(observation, dict):
+        observation = observation['policy']
+    displacement = observation[:, 61:64] - observation[:, 45:48]
+    relative = observation[:, 64:67] - observation[:, 51:54]
+    lead = -(displacement * relative).sum(-1) / relative.square().sum(-1).clamp_min(1e-6)
+    closest = displacement + lead.clamp(0., .4)[:, None] * relative
+    return ((lane_activity.to(observation.device).reshape(-1) > .25)
+            | ((observation[:, 67] > .5) & (lead > 0.) & (lead <= .4) & (closest.norm(dim=-1) < .6)))
+
+
+class NativeArmIdentification:
+    """Small signed command pulses on a rotating subset of training lanes."""
+    def __init__(self, lanes, device, excluded, *, ticks=4, amplitude=.01, stride=8):
+        self.ticks, self.amplitude, self.stride = ticks, amplitude, stride
+        self.lanes = torch.arange(lanes, device=device)
+        self.allowed = torch.ones(lanes, dtype=torch.bool, device=device)
+        self.allowed[list(excluded)] = False
+        self.episode = torch.full_like(self.lanes, -1)
+        self.remaining = torch.zeros_like(self.lanes)
+        self.pulse = torch.zeros((lanes, 6), device=device)
+        self.excited = torch.zeros_like(self.allowed)
+        self.active = torch.zeros_like(self.allowed)
+
+    def apply(self, action, observation, episode, had_contact):
+        reset = episode != self.episode
+        self.episode.copy_(episode)
+        self.excited &= ~reset
+        self.remaining.masked_fill_(reset | had_contact, 0)
+        candidates = self.allowed & ((self.lanes + episode) % self.stride == 0) & ~had_contact
+        approaching = early_approach_start(observation, torch.zeros_like(self.lanes))
+        start = candidates & ~self.excited & approaching
+        index = start.nonzero().flatten()
+        if len(index):
+            number = (self.lanes[index] // self.stride) + episode[index]
+            self.pulse[index] = 0
+            self.pulse[index, number % 6] = self.amplitude * (1 - 2 * ((number // 6) % 2))
+        self.remaining.masked_fill_(start, self.ticks)
+        self.active.copy_(self.remaining > 0)
+        self.excited |= self.active
+        self.remaining.sub_(self.active.long())
+        arm = action[:, 12:]
+        arm = torch.where(self.active[:, None], (arm + self.pulse.to(action)).clamp(-1., 1.), arm)
+        return torch.cat((action[:, :12], arm), dim=-1)
+
+
 @torch.no_grad()
 def recorded_approach_metadata(tensors, schema, actor, geometry):
     """Reconstruct replay labels from recorded observations and native value/valid pairs."""
@@ -118,6 +165,47 @@ def masked_lane_mean(value, weights):
     value=value.reshape(len(weights),-1).mean(-1)
     return (value*weights).sum()/weights.sum().clamp_min(1.)
 
+def prioritize_flight_gradient(parameters, flight_gradients):
+    """Remove uphill flight interference while retaining transverse gradients."""
+    combined = torch.cat([torch.zeros_like(p).flatten() if p.grad is None else p.grad.flatten()
+                          for p in parameters])
+    flight = torch.cat([torch.zeros_like(p).flatten() if g is None else g.flatten()
+                        for p, g in zip(parameters, flight_gradients, strict=True)])
+    norm_squared = flight.square().sum()
+    alignment = torch.dot(combined, flight)
+    # The bisector makes both costs descend to first order when their
+    # gradients conflict and are not exactly opposed.
+    coefficient = float(torch.where(
+        (alignment < 0) & (norm_squared > 1e-20),
+        combined.norm() / norm_squared.clamp_min(1e-20).sqrt(), 0.))
+    if coefficient:
+        for parameter, gradient in zip(parameters, flight_gradients, strict=True):
+            if gradient is None:
+                continue
+            if parameter.grad is None:
+                parameter.grad = gradient.detach() * coefficient
+            else:
+                parameter.grad.add_(gradient.detach(), alpha=coefficient)
+    return coefficient
+
+
+def comparable_flight_merit(before, after, baseline_loss, candidate_loss):
+    """Compare flight losses on the exact baseline releases during line search."""
+    if before.shape != after.shape:
+        raise ValueError('Flight line search requires the same packed start lanes')
+    mask = before.isfinite()
+    count = int(mask.sum())
+    if not count:
+        return candidate_loss < baseline_loss, dict(matched_lanes=0)
+    initial = float(before[mask].mean())
+    comparable = after[mask]
+    if not comparable.isfinite().all():
+        return False, dict(matched_lanes=count, before=initial, after=None, lost_release=True)
+    trial = float(comparable.mean())
+    accepted = trial <= initial and candidate_loss < baseline_loss
+    return accepted, dict(matched_lanes=count, before=initial, after=trial, lost_release=False)
+
+
 def gradient_parts(terms, parameters):
     """Diagnostics only; does not accumulate .grad or step an optimizer."""
     result={}; vectors={}
@@ -126,6 +214,11 @@ def gradient_parts(terms, parameters):
         vector=torch.cat([(g.detach() if g is not None else torch.zeros_like(p)).flatten() for p,g in zip(parameters,grads)])
         if not torch.isfinite(vector).all(): raise FloatingPointError('Nonfinite '+name+' gradient')
         vectors[name]=vector; result[name+'_gradient_norm']=float(vector.norm())
-    a,b=vectors['task'],vectors['tracking']
-    result['task_tracking_cosine']=float(torch.dot(a,b)/(a.norm()*b.norm()).clamp_min(1e-20))
+    for left, right, key in (('task', 'tracking', 'task_tracking_cosine'),
+                             ('ball_speed', 'ball_geometry', 'ball_speed_geometry_cosine')):
+        if left in vectors and right in vectors:
+            a, b = vectors[left], vectors[right]
+            denominator = a.norm() * b.norm()
+            cosine = float(torch.dot(a, b) / denominator.clamp_min(1e-20))
+            result[key] = None if key == 'ball_speed_geometry_cosine' and float(denominator) <= 1e-20 else cosine
     return result

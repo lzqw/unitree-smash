@@ -23,7 +23,8 @@ def ball_error(predicted,target):
 
 
 def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed,launch,*,
-                    action_model=None,return_details=False,ball_input_grad=True,impulse_residual_scale=1.):
+                    action_model=None,return_details=False,ball_input_grad=True,impulse_residual_scale=1.,
+                    native_robot_endpoint=None):
     """The optional action model sees the CURRENT final command only through
     the command-conditioned robot prediction. Legacy mode is unchanged.
     """
@@ -69,6 +70,10 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
     else:
         correction,_=ball(features,present)
     physical,logits,active=base(body_input,targets,previous_action,feet,present,elapsed,launch,**body_options)
+    if native_robot_endpoint is not None:
+        if native_robot_endpoint.shape != physical[:, :49].shape:
+            raise ValueError('Native robot endpoint must match the transition batch')
+        physical = torch.cat((native_robot_endpoint.detach(), physical[:, 49:]), dim=-1)
     robot_prediction = physical[:,:49]
     if not ball_input_grad:
         physical = physical.detach()

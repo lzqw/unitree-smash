@@ -162,6 +162,11 @@ class ResidualPPOInitializedActor(nn.Module):
         super().__init__()
         self.actor = actor_module
         self.log_std = nn.Parameter(torch.full((action_dim,), -3.0))
+        self.early_arm_gate = None
+
+    def configure_approach_gate(self, preparation_seconds):
+        from .frozen_v2_approach_v1 import EarlyArmApproachGate
+        self.early_arm_gate = None if preparation_seconds is None else EarlyArmApproachGate(preparation_seconds)
 
     def forward(self, obs: torch.Tensor, sample: bool = False):
         mean = self.actor(obs)
@@ -206,16 +211,21 @@ class ResidualPPOInitializedActor(nn.Module):
         normalized = module.normalizer(obs)
         mean = (module.base(normalized)
                 + recovery_gate.to(obs.dtype) * module.recovery(normalized) * module.recovery_scale
-                + module.gate(obs) * module.approach(normalized) * module.approach_scale)
+                + self.approach_action_gate(obs) * module.approach(normalized) * module.approach_scale)
         std = self.log_std.clamp(-8.0, 1.0).exp().expand_as(mean)
         return Normal(mean, std)
 
-    def approach_gate(self, obs: torch.Tensor) -> torch.Tensor:
-        """Return the exported causal Approach gate for start selection/diagnostics."""
+    def approach_action_gate(self, obs: torch.Tensor) -> torch.Tensor:
+        """Per-joint gate for commands; legacy checkpoints use one broadcast value."""
         module = self.actor
         if not hasattr(module, 'gate'):
             raise ValueError('Approach gate requires FrozenV2 approach export')
-        return module.gate(obs)
+        legacy = module.gate(obs)
+        return legacy if self.early_arm_gate is None else self.early_arm_gate(obs, legacy)
+
+    def approach_gate(self, obs: torch.Tensor) -> torch.Tensor:
+        """Lane activity used by replay and imagination selection."""
+        return self.approach_action_gate(obs).amax(dim=-1, keepdim=True)
 
     def recovery_gate(self, obs: torch.Tensor) -> torch.Tensor:
         """Return the legacy exported recovery gate for diagnostics only."""

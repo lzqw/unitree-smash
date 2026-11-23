@@ -42,6 +42,21 @@ def make_plan(recovery, approach, recovery_proposals, approach_proposals, *,
     return events
 
 
+def make_approach_plan(updates, proposals, *, block_size=8):
+    """One continuous native stream, with collection and WM fitting inside each A block."""
+    if any(type(x) is not int or x < 1 for x in (updates, proposals, block_size)) or proposals < updates:
+        raise ValueError('Invalid Approach-only update or proposal budget')
+    sizes = [min(block_size, updates - i) for i in range(0, updates, block_size)]
+    surplus, remainder = divmod(proposals - updates, len(sizes))
+    events = []
+    for index, target in enumerate(sizes):
+        key = f'approach_only_{index:03d}'
+        events.append(dict(id=key, kind='train', cycle=0, pair=index, block_key=key,
+                           head='approach', target=target,
+                           proposal_limit=target + surplus + int(index < remainder)))
+    return events + [dict(id='approach_only_finalize', kind='finalize', cycle=0)]
+
+
 def refresh_world_budgets(total, heads=HEADS):
     """Split the existing TOTAL budget, not one full budget per head."""
     if type(total) is not int or total < 0 or not heads:
@@ -132,7 +147,7 @@ class AlternatingSchedule:
         return totals
 
 
-def run_schedule(schedule, *, train, refresh, finalize, checkpoint):
+def run_schedule(schedule, *, train, refresh, finalize, checkpoint, stop_after=None):
     """Used by the native entry AND CPU contract tests, with durable boundaries."""
     callbacks=dict(train=train,refresh=refresh,finalize=finalize)
     while not schedule.complete:
@@ -145,3 +160,6 @@ def run_schedule(schedule, *, train, refresh, finalize, checkpoint):
         result=callbacks[event['kind']](event)
         schedule.finish(result)
         checkpoint('latest.pt')
+        if stop_after is not None and stop_after(event, schedule):
+            return schedule.complete
+    return True

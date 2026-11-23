@@ -215,11 +215,12 @@ def update_recovery_landing(landed, previous_task, next_feet):
     return landed | (eligible & in_flight & (next_feet > .5).any(-1))
 
 
-def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weights=None, baseline_landing_weights=None, *, collect_critic_data=True):
+def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weights=None, baseline_landing_weights=None, *,
+                     baseline_ball_scored=None, collect_critic_data=True):
     toi = trainer.block_name=='approach' and getattr(trainer,'approach_objective','task')=='toi_racket_only'
     if not starts or not (toi or trainer.block_name=='recovery'):
         raise ValueError('Pooled starts require Recovery or TOI racket supervision')
-    for group in (effective_weights,baseline_toi_weights,baseline_landing_weights):
+    for group in (effective_weights,baseline_toi_weights,baseline_landing_weights,baseline_ball_scored):
         if group is not None and len(group)!=len(starts):
             raise ValueError('Backtracking weights must cover the same start records')
     toi_weights=[]
@@ -227,6 +228,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     preserved=True
     params=[p for p in trainer.actor.parameters() if p.requires_grad]
     terms={k:[] for k in ('task','tracking','anchor')}
+    ball_scored, ball_speeds, ball_metrics, ball_derivatives = [], [], {}, {}
+    ball_costs, flight_priority = [], []
     counts={};covered={};weights=[];returns=[];data=[];usage={};by_record=[]
     for i,state in enumerate(starts):
         kwargs=dict(effective_weights=None if effective_weights is None else effective_weights[i])
@@ -234,6 +237,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
             kwargs['collect_critic_data'] = False
         if baseline_landing_weights is not None:
             kwargs['baseline_landing_weights'] = baseline_landing_weights[i]
+        if baseline_ball_scored is not None:
+            kwargs['baseline_ball_scored'] = baseline_ball_scored[i]
         if toi:
             kwargs['baseline_toi_weights']=None if baseline_toi_weights is None else baseline_toi_weights[i]
         if torch.is_grad_enabled():
@@ -245,6 +250,23 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         if row.get('landing_weights') is not None:
             landing_weights.append(row['landing_weights'])
         n=row['gate_lanes']; w=row['tracking_effective_weight_sum']
+        if row.get('flight_cost_by_lane') is not None:
+            ball_costs.append(row['flight_cost_by_lane'])
+        if row.get('flight_priority_loss') is not None:
+            flight_priority.append(_gradient_value(row['flight_priority_loss'], params) * n)
+        if row.get('ball_scored') is not None:
+            ball_scored.append(row['ball_scored'])
+            if row.get('ball_approach_speed') is not None:
+                ball_speeds.append(row['ball_approach_speed'])
+            counts['resolved_ball_lanes'] = counts.get('resolved_ball_lanes', 0) + row['resolved_ball_lanes']
+            counts['ball_speed_loss_supported_lanes'] = counts.get('ball_speed_loss_supported_lanes', 0) + row.get('ball_speed_loss_supported_lanes', 0)
+            counts['demand_racket_target_lanes'] = counts.get('demand_racket_target_lanes', 0) + row['demand_racket_target_lanes']
+            for name in ('planned_imagination_steps', 'model_rollout_steps'):
+                counts[name] = max(counts.get(name, 0), row[name])
+            for name, value in row['flight_losses'].items():
+                ball_metrics[name] = ball_metrics.get(name, 0.) + float(value.detach()) * n
+                if getattr(trainer, 'diagnose_ball_gradients', False) and torch.is_grad_enabled():
+                    ball_derivatives.setdefault(name, []).append(_gradient_value(value, params) * n)
         for key in terms:
             derivatives = row.get('tracking_derivatives') if key == 'tracking' else None
             terms[key].append((_gradient_value(row[key],params,derivatives), w if key=='tracking' else n))
@@ -284,7 +306,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         return torch.cat([pad(v[k]) for v in data],dim=1)
     scalars={k:sum(x*n for x,n in items)/max(1.e-8,sum(n for _,n in items)) for k,items in terms.items()}
     loss=trainer.tracking_coefficient(trainer.block_name)*scalars['tracking']+trainer.anchor_coeff*scalars['anchor']
-    if not toi:
+    if not toi or getattr(trainer, 'approach_ball_protocol', None) is not None:
         loss=loss+scalars['task']
     elif getattr(trainer,'contact_aux_weight',0.):
         loss=loss+trainer.contact_aux_weight*scalars['task']
@@ -292,6 +314,12 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     coverage.update(matched_lanes=counts['matched_references'],effective_weight_sum=counts['tracking_effective_weight_sum'],
                     tracking_applied=bool(counts['tracking_active_lane_steps']),reference_usage_by_sha256=usage,per_record=by_record)
     ret=torch.cat(returns)
-    return dict(**scalars,**counts, loss=loss,ret=ret if ret.numel() else loss.detach().reshape(1),
+    n = max(counts['gate_lanes'], 1)
+    return dict(**scalars,**counts, **{f'ball_loss_{key}': value/n for key,value in ball_metrics.items()},
+                ball_scored=ball_scored or None, ball_approach_speed=torch.cat(ball_speeds) if ball_speeds else None,
+                flight_cost_by_lane=torch.cat(ball_costs) if ball_costs else None,
+                flight_priority_loss=sum(flight_priority)/n if flight_priority else None,
+                flight_losses={key: sum(values)/n for key,values in ball_derivatives.items()},
+                loss=loss,ret=ret if ret.numel() else loss.detach().reshape(1),
                 effective_weights=weights,landing_weights=landing_weights or None,toi_weights=toi_weights if toi else None,toi_coverage_preserved=preserved,reference_coverage=coverage,
                 critic_data=tuple(join(k) for k in range(5)) if collect_critic_data else None,tracking_objective='toi_racket_only' if toi else 'recovery_reference')

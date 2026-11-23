@@ -11,12 +11,62 @@ from pathlib import Path
 
 STRICT_SCORING = 'historical-independent-complete5-v1'
 RELAXED_SCORING = 'relaxed-complete5-v1'
-SCORING_SCHEMAS = frozenset((STRICT_SCORING, RELAXED_SCORING))
+APPROACH_BALL_SCORING = 'approach_ball_only_v1'
+SCORING_SCHEMAS = frozenset((STRICT_SCORING, RELAXED_SCORING, APPROACH_BALL_SCORING))
 
 
 def relaxed_scoring_protocol():
     path = Path(__file__).resolve().parents[2] / 'configs/evaluation_protocol_v3_relaxed.json'
     return json.loads(path.read_text())
+
+
+def approach_ball_scoring_protocol():
+    path = Path(__file__).resolve().parents[2] / 'configs/evaluation_protocol_v4_approach_ball_only.json'
+    return json.loads(path.read_text())
+
+
+def score_approach_ball_episode(row, protocol, result):
+    from quadsmash.evaluation_v4 import FAULTS
+
+    rules = protocol['approach_ball_scoring']
+    if rules['scoring_schema'] != APPROACH_BALL_SCORING:
+        raise ValueError('Unknown Approach-only scoring schema')
+    terminal = row['approach_ball_terminal']
+    court = json.loads((Path(protocol['_root']) / 'configs/court_net_v4.json').read_text())
+    contact, velocity, landing = (row[k] for k in ('contact_point_m', 'outgoing_velocity_mps', 'first_landing_m'))
+    hit, release, net, ground = (row[k] for k in
+        ('contact_time_s', 'release_time_s', 'crossing_time_s', 'first_landing_time_s'))
+    tolerance = protocol['physics_dt_s']
+    airborne = bool(row['legal_initial_contact'] and row['string_hit'] and row['airborne_string_hit']
+                    and all(map(math.isfinite, contact)) and contact[0] < court['net_plane_x_m'])
+    faulted = any(row[k] for k in FAULTS)
+    speed = math.hypot(*velocity) if all(map(math.isfinite, velocity)) and row['released'] else None
+    criteria = dict(
+        ground_single_launch=bool(row['ground_init'] and row['active_rally_launch_count'] == 1),
+        legal_airborne_strings=airborne, no_rule_fault=not faulted,
+        released_forward=speed is not None and velocity[0] > 0,
+        actual_net_and_target=bool(row['crossed_net'] and row['landed_target'] and all(map(math.isfinite, landing))
+            and court['target_x_limits_m'][0] <= landing[0] <= court['target_x_limits_m'][1]
+            and court['opponent_x_limits_m'][0] <= landing[0] <= court['opponent_x_limits_m'][1]
+            and abs(landing[1]) <= min(court['target_y_half_width_m'], court['singles_width_m'] / 2)),
+        event_order=bool(all(map(math.isfinite, (hit, release, net, ground)))
+            and hit >= protocol['preparation_seconds'] - tolerance and release >= hit
+            and net + tolerance >= hit and ground + tolerance >= max(net, release)),
+        no_numerical_failure=not terminal['numerical_abort'] and row['numerical_failures'] == 0,
+        ball_terminal=terminal['ball_terminal'])
+    speed_ok = speed is not None and speed >= rules['minimum_outgoing_speed_mps']
+    ball_ok = all(criteria.values()) and speed_ok
+    tail = terminal['recovery_tail_observed'] and criteria['no_numerical_failure']
+    return dict(result, scoring_schema=APPROACH_BALL_SCORING, approach_ball_terminal=terminal,
+                qualified_airborne_string_contact=airborne, rally_fault=faulted,
+                ball_side_complete_except_recovery=ball_ok, outgoing_speed_mps=speed,
+                contact_time_s=hit if math.isfinite(hit) else None,
+                recovery_success=bool(airborne and row['recovery_success'] and not faulted) if tail else None,
+                physical_recovery_success=bool(row['recovery_success']) if tail else None,
+                complete5=bool(ball_ok and row['recovery_success']) if tail else None,
+                criteria_except_speed=criteria,
+                rejection_reasons=[k for k, passed in criteria.items() if not passed]
+                + ([] if speed_ok else ['speed_threshold']))
 
 
 def attach_reset_jump_records(rallies, jumps):
@@ -46,6 +96,8 @@ def score_terminal_episode(row, protocol):
     # return monitor uses it to reject lane duplication or case-set drift
     # across refreshes.
     result['case_id'] = row.get('case_id', f"ENV{int(row['env_id'])}")
+    if protocol.get('approach_ball_scoring') is not None:
+        return score_approach_ball_episode(row, protocol, result)
     label = classify(row, protocol, 5.)
     original = label['original_outcomes']
     result['raw_environment_flags'] = {
