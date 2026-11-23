@@ -1,3 +1,4 @@
+import json
 from types import SimpleNamespace
 
 import pytest
@@ -87,6 +88,35 @@ def test_recovery_file_digest_does_not_depend_on_other_resume_options(tmp_path):
     path.write_bytes(b'saved recovery input')
     assert file_sha(path) == sha256(b'saved recovery input').hexdigest()
     assert 'file_sha' not in run.__code__.co_varnames
+
+
+def test_milestone_cost_counts_interrupted_work_and_resume_without_native_completions(tmp_path):
+    from scripts.report_supermimic_approach_curve import training_cost
+
+    def archive(name, ticks, completes):
+        run = tmp_path/name
+        (run/'native_transitions').mkdir(parents=True)
+        manifest = dict(num_envs=128, control_ticks=ticks, transitions=128*ticks,
+                        chunks=[dict(ticks=ticks, bytes=ticks*100)])
+        (run/'native_transitions'/'manifest.json').write_text(json.dumps(manifest))
+        lifecycle = [dict(stage='BEFORE_APP', time_ns=0), dict(stage='CLEANUP_FINISHED', time_ns=2_000_000_000)]
+        (run/'lifecycle.jsonl').write_text('\n'.join(map(json.dumps, lifecycle)))
+        proposal = dict(update_accepted=True, native_collect_seconds=1., bptt_seconds=.5,
+                        peak_gpu_bytes=100, reference_coverage={}, completed_native_episodes=completes)
+        (run/'training_history.jsonl').write_text(json.dumps(proposal))
+        if completes:
+            episode = dict(env_id=0, episode_index=0, scoring_schema='approach_ball_only_v1',
+                           case_id='train', qualified_airborne_string_contact=True, numerical_failures=0)
+            (run/'native_episodes.jsonl').write_text(json.dumps(episode))
+        return run
+
+    prefix = archive('interrupted', 3, 1)
+    resumed = archive('resumed', 1, 0)
+    cost = training_cost(resumed, interrupted_prefix=prefix)
+    assert cost['new_native_transitions'] == 4*128
+    assert cost['completed_native_episodes'] == cost['qualified_native_contact_episodes'] == 1
+    assert cost['accepted_approach_updates'] == cost['actor_attempts'] == 2
+    assert cost['training_wall_seconds'] == 4.
 
 
 def test_flight_priority_keeps_unopposed_gradients_and_repairs_uphill_projection():

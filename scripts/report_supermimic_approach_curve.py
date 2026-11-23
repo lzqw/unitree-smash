@@ -33,28 +33,40 @@ def frozen_panel(evaluation, arm):
     return checkpoint, metrics, actor
 
 
-def training_cost(directory):
-    archive = read_json(directory/'native_transitions', 'manifest.json')
-    ticks = sum(chunk['ticks'] for chunk in archive['chunks'])
-    if ticks <= 0 or archive['num_envs'] != 128 or archive['control_ticks'] != ticks or archive['transitions'] != ticks*128:
-        raise ValueError(f'Incomplete native archive at {directory}')
-
-    proposals = read_rows(directory, 'training_history.jsonl')
-    episodes = read_rows(directory, 'native_episodes.jsonl')
-    identities = {(row['env_id'], row['episode_index']) for row in episodes}
-    if len(identities) != len(episodes) or any(row['scoring_schema'] != APPROACH_BALL_SCORING for row in episodes):
-        raise ValueError(f'Invalid native episode records at {directory}')
-    lifecycle = {row['stage']: row['time_ns'] for row in read_rows(directory, 'lifecycle.jsonl')}
-    wall = (lifecycle['CLEANUP_FINISHED'] - lifecycle['BEFORE_APP']) / 1e9
+def training_cost(directory, *, interrupted_prefix=None):
+    directories = (directory,) if interrupted_prefix is None else (interrupted_prefix, directory)
+    proposals, episodes = [], []
+    ticks = archive_bytes = 0
+    wall = 0.
+    for run in directories:
+        archive = read_json(run/'native_transitions', 'manifest.json')
+        run_ticks = sum(chunk['ticks'] for chunk in archive['chunks'])
+        if (run_ticks <= 0 or archive['num_envs'] != 128
+                or archive['control_ticks'] != run_ticks or archive['transitions'] != run_ticks * 128):
+            raise ValueError(f'Incomplete native archive at {run}')
+        ticks += run_ticks
+        archive_bytes += sum(chunk['bytes'] for chunk in archive['chunks'])
+        run_proposals = read_rows(run, 'training_history.jsonl')
+        proposals.extend(run_proposals)
+        no_completed_episodes = run_proposals and all(row['completed_native_episodes'] == 0 for row in run_proposals)
+        episode_file = run/'native_episodes.jsonl'
+        run_episodes = [] if not episode_file.exists() and no_completed_episodes else read_rows(run, episode_file.name)
+        identities = {(row['env_id'], row['episode_index']) for row in run_episodes}
+        if (len(identities) != len(run_episodes)
+                or any(row['scoring_schema'] != APPROACH_BALL_SCORING for row in run_episodes)):
+            raise ValueError(f'Invalid native episode records at {run}')
+        episodes.extend(run_episodes)
+        lifecycle = {row['stage']: row['time_ns'] for row in read_rows(run, 'lifecycle.jsonl')}
+        wall += (lifecycle['CLEANUP_FINISHED'] - lifecycle['BEFORE_APP']) / 1e9
     native_seconds = sum(row['native_collect_seconds'] for row in proposals)
     if not 0 < native_seconds <= wall:
         raise ValueError(f'Invalid run timing at {directory}')
 
     valid_hits = [row for row in episodes if row['qualified_airborne_string_contact'] and not row['numerical_failures']]
     cost = dict(
-        new_native_control_ticks=ticks, new_native_transitions=archive['transitions'],
+        new_native_control_ticks=ticks, new_native_transitions=ticks * 128,
         training_wall_seconds=wall, native_collection_seconds=native_seconds,
-        new_archive_bytes=sum(chunk['bytes'] for chunk in archive['chunks']),
+        new_archive_bytes=archive_bytes,
         accepted_approach_updates=sum(row['update_accepted'] for row in proposals),
         actor_attempts=len(proposals), actor_bptt_seconds=sum(row['bptt_seconds'] for row in proposals),
         world_refresh_seconds=sum(row.get('world_update_seconds', 0.) for row in proposals),
@@ -77,6 +89,8 @@ def training_cost(directory):
             **{field+'_lane_ticks': sum(group[field+'_steps']*group['lanes'] for group in groups)
                for field in ('maximum', 'planned', 'executed')},
         )
+    if interrupted_prefix is not None:
+        cost['training_runs'] = [str(run) for run in directories]
     return cost
 
 
@@ -133,7 +147,40 @@ def checkpoint_state(checkpoint, anchor_actor, metrics, arm):
     )
 
 
-def curve(arm, baseline, milestones, *, final_selection=False):
+def interrupted_prefix_evidence(prefix, resumed_run, prior):
+    """Bind the unfinished native run to the scored predecessor and resumed job."""
+    import torch
+    from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+
+    command = read_json(prefix, 'startup.json')['argv']
+    loaded = read_json(prefix, 'loaded_runtime_identity.json')['identity']
+    incomplete = read_json(prefix, 'block_incomplete.json')
+    source = (prefix/'interrupted.pt').resolve(strict=True)
+    receipt = read_json(resumed_run, 'approach_proposal_reallocation.json')
+    with source.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    if (Path(command[command.index('--resume-training') + 1]).resolve() != Path(prior['checkpoint']).resolve()
+            or loaded['actor_state_sha256'] != prior['actor_sha256']
+            or incomplete['block'] != 'approach' or incomplete['attempts'] != incomplete['limit']
+            or incomplete['accepted'] != receipt['accepted_before']
+            or incomplete['attempts'] != receipt['attempted_before']
+            or Path(receipt['source_checkpoint']).resolve() != source or receipt['source_checkpoint_sha256'] != digest):
+        raise ValueError(f'Unverified Approach recovery prefix at {prefix}')
+
+    checkpoint = torch.load(source, map_location='cpu', mmap=True, weights_only=False)
+    counters = checkpoint['global_counters']
+    proposals = read_rows(prefix, 'training_history.jsonl')
+    retained = counters['accepted'] - checkpoint['config']['research_origin']
+    if (not proposals or retained - prior['accepted_updates'] != sum(row['update_accepted'] for row in proposals)
+            or [row['attempt_id'] for row in proposals] != list(range(proposals[0]['attempt_id'], counters['attempts'] + 1))
+            or not all(row['frozen_base_recovery_unchanged'] and row['model_unchanged_during_actor']
+                       for row in proposals)):
+        raise ValueError(f'Interrupted Approach checkpoint counters do not match {prefix}')
+    return dict(checkpoint=str(source), checkpoint_sha256=digest, actor_sha256=tensor_digest(checkpoint['actor'].items()),
+                global_accepted=counters['accepted'], global_attempts=counters['attempts'], accepted_updates=retained)
+
+
+def curve(arm, baseline, milestones, *, final_selection=False, interrupted_prefixes=None):
     checkpoint, metrics, actor = frozen_panel(baseline, arm)
     with checkpoint.open('rb') as stream:
         if hashlib.file_digest(stream, 'sha256').hexdigest() != metrics['evaluated_checkpoint_sha256']:
@@ -145,16 +192,27 @@ def curve(arm, baseline, milestones, *, final_selection=False):
         cumulative_training_seconds=0., cumulative_new_native_transitions=0,
     )
     points = [pivot]
+    interrupted_prefixes = interrupted_prefixes or {}
     for retained, train, evaluation in milestones:
         prior = points[-1]
         source = Path(prior['checkpoint'])
         previous_updates = prior['accepted_updates']
+        prefix = interrupted_prefixes.get(retained)
+        prefix_evidence = interrupted_prefix_evidence(prefix, train, prior) if prefix is not None else None
+        expected_actor = prior['actor_sha256']
+        if prefix_evidence is not None:
+            source = Path(prefix_evidence['checkpoint'])
+            expected_actor = prefix_evidence['actor_sha256']
         current, invocation = verify_training_milestone(train, retained, source)
         evaluated, panel_metrics, _ = frozen_panel(evaluation, arm)
-        cost = training_cost(train)
-        if (current != evaluated or invocation['start']['actor_sha256'] != prior['actor_sha256']
+        cost = training_cost(train, interrupted_prefix=prefix)
+        if (current != evaluated or invocation['start']['actor_sha256'] != expected_actor
                 or retained <= previous_updates or cost['accepted_approach_updates'] != retained - previous_updates):
             raise ValueError(f'A{retained} is not a verified continuation from A{previous_updates}')
+        if prefix_evidence is not None and (
+                invocation['start']['accepted'] != prefix_evidence['global_accepted']
+                or invocation['start']['attempts'] != prefix_evidence['global_attempts']):
+            raise ValueError(f'A{retained} continuation did not preserve the interrupted counters')
         evidence = verify_frozen_milestone(evaluation, current, invocation)
         state = checkpoint_state(current, pivot['actor_sha256'], panel_metrics, arm)
         paired = compare(baseline, evaluation)
@@ -177,6 +235,8 @@ def curve(arm, baseline, milestones, *, final_selection=False):
             improved_cases=paired['improved_cases'], regressed_cases=paired['regressed_cases'],
             paired_exact_two_sided_p=paired['paired_exact_two_sided_p'],
         ))
+        if prefix_evidence is not None:
+            points[-1]['interrupted_prefix'] = prefix_evidence
 
     result = dict(schema='supermimic-approach-learning-curve-v1', arm=arm,
                   fixed_development_panel_sha256=FIXED128_SHA256, baseline=str(baseline), points=points)
@@ -197,11 +257,17 @@ def main():
     parser.add_argument('--arm', choices=('E0', 'E1'), required=True)
     parser.add_argument('--baseline', type=Path, required=True)
     parser.add_argument('--stage', nargs=3, action='append', required=True, metavar=('UPDATES', 'TRAIN_DIR', 'EVAL_DIR'))
+    parser.add_argument('--interrupted-prefix', nargs=2, action='append', default=[],
+                        metavar=('UPDATES', 'TRAIN_DIR'))
     parser.add_argument('--final-selection', action='store_true')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     stages = [(int(retained), Path(train), Path(evaluation)) for retained, train, evaluation in args.stage]
-    report = curve(args.arm, args.baseline, stages, final_selection=args.final_selection)
+    prefixes = {int(retained): Path(train) for retained, train in args.interrupted_prefix}
+    if len(prefixes) != len(args.interrupted_prefix) or set(prefixes) - {stage[0] for stage in stages}:
+        parser.error('Each interrupted prefix must identify a different requested milestone')
+    report = curve(args.arm, args.baseline, stages, final_selection=args.final_selection,
+                   interrupted_prefixes=prefixes)
     staged = args.output.with_suffix('.tmp')
     staged.write_text(json.dumps(report, indent=2, allow_nan=False)+'\n')
     staged.replace(args.output)
