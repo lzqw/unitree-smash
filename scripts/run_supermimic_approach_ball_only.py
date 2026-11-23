@@ -43,7 +43,8 @@ def evaluate_command(source, output, motion, execution_root, *, seed, a0, indepe
     return command
 
 
-def train_command(registered, source, output, motion, *, stop_at, fresh, prioritize_flight=False, training_seed=None):
+def train_command(registered, source, output, motion, *, stop_at, fresh, prioritize_flight=False,
+                  training_seed=None, start_lanes=16):
     command = ['scripts/train_supermimic_physical_block.py', *registered_options(registered, ARCHIVE_INPUTS),
                '--output', str(output), '--resume-training', str(source),
                '--training-profile', 'research_scale', '--training-stage', 'research_contact',
@@ -51,7 +52,7 @@ def train_command(registered, source, output, motion, *, stop_at, fresh, priorit
                '--approach-ball-only', '--approach-update-budget', str(APPROACH_BUDGET), '--approach-proposal-budget', '512',
                '--head-block-size', '8', '--native-ticks-per-actor-update', '128',
                '--world-updates-per-actor-update', '16', '--approach-contact-updates', '32',
-               '--wm-batch-size', '128', '--toi-effective-start-lanes', '16', '--tracking-weight', '1',
+               '--wm-batch-size', '128', '--toi-effective-start-lanes', str(start_lanes), '--tracking-weight', '1',
                '--world-learning-rate', '1e-6', '--wm-separate-supervision',
                '--wm-source-quota', 'recent_online=24,older_online=8,initial_archive=32,action_identification=26,contact_event=38',
                '--command-delta-budget', '.02', '--target-delta-budget-rad', '.08',
@@ -120,6 +121,8 @@ def main():
     parser.add_argument('--fresh', action='store_true')
     parser.add_argument('--prioritize-approach-flight', action='store_true')
     parser.add_argument('--stop-at', type=int)
+    parser.add_argument('--toi-effective-start-lanes', type=int,
+                        help='Target distinct episodes per Actor proposal (default: 16)')
     parser.add_argument('--training-seed', type=int, help='Learner seed for a fresh training branch or its continuation')
     parser.add_argument('--baseline', type=Path, help='Pair the milestone with a completed fixed128 A0 run')
     parser.add_argument('--fixed-output', type=Path, help='Directory for the milestone’s fixed128 evaluation')
@@ -129,8 +132,10 @@ def main():
     args = parser.parse_args()
     training = args.job in ('train', 'milestone')
     if not training and (args.fresh or args.stop_at is not None or args.prioritize_approach_flight
-                         or args.training_seed is not None):
-        parser.error('A training boundary and optimizer reset apply only to train')
+                         or args.training_seed is not None or args.toi_effective_start_lanes is not None):
+        parser.error('Training options require a train or milestone job')
+    if args.toi_effective_start_lanes is not None and not 1 <= args.toi_effective_start_lanes <= 128:
+        parser.error('The distinct-episode target must be in [1,128]')
     if training and args.independent_panel_batch is not None:
         parser.error('Independent evaluation is a separate frozen job')
     if args.stop_at is not None and (args.stop_at not in range(8, APPROACH_BUDGET + 1, 8)):
@@ -142,7 +147,8 @@ def main():
     early = args.arm == 'E1'
     if training:
         command = train_command(registered, source, output, early, stop_at=args.stop_at, fresh=args.fresh,
-                                prioritize_flight=args.prioritize_approach_flight, training_seed=args.training_seed)
+                                prioritize_flight=args.prioritize_approach_flight, training_seed=args.training_seed,
+                                start_lanes=args.toi_effective_start_lanes or 16)
     else:
         execution = registered_options(registered, ('g07-execution-root',))[1]
         command = evaluate_command(source, output, early, execution, seed=args.seed, a0=args.job == 'a0',

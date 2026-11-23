@@ -24,16 +24,18 @@ def test_matched_approach_arms_share_merit_and_budgets_with_distinct_speed_targe
     gate = early.index('--early-arm-seconds')
     assert early[gate + 1] == '.25'
     assert '--prioritize-approach-flight' in control
+    assert control[control.index('--toi-effective-start-lanes') + 1] == '16'
     assert control[:control.index(speed)] == early[:gate] + early[gate + 2:early.index(speed)]
 
 
 def test_final_milestone_finalizes_the_full_schedule_and_preserves_requested_training_seed(tmp_path):
     registered = [part for name in ARCHIVE_INPUTS for part in ('--' + name, name)]
     command = train_command(registered, 'a128.pt', tmp_path, True, stop_at=256, fresh=False,
-                            prioritize_flight=True, training_seed=913)
+                            prioritize_flight=True, training_seed=913, start_lanes=32)
     assert '--approach-stop-at' not in command
     assert '--resume-reset-schedule' not in command
     assert command[command.index('--research-training-seed') + 1] == '913'
+    assert command[command.index('--toi-effective-start-lanes') + 1] == '32'
     assert milestone_checkpoint(tmp_path, 256) == tmp_path/'latest.pt'
     assert milestone_checkpoint(tmp_path, 128) == tmp_path/'approach_A128.pt'
 
@@ -143,6 +145,33 @@ def test_ball_phase_retains_recent_native_starts_for_delayed_outcome_labels():
     restored = ActorStartBank(capacity=3, ball_phase=True)
     restored.load_state_dict(bank.state_dict())
     assert restored.sampling_report()['actual_by_outcome']['low_speed'] == 1
+
+
+def test_ball_phase_scales_quotas_without_reusing_episodes():
+    from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank
+
+    bank = ActorStartBank(ball_phase=True)
+    outcomes = ['contact_failure'] * 10 + ['low_speed'] * 14 + ['flight_failure'] * 8 + ['success'] * 8
+    active = torch.ones(len(outcomes), dtype=torch.bool)
+    for tick in (16, 20):
+        start = dict(stream_id=2, before=dict(episode_index=torch.zeros(len(outcomes), dtype=torch.long),
+                     elapsed_tick=torch.full((len(outcomes),), tick)))
+        bank.append(start, dict(approach_gate=active.float(), had_contact=~active,
+                               approach_start_eligible=active), stream=2, policy_version=0, native_tick=tick)
+        bank.entries[-1]['ball_outcomes'] = {lane: (outcome, 38 - tick) for lane, outcome in enumerate(outcomes)}
+
+    for count, expected in (
+            (24, dict(contact_failure=6, low_speed=9, flight_failure=5, success=4)),
+            (32, dict(contact_failure=8, low_speed=12, flight_failure=6, success=6))):
+        starts, report = bank.sample_ball_phase(lambda _: active, 0, count=count)
+        assert report['requested_by_outcome'] == expected
+        assert report['actual_by_outcome'] == {**expected, 'unlabeled': 0}
+        assert report['effective_lanes'] == count
+        assert torch.stack([start['_actor_lane_mask'] for start in starts]).sum(0).max() == 1
+
+    _, limited = bank.sample_ball_phase(lambda _: active, 0, count=48)
+    assert limited['effective_lanes'] == 40
+    assert limited['missing_episodes'] == 8
 
 
 def test_native_phase_timing_preserves_substeps_and_restores_simulator_method():

@@ -14,6 +14,18 @@ INTERLEAVED_SCHEDULE = (
     'failure_pre', 'success_near', 'pre_contact', 'gate_onset', 'failure_pre',
 )
 BALL_START_QUOTAS = dict(contact_failure=4, low_speed=6, flight_failure=3, success=3)
+BALL_START_TIME_QUOTAS = dict(early=5, middle=8, late=3)
+
+
+def _scale_start_quotas(quotas, count):
+    """Allocate the requested batch proportionally, rounding by largest remainder."""
+    base = sum(quotas.values())
+    allocations = {name: divmod(count * weight, base) for name, weight in quotas.items()}
+    rounded = {name: whole for name, (whole, _) in allocations.items()}
+    remaining = count - sum(rounded.values())
+    for name in sorted(quotas, key=lambda name: -allocations[name][1])[:remaining]:
+        rounded[name] += 1
+    return rounded
 
 
 def ball_start_outcome(record):
@@ -104,8 +116,11 @@ class ActorStartBank:
                 if label is not None and (lead is None or 8 <= lead <= 40):
                     entry.setdefault('ball_outcomes', {})[lane] = (label, lead)
 
-    def sample_ball_phase(self, eligible_lanes, attempt, *, fallback=()):
-        """Draw outcome and time margins over the same 16 independent starts."""
+    def sample_ball_phase(self, eligible_lanes, attempt, *, fallback=(), count=16):
+        """Draw distinct episode starts with proportionate outcome and time quotas."""
+        if not 1 <= count <= 128:
+            raise ValueError('Ball-phase start count must be in [1,128]')
+        outcome_quotas = _scale_start_quotas(BALL_START_QUOTAS, count)
         order = torch.randperm(len(self.entries), generator=self.generator).tolist()
         groups = {name: [] for name in BALL_START_QUOTAS}
         unlabeled = []
@@ -122,7 +137,8 @@ class ActorStartBank:
                 unlabeled.append((start, lane, 'unlabeled', None))
 
         # These lead-time preferences share the same batch as the outcome quotas.
-        timing = (('early',) * 5 + ('middle',) * 8 + ('late',) * 3)
+        time_quotas = _scale_start_quotas(BALL_START_TIME_QUOTAS, count)
+        timing = tuple(name for name, quota in time_quotas.items() for _ in range(quota))
         timing = timing[attempt % len(timing):] + timing[:attempt % len(timing)]
         seen, selected = set(), {}
         actual = {name: 0 for name in (*BALL_START_QUOTAS, 'unlabeled')}
@@ -156,11 +172,11 @@ class ActorStartBank:
                 actual[outcome] += 1
                 times[time_group(lead)] += 1
 
-        for name, count in BALL_START_QUOTAS.items():
-            take(groups[name], count)
+        for name, quota in outcome_quotas.items():
+            take(groups[name], quota)
         take([row for group in groups.values() for row in group] + unlabeled, len(timing) - len(seen))
-        report = dict(requested_by_outcome=BALL_START_QUOTAS, actual_by_outcome=actual,
-                      outcome_shortfall={name:max(0, count-actual[name]) for name,count in BALL_START_QUOTAS.items()},
+        report = dict(requested_by_outcome=outcome_quotas, actual_by_outcome=actual,
+                      outcome_shortfall={name:max(0, quota-actual[name]) for name,quota in outcome_quotas.items()},
                       lead_time_counts=times, effective_lanes=len(seen), missing_episodes=len(timing)-len(seen),
                       records=[dict(lane_episode_tick=details) for _, details in selected.values()])
         if self.ball_phase:

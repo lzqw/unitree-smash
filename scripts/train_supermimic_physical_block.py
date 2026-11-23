@@ -174,8 +174,8 @@ def main():
     parser.add_argument('--resume-warmup-ticks',type=int,default=0,
                         help='Optional native ticks before a resumed stream; zero preserves exact block budgets')
     parser.add_argument('--actor-update-budget',type=int,default=None,help='Legacy single-block budget')
-    parser.add_argument('--toi-effective-start-lanes',type=int,default=1,
-                        help='Target distinct episodes per TOI-only Approach proposal when greater than one')
+    parser.add_argument('--toi-effective-start-lanes',type=int,
+                        help='Target distinct episodes per TOI-only Approach proposal (default: 16 in ball-only, 1 otherwise)')
     parser.add_argument('--recovery-effective-start-lanes',type=int,default=12,help='Pool distinct gated Recovery episodes across archived G07 snapshots per optimizer proposal')
     parser.add_argument('--recovery-update-budget',type=int,default=256,
                         help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
@@ -321,6 +321,8 @@ def main():
                      args.contact_bptt_mode not in (None,'enabled') or args.resume_without_replay or
                      not 0 < args.research_contact_weight <= 1):
         parser.error('Research training requires alternating TOI blocks, calibrated contact and complete replay')
+    if args.toi_effective_start_lanes is None:
+        args.toi_effective_start_lanes = 16 if args.approach_ball_only else 1
     if not 1<=args.toi_effective_start_lanes<=128 or (args.toi_effective_start_lanes>1 and args.approach_objective!='toi_racket_only'):
         parser.error('TOI start pooling requires a size in [1,128] and the TOI racket objective')
     if not 1<=args.recovery_effective_start_lanes<=128:
@@ -2044,7 +2046,7 @@ def run(args, *, alternating=None):
                         return allowed & precontact & early_approach_start(observation, activity).cpu()
                     draw = schedule.head_attempts('approach')
                     proposal_rows, start_sampling = replay.actor_start_bank.sample_ball_phase(
-                        ball_start_lanes, draw, fallback=pool)
+                        ball_start_lanes, draw, fallback=pool, count=args.toi_effective_start_lanes)
                     if not proposal_rows:
                         raise RuntimeError('No causal pre-contact state available for the ball-only proposal')
                     row = proposal_rows[0]
