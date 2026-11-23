@@ -1,0 +1,458 @@
+{
+  "schema": "supermimic-e1-v2-a48-decision-v1",
+  "training_code": "efbc46d0",
+  "recovery_allocation": {
+    "block": "approach_only_004",
+    "accepted_before": 6,
+    "attempted_before": 16,
+    "new_proposal_limit": 20,
+    "transferred": {
+      "approach_only_003": 4
+    },
+    "source_checkpoint_sha256": "6f655d56159eecc74045252bc0f0c6251f4404a12fa0d4a1c6b7ef33dafc82b5",
+    "first_native_collection_ticks": 0
+  },
+  "quick64": [
+    {
+      "stage": 32,
+      "success": 30,
+      "qualified": 42,
+      "frame": 12,
+      "low": 5
+    },
+    {
+      "stage": 38,
+      "success": 28,
+      "qualified": 37,
+      "frame": 19,
+      "low": 5
+    },
+    {
+      "stage": 40,
+      "success": 26,
+      "qualified": 36,
+      "frame": 22,
+      "low": 5
+    },
+    {
+      "stage": 48,
+      "success": 25,
+      "qualified": 36,
+      "frame": 20,
+      "low": 6
+    }
+  ],
+  "fixed128": {
+    "cases": 128,
+    "a32": {
+      "ball_success": 55,
+      "ball_success_rate": 0.4296875,
+      "qualified_contacts": 78,
+      "success_given_qualified": 0.7051282051282052,
+      "qualified_low_speed": 5,
+      "failure_reasons": {
+        "legal_airborne_strings": 50,
+        "no_rule_fault": 24,
+        "actual_net_and_target": 68,
+        "event_order": 45,
+        "released_forward": 23,
+        "speed_threshold": 28
+      },
+      "wall_seconds": 632.0679966550088,
+      "independent_qualified_contacts_per_minute": 7.404266668724262,
+      "completed_ball_episodes_per_hour": 729.0354873820812,
+      "qualified_releases_measured": 78,
+      "qualified_release_speed_mps": {
+        "minimum": 4.087103448363882,
+        "median": 5.121103165120723,
+        "average": 5.230025651548066,
+        "maximum": 6.742916288163982
+      },
+      "qualified_below_speed_threshold_rate": 0.0641025641025641,
+      "cleared_net": 77,
+      "target_landings": 60,
+      "frame_without_strings": 31,
+      "no_racket_contact": 19,
+      "matched_contact_motion": 78,
+      "arm_gate_onset_median_tick": 251.5,
+      "arm_contact_speed_median_mps": 3.5082806783508396,
+      "normal_relative_speed_median_mps": 6.477644443511963,
+      "components_along_incoming_face_normal": {
+        "root_transport_mps": {
+          "cases": 78,
+          "mean_mps": 0.11230118105774506
+        },
+        "root_rotation_at_contact_mps": {
+          "cases": 78,
+          "mean_mps": 0.17614594325870028
+        },
+        "arm_contact_velocity_mps": {
+          "cases": 78,
+          "mean_mps": -1.0523752756236273
+        }
+      }
+    },
+    "a48": {
+      "ball_success": 51,
+      "ball_success_rate": 0.3984375,
+      "qualified_contacts": 78,
+      "success_given_qualified": 0.6538461538461539,
+      "qualified_low_speed": 13,
+      "failure_reasons": {
+        "legal_airborne_strings": 50,
+        "no_rule_fault": 29,
+        "actual_net_and_target": 65,
+        "event_order": 45,
+        "speed_threshold": 32,
+        "released_forward": 23
+      },
+      "wall_seconds": 606.7651199320098,
+      "independent_qualified_contacts_per_minute": 7.7130339999181405,
+      "completed_ball_episodes_per_hour": 759.4371938380938,
+      "qualified_releases_measured": 78,
+      "qualified_release_speed_mps": {
+        "minimum": 3.4451544315941014,
+        "median": 5.121966674599517,
+        "average": 5.1152293928961905,
+        "maximum": 6.550804199102528
+      },
+      "qualified_below_speed_threshold_rate": 0.16666666666666666,
+      "cleared_net": 77,
+      "target_landings": 63,
+      "frame_without_strings": 34,
+      "no_racket_contact": 16,
+      "matched_contact_motion": 78,
+      "arm_gate_onset_median_tick": 251.0,
+      "arm_contact_speed_median_mps": 3.50782903937447,
+      "normal_relative_speed_median_mps": 6.424217939376831,
+      "components_along_incoming_face_normal": {
+        "root_transport_mps": {
+          "cases": 78,
+          "mean_mps": 0.11923180383272891
+        },
+        "root_rotation_at_contact_mps": {
+          "cases": 78,
+          "mean_mps": 0.22964057762302473
+        },
+        "arm_contact_velocity_mps": {
+          "cases": 78,
+          "mean_mps": -1.2095625822873866
+        }
+      }
+    },
+    "gains": 9,
+    "losses": 13,
+    "exact_two_sided_p": 0.5234670639038086,
+    "measured_release_speed": {
+      "cases": 71,
+      "mean_delta_mps": -0.0720056534615296,
+      "median_delta_mps": -0.03816604175439764,
+      "below_threshold_to_pass": [],
+      "pass_to_below_threshold": [
+        "A-97124801-010",
+        "A-97124801-024",
+        "A-97124801-048",
+        "B-97124802-012",
+        "B-97124802-020"
+      ]
+    },
+    "identical_initial_physics_and_execution_contracts": true,
+    "independent512_scored": false
+  },
+  "fixed128_case_turnover": {
+    "improved_cases": [
+      "A-97124801-009",
+      "A-97124801-038",
+      "A-97124801-062",
+      "B-97124802-018",
+      "B-97124802-021",
+      "B-97124802-028",
+      "B-97124802-042",
+      "B-97124802-043",
+      "B-97124802-063"
+    ],
+    "regressed_cases": [
+      "A-97124801-010",
+      "A-97124801-012",
+      "A-97124801-020",
+      "A-97124801-024",
+      "A-97124801-032",
+      "A-97124801-036",
+      "A-97124801-048",
+      "B-97124802-000",
+      "B-97124802-003",
+      "B-97124802-007",
+      "B-97124802-012",
+      "B-97124802-020",
+      "B-97124802-050"
+    ]
+  },
+  "quick64_paired_a32_a48": {
+    "regressed": true,
+    "transitions": {
+      "string_to_frame": [
+        "A-720401-004",
+        "A-720401-006",
+        "B-720402-018",
+        "B-720402-026",
+        "B-720402-030",
+        "B-720402-054",
+        "B-720402-056"
+      ],
+      "frame_to_string": [
+        "A-720401-056"
+      ],
+      "success": {
+        "gained": [
+          "A-720401-056"
+        ],
+        "lost": [
+          "A-720401-004",
+          "A-720401-006",
+          "A-720401-062",
+          "B-720402-026",
+          "B-720402-042",
+          "B-720402-054"
+        ]
+      },
+      "string": {
+        "gained": [
+          "A-720401-056"
+        ],
+        "lost": [
+          "A-720401-004",
+          "A-720401-006",
+          "B-720402-018",
+          "B-720402-026",
+          "B-720402-030",
+          "B-720402-054",
+          "B-720402-056"
+        ]
+      },
+      "frame": {
+        "gained": [
+          "A-720401-004",
+          "A-720401-006",
+          "A-720401-048",
+          "B-720402-018",
+          "B-720402-024",
+          "B-720402-026",
+          "B-720402-028",
+          "B-720402-030",
+          "B-720402-054",
+          "B-720402-056"
+        ],
+        "lost": [
+          "A-720401-056",
+          "B-720402-048"
+        ]
+      },
+      "low": {
+        "gained": [
+          "B-720402-042"
+        ],
+        "lost": []
+      },
+      "net_hit": {
+        "gained": [
+          "A-720401-004",
+          "A-720401-006",
+          "A-720401-044",
+          "B-720402-008",
+          "B-720402-020",
+          "B-720402-026",
+          "B-720402-036"
+        ],
+        "lost": [
+          "A-720401-018",
+          "A-720401-056",
+          "B-720402-048"
+        ]
+      },
+      "out": {
+        "gained": [
+          "A-720401-062"
+        ],
+        "lost": [
+          "A-720401-018",
+          "B-720402-030"
+        ]
+      }
+    },
+    "matched_speed": {
+      "adequate_to_low": [
+        "B-720402-042"
+      ],
+      "low_to_adequate": []
+    }
+  },
+  "throughput": {
+    "a40_recovery": {
+      "wall_seconds": 305.70291248802096,
+      "actor_seconds": 188.22796033299528,
+      "native_collection_seconds": 0,
+      "proposals": 3,
+      "accepted": 2,
+      "accepted_per_hour": 23.552278064351558,
+      "accepted_scales": [
+        0.25,
+        0.125
+      ],
+      "distinct_native_qualified_contact_episodes": 0,
+      "native_qualified_contact_episodes_per_hour": null
+    },
+    "a48": {
+      "wall_seconds": 1535.4684184559737,
+      "actor_seconds": 531.297208615113,
+      "native_collection_seconds": 713.0799426889862,
+      "proposals": 13,
+      "accepted": 8,
+      "accepted_per_hour": 18.756491279032957,
+      "accepted_scales": [
+        0.0625,
+        0.0625,
+        0.0625,
+        0.0625,
+        0.0625,
+        0.0625,
+        0.0625,
+        0.0625
+      ],
+      "distinct_native_qualified_contact_episodes": 78,
+      "native_qualified_contact_episodes_per_hour": 393.7847402370038
+    },
+    "a48_wall_through_both_evaluations_seconds": 2800.410637140274,
+    "a48_accepts_per_hour_through_both_evaluations": 10.284206043942902
+  },
+  "expansion_preflight": {
+    "checkpoint_sha256": "78e6e5af0cc7b8270deaac1ea43ba1d4d3f4a6ed8c0c8d1080dc9736afb3423a",
+    "attempt": 68,
+    "inventory_labeled_count": 117,
+    "inventory_is_lower_bound": false,
+    "inventory_outcomes": {
+      "contact_failure": 34,
+      "low_speed": 7,
+      "flight_failure": 20,
+      "success": 56,
+      "unlabeled": 0
+    },
+    "small": {
+      "requested": [
+        32,
+        16
+      ],
+      "delivered": [
+        32,
+        16
+      ],
+      "gradient": {
+        "contact_failure": 15,
+        "low_speed": 5,
+        "flight_failure": 6,
+        "success": 6,
+        "unlabeled": 0
+      },
+      "check": {
+        "contact_failure": 6,
+        "low_speed": 2,
+        "flight_failure": 5,
+        "success": 3,
+        "unlabeled": 0
+      },
+      "disjoint": true
+    },
+    "large": {
+      "requested": [
+        64,
+        32
+      ],
+      "delivered": [
+        64,
+        32
+      ],
+      "gradient": {
+        "contact_failure": 20,
+        "low_speed": 5,
+        "flight_failure": 10,
+        "success": 29,
+        "unlabeled": 0
+      },
+      "check": {
+        "contact_failure": 14,
+        "low_speed": 2,
+        "flight_failure": 10,
+        "success": 6,
+        "unlabeled": 0
+      },
+      "disjoint": true
+    },
+    "full_large_batch_supported": true,
+    "low_speed_density_maintained": false,
+    "allow_matched_proposal_benchmark": false
+  },
+  "native_collection_support": {
+    "all": {
+      "distinct_episodes": 128,
+      "qualified": 78,
+      "low": 16,
+      "edge_under_10_mm": 1,
+      "signed_margins_available": 78,
+      "first_contact": {
+        "frame": 40,
+        "miss": 10,
+        "string": 78
+      },
+      "complete": 49
+    },
+    "training_lanes_without_excitation": {
+      "distinct_episodes": 39,
+      "qualified": 26,
+      "low": 3,
+      "edge_under_10_mm": 0,
+      "signed_margins_available": 26,
+      "first_contact": {
+        "frame": 11,
+        "string": 26,
+        "miss": 2
+      },
+      "complete": 16
+    },
+    "wall_seconds": 713.0799426889862,
+    "ticks": 512
+  },
+  "contact_probe_summary": {
+    "lead_ticks": [
+      20,
+      5,
+      3
+    ],
+    "native_frame_flips": 4,
+    "predicted_frame_or_nonstring": [
+      1,
+      3,
+      4
+    ],
+    "controls": 4
+  },
+  "decision": {
+    "retain": "A32",
+    "batch": [
+      32,
+      16
+    ],
+    "a56_a64": "deferred_after_native_evaluation",
+    "e0": "stopped",
+    "a128": "deferred",
+    "independent512_scored": false
+  },
+  "checkpoint_sha256": {
+    "approach_A032.pt": "c7f586bc123d2d536469e55b17ebf39002118a934ec9de869e15e450350ef010",
+    "interrupted.pt": "6f655d56159eecc74045252bc0f0c6251f4404a12fa0d4a1c6b7ef33dafc82b5",
+    "approach_A040.pt": "2ab0e68ecf67298ae4cecd65e916701520cd272806ff0e1cd8a93dd4e16c24ca",
+    "approach_A048.pt": "78e6e5af0cc7b8270deaac1ea43ba1d4d3f4a6ed8c0c8d1080dc9736afb3423a"
+  },
+  "operational_checks": {
+    "budget_exhaustion_dispatch_isolated_test": true,
+    "new_a48_replay_chunks_hash_verified": 16
+  }
+}
