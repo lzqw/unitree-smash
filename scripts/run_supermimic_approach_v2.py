@@ -9,6 +9,8 @@ import subprocess
 import sys
 from time import perf_counter
 
+from quadsmash.rl.supermimic_native_event_coverage import native_event_coverage
+
 from compare_supermimic_approach_ball_only import compare
 from run_supermimic_approach_ball_only import (
     ROOT, evaluate_command, registered_options, train_command, verify_frozen_milestone, verify_training_milestone)
@@ -102,40 +104,6 @@ def paired_quick_result(baseline, candidate, before_dir, after_dir):
         'low_to_adequate': [key for key in keys if old[key]['string'] and new[key]['string']
                             and old[key]['low'] and not new[key]['low']]
     })
-
-
-def native_event_coverage(episodes, holdout_lanes, seconds):
-    """Count settled cases available for training-side labels in one stream."""
-    distinct = {}
-    for row in episodes:
-        key = (row['env_id'], row['episode_index'])
-        if key in distinct:
-            raise ValueError(f'Duplicate settled native episode {key}')
-        distinct[key] = row
-    training = {
-        row['case_id']: row for row in distinct.values()
-        if row['env_id'] not in holdout_lanes and row.get('arm_identification_episode') is False
-        and not row['numerical_failures']
-    }
-    qualified = [row for row in training.values() if row['qualified_airborne_string_contact']]
-    margins = [row['native_contact'].get('signed_string_margin_m') for row in qualified]
-    known_margins = [value for value in margins if value is not None and math.isfinite(value)]
-    counts = dict(
-        settled_cases=len(training),
-        qualified_string=len(qualified),
-        low_speed=sum('speed_threshold' in row['rejection_reasons'] for row in qualified),
-        frame=sum(row['native_contact']['frame_hit'] and not row['native_contact']['string_hit']
-                  for row in training.values()),
-        near_edge_under_10_mm=sum(value < .010 for value in known_margins),
-        marginal_success=sum(row['ball_side_complete_except_recovery']
-                             and row['outgoing_speed_mps'] is not None
-                             and 4.5 <= row['outgoing_speed_mps'] < 4.75 for row in qualified),
-    )
-    return dict(scope='settled training-side cases, before checking start snapshot availability',
-                settled_episodes=len(distinct), training_case_ids=sorted(training),
-                missing_qualified_margins=len(margins) - len(known_margins),
-                counts=counts, per_collection_hour={key: count * 3600 / seconds if seconds else None
-                                                   for key, count in counts.items()})
 
 
 def block_timing(folder, elapsed):

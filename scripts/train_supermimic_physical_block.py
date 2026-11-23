@@ -252,6 +252,8 @@ def main():
                         help='Explicit event-aligned Body fit bound to the resumed Approach checkpoint')
     parser.add_argument('--approach-resident-eval-wait-seconds', type=int, default=0,
                         help='Opt in to waiting for a matched native decision at intermediate Approach boundaries')
+    parser.add_argument('--approach-resident-coverage-baseline', type=Path,
+                        help='Collect warm blocks to measured indexed-event coverage, capped at the cold tick budget')
     parser.add_argument('--wm-active-flight-batch',type=int,default=0,help='Extra long flight windows from eligible lanes in the latest frozen dataset')
     parser.add_argument('--wm-natural-flight-batch',type=int,default=0,help='Additional immutable training-lane 64-step native windows per shared WM update')
     parser.add_argument('--wm-calibration-updates',type=int,default=256,
@@ -410,6 +412,16 @@ def main():
             not args.e1_v2_approach_scale or args.approach_stop_at is None
             or not 1 <= args.approach_resident_eval_wait_seconds <= 3600):
         parser.error('Resident evaluation requires E1 v2, a bounded final milestone and a wait within 1–3600 seconds')
+    resident_targets = None
+    if args.approach_resident_coverage_baseline:
+        if not args.approach_resident_eval_wait_seconds:
+            parser.error('Resident coverage targets apply only to resident warm collection')
+        from quadsmash.rl.supermimic_native_event_coverage import coverage_deficits, coverage_targets, native_event_coverage
+        try:
+            resident_baseline_bytes = args.approach_resident_coverage_baseline.read_bytes()
+            resident_targets = coverage_targets(json.loads(resident_baseline_bytes))
+        except (OSError, ValueError) as error:
+            parser.error(str(error))
     if (args.prioritize_approach_flight or args.approach_speed_target is not None) and not args.approach_ball_only:
         parser.error('Flight priority and the speed target require the Approach-only phase')
     if args.shuffle_unlabeled_approach_starts and not args.approach_ball_only:
@@ -1992,6 +2004,11 @@ def run(args, *, alternating=None):
                 first_scene_collection = args.approach_ball_only and collect_block and tick == first_mixed_tick
                 if first_scene_collection:
                     collection_ticks = args.resume_approach_collection_ticks or args.approach_initial_ticks
+                warm_coverage = resident_targets is not None and collect_block and not first_scene_collection
+                warm_records = []
+                coverage_record_count = -1
+                if warm_coverage:
+                    collection_ticks = args.approach_initial_ticks
                 phase_timing = None
                 if first_scene_collection:
                     from quadsmash.rl.supermimic_native_phase_timing import NativePhaseTiming
@@ -1999,7 +2016,7 @@ def run(args, *, alternating=None):
                 io_pipeline = getattr(archive, 'pipeline', None) if collect_block else None
                 io_before = io_pipeline.timing() if io_pipeline is not None else {}
                 with torch.inference_mode():
-                    for _ in range(collection_ticks):
+                    for collection_step in range(collection_ticks):
                         check_stop()
                         action = native_actor_action(obs)
                         if arm_identification is not None:
@@ -2042,6 +2059,8 @@ def run(args, *, alternating=None):
                                 record['first_approach_contact_motion'] = raw['first_approach_contact_motion']
                             if not record.get('arm_identification_episode', False):
                                 replay.actor_start_bank.label_terminal(record,replay.current_stream)
+                            if warm_coverage:
+                                warm_records.append(record)
                             with (args.output/'native_episodes.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                             if writer is not None:
                                 step=int(tick*128)
@@ -2061,16 +2080,36 @@ def run(args, *, alternating=None):
                             writer.add_scalar('native/return_mean_128_cases', len(completed_window), tick*128)
                             writer.flush()
                         cursor=len(env.rally_records)
+                        if (warm_coverage and collection_step + 1 >= args.native_ticks_per_actor_update
+                                and len(warm_records) != coverage_record_count):
+                            coverage_record_count = len(warm_records)
+                            indexed = {(lane, episode) for stream, lane, episode in replay.actor_start_bank.resolved
+                                       if stream == replay.current_stream}
+                            measured_coverage = native_event_coverage(
+                                warm_records, wm_holdout_lanes, None, indexed_episodes=indexed)
+                            if not coverage_deficits(measured_coverage['counts'], resident_targets):
+                                break
                 if research and collect_block:
                     # Publish the collected chunks to live native monitors before policy fitting.
                     archive.flush()
                 collect_s=time.perf_counter()-started;check_stop()
                 if args.approach_ball_only and collect_block:
-                    timing = dict(native_ticks=collection_ticks, through_archive_drain_seconds=collect_s,
-                        env_steps_per_second=(collection_ticks * 128 / collect_s) if collect_s else None,
+                    collected_ticks = replay._native_tick_counter - replay_tick_before_collect
+                    timing = dict(native_ticks=collected_ticks, through_archive_drain_seconds=collect_s,
+                        env_steps_per_second=(collected_ticks * 128 / collect_s) if collect_s else None,
                         archive={key: end - io_before[key] for key, end in io_pipeline.timing().items()}
                             if io_pipeline is not None else None,
                         first_scene_phases=phase_timing.report() if phase_timing is not None else None)
+                    if warm_coverage:
+                        indexed = {(lane, episode) for stream, lane, episode in replay.actor_start_bank.resolved
+                                   if stream == replay.current_stream}
+                        coverage = native_event_coverage(
+                            warm_records, wm_holdout_lanes, collect_s, indexed_episodes=indexed)
+                        deficits = coverage_deficits(coverage['counts'], resident_targets)
+                        timing['resident_coverage'] = dict(coverage, minimum_ticks=args.native_ticks_per_actor_update,
+                            maximum_ticks=collection_ticks, targets=resident_targets, deficits=deficits,
+                            stop_reason='tick_budget' if deficits else 'coverage_met',
+                            baseline_sha256=hashlib.sha256(resident_baseline_bytes).hexdigest())
                     write(args.output/(str(cycle_index)+'_native_collection_timing.json'), timing)
                 if collect_block:
                     progress['collection_reward_mean']=float(reward.mean())
