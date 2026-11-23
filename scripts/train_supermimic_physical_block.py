@@ -2781,6 +2781,8 @@ def run(args, *, alternating=None):
                     return False
                 from quadsmash.rl.supermimic_resident_gate import await_native_decision, publish_boundary
                 directory = args.output / f'A{retained:03d}_resident_gate'
+                torch.cuda.synchronize(env.device)
+                torch.cuda.empty_cache()
                 free, total = torch.cuda.mem_get_info(env.device)
                 boundary = publish_boundary(directory, args.output/'latest.pt', retained,
                     dict(free_bytes=free, total_bytes=total, trainer_reserved_bytes=torch.cuda.memory_reserved(env.device)))
