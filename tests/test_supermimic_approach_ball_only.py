@@ -10,7 +10,7 @@ from quadsmash.rl.supermimic_approach_data_v1 import (
 from quadsmash.rl.supermimic_outgoing_flight import calibrated_speed_loss, predict_flight_events
 from quadsmash.rl.supermimic_release_calibration import release_error_summary, speed_bias_at_lead
 from quadsmash.tasks.stand.approach_ball_terminal import ball_terminal_mask
-from scripts.run_supermimic_approach_ball_only import ARCHIVE_INPUTS, train_command
+from scripts.run_supermimic_approach_ball_only import ARCHIVE_INPUTS, milestone_checkpoint, train_command
 
 
 def test_matched_approach_arms_share_merit_and_budgets_with_distinct_speed_targets():
@@ -25,6 +25,17 @@ def test_matched_approach_arms_share_merit_and_budgets_with_distinct_speed_targe
     assert early[gate + 1] == '.25'
     assert '--prioritize-approach-flight' in control
     assert control[:control.index(speed)] == early[:gate] + early[gate + 2:early.index(speed)]
+
+
+def test_final_milestone_finalizes_the_full_schedule_and_preserves_requested_training_seed(tmp_path):
+    registered = [part for name in ARCHIVE_INPUTS for part in ('--' + name, name)]
+    command = train_command(registered, 'a128.pt', tmp_path, True, stop_at=256, fresh=False,
+                            prioritize_flight=True, training_seed=913)
+    assert '--approach-stop-at' not in command
+    assert '--resume-reset-schedule' not in command
+    assert command[command.index('--research-training-seed') + 1] == '913'
+    assert milestone_checkpoint(tmp_path, 256) == tmp_path/'latest.pt'
+    assert milestone_checkpoint(tmp_path, 128) == tmp_path/'approach_A128.pt'
 
 
 def test_flight_priority_keeps_unopposed_gradients_and_repairs_uphill_projection():
