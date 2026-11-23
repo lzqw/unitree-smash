@@ -663,13 +663,17 @@ class PhysicalHorizonTrainer:
             torch.set_rng_state(cpu_rng)
             if cuda_rng is not None:torch.cuda.set_rng_state_all(cuda_rng)
         accepted=False; alpha=0.; gradient=0.; reason=None; grad_stats={}; trials=[]
+        proposal_timing = dict(baseline_forward_wall_s=0., gradient_wall_s=0., backtracking_wall_s=0.)
         if update_actor:self.actor_attempts+=1
         self._proposal_ball_targets = {}
         try:
             with frozen(self.adapter,self.critic),torch.set_grad_enabled(update_actor):
+                forward_started = time.perf_counter()
                 rollout=self._rollout_objective(initial_state)
                 baseline_loss=float(rollout['loss'].detach())
+                proposal_timing['baseline_forward_wall_s'] = time.perf_counter() - forward_started
                 if update_actor and rollout['gate_lanes']:
+                    gradient_started = time.perf_counter()
                     grad_stats=gradient_parts({k:rollout[k] for k in ('task','tracking','anchor')},parameters)
                     if getattr(self, 'diagnose_ball_gradients', False) and rollout.get('flight_losses'):
                         grad_stats.update(gradient_parts(
@@ -698,6 +702,7 @@ class PhysicalHorizonTrainer:
                                 parameters, flight_gradients)
                         norm=torch.sqrt(sum((p.grad.detach().square().sum() for p in parameters if p.grad is not None),rollout['loss'].new_zeros(())))
                         if not torch.isfinite(norm):raise FloatingPointError('Nonfinite actor gradient')
+                        proposal_timing['gradient_wall_s'] = time.perf_counter() - gradient_started
                         if float(norm)>1e-12:
                             # Preserve the gradient of the scored objective before optimizer_step clips it.
                             active_params = [(name, p) for name, p in self.actor.named_parameters()
@@ -739,6 +744,7 @@ class PhysicalHorizonTrainer:
                             proposed={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
                             proposed_opt=copy.deepcopy(self.actor_opt.state_dict())
                             step_sizes = (1., .5, .25, .125, .0625)
+                            backtracking_started = time.perf_counter()
                             for candidate_alpha in step_sizes:
                                 candidate={k:(v+(proposed[k]-v)*candidate_alpha if k in self.trainable_names else v) for k,v in actor_before.items()}
                                 self.actor.load_state_dict(candidate,strict=True)
@@ -791,6 +797,7 @@ class PhysicalHorizonTrainer:
                                 if bounded and coverage_ok and effect>0 and merit_ok:
                                     committed_budget=candidate_budget
                                     alpha=candidate_alpha;accepted=True;break
+                            proposal_timing['backtracking_wall_s'] = time.perf_counter() - backtracking_started
                             if accepted:
                                 # Adam moments correspond to the original same-gradient proposal;
                                 # alpha scales only the committed parameter displacement.
@@ -800,7 +807,9 @@ class PhysicalHorizonTrainer:
                                           if rollout.get('flight_cost_by_lane') is not None
                                           else 'objective_budget_or_zero_final_command_response')
                         else:reason='zero_total_gradient'
-                    else:reason='no_task_or_tracking_gradient'
+                    else:
+                        proposal_timing['gradient_wall_s'] = time.perf_counter() - gradient_started
+                        reason='no_task_or_tracking_gradient'
                 elif update_actor:reason='no_effective_gate'
             critic_data=rollout['critic_data']
             ret_mean=float(rollout['ret'].detach().mean()); track_value=float(rollout['tracking'].detach())
@@ -867,6 +876,7 @@ class PhysicalHorizonTrainer:
             tracking_steps=track_steps,matched_references=matched,**grad_stats,**track_stats,
             final_command_max_change=command_delta['final_joint_target_delta_rad'],request_max_change=command_delta['residual_request_delta'],
             budget_report=self._relative_budget_report(committed_budget,budget_references),critic_loss=self.last_critic_loss,bptt_seconds=bptt_seconds,
+            proposal_wall_breakdown=proposal_timing,
             critic_seconds=time.perf_counter()-started,model_runtime_state_sha256=model_hash,
             imagined_steps=track_stats.get('model_rollout_steps', track_steps) if critic_data is None else len(rewards),
             effective_gate_steps=gate_steps,effective_gate_lanes=gate_lanes,no_effective_gate=gate_lanes==0,
