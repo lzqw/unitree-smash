@@ -104,6 +104,40 @@ def paired_quick_result(baseline, candidate, before_dir, after_dir):
     })
 
 
+def native_event_coverage(episodes, holdout_lanes, seconds):
+    """Count settled cases available for training-side labels in one stream."""
+    distinct = {}
+    for row in episodes:
+        key = (row['env_id'], row['episode_index'])
+        if key in distinct:
+            raise ValueError(f'Duplicate settled native episode {key}')
+        distinct[key] = row
+    training = {
+        row['case_id']: row for row in distinct.values()
+        if row['env_id'] not in holdout_lanes and row.get('arm_identification_episode') is False
+        and not row['numerical_failures']
+    }
+    qualified = [row for row in training.values() if row['qualified_airborne_string_contact']]
+    margins = [row['native_contact'].get('signed_string_margin_m') for row in qualified]
+    known_margins = [value for value in margins if value is not None and math.isfinite(value)]
+    counts = dict(
+        settled_cases=len(training),
+        qualified_string=len(qualified),
+        low_speed=sum('speed_threshold' in row['rejection_reasons'] for row in qualified),
+        frame=sum(row['native_contact']['frame_hit'] and not row['native_contact']['string_hit']
+                  for row in training.values()),
+        near_edge_under_10_mm=sum(value < .010 for value in known_margins),
+        marginal_success=sum(row['ball_side_complete_except_recovery']
+                             and row['outgoing_speed_mps'] is not None
+                             and 4.5 <= row['outgoing_speed_mps'] < 4.75 for row in qualified),
+    )
+    return dict(scope='settled training-side cases, before checking start snapshot availability',
+                settled_episodes=len(distinct), training_case_ids=sorted(training),
+                missing_qualified_margins=len(margins) - len(known_margins),
+                counts=counts, per_collection_hour={key: count * 3600 / seconds if seconds else None
+                                                   for key, count in counts.items()})
+
+
 def block_timing(folder, elapsed):
     proposals = list(map(json.loads, (folder / 'training_history.jsonl').read_text().splitlines()))
     accepted = [row for row in proposals if row['update_accepted']]
@@ -113,9 +147,11 @@ def block_timing(folder, elapsed):
     episode_log = folder / 'native_episodes.jsonl'
     episodes = list(map(json.loads, episode_log.read_text().splitlines())) if episode_log.is_file() else []
     contacts = {(row['env_id'], row['episode_index']) for row in episodes if row['qualified_airborne_string_contact']}
+    holdout = set(json.loads((folder / 'config.json').read_text())['wm_holdout_lanes'])
     return dict(wall_seconds=elapsed, actor_seconds=actor_seconds, native_collection_seconds=native,
         proposals=len(proposals), accepted=len(accepted), accepted_per_hour=len(accepted) * 3600 / elapsed,
         accepted_scales=[row['backtrack_alpha'] for row in accepted],
+        native_event_coverage=native_event_coverage(episodes, holdout, native),
         distinct_native_qualified_contact_episodes=len(contacts),
         native_qualified_contact_episodes_per_hour=len(contacts) * 3600 / native if native else None)
 

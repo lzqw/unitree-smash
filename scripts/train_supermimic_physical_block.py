@@ -250,6 +250,8 @@ def main():
     parser.add_argument('--wm-direct-long-body-supervision',action='store_true',help='Use measured 4/16/32/64-step robot, root angular velocity and racket FK targets for the robot gradient')
     parser.add_argument('--approach-body-overlay', type=Path,
                         help='Explicit event-aligned Body fit bound to the resumed Approach checkpoint')
+    parser.add_argument('--approach-resident-eval-wait-seconds', type=int, default=0,
+                        help='Opt in to waiting for a matched native decision at intermediate Approach boundaries')
     parser.add_argument('--wm-active-flight-batch',type=int,default=0,help='Extra long flight windows from eligible lanes in the latest frozen dataset')
     parser.add_argument('--wm-natural-flight-batch',type=int,default=0,help='Additional immutable training-lane 64-step native windows per shared WM update')
     parser.add_argument('--wm-calibration-updates',type=int,default=256,
@@ -404,6 +406,10 @@ def main():
             not args.e1_v2_approach_scale or args.resume_training is None or args.resume_reset_schedule
             or args.resume_next_cycle or args.resume_wm_replay or not args.wm_forward_guard):
         parser.error('Body overlay requires a bound E1 v2 continuation with a fixed native forward guard')
+    if args.approach_resident_eval_wait_seconds and (
+            not args.e1_v2_approach_scale or args.approach_stop_at is None
+            or not 1 <= args.approach_resident_eval_wait_seconds <= 3600):
+        parser.error('Resident evaluation requires E1 v2, a bounded final milestone and a wait within 1–3600 seconds')
     if (args.prioritize_approach_flight or args.approach_speed_target is not None) and not args.approach_ball_only:
         parser.error('Flight priority and the speed target require the Approach-only phase')
     if args.shuffle_unlabeled_approach_starts and not args.approach_ball_only:
@@ -2727,8 +2733,21 @@ def run(args, *, alternating=None):
                 write(args.output/('cycle_%02d.json' % (event['cycle']+1)),result)
                 return result
             def stop_for_evaluation(event, cursor):
-                return (event['kind'] == 'train'
-                        and cursor.head_totals()['approach']['accepted'] == args.approach_stop_at)
+                if event['kind'] != 'train':
+                    return False
+                retained = cursor.head_totals()['approach']['accepted']
+                if retained == args.approach_stop_at:
+                    return True
+                if not args.approach_resident_eval_wait_seconds:
+                    return False
+                from quadsmash.rl.supermimic_resident_gate import await_native_decision, publish_boundary
+                directory = args.output / f'A{retained:03d}_resident_gate'
+                free, total = torch.cuda.mem_get_info(env.device)
+                boundary = publish_boundary(directory, args.output/'latest.pt', retained,
+                    dict(free_bytes=free, total_bytes=total, trainer_reserved_bytes=torch.cuda.memory_reserved(env.device)))
+                decision = await_native_decision(directory, boundary, args.approach_resident_eval_wait_seconds, check_stop)
+                write(directory/'result.json', dict(decision=decision, native_ticks=tick))
+                return decision == 'stop'
 
             completed = run_schedule(
                 alternating, train=train_short, refresh=refresh_pair, finalize=finalize_cycle, checkpoint=save,

@@ -27,7 +27,10 @@ for flag in ('initial-policy', 'later-policy', 'initial-capture', 'later-capture
     parser.add_argument('--'+flag, type=Path, required=True)
 parser.add_argument('--world-base', choices=('initial','later'), default='later')
 parser.add_argument('--body-candidate', type=Path)
+parser.add_argument('--additional-normal-cases', type=int, default=0)
 args = parser.parse_args()
+if args.additional_normal_cases < 0:
+    parser.error('Additional normal case count must be nonnegative')
 lead_ticks = args.lead_ticks
 run = args.output.resolve().parent
 registration = args.registration
@@ -84,6 +87,14 @@ for key in sorted(terminal[0].keys() & terminal[1].keys()):
         control_keys.append(key)
 holdout = set(config['config']['wm_holdout_lanes'])
 groups = {'flip': failure_keys, 'normal': control_keys[:len(failure_keys)], 'low_speed': [], 'marginal_success': []}
+if args.additional_normal_cases:
+    clean_controls = [
+        key for key in control_keys[len(failure_keys):]
+        if terminal[0][key]['env_id'] in holdout and terminal[1][key]['env_id'] in holdout
+        and all(record['outgoing_speed_mps'] is not None and record['outgoing_speed_mps'] >= 4.75
+                for record in (terminal[0][key], terminal[1][key]))
+    ]
+    groups['additional_normal'] = clean_controls[:args.additional_normal_cases]
 for k, r in terminal[1].items():
     v = r['outgoing_speed_mps']
     if (k in terminal[0] and r['env_id'] not in holdout and v is not None
