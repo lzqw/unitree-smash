@@ -1,0 +1,227 @@
+{
+  "schema": "supermimic-approach-matched-a08-evidence-v1",
+  "native_cases_per_arm": 128,
+  "independent_final_holdout": false,
+  "approach_updates_per_arm": 8,
+  "native_training_transitions_per_arm": 65536,
+  "initial_identity": {
+    "actor_state_sha256": "7e867cb528a26e97b017b1f711926fc855ad4dc4207bd38f0810308854a87346",
+    "world_state_sha256": "098fbcb8b5b700ee827bf4ada5336c7349106163cc3d1007b5c544bf458f8ccf",
+    "shared_config": {
+      "prioritize_approach_flight": true,
+      "approach_update_budget": 256,
+      "recovery_update_budget": 0,
+      "approach_proposal_budget": 512,
+      "native_ticks_per_actor_update": 128,
+      "world_updates_per_actor_update": 16,
+      "wm_batch_size": 128,
+      "toi_effective_start_lanes": 16
+    },
+    "E0_training_commit": "185997b89896f900db03d203983342cf22b09e1f",
+    "E1_training_commit": "277a2a9fb0cdb888d19cf58b401313b94deac149",
+    "E0_speed_target": "historical",
+    "E1_speed_target": "relative-face",
+    "E1_arm_preparation_seconds": 0.25
+  },
+  "outcomes": {
+    "E0": {
+      "before": {
+        "ball_success": 47,
+        "qualified_contacts": 76,
+        "qualified_low_speed": 18,
+        "cleared_net": 74,
+        "target_landings": 63,
+        "frame_without_strings": 35,
+        "wall_seconds": 1079.703859248024
+      },
+      "after": {
+        "ball_success": 52,
+        "qualified_contacts": 76,
+        "qualified_low_speed": 6,
+        "cleared_net": 75,
+        "target_landings": 58,
+        "frame_without_strings": 32,
+        "wall_seconds": 575.8940148249967
+      },
+      "improved_cases": [
+        "A-97124801-001",
+        "A-97124801-010",
+        "A-97124801-014",
+        "A-97124801-015",
+        "A-97124801-021",
+        "A-97124801-024",
+        "A-97124801-029",
+        "A-97124801-031",
+        "B-97124802-004",
+        "B-97124802-020",
+        "B-97124802-021",
+        "B-97124802-034",
+        "B-97124802-042",
+        "B-97124802-043"
+      ],
+      "regressed_cases": [
+        "A-97124801-000",
+        "A-97124801-009",
+        "A-97124801-018",
+        "A-97124801-038",
+        "A-97124801-044",
+        "A-97124801-051",
+        "A-97124801-063",
+        "B-97124802-005",
+        "B-97124802-049"
+      ],
+      "paired_exact_two_sided_p": 0.4048728942871094,
+      "paired_qualified_release_speed": {
+        "cases": 64,
+        "mean_delta_mps": 0.28669777769532095,
+        "median_delta_mps": 0.30781662005472255,
+        "below_threshold_to_pass": [
+          "A-97124801-010",
+          "A-97124801-014",
+          "A-97124801-015",
+          "A-97124801-021",
+          "A-97124801-024",
+          "A-97124801-029",
+          "A-97124801-037",
+          "B-97124802-004",
+          "B-97124802-020",
+          "B-97124802-037"
+        ],
+        "pass_to_below_threshold": []
+      },
+      "signed_contact_motion": {},
+      "evaluated_checkpoint_sha256": "3c6da60d02cad268ddc925aa9ab77436d40ca667114f666397b6a2f2da6c45cd",
+      "actor_state_sha256": "4e745ecf07e699535023f85a824e900b1001b95c53877e5455cd9d52e7a807d4",
+      "actual_evaluation_control_ticks": 440,
+      "frozen_optimizer_updates": {
+        "actor": 0,
+        "world": 0,
+        "critic": 0
+      },
+      "numerical_failures": 0
+    },
+    "E1": {
+      "before": {
+        "ball_success": 42,
+        "qualified_contacts": 83,
+        "qualified_low_speed": 17,
+        "cleared_net": 81,
+        "target_landings": 58,
+        "frame_without_strings": 25,
+        "wall_seconds": 556.823099530011
+      },
+      "after": {
+        "ball_success": 50,
+        "qualified_contacts": 77,
+        "qualified_low_speed": 6,
+        "cleared_net": 76,
+        "target_landings": 56,
+        "frame_without_strings": 30,
+        "wall_seconds": 616.4008151050075
+      },
+      "improved_cases": [
+        "A-97124801-010",
+        "A-97124801-028",
+        "A-97124801-031",
+        "A-97124801-045",
+        "A-97124801-047",
+        "A-97124801-053",
+        "A-97124801-055",
+        "A-97124801-057",
+        "A-97124801-059",
+        "B-97124802-012",
+        "B-97124802-021",
+        "B-97124802-043",
+        "B-97124802-048",
+        "B-97124802-050"
+      ],
+      "regressed_cases": [
+        "A-97124801-000",
+        "A-97124801-009",
+        "A-97124801-030",
+        "A-97124801-038",
+        "A-97124801-042",
+        "A-97124801-063"
+      ],
+      "paired_exact_two_sided_p": 0.11531829833984375,
+      "paired_qualified_release_speed": {
+        "cases": 71,
+        "mean_delta_mps": 0.18157295408103852,
+        "median_delta_mps": 0.18198023193139878,
+        "below_threshold_to_pass": [
+          "A-97124801-010",
+          "A-97124801-031",
+          "A-97124801-045",
+          "A-97124801-047",
+          "A-97124801-055",
+          "A-97124801-057",
+          "B-97124802-012",
+          "B-97124802-028",
+          "B-97124802-048"
+        ],
+        "pass_to_below_threshold": []
+      },
+      "signed_contact_motion": {
+        "speed_delta_mps": {
+          "cases": 71,
+          "mean": 0.18157295408103852,
+          "median": 0.18198023193139878
+        },
+        "first_contact_time_delta_ms": {
+          "cases": 71,
+          "mean": -1.3460911495584837,
+          "median": -1.1868476867675781
+        },
+        "arm_contact_speed_delta_mps": {
+          "cases": 71,
+          "mean": 0.26791860882729246,
+          "median": 0.26396679354117936
+        },
+        "point_velocity_mps_delta_on_after_face": {
+          "cases": 71,
+          "mean": 0.06873212467753152,
+          "median": 0.07513506544461168
+        },
+        "root_transport_mps_delta_on_after_face": {
+          "cases": 71,
+          "mean": -0.0005271854191870279,
+          "median": 0.00067936374939781
+        },
+        "root_rotation_at_contact_mps_delta_on_after_face": {
+          "cases": 71,
+          "mean": -0.012223571382660925,
+          "median": -0.011744048405447571
+        },
+        "arm_contact_velocity_mps_delta_on_after_face": {
+          "cases": 71,
+          "mean": 0.08148287972881521,
+          "median": 0.13807077164939674
+        }
+      },
+      "evaluated_checkpoint_sha256": "3f66e1486a95e77d4294f78eac165da35aa76b34a52cdaa0da73b2ee3f9dea13",
+      "actor_state_sha256": "fd6e864e9d8d74ba69bfceb064c11eb07e27a7091f5cba2dd50a1d3fbbb5cafc",
+      "actual_evaluation_control_ticks": 478,
+      "frozen_optimizer_updates": {
+        "actor": 0,
+        "world": 0,
+        "critic": 0
+      },
+      "numerical_failures": 0
+    }
+  },
+  "E1_minus_E0_learning_rate_delta": 0.0234375,
+  "case_level_E1_minus_E0_change_counts": {
+    "0": 101,
+    "-1": 12,
+    "1": 15
+  },
+  "differential_two_sided_exact_sign_p": 0.7011080384254456,
+  "source_sha256": {
+    "E0_E1_A08_matched_comparison.json": "ad5e16737047be5f3403ad8f7fc62651155d4b3ce308a7458882c63cc28e3d43",
+    "E0_E1_A08_matched_native_collection_verified.json": "3706e0273d27fc96464849b90dce27fc28d5b29995fb766eeba11be881ccff22",
+    "E0_A08_matched_flight_priority_startup_parity.json": "cc2d005b9556b596a9fe4d3f272e76ee8b9ada596780e0e6cb6ec6977397e867",
+    "E0_A08_matched_flight_priority_train/milestone_receipt.json": "ad7bd6a034946c1a9d7fdf6c74623535900d93063f7748a72851064c8c984c43",
+    "E0_A08_matched_flight_priority_eval/metrics.json": "6eba6e7005cec0b952e56bca5f78f9181b48047cc3c9371e8c995b7b92606b07",
+    "E1_A08_flight_priority_eval/metrics.json": "292a8e8dbcb1106c3c439fea6ae9ff99cf599d8fadfe1505f3bbff7790c2f1dc"
+  }
+}
