@@ -248,6 +248,8 @@ def main():
     parser.add_argument('--world-learning-rate',type=float,help='Defaults to the restored optimizer rate, or 0.0002 for a new run')
     parser.add_argument('--wm-natural-flight-loss',choices=('huber','mse'),default='huber')
     parser.add_argument('--wm-direct-long-body-supervision',action='store_true',help='Use measured 4/16/32/64-step robot, root angular velocity and racket FK targets for the robot gradient')
+    parser.add_argument('--approach-body-overlay', type=Path,
+                        help='Explicit event-aligned Body fit bound to the resumed Approach checkpoint')
     parser.add_argument('--wm-active-flight-batch',type=int,default=0,help='Extra long flight windows from eligible lanes in the latest frozen dataset')
     parser.add_argument('--wm-natural-flight-batch',type=int,default=0,help='Additional immutable training-lane 64-step native windows per shared WM update')
     parser.add_argument('--wm-calibration-updates',type=int,default=256,
@@ -398,6 +400,10 @@ def main():
             args.approach_ball_only and args.prioritize_approach_flight and args.early_arm_seconds is not None
             and args.toi_effective_start_lanes in (32, 64, 96, 128)):
         raise ValueError('E1 v2 requires early-arm ball-only training and a supported distinct-episode batch')
+    if args.approach_body_overlay is not None and (
+            not args.e1_v2_approach_scale or args.resume_training is None or args.resume_reset_schedule
+            or args.resume_next_cycle or args.resume_wm_replay or not args.wm_forward_guard):
+        parser.error('Body overlay requires a bound E1 v2 continuation with a fixed native forward guard')
     if (args.prioritize_approach_flight or args.approach_speed_target is not None) and not args.approach_ball_only:
         parser.error('Flight priority and the speed target require the Approach-only phase')
     if args.shuffle_unlabeled_approach_starts and not args.approach_ball_only:
@@ -812,6 +818,7 @@ def run(args, *, alternating=None):
         replay_archives=[];replay_receipts=[];critic_coverage_blocks=0
         refresh_world_updates=0;refresh_critic_updates=0
         replay_handoff=None
+        body_overlay_receipt = None
         relaxed_transition = False
         relaxed_bootstrap = False
         if args.approach_ball_only:
@@ -954,10 +961,29 @@ def run(args, *, alternating=None):
                 if calibration is not None and calibration['world_sha256'] != tensor_digest(adapter.state_dict().items()):
                     raise ValueError('Saved release-speed calibration belongs to another WM')
                 trainer.approach_speed_calibration = calibration
+            if args.approach_body_overlay is not None:
+                candidate = torch.load(args.approach_body_overlay, map_location='cpu', weights_only=True)
+                base_hash = tensor_digest(adapter.state_dict().items())
+                if (candidate['schema'] != 'e1-v2-event-precontact-body-v1'
+                        or candidate['parent_checkpoint_sha256'] != file_sha(args.resume_training)
+                        or candidate['parent_actor_sha256'] != tensor_digest(actor.state_dict().items())
+                        or candidate['parent_world_sha256'] != base_hash
+                        or candidate['body_sha256'] != tensor_digest(candidate['model'].items())
+                        or tuple(candidate['horizons']) != (20, 32)
+                        or set(candidate['holdout_lanes']) != set(wm_holdout_lanes)
+                        or not candidate['train_lanes'] or set(candidate['train_lanes']) & set(wm_holdout_lanes)):
+                    raise ValueError('Body overlay source, holdout or state identity mismatch')
+                adapter.physical_model.body.load_state_dict(candidate['model'], strict=True)
+                trainer.approach_speed_calibration = None
+                body_overlay_receipt = {k: v for k, v in candidate.items() if k != 'model'}
+                body_overlay_receipt.update(file_sha256=file_sha(args.approach_body_overlay),
+                    startup_world_sha256=tensor_digest(adapter.state_dict().items()),
+                    body_adam='reset', other_world_adam='restored_from_source',
+                    release_calibration='refit_on_training_lanes_before_actor')
             if forward_guard is not None:
                 resume_check=forward_guard.check(adapter)
                 write(args.output/'resumed_forward_validation.json',resume_check)
-                if not resume_check['passed'] and not research:
+                if not resume_check['passed'] and (not research or body_overlay_receipt is not None):
                     raise ValueError('Restored online WM failed fixed native forward validation')
             v2_continuation = args.e1_v2_approach_scale and resumed['config'].get('e1_v2_approach_scale', False)
             if (reference_bank is None or v2_continuation) and resumed.get('reference_bank') is not None:
@@ -991,6 +1017,10 @@ def run(args, *, alternating=None):
                     trainer.actor_opt.load_state_dict(resumed['actor_optimizer'])
             args.world_learning_rate=trainer.world_lr=restore_world_optimizer(
                 trainer.world_opt,world_optimizer,args.requested_world_lr)
+            if body_overlay_receipt is not None:
+                for parameter in adapter.physical_model.body.parameters():
+                    trainer.world_opt.state.pop(parameter, None)
+                write(args.output/'approach_body_overlay.json', body_overlay_receipt)
             if natural_flight is not None and natural_rng is not None:
                 natural_flight.generator.set_state(natural_rng.cpu())
 
@@ -1481,6 +1511,8 @@ def run(args, *, alternating=None):
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
         metadata=dict(wm_action_collections=action_collections,policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
+        if body_overlay_receipt is not None:
+            metadata['approach_body_overlay'] = body_overlay_receipt
         if args.approach_ball_only:
             frozen_phase_hash = tensor_digest((k, v) for k, v in actor.state_dict().items()
                                               if k not in APPROACH_NAMES)
@@ -2305,7 +2337,8 @@ def run(args, *, alternating=None):
                         and args.research_contact_gradient=='G1' and retained>=32 else 0.)
                     adapter.action_ball_model.detach_residual_for_actor=not args.approach_ball_only
                 trainer.diagnose_ball_gradients = args.approach_ball_only and collect_block
-                trainer.audit_approach_outcomes = args.e1_v2_approach_scale and invocation_heads['approach']['attempts'] <= 2
+                trainer.audit_approach_outcomes = args.e1_v2_approach_scale and (
+                    body_overlay_receipt is not None or invocation_heads['approach']['attempts'] <= 2)
                 try:
                     stats=trainer.imagine_update(actor_start, guard_starts=guard_start)
                 finally:
