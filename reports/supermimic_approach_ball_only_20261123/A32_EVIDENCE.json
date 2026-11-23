@@ -1,0 +1,265 @@
+{
+  "schema": "supermimic-approach-a32-fixed-development-evidence-v1",
+  "verified": {
+    "checkpoint_sha256": "c7f586bc123d2d536469e55b17ebf39002118a934ec9de869e15e450350ef010",
+    "actor_sha256": "1d77fb65bed2e7afed8f393d56054d7c617adf8f02d9d05af124a16082371000",
+    "cases": 128,
+    "valid_returns": 55,
+    "evaluation_seconds": 632.0679966550088
+  },
+  "independent_final_holdout": false,
+  "frozen_optimizer_updates": {
+    "actor": 0,
+    "world": 0,
+    "critic": 0
+  },
+  "numerical_failures": 0,
+  "actual_eval_control_ticks": 479,
+  "train_invocation": {
+    "start": {
+      "actor_sha256": "a95071575a1cee014dee7b8a493dabf554e3603d24d05ba3d596a96613a21c1c",
+      "accepted": 211,
+      "attempts": 219,
+      "world": 316,
+      "critic": 6190
+    },
+    "actor_end_sha256": "1d77fb65bed2e7afed8f393d56054d7c617adf8f02d9d05af124a16082371000",
+    "actor_updates": 16,
+    "actor_attempts": 18,
+    "world_updates": 32,
+    "critic_updates": 0,
+    "heads": {
+      "recovery": {
+        "accepted": 0,
+        "attempts": 0
+      },
+      "approach": {
+        "accepted": 16,
+        "attempts": 18
+      }
+    },
+    "approach_objective": "toi_racket_only",
+    "scope": "updates executed in this process only"
+  },
+  "native_training_control_ticks": 640,
+  "native_training_transitions": 81920,
+  "results": {
+    "vs_A0": {
+      "before": {
+        "ball_success": 42,
+        "qualified_contacts": 83,
+        "qualified_low_speed": 17,
+        "cleared_net": 81,
+        "target_landings": 58,
+        "frame_without_strings": 25
+      },
+      "after": {
+        "ball_success": 55,
+        "qualified_contacts": 78,
+        "qualified_low_speed": 5,
+        "cleared_net": 77,
+        "target_landings": 60,
+        "frame_without_strings": 31
+      },
+      "improved_cases": [
+        "A-97124801-010",
+        "A-97124801-012",
+        "A-97124801-027",
+        "A-97124801-028",
+        "A-97124801-031",
+        "A-97124801-032",
+        "A-97124801-040",
+        "A-97124801-044",
+        "A-97124801-047",
+        "A-97124801-048",
+        "A-97124801-053",
+        "A-97124801-055",
+        "A-97124801-057",
+        "A-97124801-059",
+        "B-97124802-003",
+        "B-97124802-007",
+        "B-97124802-012",
+        "B-97124802-020",
+        "B-97124802-048",
+        "B-97124802-050",
+        "B-97124802-058"
+      ],
+      "regressed_cases": [
+        "A-97124801-000",
+        "A-97124801-009",
+        "A-97124801-033",
+        "A-97124801-034",
+        "A-97124801-038",
+        "A-97124801-042",
+        "A-97124801-052",
+        "B-97124802-018"
+      ],
+      "paired_exact_two_sided_p": 0.0241195447742939,
+      "paired_qualified_release_speed": {
+        "cases": 70,
+        "mean_delta_mps": 0.1230563958921591,
+        "median_delta_mps": 0.09400016588988258,
+        "below_threshold_to_pass": [
+          "A-97124801-010",
+          "A-97124801-031",
+          "A-97124801-047",
+          "A-97124801-048",
+          "A-97124801-055",
+          "A-97124801-057",
+          "B-97124802-012",
+          "B-97124802-028",
+          "B-97124802-048"
+        ],
+        "pass_to_below_threshold": [
+          "A-97124801-034",
+          "A-97124801-052"
+        ]
+      },
+      "signed_contact_motion": {
+        "speed_delta_mps": {
+          "cases": 70,
+          "mean": 0.1230563958921591,
+          "median": 0.09400016588988258
+        },
+        "first_contact_time_delta_ms": {
+          "cases": 70,
+          "mean": -2.73242677961077,
+          "median": -2.8734207153320312
+        },
+        "arm_contact_speed_delta_mps": {
+          "cases": 70,
+          "mean": 0.13907915023988413,
+          "median": 0.04515934309541181
+        },
+        "point_velocity_mps_delta_on_after_face": {
+          "cases": 70,
+          "mean": 0.006730221289167367,
+          "median": 0.013270518357080208
+        },
+        "root_transport_mps_delta_on_after_face": {
+          "cases": 70,
+          "mean": 0.002875092521694385,
+          "median": 0.003572353236742015
+        },
+        "root_rotation_at_contact_mps_delta_on_after_face": {
+          "cases": 70,
+          "mean": 0.005614793408939705,
+          "median": -0.003856412807204085
+        },
+        "arm_contact_velocity_mps_delta_on_after_face": {
+          "cases": 70,
+          "mean": -0.0017596512154136673,
+          "median": -0.003671266189726796
+        }
+      }
+    },
+    "vs_A16": {
+      "before": {
+        "ball_success": 54,
+        "qualified_contacts": 83,
+        "qualified_low_speed": 9,
+        "cleared_net": 82,
+        "target_landings": 63,
+        "frame_without_strings": 28
+      },
+      "after": {
+        "ball_success": 55,
+        "qualified_contacts": 78,
+        "qualified_low_speed": 5,
+        "cleared_net": 77,
+        "target_landings": 60,
+        "frame_without_strings": 31
+      },
+      "improved_cases": [
+        "A-97124801-010",
+        "A-97124801-012",
+        "A-97124801-023",
+        "A-97124801-027",
+        "A-97124801-040",
+        "A-97124801-053",
+        "B-97124802-003",
+        "B-97124802-007",
+        "B-97124802-012",
+        "B-97124802-020",
+        "B-97124802-030",
+        "B-97124802-058"
+      ],
+      "regressed_cases": [
+        "A-97124801-000",
+        "A-97124801-009",
+        "A-97124801-018",
+        "A-97124801-033",
+        "A-97124801-038",
+        "A-97124801-042",
+        "A-97124801-052",
+        "A-97124801-062",
+        "B-97124802-018",
+        "B-97124802-042",
+        "B-97124802-043"
+      ],
+      "paired_exact_two_sided_p": 1.0,
+      "paired_qualified_release_speed": {
+        "cases": 74,
+        "mean_delta_mps": -0.019263860136118992,
+        "median_delta_mps": -0.028221699753267604,
+        "below_threshold_to_pass": [
+          "A-97124801-010",
+          "B-97124802-012",
+          "B-97124802-020"
+        ],
+        "pass_to_below_threshold": [
+          "A-97124801-052"
+        ]
+      },
+      "signed_contact_motion": {
+        "speed_delta_mps": {
+          "cases": 74,
+          "mean": -0.019263860136118992,
+          "median": -0.028221699753267604
+        },
+        "first_contact_time_delta_ms": {
+          "cases": 74,
+          "mean": -1.4468399254051414,
+          "median": -1.3742446899414062
+        },
+        "arm_contact_speed_delta_mps": {
+          "cases": 74,
+          "mean": 0.11475660345297849,
+          "median": 0.0672494995690941
+        },
+        "point_velocity_mps_delta_on_after_face": {
+          "cases": 74,
+          "mean": -0.01686467614398896,
+          "median": 0.009287280298358458
+        },
+        "root_transport_mps_delta_on_after_face": {
+          "cases": 74,
+          "mean": 0.0007283702356600684,
+          "median": 0.0008500475601012636
+        },
+        "root_rotation_at_contact_mps_delta_on_after_face": {
+          "cases": 74,
+          "mean": -0.017613655208507596,
+          "median": -0.030636942054752724
+        },
+        "arm_contact_velocity_mps_delta_on_after_face": {
+          "cases": 74,
+          "mean": 2.062126723838602e-05,
+          "median": 0.03695004562978782
+        },
+        "normal_relative_velocity_delta_mps": {
+          "cases": 74,
+          "mean": -0.07592415809631348,
+          "median": -0.06705045700073242
+        }
+      }
+    }
+  },
+  "source_sha256": {
+    "E1_A32_flight_priority_train/milestone_receipt.json": "c373e1886bb32b4e43672dbb5a4e35956807bdb94ddd204a9c8590e5bf046ad0",
+    "E1_A32_flight_priority_vs_A16.json": "c581927661be46063438f520fdac3b048ecc29f2a3d83db6baef1bee1d748965",
+    "E1_A32_flight_priority_eval/metrics.json": "5efccb143b4549f18badbab6e27eb0085320f347049010633b9e2a09f3d222e7",
+    "E1_A32_flight_priority_train/evaluation_boundary.json": "3c492c1bc47705d305162e3c5697410391e4d91ee1605cfcfe2018b494fb2e62",
+    "E1_A32_flight_priority_train/native_transitions/manifest.json": "4f36373545d8074f566850891bdecebac3cfa9681bc8da80439707ea17423072"
+  }
+}
