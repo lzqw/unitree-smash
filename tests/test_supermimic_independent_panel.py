@@ -6,7 +6,8 @@ import pytest
 
 from quadsmash.rl.supermimic_independent_panel import fixed128_cases, load_panel, panel_batch
 from quadsmash.rl.supermimic_native_metrics import RETURN_DEFINITION
-from scripts.evaluate_supermimic_independent512 import collect_scores
+from quadsmash.rl.supermimic_terminal_scoring import APPROACH_BALL_SCORING
+from scripts.evaluate_supermimic_independent512 import collect_scores, compare_ball_only
 
 
 def test_frozen_research_panel_is_disjoint_from_original_suites():
@@ -61,6 +62,44 @@ def test_combined_metrics_use_all_contacts_and_reject_wrong_checkpoint(tmp_path)
     assert summary['metrics']['native_episode_return_mean']==pytest.approx(1.5)
     with pytest.raises(ValueError):
         collect_scores(tmp_path,'other',panel)
+
+
+def test_ball_only_holdout_pairs_all_batches_and_checks_actuator_contract(tmp_path):
+    panel = load_panel()
+    execution = {'arm_preparation_seconds': .25}
+    for name in ('baseline', 'candidate'):
+        for i in range(4):
+            folder = tmp_path/name/f'batch_{i}'
+            folder.mkdir(parents=True)
+            cases, identity = panel_batch(i, panel['protocol_sha256'], 882072)
+            task = dict(protocol_sha256=panel['protocol_sha256'], independent_evaluation=identity)
+            rows = [dict(case_id=case['case_id'], env_id=lane, episode_index=0, scoring_schema=APPROACH_BALL_SCORING,
+                numerical_failures=0, qualified_airborne_string_contact=True, recovery_success=None,
+                ball_side_complete_except_recovery=(lane == 0 if name == 'baseline' else lane in (1, 2)),
+                outgoing_speed_mps=(4.0 if name == 'baseline' else 4.6),
+                rejection_reasons=['speed_threshold'] if name == 'baseline' else [], complete5=None,
+                native_episode_return=0., native_episode_length_steps=100, native_return_definition=RETURN_DEFINITION)
+                for lane, case in enumerate(cases)]
+            files = dict(startup=dict(argv=['--seed', '882072']), completed=dict(control_ticks=800, episodes=128),
+                episodes_summary=rows, task_contract=task, policy_execution=dict(contract=execution), physics={},
+                initial_states=[], actuator_contract={'controller': 'same'},
+                metrics=dict(num_envs=128, actor_parameters_unchanged=True, optimizer_updates=dict(actor=0),
+                    policy_execution=execution, task_contract=task, actor_state_sha256=f'actor-{name}',
+                    evaluated_checkpoint_sha256=name, scoring_schema=APPROACH_BALL_SCORING))
+            for key, value in files.items():
+                (folder/f'{key}.json').write_text(json.dumps(value))
+    base, candidate = tmp_path/'baseline', tmp_path/'candidate'
+    aggregate = collect_scores(candidate, 'candidate', panel, approach_ball_only=True, early_arm_seconds=.25)
+    assert aggregate['metrics']['ball_side_complete_except_recovery'] == 8
+    with pytest.raises(ValueError, match='different A0 preparation gate'):
+        collect_scores(candidate, 'candidate', panel, approach_ball_only=True, early_arm_seconds=.3)
+    result = compare_ball_only(base, candidate, 'baseline', 'candidate', panel)
+    assert (len(result['improved_cases']), len(result['regressed_cases'])) == (8, 4)
+    assert result['paired_qualified_release_speed_cases'] == 512
+    assert result['mean_paired_release_speed_delta_mps'] == pytest.approx(.6)
+    (candidate/'batch_3/actuator_contract.json').write_text('{}')
+    with pytest.raises(ValueError, match='changed execution, initial states or actuator contract'):
+        compare_ball_only(base, candidate, 'baseline', 'candidate', panel)
 
 
 def test_research_fixed128_reuses_matching_zero_and_rejects_training_suite(tmp_path):

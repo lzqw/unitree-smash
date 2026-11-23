@@ -62,7 +62,8 @@ def train_command(registered, source, output, motion, *, stop_at, fresh, priorit
     if motion:
         command.extend(('--early-arm-seconds', '.25'))
     if prioritize_flight:
-        command.append('--prioritize-approach-flight')
+        speed_target = 'relative-face' if motion else 'historical'
+        command.extend(('--prioritize-approach-flight', '--approach-speed-target', speed_target))
     return command
 
 

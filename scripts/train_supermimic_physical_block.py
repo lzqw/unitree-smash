@@ -188,6 +188,8 @@ def main():
                         help='Run a ball-only Approach schedule with frozen Base and Recovery')
     parser.add_argument('--prioritize-approach-flight', action='store_true',
                         help='Preserve flight merit on the same releases during Approach-only backtracking')
+    parser.add_argument('--approach-speed-target', choices=('historical', 'relative-face'),
+                        help='Choose the Approach TOI speed target independently of flight backtracking')
     parser.add_argument('--early-arm-seconds', type=float, default=None)
     parser.add_argument('--approach-stop-at', type=int, default=None,
                         help='End cleanly at an A-only block boundary for frozen evaluation')
@@ -371,8 +373,10 @@ def main():
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
     if (args.early_arm_seconds is not None or args.approach_stop_at is not None) and not args.approach_ball_only:
         parser.error('Early arm control and evaluation boundaries require the Approach-only phase')
-    if args.prioritize_approach_flight and not args.approach_ball_only:
-        parser.error('Flight priority requires the Approach-only phase')
+    if (args.prioritize_approach_flight or args.approach_speed_target is not None) and not args.approach_ball_only:
+        parser.error('Flight priority and the speed target require the Approach-only phase')
+    if args.approach_speed_target is None:
+        args.approach_speed_target = 'relative-face' if args.prioritize_approach_flight else 'historical'
     if args.approach_ball_only:
         if (not research or args.training_stage != 'research_contact' or args.update_mode != 'sequential'
                 or args.sequential_layout != 'short-alternating' or args.cycles != 1 or args.relaxed_scoring
@@ -774,6 +778,7 @@ def run(args, *, alternating=None):
             protocol = dict(protocol, approach_ball_scoring=phase_scoring)
             trainer.approach_ball_protocol = phase_scoring
             trainer.prioritize_approach_flight = args.prioritize_approach_flight
+            trainer.approach_relative_face_speed = args.approach_speed_target == 'relative-face'
             trainer.approach_separation_m = PHYSICS['separation_hysteresis_m']
             trainer.reference.configure_approach_gate(args.early_arm_seconds)
         plane_calibration = None
@@ -877,8 +882,13 @@ def run(args, *, alternating=None):
                 saved_objective=resumed['config'].get('approach_objective','task')
                 if args.approach_objective!=saved_objective:
                     raise ValueError('An Approach objective change requires a fresh schedule; inherited updates cannot count toward the new objective')
-                if args.prioritize_approach_flight != resumed['config'].get('prioritize_approach_flight', False):
+                saved_flight_priority = resumed['config'].get('prioritize_approach_flight', False)
+                if args.prioritize_approach_flight != saved_flight_priority:
                     raise ValueError('An Approach flight priority change requires a fresh schedule')
+                saved_speed_target = resumed['config'].get(
+                    'approach_speed_target', 'relative-face' if saved_flight_priority else 'historical')
+                if args.approach_speed_target != saved_speed_target:
+                    raise ValueError('An Approach TOI speed target change requires a fresh schedule')
             world=resumed['world']
             world_optimizer=resumed['world_optimizer']
             natural_rng=resumed.get('natural_flight_rng')
@@ -1369,6 +1379,7 @@ def run(args, *, alternating=None):
             action_ball_checkpoint=str(args.action_ball_checkpoint.resolve()) if args.action_ball_checkpoint else None,
             tracking_weight=args.tracking_weight,approach_objective=args.approach_objective,toi_racket_weight=args.toi_racket_weight,
             prioritize_approach_flight=args.prioritize_approach_flight,
+            approach_speed_target=args.approach_speed_target,
             use_substep_toi_references=args.use_substep_toi_references,intercept_plane_calibration=plane_calibration,
             paired_evaluation_baseline=str(args.paired_evaluation_baseline.resolve()) if args.paired_evaluation_baseline else None,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))

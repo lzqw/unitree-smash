@@ -10,6 +10,21 @@ from quadsmash.rl.supermimic_approach_data_v1 import (
 from quadsmash.rl.supermimic_outgoing_flight import calibrated_speed_loss, predict_flight_events
 from quadsmash.rl.supermimic_release_calibration import release_error_summary, speed_bias_at_lead
 from quadsmash.tasks.stand.approach_ball_terminal import ball_terminal_mask
+from scripts.run_supermimic_approach_ball_only import ARCHIVE_INPUTS, train_command
+
+
+def test_matched_approach_arms_share_merit_and_budgets_with_distinct_speed_targets():
+    registered = [part for name in ARCHIVE_INPUTS for part in ('--' + name, name)]
+    control, early = [train_command(registered, 'base.pt', 'phase', motion, stop_at=8, fresh=True,
+                                     prioritize_flight=True) for motion in (False, True)]
+    speed = '--approach-speed-target'
+    assert control[control.index(speed) + 1] == 'historical'
+    assert early[early.index(speed) + 1] == 'relative-face'
+    assert '--early-arm-seconds' not in control
+    gate = early.index('--early-arm-seconds')
+    assert early[gate + 1] == '.25'
+    assert '--prioritize-approach-flight' in control
+    assert control[:control.index(speed)] == early[:gate] + early[gate + 2:early.index(speed)]
 
 
 def test_flight_priority_keeps_unopposed_gradients_and_repairs_uphill_projection():

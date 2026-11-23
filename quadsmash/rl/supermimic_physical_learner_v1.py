@@ -505,7 +505,8 @@ class PhysicalHorizonTrainer:
                         reference,track_mask,survival,self.adapter.physical_model.geometry,
                         fixed_weights=fixed_weights,
                         detach_empty=True, boundary=getattr(self, 'string_boundary', None),
-                        **({'relative_face_speed': True} if getattr(self, 'prioritize_approach_flight', False) else {}))
+                        relative_face_speed=getattr(self, 'approach_relative_face_speed',
+                                                    getattr(self, 'prioritize_approach_flight', False)))
                 else:
                     numerator,denominator,weights=self.reference_bank.loss(state.physical,state.clock_goal_context['elapsed'],reference,self.block_name,
                         geometry=self.adapter.physical_model.geometry,valid_mask=track_mask,weights=survival,return_components=True,
