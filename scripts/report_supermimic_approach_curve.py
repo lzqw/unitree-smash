@@ -72,6 +72,59 @@ def training_cost(directory):
     return cost
 
 
+def checkpoint_state(checkpoint, anchor_actor, metrics, arm):
+    """Record the state required to resume the scored policy at the same training boundary."""
+    import torch
+    from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+    from train_supermimic_physical_block import restore_approach_phase_anchor
+
+    saved = torch.load(checkpoint, map_location='cpu', mmap=True, weights_only=False)
+    metadata, config = saved['metadata'], saved['config']
+    whitelist = set(config['actor_whitelist']['approach'])
+    actor = saved['actor']
+    frozen = tensor_digest((name, value) for name, value in actor.items() if name not in whitelist)
+    world = tensor_digest(saved['world'].items())
+    anchor_state = restore_approach_phase_anchor(saved, checkpoint)
+    anchor = tensor_digest(anchor_state.items())
+    anchor_frozen = tensor_digest((name, value) for name, value in anchor_state.items() if name not in whitelist)
+    calibration = saved['approach_speed_calibration']
+    optimizer = saved['actor_optimizers']['approach']['state']
+    world_optimizer = saved['world_optimizer']['state']
+    rng = {name: saved[name] for name in ('torch_rng', 'cuda_rng', 'replay_rng')}
+    archives = saved['replay_archives']
+    receipts = saved['replay_archive_receipts']
+    holdout = config['wm_holdout_lanes']
+    target = config.get('approach_speed_target', 'relative-face' if config.get('prioritize_approach_flight') else 'historical')
+    task = dict(metrics['task_contract'])
+    task.pop('research_evaluation')
+    if (tensor_digest(actor.items()) != metrics['actor_state_sha256']
+            or frozen != metadata['phase_frozen_actor_sha256'] or frozen != anchor_frozen
+            or anchor != anchor_actor
+            or world != calibration['world_sha256'] or set(calibration['excluded_lanes']) != set(holdout)
+            or metadata['task_contract'] != task or metadata['policy_execution'] != metrics['policy_execution']
+            or config['approach_update_budget'] != 256 or config['recovery_update_budget'] != 0
+            or not config['prioritize_approach_flight'] or target != ('relative-face' if arm == 'E1' else 'historical')
+            or len(optimizer) != len(whitelist) or not world_optimizer
+            or not archives or len(archives) != len(receipts)
+            or any(not isinstance(state, torch.Tensor) or not state.numel() for state in rng.values())):
+        raise ValueError(f'Incomplete or inconsistent Approach continuation state in {checkpoint}')
+    if any(not (Path(directory)/chunk['file']).is_file()
+           for directory, receipt in zip(archives, receipts, strict=True) for chunk in receipt['chunks']):
+        raise ValueError(f'Missing checkpoint replay archive chunks for {checkpoint}')
+    return dict(
+        world_sha256=world, frozen_base_recovery_normalization_sha256=frozen,
+        approach_a0_anchor_sha256=anchor, approach_speed_target=target,
+        calibration_world_sha256=calibration['world_sha256'],
+        calibration_independent_releases=calibration['independent_releases'],
+        approach_optimizer_parameter_states=len(optimizer), world_optimizer_parameter_states=len(world_optimizer),
+        replay_archives=len(archives), replay_chunks=sum(len(receipt['chunks']) for receipt in receipts),
+        replay_ticks=saved['replay_state']['count'],
+        schedule_cursor=saved['alternating_schedule']['cursor'],
+        rng_state_sha256={name: hashlib.sha256(state.numpy().tobytes()).hexdigest() for name, state in rng.items()},
+        excluded_wm_lanes=holdout,
+    )
+
+
 def curve(arm, baseline, milestones, *, final_selection=False):
     checkpoint, metrics, actor = frozen_panel(baseline, arm)
     with checkpoint.open('rb') as stream:
@@ -89,12 +142,13 @@ def curve(arm, baseline, milestones, *, final_selection=False):
         source = Path(prior['checkpoint'])
         previous_updates = prior['accepted_updates']
         current, invocation = verify_training_milestone(train, retained, source)
-        evaluated, _, _ = frozen_panel(evaluation, arm)
+        evaluated, panel_metrics, _ = frozen_panel(evaluation, arm)
         cost = training_cost(train)
         if (current != evaluated or invocation['start']['actor_sha256'] != prior['actor_sha256']
                 or retained <= previous_updates or cost['accepted_approach_updates'] != retained - previous_updates):
             raise ValueError(f'A{retained} is not a verified continuation from A{previous_updates}')
         evidence = verify_frozen_milestone(evaluation, current, invocation)
+        state = checkpoint_state(current, pivot['actor_sha256'], panel_metrics, arm)
         paired = compare(baseline, evaluation)
         wall = cost['training_wall_seconds']
         collection = cost['native_collection_seconds']
@@ -104,6 +158,7 @@ def curve(arm, baseline, milestones, *, final_selection=False):
             cumulative_training_seconds=prior['cumulative_training_seconds'] + wall,
             cumulative_eval_seconds=prior.get('cumulative_eval_seconds', 0.) + evidence['evaluation_seconds'],
             stage_training=cost,
+            checkpoint_state=state,
             efficiency=dict(
                 effective_actor_updates_per_training_hour=3600*(retained-previous_updates)/wall,
                 observed_qualified_contact_episodes_per_collection_minute=60*cost['qualified_native_contact_episodes']/collection,
