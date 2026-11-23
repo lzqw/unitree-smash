@@ -64,6 +64,42 @@ def clearly_regressed(baseline, candidate):
         or candidate['frame'] >= baseline['frame'] + 4))
 
 
+def paired_quick_result(baseline, candidate, before_dir, after_dir):
+    regressed = clearly_regressed(baseline, candidate)
+
+    def cases(path):
+        raw = {row['case_id']: row for row in map(json.loads, (path / 'episodes.jsonl').read_text().splitlines())}
+        score = json.loads((path / 'episodes_summary.json').read_text())
+        result = {}
+        for row in score:
+            key = row['case_id']
+            native = raw[key]
+            string = bool(row['qualified_airborne_string_contact'])
+            result[key] = dict(success=bool(row['ball_side_complete_except_recovery']), string=string,
+                frame=bool(native['frame_hit'] and not native['string_hit']),
+                low=string and 'speed_threshold' in row['rejection_reasons'],
+                net_hit=bool(native['shuttle_net_contact']),
+                out=bool(native['crossed_net'] and not native['landed_target']
+                         and all(map(math.isfinite, native['first_landing_m']))))
+        return result
+
+    old, new = cases(before_dir), cases(after_dir)
+    keys = sorted(old)
+    return dict(regressed=regressed, transitions={
+        name: [key for key in keys if old[key][left] and new[key][right]]
+        for name, left, right in (('string_to_frame', 'string', 'frame'), ('frame_to_string', 'frame', 'string'))
+    } | {
+        name: dict(gained=[key for key in keys if not old[key][name] and new[key][name]],
+                   lost=[key for key in keys if old[key][name] and not new[key][name]])
+        for name in ('success', 'string', 'frame', 'low', 'net_hit', 'out')
+    }, matched_speed={
+        'adequate_to_low': [key for key in keys if old[key]['string'] and new[key]['string']
+                            and not old[key]['low'] and new[key]['low']],
+        'low_to_adequate': [key for key in keys if old[key]['string'] and new[key]['string']
+                            and old[key]['low'] and not new[key]['low']]
+    })
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('registration', 'source', 'history', 'output', 'restart-receipt'):
@@ -71,6 +107,8 @@ def main():
     parser.add_argument('--stop-at', choices=(40, 48, 56, 64), type=int, default=40)
     parser.add_argument('--seed', type=int, default=882072)
     parser.add_argument('--development-baseline', type=Path, required=True)
+    parser.add_argument('--resume-partial', type=Path, help='Exhausted A40 run directory containing its clean recovery snapshot')
+    parser.add_argument('--retry-proposals', type=int, choices=(2, 4), default=4)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     receipt = json.loads(args.restart_receipt.read_text())
@@ -92,27 +130,60 @@ def main():
     retry = 0
     training_lanes, guard_lanes = 32, 16
     try:
+        partial_baseline = None
+        if args.resume_partial:
+            original = args.resume_partial.resolve(strict=True)
+            exhausted = json.loads((original / 'block_incomplete.json').read_text())
+            prior = exhausted['accepted']
+            if (exhausted['block'] != 'approach' or exhausted['target'] != 8
+                    or (prior, exhausted['limit'], args.retry_proposals) not in ((6, 16, 4), (7, 20, 2))
+                    or exhausted['attempts'] != exhausted['limit']):
+                raise ValueError('Expected A38 with four new proposals, or A39 with two final proposals')
+            partial_stage = 32 + prior
+            a32_dir, partial_dir = args.output / 'A032_quick64', args.output / f'A{partial_stage:03d}_quick64'
+            best = dict(stage=32, **quick_check(source, a32_dir, execution, args.seed))
+            partial = original / f'approach_only_004_approach_candidate_{prior:04d}.pt'
+            partial_baseline = dict(stage=partial_stage, **quick_check(partial, partial_dir, execution, args.seed))
+            records.extend((best, partial_baseline))
+            paired = paired_quick_result(best, partial_baseline, a32_dir, partial_dir)
+            dump(args.output / f'A032_A{partial_stage:03d}_paired.json', paired)
+            if paired['regressed']:
+                dump(state, dict(stage=partial_stage, status='native_regression_review', records=records))
+                return
+            source = (original / 'interrupted.pt').resolve(strict=True)
         while stage <= args.stop_at:
             label = f'A{stage:03d}' + (f'_retry{retry}' if retry else '')
+            recovering = args.resume_partial is not None and stage == 40 and retry == 0
+            if recovering:
+                label += f'_from{partial_stage:03d}'
             folder = args.output / f'{label}_train'
             command = train_command(registered, source, folder, True, stop_at=stage, fresh=False,
                                     prioritize_flight=True, start_lanes=training_lanes, e1_v2=True, guard_lanes=guard_lanes,
                                     labeled_start_checkpoint=args.history.resolve(strict=True),
-                                    labeled_snapshot_reserve=8)
+                                    labeled_snapshot_reserve=8,
+                                    retry_proposals=args.retry_proposals if recovering else 0)
             dump(state, dict(stage=stage, status='training', source=str(source), pid=os.getpid(),
                              native_collection='native_ground_prefix_replay', records=records))
-            run(command, folder.with_suffix('.log'), 150)
+            try:
+                run(command, folder.with_suffix('.log'), 150)
+            except subprocess.CalledProcessError:
+                incomplete = folder / 'block_incomplete.json'
+                if not incomplete.is_file():
+                    raise
+                stopped = json.loads(incomplete.read_text())
+                if stopped['attempts'] != stopped['limit'] or stopped['block'] != 'approach':
+                    raise
+                candidates = list(folder.glob(f'*_approach_candidate_{stopped["accepted"]:04d}.pt'))
+                if len(candidates) != 1:
+                    raise
+                total = stage - stopped['target'] + stopped['accepted']
+                result = dict(stage=total, **quick_check(candidates[0], args.output / f'{label}_partial_quick64', execution, args.seed))
+                records.append(result)
+                dump(state, dict(stage=total, status='proposal_budget_exhausted', checkpoint=str(candidates[0]),
+                                 block=stopped, records=records))
+                return
             checkpoint, invocation = verify_training_milestone(folder, stage, source)
             verified[str(checkpoint)] = invocation
-            throughput = folder / 'approach_v2_throughput.json'
-            if throughput.is_file():
-                trials = {row['lanes']: row for row in json.loads(throughput.read_text())['trials'] if 'lanes' in row}
-                if (32 in trials and 64 in trials
-                        and trials[64]['lane_ticks_per_second'] >= 1.1 * trials[32]['lane_ticks_per_second']
-                        and trials[64]['api_peak_bytes'] < 10 * 1024**3):
-                    # The sampler still requires 96 distinct labeled episodes
-                    # and falls back to 32+16 if either batch cannot be filled.
-                    training_lanes, guard_lanes = 64, 32
             dump(state, dict(stage=stage, status='quick_check', checkpoint=str(checkpoint), pid=os.getpid(),
                              records=records))
             if best is None:
@@ -120,6 +191,9 @@ def main():
                 records.append(best)
             result = dict(stage=stage, **quick_check(checkpoint, args.output / f'{label}_quick64', execution, args.seed))
             records.append(result)
+            if recovering and (clearly_regressed(partial_baseline, result) or clearly_regressed(best, result)):
+                dump(state, dict(stage=stage, status='native_regression_review', records=records))
+                return
             regressions = regressions + 1 if clearly_regressed(best, result) else 0
             if result['success'] > best['success']:
                 best = result
@@ -137,6 +211,8 @@ def main():
         evaluate = {r['checkpoint'] for r in records[-2:] if r['checkpoint'] in verified}
         if best['checkpoint'] in verified:
             evaluate.add(best['checkpoint'])
+        if args.resume_partial:
+            evaluate = {r['checkpoint'] for r in records if r['stage'] >= 48 and r['checkpoint'] in verified}
         development = {str(args.source): dict(valid_returns=source_metric['ball_side_complete_except_recovery'],
                                              checkpoint_sha256=source_metric['evaluated_checkpoint_sha256'])}
         for candidate in sorted(evaluate):

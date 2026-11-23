@@ -232,6 +232,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     terms={k:[] for k in ('task','tracking','anchor')}
     ball_scored, ball_speeds, ball_metrics, ball_derivatives = [], [], {}, {}
     ball_costs, flight_priority, string_margins = [], [], []
+    outcome_audit = []
     counts={};covered={};weights=[];returns=[];data=[];usage={};by_record=[]
     tracking_vjp_wall_s = pooled_vjp_wall_s = 0.
 
@@ -259,6 +260,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         if torch.is_grad_enabled() and not joint_backward:
             kwargs['tracking_parameters'] = params
         row=trainer._rollout_objective(state,**kwargs)
+        outcome_audit.extend(row.get('outcome_audit', []))
         tracking_vjp_wall_s += row.get('tracking_vjp_wall_s', 0.)
         if toi:
             toi_weights.append(row['toi_weights'])
@@ -343,7 +345,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     ret=torch.cat(returns)
     n = max(counts['gate_lanes'], 1)
     return dict(**scalars,**counts, **{f'ball_loss_{key}': value/n for key,value in ball_metrics.items()},
-                ball_scored=ball_scored or None, ball_approach_speed=torch.cat(ball_speeds) if ball_speeds else None,
+                outcome_audit=outcome_audit, ball_scored=ball_scored or None, ball_approach_speed=torch.cat(ball_speeds) if ball_speeds else None,
                 string_margin_by_lane=torch.cat(string_margins) if string_margins else None,
                 flight_cost_by_lane=torch.cat(ball_costs) if ball_costs else None,
                 flight_priority_loss=sum(flight_priority)/n if flight_priority else None,

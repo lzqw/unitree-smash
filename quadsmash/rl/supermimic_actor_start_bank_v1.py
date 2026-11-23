@@ -310,6 +310,8 @@ class ActorStartBank:
                     selected[id(start)] = (dict(start, _actor_lane_mask=mask), [])
                 row, details = selected[id(start)]
                 row['_actor_lane_mask'][lane] = True
+                if require_labels:
+                    row.setdefault('_approach_diagnostic_outcomes', {})[lane] = (key, outcome)
                 details.append([key[1], key[2], int(before['elapsed_tick'][lane]), outcome, lead, key[0]])
                 actual[outcome] += 1
                 times[time_group(lead)] += 1

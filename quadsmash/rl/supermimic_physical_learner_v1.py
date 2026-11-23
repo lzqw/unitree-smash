@@ -551,8 +551,13 @@ class PhysicalHorizonTrainer:
         flight_cost_by_lane = None
         flight_priority_loss = None
         scored = None
+        outcome_audit = []
         if ball_protocol is not None:
             scored = resolved & first_string & weights.bool().reshape(-1)
+            audit = (initial_state.clock_goal_context.get('approach_diagnostic')
+                     if getattr(self, 'audit_approach_outcomes', False) else None)
+            if audit is not None:
+                speed_cost = release_ball.new_zeros(len(selected))
             denominator = weights.sum().clamp_min(1.)
             # Unresolved starts keep continuous pre-contact geometry supervision.
             task_loss = (closest_approach * (~impacted) * weights).sum() / denominator
@@ -565,6 +570,8 @@ class PhysicalHorizonTrainer:
                     speed_bias=speed_bias_at_lead(impact_lead[scored], getattr(self, 'approach_speed_calibration', None)),
                     minimum=ball_protocol['minimum_outgoing_speed_mps'], speed_margin=.25 if approach_v2 else 0.)
                 flight_metrics['ball_speed_loss_supported_lanes'] = int((terms['speed'].detach() > 1e-6).sum())
+                if audit is not None:
+                    speed_cost[scored] = terms['speed'].detach()
                 if flight_cost_by_lane is not None:
                     flight_cost_by_lane[scored] = sum(value.detach() for value in terms.values())
                 confidence = (first_margin[scored].detach() / .012).clamp(.2, 1.) if approach_v2 else 1.
@@ -584,6 +591,16 @@ class PhysicalHorizonTrainer:
             flight_metrics['model_rollout_steps'] = len(rewards)
             target = reference.get('ball_only_contact') if reference is not None else None
             flight_metrics['demand_racket_target_lanes'] = int(target['valid'].sum()) if target is not None else 0
+            if audit is not None:
+                keys = audit.tolist()
+                values = torch.stack((first_string, released, scored, release_ball[:, 3:].detach().norm(dim=-1),
+                                      speed_cost), dim=-1).tolist()
+                for (stream, lane, episode, code), (string, release, scored_lane, speed, loss) in zip(keys, values, strict=True):
+                    if code:
+                        outcome_audit.append(dict(episode=[stream, lane, episode],
+                            outcome='low_speed' if code == 1 else 'success', predicted_legal_strings=bool(string),
+                            predicted_release=bool(release), release_speed_mps=speed if release else None,
+                            speed_loss=loss if scored_lane else None, speed_loss_active=bool(scored_lane and loss > 1e-6)))
         elif toi_only:
             task_loss=task_loss.detach()
             if contact_weight:
@@ -658,7 +675,7 @@ class PhysicalHorizonTrainer:
         if landing_trace is not None and baseline_landing_weights is None:
             added = (landing_trace > 0) & ~initial_landing
             coverage.update(newly_landed_lanes=int(added.any(0).sum()), newly_landed_lane_steps=int(added.sum()))
-        return dict(**aux_stats, **flight_metrics, ball_scored=scored, flight_losses=flight_losses,
+        return dict(**aux_stats, **flight_metrics, outcome_audit=outcome_audit, ball_scored=scored, flight_losses=flight_losses,
                     flight_cost_by_lane=flight_cost_by_lane, flight_priority_loss=flight_priority_loss,
                     string_margin_by_lane=(first_margin.masked_fill(~(first_string & weights.bool()), torch.nan)
                                            if ball_protocol is not None and first_geometry else None),
@@ -720,7 +737,8 @@ class PhysicalHorizonTrainer:
             torch.set_rng_state(cpu_rng)
             if cuda_rng is not None:torch.cuda.set_rng_state_all(cuda_rng)
         accepted=False; alpha=0.; gradient=0.; reason=None; grad_stats={}; trials=[]
-        proposal_timing = dict(baseline_objective_wall_s=0., baseline_tracking_vjp_wall_s=0.,
+        guard_baseline = None
+        proposal_timing = dict(baseline_objective_wall_s=0., guard_baseline_wall_s=0., baseline_tracking_vjp_wall_s=0.,
                                baseline_pooled_vjp_wall_s=0., outer_gradient_wall_s=0.,
                                backtracking_wall_s=0.)
         if update_actor:self.actor_attempts+=1
@@ -734,11 +752,12 @@ class PhysicalHorizonTrainer:
                 proposal_timing['baseline_tracking_vjp_wall_s'] = rollout.get('tracking_vjp_wall_s', 0.)
                 proposal_timing['baseline_pooled_vjp_wall_s'] = rollout.get('pooled_vjp_wall_s', 0.)
                 if update_actor and rollout['gate_lanes']:
-                    guard_baseline = None
                     if fast:
+                        guard_started = time.perf_counter()
                         with torch.no_grad():
                             restore_rng()
                             guard_baseline = self._rollout_objective(guard_starts, collect_critic_data=False)
+                        proposal_timing['guard_baseline_wall_s'] = time.perf_counter() - guard_started
                     gradient_started = time.perf_counter()
                     diagnose = not fast or getattr(self, 'diagnose_ball_gradients', False)
                     grad_stats = (gradient_parts({k:rollout[k] for k in ('task','tracking','anchor')},parameters)
@@ -867,6 +886,8 @@ class PhysicalHorizonTrainer:
                                     merit_ok, flight_report = approach_guard_merit(guard_baseline, evaluation)
                                     trials[-1]['baseline_release_flight'] = flight_report
                                     trials[-1]['flight_priority_merit_ok'] = merit_ok
+                                    if evaluation['outcome_audit']:
+                                        trials[-1]['guard_outcome_audit'] = evaluation['outcome_audit']
                                 elif rollout.get('flight_cost_by_lane') is not None:
                                     merit_ok, flight_report = comparable_flight_merit(
                                         rollout['flight_cost_by_lane'], evaluation['flight_cost_by_lane'],
@@ -904,6 +925,7 @@ class PhysicalHorizonTrainer:
                                          'ball_speed_loss_supported_lanes')})
             matched=rollout['matched_references'];coverage=rollout['reference_coverage']
             baseline_terms = {name: float(rollout[name].detach()) for name in ('task','tracking','anchor')}
+            proposal_outcome_audit = rollout.get('outcome_audit', [])
             del rollout
         except BaseException:
             self.actor.load_state_dict(actor_before,strict=True);self.actor_opt.load_state_dict(optimizer_before)
@@ -944,12 +966,30 @@ class PhysicalHorizonTrainer:
             arm_deltas = [(after[2][:, 12:] - before[2][:, 12:]).abs().amax()
                           for after, before in zip(committed_budget, before_budget, strict=True)]
             track_stats['arm_final_joint_target_delta_rad'] = float(torch.stack(arm_deltas).amax())
-        return dict(reference_coverage=coverage,actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,rejected_actor_updates=self.rejected_actor_updates,
+        objective_before = baseline_loss
+        objective_terms_before = baseline_terms
+        objective_report = {}
+        if fast:
+            objective_report['proposal_objective_before'] = baseline_loss
+            objective_report['proposal_terms_before'] = baseline_terms
+            if proposal_outcome_audit:
+                objective_report['proposal_outcome_audit'] = proposal_outcome_audit
+        if guard_baseline is not None:
+            objective_before = float(guard_baseline['loss'])
+            objective_terms_before = {name: float(guard_baseline[name]) for name in ('task', 'tracking', 'anchor')}
+            objective_report.update(
+                guard_objective_before=objective_before,
+                guard_objective_after=trials[-1]['loss'] if accepted else objective_before,
+                guard_terms_before=objective_terms_before,
+                guard_terms_after=trials[-1]['objective_terms'] if accepted else objective_terms_before)
+            if guard_baseline['outcome_audit']:
+                objective_report['guard_outcome_audit_before'] = guard_baseline['outcome_audit']
+        return dict(**objective_report, reference_coverage=coverage,actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,rejected_actor_updates=self.rejected_actor_updates,
             update_accepted=accepted if update_actor else False,block_name=self.block_name,trainable_names=sorted(self.trainable_names),
             block_attempts=self.block_attempts,backtracked_actor_updates=self.backtracked_actor_updates,backtrack_alpha=alpha,
-            rejection_reason=reason,backtrack_trials=trials,objective_before=baseline_loss,
-            objective_terms_before=baseline_terms,
-            objective_after=trials[-1]['loss'] if accepted else baseline_loss,adam_scaling='full proposal moments with alpha-scaled parameters',
+            rejection_reason=reason,backtrack_trials=trials,objective_before=objective_before,
+            objective_terms_before=objective_terms_before,
+            objective_after=trials[-1]['loss'] if accepted else objective_before,adam_scaling='full proposal moments with alpha-scaled parameters',
             command_delta_budget=self.command_delta_budget,target_delta_budget_rad=self.target_delta_budget_rad,
             critic_updates=self.critic_updates,world_updates=self.world_updates,imagined_return_mean=ret_mean,
             actor_gradient=gradient,parameter_max_changes=changes,tracking_loss=track_value,

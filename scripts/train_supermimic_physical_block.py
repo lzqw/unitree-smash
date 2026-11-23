@@ -1162,7 +1162,8 @@ def run(args, *, alternating=None):
                     if approach_proposal_reallocation is not None:
                         approach_proposal_reallocation.update(source_checkpoint=str(args.resume_training),
                             source_checkpoint_sha256=file_sha(args.resume_training),
-                            first_native_collection_ticks=args.resume_approach_collection_ticks or args.approach_initial_ticks)
+                            first_native_collection_ticks=(0 if args.e1_v2_approach_scale else
+                                args.resume_approach_collection_ticks or args.approach_initial_ticks))
                         write(args.output/'approach_proposal_reallocation.json', approach_proposal_reallocation)
                 if (args.landing_and_first_contact_objectives and args.research_contact_gradient == 'G0'
                         and saved_alternating['execution_config'].get('contact_gradient') == 'G1'):
@@ -1322,8 +1323,15 @@ def run(args, *, alternating=None):
                 from quadsmash.rl.supermimic_compact_starts import compact_start
                 lanes=training_start_mask(row,wm_holdout_lanes)
                 small,small_launch=compact_start(row,lanes,select_launch_for_start(row,launch))
-                return PhysicalImaginationStateV1.from_record(small,executor_template=template,launch=small_launch,
+                state = PhysicalImaginationStateV1.from_record(small,executor_template=template,launch=small_launch,
                                                                device='cuda:0',array_plan_observations=True)
+                outcomes = row.get('_approach_diagnostic_outcomes')
+                if outcomes is not None:
+                    codes = {'low_speed': 1, 'success': 2}
+                    state.clock_goal_context['approach_diagnostic'] = torch.tensor([
+                        (*outcomes[lane][0], codes.get(outcomes[lane][1], 0))
+                        for lane in lanes.nonzero().flatten().tolist()], device=state.physical.device)
+                return state
             state=as_state(row)
             if wm_holdout_lanes:
                 state.clock_goal_context['actor_lane_mask']=training_start_mask(row,wm_holdout_lanes).to(state.physical.device)
@@ -2297,6 +2305,7 @@ def run(args, *, alternating=None):
                         and args.research_contact_gradient=='G1' and retained>=32 else 0.)
                     adapter.action_ball_model.detach_residual_for_actor=not args.approach_ball_only
                 trainer.diagnose_ball_gradients = args.approach_ball_only and collect_block
+                trainer.audit_approach_outcomes = args.e1_v2_approach_scale and invocation_heads['approach']['attempts'] <= 2
                 try:
                     stats=trainer.imagine_update(actor_start, guard_starts=guard_start)
                 finally:
@@ -2348,7 +2357,7 @@ def run(args, *, alternating=None):
                     writer.add_scalar('actor/%s_gate_active'%block_name,float(stats.get('effective_gate_lanes',0)),step)
                     writer.add_scalar('actor/effective_updates',float(global_accepted_id),step)
                     writer.add_scalar('actor/tracking_loss',float(stats.get('tracking_loss',0.0)),step)
-                    for name in ('task_gradient_norm','tracking_gradient_norm','anchor_gradient_norm','task_tracking_cosine','final_command_max_change','objective_before','objective_after','tracking_active_lane_steps','tracking_effective_weight_sum','tracking_nonzero_gradient_lanes'):
+                    for name in ('task_gradient_norm','tracking_gradient_norm','anchor_gradient_norm','task_tracking_cosine','final_command_max_change','objective_before','objective_after','proposal_objective_before','guard_objective_before','guard_objective_after','tracking_active_lane_steps','tracking_effective_weight_sum','tracking_nonzero_gradient_lanes'):
                         if name in stats:writer.add_scalar('actor/'+name,float(stats[name]),step)
                     if research:
                         axes={'retained_updates':global_accepted_id-research_origin,'native_env_steps':int(tick*128),
