@@ -44,7 +44,7 @@ def resolve_task_contract(source, source_path, *, execution_root=None,
     # Native G07 callers pass the measured execution root explicitly.  Keep
     # protocol, asset and suite hashing on that same root so an isolated
     # worktree cannot validate a contract against a missing or different USD.
-    root = Path(execution_root if root is None else root)
+    root = Path(root if root is not None else execution_root or ROOT)
     source_path = Path(source_path).resolve()
     g07 = source.get('schema') == 'g07-shared-target-residual-ppo-v1'
     if not g07 and source.get('schema') != 'full-racket-residual-ppo-v4':
@@ -104,13 +104,18 @@ def resolve_task_contract(source, source_path, *, execution_root=None,
     return contract, protocol, cases, receipt
 
 
-def make_task_cfg(count, contract, protocol, receipt):
+def make_task_cfg(count, contract, protocol, receipt, *, execution_root=None):
     if contract['contact_flight_recovery'] is not None:
         from quadsmash.tasks.stand.contact_recovery_origin0_v5 import contact_recovery_origin0_cfg
         cfg = contact_recovery_origin0_cfg(count, protocol, Path(receipt))
     else:
         from quadsmash.tasks.stand.full_racket_env_v4 import full_racket_cfg
         cfg = full_racket_cfg(count, contract['physics_dt_s'])
+    if execution_root is not None:
+        asset = (Path(execution_root) / contract['asset']['path']).resolve(strict=True)
+        if sha(asset) != contract['asset']['sha256']:
+            raise ValueError('Configured robot asset differs from the resolved task contract')
+        cfg.robot.spawn.usd_path = str(asset)
     cfg.ground_size_m = tuple(contract['ground_size_m'])
     cfg.episode_length_s = contract['episode_s']
     if cfg.scene.env_spacing != contract['environment_spacing_m']:

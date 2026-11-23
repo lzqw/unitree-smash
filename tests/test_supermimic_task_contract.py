@@ -53,6 +53,32 @@ def test_resume_requires_same_physical_and_scoring_contract():
             require_resume_contract(saved, changed)
 
 
+def test_task_cfg_spawns_the_registered_asset_from_another_worktree(tmp_path, monkeypatch):
+    import sys
+    from types import SimpleNamespace
+    from quadsmash.rl.supermimic_task_contract import make_task_cfg, sha
+
+    asset = tmp_path / 'assets' / 'registered.usd'
+    asset.parent.mkdir()
+    asset.write_text('registered robot')
+    cfg = SimpleNamespace(
+        robot=SimpleNamespace(spawn=SimpleNamespace(usd_path='/isolated-worktree/missing.usd')),
+        scene=SimpleNamespace(env_spacing=0.), sim=SimpleNamespace(dt=.0000625),
+        decimation=160, sweep_audit_iterations=4096,
+    )
+    monkeypatch.setitem(sys.modules, 'quadsmash.tasks.stand.contact_recovery_origin0_v5',
+                        SimpleNamespace(contact_recovery_origin0_cfg=lambda *_: cfg))
+    contract = dict(contact_flight_recovery='contact-flight-recovery-v1',
+                    asset=dict(path='assets/registered.usd', sha256=sha(asset)),
+                    ground_size_m=[64., 64., .1], episode_s=8., environment_spacing_m=0.,
+                    control_dt_s=.01, sweep_audit=dict(SOURCE_SWEEP_AUDIT))
+    result = make_task_cfg(128, contract, {}, 'receipt.json', execution_root=tmp_path)
+    assert result.robot.spawn.usd_path == str(asset)
+    asset.write_text('changed robot')
+    with pytest.raises(ValueError, match='Configured robot asset differs'):
+        make_task_cfg(128, contract, {}, 'receipt.json', execution_root=tmp_path)
+
+
 def test_legacy_replay_cannot_silently_resume():
     with pytest.raises(ValueError, match='Resume task contract'):
         require_resume_contract(dict(metadata={}), dict(version='new'))

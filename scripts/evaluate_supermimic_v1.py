@@ -173,7 +173,7 @@ def _run_native(args, stop_request):
         contract, protocol, cases, receipt = resolve_task_contract(
             source, source_path, execution_root=execution_root,
             precision_receipt=args.precision_receipt, root=execution_root)
-        scoring_protocol = dict(protocol, _root=str(ROOT))
+        scoring_protocol = dict(protocol, _root=str(execution_root or ROOT))
         if trained is not None:
             stored = trained.get('metadata', {}).get('task_contract', {})
             if 'relaxed_scoring' in stored:
@@ -209,7 +209,7 @@ def _run_native(args, stop_request):
                 capture_contract = dict(contract, contact_training_panel_sha256=training_digest,
                                         contact_training_only=True)
         write_json(args.output/'task_contract.json', capture_contract)
-        cfg = make_task_cfg(128, contract, protocol, receipt)
+        cfg = make_task_cfg(128, contract, protocol, receipt, execution_root=execution_root)
         cfg.seed, cfg.sim.device = args.seed, args.physics_device
         validate_sweep_contract(cfg, contract, args.sweep_audit_iterations)
         noise = zero_panel_reset_noise(len(cases), args.seed)

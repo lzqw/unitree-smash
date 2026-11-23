@@ -555,7 +555,8 @@ def run(args, *, alternating=None):
         contract,protocol,cases,receipt=resolve_task_contract(
             native_source_checkpoint, source_path, execution_root=execution_root, root=execution_root)
         if contract!=manifest['task_contract']:raise ValueError('Native task contract changed')
-        cfg=make_task_cfg(128,contract,protocol,receipt);cfg.seed=NATIVE_TRAIN128_SEED;cfg.sim.device='cuda:0'
+        cfg=make_task_cfg(128,contract,protocol,receipt,execution_root=execution_root)
+        cfg.seed=NATIVE_TRAIN128_SEED;cfg.sim.device='cuda:0'
         lifecycle_stage(args.output, 'PHYSICS_CONTRACT_VALIDATED')
         contact_validation=None;wm_holdout_lanes=parse_lane_list(args.wm_holdout_lanes);runtime_wm_bounds={};runtime_validation_data=None;dual_quality=None;native_value_bank=None
         if args.contact_validation_receipt is not None:
