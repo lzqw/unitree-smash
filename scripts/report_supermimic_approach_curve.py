@@ -69,6 +69,14 @@ def training_cost(directory):
         measured_attempts=len(breakdown),
         seconds={key: sum(sample[key] for sample in breakdown) for key in breakdown[0]} if breakdown else None,
     )
+    groups = [record['imagination'] for row in proposals
+              for record in row['reference_coverage'].get('per_record', []) if 'imagination' in record]
+    if groups:
+        cost['baseline_imagination'] = dict(
+            measured_groups=len(groups),
+            **{field+'_lane_ticks': sum(group[field+'_steps']*group['lanes'] for group in groups)
+               for field in ('maximum', 'planned', 'executed')},
+        )
     return cost
 
 

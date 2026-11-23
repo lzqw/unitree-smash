@@ -289,10 +289,19 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         if 'outgoing_impact_lanes' in row:
             counts['outgoing_impact_lanes']=counts.get('outgoing_impact_lanes',0)+row['outgoing_impact_lanes']
         report=row['reference_coverage']
-        by_record.append(dict(gate_lanes=n,matched=row['matched_references'],tracking_lane_steps=row['tracking_active_lane_steps']))
+        record = dict(gate_lanes=n, matched=row['matched_references'],
+                      tracking_lane_steps=row['tracking_active_lane_steps'])
+        if 'model_rollout_steps' in row:
+            record['imagination'] = dict(
+                lanes=row['effective_weights'].numel(),
+                maximum_steps=trainer.timebase.imagination_steps,
+                planned_steps=row['planned_imagination_steps'],
+                executed_steps=row['model_rollout_steps'],
+            )
+        by_record.append(record)
         if torch.is_grad_enabled():
             from .supermimic_approach_data_v1 import gradient_parts
-            by_record[-1].update(gradient_parts({k:terms[k][-1][0] for k in terms},params))
+            record.update(gradient_parts({k:terms[k][-1][0] for k in terms},params))
         for key in ('predicted_first_string_lanes','predicted_first_frame_lanes','predicted_first_margin_sum_m',
                     'newly_landed_lanes','newly_landed_lane_steps'):
             if key in report:
