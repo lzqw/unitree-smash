@@ -33,6 +33,10 @@ def main():
     if not (args.quick_baseline / 'completed.json').is_file():
         raise ValueError('The paired TRAIN64 A32 baseline must already be complete')
     args.output.mkdir()
+    shared_replay_cache = args.output.parent / '.native_replay_cache'
+    if shared_replay_cache.is_dir():
+        # The trainer checks both immutable archive and packed-payload digests.
+        (args.output / '.native_replay_cache').symlink_to(shared_replay_cache.resolve(), target_is_directory=True)
     status = args.output / 'status.json'
     folder = args.output / 'train'
     baseline = quick_check(source, args.quick_baseline, execution, args.seed)
