@@ -176,6 +176,8 @@ def main():
     parser.add_argument('--actor-update-budget',type=int,default=None,help='Legacy single-block budget')
     parser.add_argument('--toi-effective-start-lanes',type=int,
                         help='Target distinct episodes per TOI-only Approach proposal (default: 16 in ball-only, 1 otherwise)')
+    parser.add_argument('--shuffle-unlabeled-approach-starts', action='store_true',
+                        help='Spread ball-only fallback sampling over distinct unlabeled episodes')
     parser.add_argument('--recovery-effective-start-lanes',type=int,default=12,help='Pool distinct gated Recovery episodes across archived G07 snapshots per optimizer proposal')
     parser.add_argument('--recovery-update-budget',type=int,default=256,
                         help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
@@ -377,6 +379,8 @@ def main():
         parser.error('Early arm control and evaluation boundaries require the Approach-only phase')
     if (args.prioritize_approach_flight or args.approach_speed_target is not None) and not args.approach_ball_only:
         parser.error('Flight priority and the speed target require the Approach-only phase')
+    if args.shuffle_unlabeled_approach_starts and not args.approach_ball_only:
+        parser.error('Unlabeled start shuffling requires the ball-only Approach phase')
     if args.approach_speed_target is None:
         args.approach_speed_target = 'relative-face' if args.prioritize_approach_flight else 'historical'
     if args.approach_ball_only:
@@ -1410,6 +1414,7 @@ def run(args, *, alternating=None):
         config['relaxed_impulse_residual_scale'] = args.relaxed_impulse_residual_scale
         config['relaxed_calibration_complete'] = args.relaxed_scoring and not relaxed_bootstrap
         config['approach_ball_only'] = args.approach_ball_only
+        config['shuffle_unlabeled_approach_starts'] = args.shuffle_unlabeled_approach_starts
         if research: config['research_training_seed']=training_seed
         write(args.output/'config.json',config)
         elapsed_offset = 0.
@@ -2046,7 +2051,8 @@ def run(args, *, alternating=None):
                         return allowed & precontact & early_approach_start(observation, activity).cpu()
                     draw = schedule.head_attempts('approach')
                     proposal_rows, start_sampling = replay.actor_start_bank.sample_ball_phase(
-                        ball_start_lanes, draw, fallback=pool, count=args.toi_effective_start_lanes)
+                        ball_start_lanes, draw, fallback=pool, count=args.toi_effective_start_lanes,
+                        shuffle_unlabeled=args.shuffle_unlabeled_approach_starts)
                     if not proposal_rows:
                         raise RuntimeError('No causal pre-contact state available for the ball-only proposal')
                     row = proposal_rows[0]

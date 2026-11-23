@@ -31,11 +31,13 @@ def test_matched_approach_arms_share_merit_and_budgets_with_distinct_speed_targe
 def test_final_milestone_finalizes_the_full_schedule_and_preserves_requested_training_seed(tmp_path):
     registered = [part for name in ARCHIVE_INPUTS for part in ('--' + name, name)]
     command = train_command(registered, 'a128.pt', tmp_path, True, stop_at=256, fresh=False,
-                            prioritize_flight=True, training_seed=913, start_lanes=32)
+                            prioritize_flight=True, training_seed=913, start_lanes=32,
+                            shuffle_unlabeled_starts=True)
     assert '--approach-stop-at' not in command
     assert '--resume-reset-schedule' not in command
     assert command[command.index('--research-training-seed') + 1] == '913'
     assert command[command.index('--toi-effective-start-lanes') + 1] == '32'
+    assert '--shuffle-unlabeled-approach-starts' in command
     assert milestone_checkpoint(tmp_path, 256) == tmp_path/'latest.pt'
     assert milestone_checkpoint(tmp_path, 128) == tmp_path/'approach_A128.pt'
 
@@ -172,6 +174,37 @@ def test_ball_phase_scales_quotas_without_reusing_episodes():
     _, limited = bank.sample_ball_phase(lambda _: active, 0, count=48)
     assert limited['effective_lanes'] == 40
     assert limited['missing_episodes'] == 8
+
+
+def test_unlabeled_fallback_shuffles_episodes_and_restores_sampler_rng():
+    from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank
+
+    active = torch.ones(24, dtype=torch.bool)
+
+    def start(tick):
+        return dict(stream_id=3, before=dict(episode_index=torch.zeros(24, dtype=torch.long),
+                                            elapsed_tick=torch.full((24,), tick)))
+
+    bank = ActorStartBank(ball_phase=True)
+    bank.append(start(20), dict(approach_gate=active.float(), had_contact=~active,
+                               approach_start_eligible=active), stream=3, policy_version=0, native_tick=20)
+    bank.entries[0]['ball_outcomes'] = {23: ('low_speed', 18)}
+    saved = bank.state_dict()
+
+    def sample(source):
+        _, report = source.sample_ball_phase(lambda _: active, 0, count=8, fallback=(start(16), start(20)),
+                                             shuffle_unlabeled=True)
+        assert report['unlabeled_pool_episodes'] == 24
+        assert report['actual_by_outcome']['low_speed'] == 1
+        episodes = {lane for row in report['records'] for lane, *_ in row['lane_episode_tick']}
+        assert len(episodes) == 8 and 23 in episodes
+        return report
+
+    first = sample(bank)
+    assert sample(bank)['records'] != first['records']
+    restored = ActorStartBank(ball_phase=True)
+    restored.load_state_dict(saved)
+    assert sample(restored) == first
 
 
 def test_native_phase_timing_preserves_substeps_and_restores_simulator_method():

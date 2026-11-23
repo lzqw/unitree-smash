@@ -116,7 +116,7 @@ class ActorStartBank:
                 if label is not None and (lead is None or 8 <= lead <= 40):
                     entry.setdefault('ball_outcomes', {})[lane] = (label, lead)
 
-    def sample_ball_phase(self, eligible_lanes, attempt, *, fallback=(), count=16):
+    def sample_ball_phase(self, eligible_lanes, attempt, *, fallback=(), count=16, shuffle_unlabeled=False):
         """Draw distinct episode starts with proportionate outcome and time quotas."""
         if not 1 <= count <= 128:
             raise ValueError('Ball-phase start count must be in [1,128]')
@@ -151,6 +151,15 @@ class ActorStartBank:
             return (int(start.get('stream_id', start.get('_native_stream', 0))),
                     int(start.get('_lane_id', lane)), int(start['before']['episode_index'][lane]))
 
+        if shuffle_unlabeled:
+            by_episode = {}
+            for row in unlabeled:
+                by_episode.setdefault(episode_identity(row[0], row[1]), []).append(row)
+            episode_rows = list(by_episode.values())
+            order = torch.randperm(len(episode_rows), generator=self.generator).tolist()
+            unlabeled = [episode_rows[i][int(torch.randint(len(episode_rows[i]), (), generator=self.generator))]
+                         for i in order]
+
         def take(candidates, count):
             for _ in range(count):
                 desired = timing[len(seen)]
@@ -179,6 +188,8 @@ class ActorStartBank:
                       outcome_shortfall={name:max(0, quota-actual[name]) for name,quota in outcome_quotas.items()},
                       lead_time_counts=times, effective_lanes=len(seen), missing_episodes=len(timing)-len(seen),
                       records=[dict(lane_episode_tick=details) for _, details in selected.values()])
+        if shuffle_unlabeled:
+            report['unlabeled_pool_episodes'] = len(unlabeled)
         if self.ball_phase:
             self.sampling_history.append(report)
         return [row for row, _ in selected.values()], report
