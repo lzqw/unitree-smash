@@ -1,0 +1,442 @@
+{
+  "schema": "supermimic-approach-a64-fixed-development-evidence-v1",
+  "panel_sha256": "0e2c5cf34a165ec7aa6b68d73bbc2f7d27b38a98aad4b3f4b73cfc066365df0d",
+  "independent_final_holdout": false,
+  "verified": {
+    "checkpoint_sha256": "312564d456d613308b95cf26a5b45e1f598aa5adf0c68cde61dd3be5a5de3551",
+    "actor_sha256": "06218bd491a77595a5204075a6ce8730091b4c924507860757ef45d3870a09c0",
+    "cases": 128,
+    "valid_returns": 52,
+    "evaluation_seconds": 637.5190573270083
+  },
+  "frozen_optimizer_updates": {
+    "actor": 0,
+    "world": 0,
+    "critic": 0
+  },
+  "numerical_failures": 0,
+  "actual_eval_control_ticks": 464,
+  "head_counters": {
+    "recovery": {
+      "attempts": 0,
+      "accepted": 0,
+      "rejected": 0,
+      "backtracked": 0
+    },
+    "approach": {
+      "attempts": 88,
+      "accepted": 64,
+      "rejected": 24,
+      "backtracked": 34
+    }
+  },
+  "resumed_invocation": {
+    "start": {
+      "actor_sha256": "d78396a413105d2b2ccc1e9ee6b8291d4160dab01be3b7254eab6445f8373420",
+      "accepted": 248,
+      "attempts": 272,
+      "world": 396,
+      "critic": 6190
+    },
+    "actor_end_sha256": "06218bd491a77595a5204075a6ce8730091b4c924507860757ef45d3870a09c0",
+    "actor_updates": 11,
+    "actor_attempts": 18,
+    "world_updates": 16,
+    "critic_updates": 0,
+    "heads": {
+      "recovery": {
+        "accepted": 0,
+        "attempts": 0
+      },
+      "approach": {
+        "accepted": 11,
+        "attempts": 18
+      }
+    },
+    "approach_objective": "toi_racket_only",
+    "scope": "updates executed in this process only"
+  },
+  "cumulative_new_native_transitions": 327680,
+  "a32_to_a64_training": {
+    "new_native_control_ticks": 896,
+    "new_native_transitions": 114688,
+    "training_wall_seconds": 9759.919208481999,
+    "native_collection_seconds": 1282.538927148038,
+    "new_archive_bytes": 739304048,
+    "accepted_approach_updates": 32,
+    "actor_attempts": 53,
+    "actor_bptt_seconds": 7042.063756632968,
+    "world_refresh_seconds": 875.6772368680104,
+    "actor_peak_torch_allocated_bytes": 1704648704,
+    "completed_native_episodes": 240,
+    "qualified_native_contact_episodes": 149,
+    "unique_qualified_native_case_ids": 94,
+    "native_numerical_failures": 0,
+    "actor_proposal_wall_components": {
+      "measured_attempts": 53,
+      "seconds": {
+        "baseline_objective_wall_s": 4155.039437011059,
+        "baseline_tracking_vjp_wall_s": 444.70205379556865,
+        "baseline_pooled_vjp_wall_s": 2553.867955580994,
+        "outer_gradient_wall_s": 0.31555167317856103,
+        "backtracking_wall_s": 2883.510653952835
+      }
+    },
+    "baseline_imagination": {
+      "measured_groups": 127,
+      "maximum_lane_ticks": 54272,
+      "planned_lane_ticks": 30592,
+      "executed_lane_ticks": 28444
+    }
+  },
+  "recovery_proposal_reallocation": {
+    "block": "approach_only_006",
+    "accepted_before": 5,
+    "attempted_before": 16,
+    "new_proposal_limit": 24,
+    "transferred": {
+      "approach_only_005": 7,
+      "approach_only_004": 1
+    },
+    "source_checkpoint_sha256": "a3b745ad84f31dd9b2c702341488c0561d0e06f45c85a00b34a378514f86dd0d",
+    "first_native_collection_ticks": 128
+  },
+  "interrupted_block_start_sampling": {
+    "samples": 16,
+    "requested_by_outcome": {
+      "contact_failure": 64,
+      "low_speed": 96,
+      "flight_failure": 48,
+      "success": 48
+    },
+    "actual_by_outcome": {
+      "contact_failure": 32,
+      "low_speed": 0,
+      "flight_failure": 16,
+      "success": 0,
+      "unlabeled": 208
+    },
+    "shortfall_by_outcome": {
+      "contact_failure": 32,
+      "low_speed": 96,
+      "flight_failure": 32,
+      "success": 48
+    },
+    "lead_time_counts": {
+      "early": 0,
+      "middle": 9,
+      "late": 7,
+      "unknown": 240
+    }
+  },
+  "resumed_start_sampling": [
+    {
+      "samples": 4,
+      "requested_by_outcome": {
+        "contact_failure": 16,
+        "low_speed": 24,
+        "flight_failure": 12,
+        "success": 12
+      },
+      "actual_by_outcome": {
+        "contact_failure": 32,
+        "low_speed": 8,
+        "flight_failure": 12,
+        "success": 12,
+        "unlabeled": 0
+      },
+      "shortfall_by_outcome": {
+        "contact_failure": 0,
+        "low_speed": 16,
+        "flight_failure": 0,
+        "success": 0
+      },
+      "lead_time_counts": {
+        "early": 19,
+        "middle": 32,
+        "late": 13,
+        "unknown": 0
+      }
+    },
+    {
+      "samples": 14,
+      "requested_by_outcome": {
+        "contact_failure": 56,
+        "low_speed": 84,
+        "flight_failure": 42,
+        "success": 42
+      },
+      "actual_by_outcome": {
+        "contact_failure": 100,
+        "low_speed": 28,
+        "flight_failure": 48,
+        "success": 48,
+        "unlabeled": 0
+      },
+      "shortfall_by_outcome": {
+        "contact_failure": 0,
+        "low_speed": 56,
+        "flight_failure": 0,
+        "success": 0
+      },
+      "lead_time_counts": {
+        "early": 52,
+        "middle": 123,
+        "late": 43,
+        "unknown": 6
+      }
+    }
+  ],
+  "results": {
+    "E1_A0": {
+      "before": {
+        "ball_success": 42,
+        "qualified_contacts": 83,
+        "qualified_low_speed": 17,
+        "cleared_net": 81,
+        "target_landings": 58,
+        "frame_without_strings": 25,
+        "no_racket_contact": 20
+      },
+      "after": {
+        "ball_success": 52,
+        "qualified_contacts": 75,
+        "qualified_low_speed": 8,
+        "cleared_net": 74,
+        "target_landings": 59,
+        "frame_without_strings": 34,
+        "no_racket_contact": 19
+      },
+      "improved_cases": [
+        "A-97124801-010",
+        "A-97124801-025",
+        "A-97124801-027",
+        "A-97124801-028",
+        "A-97124801-031",
+        "A-97124801-032",
+        "A-97124801-040",
+        "A-97124801-044",
+        "A-97124801-047",
+        "A-97124801-048",
+        "A-97124801-054",
+        "A-97124801-055",
+        "A-97124801-057",
+        "A-97124801-062",
+        "B-97124802-028",
+        "B-97124802-042",
+        "B-97124802-048",
+        "B-97124802-050",
+        "B-97124802-063"
+      ],
+      "regressed_cases": [
+        "A-97124801-009",
+        "A-97124801-020",
+        "A-97124801-023",
+        "A-97124801-036",
+        "A-97124801-038",
+        "A-97124801-042",
+        "A-97124801-052",
+        "B-97124802-006",
+        "B-97124802-018"
+      ],
+      "paired_exact_two_sided_p": 0.08715855330228806,
+      "paired_qualified_release_speed": {
+        "cases": 68,
+        "mean_delta_mps": 0.10269358314004857,
+        "median_delta_mps": 0.1401711696459471,
+        "below_threshold_to_pass": [
+          "A-97124801-010",
+          "A-97124801-031",
+          "A-97124801-047",
+          "A-97124801-048",
+          "A-97124801-055",
+          "A-97124801-057",
+          "B-97124802-028",
+          "B-97124802-048"
+        ],
+        "pass_to_below_threshold": [
+          "A-97124801-020",
+          "A-97124801-052",
+          "B-97124802-037"
+        ]
+      },
+      "contact_motion": {
+        "speed_delta_mps": {
+          "cases": 68,
+          "mean": 0.10269358314004857,
+          "median": 0.1401711696459471
+        },
+        "first_contact_time_delta_ms": {
+          "cases": 68,
+          "mean": -2.679593422833611,
+          "median": -2.5610923767089844
+        },
+        "arm_contact_speed_delta_mps": {
+          "cases": 68,
+          "mean": -0.37550543814013093,
+          "median": -0.33408932807401204
+        },
+        "point_velocity_mps_delta_on_after_face": {
+          "cases": 68,
+          "mean": -0.009353022225491484,
+          "median": 0.002210727791990885
+        },
+        "root_transport_mps_delta_on_after_face": {
+          "cases": 68,
+          "mean": 0.007153252923463729,
+          "median": 0.006929228834750223
+        },
+        "root_rotation_at_contact_mps_delta_on_after_face": {
+          "cases": 68,
+          "mean": -0.02736552997875505,
+          "median": -0.013653380572036494
+        },
+        "arm_contact_velocity_mps_delta_on_after_face": {
+          "cases": 68,
+          "mean": 0.010859257655319471,
+          "median": 0.014428313122725023
+        }
+      },
+      "regressed_cases_failure_counts": {
+        "legal_airborne_strings": 5,
+        "no_rule_fault": 2,
+        "actual_net_and_target": 7,
+        "event_order": 2,
+        "speed_threshold": 2
+      }
+    },
+    "E1_A32_flight_priority_eval": {
+      "before": {
+        "ball_success": 55,
+        "qualified_contacts": 78,
+        "qualified_low_speed": 5,
+        "cleared_net": 77,
+        "target_landings": 60,
+        "frame_without_strings": 31,
+        "no_racket_contact": 19
+      },
+      "after": {
+        "ball_success": 52,
+        "qualified_contacts": 75,
+        "qualified_low_speed": 8,
+        "cleared_net": 74,
+        "target_landings": 59,
+        "frame_without_strings": 34,
+        "no_racket_contact": 19
+      },
+      "improved_cases": [
+        "A-97124801-000",
+        "A-97124801-025",
+        "A-97124801-033",
+        "A-97124801-034",
+        "A-97124801-054",
+        "A-97124801-062",
+        "B-97124802-028",
+        "B-97124802-042",
+        "B-97124802-063"
+      ],
+      "regressed_cases": [
+        "A-97124801-012",
+        "A-97124801-020",
+        "A-97124801-023",
+        "A-97124801-036",
+        "A-97124801-053",
+        "A-97124801-059",
+        "B-97124802-003",
+        "B-97124802-006",
+        "B-97124802-007",
+        "B-97124802-012",
+        "B-97124802-020",
+        "B-97124802-058"
+      ],
+      "paired_exact_two_sided_p": 0.6636238098144531,
+      "paired_qualified_release_speed": {
+        "cases": 69,
+        "mean_delta_mps": -0.01631983040807328,
+        "median_delta_mps": 0.03247335033066179,
+        "below_threshold_to_pass": [
+          "A-97124801-034"
+        ],
+        "pass_to_below_threshold": [
+          "A-97124801-020",
+          "B-97124802-020",
+          "B-97124802-037"
+        ]
+      },
+      "contact_motion": {
+        "speed_delta_mps": {
+          "cases": 69,
+          "mean": -0.01631983040807328,
+          "median": 0.03247335033066179
+        },
+        "first_contact_time_delta_ms": {
+          "cases": 69,
+          "mean": 0.04979147427323936,
+          "median": 0.0
+        },
+        "arm_contact_speed_delta_mps": {
+          "cases": 69,
+          "mean": -0.564515034687862,
+          "median": -0.5523501546592811
+        },
+        "point_velocity_mps_delta_on_after_face": {
+          "cases": 69,
+          "mean": -0.02204512356918881,
+          "median": -0.012038623281785066
+        },
+        "root_transport_mps_delta_on_after_face": {
+          "cases": 69,
+          "mean": 0.004318626367482252,
+          "median": 0.003396546768574815
+        },
+        "root_rotation_at_contact_mps_delta_on_after_face": {
+          "cases": 69,
+          "mean": -0.031010727041845224,
+          "median": -0.03436834653218934
+        },
+        "arm_contact_velocity_mps_delta_on_after_face": {
+          "cases": 69,
+          "mean": 0.0046469667568823,
+          "median": 0.012378605973133006
+        },
+        "normal_relative_velocity_delta_mps": {
+          "cases": 69,
+          "mean": 0.004252191902934641,
+          "median": -0.0033292770385742188
+        }
+      },
+      "regressed_cases_failure_counts": {
+        "legal_airborne_strings": 5,
+        "actual_net_and_target": 10,
+        "speed_threshold": 2,
+        "no_rule_fault": 4,
+        "event_order": 4,
+        "released_forward": 1
+      }
+    }
+  },
+  "matched_native_release_audit": {
+    "native_archive_manifest_sha256": "4f36373545d8074f566850891bdecebac3cfa9681bc8da80439707ea17423072",
+    "common_native_landing_count": 11,
+    "lead_ticks": 8,
+    "landing_mae_m": {
+      "A32": {
+        "native_release_to_flight": 0.016917457804083824,
+        "native_robot_contact_to_flight": 0.14174503087997437,
+        "predicted_robot_contact_to_flight": 0.26116669178009033
+      },
+      "A64": {
+        "native_release_to_flight": 0.016917457804083824,
+        "native_robot_contact_to_flight": 0.14040488004684448,
+        "predicted_robot_contact_to_flight": 0.26129648089408875
+      }
+    }
+  },
+  "local_audit_artifact_sha256": {
+    "E1_approach_learning_curve.json": "9713601bd5e03d64df27cc9ccc79853b5f8bc7df539b714e624bbf109c288c37",
+    "E1_A64_flight_priority_vs_A32.json": "f65e8215ba95e9f5992d05ca17daa90ee0cead9b733576b3c89e00959e7abb6e",
+    "E1_A64_heldout_native_release_chain.json": "f55d93e04d44838ab05b1a7a0e3bf59a9994af11cd713f06bec5ced19a6184b2",
+    "E1_A64_flight_priority_eval/episodes_summary.json": "1321035f98191fac593839ff6138f92380ad9f646855672a40e3a1fd8bc96621",
+    "E1_A64_recovered_train/milestone_receipt.json": "3e74b6da153547139db4aecfb4c8b610fab8434f189559b08bc9b8075e2cbe00"
+  }
+}
