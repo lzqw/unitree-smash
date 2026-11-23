@@ -15,3 +15,21 @@ E1 修订 A8 和 A16 已导出 29 段实测碰后轨迹，来自 15 个不同发
 当前尾段采样每八个 lane 取一个。首回合的机械臂辨识也按同一 lane 余数选取，并排除 WM 留出。实测保留下来的非留出尾段因此全部来自扰动回合。该批数据可用于执行器和碰后动力学诊断，正常策略分布下的恢复训练仍缺完整无扰动尾段。后续自然采集需要覆盖非留出且未施加辨识扰动的 lane，现有留出标签继续保留。
 
 本次仅从已完成的原生归档导出，没有追加仿真预算。[轨迹导出程序](../../scripts/export_supermimic_recovery_tails.py)
+
+## 自然回合补采入口
+
+在冻结策略的原始 TRAIN128 上使用已有的原生状态采集。该入口使用球侧评分合同，保留原有尾段规则，并由冻结策略正常执行。采集后索引检查 checkpoint Actor 指纹、零优化器更新、执行合同和真实步数，再从序列中排除 WM 留出 lane。固定开发面板及独立留出面板不可用作此训练资料的来源。
+
+```bash
+export PYTHONPATH=.:scripts
+export QUADSMASH_ZSTD_ARCHIVE=1
+"$PYTHON" scripts/evaluate_supermimic_v1.py --checkpoint "$CHECKPOINT" \
+  --g07-execution-root "$EXECUTION_ROOT" --approach-ball-only --record-physical-transitions \
+  --headless --output "$CAPTURE"
+"$PYTHON" scripts/index_supermimic_recovery_tails.py --frozen-run "$CAPTURE" \
+  --scratch "$SCRATCH" --output "$CAPTURE/recovery_index.json"
+"$PYTHON" scripts/export_supermimic_recovery_tails.py --index "$CAPTURE/recovery_index.json" \
+  --scratch "$SCRATCH" --output "$CAPTURE/recovery_trajectories.pt"
+```
+
+兼容性和数据分区已通过 CPU 回归测试。冻结自然采集尚未运行。若后续现有多块采集已经得到无扰动尾段，可直接使用训练归档。

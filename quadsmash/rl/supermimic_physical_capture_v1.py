@@ -177,7 +177,7 @@ def capture_state(env):
 class PhysicalTransitionArchive:
     schema = 'supermimic-native-physical-transition-v1'
 
-    def __init__(self, directory, *, metadata, chunk_ticks=32, compact_plan_observations=False):
+    def __init__(self, directory, *, metadata, chunk_ticks=32, compact_plan_observations=False, compress=False):
         if chunk_ticks < 1:
             raise ValueError('chunk_ticks must be positive')
         self.directory = Path(directory)
@@ -192,6 +192,7 @@ class PhysicalTransitionArchive:
         if compact_plan_observations:
             self.metadata['controller_snapshot_encoding'] = 'public_plan_observations_f64le_v1'
         self.chunk_ticks = chunk_ticks
+        self.compress = compress
         self.pending = None
         self.rows = []
         self.chunks = []
@@ -284,6 +285,8 @@ class PhysicalTransitionArchive:
         self._manifest()
 
     def flush(self):
+        if self.compress:
+            return self.flush_compressed()
         if self.rows:
             name = f'chunk_{len(self.chunks):05d}.pt'
             temp = self.directory/(name + '.tmp')

@@ -250,13 +250,16 @@ def _run_native(args, stop_request):
             from quadsmash.rl.supermimic_physical_capture_v1 import PhysicalTransitionArchive
             if env._sm_residual_controller is None:
                 raise ValueError('Physical capture requires the initialized residual execution contract')
+            compress_archive = os.environ.get('QUADSMASH_ZSTD_ARCHIVE') == '1'
             env.physical_transition_archive = PhysicalTransitionArchive(
                 args.output/'physical_transitions', metadata=dict(
                     source_checkpoint=str(source_path), source_sha256=hashlib.sha256(source_path.read_bytes()).hexdigest(),
                     task_contract=contract,policy_execution=policy_execution,actor_state_sha256=actor_state_before,policy_id='frozen-evaluation',body_names=list(env.robot.body_names),
                     control_dt_s=float(env.step_dt), num_envs=env.num_envs,
                     seed=args.seed, runtime_commit=subprocess.check_output(
-                        ['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()))
+                        ['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
+                    wm_holdout_lanes=trained.get('config', {}).get('wm_holdout_lanes') if trained is not None else None),
+                compact_plan_observations=compress_archive, compress=compress_archive)
             env.physical_transition_archive.attach_task_sequence(env)
         reference = None
         if trained is None:

@@ -15,7 +15,7 @@ STATE_FIELDS = (
     'shuttle_state_w', 'event_state',
 )
 ACTION_FIELDS = ('requested_action', 'base_action', 'final_action', 'final_joint_targets', 'reward',
-                 'terminated', 'timeout', 'arm_identification_active')
+                 'terminated', 'timeout')
 MIXER_STATE = {
     'arm_target': 'controller/mixer/arm_rate/target',
     'arm_clock': 'controller/mixer/arm_rate/clock',
@@ -38,8 +38,10 @@ def lane_state(snapshot, lane, lanes):
     return state
 
 
-def capture_step(row, lane, lanes):
+def capture_step(row, lane, lanes, *, frozen):
     step = {key: lane_tensor(row[key], lane, lanes) for key in ACTION_FIELDS}
+    step['arm_identification_active'] = (torch.tensor(False) if frozen else
+                                         lane_tensor(row['arm_identification_active'], lane, lanes))
     for side in ('before', 'after'):
         step[side] = lane_state(row[side], lane, lanes)
         memory = row['executor_'+side]['tensors']
@@ -53,20 +55,27 @@ def stack_steps(steps):
 
 
 def export_run(registered, scratch):
+    from index_supermimic_recovery_tails import validate_frozen_source
+
     run = Path(registered['training_run'])
     archive = Path(registered['archive'])
+    kind = registered.get('source_kind', 'training')
+    if kind not in ('training', 'frozen_natural'):
+        raise ValueError(f'Unrecognized recovery source kind {kind}')
+    frozen = kind == 'frozen_natural'
     raw = (archive/'manifest.json').read_bytes()
     if hashlib.sha256(raw).hexdigest() != registered['manifest_sha256']:
         raise ValueError(f'Archive manifest changed after indexing {run}')
     manifest = json.loads(raw)
-    episode_bytes = (run/'native_episodes.jsonl').read_bytes()
+    episode_bytes = (run/('episodes_summary.json' if frozen else 'native_episodes.jsonl')).read_bytes()
     if hashlib.sha256(episode_bytes).hexdigest() != registered['episode_records_sha256']:
         raise ValueError(f'Native episode records changed after indexing {run}')
-    episodes = [json.loads(line) for line in episode_bytes.splitlines()]
+    episodes = json.loads(episode_bytes) if frozen else [json.loads(line) for line in episode_bytes.splitlines()]
+    if frozen:
+        validate_frozen_source(run, manifest, episodes)
     episodes = {(row['env_id'], row['episode_index']): row for row in episodes}
-    config_bytes = (run/'config.json').read_bytes()
-    config = json.loads(config_bytes)
-    reserved = set(config['wm_holdout_lanes'])
+    config_bytes = (run/('startup.json' if frozen else 'config.json')).read_bytes()
+    reserved = set((manifest if frozen else json.loads(config_bytes))['wm_holdout_lanes'])
     lanes = manifest['num_envs']
     clips = registered['clips']
     timelines = [[] for _ in clips]
@@ -74,7 +83,9 @@ def export_run(registered, scratch):
     receipts = {entry['file']: entry for entry in manifest['chunks']}
     for i, clip in enumerate(clips):
         native = episodes[clip['env_id'], clip['episode_index']]
-        if (clip['case_id'] != native['case_id'] or clip['arm_intervention'] != native['arm_identification_episode']
+        if (clip['case_id'] != native['case_id']
+                or clip['arm_intervention'] != (False if frozen else native['arm_identification_episode'])
+                or (frozen and clip['env_id'] in reserved)
                 or clip['ball_completed'] != native['ball_side_complete_except_recovery']
                 or clip['physical_recovery_success'] != native['physical_recovery_success']
                 or not native['approach_ball_terminal']['recovery_tail_observed'] or native['numerical_failures']):
@@ -97,7 +108,7 @@ def export_run(registered, scratch):
                 last = stop['row_offset']+1 if stop['file'] == name else len(rows)
                 for offset in range(first, last):
                     row = rows[offset]
-                    tick = row['native_tick']
+                    tick = row['before']['control_tick'] if frozen else row['native_tick']
                     final = tick == stop['native_tick']
                     if (tick != start['native_tick'] + len(timelines[i])
                             or tick > stop['native_tick']
@@ -105,7 +116,7 @@ def export_run(registered, scratch):
                             or int(row['after']['episode_index'][lane]) != clip['episode_index']
                             or bool(row['terminated'][lane] or row['timeout'][lane]) != final):
                         raise ValueError(f'Discontinuous or reset trajectory for {clip["case_id"]}')
-                    timelines[i].append(capture_step(row, lane, lanes))
+                    timelines[i].append(capture_step(row, lane, lanes, frozen=frozen))
 
     exported = []
     for clip, steps in zip(clips, timelines, strict=True):
@@ -128,7 +139,8 @@ def export_run(registered, scratch):
             source=clip, wm_holdout_lane=clip['env_id'] in reserved,
             control_dt_s=manifest['control_dt_s'], trajectory=trajectory,
         ))
-    return dict(source=registered['training_run'], source_manifest_sha256=registered['manifest_sha256'],
+    return dict(source=registered['training_run'], source_kind=kind,
+                source_manifest_sha256=registered['manifest_sha256'],
                 source_config_sha256=hashlib.sha256(config_bytes).hexdigest(),
                 native_episodes_sha256=registered['episode_records_sha256'],
                 joint_names=manifest['joint_names'], body_names=manifest['body_names'],

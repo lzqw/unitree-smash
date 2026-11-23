@@ -17,8 +17,11 @@ def state(tick, episode=0):
                 physical={'joint_position': torch.full((2, 18), float(tick))})
 
 
-def test_terminal_state_and_actual_command_survive_reset_and_chunk_save(tmp_path):
-    archive = PhysicalTransitionArchive(tmp_path/'data', metadata={}, chunk_ticks=2)
+@pytest.mark.parametrize('compress', [False, True])
+def test_terminal_state_and_actual_command_survive_reset_and_chunk_save(tmp_path, compress):
+    from quadsmash.rl.supermimic_archive_storage_v1 import read_archive_rows
+
+    archive = PhysicalTransitionArchive(tmp_path/'data', metadata={}, chunk_ticks=2, compress=compress)
     requested = torch.full((2, 18), .8)
     final = torch.full((2, 18), .3)
     targets = torch.full((2, 18), .15)
@@ -36,7 +39,9 @@ def test_terminal_state_and_actual_command_survive_reset_and_chunk_save(tmp_path
     manifest = json.loads((tmp_path/'data/manifest.json').read_text())
     path = tmp_path/'data'/manifest['chunks'][0]['file']
     assert hashlib.sha256(path.read_bytes()).hexdigest() == manifest['chunks'][0]['sha256']
-    row = torch.load(path, weights_only=True)['rows'][0]
+    assert path.name.endswith('.pt.zst' if compress else '.pt')
+    with read_archive_rows(archive.directory, manifest['chunks'][0], scratch=tmp_path) as rows:
+        row = rows[0]
     assert row['after']['physical']['joint_position'].eq(800).all()
     assert row['after']['episode_index'].eq(0).all()
     assert row['requested_action'].eq(.8).all()
