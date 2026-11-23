@@ -58,7 +58,10 @@ class Go2WalkTransfer:
         if heading_error is not None:
             commands[:,2]=(heading_kp*heading_error).clamp(-.6,.6)*ramp
         commands[self.reached]=0
-        if self.tick%2==0:
+        if isinstance(self.tick, torch.Tensor):
+            source=torch.cat((obs[:,:9],commands,obs[:,9:21],obs[:,27:39],self.last_raw),1)
+            self.last_raw.copy_(torch.where((self.tick % 2 == 0)[:, None], self.actor(source), self.last_raw))
+        elif self.tick%2==0:
             source=torch.cat((obs[:,:9],commands,obs[:,9:21],obs[:,27:39],self.last_raw),1)
             self.last_raw.copy_(self.actor(source))
         self.tick+=1

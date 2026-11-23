@@ -8,6 +8,7 @@ NOT a certified PhysicalImaginationAdapter or a training entry point.
 """
 import ast
 import inspect
+import math
 import textwrap
 import types
 from dataclasses import dataclass
@@ -197,6 +198,111 @@ class G07BatchMemory:
             event_time=torch.cat([branch.event_time for branch in controllers]),
             planned=torch.cat([branch.planned for branch in controllers]),
             nominal_target=first.nominal_target, physics=first.physics, height_intercept=first.height_intercept)
+
+
+_LANE_TENSORS = frozenset({
+    'clock', 'initialized', 'event_time', 'planned', 'parameters', 'population', 'runtime_parameters',
+    'last_raw', 'reached', 'standing_ticks', 'started', 'start_time', 'start_leg',
+    'target', 'target_offset_world', 'nonzero_seen', 'valid_plan', 'ever_active',
+    'hit_seen', 'air_hit_seen', 'first_public_hit_clock', 'effective_velocity', 'original_velocity',
+    'center_s', 'half_window_s', 'requests', 'last_request', 'last_requested', 'last_actual',
+    'last_base_action', 'last_arm_targets_before_slew', 'last_arm_targets_after_slew',
+})
+
+
+class _IncompatibleExecution(Exception):
+    pass
+
+
+def pack_planned_execution(branches, lane_counts, *, required=False):
+    """Merge consumed G07 plans and independent tensor memories for one rollout."""
+    if len(branches) == 1:
+        return branches[0]
+    if not all(bool(branch.reference_controller.planned.all()) for branch in branches):
+        return G07BatchMemory(branches, lane_counts)
+    memo = {}
+
+    def merge(values, path=()):
+        first = values[0]
+        name = path[-1] if path else ''
+        key = tuple(map(id, values))
+        if name in ('count', 'num_envs') and all(
+                type(v) is int and v == n for v, n in zip(values, lane_counts, strict=True)):
+            return sum(lane_counts)
+        if name == 'tick' and len(path) > 1 and path[-2] in ('walk', 'standing'):
+            device = branches[0].reference_controller.parameters.device
+            return torch.cat([torch.as_tensor(v, device=device).expand(n)
+                              for v, n in zip(values, lane_counts, strict=True)])
+        if name == 'logs':
+            return []
+        if name in ('last_diagnostic', 'last_diagnostics'):
+            return None
+        if key in memo:
+            return memo[key]
+        if any(type(v) is not type(first) for v in values):
+            raise _IncompatibleExecution(('controller type differs', path))
+        if isinstance(first, torch.Tensor):
+            per_lane = name in _LANE_TENSORS or 'runtime_matrices' in path
+            if per_lane and all(v.ndim and len(v) == n for v, n in zip(values, lane_counts, strict=True)):
+                result = torch.cat(values)
+            elif all(v.shape == first.shape and (v is first or torch.allclose(
+                    v, first, atol=0., rtol=0., equal_nan=True)) for v in values):
+                result = first.clone()
+            else:
+                raise _IncompatibleExecution(('unrecognized tensor memory', path))
+        elif isinstance(first, torch.nn.Module):
+            if any(v is not first for v in values):
+                raise _IncompatibleExecution(('different frozen source networks', path))
+            result = first
+        elif isinstance(first, np.ndarray):
+            if any(not np.array_equal(v, first, equal_nan=True) for v in values):
+                raise _IncompatibleExecution(('different static arrays', path))
+            result = first.copy()
+        elif isinstance(first, types.MethodType):
+            if any(v.__func__ is not first.__func__ for v in values):
+                raise _IncompatibleExecution(('different controller callbacks', path))
+            result = types.MethodType(first.__func__, merge([v.__self__ for v in values], path + ('owner',)))
+        elif isinstance(first, dict):
+            if any(v.keys() != first.keys() for v in values):
+                raise _IncompatibleExecution(('different execution fields', path))
+            result = {}
+            memo[key] = result
+            result.update((k, merge([v[k] for v in values], path + (k,))) for k in first)
+        elif isinstance(first, (list, tuple)):
+            if any(len(v) != len(first) for v in values):
+                raise _IncompatibleExecution(('different execution records', path))
+            result = type(first)(merge(items, path + (str(i),))
+                                 for i, items in enumerate(zip(*values, strict=True)))
+        elif hasattr(first, '__dict__') and not isinstance(first, (type, types.FunctionType, types.ModuleType)):
+            if any(vars(v).keys() != vars(first).keys() for v in values):
+                raise _IncompatibleExecution(('different execution memory fields', path))
+            cls = type(first)
+            result = types.SimpleNamespace.__new__(cls) if isinstance(first, types.SimpleNamespace) else object.__new__(cls)
+            memo[key] = result
+            for attr in vars(first):
+                if attr == 'plan_cursor':
+                    bypass = type(first).__name__ == 'MomentumStrikeController' and all(
+                        v.requester.gain == 0. for v in values)
+                    if not bypass and any(v.plan_cursor < len(v.reference_controller.logs if hasattr(v, 'reference_controller')
+                                                              else v.reference.logs) for v in values):
+                        raise _IncompatibleExecution(('unconsumed controller plans', path))
+                    setattr(result, attr, 0)
+                else:
+                    setattr(result, attr, merge([getattr(v, attr) for v in values], path + (attr,)))
+        else:
+            if any(v is not first and v != first and not
+                   (isinstance(first, float) and math.isnan(first) and math.isnan(v)) for v in values):
+                raise _IncompatibleExecution(('different static control context', path))
+            result = first
+        memo[key] = result
+        return result
+
+    try:
+        return merge(branches)
+    except _IncompatibleExecution:
+        if required:
+            raise
+        return G07BatchMemory(branches, lane_counts)
 
 
 class G07MemoryPreviewV1:

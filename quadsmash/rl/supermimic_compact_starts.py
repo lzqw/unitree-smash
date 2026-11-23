@@ -32,8 +32,8 @@ def compact_start(row, selected, launch):
                 executor_before=snapshot,_actor_lane_mask=torch.ones(len(ids),dtype=torch.bool)),gather(launch)
 
 
-def merge_physical_starts(states):
-    from .supermimic_g07_memory_preview_v1 import G07BatchMemory
+def merge_physical_starts(states, *, pack_execution=False):
+    from .supermimic_g07_memory_preview_v1 import G07BatchMemory, pack_planned_execution
     from .supermimic_physical_imagination_state_v1 import PhysicalImaginationStateV1
 
     if len(states) == 1:
@@ -60,16 +60,18 @@ def merge_physical_starts(states):
                 raise ValueError(f'Incompatible shared physical contract at {path}')
         return first
 
+    branches = tuple(state.executor_memory for state in states)
+    executor = pack_planned_execution(branches, counts) if pack_execution else G07BatchMemory(branches, counts)
     return PhysicalImaginationStateV1(
         physical=torch.cat([state.physical for state in states]),
-        executor_memory=G07BatchMemory(tuple(state.executor_memory for state in states), counts),
+        executor_memory=executor,
         task_memory=merge([state.task_memory for state in states]),
         observation_history=torch.cat([state.observation_history for state in states]),
         observation=torch.cat([state.observation for state in states]),
         clock_goal_context=merge([state.clock_goal_context for state in states]))
 
 
-def batch_approach_starts(states, *, max_steps, dt, followthrough_ticks, plane_offset_m):
+def batch_approach_starts(states, *, max_steps, dt, followthrough_ticks, plane_offset_m, pack_execution=False):
     from .supermimic_toi_racket_objective import approach_horizon, flight_intercept
 
     groups = {}
@@ -82,5 +84,6 @@ def batch_approach_starts(states, *, max_steps, dt, followthrough_ticks, plane_o
         # does not collect. Keep each archive's real auxiliary state.
         recovery = tuple(sorted(state.task_memory['recovery']))
         capture = tuple(state.task_memory['auxiliary']['not_captured'])
-        groups.setdefault((horizon, recovery, capture), []).append(state)
-    return tuple(merge_physical_starts(groups[key]) for key in sorted(groups))
+        planned = pack_execution and bool(state.executor_memory.reference_controller.planned.all())
+        groups.setdefault((horizon, recovery, capture, planned), []).append(state)
+    return tuple(merge_physical_starts(groups[key], pack_execution=pack_execution) for key in sorted(groups))

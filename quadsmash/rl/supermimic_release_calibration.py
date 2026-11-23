@@ -157,6 +157,33 @@ def measured_contact_pairs(replay, launch, *, offset, limit):
     return pairs
 
 
+def measured_body_pairs(replay, launch, *, offset, limit=4):
+    """Return genuine interventions that contain at least four pre-impact steps."""
+    columns = _native_event_columns(replay.schema)
+    contact = columns['rally/had_contact']
+    fields = ('state', 'next_state', 'next_values', 'targets', 'previous_action', 'feet', 'present', 'elapsed')
+    records = replay.training_probe_pairs
+    if not records:
+        return []
+    pairs = []
+    for index in range(len(records)):
+        lanes, minus, plus = records[(index + offset) % len(records)]
+        available = min(len(minus['state']), len(plus['state']), 16)
+        if available < 4:
+            continue
+        valid = ((minus['next_values'][:4, :, contact] <= .5)
+                 & (plus['next_values'][:4, :, contact] <= .5)).squeeze(-1).all(0)
+        if not valid.any():
+            continue
+        selected = torch.tensor(lanes)[valid]
+        windows = [{name: branch[name][:available, valid].to(launch.device) for name in fields}
+                   for branch in (minus, plus)]
+        pairs.append((*windows, launch[selected.to(launch.device)]))
+        if len(pairs) == limit:
+            break
+    return pairs
+
+
 @torch.no_grad()
 def calibrate_release_speed(adapter, replay, launch, *, excluded_lanes, string_strips,
                             separation_m, threshold=4.5, max_cases=64, training_calibration=None,

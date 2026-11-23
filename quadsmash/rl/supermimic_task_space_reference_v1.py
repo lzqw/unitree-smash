@@ -174,6 +174,55 @@ class TaskSpaceReferenceBankV1:
         self.entries=list(reversed(kept))
         self.excluded_lanes=tuple(sorted(excluded))
 
+    @torch.no_grad()
+    def extend_resolved_approach(self, resolved, geometry, court, *, source_sha256):
+        from .supermimic_physical_dataset_v1 import encode_physical
+
+        device = next(geometry.buffers()).device
+        entries = []
+        for (stream, lane, episode), (frames, terminal) in resolved.items():
+            if lane in self.excluded_lanes or not terminal['ball_side_complete_except_recovery']:
+                continue
+            motion = (terminal.get('native_contact') or {}).get('first_approach_contact_motion')
+            flight = terminal.get('native_flight') or {}
+            landing = flight.get('first_landing_m')
+            required = ('racket_center_m', 'racket_linear_velocity_mps', 'face_normal',
+                        'racket_angular_velocity_rad_s', 'ball_position_m', 'incoming_ball_velocity_mps')
+            if not motion or not all(name in motion for name in required) or not landing:
+                continue
+            xmin, xmax = court['target_x_limits_m']
+            inside = min(landing[0] - xmin, xmax - landing[0], court['target_y_half_width_m'] - abs(landing[1]))
+            if not math.isfinite(inside) or inside < .10:
+                continue
+            tensors = [torch.as_tensor(motion[name], device=device, dtype=torch.float32) for name in required]
+            center, linear, normal, angular, ball, incoming = tensors
+            target = torch.cat((center - ball, linear, normal, angular))
+            arrival = terminal['contact_time_s']
+            if not target.isfinite().all() or not incoming.isfinite().all() or not math.isfinite(arrival):
+                continue
+            states, times = [], []
+            for frame in frames:
+                physical = frame['start']['before']['physical']
+                states.append(encode_physical({k: v[lane:lane+1] for k, v in physical.items()}).to(device))
+                times.append(float(physical['elapsed_s'][lane]))
+            order = sorted(range(len(times)), key=times.__getitem__)
+            states = torch.cat([states[i] for i in order])
+            times = torch.tensor([times[i] for i in order], device=device)
+            event_source = (terminal.get('behavior_at_terminal') or {}).get('actor_sha256') or source_sha256
+            digest = hashlib.sha256(f'{event_source}:{stream}:{lane}:{episode}'.encode()).hexdigest()
+            entries.append(dict(mode='approach', lane_id=lane, episode_id=episode,
+                                features=task_space_features(states, geometry, 'approach'), times=times,
+                                choices=torch.arange(len(times), device=device), anchor_time=arrival,
+                                toi_time=arrival, toi_racket=target, incoming_velocity=incoming,
+                                outgoing_velocity=flight.get('outgoing_velocity_mps'), landing_position=landing,
+                                contact_position=motion['point_m'], source_sha256=event_source,
+                                policy_id=f'{stream}:{frames[-1]["policy_version"]}', digest=digest,
+                                score_schema='approach_ball_only_v1', terminal_verified=True))
+        self.extend(type(self)(entries, self.geometry_sha256, source_sha256, self.match_distance_threshold,
+                               excluded_lanes=self.excluded_lanes,
+                               execution_contract_sha256=self.execution_contract_sha256))
+        return len(entries)
+
     def bind(self,initial_physical,mode,*,geometry,elapsed,event_time=None,require_toi=False):
         current=task_space_features(initial_physical,geometry,mode).detach()
         candidates=[e for e in self.entries if e['mode']==mode]
@@ -188,6 +237,10 @@ class TaskSpaceReferenceBankV1:
         for i,e in enumerate(candidates):
             ids=e['choices'].to(current.device); ts=e['times'].to(current.device); fs=e['features'].to(current.device)
             distance=(current[:,None]-fs[ids][None]).square().mean(-1)
+            if require_toi and 'incoming_velocity' in e:
+                velocity = e['incoming_velocity'].to(current)
+                delta = (initial_physical[:, 52:55] - velocity).square().mean(-1) / 25.
+                distance = distance + .2 * delta[:, None]
             if event_time is not None:
                 relative=elapsed.reshape(-1)-event_time.reshape(-1)
                 known=torch.isfinite(relative)
@@ -210,7 +263,9 @@ class TaskSpaceReferenceBankV1:
         anchor_time=anchor_table[chosen]
         anchor_index=(time_table[chosen]-anchor_time[:,None]).abs().argmin(-1)
         anchor_features=feature_table[chosen,anchor_index]
-        toi_data = {'toi_racket':torch.stack([e['toi_racket'].to(current) for e in candidates])[chosen]} if require_toi else {}
+        toi_data = {'toi_racket':torch.stack([e['toi_racket'].to(current) for e in candidates])[chosen],
+                    'measured_interior_success':torch.tensor(
+                        ['landing_position' in e for e in candidates], device=current.device)[chosen]} if require_toi else {}
         return dict(**toi_data,reference_digests=[e['digest'] for e in candidates],indices=chosen,matched=torch.isfinite(best)&(best<=self.match_distance_threshold),
                     times=time_table[chosen],features=feature_table[chosen],lengths=sizes[chosen],
                     distance=best,offset=aligned-elapsed.detach().reshape(-1),

@@ -61,9 +61,19 @@ def main():
                         help='Score the predeclared research cases held out from native training')
     panels.add_argument('--independent-panel-batch', type=int, choices=range(4),
                         help='Evaluate one stage-end batch of the declared independent 512 cases')
+    panels.add_argument('--approach-quick64', action='store_true',
+                        help='Score 64 registered training-side cases for block monitoring')
+    parser.add_argument('--approach-reset-probe', action='store_true',
+                        help='Compare 64 continuation ticks with a scene restart on eight training cases')
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus'),default=None)
     args = parser.parse_args()
+    if args.approach_reset_probe and not args.approach_quick64:
+        parser.error('The restart probe requires the ball-only training-case panel')
+    if args.approach_quick64 and (not args.approach_ball_only or not args.checkpoint
+                                 or args.native_action_probe_spec or args.record_physical_transitions
+                                 or args.shutdown_diagnostic_ticks is not None or args.diagnostic_grounded_miss):
+        parser.error('Approach quick-check requires a frozen ball-only checkpoint')
     if args.early_arm_seconds is not None and not args.approach_ball_only:
         parser.error('Early-arm override requires the ball-only A0 evaluation protocol')
     if args.approach_ball_only and (args.relaxed_scoring or args.relaxed_survival_diagnostic):
@@ -201,6 +211,12 @@ def _run_native(args, stop_request):
             from quadsmash.rl.supermimic_independent_panel import fixed128_cases
             cases, panel_identity = fixed128_cases(contract['protocol_sha256'], args.seed)
             capture_contract = dict(contract, research_evaluation=panel_identity)
+        if args.approach_quick64:
+            from quadsmash.rl.supermimic_approach_data_v1 import approach_quick_panel
+            cases, panel_identity = approach_quick_panel(cases)
+            capture_contract = dict(contract, approach_quick_panel=panel_identity)
+            if args.approach_reset_probe:
+                cases = cases[:8]
         if args.native_action_probe_spec:
             from scripts.declare_supermimic_contact_training_cases import resolve_probe_cases
             spec = json.loads(args.native_action_probe_spec.read_text())
@@ -209,7 +225,8 @@ def _run_native(args, stop_request):
                 capture_contract = dict(contract, contact_training_panel_sha256=training_digest,
                                         contact_training_only=True)
         write_json(args.output/'task_contract.json', capture_contract)
-        cfg = make_task_cfg(128, contract, protocol, receipt, execution_root=execution_root)
+        lanes = len(cases)
+        cfg = make_task_cfg(lanes, contract, protocol, receipt, execution_root=execution_root)
         cfg.seed, cfg.sim.device = args.seed, args.physics_device
         validate_sweep_contract(cfg, contract, args.sweep_audit_iterations)
         noise = zero_panel_reset_noise(len(cases), args.seed)
@@ -263,9 +280,9 @@ def _run_native(args, stop_request):
             env.physical_transition_archive.attach_task_sequence(env)
         reference = None
         if trained is None:
-            reference = (make_g07_residual_controller(source,128,env.device,execution_root)
+            reference = (make_g07_residual_controller(source,lanes,env.device,execution_root)
                          if source['schema']=='g07-shared-target-residual-ppo-v1'
-                         else FullRacketResidualControllerV4(source,128,env.device))
+                         else FullRacketResidualControllerV4(source,lanes,env.device))
             reference.reset()
         physics = dict(device=str(SimulationManager.get_physics_sim_device()),
                        gpu_dynamics=bool(SimulationManager.is_gpu_dynamics_enabled()),
@@ -278,7 +295,7 @@ def _run_native(args, stop_request):
         first, cursor, numerical = {}, 0, 0
         head_counts = torch.zeros(2, dtype=torch.long, device=env.device)
         if args.diagnostic_grounded_miss:
-            gate_first_tick = torch.full((128,), -1, device=env.device, dtype=torch.long)
+            gate_first_tick = torch.full((lanes,), -1, device=env.device, dtype=torch.long)
             gate_ticks = torch.zeros_like(gate_first_tick)
             first_active = torch.ones_like(gate_ticks, dtype=torch.bool)
         mapping = dict(max_final_target_error_rad=0., tolerance_rad=2e-6,
@@ -299,6 +316,11 @@ def _run_native(args, stop_request):
             from quadsmash.rl.supermimic_native_phase_timing import NativePhaseTiming
             phase_timing = NativePhaseTiming(env)
         stage = 'EVALUATING'
+        if args.approach_reset_probe:
+            from quadsmash.rl.supermimic_native_approach_reset import (
+                NativeApproachRestart, observe_restart_state, restart_comparison)
+            restart = None
+            replay_actions, continuation = [], []
         with torch.inference_mode():
             for tick in range(args.shutdown_diagnostic_ticks or 800):
                 if stop_request['signal'] is not None:
@@ -306,6 +328,8 @@ def _run_native(args, stop_request):
                 before = obs['policy'] if reference is None and probe_capture is None else obs['policy'].clone()
                 old_target = None
                 action = policy_forward(actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
+                if args.approach_reset_probe and tick == 235:
+                    restart = NativeApproachRestart.capture(env)
                 if env.approach_ball_termination is not None:
                     env.record_approach_gate(actor.approach_action_gate(before))
                 if probe_capture is not None:action=probe_capture.before(tick,env,before,action)
@@ -330,6 +354,19 @@ def _run_native(args, stop_request):
                 step_start = time.perf_counter()
                 obs, _, done, _ = (wrapper.step(action) if phase_timing is None else
                                    phase_timing.step(wrapper.step, action, before, tick))
+                if args.approach_reset_probe and restart is not None:
+                    replay_actions.append(action.detach().clone())
+                    continuation.append(observe_restart_state(env, obs))
+                    if len(continuation) == 64:
+                        restart.restore(env)
+                        replay = []
+                        for command in replay_actions:
+                            obs, _, _, _ = wrapper.step(command)
+                            replay.append(observe_restart_state(env, obs))
+                        outcome = restart_comparison(continuation, replay)
+                        outcome.update(start_control_tick=235, cases=[case['case_id'] for case in cases])
+                        write_json(args.output/'approach_restart_probe.json', outcome)
+                        return
                 if probe_capture is not None:probe_capture.after(tick,env,done)
                 ticks_completed += 1
                 if not torch.isfinite(obs['policy']).all():
@@ -380,7 +417,7 @@ def _run_native(args, stop_request):
                     write_json(args.output/'progress.json',progress)
                     write_json(args.output/'command_consistency.json',mapping)
                     print('SUPERMIMIC_EVAL_PROGRESS='+json.dumps(progress),flush=True)
-                if scoring_protocol['approach_ball_scoring'] is not None and len(first) == 128:
+                if scoring_protocol['approach_ball_scoring'] is not None and len(first) == lanes:
                     break
         if env.physical_transition_archive is not None:
             env.physical_transition_archive.flush()
@@ -389,7 +426,7 @@ def _run_native(args, stop_request):
         if args.shutdown_diagnostic_ticks is not None:
             write_json(args.output/'command_consistency.json', mapping)
             write_json(args.output/'shutdown_diagnostic.json', dict(
-                control_ticks=ticks_completed, num_envs=128,
+                control_ticks=ticks_completed, num_envs=lanes,
                 requested_ticks=args.shutdown_diagnostic_ticks,
                 first_episodes=len(first), elapsed_s=time.perf_counter()-start,
                 scope='Shutdown diagnostic only; no task score or formal completion',
@@ -397,12 +434,12 @@ def _run_native(args, stop_request):
             lifecycle_stage(args.output, 'SHUTDOWN_DIAGNOSTIC_FINISHED', control_ticks=ticks_completed)
             print('SUPERMIMIC_SHUTDOWN_DIAGNOSTIC_FINISHED', flush=True)
             return
-        if len(first)!=128:
-            raise RuntimeError(f'Only {len(first)}/128 pre-reset records; no live-state backfill permitted')
-        if args.research_fixed128 or args.independent_panel_batch is not None:
-            if any(first[i]['case_id'] != cases[i]['case_id'] for i in range(128)):
+        if len(first) != lanes:
+            raise RuntimeError(f'Only {len(first)}/{lanes} pre-reset records; no live-state backfill permitted')
+        if args.approach_quick64 or args.research_fixed128 or args.independent_panel_batch is not None:
+            if any(first[i]['case_id'] != cases[i]['case_id'] for i in range(lanes)):
                 raise ValueError('Terminal case differs from the declared lane assignment')
-        rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(128)]
+        rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(lanes)]
         if scoring_protocol['approach_ball_scoring'] is not None:
             contacts = [event for event in env.contact_records if event['episode_index'] == 0]
             write_json(args.output/'native_contact_motion.json', contacts)
@@ -418,7 +455,7 @@ def _run_native(args, stop_request):
                 digest.update(chunk)
             checkpoint_sha256 = digest.hexdigest()
         metrics=dict(policy_execution=policy_execution,policy_execution_provenance=execution_provenance,evaluation_scope='TRAIN128 development, not A/B acceptance',
-            num_envs=128,control_ticks=ticks_completed,episode_seconds=8.,
+            num_envs=lanes,control_ticks=ticks_completed,episode_seconds=8.,
             qualified_airborne_string_contact=n,
             ball_side_complete_except_recovery=sum(r['ball_side_complete_except_recovery'] for r in rows),
             recovery_success=recovery if recovery_observed or scoring_protocol['approach_ball_scoring'] is None else None,
@@ -447,6 +484,8 @@ def _run_native(args, stop_request):
             metrics.update(task_contract=capture_contract, evaluation_scope='independent512 stage-end research evaluation')
         if args.research_fixed128:
             metrics.update(task_contract=capture_contract, evaluation_scope='fixed128 held-out research development')
+        if args.approach_quick64:
+            metrics.update(task_contract=capture_contract, evaluation_scope='fixed train64 Approach quick-check')
         actor_state_after=tensor_digest(actor.state_dict().items())
         if actor_state_after!=actor_state_before:raise RuntimeError('Frozen evaluation mutated actor weights')
         head_active_lane_steps = dict(zip(("recovery", "approach"), head_counts.tolist()))
@@ -475,9 +514,9 @@ def _run_native(args, stop_request):
         write_json(args.output/'episodes_summary.json',rows)
         write_json(args.output/'metrics.json',metrics)
         write_json(args.output/'command_consistency.json',mapping)
-        write_json(args.output/'completed.json',dict(control_ticks=ticks_completed,episodes=128,formal_acceptance=False))
+        write_json(args.output/'completed.json',dict(control_ticks=ticks_completed,episodes=lanes,formal_acceptance=False))
         stage='FINISHED'
-        lifecycle_stage(args.output, 'SIMULATION_FINISHED', control_ticks=800, episodes=128)
+        lifecycle_stage(args.output, 'SIMULATION_FINISHED', control_ticks=ticks_completed, episodes=lanes)
         print('SUPERMIMIC_EVAL_RESULT='+json.dumps(metrics),flush=True)
     except BaseException as error:
         primary_failed = True

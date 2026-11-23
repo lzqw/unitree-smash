@@ -46,7 +46,7 @@ def evaluate_command(source, output, motion, execution_root, *, seed, a0, indepe
 def train_command(registered, source, output, motion, *, stop_at, fresh, prioritize_flight=False,
                   training_seed=None, start_lanes=16, shuffle_unlabeled_starts=False,
                   retry_proposals=0, resume_collection_ticks=None, labeled_start_checkpoint=None,
-                  labeled_snapshot_reserve=0):
+                  labeled_snapshot_reserve=0, e1_v2=False, guard_lanes=16):
     command = ['scripts/train_supermimic_physical_block.py', *registered_options(registered, ARCHIVE_INPUTS),
                '--output', str(output), '--resume-training', str(source),
                '--training-profile', 'research_scale', '--training-stage', 'research_contact',
@@ -81,6 +81,8 @@ def train_command(registered, source, output, motion, *, stop_at, fresh, priorit
     if prioritize_flight:
         speed_target = 'relative-face' if motion else 'historical'
         command.extend(('--prioritize-approach-flight', '--approach-speed-target', speed_target))
+    if e1_v2:
+        command.extend(('--e1-v2-approach-scale', '--approach-guard-start-lanes', str(guard_lanes)))
     return command
 
 
@@ -141,6 +143,8 @@ def main():
     parser.add_argument('--approach-labeled-start-checkpoint', type=Path)
     parser.add_argument('--retain-labeled-approach-snapshots', type=int, default=0)
     parser.add_argument('--training-seed', type=int, help='Learner seed for a fresh training branch or its continuation')
+    parser.add_argument('--e1-v2-approach-scale', action='store_true')
+    parser.add_argument('--approach-guard-start-lanes', type=int, choices=(16, 32), default=16)
     parser.add_argument('--baseline', type=Path, help='Pair the milestone with a completed fixed128 A0 run')
     parser.add_argument('--fixed-output', type=Path, help='Directory for the milestone’s fixed128 evaluation')
     parser.add_argument('--seed', type=int, default=882072)
@@ -148,6 +152,9 @@ def main():
     parser.add_argument('--print-command', action='store_true')
     args = parser.parse_args()
     training = args.job in ('train', 'milestone')
+    if args.e1_v2_approach_scale and (
+            not training or args.arm != 'E1' or not args.prioritize_approach_flight or args.fresh):
+        parser.error('E1 v2 requires an E1 flight-priority continuation')
     if not training and (args.fresh or args.stop_at is not None or args.prioritize_approach_flight
                          or args.training_seed is not None or args.toi_effective_start_lanes is not None
                          or args.shuffle_unlabeled_approach_starts or args.reuse_unused_approach_proposals
@@ -174,12 +181,13 @@ def main():
     if training:
         command = train_command(registered, source, output, early, stop_at=args.stop_at, fresh=args.fresh,
                                 prioritize_flight=args.prioritize_approach_flight, training_seed=args.training_seed,
-                                start_lanes=args.toi_effective_start_lanes or 16,
+                                start_lanes=args.toi_effective_start_lanes or (32 if args.e1_v2_approach_scale else 16),
                                 shuffle_unlabeled_starts=args.shuffle_unlabeled_approach_starts,
                                 retry_proposals=args.reuse_unused_approach_proposals,
                                 resume_collection_ticks=args.resume_approach_collection_ticks,
                                 labeled_start_checkpoint=args.approach_labeled_start_checkpoint,
-                                labeled_snapshot_reserve=args.retain_labeled_approach_snapshots)
+                                labeled_snapshot_reserve=args.retain_labeled_approach_snapshots,
+                                e1_v2=args.e1_v2_approach_scale, guard_lanes=args.approach_guard_start_lanes)
     else:
         execution = registered_options(registered, ('g07-execution-root',))[1]
         command = evaluate_command(source, output, early, execution, seed=args.seed, a0=args.job == 'a0',

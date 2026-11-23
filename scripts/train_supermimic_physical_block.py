@@ -4,7 +4,7 @@
 Native Isaac interaction, replay, world-model imagination and actor/critic
 updates are durable and restartable. No MPC or teacher intervention.
 """
-import argparse,hashlib,json,os,shutil,subprocess,sys,time,traceback,signal,io
+import argparse,copy,hashlib,json,os,shutil,subprocess,sys,time,traceback,signal,io
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -214,6 +214,8 @@ def main():
                         help='Maximum measured-motion contact batches between A-only Actor blocks')
     parser.add_argument('--approach-initial-ticks', type=int, default=512,
                         help='First native collection after each scene start, through shot settlement')
+    parser.add_argument('--e1-v2-approach-scale', action='store_true')
+    parser.add_argument('--approach-guard-start-lanes', type=int, choices=(16, 32), default=16)
     parser.add_argument('--head-block-size',type=int,default=8)
     parser.add_argument('--refresh-mode',choices=('pair','per-head'),default='pair',
                         help='pair: R8/A8 then one combined refresh; per-head: integration diagnostic only')
@@ -392,6 +394,10 @@ def main():
     if args.ball_side_mode == 'enforce': parser.error('ball-side enforce mode is not implemented; use shadow for this audit-only revision')
     if (args.early_arm_seconds is not None or args.approach_stop_at is not None) and not args.approach_ball_only:
         parser.error('Early arm control and evaluation boundaries require the Approach-only phase')
+    if args.e1_v2_approach_scale and not (
+            args.approach_ball_only and args.prioritize_approach_flight and args.early_arm_seconds is not None
+            and args.toi_effective_start_lanes in (32, 64, 96, 128)):
+        raise ValueError('E1 v2 requires early-arm ball-only training and a supported distinct-episode batch')
     if (args.prioritize_approach_flight or args.approach_speed_target is not None) and not args.approach_ball_only:
         parser.error('Flight priority and the speed target require the Approach-only phase')
     if args.shuffle_unlabeled_approach_starts and not args.approach_ball_only:
@@ -638,7 +644,7 @@ def run(args, *, alternating=None):
             from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank
             replay.actor_start_bank = ActorStartBank(
                 ball_phase=True, label_reserve=args.retain_labeled_approach_snapshots,
-                excluded_lanes=wm_holdout_lanes)
+                excluded_lanes=wm_holdout_lanes, persistent_events=args.e1_v2_approach_scale)
         from quadsmash.rl.supermimic_physical_loop_replay_v1 import ActiveFlightWindows, NaturalFlightWindows, sample_long_native
         natural_flight=NaturalFlightWindows(package['tensors'],wm_holdout_lanes) if args.wm_natural_flight_batch else None
         active_flight=None
@@ -815,6 +821,7 @@ def run(args, *, alternating=None):
             contract = dict(contract, approach_ball_scoring=phase_scoring)
             protocol = dict(protocol, approach_ball_scoring=phase_scoring)
             trainer.approach_ball_protocol = phase_scoring
+            trainer.approach_v2 = args.e1_v2_approach_scale
             trainer.prioritize_approach_flight = args.prioritize_approach_flight
             trainer.approach_relative_face_speed = args.approach_speed_target == 'relative-face'
             trainer.approach_separation_m = PHYSICS['separation_hysteresis_m']
@@ -952,10 +959,16 @@ def run(args, *, alternating=None):
                 write(args.output/'resumed_forward_validation.json',resume_check)
                 if not resume_check['passed'] and not research:
                     raise ValueError('Restored online WM failed fixed native forward validation')
-            if reference_bank is None and resumed.get('reference_bank') is not None:
+            v2_continuation = args.e1_v2_approach_scale and resumed['config'].get('e1_v2_approach_scale', False)
+            if (reference_bank is None or v2_continuation) and resumed.get('reference_bank') is not None:
                 from quadsmash.rl.supermimic_task_space_reference_v1 import TaskSpaceReferenceBankV1
-                trainer.reference_bank=TaskSpaceReferenceBankV1.from_payload(resumed['reference_bank']).to('cuda:0')
-                trainer.reference_bank.assert_excludes(wm_holdout_lanes)
+                saved_bank = TaskSpaceReferenceBankV1.from_payload(resumed['reference_bank']).to('cuda:0')
+                saved_bank.assert_excludes(wm_holdout_lanes)
+                if v2_continuation and reference_bank is not None and (
+                        saved_bank.execution_contract_sha256 != reference_bank.execution_contract_sha256
+                        or saved_bank.geometry_sha256 != reference_bank.geometry_sha256):
+                    raise ValueError('E1 v2 reference continuation changed execution or geometry')
+                trainer.reference_bank = saved_bank
             for attr,key in (('accepted_snapshot','step'),('block_start_snapshot','block'),('native_accepted_snapshot','native')):
                 if key in resumed.get('actor_references',{}):setattr(trainer,attr,resumed['actor_references'][key])
             trainer.critic.load_state_dict(resumed['critic'],strict=True)
@@ -970,6 +983,8 @@ def run(args, *, alternating=None):
             if not (args.approach_ball_only and args.resume_reset_schedule):
                 if 'actor_optimizers' in resumed:
                     trainer._pending_actor_optimizer_states=dict(resumed['actor_optimizers'])
+                    if args.e1_v2_approach_scale and not v2_continuation:
+                        trainer._pending_actor_optimizer_states.pop('approach', None)
                     if 'joint' in trainer._pending_actor_optimizer_states:
                         trainer._actor_optimizers['joint'].load_state_dict(trainer._pending_actor_optimizer_states.pop('joint'))
                 else:
@@ -1190,6 +1205,22 @@ def run(args, *, alternating=None):
                 raise ValueError('The fused flight backend is scoped to research-scale runs')
             from quadsmash.rl.supermimic_research_flight_cuda import enable_research_flight
             flight_backend = enable_research_flight(adapter.action_ball_model, previous_backend)
+        v2_flight_backend = None
+        old_v2 = resumed['config'].get('e1_v2_approach_scale', False) if args.resume_training else False
+        if old_v2 and not args.e1_v2_approach_scale:
+            raise ValueError('An E1 v2 checkpoint requires the same training profile')
+        if args.e1_v2_approach_scale:
+            from quadsmash.rl.supermimic_differentiable_flight_cuda import enable_differentiable_flight
+            from quadsmash.rl.supermimic_v1 import load_ppo_initialized_actor as load_v2_anchor
+            if args.resume_training:
+                trainer.last_approach_alpha = resumed.get('last_approach_alpha')
+            anchor, _ = load_v2_anchor(Path(adapter.manifest['checkpoint_paths']['source']), torch.device('cuda:0'))
+            anchor.load_state_dict(resumed['approach_v2_anchor'] if old_v2 else actor.state_dict(), strict=True)
+            anchor.configure_approach_gate(args.early_arm_seconds)
+            trainer.approach_v2_anchor = anchor.eval().requires_grad_(False)
+            v2_flight_backend = enable_differentiable_flight(
+                adapter.action_ball_model,
+                resumed['config'].get('differentiable_flight_backend') if args.resume_training else None)
         previous_body_backend = resumed['config'].get('research_body_flight_backend') if args.resume_training else None
         body_flight_backend = None
         if previous_body_backend or args.fused_research_body_flight:
@@ -1457,6 +1488,9 @@ def run(args, *, alternating=None):
         research_origin=(global_accepted_id if args.resume_reset_schedule else resumed.get('config',{}).get('research_origin',global_accepted_id)) if research and args.resume_training else 0
         config['research_body_flight_backend'] = body_flight_backend
         config['research_full_body_fk_backend'] = fk_backend
+        config['e1_v2_approach_scale'] = args.e1_v2_approach_scale
+        config['approach_guard_start_lanes'] = args.approach_guard_start_lanes
+        config['differentiable_flight_backend'] = v2_flight_backend
         config['research_flight_backend'] = flight_backend
         config['research_origin']=research_origin
         config['recovery_stability_limits'] = args.recovery_stability_limits
@@ -1512,7 +1546,9 @@ def run(args, *, alternating=None):
                 actor_optimizers=dict(getattr(trainer,'_pending_actor_optimizer_states',{}),**{name:opt.state_dict() for name,opt in trainer._actor_optimizers.items()}),
                 world_optimizer=trainer.world_opt.state_dict(),critic_optimizer=trainer.critic_opt.state_dict(),
                 actor_updates=trainer.actor_updates,actor_attempts=trainer.actor_attempts,
+                last_approach_alpha=getattr(trainer, 'last_approach_alpha', None),
                 approach_speed_calibration=getattr(trainer, 'approach_speed_calibration', None),
+                approach_v2_anchor=(trainer.approach_v2_anchor.state_dict() if args.e1_v2_approach_scale else None),
                 rejected_actor_updates=trainer.rejected_actor_updates,world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,
                 research_elapsed_s=time.monotonic()-research_started,
                 native_ticks=tick,metadata=metadata,config=config,last_critic_loss=trainer.last_critic_loss,
@@ -1938,6 +1974,23 @@ def run(args, *, alternating=None):
                             completed_returns.append(record['native_episode_return'])
                             completed_discounted.append(record['native_episode_discounted_return'])
                             episode_stats.add(record)
+                            if args.e1_v2_approach_scale:
+                                native_contact = {key: raw.get(key) for key in (
+                                    'first_string_contact_point_m', 'terminal_control_tick', 'string_hit', 'frame_hit',
+                                    'first_approach_contact_motion')}
+                                native_contact['contact_type'] = ('string' if raw['string_hit'] else
+                                                                  'frame' if raw['frame_hit'] else 'other' if raw['had_contact'] else 'miss')
+                                motion = native_contact['first_approach_contact_motion']
+                                if motion is not None:
+                                    from quadsmash.tasks.stand.observation_contract import inverse_rotate
+                                    normal, offset = trainer.string_boundary
+                                    point = normal.new_tensor(motion['point_m'])
+                                    center = normal.new_tensor(motion['racket_center_m'])
+                                    quaternion = normal.new_tensor(motion['racket_quaternion_w'])
+                                    local = inverse_rotate(quaternion[None], (point - center)[None])[0]
+                                    native_contact['signed_string_margin_m'] = float((local[1:] @ normal.T - offset).amin())
+                                    native_contact['first_contact_control_tick'] = round(motion['time_s'] / timebase.control_dt_s)
+                                record['native_contact'] = native_contact
                             if arm_identification is not None:
                                 record['arm_identification_episode'] = bool(arm_identification.excited[raw['env_id']])
                                 record['first_approach_contact_motion'] = raw['first_approach_contact_motion']
@@ -1994,7 +2047,36 @@ def run(args, *, alternating=None):
                 world_stats=run_world_updates(global_attempt_id,head=block_name) if collect_block else {}
                 if args.approach_ball_only and collect_block:
                     from quadsmash.rl.supermimic_release_calibration import (
-                        calibrate_release_speed, measured_contact_batches, measured_contact_pairs)
+                        calibrate_release_speed, measured_body_pairs, measured_contact_batches, measured_contact_pairs)
+                    if args.e1_v2_approach_scale:
+                        if trainer.reference_bank is not None:
+                            world_stats['measured_interior_reference_count'] = trainer.reference_bank.extend_resolved_approach(
+                                replay.actor_start_bank.resolved, adapter.physical_model.geometry,
+                                trainer.research_court, source_sha256=behavior_actor_hash)
+                        if not world_stats['fixed_native_forward']['passed']:
+                            raise RuntimeError('E1 v2 Body refresh failed its native forward check')
+                        body_fit = []
+                        body_pairs = measured_body_pairs(replay, launch, offset=global_attempt_id)
+                        if body_pairs:
+                            body = adapter.physical_model.body
+                            body_before = copy.deepcopy(body.state_dict())
+                            optimizer_before = copy.deepcopy(trainer.world_opt.state_dict())
+                            updates_before = trainer.world_updates
+                        for minus, plus, pair_launch in body_pairs:
+                            check_stop()
+                            body_fit.append(trainer.fit_approach_body_pair(minus, plus, pair_launch))
+                        world_stats['paired_precontact_body_supervision'] = body_fit
+                        if any(result['updated'] for result in body_fit):
+                            verification = verify_online_forward(block_name, global_attempt_id)
+                            if not verification['passed']:
+                                body.load_state_dict(body_before)
+                                trainer.world_opt.load_state_dict(optimizer_before)
+                                trainer.world_updates = updates_before
+                                world_stats['rejected_body_pair_forward_validation'] = verification
+                                verification = verify_online_forward(block_name, global_attempt_id)
+                                if not verification['passed']:
+                                    raise RuntimeError('Restored E1 v2 Body failed native replay validation')
+                            world_stats['fixed_native_forward'] = verification
                     contact_started = time.perf_counter()
                     contact_pairs = measured_contact_pairs(
                         replay, launch, offset=global_attempt_id, limit=min(4, args.approach_contact_updates))
@@ -2048,6 +2130,7 @@ def run(args, *, alternating=None):
                     active_pool=[item for item in pool if approach_active(item)]
                     pool=active_pool if active_pool else approach_pool
                 proposal_rows=None
+                guard_rows=None
                 if block_name=='recovery':
                     eligible=[]
                     for item in pool:
@@ -2105,10 +2188,46 @@ def run(args, *, alternating=None):
                             allowed &= ~start['arm_identification_episode'].cpu().reshape(-1)
                         return allowed & precontact & early_approach_start(observation, activity).cpu()
                     draw = schedule.head_attempts('approach')
-                    proposal_rows, start_sampling = replay.actor_start_bank.sample_ball_phase(
-                        ball_start_lanes, draw, fallback=pool, count=args.toi_effective_start_lanes,
-                        shuffle_unlabeled=args.shuffle_unlabeled_approach_starts,
-                        labeled_history=labeled_approach_history)
+                    if args.e1_v2_approach_scale:
+                        audit = args.output/'approach_v2_throughput.json'
+                        if collect_block and not old_v2 and not audit.exists():
+                            from quadsmash.rl.supermimic_compact_starts import batch_approach_starts
+                            starts = replay.actor_start_bank
+                            rng = starts.generator.get_state()
+                            trials = []
+                            try:
+                                for size in (16, 32, 64):
+                                    check_stop()
+                                    sampled, coverage = starts.sample_ball_phase(
+                                        ball_start_lanes, draw, count=size, require_labels=True, record_draw=False,
+                                        labeled_history=labeled_approach_history)
+                                    if coverage['effective_lanes'] != size:
+                                        trials.append(dict(requested=size, available=coverage['effective_lanes'],
+                                                           status='insufficient_labeled_episodes'))
+                                        continue
+                                    measured = batch_approach_starts(
+                                        tuple(training_state(s, compact=True) for s in sampled),
+                                        max_steps=timebase.imagination_steps, dt=timebase.control_dt_s,
+                                        followthrough_ticks=phase_scoring['minimum_followthrough_ticks'],
+                                        plane_offset_m=trainer.toi_plane_offset_m, pack_execution=True)
+                                    try:
+                                        trials.append(trainer.benchmark_approach_objective(measured))
+                                    except torch.cuda.OutOfMemoryError:
+                                        if size < 64:
+                                            raise
+                                        trials.append(dict(requested=size, status='cuda_out_of_memory'))
+                                    del measured
+                            finally:
+                                starts.generator.set_state(rng)
+                            write(audit, dict(trials=trials, scope='frozen real native starts, no optimizer step'))
+                        proposal_rows, guard_rows, start_sampling = replay.actor_start_bank.sample_proposal_and_guard(
+                            ball_start_lanes, draw, args.toi_effective_start_lanes, args.approach_guard_start_lanes,
+                            labeled_history=labeled_approach_history)
+                    else:
+                        proposal_rows, start_sampling = replay.actor_start_bank.sample_ball_phase(
+                            ball_start_lanes, draw, fallback=pool, count=args.toi_effective_start_lanes,
+                            shuffle_unlabeled=args.shuffle_unlabeled_approach_starts,
+                            labeled_history=labeled_approach_history)
                     if not proposal_rows:
                         raise RuntimeError('No causal pre-contact state available for the ball-only proposal')
                     row = proposal_rows[0]
@@ -2162,8 +2281,16 @@ def run(args, *, alternating=None):
                     actor_start = batch_approach_starts(
                         actor_start, max_steps=timebase.imagination_steps, dt=timebase.control_dt_s,
                         followthrough_ticks=phase_scoring['minimum_followthrough_ticks'],
-                        plane_offset_m=trainer.toi_plane_offset_m)
+                        plane_offset_m=trainer.toi_plane_offset_m, pack_execution=args.e1_v2_approach_scale)
                     start_sampling['packed_rollout_lane_counts'] = [len(s.physical) for s in actor_start]
+                guard_start = None
+                if guard_rows is not None:
+                    guard_start = batch_approach_starts(
+                        tuple(training_state(r, compact=research) for r in guard_rows),
+                        max_steps=timebase.imagination_steps, dt=timebase.control_dt_s,
+                        followthrough_ticks=phase_scoring['minimum_followthrough_ticks'],
+                        plane_offset_m=trainer.toi_plane_offset_m, pack_execution=True)
+                    start_sampling['guard']['packed_rollout_lane_counts'] = [len(s.physical) for s in guard_start]
                 if research:
                     retained=global_accepted_id-research_origin
                     trainer.contact_aux_weight=(args.research_contact_weight if not args.approach_ball_only and block_name=='approach'
@@ -2171,7 +2298,7 @@ def run(args, *, alternating=None):
                     adapter.action_ball_model.detach_residual_for_actor=not args.approach_ball_only
                 trainer.diagnose_ball_gradients = args.approach_ball_only and collect_block
                 try:
-                    stats=trainer.imagine_update(actor_start)
+                    stats=trainer.imagine_update(actor_start, guard_starts=guard_start)
                 finally:
                     if research:adapter.action_ball_model.detach_residual_for_actor=False
                 if research:
@@ -2256,7 +2383,7 @@ def run(args, *, alternating=None):
                 schedule.finish_approach_refresh(progress,refresh_frozen_policy('approach'))
             if not research:save(f'{cycle_index}_{block_name}_candidate_{accepted:04d}.pt')
             progress['status']='done';save('latest.pt')
-            if research and (global_accepted_id-research_origin)%32==0:
+            if research and not args.e1_v2_approach_scale and (global_accepted_id-research_origin)%32==0:
                 save(f'research_{global_accepted_id-research_origin:04d}.pt')
             return accepted
         def refresh_frozen_policy(head,*,event_id=None,managed_refresh=False,critic_only=False):
@@ -2567,7 +2694,15 @@ def run(args, *, alternating=None):
             if not completed:
                 totals = alternating.head_totals()
                 retained = totals['approach']['accepted']
-                save(f'approach_A{retained:03d}.pt')
+                checkpoint_name = f'approach_A{retained:03d}.pt'
+                save(checkpoint_name)
+                if args.e1_v2_approach_scale:
+                    # The named file is durable. Keep an exact latest alias
+                    # rather than a second gigabyte-scale copy of the same block.
+                    latest = args.output/'latest.pt'
+                    pending = latest.with_suffix('.pt.alias')
+                    os.link(args.output/checkpoint_name, pending)
+                    pending.replace(latest)
                 write(args.output/'evaluation_boundary.json', dict(
                     approach_accepted=retained, recovery_accepted=0, native_ticks=tick,
                     head_counters=totals, invocation=invocation_receipt(),

@@ -319,6 +319,7 @@ class PhysicalLoopReplay:
 
     def new_stream(self, *, source='online', policy_version=None):
         self.current_stream += 1
+        self.actor_start_bank.discard_pending_streams(self.current_stream)
         if source not in SOURCE_CODES:
             raise ValueError(f'Unknown replay source: {source}')
         self.current_source = source

@@ -228,9 +228,10 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     landing_weights=[]
     preserved=True
     params=[p for p in trainer.actor.parameters() if p.requires_grad]
+    joint_backward = toi and getattr(trainer, 'approach_v2', False)
     terms={k:[] for k in ('task','tracking','anchor')}
     ball_scored, ball_speeds, ball_metrics, ball_derivatives = [], [], {}, {}
-    ball_costs, flight_priority = [], []
+    ball_costs, flight_priority, string_margins = [], [], []
     counts={};covered={};weights=[];returns=[];data=[];usage={};by_record=[]
     tracking_vjp_wall_s = pooled_vjp_wall_s = 0.
 
@@ -238,6 +239,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         nonlocal pooled_vjp_wall_s
         if not torch.is_grad_enabled():
             return term.detach()
+        if joint_backward:
+            return term
         started = perf_counter()
         result = _gradient_value(term, params, derivatives)
         pooled_vjp_wall_s += perf_counter() - started
@@ -253,7 +256,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
             kwargs['baseline_ball_scored'] = baseline_ball_scored[i]
         if toi:
             kwargs['baseline_toi_weights']=None if baseline_toi_weights is None else baseline_toi_weights[i]
-        if torch.is_grad_enabled():
+        if torch.is_grad_enabled() and not joint_backward:
             kwargs['tracking_parameters'] = params
         row=trainer._rollout_objective(state,**kwargs)
         tracking_vjp_wall_s += row.get('tracking_vjp_wall_s', 0.)
@@ -265,6 +268,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         n=row['gate_lanes']; w=row['tracking_effective_weight_sum']
         if row.get('flight_cost_by_lane') is not None:
             ball_costs.append(row['flight_cost_by_lane'])
+        if row.get('string_margin_by_lane') is not None:
+            string_margins.append(row['string_margin_by_lane'])
         if row.get('flight_priority_loss') is not None:
             flight_priority.append(gradient_value(row['flight_priority_loss']) * n)
         if row.get('ball_scored') is not None:
@@ -299,7 +304,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
                 executed_steps=row['model_rollout_steps'],
             )
         by_record.append(record)
-        if torch.is_grad_enabled():
+        if torch.is_grad_enabled() and not joint_backward:
             from .supermimic_approach_data_v1 import gradient_parts
             record.update(gradient_parts({k:terms[k][-1][0] for k in terms},params))
         for key in ('predicted_first_string_lanes','predicted_first_frame_lanes','predicted_first_margin_sum_m',
@@ -339,6 +344,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     n = max(counts['gate_lanes'], 1)
     return dict(**scalars,**counts, **{f'ball_loss_{key}': value/n for key,value in ball_metrics.items()},
                 ball_scored=ball_scored or None, ball_approach_speed=torch.cat(ball_speeds) if ball_speeds else None,
+                string_margin_by_lane=torch.cat(string_margins) if string_margins else None,
                 flight_cost_by_lane=torch.cat(ball_costs) if ball_costs else None,
                 flight_priority_loss=sum(flight_priority)/n if flight_priority else None,
                 flight_losses={key: sum(values)/n for key,values in ball_derivatives.items()},

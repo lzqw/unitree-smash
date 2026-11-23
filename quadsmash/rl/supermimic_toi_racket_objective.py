@@ -64,7 +64,7 @@ def flight_intercept(state, horizon, *, plane_offset_m=0.):
 
 
 @torch.no_grad()
-def search_outgoing_target(reference, prior, court, *, minimum_speed):
+def search_outgoing_target(reference, prior, court, *, minimum_speed, interior_m=.03):
     """Choose a court-feasible outgoing shot and invert the normal impulse."""
     from .supermimic_outgoing_flight import predict_flight_events
 
@@ -96,8 +96,8 @@ def search_outgoing_target(reference, prior, court, *, minimum_speed):
     feasible = (results['crossed_net'].reshape(-1, count) & results['landed'].reshape(-1, count)
                 & (results['net_clearance'].reshape(-1, count) > .02)
                 & (results['net_lateral_position'].reshape(-1, count).abs() < court['net_width_m']/2)
-                & (landing[..., 0] >= low + .03) & (landing[..., 0] <= high - .03)
-                & (landing[..., 1].abs() <= court['target_y_half_width_m'] - .03))
+                & (landing[..., 0] >= low + interior_m) & (landing[..., 0] <= high - interior_m)
+                & (landing[..., 1].abs() <= court['target_y_half_width_m'] - interior_m))
     change = outgoing - v[:, None]
     normal = F.normalize(change, dim=-1)
     face = native[lanes, 6:9]
@@ -218,15 +218,15 @@ def string_boundary(config_path, like):
     return inward, (vertices * inward).sum(-1)
 
 
-def string_margin_cost(local_yz, boundary):
+def string_margin_cost(local_yz, boundary, *, minimum=.005):
     inward, offset = boundary
     margin = (local_yz @ inward.T - offset).amin(-1)
-    # Same 5 cm position scale as the TOI loss. No penalty beyond 5 mm inside.
-    return F.smooth_l1_loss((.005 - margin).clamp_min(0) / .05,
+    # Same 5 cm position scale as the TOI loss.
+    return F.smooth_l1_loss((minimum - margin).clamp_min(0) / .05,
                             torch.zeros_like(margin), reduction='none')
 
 
-def first_racket_cost(before, after, impact, geometry, preview, strips, boundary, dt):
+def first_racket_cost(before, after, impact, geometry, preview, strips, boundary, dt, *, minimum=.005):
     """First native-shape preview, with a body-only pose derivative at frozen TOI."""
     from .supermimic_ball_geometry_preview_v1 import box_gap, round_gap
     from .supermimic_ball_impulse_prior_v1 import BallImpulsePriorV1
@@ -244,12 +244,13 @@ def first_racket_cost(before, after, impact, geometry, preview, strips, boundary
     if boxes.shape[1] > strips:
         frame = torch.minimum(frame, boxes[:, strips:].amin(-1))
     competition = torch.nn.functional.softplus((strings - frame + .005) / .005)
-    error = competition + string_margin_cost(local[:, 1:], boundary)
+    error = competition + string_margin_cost(local[:, 1:], boundary, minimum=minimum)
     return 1 - torch.exp(-error)
 
 
 def intercept_loss(before, after, start, end, reference, mask, survival, geometry, *,
-                   fixed_weights=None, detach_empty=False, boundary=None, relative_face_speed=False):
+                   fixed_weights=None, detach_empty=False, boundary=None, relative_face_speed=False,
+                   minimum_margin=.005):
     """Sample racket kinematics at the requested sub-tick arrival. Each lane contributes once."""
     arrival = reference['intercept']['time']
     active = intercept_interval(start, end, reference, mask)
@@ -269,7 +270,8 @@ def intercept_loss(before, after, start, end, reference, mask, survival, geometr
         def local_yz(body):
             axes = body[:, 3:12].reshape(-1, 3, 3)[:, :, 1:]
             return ((point - body[:, :3])[:, :, None] * axes).sum(1)
-        edge_cost = string_margin_cost(torch.lerp(local_yz(a), local_yz(b), alpha[:, None]), boundary)
+        edge_cost = string_margin_cost(torch.lerp(local_yz(a), local_yz(b), alpha[:, None]),
+                                      boundary, minimum=minimum_margin)
     terms = intercept_terms(kinematics, reference['intercept']['position'], reference['toi_racket'])
     position, linear, normal, angular = terms.unbind(-1)
     target = reference.get('ball_only_contact')

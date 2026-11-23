@@ -1,10 +1,24 @@
 """Native-only Approach sampling labels. Never inputs to actor/model rollout."""
+import hashlib
+import json
+
 import torch
 
 APPROACH_QUOTA = dict(uniform=24, approach_active=32, hit_prepare=24,
                      contact_release=24, approach_failure=16, post_hit=8)
 FIELDS = ('approach_gate', 'racket_distance', 'had_contact', 'released',
           'qualified', 'frame_hit', 'attack', 'crossed_net', 'landed_target')
+
+
+def approach_quick_panel(training_cases):
+    """Predeclared half of the ordered TRAIN128 suite for repeated native checks."""
+    if len(training_cases) != 128 or len({row['case_id'] for row in training_cases}) != 128:
+        raise ValueError('Quick-check requires the original ordered TRAIN128')
+    indices = list(range(0, 128, 2))
+    cases = [training_cases[index] for index in indices]
+    digest = hashlib.sha256(json.dumps(cases, sort_keys=True, allow_nan=False).encode()).hexdigest()
+    return cases, dict(schema='approach-train64-quick-v1', sha256=digest, source='TRAIN128',
+                       source_case_indices=indices, stage_end_holdout=False)
 
 def active_gate(gate, threshold=.25, minimum_batch_lanes=4):
     gate = gate.detach().reshape(-1)
@@ -204,6 +218,50 @@ def comparable_flight_merit(before, after, baseline_loss, candidate_loss):
     trial = float(comparable.mean())
     accepted = trial <= initial and candidate_loss < baseline_loss
     return accepted, dict(matched_lanes=count, before=initial, after=trial, lost_release=False)
+
+
+def approach_guard_merit(before, after):
+    """Preserve aggregate flight and contact quality on held-out proposal starts."""
+    old, new = (rollout['flight_cost_by_lane'] for rollout in (before, after))
+    margins, candidate_margins = (rollout['string_margin_by_lane'] for rollout in (before, after))
+    if old.shape != new.shape or margins.shape != candidate_margins.shape or old.shape != margins.shape:
+        raise ValueError('The guard must score the same lanes for each candidate')
+    released = torch.isfinite(old)
+    candidate_released = torch.isfinite(new)
+    n_release = int(released.sum())
+    lost = released & ~candidate_released
+    # Lost predicted releases still contribute a unit cost, even if a different
+    # lane gained an outgoing trajectory.
+    candidate = torch.where(candidate_released, new, old + 1.)
+    old_flight = float(old[released].mean()) if n_release else None
+    new_flight = float(candidate[released].mean()) if n_release else None
+    margin = torch.isfinite(margins) & (margins >= .010)
+    n_margin = int(margin.sum())
+    old_q25 = float(margins[margin].quantile(.25)) if n_margin else None
+    compared = candidate_margins.nan_to_num(nan=-.015)
+    new_q25 = float(compared[margin].quantile(.25)) if n_margin else None
+    count = int(torch.isfinite(margins).sum())
+    candidate_count = int(torch.isfinite(candidate_margins).sum())
+    allowed_losses = max(1, count // 20)
+    flight_ok = not n_release or new_flight <= old_flight + .002
+    margin_ok = not n_margin or new_q25 >= old_q25 - .003
+    count_ok = candidate_count + allowed_losses >= count
+    objective_ok = float(after['loss']) < float(before['loss'])
+    return bool(flight_ok and margin_ok and count_ok and objective_ok), dict(
+        matched_lanes=n_release, before=old_flight, after=new_flight,
+        lost_release=bool(lost.any()), lost_release_lanes=int(lost.sum()),
+        legal_string_before=count, legal_string_after=candidate_count,
+        stable_margin_lanes=n_margin, margin_q25_before_m=old_q25, margin_q25_after_m=new_q25,
+        flight_ok=bool(flight_ok), margin_ok=bool(margin_ok), count_ok=count_ok, objective_ok=objective_ok)
+
+
+def approach_step_sizes(previous):
+    """Try the last successful scale and its neighbors before distant scales."""
+    scales = (1., .5, .25, .125, .0625)
+    if previous not in scales:
+        return scales
+    index = scales.index(previous)
+    return tuple(scales[i] for i in sorted(range(len(scales)), key=lambda i: (abs(i - index), i)))
 
 
 def gradient_parts(terms, parameters):
