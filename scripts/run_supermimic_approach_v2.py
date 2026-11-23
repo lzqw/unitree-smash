@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+from time import perf_counter
 
 from compare_supermimic_approach_ball_only import compare
 from run_supermimic_approach_ball_only import (
@@ -66,6 +67,9 @@ def clearly_regressed(baseline, candidate):
 
 def paired_quick_result(baseline, candidate, before_dir, after_dir):
     regressed = clearly_regressed(baseline, candidate)
+    for name in ('initial_states.json', 'policy_execution.json', 'actuator_contract.json', 'physics.json', 'task_contract.json'):
+        if json.loads((before_dir / name).read_text()) != json.loads((after_dir / name).read_text()):
+            raise ValueError(f'TRAIN64 pair differs in {name}')
 
     def cases(path):
         raw = {row['case_id']: row for row in map(json.loads, (path / 'episodes.jsonl').read_text().splitlines())}
@@ -100,6 +104,22 @@ def paired_quick_result(baseline, candidate, before_dir, after_dir):
     })
 
 
+def block_timing(folder, elapsed):
+    proposals = list(map(json.loads, (folder / 'training_history.jsonl').read_text().splitlines()))
+    accepted = [row for row in proposals if row['update_accepted']]
+    actor_seconds = sum(row['bptt_seconds'] for row in proposals)
+    collection = list(folder.glob('*_native_collection_timing.json'))
+    native = sum(json.loads(path.read_text())['through_archive_drain_seconds'] for path in collection)
+    episode_log = folder / 'native_episodes.jsonl'
+    episodes = list(map(json.loads, episode_log.read_text().splitlines())) if episode_log.is_file() else []
+    contacts = {(row['env_id'], row['episode_index']) for row in episodes if row['qualified_airborne_string_contact']}
+    return dict(wall_seconds=elapsed, actor_seconds=actor_seconds, native_collection_seconds=native,
+        proposals=len(proposals), accepted=len(accepted), accepted_per_hour=len(accepted) * 3600 / elapsed,
+        accepted_scales=[row['backtrack_alpha'] for row in accepted],
+        distinct_native_qualified_contact_episodes=len(contacts),
+        native_qualified_contact_episodes_per_hour=len(contacts) * 3600 / native if native else None)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('registration', 'source', 'history', 'output', 'restart-receipt'):
@@ -131,6 +151,7 @@ def main():
     training_lanes, guard_lanes = 32, 16
     try:
         partial_baseline = None
+        previous_quick = None
         if args.resume_partial:
             original = args.resume_partial.resolve(strict=True)
             exhausted = json.loads((original / 'block_incomplete.json').read_text())
@@ -150,6 +171,7 @@ def main():
             if paired['regressed']:
                 dump(state, dict(stage=partial_stage, status='native_regression_review', records=records))
                 return
+            previous_quick = partial_baseline, partial_dir
             source = (original / 'interrupted.pt').resolve(strict=True)
         while stage <= args.stop_at:
             label = f'A{stage:03d}' + (f'_retry{retry}' if retry else '')
@@ -164,6 +186,7 @@ def main():
                                     retry_proposals=args.retry_proposals if recovering else 0)
             dump(state, dict(stage=stage, status='training', source=str(source), pid=os.getpid(),
                              native_collection='native_ground_prefix_replay', records=records))
+            started = perf_counter()
             try:
                 run(command, folder.with_suffix('.log'), 150)
             except subprocess.CalledProcessError:
@@ -176,12 +199,14 @@ def main():
                 candidates = list(folder.glob(f'*_approach_candidate_{stopped["accepted"]:04d}.pt'))
                 if len(candidates) != 1:
                     raise
+                dump(folder / 'v2_block_timing.json', block_timing(folder, perf_counter() - started))
                 total = stage - stopped['target'] + stopped['accepted']
                 result = dict(stage=total, **quick_check(candidates[0], args.output / f'{label}_partial_quick64', execution, args.seed))
                 records.append(result)
                 dump(state, dict(stage=total, status='proposal_budget_exhausted', checkpoint=str(candidates[0]),
                                  block=stopped, records=records))
                 return
+            dump(folder / 'v2_block_timing.json', block_timing(folder, perf_counter() - started))
             checkpoint, invocation = verify_training_milestone(folder, stage, source)
             verified[str(checkpoint)] = invocation
             dump(state, dict(stage=stage, status='quick_check', checkpoint=str(checkpoint), pid=os.getpid(),
@@ -189,7 +214,13 @@ def main():
             if best is None:
                 best = dict(stage=32, **quick_check(args.source, args.output / 'A032_quick64', execution, args.seed))
                 records.append(best)
-            result = dict(stage=stage, **quick_check(checkpoint, args.output / f'{label}_quick64', execution, args.seed))
+            quick_dir = args.output / f'{label}_quick64'
+            result = dict(stage=stage, **quick_check(checkpoint, quick_dir, execution, args.seed))
+            if previous_quick is not None:
+                prior_result, prior_dir = previous_quick
+                dump(args.output / f'A{prior_result["stage"]:03d}_A{stage:03d}_paired.json',
+                     paired_quick_result(prior_result, result, prior_dir, quick_dir))
+            previous_quick = result, quick_dir
             records.append(result)
             if recovering and (clearly_regressed(partial_baseline, result) or clearly_regressed(best, result)):
                 dump(state, dict(stage=stage, status='native_regression_review', records=records))
