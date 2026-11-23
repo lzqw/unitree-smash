@@ -44,7 +44,8 @@ def evaluate_command(source, output, motion, execution_root, *, seed, a0, indepe
 
 
 def train_command(registered, source, output, motion, *, stop_at, fresh, prioritize_flight=False,
-                  training_seed=None, start_lanes=16, shuffle_unlabeled_starts=False):
+                  training_seed=None, start_lanes=16, shuffle_unlabeled_starts=False,
+                  retry_proposals=0, resume_collection_ticks=None, labeled_start_checkpoint=None):
     command = ['scripts/train_supermimic_physical_block.py', *registered_options(registered, ARCHIVE_INPUTS),
                '--output', str(output), '--resume-training', str(source),
                '--training-profile', 'research_scale', '--training-stage', 'research_contact',
@@ -64,6 +65,12 @@ def train_command(registered, source, output, motion, *, stop_at, fresh, priorit
         command.extend(('--research-training-seed', str(training_seed)))
     if shuffle_unlabeled_starts:
         command.append('--shuffle-unlabeled-approach-starts')
+    if retry_proposals:
+        command.extend(('--reuse-unused-approach-proposals', str(retry_proposals)))
+    if resume_collection_ticks is not None:
+        command.extend(('--resume-approach-collection-ticks', str(resume_collection_ticks)))
+    if labeled_start_checkpoint is not None:
+        command.extend(('--approach-labeled-start-checkpoint', str(labeled_start_checkpoint)))
     if fresh:
         command.append('--resume-reset-schedule')
     if motion:
@@ -126,6 +133,9 @@ def main():
     parser.add_argument('--toi-effective-start-lanes', type=int,
                         help='Target distinct episodes per Actor proposal (default: 16)')
     parser.add_argument('--shuffle-unlabeled-approach-starts', action='store_true')
+    parser.add_argument('--reuse-unused-approach-proposals', type=int, default=0)
+    parser.add_argument('--resume-approach-collection-ticks', type=int)
+    parser.add_argument('--approach-labeled-start-checkpoint', type=Path)
     parser.add_argument('--training-seed', type=int, help='Learner seed for a fresh training branch or its continuation')
     parser.add_argument('--baseline', type=Path, help='Pair the milestone with a completed fixed128 A0 run')
     parser.add_argument('--fixed-output', type=Path, help='Directory for the milestone’s fixed128 evaluation')
@@ -136,10 +146,15 @@ def main():
     training = args.job in ('train', 'milestone')
     if not training and (args.fresh or args.stop_at is not None or args.prioritize_approach_flight
                          or args.training_seed is not None or args.toi_effective_start_lanes is not None
-                         or args.shuffle_unlabeled_approach_starts):
+                         or args.shuffle_unlabeled_approach_starts or args.reuse_unused_approach_proposals
+                         or args.resume_approach_collection_ticks is not None
+                         or args.approach_labeled_start_checkpoint is not None):
         parser.error('Training options require a train or milestone job')
     if args.toi_effective_start_lanes is not None and not 1 <= args.toi_effective_start_lanes <= 128:
         parser.error('The distinct-episode target must be in [1,128]')
+    if (args.reuse_unused_approach_proposals < 0 or (args.fresh and args.reuse_unused_approach_proposals)
+            or (args.resume_approach_collection_ticks is not None and not args.reuse_unused_approach_proposals)):
+        parser.error('Recovery options require a continuation with a positive number of reused proposals')
     if training and args.independent_panel_batch is not None:
         parser.error('Independent evaluation is a separate frozen job')
     if args.stop_at is not None and (args.stop_at not in range(8, APPROACH_BUDGET + 1, 8)):
@@ -153,7 +168,10 @@ def main():
         command = train_command(registered, source, output, early, stop_at=args.stop_at, fresh=args.fresh,
                                 prioritize_flight=args.prioritize_approach_flight, training_seed=args.training_seed,
                                 start_lanes=args.toi_effective_start_lanes or 16,
-                                shuffle_unlabeled_starts=args.shuffle_unlabeled_approach_starts)
+                                shuffle_unlabeled_starts=args.shuffle_unlabeled_approach_starts,
+                                retry_proposals=args.reuse_unused_approach_proposals,
+                                resume_collection_ticks=args.resume_approach_collection_ticks,
+                                labeled_start_checkpoint=args.approach_labeled_start_checkpoint)
     else:
         execution = registered_options(registered, ('g07-execution-root',))[1]
         command = evaluate_command(source, output, early, execution, seed=args.seed, a0=args.job == 'a0',

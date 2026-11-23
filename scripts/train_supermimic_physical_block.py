@@ -178,6 +178,12 @@ def main():
                         help='Target distinct episodes per TOI-only Approach proposal (default: 16 in ball-only, 1 otherwise)')
     parser.add_argument('--shuffle-unlabeled-approach-starts', action='store_true',
                         help='Spread ball-only fallback sampling over distinct unlabeled episodes')
+    parser.add_argument('--reuse-unused-approach-proposals', type=int, default=0,
+                        help='Transfer unused proposals from completed blocks to the exhausted Approach block')
+    parser.add_argument('--resume-approach-collection-ticks', type=int,
+                        help='First native collection on the recovered run, bounded by the registered block sizes')
+    parser.add_argument('--approach-labeled-start-checkpoint', type=Path,
+                        help='Older checkpoint on the resumed replay lineage supplying labeled starts')
     parser.add_argument('--recovery-effective-start-lanes',type=int,default=12,help='Pool distinct gated Recovery episodes across archived G07 snapshots per optimizer proposal')
     parser.add_argument('--recovery-update-budget',type=int,default=256,
                         help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
@@ -381,6 +387,17 @@ def main():
         parser.error('Flight priority and the speed target require the Approach-only phase')
     if args.shuffle_unlabeled_approach_starts and not args.approach_ball_only:
         parser.error('Unlabeled start shuffling requires the ball-only Approach phase')
+    if (args.reuse_unused_approach_proposals < 0 or
+            (args.reuse_unused_approach_proposals and (not args.approach_ball_only
+                or args.resume_training is None or args.resume_reset_schedule))):
+        parser.error('Proposal reuse requires a ball-only checkpoint continuation')
+    if args.resume_approach_collection_ticks is not None and (
+            not args.reuse_unused_approach_proposals or not args.native_ticks_per_actor_update
+            <= args.resume_approach_collection_ticks <= args.approach_initial_ticks):
+        parser.error('Recovery collection ticks must fit between the registered warm and cold budgets')
+    if args.approach_labeled_start_checkpoint is not None and (
+            not args.approach_ball_only or args.resume_training is None or args.resume_reset_schedule):
+        parser.error('An older labeled start checkpoint requires an Approach-only continuation')
     if args.approach_speed_target is None:
         args.approach_speed_target = 'relative-face' if args.prioritize_approach_flight else 'historical'
     if args.approach_ball_only:
@@ -1089,6 +1106,17 @@ def run(args, *, alternating=None):
         from quadsmash.rl.supermimic_sequential_progress_v1 import SequentialProgress
         schedule=SequentialProgress.for_run(resumed.get('sequential_progress') if args.resume_training else None,
                                             fresh=args.resume_reset_schedule or args.resume_next_cycle)
+        approach_proposal_reallocation = None
+        labeled_approach_history = ()
+        labeled_approach_source = None
+        if args.approach_labeled_start_checkpoint is not None:
+            from quadsmash.rl.supermimic_actor_start_bank_v1 import verified_labeled_start_history
+            source = args.approach_labeled_start_checkpoint.resolve(strict=True)
+            older = torch.load(source, map_location='cpu', mmap=True, weights_only=False)
+            labeled_approach_history = verified_labeled_start_history(older, resumed)
+            labeled_approach_source = dict(path=str(source), sha256=file_sha(source),
+                                           usable_snapshots=len(labeled_approach_history))
+            del older
         if args.resume_training and not args.resume_next_cycle and not args.resume_reset_schedule:
             if not (args.extend_completed_research or args.landing_and_first_contact_objectives) and args.continuous_approach_starts != resumed['config'].get('continuous_approach_starts',False):
                 raise ValueError('Resume changes the Approach start quota schedule')
@@ -1097,6 +1125,17 @@ def run(args, *, alternating=None):
             saved_alternating=resumed.get('alternating_schedule')
             if alternating is not None and not args.resume_reset_schedule:
                 if saved_alternating is None:raise ValueError('Legacy checkpoint has no alternating cursor; no silent schedule migration')
+                if args.approach_ball_only:
+                    from quadsmash.rl.supermimic_alternating_schedule_v1 import restore_approach_proposal_plan
+                    saved_alternating, approach_proposal_reallocation = restore_approach_proposal_plan(
+                        alternating.plan, saved_alternating, schedule,
+                        retry_proposals=args.reuse_unused_approach_proposals)
+                    alternating.plan = saved_alternating['plan']
+                    if approach_proposal_reallocation is not None:
+                        approach_proposal_reallocation.update(source_checkpoint=str(args.resume_training),
+                            source_checkpoint_sha256=file_sha(args.resume_training),
+                            first_native_collection_ticks=args.resume_approach_collection_ticks or args.approach_initial_ticks)
+                        write(args.output/'approach_proposal_reallocation.json', approach_proposal_reallocation)
                 if (args.landing_and_first_contact_objectives and args.research_contact_gradient == 'G0'
                         and saved_alternating['execution_config'].get('contact_gradient') == 'G1'):
                     # Fork the control only from a prefix that has never executed an auxiliary update.
@@ -1415,6 +1454,10 @@ def run(args, *, alternating=None):
         config['relaxed_calibration_complete'] = args.relaxed_scoring and not relaxed_bootstrap
         config['approach_ball_only'] = args.approach_ball_only
         config['shuffle_unlabeled_approach_starts'] = args.shuffle_unlabeled_approach_starts
+        if approach_proposal_reallocation is not None:
+            config['approach_proposal_reallocation'] = approach_proposal_reallocation
+        if labeled_approach_source is not None:
+            config['approach_labeled_start_source'] = labeled_approach_source
         if research: config['research_training_seed']=training_seed
         write(args.output/'config.json',config)
         elapsed_offset = 0.
@@ -1854,7 +1897,7 @@ def run(args, *, alternating=None):
                 # fresh scene whose first 128 ticks are entirely pre-launch.
                 first_scene_collection = args.approach_ball_only and collect_block and tick == first_mixed_tick
                 if first_scene_collection:
-                    collection_ticks = args.approach_initial_ticks
+                    collection_ticks = args.resume_approach_collection_ticks or args.approach_initial_ticks
                 phase_timing = None
                 if first_scene_collection:
                     from quadsmash.rl.supermimic_native_phase_timing import NativePhaseTiming
@@ -2052,7 +2095,8 @@ def run(args, *, alternating=None):
                     draw = schedule.head_attempts('approach')
                     proposal_rows, start_sampling = replay.actor_start_bank.sample_ball_phase(
                         ball_start_lanes, draw, fallback=pool, count=args.toi_effective_start_lanes,
-                        shuffle_unlabeled=args.shuffle_unlabeled_approach_starts)
+                        shuffle_unlabeled=args.shuffle_unlabeled_approach_starts,
+                        labeled_history=labeled_approach_history)
                     if not proposal_rows:
                         raise RuntimeError('No causal pre-contact state available for the ball-only proposal')
                     row = proposal_rows[0]

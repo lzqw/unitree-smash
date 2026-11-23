@@ -1,9 +1,12 @@
 from types import SimpleNamespace
 
+import pytest
 import torch
 
 from quadsmash.rl.frozen_v2_approach_v1 import EarlyArmApproachGate
-from quadsmash.rl.supermimic_alternating_schedule_v1 import AlternatingSchedule, make_approach_plan, run_schedule
+from quadsmash.rl.supermimic_alternating_schedule_v1 import (
+    AlternatingSchedule, make_approach_plan, restore_approach_proposal_plan, run_schedule,
+)
 from quadsmash.rl.supermimic_approach_data_v1 import (
     NativeArmIdentification, comparable_flight_merit, prioritize_flight_gradient,
 )
@@ -40,6 +43,40 @@ def test_final_milestone_finalizes_the_full_schedule_and_preserves_requested_tra
     assert '--shuffle-unlabeled-approach-starts' in command
     assert milestone_checkpoint(tmp_path, 256) == tmp_path/'latest.pt'
     assert milestone_checkpoint(tmp_path, 128) == tmp_path/'approach_A128.pt'
+
+
+def test_recover_exhausted_approach_block_without_resetting_used_proposals():
+    from quadsmash.rl.supermimic_sequential_progress_v1 import SequentialProgress
+
+    original = make_approach_plan(32, 64)
+    schedule = AlternatingSchedule(original)
+    progress = SequentialProgress()
+    for idx, attempts in enumerate((9, 10)):
+        schedule.begin()
+        result = dict(attempts=attempts, accepted=8, rejected=attempts - 8, backtracked=1)
+        schedule.finish(result)
+        progress.block(original[idx]['block_key'], 'approach', 8, 16).update(**result, status='done')
+
+    schedule.begin()
+    saved = schedule.state_dict()
+    partial = progress.block(original[2]['block_key'], 'approach', 8, 16)
+    partial.update(attempts=16, accepted=5, rejected=11, status='training')
+    with pytest.raises(ValueError, match='Insufficient unused proposals'):
+        restore_approach_proposal_plan(original, saved, progress, retry_proposals=14)
+    assert partial['limit'] == 16
+
+    state, receipt = restore_approach_proposal_plan(original, saved, progress, retry_proposals=8)
+    assert [event['proposal_limit'] for event in state['plan'][:-1]] == [14, 10, 24, 16]
+    assert partial['accepted'] == 5 and partial['attempts'] == 16
+    assert receipt['transferred'] == {original[1]['id']: 6, original[0]['id']: 2}
+    assert saved['plan'] == original
+
+    state, receipt = restore_approach_proposal_plan(original, state, progress)
+    assert receipt is None
+    restored = AlternatingSchedule(state['plan'])
+    restored.load_state_dict(state)
+    assert restored.cursor == 2 and restored.running
+    assert restored.head_totals()['approach']['attempts'] == 19
 
 
 def test_flight_priority_keeps_unopposed_gradients_and_repairs_uphill_projection():
@@ -205,6 +242,34 @@ def test_unlabeled_fallback_shuffles_episodes_and_restores_sampler_rng():
     restored = ActorStartBank(ball_phase=True)
     restored.load_state_dict(saved)
     assert sample(restored) == first
+
+
+def test_labeled_history_must_come_from_an_earlier_verified_replay_prefix():
+    from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank, verified_labeled_start_history
+
+    bank = ActorStartBank(ball_phase=True)
+    active = torch.ones(4, dtype=torch.bool)
+    start = dict(stream_id=3, before=dict(episode_index=torch.zeros(4, dtype=torch.long),
+                                         elapsed_tick=torch.full((4,), 20)))
+    bank.append(start, dict(approach_gate=active.float(), had_contact=~active,
+                           approach_start_eligible=active), stream=3, policy_version=0, native_tick=20)
+    bank.entries[0]['ball_outcomes'] = {2: ('low_speed', 18)}
+    metadata = dict(task_contract={}, policy_execution={}, phase_frozen_actor_sha256='fixed',
+                    phase_anchor_actor_sha256='origin')
+    common = dict(metadata=metadata, config=dict(wm_holdout_lanes=[1]), replay_archives=['native'])
+    first = dict(file='chunk1', sha256='first')
+    second = dict(file='chunk2', sha256='second')
+    older = dict(common, global_counters=dict(accepted=40), replay_archive_receipts=[dict(chunks=[first])],
+                 actor_start_bank=bank.state_dict())
+    resumed = dict(common, global_counters=dict(accepted=53), replay_archive_receipts=[dict(chunks=[first, second])])
+    history = verified_labeled_start_history(older, resumed)
+    empty = ActorStartBank(ball_phase=True)
+    _, report = empty.sample_ball_phase(lambda _: active, 0, labeled_history=history)
+    assert report['effective_lanes'] == report['actual_by_outcome']['low_speed'] == 1
+
+    unrelated = dict(resumed, replay_archive_receipts=[dict(chunks=[second, first])])
+    with pytest.raises(ValueError, match='not a prefix'):
+        verified_labeled_start_history(older, unrelated)
 
 
 def test_native_phase_timing_preserves_substeps_and_restores_simulator_method():

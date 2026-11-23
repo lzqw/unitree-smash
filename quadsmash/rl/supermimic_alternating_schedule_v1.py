@@ -57,6 +57,68 @@ def make_approach_plan(updates, proposals, *, block_size=8):
     return events + [dict(id='approach_only_finalize', kind='finalize', cycle=0)]
 
 
+def restore_approach_proposal_plan(original, saved, progress, *, retry_proposals=0):
+    """Reuse unspent proposals from finished Approach blocks at a failed boundary."""
+    plan = saved['plan']
+    if len(plan) != len(original):
+        raise ValueError('Approach recovery cannot change the schedule length')
+    prefix_balance = 0
+    for registered, actual in zip(original, plan, strict=True):
+        limit = actual.get('proposal_limit')
+        if {k: v for k, v in actual.items() if k != 'proposal_limit'} != {
+                k: v for k, v in registered.items() if k != 'proposal_limit'}:
+            raise ValueError('Approach recovery cannot change block targets or order')
+        if registered['kind'] == 'train':
+            if type(limit) is not int or limit < actual['target']:
+                raise ValueError('Invalid restored Approach proposal limit')
+            prefix_balance += registered['proposal_limit'] - limit
+            if prefix_balance < 0:
+                raise ValueError('Restored Approach plan borrows proposals from future blocks')
+    if prefix_balance:
+        raise ValueError('Restored Approach plan changes the total proposal budget')
+    if retry_proposals == 0:
+        return saved, None
+    if type(retry_proposals) is not int or retry_proposals < 1:
+        raise ValueError('Recovery proposal count must be positive')
+
+    restored = copy.deepcopy(saved)
+    cursor = restored['cursor']
+    if not restored['running'] or not 0 <= cursor < len(plan) - 1:
+        raise ValueError('Approach recovery requires an incomplete current training block')
+    current = restored['plan'][cursor]
+    row = progress.block(current['block_key'], 'approach', current['target'], current['proposal_limit'])
+    if (row['status'] != 'training' or row['attempts'] != row['limit'] or row['accepted'] >= row['target']
+            or row.get('proposal_in_flight', False) or row.get('pending_refresh', False)):
+        raise ValueError('Approach recovery requires an exhausted block with clean optimizer state')
+
+    donors = []
+    remaining = retry_proposals
+    for i in range(cursor - 1, -1, -1):
+        event, receipt = restored['plan'][i], restored['results'][i]
+        donor = progress.block(event['block_key'], 'approach', event['target'], event['proposal_limit'])
+        moves = min(remaining, event['proposal_limit'] - receipt['result']['attempts'])
+        if (receipt['event'] != event or donor['status'] != 'done'
+                or donor['attempts'] != receipt['result']['attempts'] or moves < 0):
+            raise ValueError('Approach recovery requires consistent completed block receipts')
+        if moves:
+            donors.append((event, receipt, donor, moves))
+            remaining -= moves
+        if remaining == 0:
+            break
+    if remaining:
+        raise ValueError('Insufficient unused proposals in completed Approach blocks')
+
+    for event, receipt, donor, moves in donors:
+        event['proposal_limit'] -= moves
+        donor['limit'] = event['proposal_limit']
+        receipt['event'] = copy.deepcopy(event)
+    current['proposal_limit'] += retry_proposals
+    row['limit'] = current['proposal_limit']
+    return restored, dict(block=current['id'], accepted_before=row['accepted'], attempted_before=row['attempts'],
+                          new_proposal_limit=row['limit'],
+                          transferred={event['id']: moves for event, _, _, moves in donors})
+
+
 def refresh_world_budgets(total, heads=HEADS):
     """Split the existing TOTAL budget, not one full budget per head."""
     if type(total) is not int or total < 0 or not heads:

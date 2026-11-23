@@ -38,6 +38,30 @@ def ball_start_outcome(record):
         return 'low_speed'
     return 'success' if record['ball_side_complete_except_recovery'] else 'flight_failure'
 
+def verified_labeled_start_history(older, resumed):
+    """Expose labeled snapshots from an older checkpoint on the same replay lineage."""
+    for field in ('task_contract', 'policy_execution', 'phase_frozen_actor_sha256', 'phase_anchor_actor_sha256'):
+        if older['metadata'][field] != resumed['metadata'][field]:
+            raise ValueError(f'Labeled starts use a different {field}')
+    if older['config']['wm_holdout_lanes'] != resumed['config']['wm_holdout_lanes']:
+        raise ValueError('Labeled starts use a different native holdout')
+    if older['global_counters']['accepted'] >= resumed['global_counters']['accepted']:
+        raise ValueError('Labeled starts require an earlier checkpoint')
+    count = len(older['replay_archives'])
+    if not count or older['replay_archives'] != resumed['replay_archives'][:count]:
+        raise ValueError('Labeled starts require the same native replay lineage')
+    old_receipts = older['replay_archive_receipts']
+    current_receipts = resumed['replay_archive_receipts'][:count]
+    for old_receipt, current_receipt in zip(old_receipts, current_receipts, strict=True):
+        chunks = old_receipt['chunks']
+        if chunks != current_receipt['chunks'][:len(chunks)]:
+            raise ValueError('Labeled start archive is not a prefix of resumed data')
+    bank = older['actor_start_bank']
+    if not bank['ball_phase']:
+        raise ValueError('Labeled starts must come from the ball-only phase')
+    return tuple(entry for entry in bank['entries'] if entry.get('ball_outcomes'))
+
+
 class ActorStartBank:
     schema='causal-full-executor-start-bank-v1'
     def __init__(self,capacity=32,seed=20261117,*,ball_phase=False):
@@ -116,7 +140,8 @@ class ActorStartBank:
                 if label is not None and (lead is None or 8 <= lead <= 40):
                     entry.setdefault('ball_outcomes', {})[lane] = (label, lead)
 
-    def sample_ball_phase(self, eligible_lanes, attempt, *, fallback=(), count=16, shuffle_unlabeled=False):
+    def sample_ball_phase(self, eligible_lanes, attempt, *, fallback=(), count=16,
+                          shuffle_unlabeled=False, labeled_history=()):
         """Draw distinct episode starts with proportionate outcome and time quotas."""
         if not 1 <= count <= 128:
             raise ValueError('Ball-phase start count must be in [1,128]')
@@ -124,12 +149,15 @@ class ActorStartBank:
         order = torch.randperm(len(self.entries), generator=self.generator).tolist()
         groups = {name: [] for name in BALL_START_QUOTAS}
         unlabeled = []
-        for index in order:
-            entry = self.entries[index]
+        entries = [(self.entries[i], False) for i in order]
+        entries.extend((entry, True) for entry in labeled_history)
+        for entry, history in entries:
             start = entry['start']
             valid = eligible_lanes(start).cpu() & entry['masks']['pre_contact']
             for lane in valid.nonzero().flatten().tolist():
                 outcome, lead = entry.get('ball_outcomes', {}).get(lane, ('unlabeled', None))
+                if history and outcome not in groups:
+                    continue
                 group = groups.get(outcome, unlabeled)
                 group.append((start, lane, outcome, lead))
         for start in fallback:
