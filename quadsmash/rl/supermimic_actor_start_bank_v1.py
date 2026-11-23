@@ -453,8 +453,9 @@ class ActorStartBank:
             raise ValueError('Restoring an event bank requires persistent event collection')
         frames = state.get('event_frames', {}) | {
             (entry['stream'], entry['native_tick']): entry for entry in self.entries}
-        self.pending = {k: [frames[i] for i in ids] for k, ids in state.get('pending_frames', {}).items()}
-        self.resolved = {k: (tuple(frames[i] for i in ids), label)
+        # The trainer's CPU snapshot copy normalizes sequence values to lists.
+        self.pending = {k: [frames[tuple(i)] for i in ids] for k, ids in state.get('pending_frames', {}).items()}
+        self.resolved = {k: (tuple(frames[tuple(i)] for i in ids), label)
                          for k, (ids, label) in state.get('resolved_events', {}).items()}
         self.generator.set_state(state['rng'].cpu())
 

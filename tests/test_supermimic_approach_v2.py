@@ -48,6 +48,7 @@ def test_cuda_flight_values_and_adjoint_match_eager(trajectory):
 
 def test_delayed_native_label_survives_fifo_and_reloads_disjoint_batches():
     from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank
+    from quadsmash.rl.supermimic_physical_capture_v1 import tensor_tree_copy
 
     bank = ActorStartBank(capacity=2, ball_phase=True, persistent_events=True)
     n = 52
@@ -71,7 +72,7 @@ def test_delayed_native_label_survives_fifo_and_reloads_disjoint_batches():
     assert len(bank.resolved) == n and not bank.pending
     assert min(row['native_tick'] for row in bank.resolved[(1, 0, 0)][0]) == 100
     restored = ActorStartBank(capacity=2, ball_phase=True, persistent_events=True)
-    restored.load_state_dict(bank.state_dict())
+    restored.load_state_dict(tensor_tree_copy(bank.state_dict(), cpu=True))
     _, _, report = restored.sample_proposal_and_guard(lambda start: gate.bool(), 1, 64, 32)
     assert report['effective_lanes'] == 32 and report['guard']['effective_lanes'] == 16
     def ids(draw):
