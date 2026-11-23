@@ -1,0 +1,284 @@
+{
+  "scope": "matched training-side native quick64, no checkpoint promotion or independent generalization claim",
+  "panel_sha256": "e42bce6665fb0a7baf2c372f3db56d3724e5f558e3c36ba25fd286dbee0f7477",
+  "scores": {
+    "A32": {
+      "success": 30,
+      "qualified": 42,
+      "frame": 12,
+      "low": 5,
+      "out_of_target": 5,
+      "landed_target": 33,
+      "checkpoint_sha256": "c7f586bc123d2d536469e55b17ebf39002118a934ec9de869e15e450350ef010"
+    },
+    "revised_A40": {
+      "success": 33,
+      "qualified": 39,
+      "frame": 15,
+      "low": 3,
+      "out_of_target": 2,
+      "landed_target": 36,
+      "checkpoint_sha256": "8181f8a8a0e03a70962bac74e39b5fcd00900ac65600d40b47df3d4a004cee3b"
+    }
+  },
+  "paired": {
+    "regressed": false,
+    "transitions": {
+      "string_to_frame": [
+        "A-720401-004",
+        "A-720401-006",
+        "B-720402-050",
+        "B-720402-056"
+      ],
+      "frame_to_string": [
+        "A-720401-056"
+      ],
+      "success": {
+        "gained": [
+          "A-720401-022",
+          "A-720401-056",
+          "B-720402-000",
+          "B-720402-004",
+          "B-720402-008",
+          "B-720402-018"
+        ],
+        "lost": [
+          "A-720401-004",
+          "A-720401-006",
+          "B-720402-054"
+        ]
+      },
+      "string": {
+        "gained": [
+          "A-720401-056"
+        ],
+        "lost": [
+          "A-720401-004",
+          "A-720401-006",
+          "B-720402-050",
+          "B-720402-056"
+        ]
+      },
+      "frame": {
+        "gained": [
+          "A-720401-004",
+          "A-720401-006",
+          "A-720401-048",
+          "A-720401-058",
+          "B-720402-050",
+          "B-720402-056"
+        ],
+        "lost": [
+          "A-720401-056",
+          "B-720402-044",
+          "B-720402-048"
+        ]
+      },
+      "low": {
+        "gained": [],
+        "lost": [
+          "B-720402-008",
+          "B-720402-050"
+        ]
+      },
+      "net_hit": {
+        "gained": [
+          "B-720402-054"
+        ],
+        "lost": [
+          "A-720401-018",
+          "A-720401-022",
+          "A-720401-056",
+          "B-720402-048"
+        ]
+      },
+      "out": {
+        "gained": [],
+        "lost": [
+          "A-720401-018",
+          "A-720401-022",
+          "B-720402-000"
+        ]
+      }
+    },
+    "matched_speed": {
+      "adequate_to_low": [],
+      "low_to_adequate": [
+        "B-720402-008"
+      ]
+    }
+  },
+  "mcnemar_exact_two_sided_p": 0.5078125,
+  "common_string_speed_delta": {
+    "cases": 38,
+    "mean_mps": 0.06096304618714745,
+    "median_mps": 0.12478493790389056
+  },
+  "actor_invocation": {
+    "start": {
+      "actor_sha256": "1d77fb65bed2e7afed8f393d56054d7c617adf8f02d9d05af124a16082371000",
+      "accepted": 227,
+      "attempts": 237,
+      "world": 348,
+      "critic": 6190
+    },
+    "actor_end_sha256": "6448d83b8fc5cf8d569b75dbaf2f3609061e061fda12a8eefe23a958b9f8e5c4",
+    "actor_updates": 8,
+    "actor_attempts": 11,
+    "world_updates": 17,
+    "critic_updates": 0,
+    "heads": {
+      "recovery": {
+        "accepted": 0,
+        "attempts": 0
+      },
+      "approach": {
+        "accepted": 8,
+        "attempts": 11
+      }
+    },
+    "approach_objective": "toi_racket_only",
+    "scope": "updates executed in this process only"
+  },
+  "native": {
+    "episodes": 64,
+    "control_ticks": 485,
+    "elapsed_seconds": 614.436992088973,
+    "numerical_failures": 0,
+    "optimizer_updates": {
+      "actor": 0,
+      "world": 0,
+      "critic": 0
+    },
+    "actor_parameters_unchanged": true
+  },
+  "training": {
+    "wall_seconds": 1786.7240059229662,
+    "actor_seconds": 616.2926644810941,
+    "native_collection_seconds": 708.4171748590306,
+    "proposals": 11,
+    "accepted": 8,
+    "accepted_per_hour": 16.118885683814838,
+    "accepted_scales": [
+      0.5,
+      0.25,
+      1.0,
+      0.5,
+      0.5,
+      0.25,
+      0.25,
+      0.25
+    ],
+    "native_event_coverage": {
+      "scope": "settled training-side cases, before checking start snapshot availability",
+      "settled_episodes": 128,
+      "training_case_ids": [
+        "A-720401-009",
+        "A-720401-010",
+        "A-720401-012",
+        "A-720401-019",
+        "A-720401-020",
+        "A-720401-022",
+        "A-720401-023",
+        "A-720401-025",
+        "A-720401-026",
+        "A-720401-027",
+        "A-720401-028",
+        "A-720401-029",
+        "A-720401-031",
+        "A-720401-033",
+        "A-720401-035",
+        "A-720401-036",
+        "A-720401-042",
+        "A-720401-043",
+        "A-720401-045",
+        "A-720401-047",
+        "A-720401-052",
+        "A-720401-054",
+        "A-720401-055",
+        "A-720401-058",
+        "A-720401-063",
+        "B-720402-002",
+        "B-720402-003",
+        "B-720402-004",
+        "B-720402-005",
+        "B-720402-007",
+        "B-720402-011",
+        "B-720402-014",
+        "B-720402-015",
+        "B-720402-018",
+        "B-720402-019",
+        "B-720402-027",
+        "B-720402-028",
+        "B-720402-029",
+        "B-720402-031"
+      ],
+      "missing_qualified_margins": 0,
+      "counts": {
+        "settled_cases": 39,
+        "qualified_string": 26,
+        "low_speed": 2,
+        "frame": 9,
+        "near_edge_under_10_mm": 0,
+        "marginal_success": 2
+      },
+      "per_collection_hour": {
+        "settled_cases": 198.18830624474694,
+        "qualified_string": 132.12553749649794,
+        "low_speed": 10.163502884345997,
+        "frame": 45.73576297955698,
+        "near_edge_under_10_mm": 0.0,
+        "marginal_success": 10.163502884345997
+      }
+    }
+  },
+  "speed_risk": {
+    "low_speed": {
+      "proposal": {
+        "rows": 33,
+        "distinct_episodes": 4,
+        "with_native_speed": 6,
+        "median_signed_error_mps": 0.5503103356519503,
+        "predicted_missing_release": 0,
+        "speed_loss_inactive": 3,
+        "speed_loss_below_0_001": 16
+      },
+      "guard": {
+        "rows": 22,
+        "distinct_episodes": 3,
+        "with_native_speed": 16,
+        "median_signed_error_mps": 1.3254768988900585,
+        "predicted_missing_release": 0,
+        "speed_loss_inactive": 3,
+        "speed_loss_below_0_001": 12
+      }
+    },
+    "marginal_success": {
+      "proposal": {
+        "rows": 7,
+        "distinct_episodes": 2,
+        "with_native_speed": 7,
+        "median_signed_error_mps": 1.008076996403691,
+        "predicted_missing_release": 0,
+        "speed_loss_inactive": 0,
+        "speed_loss_below_0_001": 3
+      },
+      "guard": {
+        "rows": 2,
+        "distinct_episodes": 1,
+        "with_native_speed": 2,
+        "median_signed_error_mps": 0.8935805269060104,
+        "predicted_missing_release": 0,
+        "speed_loss_inactive": 0,
+        "speed_loss_below_0_001": 1
+      }
+    }
+  },
+  "a40_fixed128_warranted": false,
+  "resident_gpu_admission": {
+    "standalone_peak_used_mib": 5069,
+    "reserved_headroom_mib": 1024,
+    "required_free_mib": 6093,
+    "samples": 308
+  }
+}
