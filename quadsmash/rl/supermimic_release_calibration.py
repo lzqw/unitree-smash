@@ -340,7 +340,10 @@ def _flight_chain_report(adapter, schema, data, streams, ticks, releases, lanes,
                     free_flight_samples=traces)
 
     common = captured & body_captured
-    return dict(common_native_landing_count=sum(bool(common[row[0]]) for row in evidence),
+    shared_landings = [row[0] for row in evidence if bool(common[row[0]])]
+    identities = [{'stream_id': int(streams[releases[index]]), 'release_tick': int(ticks[releases[index]]),
+                   'lane': int(lanes[index])} for index in shared_landings]
+    return dict(common_native_landing_count=len(identities), common_native_landing_ids=identities,
                 lead_ticks=8, native_release_to_flight=score(boundaries, common),
                 native_robot_contact_to_flight=score(native_body, common),
                 predicted_robot_contact_to_flight=score(predicted, common))
