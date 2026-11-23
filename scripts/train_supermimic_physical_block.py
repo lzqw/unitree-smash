@@ -1847,6 +1847,12 @@ def run(args, *, alternating=None):
                 first_scene_collection = args.approach_ball_only and collect_block and tick == first_mixed_tick
                 if first_scene_collection:
                     collection_ticks = args.approach_initial_ticks
+                phase_timing = None
+                if first_scene_collection:
+                    from quadsmash.rl.supermimic_native_phase_timing import NativePhaseTiming
+                    phase_timing = NativePhaseTiming(env)
+                io_pipeline = getattr(archive, 'pipeline', None) if collect_block else None
+                io_before = io_pipeline.timing() if io_pipeline is not None else {}
                 with torch.inference_mode():
                     for _ in range(collection_ticks):
                         check_stop()
@@ -1854,7 +1860,8 @@ def run(args, *, alternating=None):
                         if arm_identification is not None:
                             env.record_approach_gate(actor.approach_action_gate(obs['policy']))
                             action = arm_identification.apply(action, obs['policy'], env.episode_index, env.rally.had_contact)
-                        obs,reward,done,info=wrapper.step(action)
+                        obs,reward,done,info=(wrapper.step(action) if phase_timing is None else
+                            phase_timing.step(wrapper.step, action, obs['policy'], tick - first_mixed_tick))
                         tick+=1
                         if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite native observation')
                         for raw in env.rally_records[cursor:]:
@@ -1896,6 +1903,13 @@ def run(args, *, alternating=None):
                     # Publish the collected chunks to live native monitors before policy fitting.
                     archive.flush()
                 collect_s=time.perf_counter()-started;check_stop()
+                if args.approach_ball_only and collect_block:
+                    timing = dict(native_ticks=collection_ticks, through_archive_drain_seconds=collect_s,
+                        env_steps_per_second=(collection_ticks * 128 / collect_s) if collect_s else None,
+                        archive={key: end - io_before[key] for key, end in io_pipeline.timing().items()}
+                            if io_pipeline is not None else None,
+                        first_scene_phases=phase_timing.report() if phase_timing is not None else None)
+                    write(args.output/(str(cycle_index)+'_native_collection_timing.json'), timing)
                 if collect_block:
                     progress['collection_reward_mean']=float(reward.mean())
                     if research and args.recovery_rollout_landing:
