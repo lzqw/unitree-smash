@@ -231,7 +231,7 @@ class ActorStartBank:
 
     def sample_ball_phase(self, eligible_lanes, attempt, *, fallback=(), count=16,
                           shuffle_unlabeled=False, labeled_history=(), excluded_episodes=(),
-                          require_labels=False, record_draw=True):
+                          require_labels=False, record_draw=True, reserve_for_proposal=0):
         """Draw distinct episode starts with proportionate outcome and time quotas."""
         if not 1 <= count <= 128:
             raise ValueError('Ball-phase start count must be in [1,128]')
@@ -273,6 +273,15 @@ class ActorStartBank:
             return (int(start.get('stream_id', start.get('_native_stream', 0))),
                     int(start.get('_lane_id', lane)), int(start['before']['episode_index'][lane]))
 
+        outcome_caps = {}
+        if reserve_for_proposal:
+            proposal_quotas = _scale_start_quotas(BALL_START_QUOTAS, reserve_for_proposal)
+            for name, rows in groups.items():
+                support = len({episode_identity(start, lane) for start, lane, _, _ in rows} - excluded_episodes)
+                if support < outcome_quotas[name] + proposal_quotas[name]:
+                    share = round(support * count / (count + reserve_for_proposal))
+                    outcome_caps[name] = min(support - 1, max(1, share)) if support > 1 else 0
+
         if shuffle_unlabeled:
             by_episode = {}
             for row in unlabeled:
@@ -282,12 +291,13 @@ class ActorStartBank:
             unlabeled = [episode_rows[i][int(torch.randint(len(episode_rows[i]), (), generator=self.generator))]
                          for i in order]
 
-        def take(candidates, count):
-            for _ in range(count):
+        def take(candidates, requested):
+            for _ in range(requested):
                 desired = timing[len(seen)]
                 remaining = [row for row in candidates
                              if episode_identity(row[0], row[1]) not in seen
-                             and episode_identity(row[0], row[1]) not in excluded_episodes]
+                             and episode_identity(row[0], row[1]) not in excluded_episodes
+                             and actual[row[2]] < outcome_caps.get(row[2], count)]
                 if not remaining:
                     return
                 start, lane, outcome, lead = next(
@@ -314,6 +324,8 @@ class ActorStartBank:
                       records=[dict(lane_episode_tick=details) for _, details in selected.values()])
         if shuffle_unlabeled:
             report['unlabeled_pool_episodes'] = len(unlabeled)
+        if reserve_for_proposal:
+            report['scarce_outcome_caps'] = outcome_caps
         if self.ball_phase and record_draw:
             self.sampling_history.append(report)
         return [row for row, _ in selected.values()], report
@@ -328,7 +340,8 @@ class ActorStartBank:
         options = dict(require_labels=True, labeled_history=labeled_history, record_draw=False)
         settings = dict.fromkeys(((proposal_count, guard_count), (32, 16)))
         for n, g in settings:
-            guard, guard_report = self.sample_ball_phase(eligible, attempt, count=g, **options)
+            guard, guard_report = self.sample_ball_phase(
+                eligible, attempt, count=g, reserve_for_proposal=n, **options)
             if guard_report['effective_lanes'] != g:
                 continue
             forbidden = {(stream, lane, episode) for record in guard_report['records']

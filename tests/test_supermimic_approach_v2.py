@@ -50,7 +50,7 @@ def test_delayed_native_label_survives_fifo_and_reloads_disjoint_batches():
     from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank
 
     bank = ActorStartBank(capacity=2, ball_phase=True, persistent_events=True)
-    n = 56
+    n = 52
     gate = torch.ones(n)
     capture = {'approach_gate': gate, 'had_contact': torch.zeros(n)}
     for tick in (100, 104, 108, 112, 116, 120, 124):
@@ -61,11 +61,12 @@ def test_delayed_native_label_survives_fifo_and_reloads_disjoint_batches():
         bank.append(snapshot, capture, stream=1, policy_version=32, native_tick=tick)
     assert min(row['native_tick'] for row in bank.entries) > 110
     for lane in range(n):
+        low_speed = lane < 5
         bank.label_terminal(dict(
             env_id=lane, episode_index=0, case_id=f'train-{lane}', scoring_schema='approach_ball_only_v1',
-            outgoing_speed_mps=4.1 if lane % 2 else 5.5, qualified_airborne_string_contact=True,
-            contact_time_s=1.18, ball_side_complete_except_recovery=lane % 2 == 0,
-            rejection_reasons=['speed_threshold'] if lane % 2 else [],
+            outgoing_speed_mps=4.1 if low_speed else 5.5, qualified_airborne_string_contact=True,
+            contact_time_s=1.18, ball_side_complete_except_recovery=not low_speed,
+            rejection_reasons=['speed_threshold'] if low_speed else [],
             approach_ball_terminal={'numerical_abort': False}), 1)
     assert len(bank.resolved) == n and not bank.pending
     assert min(row['native_tick'] for row in bank.resolved[(1, 0, 0)][0]) == 100
@@ -78,3 +79,5 @@ def test_delayed_native_label_survives_fifo_and_reloads_disjoint_batches():
                 for lane, episode, _, _, _, stream in record['lane_episode_tick']}
     assert len(ids(report)) == 32 and len(ids(report['guard'])) == 16
     assert ids(report).isdisjoint(ids(report['guard']))
+    assert report['actual_by_outcome']['low_speed'] == 3
+    assert report['guard']['actual_by_outcome']['low_speed'] == 2
