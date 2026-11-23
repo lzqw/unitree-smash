@@ -272,6 +272,26 @@ def test_labeled_history_must_come_from_an_earlier_verified_replay_prefix():
         verified_labeled_start_history(older, unrelated)
 
 
+def test_labeled_snapshot_reserve_keeps_training_labels_and_recent_starts():
+    from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank
+
+    bank = ActorStartBank(capacity=4, ball_phase=True, label_reserve=1, excluded_lanes=[1])
+    active = torch.ones(2, dtype=torch.bool)
+    for tick in range(0, 24, 4):
+        start = dict(stream_id=3, before=dict(episode_index=torch.zeros(2, dtype=torch.long),
+                                             elapsed_tick=torch.full((2,), tick)))
+        bank.append(start, dict(approach_gate=active.float(), had_contact=~active,
+                               approach_start_eligible=active), stream=3, policy_version=0, native_tick=tick)
+        if tick == 0:
+            bank.entries[-1]['ball_outcomes'] = {0: ('low_speed', 30)}
+        if tick == 4:
+            bank.entries[-1]['ball_outcomes'] = {1: ('success', 26)}
+
+    assert [entry['native_tick'] for entry in bank.entries] == [0, 12, 16, 20]
+    _, report = bank.sample_ball_phase(lambda _: torch.tensor([True, False]), 0)
+    assert report['actual_by_outcome']['low_speed'] == 1
+
+
 def test_native_phase_timing_preserves_substeps_and_restores_simulator_method():
     from quadsmash.rl.supermimic_native_phase_timing import NativePhaseTiming
 

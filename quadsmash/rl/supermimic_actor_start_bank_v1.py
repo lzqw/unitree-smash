@@ -64,11 +64,46 @@ def verified_labeled_start_history(older, resumed):
 
 class ActorStartBank:
     schema='causal-full-executor-start-bank-v1'
-    def __init__(self,capacity=32,seed=20261117,*,ball_phase=False):
+    def __init__(self,capacity=32,seed=20261117,*,ball_phase=False,label_reserve=0,excluded_lanes=()):
+        if not 0 <= label_reserve < capacity or (label_reserve and not ball_phase):
+            raise ValueError('Labeled snapshot reserve must fit within the ball-phase bank')
         self.capacity=capacity;self.entries=[];self.seen=0;self.last_gate={};self.last_tick={}
         self.ball_phase=bool(ball_phase)
+        self.label_reserve=label_reserve
+        self.excluded_lanes=set(excluded_lanes)
         self.generator=torch.Generator().manual_seed(seed)
         self.sampling_history=[]
+
+    def _prune_ball_entries(self):
+        if len(self.entries) <= self.capacity:
+            return
+        if not self.label_reserve:
+            del self.entries[:-self.capacity]
+            return
+        recent_count = self.capacity - self.label_reserve
+        older = self.entries[:-recent_count]
+        recent = self.entries[-recent_count:]
+
+        def labeled_episodes(entry):
+            episodes = entry['start']['before']['episode_index']
+            return {(entry['stream'], lane, int(episodes[lane]))
+                    for lane in entry.get('ball_outcomes', {}) if lane not in self.excluded_lanes}
+
+        covered = set().union(*(labeled_episodes(entry) for entry in recent))
+        retained = set()
+        for i in range(len(older) - 1, -1, -1):
+            labels = labeled_episodes(older[i])
+            if labels - covered:
+                retained.add(i)
+                covered.update(labels)
+                if len(retained) == self.label_reserve:
+                    break
+        for i in range(len(older) - 1, -1, -1):
+            if len(retained) == self.label_reserve:
+                break
+            retained.add(i)
+        self.entries[:] = [older[i] for i in sorted(retained)] + recent
+
     def append(self,start,metadata,*,stream,policy_version,native_tick):
         if 'approach_gate' not in metadata:return
         gate=metadata['approach_gate'].detach().cpu().reshape(-1)
@@ -104,7 +139,7 @@ class ActorStartBank:
             # Approach outcome labels arrive after the flight. Preserve a
             # recent, time-spaced set of full starts for the current phase.
             self.entries.append(entry)
-            del self.entries[:-self.capacity]
+            self._prune_ball_entries()
         elif len(self.entries)<self.capacity:self.entries.append(entry)
         else:
             slot=int(torch.randint(self.seen,(1,),generator=self.generator))

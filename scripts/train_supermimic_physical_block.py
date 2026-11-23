@@ -16,6 +16,13 @@ def write(path,value):
     temp=path.with_suffix(path.suffix+'.tmp');temp.write_text(json.dumps(value,indent=2,default=str)+'\n');temp.replace(path)
 
 
+def file_sha(path):
+    if not path:
+        return None
+    from quadsmash.rl.supermimic_long_run_contract_v1 import sha256
+    return sha256(path)
+
+
 def parse_quota(text, *, allowed, name):
     """Parse auditable ``key=count`` quotas without silently dropping keys."""
     result={}
@@ -184,6 +191,8 @@ def main():
                         help='First native collection on the recovered run, bounded by the registered block sizes')
     parser.add_argument('--approach-labeled-start-checkpoint', type=Path,
                         help='Older checkpoint on the resumed replay lineage supplying labeled starts')
+    parser.add_argument('--retain-labeled-approach-snapshots', type=int, default=0,
+                        help='Reserve up to this many of the 32 ball-only snapshot slots for labeled episodes')
     parser.add_argument('--recovery-effective-start-lanes',type=int,default=12,help='Pool distinct gated Recovery episodes across archived G07 snapshots per optimizer proposal')
     parser.add_argument('--recovery-update-budget',type=int,default=256,
                         help='Total effective updates for this head per cycle; joint mode uses --joint-update-budget')
@@ -398,6 +407,9 @@ def main():
     if args.approach_labeled_start_checkpoint is not None and (
             not args.approach_ball_only or args.resume_training is None or args.resume_reset_schedule):
         parser.error('An older labeled start checkpoint requires an Approach-only continuation')
+    if (not 0 <= args.retain_labeled_approach_snapshots < 32
+            or (args.retain_labeled_approach_snapshots and not args.approach_ball_only)):
+        parser.error('Labeled retention is selectable in [0,31] for ball-only Approach')
     if args.approach_speed_target is None:
         args.approach_speed_target = 'relative-face' if args.prioritize_approach_flight else 'historical'
     if args.approach_ball_only:
@@ -624,7 +636,9 @@ def run(args, *, alternating=None):
         replay=PhysicalLoopReplay(package,adapter.task_model.memory_schema,capacity_ticks=args.replay_capacity_ticks,approach_labeler=labeler)
         if args.approach_ball_only:
             from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank
-            replay.actor_start_bank = ActorStartBank(ball_phase=True)
+            replay.actor_start_bank = ActorStartBank(
+                ball_phase=True, label_reserve=args.retain_labeled_approach_snapshots,
+                excluded_lanes=wm_holdout_lanes)
         from quadsmash.rl.supermimic_physical_loop_replay_v1 import ActiveFlightWindows, NaturalFlightWindows, sample_long_native
         natural_flight=NaturalFlightWindows(package['tensors'],wm_holdout_lanes) if args.wm_natural_flight_batch else None
         active_flight=None
@@ -1387,8 +1401,6 @@ def run(args, *, alternating=None):
         # native rollout.  Prevent windows from crossing the reset boundary
         # even when episode indices are reused by the fixed panel.
         replay.new_stream(source='online', policy_version=0)
-        def file_sha(path):
-            return hashlib.sha256(Path(path).read_bytes()).hexdigest() if path else None
         reference_path=args.reference_policy_checkpoint or source_path
         if file_sha(reference_path)!=manifest['source_sha256']:
             raise ValueError('Reference policy checkpoint does not match the verified source actor')
@@ -1454,6 +1466,7 @@ def run(args, *, alternating=None):
         config['relaxed_calibration_complete'] = args.relaxed_scoring and not relaxed_bootstrap
         config['approach_ball_only'] = args.approach_ball_only
         config['shuffle_unlabeled_approach_starts'] = args.shuffle_unlabeled_approach_starts
+        config['retain_labeled_approach_snapshots'] = args.retain_labeled_approach_snapshots
         if approach_proposal_reallocation is not None:
             config['approach_proposal_reallocation'] = approach_proposal_reallocation
         if labeled_approach_source is not None:

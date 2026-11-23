@@ -45,7 +45,8 @@ def evaluate_command(source, output, motion, execution_root, *, seed, a0, indepe
 
 def train_command(registered, source, output, motion, *, stop_at, fresh, prioritize_flight=False,
                   training_seed=None, start_lanes=16, shuffle_unlabeled_starts=False,
-                  retry_proposals=0, resume_collection_ticks=None, labeled_start_checkpoint=None):
+                  retry_proposals=0, resume_collection_ticks=None, labeled_start_checkpoint=None,
+                  labeled_snapshot_reserve=0):
     command = ['scripts/train_supermimic_physical_block.py', *registered_options(registered, ARCHIVE_INPUTS),
                '--output', str(output), '--resume-training', str(source),
                '--training-profile', 'research_scale', '--training-stage', 'research_contact',
@@ -71,6 +72,8 @@ def train_command(registered, source, output, motion, *, stop_at, fresh, priorit
         command.extend(('--resume-approach-collection-ticks', str(resume_collection_ticks)))
     if labeled_start_checkpoint is not None:
         command.extend(('--approach-labeled-start-checkpoint', str(labeled_start_checkpoint)))
+    if labeled_snapshot_reserve:
+        command.extend(('--retain-labeled-approach-snapshots', str(labeled_snapshot_reserve)))
     if fresh:
         command.append('--resume-reset-schedule')
     if motion:
@@ -136,6 +139,7 @@ def main():
     parser.add_argument('--reuse-unused-approach-proposals', type=int, default=0)
     parser.add_argument('--resume-approach-collection-ticks', type=int)
     parser.add_argument('--approach-labeled-start-checkpoint', type=Path)
+    parser.add_argument('--retain-labeled-approach-snapshots', type=int, default=0)
     parser.add_argument('--training-seed', type=int, help='Learner seed for a fresh training branch or its continuation')
     parser.add_argument('--baseline', type=Path, help='Pair the milestone with a completed fixed128 A0 run')
     parser.add_argument('--fixed-output', type=Path, help='Directory for the milestone’s fixed128 evaluation')
@@ -148,10 +152,13 @@ def main():
                          or args.training_seed is not None or args.toi_effective_start_lanes is not None
                          or args.shuffle_unlabeled_approach_starts or args.reuse_unused_approach_proposals
                          or args.resume_approach_collection_ticks is not None
-                         or args.approach_labeled_start_checkpoint is not None):
+                         or args.approach_labeled_start_checkpoint is not None
+                         or args.retain_labeled_approach_snapshots):
         parser.error('Training options require a train or milestone job')
     if args.toi_effective_start_lanes is not None and not 1 <= args.toi_effective_start_lanes <= 128:
         parser.error('The distinct-episode target must be in [1,128]')
+    if not 0 <= args.retain_labeled_approach_snapshots < 32:
+        parser.error('The labeled snapshot reserve must be in [0,31]')
     if (args.reuse_unused_approach_proposals < 0 or (args.fresh and args.reuse_unused_approach_proposals)
             or (args.resume_approach_collection_ticks is not None and not args.reuse_unused_approach_proposals)):
         parser.error('Recovery options require a continuation with a positive number of reused proposals')
@@ -171,7 +178,8 @@ def main():
                                 shuffle_unlabeled_starts=args.shuffle_unlabeled_approach_starts,
                                 retry_proposals=args.reuse_unused_approach_proposals,
                                 resume_collection_ticks=args.resume_approach_collection_ticks,
-                                labeled_start_checkpoint=args.approach_labeled_start_checkpoint)
+                                labeled_start_checkpoint=args.approach_labeled_start_checkpoint,
+                                labeled_snapshot_reserve=args.retain_labeled_approach_snapshots)
     else:
         execution = registered_options(registered, ('g07-execution-root',))[1]
         command = evaluate_command(source, output, early, execution, seed=args.seed, a0=args.job == 'a0',
