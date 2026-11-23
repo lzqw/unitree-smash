@@ -79,6 +79,16 @@ def test_recover_exhausted_approach_block_without_resetting_used_proposals():
     assert restored.head_totals()['approach']['attempts'] == 19
 
 
+def test_recovery_file_digest_does_not_depend_on_other_resume_options(tmp_path):
+    from hashlib import sha256
+    from scripts.train_supermimic_physical_block import file_sha, run
+
+    path = tmp_path/'checkpoint.pt'
+    path.write_bytes(b'saved recovery input')
+    assert file_sha(path) == sha256(b'saved recovery input').hexdigest()
+    assert 'file_sha' not in run.__code__.co_varnames
+
+
 def test_flight_priority_keeps_unopposed_gradients_and_repairs_uphill_projection():
     parameter = torch.nn.Parameter(torch.zeros(2))
     parameter.grad = torch.tensor([-3., 4.])

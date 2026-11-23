@@ -871,7 +871,6 @@ def run(args, *, alternating=None):
             if args.approach_objective=='toi_racket_only' and args.training_profile in ('bounded','research_scale'):
                 plane_calibration = saved_plane
             if args.intercept_plane_calibration:
-                from quadsmash.rl.supermimic_long_run_contract_v1 import sha256 as file_sha
                 from quadsmash.rl.supermimic_toi_racket_objective import calibrated_plane_offset
                 identity = file_sha(args.intercept_plane_calibration)
                 if saved_plane is None or saved_plane['sha256'] != identity:
