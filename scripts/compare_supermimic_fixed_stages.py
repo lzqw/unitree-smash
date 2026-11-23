@@ -9,6 +9,7 @@ from pathlib import Path
 
 from quadsmash.rl.supermimic_native_metrics import summarize_native_episodes
 from quadsmash.rl.supermimic_paired_evaluation_v1 import paired_evaluation, paired_flips, verify_baseline
+from quadsmash.rl.supermimic_terminal_scoring import APPROACH_BALL_SCORING
 from scripts.evaluate_supermimic_fresh_wm_panel import digest
 
 
@@ -24,10 +25,20 @@ def load_run(folder):
     completed = read(folder, 'completed')
     metrics = read(folder, 'metrics')
     rows = read(folder, 'episodes_summary')
-    if (completed['control_ticks'] != 800 or completed['episodes'] != 128
+    ball_only = metrics['scoring_schema'] == APPROACH_BALL_SCORING
+    recorded_ticks = completed['control_ticks']
+    ticks = metrics.get('control_ticks', recorded_ticks)
+    # Older ball-only receipts wrote the 800-tick cap even after all lanes finished early.
+    matching_receipt = recorded_ticks == ticks or (ball_only and recorded_ticks == 800)
+    valid_ticks = 1 <= ticks <= 800 if ball_only else ticks == 800
+    if (not valid_ticks or not matching_receipt or completed['episodes'] != 128
             or not metrics['actor_parameters_unchanged'] or metrics['num_envs'] != 128
             or any(metrics['optimizer_updates'].values()) or len(rows) != 128):
         raise ValueError('Incomplete frozen 128-case native evaluation')
+    if ball_only and any(row.get('episode_index') != 0
+                         or row.get('scoring_schema') != APPROACH_BALL_SCORING
+                         or not 1 <= row['native_episode_length_steps'] <= ticks for row in rows):
+        raise ValueError('Ball-only panel must contain the first completed episode from each lane')
     identity = dict(task=read(folder,'task_contract'), physics=read(folder,'physics'), seed=seed,
                     initials=read(folder,'initial_states'), execution=read(folder,'policy_execution')['contract'],
                     scoring=metrics['scoring_schema'], assignments=sorted((r['case_id'],r['env_id']) for r in rows))

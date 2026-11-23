@@ -80,10 +80,13 @@ def test_ball_only_holdout_pairs_all_batches_and_checks_actuator_contract(tmp_pa
                 rejection_reasons=['speed_threshold'] if name == 'baseline' else [], complete5=None,
                 native_episode_return=0., native_episode_length_steps=100, native_return_definition=RETURN_DEFINITION)
                 for lane, case in enumerate(cases)]
-            files = dict(startup=dict(argv=['--seed', '882072']), completed=dict(control_ticks=800, episodes=128),
+            ticks = 602 + i
+            completion_ticks = 800 if name == 'baseline' else ticks
+            files = dict(startup=dict(argv=['--seed', '882072']),
+                completed=dict(control_ticks=completion_ticks, episodes=128),
                 episodes_summary=rows, task_contract=task, policy_execution=dict(contract=execution), physics={},
                 initial_states=[], actuator_contract={'controller': 'same'},
-                metrics=dict(num_envs=128, actor_parameters_unchanged=True, optimizer_updates=dict(actor=0),
+                metrics=dict(num_envs=128, control_ticks=ticks, actor_parameters_unchanged=True, optimizer_updates=dict(actor=0),
                     policy_execution=execution, task_contract=task, actor_state_sha256=f'actor-{name}',
                     evaluated_checkpoint_sha256=name, scoring_schema=APPROACH_BALL_SCORING))
             for key, value in files.items():
@@ -100,6 +103,10 @@ def test_ball_only_holdout_pairs_all_batches_and_checks_actuator_contract(tmp_pa
     (candidate/'batch_3/actuator_contract.json').write_text('{}')
     with pytest.raises(ValueError, match='changed execution, initial states or actuator contract'):
         compare_ball_only(base, candidate, 'baseline', 'candidate', panel)
+    completion = candidate/'batch_3/completed.json'
+    completion.write_text(json.dumps(dict(control_ticks=605, episodes=127)))
+    with pytest.raises(ValueError, match='Incomplete frozen 128-case'):
+        collect_scores(candidate, 'candidate', panel, approach_ball_only=True)
 
 
 def test_research_fixed128_reuses_matching_zero_and_rejects_training_suite(tmp_path):

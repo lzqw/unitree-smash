@@ -472,7 +472,7 @@ def _run_native(args, stop_request):
         write_json(args.output/'episodes_summary.json',rows)
         write_json(args.output/'metrics.json',metrics)
         write_json(args.output/'command_consistency.json',mapping)
-        write_json(args.output/'completed.json',dict(control_ticks=800,episodes=128,formal_acceptance=False))
+        write_json(args.output/'completed.json',dict(control_ticks=ticks_completed,episodes=128,formal_acceptance=False))
         stage='FINISHED'
         lifecycle_stage(args.output, 'SIMULATION_FINISHED', control_ticks=800, episodes=128)
         print('SUPERMIMIC_EVAL_RESULT='+json.dumps(metrics),flush=True)
