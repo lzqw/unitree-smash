@@ -13,7 +13,8 @@ FAULTS = ('robot_net_fault','body_ball_fault','wrong_side_fault','double_hit_fau
 def native_reward_from_record(row, racket_body_index, dt=.01):
     after=row['after'];rally=after['task'];a=after['auxiliary'];p=after['physical']
     contact=rally['legal_initial_contact'] & rally['string_hit'] & rally['airborne_string_hit']
-    attack=contact & rally['released'] & (rally['outgoing_velocity'].norm(dim=1)>=5.) & (rally['outgoing_velocity'][:,0]>0)
+    minimum_speed = after['recovery'].get('minimum_outgoing_speed_mps', 5.)
+    attack=contact & rally['released'] & (rally['outgoing_velocity'].norm(dim=1)>=minimum_speed) & (rally['outgoing_velocity'][:,0]>0)
     cross=attack & rally['crossed_net'];target=cross & rally['landed_target']
     recover=contact & after['recovery']['rally_recovery_success']
     body=after['recovery']['body_ground_seen'];paid=row['before']['event_state'].bool()
@@ -31,7 +32,8 @@ def native_reward_from_record(row, racket_body_index, dt=.01):
         -.4*f['root_com_lin_vel_w'][:,:2].square().sum(1)-.2*f['root_com_ang_vel_w'].square().sum(1))
     continuous=(.5*stable-2.*risk-.05*a['environment']['action_delta']
         -.02*f['applied_torque_all'].square().sum(1)/1000.+.8*approach)*dt
-    complete=target & after['recovery']['rally_recovery_success'] & ~faulted & row['timeout'] & ~row['terminated']
+    settled = (row['timeout'] & ~row['terminated']) | after['recovery'].get('terminated_success', False)
+    complete=target & after['recovery']['rally_recovery_success'] & ~faulted & settled
     reward=continuous+2.*jump.float()+20.*hit.float()+5.*net.float()
     reward=reward+15.*land.float()+10.*recovered.float()+20.*complete.float()
     reward=reward-4.*frame.float()-5.*((~contact)&(p['elapsed_s']>3.)).float()*dt

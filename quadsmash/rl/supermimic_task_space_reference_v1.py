@@ -7,6 +7,8 @@ from dataclasses import dataclass, asdict
 import hashlib
 import math
 import torch
+
+from .supermimic_terminal_scoring import SCORING_SCHEMAS
 from .supermimic_physical_dataset_v1 import decode_physical
 
 
@@ -69,7 +71,7 @@ class TaskSpaceReferenceBankV1:
                     match_distance_threshold=self.match_distance_threshold,max_per_head=self.max_per_head,
                     excluded_lanes=list(self.excluded_lanes),
                     execution_contract_sha256=self.execution_contract_sha256,
-                    protocol_verified=bool(self.entries) and all(e.get('score_schema')=='historical-independent-complete5-v1' for e in self.entries),
+                    protocol_verified=bool(self.entries) and all(e.get('score_schema') in SCORING_SCHEMAS for e in self.entries),
                     native_contact_certification=False,alignment='current causal event estimate / current-state phase match')
 
     def payload(self): return asdict(self)
@@ -91,7 +93,7 @@ class TaskSpaceReferenceBankV1:
             for record in terminal_records:
                 key=(int(record['env_id']),int(record['episode_index']))
                 if key in labels:raise ValueError('Duplicate reference terminal identity')
-                if record.get('scoring_schema')!='historical-independent-complete5-v1':raise ValueError('Reference requires original independent task scoring')
+                if record.get('scoring_schema') not in SCORING_SCHEMAS:raise ValueError('Reference requires original independent task scoring')
                 labels[key]=record
         entries=[]; d=tensors; T,N=d['episode'].shape
         excluded=set(excluded_lanes)

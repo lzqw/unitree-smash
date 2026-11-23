@@ -2,6 +2,7 @@
 import hashlib,json,math
 from pathlib import Path
 from .supermimic_physical_loop_loading_v1 import tensor_digest
+from .supermimic_terminal_scoring import SCORING_SCHEMAS
 
 
 def json_sha(value):
@@ -132,7 +133,7 @@ def attach_terminal_ball_side(data,records):
     labels=torch.full(data['episode'].shape,float('nan'))
     seen=set()
     for record in records:
-        if record.get('scoring_schema')!='historical-independent-complete5-v1':raise ValueError('Unknown terminal scoring schema')
+        if record.get('scoring_schema') not in SCORING_SCHEMAS:raise ValueError('Unknown terminal scoring schema')
         lane=int(record['env_id']);ep=int(record['episode_index']);key=(lane,ep)
         if key in seen:raise ValueError('Duplicate native terminal identity')
         seen.add(key)

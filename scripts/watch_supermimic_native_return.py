@@ -1,6 +1,6 @@
 """Pause the registered researcher on sustained deterioration in completed native episodes."""
 import argparse
-from collections import deque
+from collections import Counter, deque
 import fcntl
 import json
 from math import hypot, isfinite
@@ -28,6 +28,7 @@ def case_evidence(observed, baseline):
                     ball_side=row['ball_side_complete_except_recovery'], complete5=row['complete5'],
                     episode_length_steps=row.get('native_episode_length_steps'), timeout=row.get('episode_timeout'),
                     physical_recovery=row.get('physical_recovery_success'), release_speed_mps=speed,
+                    relaxed_recovery=row.get('relaxed_recovery'),
                     failed_criteria=row.get('rejection_reasons'))
 
     return dict(case=observed['case_id'], lane=observed['env_id'], episode=observed['episode_index'],
@@ -84,6 +85,20 @@ class ReturnTrend:
                        paired_delta=mean(deltas) if deltas else None,
                        cumulative_paired_delta=self.paired_sum/self.paired_cases if self.paired_cases else None,
                        paired_net={k:sum(int(e[k])-int(b[k]) for e,b in pairs) for k in fields})
+        # Keep the outcome mix next to the Return so later-finishing falls and
+        # early successes are visible even when none of the cases can be paired.
+        body_returns = {name: [] for name in ('contact', 'no_contact', 'unknown')}
+        for episode in rows:
+            body = episode['body_ground_seen']
+            body_returns['unknown' if body is None else 'contact' if body else 'no_contact'].append(
+                episode['native_episode_return'])
+        current.update(
+            scope='completed online episodes, potentially mixed policies',
+            episode_indices=dict(Counter(e['episode_index'] for e in rows)),
+            body_ground_outcomes={name: dict(count=len(values), mean_return=mean(values) if values else None)
+                                  for name, values in body_returns.items()},
+            complete5_count=sum(e['complete5'] for e in rows),
+        )
         matched = {(e['case_id'], e['env_id']): b for e,b in pairs}
         current['cases'] = [case_evidence(e, matched.get((e['case_id'], e['env_id']))
                                           if e['episode_index'] == 0 else None) for e in rows]
@@ -127,8 +142,10 @@ def monitor(arm, trainer):
         time.sleep(5)
     if not manifest_path.exists():
         return
-    baseline = FirstEpisodeReturns(arm, registration, json.loads(manifest_path.read_text())).baseline
-    attach_baseline_flights(baseline, Path(registration['baseline_path']).with_name('episodes.jsonl'))
+    baseline = {}
+    if registration.get('baseline_path'):
+        baseline = FirstEpisodeReturns(arm, registration, json.loads(manifest_path.read_text())).baseline
+        attach_baseline_flights(baseline, Path(registration['baseline_path']).with_name('episodes.jsonl'))
     trend = ReturnTrend(baseline)
     history_path = (train/'native_collection_history.jsonl' if '--recovery-rollout-landing' in cmd
                     else train/'training_history.jsonl')

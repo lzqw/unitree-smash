@@ -46,7 +46,7 @@ def verify_contact_receipt(path,model_paths,task_contract):
     return dict(receipt_sha256=sha256(path),model_sha256=expected,task_contract_sha256=contract_hash,
                 validation_episodes=len(val),current_runtime_validity=None,scope='static source-file and task-contract evidence only; actual runtime weights checked separately')
 
-def verify_native_promotion(metrics_path,checkpoint_path,*,expected_execution=None):
+def verify_native_promotion(metrics_path,checkpoint_path,*,expected_execution=None,relaxed_baseline=None):
     m=json.loads(Path(metrics_path).read_text());n=m.get('native_episode_metrics',m)
     if 'checkpoint_policy_execution' in m and m['checkpoint_policy_execution'] != m.get('policy_execution'):
         raise ValueError('Native evaluation policy execution contract mismatch with checkpoint')
@@ -56,7 +56,23 @@ def verify_native_promotion(metrics_path,checkpoint_path,*,expected_execution=No
     if m.get('evaluated_checkpoint_sha256')!=sha256(checkpoint_path):raise ValueError('Native evaluation checkpoint hash mismatch')
     if m.get('num_envs')!=128 or m.get('control_ticks')!=800:raise ValueError('Incomplete native evaluation protocol')
     if not math.isfinite(n['native_episode_return_mean']):raise ValueError('Nonfinite native return')
-    if not (n['native_episode_return_mean']>-12.52678435 and n['ball_side_complete_except_recovery']>=53 and n['complete5']>=27 and m['numerical_failures']==0):raise ValueError('Native candidate not accepted')
+    from .supermimic_terminal_scoring import RELAXED_SCORING, STRICT_SCORING
+    if m.get('scoring_schema', STRICT_SCORING) == RELAXED_SCORING:
+        if relaxed_baseline is None:
+            raise ValueError('Relaxed promotion requires a same-contract native baseline')
+        base = json.loads(Path(relaxed_baseline).read_text())
+        keys = ('scoring_schema', 'task_contract', 'policy_execution', 'num_envs', 'control_ticks')
+        if any(base.get(key) != m.get(key) for key in keys) or base['numerical_failures'] != 0:
+            raise ValueError('Relaxed baseline uses a different or invalid evaluation contract')
+        prior = base.get('native_episode_metrics', base)
+        return_floor = prior['native_episode_return_mean']
+        ball_floor = prior['ball_side_complete_except_recovery']
+        complete_floor = prior['complete5']
+    else:
+        return_floor, ball_floor, complete_floor = -12.52678435, 53, 27
+    if not (n['native_episode_return_mean'] > return_floor and n['ball_side_complete_except_recovery'] >= ball_floor
+            and n['complete5'] >= complete_floor and m['numerical_failures'] == 0):
+        raise ValueError('Native candidate not accepted')
     if expected_execution is not None:
         import torch
         from .supermimic_physical_loop_loading_v1 import tensor_digest

@@ -43,8 +43,14 @@ def full_racket_cfg(num_envs=16,physics_dt=.0000625):
 
 class FullRacketEnvV4(BallEnv):
     action_family='absolute-joint-limits-full-racket-v4'
-    def __init__(self,cfg,*,cases=None,contact_flight_recovery=None,**kwargs):
+    def __init__(self,cfg,*,cases=None,contact_flight_recovery=None,relaxed_protocol=None,
+                 relaxed_survival_diagnostic=False,**kwargs):
         self.contact_recovery=None
+        self.relaxed_protocol = relaxed_protocol
+        self.relaxed_survival_diagnostic = relaxed_survival_diagnostic
+        self.minimum_outgoing_speed = 5. if relaxed_protocol is None else relaxed_protocol['minimum_outgoing_speed_mps']
+        if relaxed_protocol is not None and contact_flight_recovery is None:
+            raise ValueError('Relaxed scoring requires contact-flight association')
         if contact_flight_recovery not in (None,'contact-flight-recovery-v1'):
             raise ValueError('Unknown explicit recovery association version')
         self.racket_config,self.court_config=load_racket(),load_court()
@@ -97,7 +103,14 @@ class FullRacketEnvV4(BallEnv):
         if contact_flight_recovery is not None:
             from .contact_flight_recovery_v5 import ContactFlightRecoveryV5
             from .jump_env import PROTOCOL
-            self.contact_recovery=ContactFlightRecoveryV5(n,device,PROTOCOL)
+            if relaxed_protocol is None:
+                self.contact_recovery=ContactFlightRecoveryV5(n,device,PROTOCOL)
+            else:
+                from .contact_flight_recovery_v6 import ContactFlightRecoveryV6
+                self.contact_recovery = ContactFlightRecoveryV6(n, device, PROTOCOL, relaxed_protocol)
+        self.terminated_success = torch.zeros(n, dtype=torch.bool, device=device)
+        self.relaxed_success_time = torch.full((n,), -1., device=device)
+        self.relaxed_survived_one_second = torch.zeros_like(self.terminated_success)
         self._v4_ready=True
 
     def _consume_jump_frame(self,frame):
@@ -105,12 +118,46 @@ class FullRacketEnvV4(BallEnv):
         metric_previous=getattr(self,'_jump_metric_previous_frame',frame-1)
         super()._consume_jump_frame(frame)
         if self.contact_recovery is not None and frame>previous and frame!=0:
-            self.contact_recovery.metric(self,self.stable_recovery,(frame-metric_previous)*self.physics_dt)
+            dt = (frame-metric_previous)*self.physics_dt
+            self.contact_recovery.metric(self,self.stable_recovery,dt)
+            if self.relaxed_protocol is not None:
+                from .contact_flight_recovery_v6 import stability_failures
+                from isaaclab.utils.math import euler_xyz_from_quat, wrap_to_pi
+                data = self.robot.data
+                roll, pitch, _ = euler_xyz_from_quat(data.root_quat_w)
+                failures = stability_failures(
+                    self.relaxed_protocol['recovery'], support=self.observed_foot_contact.sum(1),
+                    roll_pitch=torch.stack((wrap_to_pi(roll), wrap_to_pi(pitch)), -1),
+                    horizontal_speed=data.root_link_lin_vel_w[:, :2].norm(dim=-1),
+                    roll_pitch_speed=data.root_ang_vel_w[:, :2].norm(dim=-1),
+                    leg_joint_speed=data.joint_vel[:, self.leg_ids].abs().amax(-1),
+                    body_ground=self.body_ground_seen)
+                self.contact_recovery.relaxed_metric(self, failures, dt)
 
     @property
     def rally_recovery_success(self):
         if self.contact_recovery is None:return self.jump_success
+        if self.relaxed_protocol is not None:
+            return self.contact_recovery.relaxed_success & ~self.body_ground_seen & (self.robot.data.root_pos_w[:,2]>=.12)
         return self.contact_recovery.success(self)&(self.robot.data.root_pos_w[:,2]>=.12)
+
+    def _get_dones(self):
+        terminated, timeout = super()._get_dones()
+        if self.relaxed_protocol is not None and self._v4_ready:
+            success = (
+                self.rally.complete5(self.rally_recovery_success, self.minimum_outgoing_speed)
+                & self.rally.crossed_net & ~terminated
+                & ((self.sweep_misses + self.sweep_unresolved) == 0))
+            if self.relaxed_survival_diagnostic:
+                first = success & (self.relaxed_success_time < 0)
+                self.relaxed_success_time.copy_(torch.where(first, self.jump_clock, self.relaxed_success_time))
+                survived = ((self.relaxed_success_time >= 0) & (self.jump_clock - self.relaxed_success_time >= 1.)
+                            & ~self.body_ground_seen & ~terminated)
+                self.relaxed_survived_one_second |= survived
+                return terminated, timeout
+            self.terminated_success.copy_(success)
+            terminated = terminated | self.terminated_success
+        return terminated, timeout
 
     def _racket_over_net_geometry(self,tool,quaternion,fully_own):
         """Use live GPU poses, not stale DirectGPU CPU scene-query poses."""
@@ -287,6 +334,10 @@ class FullRacketEnvV4(BallEnv):
     def _reset_idx(self,ids):
         if self._v4_ready:
             complete=ids[self._episode_has_stepped[ids]]
+            strict_recovery = self.rally_recovery_success
+            if self.relaxed_protocol is not None:
+                strict_recovery = (self.contact_recovery.success(self) & ~self.terminated_success
+                                   & (self.robot.data.root_pos_w[:, 2] >= .12))
             for i in complete.cpu().tolist():
                 row={name:bool(getattr(self.rally,name)[i]) for name in self.rally.flags}
                 row.update(env_id=i,episode_index=int(self.episode_index[i]),
@@ -297,8 +348,8 @@ class FullRacketEnvV4(BallEnv):
                              if self.cases is not None else f'ENV{i}'),
                     episode_timeout=bool(self.reset_time_outs[i]),
                     episode_duration_s=float(self.episode_length_buf[i] * self.step_dt),
-                    complete_smash=bool(self.rally.complete(self.rally_recovery_success)[i]),
-                    complete5=bool(self.rally.complete5(self.rally_recovery_success)[i]),
+                    complete_smash=bool(self.rally.complete(strict_recovery)[i]),
+                    complete5=bool(self.rally.complete5(self.rally_recovery_success,self.minimum_outgoing_speed)[i]),
                     recovery_success=bool(self.rally_recovery_success[i]),contact_count=int(self.rally.contact_count[i]),
                     contact_point_m=self.rally.contact_point[i].cpu().tolist(),
                     outgoing_velocity_mps=self.rally.outgoing_velocity[i].cpu().tolist(),
@@ -314,6 +365,16 @@ class FullRacketEnvV4(BallEnv):
                     active_rally_launch_count=int(self.launch_count[i]),hit_velocity_error_mps=float(self.hit_velocity_error[i]))
                 if self.contact_recovery is not None:
                     row['contact_flight_recovery']=self.contact_recovery.record(self,i,self.robot.data.root_pos_w[i,2])
+                if self.relaxed_protocol is not None:
+                    row['relaxed_recovery'] = self.contact_recovery.relaxed_record(i)
+                    row['terminated_success'] = bool(self.terminated_success[i])
+                    if self.relaxed_survival_diagnostic:
+                        reached = self.relaxed_success_time[i] >= 0
+                        observed = bool(reached and (self.relaxed_survived_one_second[i] or self.body_ground_seen[i]
+                                                     or self.reset_terminated[i] or self.jump_clock[i] - self.relaxed_success_time[i] >= 1.))
+                        row['relaxed_survival_one_second'] = dict(
+                            success_reached=bool(reached), observed=observed,
+                            survived=bool(self.relaxed_survived_one_second[i]) if observed else None)
                 self.rally_records.append(row)
             self.rally.reset(ids);self.launch_done[ids]=False;self.launch_count[ids]=0
             self.launch_signals_ready[ids]=False;self.launch_frame[ids]=-1
@@ -324,3 +385,7 @@ class FullRacketEnvV4(BallEnv):
             self.first_string_point[ids]=float('nan');self.first_string_time[ids]=float('nan')
         super()._reset_idx(ids)
         if self.contact_recovery is not None:self.contact_recovery.reset(ids)
+        if self._v4_ready:
+            self.terminated_success[ids] = False
+            self.relaxed_success_time[ids] = -1.
+            self.relaxed_survived_one_second[ids] = False

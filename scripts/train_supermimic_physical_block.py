@@ -245,6 +245,10 @@ def main():
                         help='Score speed and direction at the TOI impulse, including the native downward release criterion')
     parser.add_argument('--recovery-stability-limits', action='store_true',
                         help='Penalize post-landing motion above the native Recovery scoring thresholds')
+    parser.add_argument('--relaxed-scoring', action='store_true')
+    parser.add_argument('--relaxed-speed-margin', type=float, default=None,
+                        help='Nonnegative q90 of signed release-speed prediction errors on training calibration cases')
+    parser.add_argument('--relaxed-impulse-residual-scale', type=float, choices=(0., .5, 1.), default=None)
     parser.add_argument('--interleaved-approach-starts',action='store_true',
                         help='Spread the four Approach start families across each 20-draw quota period')
     parser.add_argument('--restart-uphill-approach-momentum', action='store_true',
@@ -458,6 +462,27 @@ def run(args, *, alternating=None):
         adapter.manifest['training_stage']=manifest['training_stage']
         adapter.manifest['action_ball_trainable_in_wm']=action_ball_trainable
         lifecycle_stage(args.output, 'AFTER_LOAD_PHYSICAL_LOOP')
+        source_path = Path(manifest['source_checkpoint'])
+        native_source_checkpoint = torch.load(source_path, map_location='cpu', weights_only=False)
+        # Older native archives do not carry the execution-root field.  The
+        # explicit CLI path is the authoritative runtime contract and keeps
+        # those archives usable without weakening the task-identity checks.
+        execution_root = args.g07_execution_root
+        if execution_root is None:
+            recorded_root = manifest.get('g07_execution_root')
+            if recorded_root is None:
+                recorded_root = manifest.get('init_policy_checkpoint', {}).get('g07_execution_root')
+            if recorded_root is None:
+                raise ValueError(
+                    'Missing g07_execution_root. Pass --g07-execution-root for legacy archives.'
+                )
+            execution_root = Path(recorded_root)
+        execution_root = Path(execution_root).resolve()
+        contract,protocol,cases,receipt=resolve_task_contract(
+            native_source_checkpoint, source_path, execution_root=execution_root, root=execution_root)
+        if contract!=manifest['task_contract']:raise ValueError('Native task contract changed')
+        cfg=make_task_cfg(128,contract,protocol,receipt);cfg.seed=NATIVE_TRAIN128_SEED;cfg.sim.device='cuda:0'
+        lifecycle_stage(args.output, 'PHYSICS_CONTRACT_VALIDATED')
         contact_validation=None;wm_holdout_lanes=parse_lane_list(args.wm_holdout_lanes);runtime_wm_bounds={};runtime_validation_data=None;dual_quality=None;native_value_bank=None
         if args.contact_validation_receipt is not None:
             from quadsmash.rl.supermimic_long_run_contract_v1 import verify_contact_receipt
@@ -663,9 +688,45 @@ def run(args, *, alternating=None):
         replay_archives=[];replay_receipts=[];critic_coverage_blocks=0
         refresh_world_updates=0;refresh_critic_updates=0
         replay_handoff=None
+        relaxed_transition = False
+        relaxed_bootstrap = False
         plane_calibration = None
+        def start_native_env():
+            class TrainingEnv(SuperMimicEnvV1, FrozenPanelEnv):
+                pass
+
+            stage(args.output, 'BEFORE_ENV')
+            native_env = TrainingEnv(cfg, cases=cases,
+                reset_noise=zero_panel_reset_noise(128, NATIVE_TRAIN128_SEED),
+                residual_policy_checkpoint=native_source_checkpoint, g07_execution_root=execution_root,
+                native_return_gamma=timebase.gamma, contact_flight_recovery=contract['contact_flight_recovery'],
+                relaxed_protocol=contract.get('relaxed_scoring'))
+            try:
+                native_wrapper = RslRlVecEnvWrapper(native_env, clip_actions=None)
+                initial_obs, _ = native_wrapper.reset()
+            except BaseException:
+                native_env.close()
+                raise
+            stage(args.output, 'NATIVE_ENV_READY')
+            return native_env, native_wrapper, initial_obs
+
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
+            had_relaxed = 'relaxed_scoring' in resumed['metadata']['task_contract']
+            args.relaxed_scoring |= had_relaxed
+            relaxed_transition = args.relaxed_scoring and not had_relaxed
+            relaxed_bootstrap = args.relaxed_scoring and not resumed['config'].get('relaxed_calibration_complete', False)
+            if relaxed_transition and not args.resume_reset_schedule:
+                raise ValueError('Relaxed scoring migration requires a fresh schedule and new native RTG calibration')
+            if had_relaxed:
+                saved_margin = resumed['config']['relaxed_speed_margin']
+                if args.relaxed_speed_margin is not None and args.relaxed_speed_margin != saved_margin:
+                    raise ValueError('Relaxed release calibration changed on resume')
+                args.relaxed_speed_margin = saved_margin
+                saved_scale = resumed['config']['relaxed_impulse_residual_scale']
+                if args.relaxed_impulse_residual_scale not in (None, saved_scale):
+                    raise ValueError('Relaxed impulse residual scale changed on resume')
+                args.relaxed_impulse_residual_scale = saved_scale
             if args.wm_latest_policy_windows is None and not args.resume_reset_schedule:
                 args.wm_latest_policy_windows = resumed['config'].get('wm_latest_policy_windows', 0)
             if not args.resume_reset_schedule and resumed['config'].get('shuffle_wm_quota_groups'):
@@ -684,15 +745,15 @@ def run(args, *, alternating=None):
                 if saved_plane is None or saved_plane['sha256'] != identity:
                     if not (args.resume_reset_schedule or args.resume_next_cycle):
                         raise ValueError('A changed contact target plane requires a fresh schedule')
-                    source = file_sha(args.resume_training)
+                    plane_source_sha = file_sha(args.resume_training)
                     if research and args.resume_reset_schedule:
                         composition = resumed['metadata'].get('research_contact_composition', {})
-                        source = composition.get('source_checkpoint_sha256', source)
+                        plane_source_sha = composition.get('source_checkpoint_sha256', plane_source_sha)
                 else:
-                    source = saved_plane['source_checkpoint_sha256']
+                    plane_source_sha = saved_plane['source_checkpoint_sha256']
                 offset = calibrated_plane_offset(json.loads(args.intercept_plane_calibration.read_text()),
-                                                 wm_holdout_lanes, source)
-                plane_calibration = dict(sha256=identity,source_checkpoint_sha256=source,offset_m=offset)
+                                                 wm_holdout_lanes, plane_source_sha)
+                plane_calibration = dict(sha256=identity,source_checkpoint_sha256=plane_source_sha,offset_m=offset)
             if saved_plane and not plane_calibration and not (args.resume_reset_schedule or args.resume_next_cycle):
                 raise ValueError('An ongoing schedule must retain its fitted TOI target plane')
             if plane_calibration:
@@ -772,8 +833,10 @@ def run(args, *, alternating=None):
             resumed_global=dict(resumed.get('global_counters',{}))
             critic_coverage_blocks=int(resumed.get('critic_coverage_blocks',0))
             if trainer.frozen_hash()!=trainer.frozen_actor_hash:raise ValueError('Resume changed frozen actor parameters')
-            if resumed['config'].get('score_downward_release'):
+            if resumed['config'].get('score_downward_release') and not args.relaxed_scoring:
                 args.score_downward_release = True
+            if not args.resume_reset_schedule:
+                args.recovery_rollout_landing |= resumed['config'].get('recovery_rollout_landing', False)
             if resumed['config'].get('recovery_stability_limits'):
                 args.recovery_stability_limits = True
             if resumed['config'].get('landing_and_first_contact_objectives') and not args.landing_and_first_contact_objectives:
@@ -782,6 +845,25 @@ def run(args, *, alternating=None):
                 replay.recovery_failure_prefixes = True
                 replay.recovery_training_mask = torch.ones(replay.lanes, dtype=torch.bool)
                 replay.recovery_training_mask[list(wm_holdout_lanes)] = False
+            if args.relaxed_scoring:
+                from math import isfinite
+                from quadsmash.rl.supermimic_terminal_scoring import relaxed_scoring_protocol
+                if (not research or not args.landing_and_first_contact_objectives or not args.resume_training
+                        or args.score_downward_release or args.relaxed_speed_margin is None
+                        or not isfinite(args.relaxed_speed_margin) or args.relaxed_speed_margin < 0
+                        or args.relaxed_impulse_residual_scale is None or not args.recovery_rollout_landing):
+                    raise ValueError('Relaxed research requires a valid release margin, revised landing objectives and a resume source')
+                relaxed = relaxed_scoring_protocol()
+                contract = dict(contract, relaxed_scoring=relaxed)
+                protocol = dict(protocol, relaxed_scoring=relaxed)
+                if not relaxed_transition and resumed['metadata']['task_contract'] != contract:
+                    raise ValueError('Relaxed scoring contract changed on resume')
+                trainer.relaxed_recovery_limits = relaxed['recovery']
+                trainer.relaxed_release_speed_goal = relaxed['minimum_outgoing_speed_mps'] + args.relaxed_speed_margin
+                trainer.relaxed_impulse_residual_scale = args.relaxed_impulse_residual_scale
+                phase = 'ENV'
+                env, wrapper, obs = start_native_env()
+                phase = 'REPLAY_RESTORE'
             replay_archives=[] if args.resume_without_replay else resumed['replay_archives']
             # A direct Approach resume must retain the Recovery-generated
             # online transitions; skipping them breaks the native-data→WM
@@ -789,16 +871,25 @@ def run(args, *, alternating=None):
             # sampler metadata.
             replay_receipts=None if args.resume_without_replay else resumed.get('replay_archive_receipts')
             if replay_receipts is not None and len(replay_receipts)!=len(replay_archives):raise ValueError('Replay receipt/archive count mismatch')
+            archive_receipts = replay_receipts if replay_receipts is not None else [
+                json.loads((Path(directory) / 'manifest.json').read_text()) for directory in replay_archives]
+            total_replay_chunks = sum(len(receipt['chunks']) for receipt in archive_receipts)
+            rebuilt_chunks = 0
             for archive_index,directory in enumerate(replay_archives):
                 replay.new_stream(source='online',policy_version=int(resumed_global.get('accepted',0)))
                 directory=Path(directory)
-                receipt=replay_receipts[archive_index] if replay_receipts is not None else json.loads((directory/'manifest.json').read_text())
+                receipt = archive_receipts[archive_index]
                 for item in receipt['chunks']:
+                    if args.stop_request['signal'] is not None:
+                        raise InterruptedError(args.stop_request['signal'])
                     from quadsmash.rl.supermimic_archive_storage_v1 import read_archive_rows
                     with read_archive_rows(directory,item,scratch=args.output) as rows:
                         for row in rows:
                             replay.append(row,retain_start=False,policy_version=row.get('policy_version',0))
                     del rows
+                    rebuilt_chunks += 1
+                    if rebuilt_chunks % 32 == 0 or rebuilt_chunks == total_replay_chunks:
+                        print(f'REPLAY_RESTORE {rebuilt_chunks}/{total_replay_chunks} chunks', flush=True)
             if 'actor_start_bank' in resumed:
                 replay.actor_start_bank.load_state_dict(tensor_tree_copy(resumed['actor_start_bank'],cpu=True))
             elif args.resume_start_block=='approach':
@@ -893,21 +984,6 @@ def run(args, *, alternating=None):
             promotion=verify_native_promotion(args.native_acceptance_receipt,args.resume_training,expected_execution=execution_contract())
             trainer.native_accepted_snapshot={k:v.detach().clone() for k,v in actor.state_dict().items()}
             write(args.output/'native_reference_promotion.json',promotion)
-        source_path=Path(manifest['source_checkpoint']);source=torch.load(source_path,map_location='cpu',weights_only=False)
-        # Older native archives do not carry the execution-root field.  The
-        # explicit CLI path is the authoritative runtime contract and keeps
-        # those archives usable without weakening the task-identity checks.
-        execution_root = args.g07_execution_root
-        if execution_root is None:
-            recorded_root = manifest.get('g07_execution_root')
-            if recorded_root is None:
-                recorded_root = manifest.get('init_policy_checkpoint', {}).get('g07_execution_root')
-            if recorded_root is None:
-                raise ValueError(
-                    'Missing g07_execution_root. Pass --g07-execution-root for legacy archives.'
-                )
-            execution_root = Path(recorded_root)
-        execution_root = Path(execution_root).resolve()
         replay.recovery_failure_prefixes = args.recovery_prefix_and_string_margin
         if args.resume_training and not args.resume_reset_schedule:
             args.recovery_rollout_landing |= resumed['config'].get('recovery_rollout_landing',False)
@@ -945,21 +1021,14 @@ def run(args, *, alternating=None):
             from quadsmash.rl.supermimic_toi_racket_objective import string_boundary
             trainer.string_boundary = string_boundary(execution_root/'configs/full_racket_v4_r3.json',
                                                       next(actor.parameters()))
-        contract,protocol,cases,receipt=resolve_task_contract(
-            source, source_path, execution_root=execution_root, root=execution_root)
-        if contract!=manifest['task_contract']:raise ValueError('Native task contract changed')
         if args.recovery_stability_limits:
             if not (research and args.landing_and_first_contact_objectives):
                 raise ValueError('Recovery stability limits require the revised research objective')
             from quadsmash.tasks.stand.jump_env import PROTOCOL as jump_protocol
             trainer.recovery_stability_limits = jump_protocol['recovery']
-        cfg=make_task_cfg(128,contract,protocol,receipt);cfg.seed=NATIVE_TRAIN128_SEED;cfg.sim.device='cuda:0'
-        class TrainingEnv(SuperMimicEnvV1,FrozenPanelEnv):pass
-        phase='ENV';stage(args.output,'BEFORE_ENV')
-        env=TrainingEnv(cfg,cases=cases,reset_noise=zero_panel_reset_noise(128,NATIVE_TRAIN128_SEED),
-            residual_policy_checkpoint=source,g07_execution_root=execution_root,
-            native_return_gamma=timebase.gamma,contact_flight_recovery=contract['contact_flight_recovery'])
-        wrapper=RslRlVecEnvWrapper(env,clip_actions=None);obs,_=wrapper.reset()
+        if env is None:
+            phase = 'ENV'
+            env, wrapper, obs = start_native_env()
         if args.resume_training:
             # Environment seeding must not overwrite the resumed learner RNG.
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
@@ -1054,7 +1123,7 @@ def run(args, *, alternating=None):
         from quadsmash.rl.supermimic_approach_data_v1 import native_approach_metadata
         from quadsmash.rl.supermimic_frozen_return_monitor_v1 import FrozenReturnMonitor
         frozen_return_monitor=FrozenReturnMonitor(args.native_return_drop_tolerance,args.native_return_flat_tolerance,args.native_return_patience)
-        if args.resume_training and resumed.get('frozen_return_monitor') is not None:
+        if args.resume_training and not relaxed_transition and resumed.get('frozen_return_monitor') is not None:
             frozen_return_monitor.load_state_dict(resumed['frozen_return_monitor'])
         elif args.resume_training and args.training_profile=='large':
             raise ValueError('Large resume requires saved native-return monitoring state; do not reset trend history')
@@ -1113,7 +1182,7 @@ def run(args, *, alternating=None):
                     self.rows.clear()
                 self._manifest()
         startup_identity=json.loads((args.output/'startup.json').read_text())
-        archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,policy_execution=policy_execution,control_ticks=0,transitions=0,chunks=[],
+        archive=TrainingArchive(args.output/'native_transitions',metadata=dict(manifest,task_contract=contract,policy_execution=policy_execution,control_ticks=0,transitions=0,chunks=[],
             initial_archive_identity={k:manifest.get(k) for k in ('policy_id','actor_state_sha256','runtime_commit')},
             behavior_policy_scope='per_transition',policy_id='mixed-training',actor_state_sha256=None,
             runtime_commit=startup_identity['commit'],runtime_script_sha256=startup_identity['script_sha256'],
@@ -1180,6 +1249,9 @@ def run(args, *, alternating=None):
         config['research_flight_backend'] = flight_backend
         config['research_origin']=research_origin
         config['recovery_stability_limits'] = args.recovery_stability_limits
+        config['relaxed_speed_margin'] = args.relaxed_speed_margin
+        config['relaxed_impulse_residual_scale'] = args.relaxed_impulse_residual_scale
+        config['relaxed_calibration_complete'] = args.relaxed_scoring and not relaxed_bootstrap
         if research: config['research_training_seed']=training_seed
         write(args.output/'config.json',config)
         elapsed_offset = 0.
@@ -1273,7 +1345,7 @@ def run(args, *, alternating=None):
         from quadsmash.rl.supermimic_dual_head_quality_v1 import split_native_value_rows,critic_holdout,reference_coverage
         from scripts.index_supermimic_success_archive import archive_actor_sha256
         label_actor_sha256=archive_actor_sha256(manifest)
-        if args.training_stage == 'wm_calibrate':
+        if args.training_stage == 'wm_calibrate' or relaxed_bootstrap:
             native_value_bank=dict(
                 inputs=torch.empty((0, 0)), rtg=torch.empty((0,)), identity=[],
                 head_masks={'recovery':torch.empty((0,),dtype=torch.bool),
@@ -1283,7 +1355,7 @@ def run(args, *, alternating=None):
                 policy_execution=manifest.get('policy_execution'), accepted_updates=0,
                 label_actor_state=None)
             write(args.output/'native_critic_stage_audit.json',dict(
-                skipped=True, reason='wm_calibrate_actor_critic_blocked',
+                skipped=True, reason='awaiting_new_scoring_native_rtg' if relaxed_bootstrap else 'wm_calibrate_actor_critic_blocked',
                 source='packed_loop/data.pt', horizon_steps=int(rtg.shape[0])))
         else:
             stage_states=[as_state(start_cache[t]) for t in stage_ticks]
@@ -1701,12 +1773,16 @@ def run(args, *, alternating=None):
                             families[family].append((item,mask))
                         batcher = late_recovery_batch if args.landing_and_first_contact_objectives else recovery_batch
                         draw = schedule.head_attempts('recovery') if continuous_recovery_starts else attempts
-                        proposal_rows,layout=batcher(families,args.recovery_effective_start_lanes,draw)
+                        kwargs = {'relaxed': True} if args.relaxed_scoring else {}
+                        proposal_rows,layout=batcher(families,args.recovery_effective_start_lanes,draw,**kwargs)
                         start_sampling['recovery_draw_index'] = draw
                         row=proposal_rows[0]
                         if args.landing_and_first_contact_objectives:
                             count=args.recovery_effective_start_lanes
                             requested={'risk':count//2,'landing':count//4,'stable':count-count//2-count//4}
+                            if args.relaxed_scoring:
+                                landing_count, risk_count = round(.60 * count), round(.25 * count)
+                                requested = dict(landing=landing_count, risk=risk_count, stable=count-landing_count-risk_count)
                             actual=dict(risk=0,landing=0,stable=0,initial_archive=0)
                             for record in layout:
                                 stage=record['stage']
@@ -1860,7 +1936,7 @@ def run(args, *, alternating=None):
             if research and (global_accepted_id-research_origin)%32==0:
                 save(f'research_{global_accepted_id-research_origin:04d}.pt')
             return accepted
-        def refresh_frozen_policy(head,*,event_id=None,managed_refresh=False):
+        def refresh_frozen_policy(head,*,event_id=None,managed_refresh=False,critic_only=False):
             """Bounded first-complete-episode collection; no mid-episode manual reset."""
             nonlocal obs,tick,cursor,refresh_collector,refresh_serial,frozen_policy_id,runtime_validation_data,runtime_validation_path,native_value_bank
             if args.refresh_ticks==0:return 0,0
@@ -1948,7 +2024,7 @@ def run(args, *, alternating=None):
             runtime_validation_data=packed
             atomic_torch_save(dict(tensors=packed,policy_id=policy_id,receipt=receipt),refresh_dir/'complete_episodes.pt')
             runtime_validation_path=str(refresh_dir/'complete_episodes.pt')
-            native_contract_sha=hashlib.sha256(json.dumps(dict(task=manifest['task_contract'],execution=policy_execution),sort_keys=True).encode()).hexdigest()
+            native_contract_sha=hashlib.sha256(json.dumps(dict(task=contract,execution=policy_execution),sort_keys=True).encode()).hexdigest()
             trend=frozen_return_monitor.observe(native_records,policy_id=policy_id,actor_sha256=actor_hash,
                                                 contract_sha256=native_contract_sha,stop_on_plateau=not frozen_plateau_is_diagnostic)
             receipt['native_return_trend']=trend
@@ -1963,7 +2039,7 @@ def run(args, *, alternating=None):
                 save('native_return_stopped.pt')
                 write(args.output/'training_stopped.json',dict(reason=trend['stop_reason'],trend=trend,actor_updates=global_accepted_id,complete=False))
                 raise RuntimeError('Stopped before further optimizer updates: '+trend['stop_reason'])
-            wm_budgets=refresh_world_budgets(args.refresh_world_updates,consumer_heads)
+            wm_budgets={} if critic_only else refresh_world_budgets(args.refresh_world_updates,consumer_heads)
             wm_fits={h:run_world_updates(global_attempt_id,n,head=h) for h,n in wm_budgets.items() if n}
             refresh_stats=dict(world_updates=sum(x['world_updates'] for x in wm_fits.values()))
             receipt['wm_refresh_by_head']=wm_fits
@@ -2027,7 +2103,10 @@ def run(args, *, alternating=None):
                         match_distance_threshold=trainer.reference_bank.match_distance_threshold,terminal_records=native_records,
                         excluded_lanes=wm_holdout_lanes,use_substep_toi=args.use_substep_toi_references,
                         execution_contract_sha256=trainer.reference_bank.execution_contract_sha256)
-                if research:
+                if critic_only and additions.entries:
+                    trainer.reference_bank = additions
+                    atomic_torch_save(additions.payload(),refresh_dir/'candidate_references.pt')
+                elif research:
                     atomic_torch_save(additions.payload(),refresh_dir/'candidate_references.pt')
                 else:
                     trainer.reference_bank.extend(additions)
@@ -2130,6 +2209,10 @@ def run(args, *, alternating=None):
             stage(args.output,'TRAINING_FINISHED',actor_updates=args.joint_update_budget)
             return
         elif alternating is not None:
+            if relaxed_bootstrap:
+                refresh_frozen_policy('combined',event_id='relaxed_scoring_critic_calibration',managed_refresh=True,critic_only=True)
+                config['relaxed_calibration_complete'] = True
+                save('relaxed_calibrated.pt')
             cycle_results=[]
             def train_short(event):
                 head=event['head'];names=RECOVERY_NAMES if head=='recovery' else APPROACH_NAMES

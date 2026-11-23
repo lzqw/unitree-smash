@@ -6,8 +6,7 @@ from .supermimic_physical_dataset_v1 import decode_physical
 from .supermimic_physical_loop_replay_v1 import NATIVE_START_ID_FIELDS
 
 
-def recovery_stability_cost(physical, limits):
-    """Per-step normalized excess over the scored Recovery motion limits."""
+def recovery_motion(physical):
     fields = decode_physical(physical)
     w, x, y, z = fields['root_quaternion_w'].unbind(-1)
     roll_sin = 2 * (w*x + y*z)
@@ -17,8 +16,14 @@ def recovery_stability_cost(physical, limits):
     pitch = torch.asin((2 * (w*y - z*x)).clamp(-1 + 1e-6, 1 - 1e-6))
     tilt = torch.maximum(roll.abs(), pitch.abs())
     horizontal_speed = fields['root_link_velocity_w'][..., :2].norm(dim=-1)
-    angular_speed = fields['root_angular_velocity_w'].norm(dim=-1)
-    joint_speed = fields['joint_velocity'].abs().amax(dim=-1)
+    return tilt, horizontal_speed, fields['root_angular_velocity_w'], fields['joint_velocity']
+
+
+def recovery_stability_cost(physical, limits):
+    """Per-step normalized excess over the scored Recovery motion limits."""
+    tilt, horizontal_speed, angular, joints = recovery_motion(physical)
+    angular_speed = angular.norm(dim=-1)
+    joint_speed = joints.abs().amax(dim=-1)
     ratios = torch.stack((
         tilt / math.radians(limits['maximum_abs_roll_pitch_deg']),
         horizontal_speed / limits['maximum_horizontal_root_speed_m_s'],
@@ -26,6 +31,26 @@ def recovery_stability_cost(physical, limits):
         joint_speed / limits['maximum_abs_joint_velocity_rad_s'],
     ), dim=-1)
     return (ratios - 1).relu().mean(dim=-1)
+
+
+def relaxed_recovery_step(physical, feet, limits, run, dt, *, active):
+    tilt, horizontal, angular, joints = recovery_motion(physical)
+    support = feet.clamp(0, 1).sum(-1)
+    ratios = torch.stack((
+        tilt / math.radians(limits['maximum_abs_roll_pitch_deg']),
+        angular[..., :2].norm(dim=-1) / limits['maximum_roll_pitch_speed_rad_s'],
+        horizontal / limits['maximum_horizontal_root_speed_m_s'],
+        joints[..., :12].abs().amax(-1) / limits['maximum_abs_leg_joint_velocity_rad_s'],
+    ), -1) / .8
+    support_deficit = (limits['minimum_support_feet'] - support).relu()
+    cost = (ratios - 1).relu().square().sum(-1) + support_deficit.square()
+    cost = cost + (.18 - physical[..., 2]).relu() + .01 * joints[..., 12:].square().mean(-1)
+    stable = torch.sigmoid((1 - ratios) / .02).prod(-1)
+    stable = stable * torch.sigmoid((support - limits['minimum_support_feet'] + .5) / .05)
+    next_run = torch.where(active, stable * (run + dt), 0.)
+    window = limits['continuous_stable_window_s']
+    progress = (next_run.clamp(max=window) - run.clamp(max=window)) / window
+    return cost, next_run, progress
 
 
 def recovery_batch(pools, target, attempt):
@@ -87,12 +112,27 @@ def recovery_batch(pools, target, attempt):
     return batches,metadata
 
 
-def late_recovery_batch(pools, target, attempt):
+def late_recovery_batch(pools, target, attempt, *, relaxed=False):
     # Quotas operate on unique native lane/episodes across all families.
     groups = (('risk', ('pre_body_ground', 'post_landing_support_loss', 'recovery_failure'), target//2),
               ('landing', ('touchdown', 'post_touchdown'), target//4),
               ('stable', ('stable_recovery',), target-target//2-target//4))
     pools = dict(pools)
+    if relaxed:
+        landing_count, risk_count = round(.60 * target), round(.25 * target)
+        groups = (('landing', ('touchdown', 'post_touchdown'), landing_count),
+                  ('risk', ('pre_body_ground',), risk_count),
+                  ('stable', ('stable_recovery',), target - landing_count - risk_count))
+        for name in ('post_touchdown', 'stable_recovery'):
+            filtered = []
+            for record, mask in pools.get(name, ()):
+                before = record['before']
+                landing = before['auxiliary']['contact_recovery']['landing_time'].reshape(-1)
+                elapsed = before['physical']['elapsed_s'].reshape(-1)
+                valid = mask & (landing > 0) & (elapsed - landing <= (.30 if name == 'post_touchdown' else 2.))
+                if valid.any():
+                    filtered.append((record, valid))
+            pools[name] = filtered
     # A failure can contribute three lead times but only one start per proposal.
     # Rotate the chosen lead across episodes and draws rather than always taking 20.
     prefixes = pools.get('pre_body_ground', [])

@@ -153,6 +153,9 @@ def capture_state(env):
     recovery_names = ('rally_recovery_success', 'body_ground_seen', 'flight_qualified',
                       'observed_airborne', 'observed_airborne_seen', 'contact_seen')
     recovery = {name: getattr(env, name).detach().clone() for name in recovery_names}
+    if getattr(env, 'relaxed_protocol', None) is not None:
+        recovery['terminated_success'] = env.terminated_success.detach().clone()
+        recovery['minimum_outgoing_speed_mps'] = env.minimum_outgoing_speed
     return dict(physical={f.name: getattr(physical, f.name) for f in fields(physical)},
                 history=env.policy_history.frames.detach().clone(),
                 history_tick=env.policy_history.last_tick.detach().clone(),

@@ -38,6 +38,9 @@ def main():
     parser.add_argument('--diagnostic-grounded-miss', action='store_true',
                         help='Frozen TRAIN128 comparison: also activate Recovery after a confirmed grounded miss')
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--relaxed-scoring', action='store_true')
+    parser.add_argument('--relaxed-survival-diagnostic', action='store_true',
+                        help='Continue successful lanes for post-success survival and uncensored strict scoring')
     parser.add_argument('--g07-execution-root', type=Path)
     parser.add_argument('--precision-receipt', type=Path)
     parser.add_argument('--seed', type=int, default=882072)
@@ -133,7 +136,7 @@ def _run_native(args, stop_request):
         from quadsmash.rl.supermimic_task_contract import (
             resolve_task_contract, make_task_cfg, require_resume_contract,
             zero_panel_reset_noise, validate_sweep_contract)
-        from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
+        from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode, relaxed_scoring_protocol, STRICT_SCORING
         from quadsmash.rl.supermimic_timebase_v2 import full_range_targets
         from quadsmash.tasks.stand.supermimic_env_v1 import SuperMimicEnvV1
         from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
@@ -160,10 +163,18 @@ def _run_native(args, stop_request):
         source = torch.load(source_path, map_location='cpu', weights_only=False)
         contract, protocol, cases, receipt = resolve_task_contract(
             source, source_path, execution_root=execution_root,
-            precision_receipt=args.precision_receipt)
+            precision_receipt=args.precision_receipt, root=execution_root)
         scoring_protocol = dict(protocol, _root=str(ROOT))
         if trained is not None:
+            stored = trained.get('metadata', {}).get('task_contract', {})
+            if 'relaxed_scoring' in stored:
+                contract = dict(contract, relaxed_scoring=relaxed_scoring_protocol())
             require_resume_contract(trained, contract)
+        if args.relaxed_scoring:
+            contract = dict(contract, relaxed_scoring=relaxed_scoring_protocol())
+        scoring_protocol['relaxed_scoring'] = contract.get('relaxed_scoring')
+        if args.relaxed_survival_diagnostic and scoring_protocol['relaxed_scoring'] is None:
+            raise ValueError('Post-success survival requires relaxed scoring')
         capture_contract = contract
         if args.independent_panel_batch is not None:
             from quadsmash.rl.supermimic_independent_panel import panel_batch
@@ -188,7 +199,9 @@ def _run_native(args, stop_request):
         stage = 'BEFORE_ENV'
         env = EvaluationEnv(cfg, cases=cases, reset_noise=noise,
             residual_policy_checkpoint=source, g07_execution_root=execution_root,
-            contact_flight_recovery=contract['contact_flight_recovery'])
+            contact_flight_recovery=contract['contact_flight_recovery'],
+            relaxed_protocol=contract.get('relaxed_scoring'),
+            relaxed_survival_diagnostic=args.relaxed_survival_diagnostic)
         stage = 'AFTER_ENV'
         wrapper = RslRlVecEnvWrapper(env, clip_actions=None)
         obs, _ = wrapper.reset()
@@ -370,7 +383,7 @@ def _run_native(args, stop_request):
             ball_side_complete_except_recovery=sum(r['ball_side_complete_except_recovery'] for r in rows),
             recovery_success=sum(r['recovery_success'] for r in rows),
             physical_recovery_success=sum(r['physical_recovery_success'] for r in rows),
-            scoring_schema='historical-independent-complete5-v1',
+            scoring_schema=rows[0].get('scoring_schema', STRICT_SCORING),
             conditional_recovery_count=recovery,conditional_recovery_denominator=n,
             recovery_given_airborne_string_contact=recovery/n if n else None,
             complete5=sum(r['complete5'] for r in rows),
@@ -399,6 +412,21 @@ def _run_native(args, stop_request):
         metrics.update(actor_state_sha256=actor_state_after,actor_parameters_unchanged=True,
             optimizer_updates=dict(actor=0,world=0,critic=0),head_active_lane_steps=head_active_lane_steps)
         metrics['native_episode_metrics'] = native_summary
+        if scoring_protocol['relaxed_scoring'] is not None:
+            strict = [r['strict_observed'] for r in rows]
+            metrics['strict_observed'] = {
+                name: dict(success=sum(r[name] is True for r in strict),
+                           observed=sum(r[name] is not None for r in strict))
+                for name in ('complete5', 'recovery_success')
+            }
+            metrics['terminated_success_count'] = sum(r['terminated_success'] for r in rows)
+            if args.relaxed_survival_diagnostic:
+                survival = [r['relaxed_survival_one_second'] for r in rows]
+                observed = sum(r['observed'] for r in survival)
+                survived = sum(r['survived'] is True for r in survival)
+                metrics['relaxed_survival_one_second'] = dict(
+                    reached=sum(r['success_reached'] for r in survival),
+                    observed=observed, survived=survived, rate=survived / observed if observed else None)
         metrics['conditional_recovery_scope'] = native_summary['conditional_recovery_scope']
         metrics['native_episode_return_mean'] = native_summary['native_episode_return_mean']
         metrics['native_episode_discounted_return_mean'] = sum(r['native_episode_discounted_return'] for r in rows)/len(rows)

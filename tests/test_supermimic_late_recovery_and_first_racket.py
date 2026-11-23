@@ -113,3 +113,25 @@ def test_recovery_stability_cost_covers_native_speed_limits_and_has_finite_gradi
     cost.sum().backward()
     assert torch.isfinite(state.grad).all()
     assert state.grad[2, 7] > 0 and state.grad[3, 12] > 0 and state.grad[4, 48] < 0
+
+
+def test_relaxed_rollout_recovers_with_yaw_and_arm_motion_but_loses_progress_without_support():
+    from quadsmash.rl.supermimic_recovery_batches import relaxed_recovery_step
+    from quadsmash.rl.supermimic_terminal_scoring import relaxed_scoring_protocol
+
+    limits = relaxed_scoring_protocol()['recovery']
+    state = torch.zeros(2, 55)
+    state[:, 2:4] = torch.tensor([.25, 1.])
+    state[:, 12] = 3.
+    state[:, 43:49] = 4.
+    state.requires_grad_()
+    feet = torch.tensor([[1., 1., 0., 0.], [1., 0., 0., 0.]])
+    run = torch.full((2,), .25)
+    cost, next_run, progress = relaxed_recovery_step(
+        state, feet, limits, run, .01, active=torch.ones(2, dtype=torch.bool))
+    assert next_run[0] > run[0] and progress[0] > 0.
+    assert next_run[1] < .001 and progress[1] < -.60
+    assert cost[0] < cost[1]
+    (cost - progress).sum().backward()
+    assert torch.isfinite(state.grad).all()
+    assert not state.grad[:, 12].any()

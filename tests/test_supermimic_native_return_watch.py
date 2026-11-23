@@ -22,7 +22,15 @@ def test_later_episodes_require_three_distinct_declining_collections():
     trend=ReturnTrend({})
     for v in (0,-1):
         assert trend.observe([case(i,v,episode=1) for i in range(4)],100-v)['reason'] is None
-    assert trend.observe([case(i,-2,episode=2) for i in range(4)],200)['reason']=='consecutive_mixed_episode_return_declines'
+    final = [dict(case(i, -2, episode=2), body_ground_seen=True, complete5=False,
+                  relaxed_recovery={'stable_s': .1, 'first_reset_reasons': ['body_ground']}) for i in range(4)]
+    decision = trend.observe(final, 200)
+    assert decision['reason'] == 'consecutive_mixed_episode_return_declines'
+    cohort = decision['cohorts'][-1]
+    assert cohort['paired_count'] == cohort['complete5_count'] == 0
+    assert cohort['episode_indices'] == {2: 4}
+    assert cohort['body_ground_outcomes']['contact'] == {'count': 4, 'mean_return': -2}
+    assert decision['cases'][0]['observed_scores']['relaxed_recovery'] == final[0]['relaxed_recovery']
 
 
 def test_pause_keeps_both_matched_cohorts_and_does_not_pair_resets():

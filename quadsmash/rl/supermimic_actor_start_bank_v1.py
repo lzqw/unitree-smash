@@ -1,6 +1,8 @@
 """Bounded full-executor snapshots; future outcome labels are sampling-only."""
 import torch
 
+from .supermimic_terminal_scoring import SCORING_SCHEMAS
+
 CATEGORIES=('gate_onset','pre_contact','failure_pre','success_near')
 SCHEDULE=('gate_onset',)*5+('pre_contact',)*7+('failure_pre',)*5+('success_near',)*3
 # Same 20-draw quotas, spread across the cycle so a rejected proposal
@@ -55,7 +57,7 @@ class ActorStartBank:
         # Gate edge bookkeeping is needed only for the current stream.
         self.last_gate={stream:self.last_gate[stream]};self.last_tick={stream:self.last_tick[stream]}
     def label_terminal(self,record,stream):
-        if record.get('scoring_schema')!='historical-independent-complete5-v1':raise ValueError('Start outcome requires independent native terminal scoring')
+        if record.get('scoring_schema') not in SCORING_SCHEMAS:raise ValueError('Start outcome requires independent native terminal scoring')
         if record.get('ball_side_complete_except_recovery') is None:raise ValueError('Missing ball-side terminal label')
         lane=int(record['env_id']);episode=int(record['episode_index'])
         for entry in self.entries:

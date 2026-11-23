@@ -76,7 +76,8 @@ try:
     from quadsmash.rl.supermimic_task_contract import make_task_cfg, resolve_task_contract, zero_panel_reset_noise
     from quadsmash.tasks.stand.full_racket_eval_env_v4 import FrozenPanelEnv
     checkpoint=args.checkpoint.resolve(); source=torch.load(checkpoint,map_location='cpu',weights_only=False)
-    contract, protocol, cases, receipt=resolve_task_contract(source,checkpoint,execution_root=args.execution_root)
+    contract, protocol, cases, receipt=resolve_task_contract(
+        source, checkpoint, execution_root=args.execution_root, root=args.execution_root)
     cfg=make_task_cfg(args.num_envs,contract,protocol,receipt)
     # This is a presentation-only layout. The formal training contract remains
     # origin-spacing 0; visual lanes are separated after contract validation.

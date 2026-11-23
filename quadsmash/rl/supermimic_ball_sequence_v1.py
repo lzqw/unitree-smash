@@ -23,7 +23,7 @@ def ball_error(predicted,target):
 
 
 def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed,launch,*,
-                    action_model=None,return_details=False,ball_input_grad=True):
+                    action_model=None,return_details=False,ball_input_grad=True,impulse_residual_scale=1.):
     """The optional action model sees the CURRENT final command only through
     the command-conditioned robot prediction. Legacy mode is unchanged.
     """
@@ -140,6 +140,8 @@ def ball_transition(base,ball,state,targets,previous_action,feet,present,elapsed
             if impulse_prior is None or impulse_info is None:
                 raise ValueError('Impulse residual metadata requires analytic prior')
             residual_dv=action_model_info['impulse_residual_dv']
+            if impulse_residual_scale != 1.:
+                residual_dv = residual_dv * impulse_residual_scale
             # Re-integrate from the same continuous TOI state used by the
             # analytic prior.  Adding a raw six-dimensional end-state offset
             # would mix impulse units with position units and would apply the

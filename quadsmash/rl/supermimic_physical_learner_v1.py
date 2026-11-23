@@ -295,6 +295,7 @@ class PhysicalHorizonTrainer:
             first_margin = state.physical.new_zeros(len(selected))
         dynamic_landing = revised and self.block_name == 'recovery' and getattr(self, 'recovery_rollout_landing', False)
         stability_limits = getattr(self, 'recovery_stability_limits', None)
+        relaxed_limits = getattr(self, 'relaxed_recovery_limits', None)
         landing_weights = []
         if revised and self.block_name == 'recovery':
             recovery_costs = []
@@ -304,9 +305,13 @@ class PhysicalHorizonTrainer:
             landed = ((aux['contact_recovery']['qualified_landing'].reshape(-1) > .5)
                       | ((landing > 0) & (landing >= contact))).detach()
             if dynamic_landing:
-                from .supermimic_recovery_batches import update_recovery_landing
+                from .supermimic_recovery_batches import update_recovery_landing, relaxed_recovery_step
                 initial_landing = landed
-        score_release = contact_weight and getattr(self, 'score_downward_release', False)
+            if relaxed_limits is not None:
+                soft_run = torch.zeros_like(landing)
+                landing = torch.where(landed, landing, torch.zeros_like(landing))
+        speed_goal = getattr(self, 'relaxed_release_speed_goal', None)
+        score_release = contact_weight and (speed_goal is not None or getattr(self, 'score_downward_release', False))
         release_velocity = state.physical.new_zeros((len(selected), 3)) if score_release else None
         if contact_weight or first_geometry:
             outgoing=state.physical.new_zeros((len(selected),6))
@@ -357,6 +362,8 @@ class PhysicalHorizonTrainer:
             gradient_options = {'detach_ball': True} if toi_only else {}
             if hasattr(self, 'research_court'):
                 gradient_options = dict(detach_ball=True, ball_input_grad=bool(contact_weight))
+            if score_release and speed_goal is not None:
+                gradient_options['impulse_residual_scale'] = self.relaxed_impulse_residual_scale
             if scoring_step is not None:
                 gradient_options['scoring_step'] = scoring_step
             if reuse_geometry:
@@ -374,13 +381,24 @@ class PhysicalHorizonTrainer:
                     from .supermimic_recovery_batches import recovery_stability_cost
                     cost = cost + recovery_stability_cost(state.physical, stability_limits)
                 if dynamic_landing:
-                    landed = update_recovery_landing(landed, previous.task_memory, state.clock_goal_context['foot_contact'])
+                    next_landed = update_recovery_landing(landed, previous.task_memory, state.clock_goal_context['foot_contact'])
+                    if relaxed_limits is not None:
+                        elapsed = state.clock_goal_context['elapsed'].reshape(-1)
+                        landing = torch.where(next_landed & ~landed, elapsed.detach(), landing)
+                        within_deadline = next_landed & (elapsed - landing <= relaxed_limits['landing_deadline_s'])
+                        cost, soft_run, progress = relaxed_recovery_step(
+                            state.physical, state.clock_goal_context['foot_contact'],
+                            relaxed_limits, soft_run, cfg.control_dt_s, active=within_deadline)
+                    landed = next_landed
                     weight = landed * track_mask * survival.detach()
                     if baseline_landing_weights is not None:
                         # A later predicted landing must not erase costs paid by the reference proposal.
                         weight = torch.maximum(weight, baseline_landing_weights[tick])
                     landing_weights.append(weight)
-                    recovery_costs.append(cost * weight * cfg.control_dt_s)
+                    stage_cost = cost * cfg.control_dt_s
+                    if relaxed_limits is not None:
+                        stage_cost = stage_cost - progress
+                    recovery_costs.append(stage_cost * weight)
                 else:
                     recovery_costs.append(cost * landed * track_mask * survival.detach() * cfg.control_dt_s)
             if contact_weight or first_geometry:
@@ -440,7 +458,7 @@ class PhysicalHorizonTrainer:
                 if revised:
                     task_loss = first_string_flight_loss(
                         outgoing, weights, first_string, prior, self.research_court,
-                        release_velocity=release_velocity)
+                        release_velocity=release_velocity, speed_goal=speed_goal)
                 elif impact_lanes.any():
                     cost = outgoing_cost(outgoing[impact_lanes], prior, self.research_court)
                     task_loss = cost.sum() / weights.sum().clamp_min(1.)

@@ -116,8 +116,8 @@ def training_interactions(native_origin, end_tick, lanes, refreshes):
                 frozen_all=frozen_ticks * lanes, frozen_in_complete_rtg_episodes=labeled_steps)
 
 
-def checkpoint_interactions(checkpoint, native_origin, lanes):
-    receipts = []
+def checkpoint_interactions(checkpoint, native_origin, lanes, *, bootstrap_receipts=()):
+    receipts = list(bootstrap_receipts)
     for entry in checkpoint['alternating_schedule']['results']:
         if entry['event']['kind'] == 'refresh':
             result = entry['result']
@@ -190,13 +190,21 @@ def evaluate(folder, step, writer):
     try:
         if milestone_clock['native_ticks'] != row['native_ticks']:
             raise ValueError('Milestone and Actor log native step counts differ')
-        budget['at_actor_checkpoint'] = checkpoint_interactions(milestone_clock, origin[1], lanes)
+        bootstrap_receipts = []
+        if metrics['task_contract'].get('relaxed_scoring'):
+            for path in train.glob('combined_frozen*/manifest.json'):
+                receipt = json.loads(path.read_text())
+                if receipt.get('schedule_event_id') == 'relaxed_scoring_critic_calibration':
+                    bootstrap_receipts.append(receipt)
+        budget['at_actor_checkpoint'] = checkpoint_interactions(
+            milestone_clock, origin[1], lanes, bootstrap_receipts=bootstrap_receipts)
         if (train/'training_completed.json').is_file():
             final = torch.load(train/'latest.pt', map_location='cpu', mmap=True, weights_only=False)
             completed = json.loads((train/'training_completed.json').read_text())
             if final['native_ticks'] != completed['native_ticks']:
                 raise ValueError('Final native step count differs from training summary')
-            budget['at_training_end'] = checkpoint_interactions(final, origin[1], lanes)
+            budget['at_training_end'] = checkpoint_interactions(
+                final, origin[1], lanes, bootstrap_receipts=bootstrap_receipts)
             del final
     except (OSError, KeyError, ValueError) as error:
         # Missing historical accounting must not discard genuine fixed-panel scores.

@@ -70,7 +70,7 @@ class PhysicalImaginationAdapter(nn.Module):
         self.manifest['contact_bptt_mode']=self.contact_bptt_mode
 
     def forward(self,state:PhysicalImaginationStateV1,actor_action,*,detach_ball=False,ball_input_grad=True,
-                scoring_step=None, return_geometry=False):
+                scoring_step=None, return_geometry=False, impulse_residual_scale=1.):
         if int(self.task_model.fit_updates)==0:
             raise RuntimeError('Physical loop requires fitted task memory/event model')
         c=state.clock_goal_context
@@ -82,7 +82,7 @@ class PhysicalImaginationAdapter(nn.Module):
         predicted,feet,present,ball_details=ball_transition(self.physical_model,self.ball_model,
             state.physical,preview.final_joint_targets,c['final_action'],c['foot_contact'],
             c['ball_present'],c['elapsed'],c['launch'],action_model=self.action_ball_model,
-            return_details=True,ball_input_grad=ball_input_grad)
+            return_details=True,ball_input_grad=ball_input_grad,impulse_residual_scale=impulse_residual_scale)
         # Keep robot dynamics differentiable while controlling when the
         # unverified ball/contact Jacobian can reach the actor.  This only
         # affects imagination gradients.  World-model supervision continues to

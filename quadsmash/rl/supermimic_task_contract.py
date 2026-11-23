@@ -41,7 +41,11 @@ def sha(path):
 
 def resolve_task_contract(source, source_path, *, execution_root=None,
                           precision_receipt=None, root=ROOT):
-    root, source_path = Path(root), Path(source_path).resolve()
+    # Native G07 callers pass the measured execution root explicitly.  Keep
+    # protocol, asset and suite hashing on that same root so an isolated
+    # worktree cannot validate a contract against a missing or different USD.
+    root = Path(execution_root if root is None else root)
+    source_path = Path(source_path).resolve()
     g07 = source.get('schema') == 'g07-shared-target-residual-ppo-v1'
     if not g07 and source.get('schema') != 'full-racket-residual-ppo-v4':
         raise ValueError('Unsupported source execution schema')

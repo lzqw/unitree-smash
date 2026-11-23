@@ -66,6 +66,32 @@ def test_later_hop_preserves_contact_landing_but_restarts_stable_window():
     assert not tracker.success(jump).any()
 
 
+def test_relaxed_window_reports_resets_and_cannot_complete_after_deadline():
+    from quadsmash.rl.supermimic_terminal_scoring import relaxed_scoring_protocol
+    from quadsmash.tasks.stand.contact_flight_recovery_v6 import ContactFlightRecoveryV6
+
+    jump, _ = state()
+    jump.jump_clock = torch.zeros(2)
+    tracker = ContactFlightRecoveryV6(2, 'cpu', PROTOCOL, relaxed_scoring_protocol())
+    flight(jump, tracker, 2.)
+    land(jump, tracker, 2.5)
+    failures = torch.zeros((2, 6), dtype=torch.bool)
+    for t in (2.6, 2.7, 2.8):
+        jump.jump_clock[:] = t
+        tracker.relaxed_metric(jump, failures, .1)
+    failures[1, 0] = True
+    jump.jump_clock[:] = 2.9
+    tracker.relaxed_metric(jump, failures, .1)
+    assert tracker.relaxed_success.tolist() == [True, False]
+    assert tracker.relaxed_record(1)['first_reset_reasons'] == ['support']
+    failures.zero_()
+    for t in (4.3, 4.4, 4.5, 4.6):
+        jump.jump_clock[:] = t
+        tracker.relaxed_metric(jump, failures, .1)
+    assert tracker.relaxed_success.tolist() == [True, False]
+    assert tracker.relaxed_record(1)['reset_counts']['deadline'] == 1
+
+
 def test_earlier_qualified_flight_does_not_qualify_later_contact_hop():
     jump, tracker = state()
     flight(jump, tracker, 1., bind=False)

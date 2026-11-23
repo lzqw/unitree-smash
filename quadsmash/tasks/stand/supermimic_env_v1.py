@@ -154,7 +154,7 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         rally = self.rally
         phase = self.episode_length_buf.float() * self.step_dt
         contact = rally.legal_initial_contact & rally.string_hit & rally.airborne_string_hit
-        attack = contact & rally.released & (rally.outgoing_velocity.norm(dim=1) >= 5.0) & (rally.outgoing_velocity[:, 0] > 0)
+        attack = contact & rally.released & (rally.outgoing_velocity.norm(dim=1) >= self.minimum_outgoing_speed) & (rally.outgoing_velocity[:, 0] > 0)
         cross = attack & rally.crossed_net
         target = cross & rally.landed_target
         recover = contact & self.rally_recovery_success
@@ -183,7 +183,8 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         continuous = (0.5 * stable_quality - 2.0 * risk - 0.05 * self.action_delta
                       - 0.02 * d.applied_torque.square().sum(1) / 1000.0
                       + 0.8 * approach) * self.step_dt
-        complete5 = target & self.rally_recovery_success & (~faulted) & self.reset_time_outs & (~self.reset_terminated)
+        settled = (self.reset_time_outs & ~self.reset_terminated) | self.terminated_success
+        complete5 = target & self.rally_recovery_success & (~faulted) & settled
         reward = continuous + 2.0 * event_jump.float() + 20.0 * event_contact.float() + 5.0 * event_cross.float()
         reward = reward + 15.0 * event_target.float() + 10.0 * event_recovery.float() + 20.0 * complete5.float()
         reward = reward - 4.0 * event_frame.float() - 5.0 * ((~contact) & (phase > 3.0)).float() * self.step_dt
@@ -210,7 +211,9 @@ class SuperMimicEnvV1(FullRacketEnvV4):
         if self._inside_step and self._v4_ready and ids.numel():
             qualified = (self.rally.legal_initial_contact & self.rally.string_hit
                          & self.rally.airborne_string_hit)
-            ball_ok = self.rally.complete5(torch.ones_like(self.rally_recovery_success))
+            ball_ok = self.rally.complete5(torch.ones_like(self.rally_recovery_success), self.minimum_outgoing_speed)
+            if self.relaxed_protocol is not None:
+                ball_ok &= self.rally.crossed_net
             faults = self.rally.faulted()
             return_records = self._sm_native_returns.records(ids)
             for i in ids[self._episode_has_stepped[ids]].cpu().tolist():

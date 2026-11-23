@@ -91,7 +91,7 @@ checkpoint = args.checkpoint.resolve()
 progress(f'loading_checkpoint {checkpoint}')
 source = torch.load(checkpoint, map_location='cpu', weights_only=False)
 contract, protocol, all_cases, receipt = resolve_task_contract(
-    source, checkpoint, execution_root=args.execution_root
+    source, checkpoint, execution_root=args.execution_root, root=args.execution_root
 )
 case = all_cases[args.training_index]
 capture_envs = args.capture_envs if args.offline_render else 1

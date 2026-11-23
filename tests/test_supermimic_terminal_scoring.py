@@ -46,6 +46,22 @@ def test_missing_jump_is_not_rebuilt_from_another_run():
         score_terminal_episode(row,protocol)
 
 
+def test_relaxed_success_accepts_forward_release_below_five_without_downward_constraint():
+    from quadsmash.rl.supermimic_terminal_scoring import relaxed_scoring_protocol
+
+    row, protocol = source(10)
+    protocol['relaxed_scoring'] = relaxed_scoring_protocol()
+    row.update(outgoing_velocity_mps=[4.7, 0., 0.], terminated_success=True,
+               relaxed_recovery=dict(success=True, stable_s=.4))
+    row['jump']['terminated'] = True
+    result = score_terminal_episode(row, protocol)
+    assert result['complete5']
+    assert result['scoring_schema'] == 'relaxed-complete5-v1'
+    assert result['strict_observed']['complete5'] is None
+    row['outgoing_velocity_mps'][0] = 4.4
+    assert not score_terminal_episode(row, protocol)['complete5']
+
+
 def test_jump_episode_must_match():
     row, protocol = source(10)
     row['jump']['episode_index'] = 1

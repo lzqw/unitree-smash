@@ -6,6 +6,8 @@ run calibration experiments or treat model metrics as task success.
 import math
 import torch
 
+from .supermimic_terminal_scoring import SCORING_SCHEMAS
+
 HEADS=('recovery','approach')
 REQUIRED_EVENTS=dict(recovery=('touchdown','support_loss','body_ground','stable'),
                      approach=('legal_contact','illegal_contact','ball_side_success','ball_side_failure'))
@@ -50,7 +52,7 @@ def compare_bounds(metrics,limits):
 
 def reference_coverage(bank,head,weight):
     entries=[] if bank is None else [e for e in bank.entries if e['mode']==head]
-    verified=[e for e in entries if e.get('terminal_verified') is True and e.get('score_schema')=='historical-independent-complete5-v1']
+    verified=[e for e in entries if e.get('terminal_verified') is True and e.get('score_schema') in SCORING_SCHEMAS]
     enabled=bool(weight>0 and verified)
     return dict(head=head,reference_count=len(entries),verified_reference_count=len(verified),tracking_weight=float(weight),
                 success_guided_available=enabled,mode='success-guided' if enabled else 'task-bptt-only',

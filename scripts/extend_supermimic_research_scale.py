@@ -45,7 +45,11 @@ def extension_registration(parent, output, tensorboard, total):
     if '--wm-latest-policy-windows' not in cmd:
         cmd.extend(['--wm-latest-policy-windows', '6'])
     if '--landing-and-first-contact-objectives' in cmd:
-        for flag in ('--recovery-rollout-landing', '--score-downward-release', '--fused-research-flight', '--fused-research-body-flight', '--depth-batched-fk'):
+        flags = ['--recovery-rollout-landing', '--fused-research-flight',
+                 '--fused-research-body-flight', '--depth-batched-fk']
+        if 'relaxed_scoring' not in ck.get('metadata', {}).get('task_contract', {}):
+            flags.append('--score-downward-release')
+        for flag in flags:
             if flag not in cmd:
                 cmd.append(flag)
     if '--wm-stage-quota' in cmd:
