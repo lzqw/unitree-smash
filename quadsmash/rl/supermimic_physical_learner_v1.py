@@ -597,7 +597,9 @@ class PhysicalHorizonTrainer:
             tracking_loss = tracking_loss + (first_cost * supervised).sum() / supervised.sum().clamp_min(1e-8)
         nonzero_lanes=0
         tracking_derivatives=None
+        tracking_vjp_wall_s=0.
         if tracks and torch.is_grad_enabled() and tracking_loss.requires_grad:
+            tracking_started = time.perf_counter()
             differentiable=[i for i,x in enumerate(track_states) if x.requires_grad]
             inputs = [track_states[i] for i in differentiable]
             # Pooled records need the same VJP at both the physical states and the Actor.
@@ -610,6 +612,7 @@ class PhysicalHorizonTrainer:
                 w = track_weights[i]
                 if g is not None:responding|=(g.detach().abs().sum(-1)>0)&(w>0)
             nonzero_lanes=int(responding.sum())
+            tracking_vjp_wall_s = time.perf_counter() - tracking_started
         loss=tracking_coeff*tracking_loss+self.anchor_coeff*anchor_loss
         if not toi_only or ball_protocol is not None:
             loss=loss+task_loss
@@ -638,7 +641,9 @@ class PhysicalHorizonTrainer:
         return dict(**aux_stats, **flight_metrics, ball_scored=scored, flight_losses=flight_losses,
                     flight_cost_by_lane=flight_cost_by_lane, flight_priority_loss=flight_priority_loss,
                     ball_approach_speed=approach_speed if ball_protocol is not None else None,
-                    landing_weights=landing_trace,tracking_derivatives=tracking_derivatives,toi_weights=all_track_weights.detach() if toi_only and tracks else None,
+                    landing_weights=landing_trace,tracking_derivatives=tracking_derivatives,
+                    tracking_vjp_wall_s=tracking_vjp_wall_s,
+                    toi_weights=all_track_weights.detach() if toi_only and tracks else None,
                     toi_coverage_preserved=toi_coverage_preserved,reference_coverage=coverage,loss=loss,task=task_loss,tracking=tracking_loss,anchor=anchor_loss,ret=ret,effective_weights=weights,
                     gate_steps=int((activity>.25).sum()),gate_lanes=int(weights.sum()),
                     critic_data=((torch.stack(states),torch.stack(rewards).detach(),torch.stack(dones).detach(),final.detach(),torch.stack(valid))
@@ -663,15 +668,19 @@ class PhysicalHorizonTrainer:
             torch.set_rng_state(cpu_rng)
             if cuda_rng is not None:torch.cuda.set_rng_state_all(cuda_rng)
         accepted=False; alpha=0.; gradient=0.; reason=None; grad_stats={}; trials=[]
-        proposal_timing = dict(baseline_forward_wall_s=0., gradient_wall_s=0., backtracking_wall_s=0.)
+        proposal_timing = dict(baseline_objective_wall_s=0., baseline_tracking_vjp_wall_s=0.,
+                               baseline_pooled_vjp_wall_s=0., outer_gradient_wall_s=0.,
+                               backtracking_wall_s=0.)
         if update_actor:self.actor_attempts+=1
         self._proposal_ball_targets = {}
         try:
             with frozen(self.adapter,self.critic),torch.set_grad_enabled(update_actor):
-                forward_started = time.perf_counter()
+                objective_started = time.perf_counter()
                 rollout=self._rollout_objective(initial_state)
                 baseline_loss=float(rollout['loss'].detach())
-                proposal_timing['baseline_forward_wall_s'] = time.perf_counter() - forward_started
+                proposal_timing['baseline_objective_wall_s'] = time.perf_counter() - objective_started
+                proposal_timing['baseline_tracking_vjp_wall_s'] = rollout.get('tracking_vjp_wall_s', 0.)
+                proposal_timing['baseline_pooled_vjp_wall_s'] = rollout.get('pooled_vjp_wall_s', 0.)
                 if update_actor and rollout['gate_lanes']:
                     gradient_started = time.perf_counter()
                     grad_stats=gradient_parts({k:rollout[k] for k in ('task','tracking','anchor')},parameters)
@@ -702,7 +711,7 @@ class PhysicalHorizonTrainer:
                                 parameters, flight_gradients)
                         norm=torch.sqrt(sum((p.grad.detach().square().sum() for p in parameters if p.grad is not None),rollout['loss'].new_zeros(())))
                         if not torch.isfinite(norm):raise FloatingPointError('Nonfinite actor gradient')
-                        proposal_timing['gradient_wall_s'] = time.perf_counter() - gradient_started
+                        proposal_timing['outer_gradient_wall_s'] = time.perf_counter() - gradient_started
                         if float(norm)>1e-12:
                             # Preserve the gradient of the scored objective before optimizer_step clips it.
                             active_params = [(name, p) for name, p in self.actor.named_parameters()
@@ -808,7 +817,7 @@ class PhysicalHorizonTrainer:
                                           else 'objective_budget_or_zero_final_command_response')
                         else:reason='zero_total_gradient'
                     else:
-                        proposal_timing['gradient_wall_s'] = time.perf_counter() - gradient_started
+                        proposal_timing['outer_gradient_wall_s'] = time.perf_counter() - gradient_started
                         reason='no_task_or_tracking_gradient'
                 elif update_actor:reason='no_effective_gate'
             critic_data=rollout['critic_data']

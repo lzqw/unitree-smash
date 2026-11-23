@@ -1,5 +1,6 @@
 """Pool causal Recovery starts without mixing G07 plans or per-record controller clocks."""
 import math
+from time import perf_counter
 
 import torch
 from .supermimic_physical_dataset_v1 import decode_physical
@@ -231,6 +232,17 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     ball_scored, ball_speeds, ball_metrics, ball_derivatives = [], [], {}, {}
     ball_costs, flight_priority = [], []
     counts={};covered={};weights=[];returns=[];data=[];usage={};by_record=[]
+    tracking_vjp_wall_s = pooled_vjp_wall_s = 0.
+
+    def gradient_value(term, derivatives=None):
+        nonlocal pooled_vjp_wall_s
+        if not torch.is_grad_enabled():
+            return term.detach()
+        started = perf_counter()
+        result = _gradient_value(term, params, derivatives)
+        pooled_vjp_wall_s += perf_counter() - started
+        return result
+
     for i,state in enumerate(starts):
         kwargs=dict(effective_weights=None if effective_weights is None else effective_weights[i])
         if not collect_critic_data:
@@ -244,6 +256,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         if torch.is_grad_enabled():
             kwargs['tracking_parameters'] = params
         row=trainer._rollout_objective(state,**kwargs)
+        tracking_vjp_wall_s += row.get('tracking_vjp_wall_s', 0.)
         if toi:
             toi_weights.append(row['toi_weights'])
             preserved=preserved and row['toi_coverage_preserved']
@@ -253,7 +266,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         if row.get('flight_cost_by_lane') is not None:
             ball_costs.append(row['flight_cost_by_lane'])
         if row.get('flight_priority_loss') is not None:
-            flight_priority.append(_gradient_value(row['flight_priority_loss'], params) * n)
+            flight_priority.append(gradient_value(row['flight_priority_loss']) * n)
         if row.get('ball_scored') is not None:
             ball_scored.append(row['ball_scored'])
             if row.get('ball_approach_speed') is not None:
@@ -266,10 +279,10 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
             for name, value in row['flight_losses'].items():
                 ball_metrics[name] = ball_metrics.get(name, 0.) + float(value.detach()) * n
                 if getattr(trainer, 'diagnose_ball_gradients', False) and torch.is_grad_enabled():
-                    ball_derivatives.setdefault(name, []).append(_gradient_value(value, params) * n)
+                    ball_derivatives.setdefault(name, []).append(gradient_value(value) * n)
         for key in terms:
             derivatives = row.get('tracking_derivatives') if key == 'tracking' else None
-            terms[key].append((_gradient_value(row[key],params,derivatives), w if key=='tracking' else n))
+            terms[key].append((gradient_value(row[key], derivatives), w if key=='tracking' else n))
         for key in ('gate_steps','gate_lanes','tracking_steps','tracking_active_lane_steps','tracking_effective_weight_sum',
                     'tracking_nonzero_gradient_lanes','matched_references'):
             counts[key]=counts.get(key,0)+row[key]
@@ -320,6 +333,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
                 flight_cost_by_lane=torch.cat(ball_costs) if ball_costs else None,
                 flight_priority_loss=sum(flight_priority)/n if flight_priority else None,
                 flight_losses={key: sum(values)/n for key,values in ball_derivatives.items()},
+                tracking_vjp_wall_s=tracking_vjp_wall_s,pooled_vjp_wall_s=pooled_vjp_wall_s,
                 loss=loss,ret=ret if ret.numel() else loss.detach().reshape(1),
                 effective_weights=weights,landing_weights=landing_weights or None,toi_weights=toi_weights if toi else None,toi_coverage_preserved=preserved,reference_coverage=coverage,
                 critic_data=tuple(join(k) for k in range(5)) if collect_critic_data else None,tracking_objective='toi_racket_only' if toi else 'recovery_reference')
