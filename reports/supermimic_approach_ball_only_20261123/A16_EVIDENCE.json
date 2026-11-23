@@ -1,0 +1,226 @@
+{
+  "schema": "supermimic-approach-a16-fixed-development-evidence-v1",
+  "verified": {
+    "checkpoint_sha256": "d150f15d15391c35098e23a423afe2d510f269e14631a3a1fc332db1b6f838d4",
+    "actor_sha256": "a95071575a1cee014dee7b8a493dabf554e3603d24d05ba3d596a96613a21c1c",
+    "cases": 128,
+    "independent_final_holdout": false,
+    "frozen_policy_optimizer_updates": {
+      "actor": 0,
+      "world": 0,
+      "critic": 0
+    },
+    "numerical_failures": 0,
+    "frozen_eval_seconds": 626.8107031079708,
+    "approach_updates_total": 16,
+    "approach_updates_this_stage": 8,
+    "recovery_updates_this_stage": 0,
+    "critic_updates_this_stage": 0,
+    "median_accepted_arm_target_delta_rad": 0.0026629865169525146,
+    "head_model_sha256": "14f81fc264604adb4ae72175c447fd238120490d0b6e972ad08a292577fac557"
+  },
+  "results": {
+    "vs_A0": {
+      "before": {
+        "ball_success": 42,
+        "qualified_contacts": 83,
+        "qualified_low_speed": 17,
+        "cleared_net": 81,
+        "target_landings": 58,
+        "frame_without_strings": 25
+      },
+      "after": {
+        "ball_success": 54,
+        "qualified_contacts": 83,
+        "qualified_low_speed": 9,
+        "cleared_net": 82,
+        "target_landings": 63,
+        "frame_without_strings": 28
+      },
+      "improved_cases": [
+        "A-97124801-018",
+        "A-97124801-028",
+        "A-97124801-031",
+        "A-97124801-032",
+        "A-97124801-044",
+        "A-97124801-047",
+        "A-97124801-048",
+        "A-97124801-055",
+        "A-97124801-057",
+        "A-97124801-059",
+        "A-97124801-062",
+        "B-97124802-042",
+        "B-97124802-043",
+        "B-97124802-048",
+        "B-97124802-050"
+      ],
+      "regressed_cases": [
+        "A-97124801-023",
+        "A-97124801-034",
+        "B-97124802-030"
+      ],
+      "paired_exact_two_sided_p": 0.007537841796875,
+      "paired_qualified_release_speed": {
+        "cases": 77,
+        "mean_delta_mps": 0.12400610391408717,
+        "median_delta_mps": 0.10427163927245875,
+        "below_threshold_to_pass": [
+          "A-97124801-031",
+          "A-97124801-047",
+          "A-97124801-048",
+          "A-97124801-055",
+          "A-97124801-057",
+          "B-97124802-028",
+          "B-97124802-048"
+        ],
+        "pass_to_below_threshold": [
+          "A-97124801-034"
+        ]
+      },
+      "signed_contact_motion": {
+        "speed_delta_mps": {
+          "cases": 77,
+          "mean": 0.12400610391408717,
+          "median": 0.10427163927245875
+        },
+        "first_contact_time_delta_ms": {
+          "cases": 77,
+          "mean": -1.255803293996043,
+          "median": -1.1243820190429688
+        },
+        "arm_contact_speed_delta_mps": {
+          "cases": 77,
+          "mean": 0.019121449675994853,
+          "median": -0.018718522130842352
+        },
+        "point_velocity_mps_delta_on_after_face": {
+          "cases": 77,
+          "mean": 0.014285230394642905,
+          "median": 0.02972022749716019
+        },
+        "root_transport_mps_delta_on_after_face": {
+          "cases": 77,
+          "mean": 0.0019426443699346488,
+          "median": 0.001770149623124162
+        },
+        "root_rotation_at_contact_mps_delta_on_after_face": {
+          "cases": 77,
+          "mean": 0.023591134231676445,
+          "median": 0.029397408858109153
+        },
+        "arm_contact_velocity_mps_delta_on_after_face": {
+          "cases": 77,
+          "mean": -0.011248548858909328,
+          "median": -0.0073388634079207815
+        }
+      }
+    },
+    "vs_A08": {
+      "before": {
+        "ball_success": 50,
+        "qualified_contacts": 77,
+        "qualified_low_speed": 6,
+        "cleared_net": 76,
+        "target_landings": 56,
+        "frame_without_strings": 30
+      },
+      "after": {
+        "ball_success": 54,
+        "qualified_contacts": 83,
+        "qualified_low_speed": 9,
+        "cleared_net": 82,
+        "target_landings": 63,
+        "frame_without_strings": 28
+      },
+      "improved_cases": [
+        "A-97124801-000",
+        "A-97124801-009",
+        "A-97124801-018",
+        "A-97124801-030",
+        "A-97124801-032",
+        "A-97124801-038",
+        "A-97124801-042",
+        "A-97124801-044",
+        "A-97124801-048",
+        "A-97124801-062",
+        "A-97124801-063",
+        "B-97124802-042"
+      ],
+      "regressed_cases": [
+        "A-97124801-010",
+        "A-97124801-023",
+        "A-97124801-034",
+        "A-97124801-045",
+        "A-97124801-053",
+        "B-97124802-012",
+        "B-97124802-021",
+        "B-97124802-030"
+      ],
+      "paired_exact_two_sided_p": 0.5034446716308594,
+      "paired_qualified_release_speed": {
+        "cases": 74,
+        "mean_delta_mps": -0.03663304342094679,
+        "median_delta_mps": -0.06150369834096514,
+        "below_threshold_to_pass": [
+          "A-97124801-048"
+        ],
+        "pass_to_below_threshold": [
+          "A-97124801-010",
+          "A-97124801-034",
+          "A-97124801-045",
+          "B-97124802-012"
+        ]
+      },
+      "signed_contact_motion": {
+        "speed_delta_mps": {
+          "cases": 74,
+          "mean": -0.03663304342094679,
+          "median": -0.06150369834096514
+        },
+        "first_contact_time_delta_ms": {
+          "cases": 74,
+          "mean": -0.03376522579708615,
+          "median": -0.062465667724609375
+        },
+        "arm_contact_speed_delta_mps": {
+          "cases": 74,
+          "mean": -0.2915851349330402,
+          "median": -0.17290388011231306
+        },
+        "point_velocity_mps_delta_on_after_face": {
+          "cases": 74,
+          "mean": -0.048576771033354095,
+          "median": -0.05700616408374892
+        },
+        "root_transport_mps_delta_on_after_face": {
+          "cases": 74,
+          "mean": 0.002664624993634824,
+          "median": 0.0022493029097176986
+        },
+        "root_rotation_at_contact_mps_delta_on_after_face": {
+          "cases": 74,
+          "mean": 0.0421434831597481,
+          "median": 0.03403502132204608
+        },
+        "arm_contact_velocity_mps_delta_on_after_face": {
+          "cases": 74,
+          "mean": -0.09338487850020516,
+          "median": -0.08952075251261382
+        },
+        "normal_relative_velocity_delta_mps": {
+          "cases": 74,
+          "mean": 0.001927156706114073,
+          "median": -0.0060901641845703125
+        }
+      }
+    }
+  },
+  "sources": {
+    "E1_A16_flight_priority_vs_A0.json": "fd5ae2575730fb0e9c2f1bc9f571a98cd6d0087fd27a5e405cf41aad92ef1650",
+    "E1_A16_flight_priority_vs_A08.json": "a5db59b5533774e4c883a3d232b3567fea714f627c6e078dc336d75f2484df07",
+    "E1_A08_A16_WM_audit_comparison.json": "f32c737b73dd9a6652e2980b8a35ef3854eb724032d96402926ba0710bcb1f68",
+    "E1_A08_A16_sampling_and_model_work.json": "9f27eec8d195566e14e85bc4f6289e787d715a317fcc3b83821b5daf40b095fa",
+    "E1_A08_A16_start_bank_support.json": "22022e6d0a517819c093f7d224e2e537a77fedbf2c0d0080636843a2652f41a3"
+  },
+  "next": "Use A16 as current E1 development leader; complete same-budget E0 control and preserve independent 512 for final selected policy."
+}
