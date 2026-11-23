@@ -412,14 +412,16 @@ def main():
             not args.e1_v2_approach_scale or args.approach_stop_at is None
             or not 1 <= args.approach_resident_eval_wait_seconds <= 3600):
         parser.error('Resident evaluation requires E1 v2, a bounded final milestone and a wait within 1–3600 seconds')
-    resident_targets = None
+    args.resident_native_coverage_targets = None
+    args.resident_native_coverage_sha256 = None
     if args.approach_resident_coverage_baseline:
         if not args.approach_resident_eval_wait_seconds:
             parser.error('Resident coverage targets apply only to resident warm collection')
-        from quadsmash.rl.supermimic_native_event_coverage import coverage_deficits, coverage_targets, native_event_coverage
+        from quadsmash.rl.supermimic_native_event_coverage import coverage_targets
         try:
             resident_baseline_bytes = args.approach_resident_coverage_baseline.read_bytes()
-            resident_targets = coverage_targets(json.loads(resident_baseline_bytes))
+            args.resident_native_coverage_targets = coverage_targets(json.loads(resident_baseline_bytes))
+            args.resident_native_coverage_sha256 = hashlib.sha256(resident_baseline_bytes).hexdigest()
         except (OSError, ValueError) as error:
             parser.error(str(error))
     if (args.prioritize_approach_flight or args.approach_speed_target is not None) and not args.approach_ball_only:
@@ -549,6 +551,9 @@ def main():
 
 def run(args, *, alternating=None):
     research=args.training_profile=='research_scale'
+    resident_targets = getattr(args, 'resident_native_coverage_targets', None)
+    if resident_targets is not None:
+        from quadsmash.rl.supermimic_native_event_coverage import coverage_deficits, native_event_coverage
     from quadsmash.rl.supermimic_run_lifecycle import stage as lifecycle_stage
     # These audits are consumed by nested WM/actor callbacks.  Import them in
     # the run scope as well as the CLI setup scope so frozen refreshes cannot
@@ -2109,7 +2114,7 @@ def run(args, *, alternating=None):
                         timing['resident_coverage'] = dict(coverage, minimum_ticks=args.native_ticks_per_actor_update,
                             maximum_ticks=collection_ticks, targets=resident_targets, deficits=deficits,
                             stop_reason='tick_budget' if deficits else 'coverage_met',
-                            baseline_sha256=hashlib.sha256(resident_baseline_bytes).hexdigest())
+                            baseline_sha256=args.resident_native_coverage_sha256)
                     write(args.output/(str(cycle_index)+'_native_collection_timing.json'), timing)
                 if collect_block:
                     progress['collection_reward_mean']=float(reward.mean())
