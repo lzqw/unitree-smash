@@ -332,7 +332,8 @@ class ActorStartBank:
             self.sampling_history.append(report)
         return [row for row, _ in selected.values()], report
 
-    def sample_proposal_and_guard(self, eligible_lanes, attempt, proposal_count, guard_count, *, labeled_history=()):
+    def sample_proposal_and_guard(self, eligible_lanes, attempt, proposal_count, guard_count, *, labeled_history=(),
+                                  fixed_guard=None, record_draw=True):
         cache = {}
         def eligible(start):
             if id(start) not in cache:
@@ -342,8 +343,11 @@ class ActorStartBank:
         options = dict(require_labels=True, labeled_history=labeled_history, record_draw=False)
         settings = dict.fromkeys(((proposal_count, guard_count), (32, 16)))
         for n, g in settings:
-            guard, guard_report = self.sample_ball_phase(
-                eligible, attempt, count=g, reserve_for_proposal=n, **options)
+            if fixed_guard is None:
+                guard, guard_report = self.sample_ball_phase(
+                    eligible, attempt, count=g, reserve_for_proposal=n, **options)
+            else:
+                guard, guard_report = fixed_guard
             if guard_report['effective_lanes'] != g:
                 continue
             forbidden = {(stream, lane, episode) for record in guard_report['records']
@@ -354,7 +358,8 @@ class ActorStartBank:
                 continue
             report.update(guard=guard_report, disjoint_native_episodes=True,
                           requested_proposal_lanes=proposal_count, requested_guard_lanes=guard_count)
-            self.sampling_history.append(report)
+            if record_draw:
+                self.sampling_history.append(report)
             return proposal, guard, report
         raise RuntimeError('Need at least 48 eligible labeled native episodes for disjoint Approach v2 batches')
 

@@ -232,6 +232,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     terms={k:[] for k in ('task','tracking','anchor')}
     ball_scored, ball_speeds, ball_metrics, ball_derivatives = [], [], {}, {}
     ball_costs, flight_priority, string_margins = [], [], []
+    speed_risks = []
     outcome_audit = []
     counts={};covered={};weights=[];returns=[];data=[];usage={};by_record=[]
     tracking_vjp_wall_s = pooled_vjp_wall_s = 0.
@@ -259,6 +260,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
             kwargs['baseline_toi_weights']=None if baseline_toi_weights is None else baseline_toi_weights[i]
         if torch.is_grad_enabled() and not joint_backward:
             kwargs['tracking_parameters'] = params
+        if getattr(trainer, 'approach_speed_risk', False):
+            kwargs['defer_speed_risk'] = True
         row=trainer._rollout_objective(state,**kwargs)
         outcome_audit.extend(row.get('outcome_audit', []))
         tracking_vjp_wall_s += row.get('tracking_vjp_wall_s', 0.)
@@ -270,6 +273,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         n=row['gate_lanes']; w=row['tracking_effective_weight_sum']
         if row.get('flight_cost_by_lane') is not None:
             ball_costs.append(row['flight_cost_by_lane'])
+        if row.get('speed_risk_by_lane') is not None:
+            speed_risks.append(row['speed_risk_by_lane'])
         if row.get('string_margin_by_lane') is not None:
             string_margins.append(row['string_margin_by_lane'])
         if row.get('flight_priority_loss') is not None:
@@ -334,6 +339,14 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
             return torch.cat((prefix,a))
         return torch.cat([pad(v[k]) for v in data],dim=1)
     scalars={k:sum(x*n for x,n in items)/max(1.e-8,sum(n for _,n in items)) for k,items in terms.items()}
+    speed_risk = tuple(torch.cat(parts) for parts in zip(*speed_risks, strict=True)) if speed_risks else None
+    risk_losses = {}
+    if speed_risk is not None:
+        from .supermimic_approach_speed_risk import group_mean
+
+        risk_loss = group_mean(*speed_risk[:2])
+        scalars['task'] = scalars['task'] + .25 * risk_loss
+        risk_losses['grouped_speed_risk'] = risk_loss
     loss=trainer.tracking_coefficient(trainer.block_name)*scalars['tracking']+trainer.anchor_coeff*scalars['anchor']
     if not toi or getattr(trainer, 'approach_ball_protocol', None) is not None:
         loss=loss+scalars['task']
@@ -349,7 +362,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
                 string_margin_by_lane=torch.cat(string_margins) if string_margins else None,
                 flight_cost_by_lane=torch.cat(ball_costs) if ball_costs else None,
                 flight_priority_loss=sum(flight_priority)/n if flight_priority else None,
-                flight_losses={key: sum(values)/n for key,values in ball_derivatives.items()},
+                speed_risk_by_lane=speed_risk,
+                flight_losses={key: sum(values)/n for key,values in ball_derivatives.items()} | risk_losses,
                 tracking_vjp_wall_s=tracking_vjp_wall_s,pooled_vjp_wall_s=pooled_vjp_wall_s,
                 loss=loss,ret=ret if ret.numel() else loss.detach().reshape(1),
                 effective_weights=weights,landing_weights=landing_weights or None,toi_weights=toi_weights if toi else None,toi_coverage_preserved=preserved,reference_coverage=coverage,

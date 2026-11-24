@@ -272,7 +272,7 @@ class PhysicalHorizonTrainer:
 
     def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None,
                            baseline_landing_weights=None, baseline_ball_scored=None,
-                           tracking_parameters=(), collect_critic_data=True):
+                           tracking_parameters=(), collect_critic_data=True, defer_speed_risk=False):
         ball_protocol = getattr(self, 'approach_ball_protocol', None)
         if ball_protocol is not None:
             collect_critic_data = False
@@ -551,6 +551,7 @@ class PhysicalHorizonTrainer:
         flight_cost_by_lane = None
         flight_priority_loss = None
         scored = None
+        speed_risk = None
         outcome_audit = []
         if ball_protocol is not None:
             scored = resolved & first_string & weights.bool().reshape(-1)
@@ -564,6 +565,13 @@ class PhysicalHorizonTrainer:
             task_loss = (closest_approach * (~impacted) * weights).sum() / denominator
             if getattr(self, 'prioritize_approach_flight', False):
                 flight_cost_by_lane = ret.new_full(ret.shape, torch.nan)
+            if getattr(self, 'approach_speed_risk', False):
+                from .supermimic_approach_speed_risk import group_mean, incomplete_risk, release_risk
+
+                codes = initial_state.clock_goal_context['approach_diagnostic'][:, -1]
+                groups = (codes == 1).long() + 2 * (codes == 3).long()
+                geometry = torch.where(impacted, first_cost, closest_approach)
+                lane_risk = incomplete_risk(geometry)
             if scored.any():
                 terms = ball_only_flight_terms(
                     release_ball[scored, :3], release_ball[scored, 3:],
@@ -575,6 +583,8 @@ class PhysicalHorizonTrainer:
                     lane_costs[scored] = torch.stack(tuple(terms[name].detach() for name in audit_terms), dim=-1)
                 if flight_cost_by_lane is not None:
                     flight_cost_by_lane[scored] = sum(value.detach() for value in terms.values())
+                if getattr(self, 'approach_speed_risk', False):
+                    lane_risk = lane_risk.masked_scatter(scored, release_risk(release_ball[scored, 3:].norm(dim=-1), terms['speed']))
                 confidence = (first_margin[scored].detach() / .012).clamp(.2, 1.) if approach_v2 else 1.
                 terms = {name: (value * confidence).sum() / denominator for name, value in terms.items()}
                 ball_loss = sum(terms.values())
@@ -583,6 +593,12 @@ class PhysicalHorizonTrainer:
                     flight_priority_loss = ball_loss
                 flight_losses = terms
                 flight_metrics.update({f'ball_loss_{name}': float(value.detach()) for name, value in flight_losses.items()})
+            if getattr(self, 'approach_speed_risk', False):
+                speed_risk = (lane_risk, groups, scored)
+                if not defer_speed_risk:
+                    risk_loss = group_mean(lane_risk, groups)
+                    task_loss = task_loss + .25 * risk_loss
+                    flight_losses['grouped_speed_risk'] = risk_loss
             if getattr(self, 'diagnose_ball_gradients', False):
                 geometry = (closest_approach * (~impacted) + first_cost * impacted) * weights
                 flight_losses['geometry'] = geometry.sum() / denominator
@@ -680,6 +696,7 @@ class PhysicalHorizonTrainer:
             added = (landing_trace > 0) & ~initial_landing
             coverage.update(newly_landed_lanes=int(added.any(0).sum()), newly_landed_lane_steps=int(added.sum()))
         return dict(**aux_stats, **flight_metrics, outcome_audit=outcome_audit, ball_scored=scored, flight_losses=flight_losses,
+                    speed_risk_by_lane=speed_risk,
                     flight_cost_by_lane=flight_cost_by_lane, flight_priority_loss=flight_priority_loss,
                     string_margin_by_lane=(first_margin.masked_fill(~(first_string & weights.bool()), torch.nan)
                                            if ball_protocol is not None and first_geometry else None),
@@ -724,9 +741,13 @@ class PhysicalHorizonTrainer:
         from .supermimic_approach_data_v1 import (
             approach_guard_merit, approach_step_sizes, comparable_flight_merit,
             gradient_parts, prioritize_flight_gradient)
+        from .supermimic_approach_speed_risk import compare_risk, forward_tolerances, risk_statistics
         fast = getattr(self, 'approach_v2', False) and update_actor
+        protect_speed = fast and getattr(self, 'approach_speed_risk', False)
         if fast and not guard_starts:
             raise ValueError('Approach v2 requires a separate guard batch')
+        if protect_speed and self.fixed_speed_risk_guard is not guard_starts:
+            raise ValueError('Speed risk protection requires the fixed block guard starts')
         cfg=self.timebase; started=time.perf_counter()
         actor_before={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
         optimizer_before=copy.deepcopy(self.actor_opt.state_dict())
@@ -760,7 +781,20 @@ class PhysicalHorizonTrainer:
                         guard_started = time.perf_counter()
                         with torch.no_grad():
                             restore_rng()
-                            guard_baseline = self._rollout_objective(guard_starts, collect_critic_data=False)
+                            anchor = self.speed_risk_anchor if protect_speed else None
+                            guard_baseline = self._rollout_objective(
+                                guard_starts, effective_weights=anchor['effective_weights'] if anchor is not None else None,
+                                collect_critic_data=False)
+                            if protect_speed and anchor is None:
+                                tolerances = []
+                                for _ in range(2):
+                                    restore_rng()
+                                    repeated = self._rollout_objective(guard_starts, effective_weights=guard_baseline['effective_weights'],
+                                                                       collect_critic_data=False)
+                                    tolerances.append(forward_tolerances(guard_baseline, repeated))
+                                self.speed_risk_tolerances = {key: max(t[key] for t in tolerances) for key in tolerances[0]}
+                                self.speed_risk_anchor = guard_baseline
+                                self.speed_risk_rejudge(self.speed_risk_tolerances, risk_statistics(guard_baseline))
                         proposal_timing['guard_baseline_wall_s'] = time.perf_counter() - guard_started
                     gradient_started = time.perf_counter()
                     diagnose = not fast or getattr(self, 'diagnose_ball_gradients', False)
@@ -887,7 +921,15 @@ class PhysicalHorizonTrainer:
                                         after_mps=float(after_speed[common].mean()) if common.any() else None)
                                 merit_ok = candidate_loss <= baseline_loss
                                 if fast:
-                                    merit_ok, flight_report = approach_guard_merit(guard_baseline, evaluation)
+                                    if protect_speed:
+                                        tol = self.speed_risk_tolerances
+                                        merit_ok, flight_report = approach_guard_merit(guard_baseline, evaluation, flight_tolerance=tol['flight'])
+                                        relative_ok, relative = compare_risk(guard_baseline, evaluation, tol['risk'])
+                                        anchor_ok, anchored = compare_risk(self.speed_risk_anchor, evaluation, tol['risk'])
+                                        trials[-1]['speed_risk_guard'] = dict(relative=relative, anchored=anchored)
+                                        merit_ok = merit_ok and relative_ok and anchor_ok
+                                    else:
+                                        merit_ok, flight_report = approach_guard_merit(guard_baseline, evaluation)
                                     trials[-1]['baseline_release_flight'] = flight_report
                                     trials[-1]['flight_priority_merit_ok'] = merit_ok
                                     if evaluation['outcome_audit']:
@@ -927,6 +969,9 @@ class PhysicalHorizonTrainer:
                                 or k in ('resolved_ball_lanes', 'demand_racket_target_lanes',
                                          'planned_imagination_steps', 'model_rollout_steps',
                                          'ball_speed_loss_supported_lanes')})
+            if protect_speed:
+                track_stats['proposal_speed_risk'] = risk_statistics(rollout)
+                track_stats['same_forward_tolerance'] = getattr(self, 'speed_risk_tolerances', None)
             matched=rollout['matched_references'];coverage=rollout['reference_coverage']
             baseline_terms = {name: float(rollout[name].detach()) for name in ('task','tracking','anchor')}
             proposal_outcome_audit = rollout.get('outcome_audit', [])

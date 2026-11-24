@@ -25,32 +25,49 @@ class NativePhaseTiming:
         if len(self.samples[phase]) >= self.samples_per_phase:
             return advance(action)
 
-        sim = self.env.sim
-        original = sim.step
-        physics_seconds = 0.
-        substeps = 0
+        sections = {}
+        originals = []
 
-        def timed_step(*args, **kwargs):
-            nonlocal physics_seconds, substeps
-            started = perf_counter()
-            try:
-                return original(*args, **kwargs)
-            finally:
-                physics_seconds += perf_counter() - started
-                substeps += 1
+        def watch(owner, attr, name):
+            original = getattr(owner, attr, None)
+            if original is None or not callable(original):
+                return
+            row = sections[name] = dict(seconds=0., calls=0)
+
+            def timed(*args, **kwargs):
+                started = perf_counter()
+                try:
+                    return original(*args, **kwargs)
+                finally:
+                    row['seconds'] += perf_counter() - started
+                    row['calls'] += 1
+
+            originals.append((owner, attr, original))
+            setattr(owner, attr, timed)
 
         started = perf_counter()
-        sim.step = timed_step
         try:
+            watch(self.env.sim, 'step', 'simulation')
+            scene = getattr(self.env, 'scene', None)
+            watch(scene, 'write_data_to_sim', 'scene_write')
+            watch(scene, 'update', 'scene_update')
+            for method, name in (('_apply_action', 'substep_action'), ('_consume_physics_frame', 'ball_events_nested'),
+                                 ('_pre_physics_step', 'control_input'), ('_get_dones', 'terminal_checks'),
+                                 ('_get_rewards', 'reward'), ('_get_observations', 'observation')):
+                watch(self.env, method, name)
             result = advance(action)
         finally:
-            sim.step = original
+            for owner, attr, original in reversed(originals):
+                setattr(owner, attr, original)
         elapsed = perf_counter() - started
+        sim_timing = sections['simulation']
         self.samples[phase].append(dict(tick=tick, near_contact_lanes=near_count,
-            released_flight_lanes=flight_count, physics_substeps=substeps, control_wall_seconds=elapsed,
-            simulation_step_wall_seconds=physics_seconds, other_control_wall_seconds=elapsed - physics_seconds))
+            released_flight_lanes=flight_count, physics_substeps=sim_timing['calls'], control_wall_seconds=elapsed,
+            simulation_step_wall_seconds=sim_timing['seconds'], other_control_wall_seconds=elapsed - sim_timing['seconds'],
+            instrumented_sections=sections))
         return result
 
     def report(self):
-        return dict(scope='sampled whole-batch wall time; simulation calls may include runtime synchronization',
+        return dict(scope='sampled whole-batch wall time; runtime synchronization may be charged to caller. '
+                          'Ball event timing is nested inside substep action and terminal checks.',
                     samples=self.samples)

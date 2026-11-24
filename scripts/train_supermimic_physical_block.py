@@ -12,6 +12,10 @@ LEARNER_SEED = 20261114
 NATIVE_TRAIN128_SEED = 882072
 
 
+class ApproachStageFinished(Exception):
+    """The requested preparation or bounded exploratory block is durable."""
+
+
 def write(path,value):
     temp=path.with_suffix(path.suffix+'.tmp');temp.write_text(json.dumps(value,indent=2,default=str)+'\n');temp.replace(path)
 
@@ -254,6 +258,10 @@ def main():
                         help='Persist per-case risk auditing through Approach checkpoint continuations')
     parser.add_argument('--approach-event-body-refresh', action='store_true',
                         help='Preserve 20/32-step contact-aligned Body supervision during E1 v2 refresh')
+    parser.add_argument('--approach-prepare-only', action='store_true',
+                        help='Stop at a resumable checkpoint after refresh and before the first Approach proposal')
+    parser.add_argument('--approach-speed-risk-history', type=Path,
+                        help='Archived risk receipt for the fixed-guard speed-risk pilot on a prepared block')
     parser.add_argument('--approach-resident-eval-wait-seconds', type=int, default=0,
                         help='Opt in to waiting for a matched native decision at intermediate Approach boundaries')
     parser.add_argument('--approach-resident-coverage-baseline', type=Path,
@@ -418,6 +426,14 @@ def main():
         parser.error('Resident evaluation requires E1 v2, a bounded final milestone and a wait within 1–3600 seconds')
     if args.approach_event_body_refresh and not args.e1_v2_approach_scale:
         parser.error('Contact-aligned Body refresh requires E1 v2')
+    if (args.approach_prepare_only or args.approach_speed_risk_history) and (
+            not args.e1_v2_approach_scale or not args.resume_training or args.approach_stop_at is None
+            or args.resume_without_replay or args.resume_reset_schedule or args.resume_next_cycle
+            or args.approach_body_overlay or args.resume_wm_replay or args.approach_resident_eval_wait_seconds
+            or args.toi_effective_start_lanes != 32 or args.approach_guard_start_lanes != 16):
+        parser.error('Prepared Approach stages require a bounded E1 v2 continuation with the 32+16 contract')
+    if args.approach_prepare_only and args.approach_speed_risk_history:
+        parser.error('Supply the risk history when resuming the prepared block')
     args.resident_native_coverage_targets = None
     args.resident_critical_cases = None
     args.resident_native_coverage_sha256 = None
@@ -851,6 +867,7 @@ def run(args, *, alternating=None):
         refresh_world_updates=0;refresh_critic_updates=0
         replay_handoff=None
         body_overlay_receipt = None
+        prepared_resume = None
         relaxed_transition = False
         relaxed_bootstrap = False
         if args.approach_ball_only:
@@ -888,6 +905,13 @@ def run(args, *, alternating=None):
 
         if args.resume_training:
             resumed=torch.load(args.resume_training,map_location='cpu',weights_only=False)
+            prepared_resume = resumed.get('approach_prepared_block')
+            if prepared_resume is not None and (prepared_resume['schema'] != 'approach-prepared-block-v1'
+                    or args.approach_prepare_only or not args.e1_v2_approach_scale or args.resume_without_replay
+                    or args.resume_reset_schedule or args.resume_next_cycle):
+                raise ValueError('Prepared block requires an exact-stage E1 v2 continuation')
+            if args.approach_speed_risk_history and prepared_resume is None:
+                raise ValueError('The speed risk pilot must resume a prepared block')
             if args.approach_ball_only and not args.resume_reset_schedule and resumed['metadata']['task_contract'] != contract:
                 raise ValueError('A ball-only continuation requires the saved phase task contract')
             had_relaxed = not args.approach_ball_only and 'relaxed_scoring' in resumed['metadata']['task_contract']
@@ -1394,8 +1418,15 @@ def run(args, *, alternating=None):
                 outcomes = row.get('_approach_diagnostic_outcomes')
                 if outcomes is not None:
                     codes = {'low_speed': 1, 'success': 2}
+                    def diagnostic_code(key, outcome):
+                        if args.approach_speed_risk_history and outcome == 'success':
+                            from quadsmash.rl.supermimic_approach_speed_risk import risk_group
+                            terminal = replay.actor_start_bank.resolved.get(key, (None, {}))[1]
+                            if risk_group(outcome, terminal) == 2:
+                                return 3
+                        return codes.get(outcome, 0)
                     state.clock_goal_context['approach_diagnostic'] = torch.tensor([
-                        (*outcomes[lane][0], codes.get(outcomes[lane][1], 0))
+                        (*outcomes[lane][0], diagnostic_code(*outcomes[lane]))
                         for lane in lanes.nonzero().flatten().tolist()], device=state.physical.device)
                 return state
             state=as_state(row)
@@ -1549,6 +1580,8 @@ def run(args, *, alternating=None):
                                                 or args.approach_resident_eval_wait_seconds or args.approach_event_body_refresh)
         config['approach_audit_all_proposals'] = args.approach_audit_all_proposals
         config['approach_event_body_refresh'] = args.approach_event_body_refresh
+        config['approach_speed_risk_history_sha256'] = file_sha(args.approach_speed_risk_history)
+        trainer.approach_speed_risk = bool(args.approach_speed_risk_history)
         metadata=dict(wm_action_collections=action_collections,policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
         if body_overlay_receipt is not None:
@@ -1615,13 +1648,14 @@ def run(args, *, alternating=None):
         initial_fit_provenance=verify_fit_provenance(json.loads(args.contact_validation_receipt.read_text()),args.contact_validation_receipt) if args.contact_validation_receipt else dict(verified=False,reason='no-fit-provenance')
         loaded_fit=loaded_fit_provenance(initial_fit_provenance,resumed if args.resume_training else None,loaded_identity['world_state_sha256'],wm_holdout_lanes)
         write(args.output/'loaded_fit_provenance.json',loaded_fit)
-        def save(name):
+        def save(name, *, prepared_block=None):
             archive.flush()  # Checkpoint never points beyond durable replay.
             actor_references = dict(step=trainer.accepted_snapshot, block=trainer.block_start_snapshot,
                                     native=trainer.native_accepted_snapshot)
             if args.approach_ball_only:
                 actor_references['approach_anchor'] = trainer.reference.state_dict()
             atomic_torch_save(dict(algorithm='supermimic_v1',adapter_schema=adapter.schema,actor=actor.state_dict(),
+                approach_prepared_block=prepared_block,
                 critic=trainer.critic.state_dict(),world=adapter.state_dict(),actor_optimizer=trainer.actor_opt.state_dict(),
                 actor_optimizers=dict(getattr(trainer,'_pending_actor_optimizer_states',{}),**{name:opt.state_dict() for name,opt in trainer._actor_optimizers.items()}),
                 world_optimizer=trainer.world_opt.state_dict(),critic_optimizer=trainer.critic_opt.state_dict(),
@@ -1965,9 +1999,12 @@ def run(args, *, alternating=None):
             stage(args.output,'TRAINING_FINISHED',actor_updates=0,world_updates=trainer.world_updates,
                   training_stage=args.training_stage)
             return
+        prepared_used = False
+
         def run_block(block_name, names, budget, proposal_limit,cycle_index=0,*,managed_refresh=False):
             nonlocal obs,tick,cursor
             nonlocal global_attempt_id,global_accepted_id,global_rejected,global_backtracked
+            nonlocal prepared_used
             sampling_history_start=len(replay.actor_start_bank.sampling_history)
             if budget<=0:return 0
             progress=schedule.block(cycle_index,block_name,budget,proposal_limit)
@@ -1992,6 +2029,33 @@ def run(args, *, alternating=None):
             budget_rows=(recovery_pool if block_name=='recovery' else approach_pool)+critic_starts[:4]
             trainer.set_budget_state_library([as_state(row) for row in budget_rows])
             accepted=progress['accepted'];attempts=progress['attempts'];max_attempts=proposal_limit
+            use_prepared = prepared_resume is not None and not prepared_used
+            if use_prepared:
+                expected = dict(block_key=str(cycle_index), attempts=global_attempt_id, accepted=global_accepted_id,
+                                native_ticks=tick, world_sha256=tensor_digest(adapter.state_dict().items()),
+                                actor_sha256=tensor_digest(actor.state_dict().items()),
+                                reference_bank_sha256=trainer.reference_bank.content_sha256() if trainer.reference_bank else None,
+                                world_updates=trainer.world_updates, critic_updates=trainer.critic_updates,
+                                head=block_name,
+                                calibration_world_sha256=trainer.approach_speed_calibration['world_sha256'])
+                if attempts or accepted or any(prepared_resume.get(key) != value for key, value in expected.items()):
+                    raise ValueError('Prepared block identity, schedule or counters changed')
+                if trainer.approach_speed_risk and (budget != 8 or args.approach_stop_at != global_accepted_id - research_origin + budget):
+                    raise ValueError('A speed risk pilot is limited to one A8 block')
+                write(args.output/'restored_approach_preparation.json', expected)
+            fixed_guard_rows = None
+            if trainer.approach_speed_risk:
+                trainer.speed_risk_anchor = None
+                trainer.fixed_speed_risk_guard = None
+                from quadsmash.rl.supermimic_approach_speed_risk import rejudge_history
+                historical_risk = json.loads(args.approach_speed_risk_history.read_text())
+                def write_risk_preflight(tolerances, anchor):
+                    report = rejudge_history(historical_risk, tolerances)
+                    report['fixed_guard_baseline'] = anchor
+                    write(args.output/'speed_risk_preflight.json', report)
+                    if not any(row['flight_failed'] for row in report['accepted_trials']):
+                        raise ValueError('Repeated-forward tolerance does not detect archived aggregate regression')
+                trainer.speed_risk_rejudge = write_risk_preflight
             trainer.actor_updates=accepted;trainer.actor_attempts=attempts
             trainer.rejected_actor_updates=progress.get('rejected',attempts-accepted)
             trainer.backtracked_actor_updates=progress.get('backtracked',0)
@@ -2001,16 +2065,13 @@ def run(args, *, alternating=None):
                 save('latest.pt')
             while accepted<budget and attempts<max_attempts:
                 check_stop()
-                collect_block = not research or attempts == 0
+                collect_block = (not research or attempts == 0) and not use_prepared
+                attempt_key = global_attempt_id + 1
                 proposal_checkpoint=args.output/('pre_block.pt' if research else f'pre_proposal_{cycle_index}_{block_name}.pt')
                 if collect_block:
                     save(proposal_checkpoint.name)
                 pre_native_metrics=episode_stats.snapshot()
-                attempts+=1;global_attempt_id+=1;trainer.block_attempts=attempts
-                invocation_heads[block_name]['attempts']+=1
-                progress['attempts']=attempts;progress['proposal_in_flight']=True
                 trainer.actor_updates=accepted
-                trainer.actor_attempts=attempts
                 check_stop()
                 if not args.approach_ball_only:
                     if not args.landing_and_first_contact_objectives or collect_block:
@@ -2207,7 +2268,7 @@ def run(args, *, alternating=None):
                         return rows
 
                     event_validation_before = event_body_validation()
-                world_stats=run_world_updates(global_attempt_id,head=block_name) if collect_block else {}
+                world_stats=run_world_updates(attempt_key,head=block_name) if collect_block else {}
                 if args.approach_ball_only and collect_block:
                     from quadsmash.rl.supermimic_release_calibration import (
                         calibrate_release_speed, measured_body_pairs, measured_contact_batches, measured_contact_pairs)
@@ -2219,7 +2280,7 @@ def run(args, *, alternating=None):
                         if not world_stats['fixed_native_forward']['passed']:
                             raise RuntimeError('E1 v2 Body refresh failed its native forward check')
                         body_fit = []
-                        body_pairs = measured_body_pairs(replay, launch, offset=global_attempt_id)
+                        body_pairs = measured_body_pairs(replay, launch, offset=attempt_key)
                         event_batches = []
                         if args.approach_event_body_refresh:
                             train_lanes = sorted(set(range(replay.lanes)).difference(wm_holdout_lanes))
@@ -2239,13 +2300,13 @@ def run(args, *, alternating=None):
                             fit = trainer.fit_event_aligned_approach_body(window, scoped_launch)
                             event_fit.append(dict(horizon=len(window['state']), counts=counts, **fit))
                         if any(result['updated'] for result in body_fit + event_fit):
-                            verification = verify_online_forward(block_name, global_attempt_id)
+                            verification = verify_online_forward(block_name, attempt_key)
                             if not verification['passed']:
                                 body.load_state_dict(body_before)
                                 trainer.world_opt.load_state_dict(optimizer_before)
                                 trainer.world_updates = updates_before
                                 world_stats['rejected_body_pair_forward_validation'] = verification
-                                verification = verify_online_forward(block_name, global_attempt_id)
+                                verification = verify_online_forward(block_name, attempt_key)
                                 if not verification['passed']:
                                     raise RuntimeError('Restored E1 v2 Body failed native replay validation')
                             world_stats['fixed_native_forward'] = verification
@@ -2257,7 +2318,7 @@ def run(args, *, alternating=None):
                             write(args.output / f'{cycle_index}_event_body_refresh.json', event_report)
                     contact_started = time.perf_counter()
                     contact_pairs = measured_contact_pairs(
-                        replay, launch, offset=global_attempt_id, limit=min(4, args.approach_contact_updates))
+                        replay, launch, offset=attempt_key, limit=min(4, args.approach_contact_updates))
                     pair_fits = []
                     for minus, plus, pair_launch in contact_pairs:
                         check_stop()
@@ -2281,7 +2342,7 @@ def run(args, *, alternating=None):
                         string_strips=trainer.string_strips, separation_m=trainer.approach_separation_m,
                         threshold=phase_scoring['minimum_outgoing_speed_mps'])
                     calibration.update(world_sha256=tensor_digest(adapter.state_dict().items()),
-                                       first_attempt=global_attempt_id, native_ticks=tick,
+                                       first_attempt=attempt_key, native_ticks=tick,
                                        seconds=time.perf_counter() - calibration_started)
                     trainer.approach_speed_calibration = calibration
                     if wm_holdout_lanes and (global_accepted_id - research_origin) % 64 == 0:
@@ -2294,11 +2355,37 @@ def run(args, *, alternating=None):
                     write(args.output/f'{cycle_index}_speed_calibration.json', calibration)
                 if refresh_before is not None:
                     write(args.output / f'{cycle_index}_model_refresh_identity.json', dict(
-                        native_ticks=tick, first_attempt=global_attempt_id,
+                        native_ticks=tick, first_attempt=attempt_key,
                         before=refresh_before, after=approach_refresh_identity(),
                         direct_long_body_supervision=args.wm_direct_long_body_supervision,
                         paired_body_fits=world_stats.get('paired_precontact_body_supervision', [])))
-                quality=check_head_quality(block_name,global_attempt_id)
+                quality = prepared_resume['quality'] if use_prepared and attempts == 0 else check_head_quality(block_name, attempt_key)
+                if use_prepared and attempts == 0:
+                    world_stats = prepared_resume['world_stats']
+                    prepared_used = True
+                if args.approach_prepare_only:
+                    checkpoint = args.output / 'approach_prepared.pt'
+                    calibration = trainer.approach_speed_calibration
+                    prepared = dict(schema='approach-prepared-block-v1', block_key=str(cycle_index), head=block_name,
+                                    attempts=global_attempt_id, accepted=global_accepted_id, native_ticks=tick,
+                                    actor_sha256=tensor_digest(actor.state_dict().items()),
+                                    world_sha256=tensor_digest(adapter.state_dict().items()),
+                                    reference_bank_sha256=trainer.reference_bank.content_sha256() if trainer.reference_bank else None,
+                                    world_updates=trainer.world_updates, critic_updates=trainer.critic_updates,
+                                    calibration_world_sha256=calibration['world_sha256'], quality=quality, world_stats=world_stats)
+                    save(checkpoint.name, prepared_block=prepared)
+                    write(args.output/'approach_prepared.json', {key: value for key, value in prepared.items()
+                          if key not in ('quality', 'world_stats')} | dict(checkpoint_sha256=file_sha(checkpoint)))
+                    raise ApproachStageFinished
+                if use_prepared:
+                    proposal_checkpoint = args.resume_training
+                attempts += 1
+                global_attempt_id = attempt_key
+                trainer.block_attempts = attempts
+                invocation_heads[block_name]['attempts'] += 1
+                progress['attempts'] = attempts
+                progress['proposal_in_flight'] = True
+                trainer.actor_attempts = attempts
                 # Rebuild the start pool for every proposal.  Recovery starts
                 # therefore follow fresh event-aligned native data as it
                 # arrives; the verified archive remains a deterministic
@@ -2404,9 +2491,25 @@ def run(args, *, alternating=None):
                             finally:
                                 starts.generator.set_state(rng)
                             write(audit, dict(trials=trials, scope='frozen real native starts, no optimizer step'))
-                        proposal_rows, guard_rows, start_sampling = replay.actor_start_bank.sample_proposal_and_guard(
-                            ball_start_lanes, draw, args.toi_effective_start_lanes, args.approach_guard_start_lanes,
-                            labeled_history=labeled_approach_history)
+                        starts = replay.actor_start_bank
+                        offsets = range(16) if trainer.approach_speed_risk and fixed_guard_rows is None else (0,)
+                        for offset in offsets:
+                            proposal_rows, guard_rows, start_sampling = starts.sample_proposal_and_guard(
+                                ball_start_lanes, draw + offset, args.toi_effective_start_lanes, args.approach_guard_start_lanes,
+                                labeled_history=labeled_approach_history, fixed_guard=fixed_guard_rows,
+                                record_draw=not trainer.approach_speed_risk)
+                            if not trainer.approach_speed_risk or fixed_guard_rows is not None:
+                                break
+                            groups = {code for row in guard_rows
+                                      for code in training_state(row, compact=True).clock_goal_context['approach_diagnostic'][:, -1].tolist()}
+                            if {1, 3} <= groups:
+                                fixed_guard_rows = guard_rows, start_sampling['guard']
+                                write(args.output/'fixed_speed_risk_guard_starts.json', start_sampling['guard'])
+                                break
+                        else:
+                            raise ValueError('Fixed guard lacks both low-speed and marginal-success native episodes')
+                        if trainer.approach_speed_risk:
+                            starts.sampling_history.append(start_sampling)
                     else:
                         proposal_rows, start_sampling = replay.actor_start_bank.sample_ball_phase(
                             ball_start_lanes, draw, fallback=pool, count=args.toi_effective_start_lanes,
@@ -2469,18 +2572,22 @@ def run(args, *, alternating=None):
                     start_sampling['packed_rollout_lane_counts'] = [len(s.physical) for s in actor_start]
                 guard_start = None
                 if guard_rows is not None:
-                    guard_start = batch_approach_starts(
-                        tuple(training_state(r, compact=research) for r in guard_rows),
-                        max_steps=timebase.imagination_steps, dt=timebase.control_dt_s,
-                        followthrough_ticks=phase_scoring['minimum_followthrough_ticks'],
-                        plane_offset_m=trainer.toi_plane_offset_m, pack_execution=True)
+                    guard_start = trainer.fixed_speed_risk_guard if trainer.approach_speed_risk else None
+                    if guard_start is None:
+                        guard_start = batch_approach_starts(
+                            tuple(training_state(r, compact=research) for r in guard_rows),
+                            max_steps=timebase.imagination_steps, dt=timebase.control_dt_s,
+                            followthrough_ticks=phase_scoring['minimum_followthrough_ticks'],
+                            plane_offset_m=trainer.toi_plane_offset_m, pack_execution=True)
+                        if trainer.approach_speed_risk:
+                            trainer.fixed_speed_risk_guard = guard_start
                     start_sampling['guard']['packed_rollout_lane_counts'] = [len(s.physical) for s in guard_start]
                 if research:
                     retained=global_accepted_id-research_origin
                     trainer.contact_aux_weight=(args.research_contact_weight if not args.approach_ball_only and block_name=='approach'
                         and args.research_contact_gradient=='G1' and retained>=32 else 0.)
                     adapter.action_ball_model.detach_residual_for_actor=not args.approach_ball_only
-                trainer.diagnose_ball_gradients = args.approach_ball_only and collect_block
+                trainer.diagnose_ball_gradients = args.approach_ball_only and (collect_block or (use_prepared and attempts == 1))
                 trainer.audit_approach_outcomes = args.e1_v2_approach_scale and (
                     args.approach_audit_all_proposals or invocation_heads['approach']['attempts'] <= 2)
                 try:
@@ -2561,6 +2668,13 @@ def run(args, *, alternating=None):
                     save('latest.pt')
             write(args.output/(str(cycle_index)+'_'+block_name+'_actor_start_sampling.json'),replay.actor_start_bank.sampling_report(sampling_history_start))
             if accepted<budget:
+                if trainer.approach_speed_risk:
+                    retained = global_accepted_id - research_origin
+                    save(f'approach_A{retained:03d}.pt')
+                    write(args.output/'evaluation_boundary.json', dict(
+                        approach_accepted=retained, recovery_accepted=0, native_ticks=tick, invocation=invocation_receipt(),
+                        actor_training_complete=False, stop_reason='proposal_budget', target=budget, attempts=attempts))
+                    raise ApproachStageFinished
                 save(f'{cycle_index}_{block_name}_candidate_{accepted:04d}.pt')
                 write(args.output/'block_incomplete.json',dict(block=block_name,target=budget,accepted=accepted,attempts=attempts,limit=max_attempts))
                 raise RuntimeError(f'{block_name}: proposal budget exhausted ({accepted}/{budget} accepted); next block disabled')
@@ -3015,6 +3129,8 @@ def run(args, *, alternating=None):
              actor_attempts=trainer.actor_attempts,rejected_actor_updates=trainer.rejected_actor_updates,
              world_updates=trainer.world_updates,critic_updates=trainer.critic_updates,formal_evaluation=False))
         stage(args.output,'TRAINING_FINISHED',actor_updates=trainer.actor_updates)
+    except ApproachStageFinished:
+        return
     except BaseException as error:
         failed=True;(args.output/'failure_traceback.txt').write_text(traceback.format_exc())
         write(args.output/'failure.json',dict(phase=phase,native_ticks=tick,

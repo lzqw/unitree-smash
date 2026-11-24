@@ -220,7 +220,7 @@ def comparable_flight_merit(before, after, baseline_loss, candidate_loss):
     return accepted, dict(matched_lanes=count, before=initial, after=trial, lost_release=False)
 
 
-def approach_guard_merit(before, after):
+def approach_guard_merit(before, after, *, flight_tolerance=.002):
     """Preserve aggregate flight and contact quality on held-out proposal starts."""
     old, new = (rollout['flight_cost_by_lane'] for rollout in (before, after))
     margins, candidate_margins = (rollout['string_margin_by_lane'] for rollout in (before, after))
@@ -243,7 +243,7 @@ def approach_guard_merit(before, after):
     count = int(torch.isfinite(margins).sum())
     candidate_count = int(torch.isfinite(candidate_margins).sum())
     allowed_losses = max(1, count // 20)
-    flight_ok = not n_release or new_flight <= old_flight + .002
+    flight_ok = not n_release or new_flight <= old_flight + flight_tolerance
     margin_ok = not n_margin or new_q25 >= old_q25 - .003
     count_ok = candidate_count + allowed_losses >= count
     objective_ok = float(after['loss']) < float(before['loss'])
