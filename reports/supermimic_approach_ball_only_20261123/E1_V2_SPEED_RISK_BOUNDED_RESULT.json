@@ -1,0 +1,4295 @@
+{
+  "status": "no_accepted_proposals",
+  "runtime": {
+    "start": {
+      "actor_sha256": "6448d83b8fc5cf8d569b75dbaf2f3609061e061fda12a8eefe23a958b9f8e5c4",
+      "accepted": 235,
+      "attempts": 248,
+      "world": 384,
+      "critic": 6190
+    },
+    "actor_end_sha256": "6448d83b8fc5cf8d569b75dbaf2f3609061e061fda12a8eefe23a958b9f8e5c4",
+    "actor_updates": 0,
+    "actor_attempts": 16,
+    "world_updates": 0,
+    "critic_updates": 0,
+    "heads": {
+      "recovery": {
+        "accepted": 0,
+        "attempts": 0
+      },
+      "approach": {
+        "accepted": 0,
+        "attempts": 16
+      }
+    },
+    "approach_objective": "toi_racket_only",
+    "scope": "updates executed in this process only"
+  },
+  "baseline_success": 33,
+  "candidate_policy": "6448d83b8fc5cf8d569b75dbaf2f3609061e061fda12a8eefe23a958b9f8e5c4",
+  "same_a40_actor": true,
+  "native_ticks_at_preparation": 12301,
+  "timing": {
+    "total_seconds": 1155.014871213003,
+    "proposal_seconds": 653.8892568749143,
+    "first_proposal_s": 128.56286957801785,
+    "subsequent_median_proposal_s": 34.897784789965954
+  },
+  "first_proposal_gradient_audit": {
+    "actor_gradient": 15.682971954345703,
+    "ball_grouped_speed_risk_gradient_norm": 7.998136043548584,
+    "ball_speed_geometry_cosine": -0.8482793569564819,
+    "task_tracking_cosine": -0.6974354386329651,
+    "proposal_wall_breakdown": {
+      "baseline_objective_wall_s": 19.860228421050124,
+      "guard_baseline_wall_s": 9.637398740043864,
+      "baseline_tracking_vjp_wall_s": 5.213872593070846,
+      "baseline_pooled_vjp_wall_s": 0.0,
+      "outer_gradient_wall_s": 82.73603024997283,
+      "backtracking_wall_s": 15.960545103007462
+    }
+  },
+  "proposals": [
+    {
+      "attempt_id": 249,
+      "accepted": false,
+      "actor_gradient": 15.682971954345703,
+      "adam_proposal_loss_slope": -0.030080894008278847,
+      "time_s": 128.56286957801785,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.4820112884044647,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 1,
+          "mean": 0.3996126353740692,
+          "releases": 1
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0019893646240234375,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.142508402466774,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01741904206573963,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9888688921928406,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.000790327787399292,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9888688921928406,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.000790327787399292,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.003991484642028809,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.1402267962694168,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017544686794281006,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9920875430107117,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0016025900840759277,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9920875430107117,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0016025900840759277,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0009931325912475586,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14364944398403168,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017357608303427696,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9870030283927917,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00039246678352355957,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9870030283927917,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00039246678352355957,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.008033275604248047,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.01362714171409607,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.018993616104125977,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.01049792766571045,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0032997429370880127,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.01049792766571045,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0032997429370880127,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0004961490631103516,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.1442185640335083,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017325973138213158,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.985944926738739,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00019571185111999512,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.985944926738739,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00019571185111999512,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 250,
+      "accepted": false,
+      "actor_gradient": 3.903254508972168,
+      "adam_proposal_loss_slope": -0.012827325612306595,
+      "time_s": 30.452175790967885,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.4820127487182617,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 1,
+          "mean": 0.4830801784992218,
+          "releases": 1
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0021909475326538086,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.143138125538826,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01740727387368679,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9845609068870544,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0005108416080474854,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9845609068870544,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0005108416080474854,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.004398345947265625,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14146682620048523,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017520051449537277,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9843873381614685,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0010366439819335938,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9843873381614685,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0010366439819335938,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0010935068130493164,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14396598935127258,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017350973561406136,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9846846461296082,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00025346875190734863,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9846846461296082,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00025346875190734863,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.00886225700378418,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.13804441690444946,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017747018486261368,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.984337031841278,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.002125859260559082,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.984337031841278,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.002125859260559082,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0005462169647216797,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14437831938266754,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017322972416877747,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9847707152366638,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00012671947479248047,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9847707152366638,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00012671947479248047,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 251,
+      "accepted": false,
+      "actor_gradient": 4.467400074005127,
+      "adam_proposal_loss_slope": -0.01248237956315279,
+      "time_s": 39.540309604024515,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.5626602172851562,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 1,
+          "mean": 0.46427595615386963,
+          "releases": 1
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.002107977867126465,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14246633648872375,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01732693240046501,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9900607466697693,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0008544921875,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9900607466697693,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0008544921875,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.004228830337524414,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14016348123550415,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01735815778374672,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9940006136894226,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0017327070236206055,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9940006136894226,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0017327070236206055,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0010523796081542969,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14362889528274536,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017310623079538345,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.987646996974945,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00042361021041870117,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.987646996974945,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00042361021041870117,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.00850975513458252,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.011222971603274345,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.018218979239463806,
+            "flight_ok": true,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.011654257774353027,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003568589687347412,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.011654257774353027,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003568589687347412,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0005258321762084961,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14421041309833527,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017303332686424255,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.986313283443451,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0002111494541168213,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.986313283443451,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0002111494541168213,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 252,
+      "accepted": false,
+      "actor_gradient": 6.13569450378418,
+      "adam_proposal_loss_slope": -0.01428229734301567,
+      "time_s": 27.420527384034358,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.5016776323318481,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 1,
+          "mean": 0.46427595615386963,
+          "releases": 1
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0021404027938842773,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14253826439380646,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017341390252113342,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9894346594810486,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0008904039859771729,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9894346594810486,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0008904039859771729,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.004294753074645996,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14034110307693481,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017386602237820625,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9930431246757507,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0018088817596435547,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9930431246757507,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0018088817596435547,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0010684728622436523,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14366605877876282,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017318513244390488,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9872884154319763,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0004412233829498291,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9872884154319763,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0004412233829498291,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.00864553451538086,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.011597946286201477,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.018505025655031204,
+            "flight_ok": true,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.011495262384414673,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003734111785888672,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.011495262384414673,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003734111785888672,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0005338191986083984,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14422719180583954,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017307069152593613,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9861089587211609,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00022035837173461914,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9861089587211609,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00022035837173461914,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 253,
+      "accepted": false,
+      "actor_gradient": 5.16879940032959,
+      "adam_proposal_loss_slope": -0.01210450753569603,
+      "time_s": 27.507546323991846,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.4820122718811035,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 1,
+          "mean": 0.4673238694667816,
+          "releases": 1
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0020121335983276367,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14261174201965332,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01740909181535244,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9890772700309753,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0007429718971252441,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9890772700309753,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0007429718971252441,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.004037022590637207,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14042429625988007,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017521945759654045,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9924256205558777,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.001506805419921875,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9924256205558777,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.001506805419921875,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0010044574737548828,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.1437021940946579,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01735117845237255,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9870967268943787,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00036850571632385254,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9870967268943787,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00036850571632385254,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.008126139640808105,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.011708150617778301,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.018876703456044197,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.010210126638412476,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0031032562255859375,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.010210126638412476,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0031032562255859375,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0005017518997192383,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14424541592597961,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017322884872555733,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.985991895198822,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00018349289894104004,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.985991895198822,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00018349289894104004,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 254,
+      "accepted": false,
+      "actor_gradient": 6.379077434539795,
+      "adam_proposal_loss_slope": -0.012744731269776821,
+      "time_s": 33.1995177679928,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.5016752481460571,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 1,
+          "mean": 0.4673238694667816,
+          "releases": 1
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.001979827880859375,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14251098036766052,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017401766031980515,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.989569365978241,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0007734894752502441,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.989569365978241,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0007734894752502441,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0039719343185424805,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14022813737392426,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017510218545794487,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.993236243724823,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0015680491924285889,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.993236243724823,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0015680491924285889,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0009882450103759766,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.1436508446931839,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017348533496260643,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9873830676078796,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0003833174705505371,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9873830676078796,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0003833174705505371,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.007993459701538086,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.011352583765983582,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01871328428387642,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.010769516229629517,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003226727247238159,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.010769516229629517,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003226727247238159,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0004937648773193359,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14421935379505157,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017321351915597916,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9861509203910828,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0001914501190185547,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9861509203910828,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0001914501190185547,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 255,
+      "accepted": false,
+      "actor_gradient": 14.148235321044922,
+      "adam_proposal_loss_slope": -0.025495357811450958,
+      "time_s": 33.51893077301793,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.4820099472999573,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 1,
+          "mean": 0.4488738775253296,
+          "releases": 1
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0019779205322265625,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14253875613212585,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01741117238998413,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.989137589931488,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0007749497890472412,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.989137589931488,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0007749497890472412,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.003968238830566406,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14028416574001312,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017527174204587936,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.992480456829071,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0015713870525360107,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.992480456829071,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0015713870525360107,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0009872913360595703,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.1436643749475479,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017351992428302765,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9871205687522888,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0003840029239654541,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9871205687522888,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0003840029239654541,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.00798654556274414,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.011473901569843292,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.018898479640483856,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.010491371154785156,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003233790397644043,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.010491371154785156,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003233790397644043,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0004932880401611328,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14422760903835297,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01732437126338482,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9860007166862488,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00019168853759765625,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9860007166862488,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00019168853759765625,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 256,
+      "accepted": false,
+      "actor_gradient": 15.0547513961792,
+      "adam_proposal_loss_slope": -0.03058512881398201,
+      "time_s": 40.088128981995396,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.5016769170761108,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 3,
+          "mean": 0.425055593252182,
+          "releases": 3
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.001997232437133789,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.1426175981760025,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017421891912817955,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9887832999229431,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0007102787494659424,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9887832999229431,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0007102787494659424,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.004007458686828613,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14043307304382324,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017549967393279076,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.991921842098236,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0014404654502868652,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.991921842098236,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0014404654502868652,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0009969472885131836,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.1437045931816101,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01735842414200306,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9869250655174255,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0003521740436553955,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9869250655174255,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0003521740436553955,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.008066892623901367,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.011679966934025288,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01908591389656067,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.009797453880310059,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0029601752758026123,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.009797453880310059,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0029601752758026123,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0004980564117431641,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.01926778443157673,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021390719339251518,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0005950331687927246,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00017577409744262695,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0005950331687927246,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00017577409744262695,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 257,
+      "accepted": false,
+      "actor_gradient": 12.008217811584473,
+      "adam_proposal_loss_slope": -0.02011706680059433,
+      "time_s": 40.294657652964815,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.482011616230011,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 1,
+          "mean": 0.4488738775253296,
+          "releases": 1
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0019555091857910156,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14248965680599213,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017408518120646477,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9892536997795105,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0007946491241455078,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9892536997795105,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0007946491241455078,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.00392305850982666,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.1401984989643097,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017522402107715607,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9926936030387878,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.001612246036529541,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9926936030387878,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.001612246036529541,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0009762048721313477,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14363917708396912,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01735125295817852,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.98718923330307,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00039386749267578125,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.98718923330307,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00039386749267578125,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.007894039154052734,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.011312808841466904,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.018830742686986923,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.010742336511611938,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003318488597869873,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.010742336511611938,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003318488597869873,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0004876852035522461,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14421428740024567,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017323341220617294,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9860579371452332,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00019630789756774902,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9860579371452332,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00019630789756774902,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 258,
+      "accepted": false,
+      "actor_gradient": 11.082343101501465,
+      "adam_proposal_loss_slope": -0.018169881775975227,
+      "time_s": 37.70580018404871,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.4820099472999573,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 2,
+          "mean": 0.5408598780632019,
+          "releases": 2
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0019496679306030273,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.017825264483690262,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021052449941635132,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0022138357162475586,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.000590592622756958,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0022138357162475586,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.000590592622756958,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0039119720458984375,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.015870336443185806,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.020576927810907364,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0045671164989471436,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0011987090110778809,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0045671164989471436,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0011987090110778809,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0009732246398925781,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.018806343898177147,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.02129686251282692,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0010910332202911377,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00029274821281433105,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0010910332202911377,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00029274821281433105,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.00787341594696045,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.012066889554262161,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.019549904391169548,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.008802175521850586,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0024617910385131836,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.008802175521850586,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0024617910385131836,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0004862546920776367,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.019296670332551003,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021421588957309723,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0005413591861724854,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00014644861221313477,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0005413591861724854,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00014644861221313477,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 259,
+      "accepted": false,
+      "actor_gradient": 12.367450714111328,
+      "adam_proposal_loss_slope": -0.01593777723610401,
+      "time_s": 40.130248344969004,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.4820099472999573,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 2,
+          "mean": 0.6622030735015869,
+          "releases": 2
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.001887679100036621,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.017906438559293747,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021074427291750908,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0020980536937713623,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.000527501106262207,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0020980536937713623,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.000527501106262207,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.003786921501159668,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.016030963510274887,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.020624015480279922,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.004312098026275635,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0010690391063690186,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.004312098026275635,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0010690391063690186,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0009423494338989258,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.018846357241272926,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021309273317456245,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0010333657264709473,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00026148557662963867,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0010333657264709473,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00026148557662963867,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.007620453834533691,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.012337248772382736,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01964036375284195,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.008196324110031128,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.002192765474319458,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.008196324110031128,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.002192765474319458,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.00047075748443603516,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.01931685581803322,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021427050232887268,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0005153417587280273,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00013113021850585938,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0005153417587280273,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00013113021850585938,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 260,
+      "accepted": false,
+      "actor_gradient": 15.298030853271484,
+      "adam_proposal_loss_slope": -0.022245977073907852,
+      "time_s": 34.897784789965954,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.5016752481460571,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 2,
+          "mean": 0.6622030735015869,
+          "releases": 2
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0019097328186035156,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.01792876049876213,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.02110559679567814,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0020439326763153076,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0005255639553070068,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0020439326763153076,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0005255639553070068,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.003831624984741211,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.016077876091003418,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.020683199167251587,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.00420534610748291,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0010657906532287598,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.00420534610748291,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0010657906532287598,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0009534358978271484,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.01885880157351494,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021322593092918396,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0010125041007995605,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0002605617046356201,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0010125041007995605,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0002605617046356201,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0077114105224609375,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.012422396801412106,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01975840888917446,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.008057385683059692,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0021874308586120605,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.008057385683059692,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0021874308586120605,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0004762411117553711,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.019323403015732765,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021434497088193893,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0005012452602386475,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00013005733489990234,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0005012452602386475,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00013005733489990234,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 261,
+      "accepted": false,
+      "actor_gradient": 12.399089813232422,
+      "adam_proposal_loss_slope": -0.01677146553993225,
+      "time_s": 36.169087241985835,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.4820099472999573,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 2,
+          "mean": 0.5408598780632019,
+          "releases": 2
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0019061565399169922,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.01787290722131729,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.02101065218448639,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.002255469560623169,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0005838871002197266,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.002255469560623169,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0005838871002197266,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.003823995590209961,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.015965264290571213,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.02049577794969082,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.00464099645614624,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0011848807334899902,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.00464099645614624,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0011848807334899902,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0009515285491943359,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.018829345703125,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021276917308568954,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0011116266250610352,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00028946995735168457,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0011116266250610352,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00028946995735168457,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0076950788497924805,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.012275097891688347,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.0193806029856205,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.008799314498901367,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.002433300018310547,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.008799314498901367,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.002433300018310547,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0004754066467285156,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.01930837333202362,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021411551162600517,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0005514919757843018,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00014531612396240234,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0005514919757843018,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00014531612396240234,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 262,
+      "accepted": false,
+      "actor_gradient": 9.307816505432129,
+      "adam_proposal_loss_slope": -0.017628392204642296,
+      "time_s": 33.46739850199083,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.4820099472999573,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 2,
+          "mean": 0.4242432713508606,
+          "releases": 2
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0020438432693481445,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.1424339860677719,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017367655411362648,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9895526766777039,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0008994638919830322,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9895526766777039,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0008994638919830322,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.004100441932678223,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.1401190161705017,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017440324649214745,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9931873679161072,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0018260478973388672,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9931873679161072,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0018260478973388672,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0010203123092651367,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14361105859279633,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01733163371682167,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9873444437980652,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00044611096382141113,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9873444437980652,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00044611096382141113,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.008251786231994629,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.011182880029082298,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.018568724393844604,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.011711031198501587,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0037659406661987305,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.011711031198501587,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0037659406661987305,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0005097389221191406,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14420142769813538,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017313148826360703,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9861196875572205,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00022226572036743164,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9861196875572205,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00022226572036743164,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 263,
+      "accepted": false,
+      "actor_gradient": 8.031042098999023,
+      "adam_proposal_loss_slope": -0.010563427582383156,
+      "time_s": 33.8423584739794,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.4820099472999573,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 2,
+          "mean": 0.5408598780632019,
+          "releases": 2
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.001927495002746582,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.017858728766441345,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021011684089899063,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0022562146186828613,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.000596851110458374,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0022562146186828613,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.000596851110458374,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0038667917251586914,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.01593732088804245,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.020496714860200882,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.00465056300163269,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0012111067771911621,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.00465056300163269,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0012111067771911621,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0009621381759643555,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.018823271617293358,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.02127338945865631,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0011144578456878662,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00029599666595458984,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0011144578456878662,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00029599666595458984,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0077811479568481445,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.01224098913371563,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01937500573694706,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.008932381868362427,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0024868547916412354,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.008932381868362427,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0024868547916412354,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.00048065185546875,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.01930646225810051,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.021413495764136314,
+            "flight_ok": true,
+            "margin_ok": true,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.0005493760108947754,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00014731287956237793,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.0005493760108947754,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00014731287956237793,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "attempt_id": 264,
+      "accepted": false,
+      "actor_gradient": 9.107702255249023,
+      "adam_proposal_loss_slope": -0.013053542003035545,
+      "time_s": 37.091915480967145,
+      "proposal_speed_risk": {
+        "low_speed": {
+          "lanes": 3,
+          "mean": 0.5016752481460571,
+          "releases": 3
+        },
+        "marginal_success": {
+          "lanes": 2,
+          "mean": 0.4242432713508606,
+          "releases": 2
+        }
+      },
+      "proposal_lanes": 32,
+      "guard_lanes": 16,
+      "disjoint_native_episodes": true,
+      "body_model_sha256": "9a99dcab303bf393da1a6c873e7c3af906c2d13d570bcd86ba788a9883f7bd78",
+      "candidates": [
+        {
+          "alpha": 0.25,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0019333362579345703,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14242054522037506,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017355546355247498,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9904825091362,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0009231865406036377,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9904825091362,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0009231865406036377,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.5,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0038775205612182617,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.1401277780532837,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.01741589605808258,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9945749640464783,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0018743574619293213,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9945749640464783,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0018743574619293213,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.125,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.0009652376174926758,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14360491931438446,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017325565218925476,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.9878751635551453,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0004579126834869385,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.9878751635551453,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.0004579126834869385,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 1.0,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.007797718048095703,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.011239958927035332,
+            "lost_release": false,
+            "lost_release_lanes": 0,
+            "legal_string_before": 8,
+            "legal_string_after": 8,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.018261417746543884,
+            "flight_ok": true,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": true
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 0.012437164783477783,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003864675760269165,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 0.012437164783477783,
+                "lost_releases": 0,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.003864675760269165,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        },
+        {
+          "alpha": 0.0625,
+          "command_budget_ok": true,
+          "executed_joint_target_change_rad": 0.00048220157623291016,
+          "toi_coverage_preserved": true,
+          "flight": {
+            "matched_lanes": 8,
+            "before": 0.019786039367318153,
+            "after": 0.14419761300086975,
+            "lost_release": true,
+            "lost_release_lanes": 1,
+            "legal_string_before": 8,
+            "legal_string_after": 7,
+            "stable_margin_lanes": 8,
+            "margin_q25_before_m": 0.021549083292484283,
+            "margin_q25_after_m": 0.017310794442892075,
+            "flight_ok": false,
+            "margin_ok": false,
+            "count_ok": true,
+            "objective_ok": false
+          },
+          "risk": {
+            "relative": {
+              "low_speed": {
+                "delta": 1.986412227153778,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00022780895233154297,
+                "lost_releases": 0,
+                "passed": false
+              }
+            },
+            "anchored": {
+              "low_speed": {
+                "delta": 1.986412227153778,
+                "lost_releases": 1,
+                "passed": false
+              },
+              "marginal_success": {
+                "delta": 0.00022780895233154297,
+                "lost_releases": 0,
+                "passed": false
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
