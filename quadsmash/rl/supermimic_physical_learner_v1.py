@@ -768,8 +768,33 @@ class PhysicalHorizonTrainer:
                                backtracking_wall_s=0.)
         if update_actor:self.actor_attempts+=1
         self._proposal_ball_targets = {}
+
+        def score_guard():
+            guard_started = time.perf_counter()
+            with torch.no_grad():
+                restore_rng()
+                anchor = self.speed_risk_anchor if protect_speed else None
+                baseline = self._rollout_objective(
+                    guard_starts, effective_weights=anchor['effective_weights'] if anchor is not None else None,
+                    collect_critic_data=False)
+                if protect_speed and anchor is None:
+                    tolerances = []
+                    for _ in range(2):
+                        restore_rng()
+                        repeated = self._rollout_objective(guard_starts, effective_weights=baseline['effective_weights'],
+                                                           collect_critic_data=False)
+                        tolerances.append(forward_tolerances(baseline, repeated))
+                    self.speed_risk_tolerances = {key: max(t[key] for t in tolerances) for key in tolerances[0]}
+                    self.speed_risk_anchor = baseline
+                    self.speed_risk_rejudge(self.speed_risk_tolerances, risk_statistics(baseline))
+            proposal_timing['guard_baseline_wall_s'] = time.perf_counter() - guard_started
+            return baseline
+
         try:
             with frozen(self.adapter,self.critic),torch.set_grad_enabled(update_actor):
+                if protect_speed and self.speed_risk_anchor is None:
+                    guard_baseline = score_guard()
+                    restore_rng()
                 objective_started = time.perf_counter()
                 rollout=self._rollout_objective(initial_state)
                 baseline_loss=float(rollout['loss'].detach())
@@ -777,25 +802,8 @@ class PhysicalHorizonTrainer:
                 proposal_timing['baseline_tracking_vjp_wall_s'] = rollout.get('tracking_vjp_wall_s', 0.)
                 proposal_timing['baseline_pooled_vjp_wall_s'] = rollout.get('pooled_vjp_wall_s', 0.)
                 if update_actor and rollout['gate_lanes']:
-                    if fast:
-                        guard_started = time.perf_counter()
-                        with torch.no_grad():
-                            restore_rng()
-                            anchor = self.speed_risk_anchor if protect_speed else None
-                            guard_baseline = self._rollout_objective(
-                                guard_starts, effective_weights=anchor['effective_weights'] if anchor is not None else None,
-                                collect_critic_data=False)
-                            if protect_speed and anchor is None:
-                                tolerances = []
-                                for _ in range(2):
-                                    restore_rng()
-                                    repeated = self._rollout_objective(guard_starts, effective_weights=guard_baseline['effective_weights'],
-                                                                       collect_critic_data=False)
-                                    tolerances.append(forward_tolerances(guard_baseline, repeated))
-                                self.speed_risk_tolerances = {key: max(t[key] for t in tolerances) for key in tolerances[0]}
-                                self.speed_risk_anchor = guard_baseline
-                                self.speed_risk_rejudge(self.speed_risk_tolerances, risk_statistics(guard_baseline))
-                        proposal_timing['guard_baseline_wall_s'] = time.perf_counter() - guard_started
+                    if fast and guard_baseline is None:
+                        guard_baseline = score_guard()
                     gradient_started = time.perf_counter()
                     diagnose = not fast or getattr(self, 'diagnose_ball_gradients', False)
                     grad_stats = (gradient_parts({k:rollout[k] for k in ('task','tracking','anchor')},parameters)

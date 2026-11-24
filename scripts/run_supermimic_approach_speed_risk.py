@@ -63,7 +63,8 @@ def main():
     boundary = read(train / 'evaluation_boundary.json')
     stage = boundary['approach_accepted']
     invocation = boundary['invocation']
-    if not 40 <= stage <= 48 or invocation['actor_updates'] != stage - 40 or invocation['world_updates'] != 0:
+    if (not 40 <= stage <= 48 or invocation['actor_updates'] != stage - 40
+            or invocation['world_updates'] != 0 or boundary['native_ticks'] != receipt['native_ticks']):
         raise ValueError('Actor-only risk block exceeded its budget or changed its prepared WM')
     if stage == 40:
         dump(status_file, dict(status='no_accepted_proposals', preparation=receipt, baseline=baseline,

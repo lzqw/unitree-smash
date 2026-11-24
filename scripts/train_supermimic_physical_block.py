@@ -2053,8 +2053,13 @@ def run(args, *, alternating=None):
                     report = rejudge_history(historical_risk, tolerances)
                     report['fixed_guard_baseline'] = anchor
                     write(args.output/'speed_risk_preflight.json', report)
-                    if not any(row['flight_failed'] for row in report['accepted_trials']):
-                        raise ValueError('Repeated-forward tolerance does not detect archived aggregate regression')
+                    rows = report['accepted_trials']
+                    regressions = sum(row['flight_failed'] for row in rows)
+                    compensated = sum(not row['flight_failed'] and row['risk_groups']['low_speed']['comparable_failed']
+                                      for row in rows)
+                    incomplete = sum(row['risk_groups']['low_speed']['incomplete'] for row in rows)
+                    if regressions < 6 or compensated < 2 or incomplete < 3:
+                        raise ValueError('Repeated-forward risk audit did not reproduce the archived evidence')
                 trainer.speed_risk_rejudge = write_risk_preflight
             trainer.actor_updates=accepted;trainer.actor_attempts=attempts
             trainer.rejected_actor_updates=progress.get('rejected',attempts-accepted)
