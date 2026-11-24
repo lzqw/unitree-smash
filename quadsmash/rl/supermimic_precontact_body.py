@@ -245,6 +245,13 @@ def body_pair_loss(world, minus, plus, launch, columns):
                 # signed agreement only where the reference is measurable.
                 measurable = native_normal_speed.abs() >= .01
                 hit_pairs = group & (hit_a > 0) & (hit_b > 0)
+                native_response = native_normal_speed[measurable]
+                predicted_response = predicted_normal_speed[measurable]
+                native_magnitude = native_response.norm()
+                predicted_magnitude = predicted_response.norm()
+                gain = float(predicted_magnitude / native_magnitude) if measurable.any() else None
+                alignment = (float((native_response @ predicted_response) / (native_magnitude * predicted_magnitude))
+                             if native_magnitude > 0 and predicted_magnitude > 0 else None)
                 normal = (b[:, 3:12] - a[:, 3:12]).reshape(-1, 3, 3)[:, :, 0]
                 native_normal = (native_b[:, 3:12] - native_a[:, 3:12]).reshape(-1, 3, 3)[:, :, 0]
                 residuals = [branch[3] for branch in reference]
@@ -252,6 +259,7 @@ def body_pair_loss(world, minus, plus, launch, columns):
                     pairs=int(group.sum()), normal_response_mae_mps=float(error[:, 0].abs().mean()),
                     normal_response_measurable=int(measurable.sum()),
                     normal_response_sign_correct=int((measurable & (native_normal_speed * predicted_normal_speed > 0)).sum()),
+                    normal_response_gain=gain, normal_response_cosine=alignment,
                     native_paired_contact_ticks=int(hit_pairs.sum()),
                     native_contact_tick_delta_mean=float((hit_b-hit_a)[hit_pairs].float().mean()) if hit_pairs.any() else None,
                     tangent_response_mae_mps=float(error[:, 1:].norm(dim=-1).mean()),
