@@ -2608,7 +2608,7 @@ def run(args, *, alternating=None):
                             write(audit, dict(trials=trials, scope='frozen real native starts, no optimizer step'))
                         starts = replay.actor_start_bank
                         offsets = range(16) if trainer.approach_speed_risk and fixed_guard_rows is None else (0,)
-                        guard_case_quotas = (dict(low_speed=4, marginal_success=4, robot_net_risk=1,
+                        guard_case_quotas = (dict(low_speed=3, marginal_success=3, robot_net_risk=1,
                                                   shuttle_net_risk=2, landing_risk=2)
                                              if args.approach_directed_risk else None)
                         last_guard_report = None

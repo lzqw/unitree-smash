@@ -435,7 +435,7 @@ class ActorStartBank:
 
         options = dict(require_labels=True, labeled_history=labeled_history, record_draw=False)
         settings = dict.fromkeys(((proposal_count, guard_count), (32, 16)))
-        proposal_risk_quotas = dict(low_speed=2, marginal_success=2) if guard_case_quotas else None
+        proposal_risk_quotas = dict(low_speed=1, marginal_success=1) if guard_case_quotas else None
         proposal_risk_shortfall = None
         for n, g in settings:
             if fixed_guard is None:
