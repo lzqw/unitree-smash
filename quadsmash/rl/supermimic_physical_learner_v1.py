@@ -887,6 +887,7 @@ class PhysicalHorizonTrainer:
                                 grad_stats['restarted_adam_proposal_loss_slope'] = proposal_slope(objective_grad)
                                 if flight_grad is not None:
                                     grad_stats['restarted_adam_proposal_flight_slope'] = proposal_slope(flight_grad)
+                            unprojected = None
                             if constraint_gradients:
                                 gradients = {
                                     key: torch.cat([values.get(id(p), torch.zeros_like(p)).flatten() for _, p in active_params])
@@ -897,6 +898,7 @@ class PhysicalHorizonTrainer:
                                 corrected, diagnostics = constrain_proposal(displacement, gradients)
                                 grad_stats['speed_risk_proposal_projection'] = diagnostics
                                 if diagnostics['applied']:
+                                    unprojected = {name: p.detach().clone() for name, p in active_params}
                                     with torch.no_grad():
                                         for (name, parameter), delta in zip(active_params, corrected.split(
                                                 [p.numel() for _, p in active_params]), strict=True):
@@ -904,9 +906,23 @@ class PhysicalHorizonTrainer:
                             proposed={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
                             proposed_opt=copy.deepcopy(self.actor_opt.state_dict())
                             step_sizes = approach_step_sizes(getattr(self, 'last_approach_alpha', None) if fast else None)
+                            line_search = [(a, 1.) for a in step_sizes]
+                            if unprojected is not None:
+                                # Bracket the raw and corrected directions at small
+                                # trust steps before making a full correction.
+                                local_steps = (.0625, .125, .25)
+                                blends = (.25, .375, .125, .50)
+                                line_search = [(a, blend) for a in local_steps for blend in blends] + line_search
                             backtracking_started = time.perf_counter()
-                            for candidate_alpha in step_sizes:
-                                candidate={k:(v+(proposed[k]-v)*candidate_alpha if k in self.trainable_names else v) for k,v in actor_before.items()}
+                            for index, (candidate_alpha, projection_fraction) in enumerate(line_search):
+                                if unprojected is not None and projection_fraction != 1.:
+                                    endpoint = dict(proposed)
+                                    for name, raw in unprojected.items():
+                                        endpoint[name] = torch.lerp(raw, proposed[name], projection_fraction)
+                                else:
+                                    endpoint = proposed
+                                candidate={k:(v+(endpoint[k]-v)*candidate_alpha if k in self.trainable_names else v)
+                                           for k,v in actor_before.items()}
                                 self.actor.load_state_dict(candidate,strict=True)
                                 with torch.no_grad():
                                     candidate_budget=self._budget_snapshot()
@@ -917,11 +933,12 @@ class PhysicalHorizonTrainer:
                                         bounded &= (native['final_normalized_command_delta']<=self.native_reference_command_budget and native['final_joint_target_delta_rad']<=self.native_reference_target_budget_rad)
                                     # Measure final executable commands on identical real states/memory.
                                     effect=self._budget_deltas(candidate_budget,before_budget)['final_joint_target_delta_rad']
-                                    if (not bounded and candidate_alpha != step_sizes[-1]
+                                    if (not bounded and index != len(line_search) - 1
                                             and all(math.isfinite(x) for deltas in report.values() for x in deltas.values())):
                                         # The fixed-command budget has already ruled out this step.
                                         # Keep the final trial scored even if every step is rejected.
-                                        trials.append(dict(alpha=candidate_alpha, budget_ok=False, budget_report=report,
+                                        trials.append(dict(alpha=candidate_alpha, projection_fraction=projection_fraction,
+                                                           budget_ok=False, budget_report=report,
                                                            final_command_change=effect, loss=None,
                                                            scoring_skipped='command_or_target_budget'))
                                         continue
@@ -942,7 +959,8 @@ class PhysicalHorizonTrainer:
                                 trial_terms = {name: float(evaluation[name]) for name in ('task','tracking','anchor')}
                                 event_counts = {k: v for k, v in evaluation['reference_coverage'].items()
                                                 if k in ('predicted_first_string_lanes','predicted_first_frame_lanes')}
-                                trials.append(dict(alpha=candidate_alpha,loss=candidate_loss,objective_terms=trial_terms,
+                                trials.append(dict(alpha=candidate_alpha,projection_fraction=projection_fraction,
+                                                   loss=candidate_loss,objective_terms=trial_terms,
                                                    first_contact_counts=event_counts,budget_ok=bool(bounded),
                                                    budget_report=report,toi_coverage_preserved=coverage_ok,final_command_change=effect))
                                 before_speed = (guard_baseline if fast else rollout).get('ball_approach_speed')
