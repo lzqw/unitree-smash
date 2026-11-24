@@ -1,0 +1,2330 @@
+{
+  "total_proposals": 11,
+  "proposals_with_logging": 11,
+  "attempts_with_risk": 11,
+  "trials_with_accepted_guard_pairs": 8,
+  "metrics": {
+    "low_speed": {
+      "proposal": {
+        "rows": 33,
+        "distinct_episodes": 3,
+        "with_native_speed": 11,
+        "median_signed_error_mps": 1.5703110318342013,
+        "predicted_missing_release": 0,
+        "speed_loss_inactive": 0,
+        "speed_loss_below_0_001": 19
+      },
+      "guard": {
+        "rows": 11,
+        "distinct_episodes": 1,
+        "with_native_speed": 11,
+        "median_signed_error_mps": 1.4649870536141796,
+        "predicted_missing_release": 0,
+        "speed_loss_inactive": 4,
+        "speed_loss_below_0_001": 3
+      }
+    },
+    "marginal_success": {
+      "proposal": {
+        "rows": 9,
+        "distinct_episodes": 5,
+        "with_native_speed": 9,
+        "median_signed_error_mps": 1.4595952918548143,
+        "predicted_missing_release": 0,
+        "speed_loss_inactive": 0,
+        "speed_loss_below_0_001": 5
+      },
+      "guard": {
+        "rows": 6,
+        "distinct_episodes": 3,
+        "with_native_speed": 6,
+        "median_signed_error_mps": 0.8448488419065692,
+        "predicted_missing_release": 0,
+        "speed_loss_inactive": 0,
+        "speed_loss_below_0_001": 2
+      }
+    }
+  },
+  "accepted_guard_speed_tradeoffs": {
+    "low_speed": {
+      "paired_starts": 8,
+      "unique_episodes": 1,
+      "modeled_speed_decreased": 8,
+      "modeled_speed_delta_median_mps": -0.011453628540039062,
+      "speed_loss_increased_with_improved_aggregate_flight": 2
+    },
+    "marginal_success": {
+      "paired_starts": 5,
+      "unique_episodes": 3,
+      "modeled_speed_decreased": 5,
+      "modeled_speed_delta_median_mps": -0.013440132141113281,
+      "speed_loss_increased_with_improved_aggregate_flight": 0
+    }
+  },
+  "attempts": [
+    {
+      "attempt": 249,
+      "update_accepted": true,
+      "proposal": [
+        {
+          "episode": [
+            15,
+            52,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 4.702691078186035,
+          "flight_cost_terms": {
+            "speed": 0.20567308366298676,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.20567308366298676,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-052",
+          "actual_speed_mps": 4.480462111934109,
+          "signed_error_mps": 0.2222289662519259
+        },
+        {
+          "episode": [
+            13,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.396954536437988,
+          "flight_cost_terms": {
+            "speed": 3.236828206354403e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 3.236828206354403e-06,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        },
+        {
+          "episode": [
+            13,
+            22,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 4.769712448120117,
+          "flight_cost_terms": {
+            "speed": 0.14941108226776123,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.14941108226776123,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        }
+      ],
+      "guard": [
+        {
+          "episode": [
+            15,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.636751651763916,
+          "flight_cost_terms": {
+            "speed": 0.0008685257635079324,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.0008685257635079324,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.028389201421221,
+          "signed_error_mps": 1.6083624503426952
+        }
+      ],
+      "accepted_guard_pairs": [
+        {
+          "before": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.636751651763916,
+            "flight_cost_terms": {
+              "speed": 0.0008685257635079324,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0008685257635079324,
+            "speed_loss_active": true,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 1.6083624503426952
+          },
+          "after": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.630868911743164,
+            "flight_cost_terms": {
+              "speed": 0.0009031603112816811,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0009031603112816811,
+            "speed_loss_active": true,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 1.6024797103219433
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.005882740020751953,
+          "flight_cost_delta": {
+            "speed": 3.4634547773748636e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          }
+        }
+      ],
+      "flight_merit": {
+        "matched_lanes": 8,
+        "before": 0.013555598445236683,
+        "after": 0.014732256531715393,
+        "lost_release": false,
+        "lost_release_lanes": 0,
+        "legal_string_before": 8,
+        "legal_string_after": 8,
+        "stable_margin_lanes": 8,
+        "margin_q25_before_m": 0.020286552608013153,
+        "margin_q25_after_m": 0.020061887800693512,
+        "flight_ok": true,
+        "margin_ok": true,
+        "count_ok": true,
+        "objective_ok": true
+      }
+    },
+    {
+      "attempt": 250,
+      "update_accepted": false,
+      "proposal": [
+        {
+          "episode": [
+            15,
+            26,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.101198673248291,
+          "flight_cost_terms": {
+            "speed": 0.01723954640328884,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.01723954640328884,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "A-720401-026",
+          "actual_speed_mps": 4.5073062471571,
+          "signed_error_mps": 0.5938924260911911
+        },
+        {
+          "episode": [
+            15,
+            52,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.259806156158447,
+          "flight_cost_terms": {
+            "speed": 8.07602464192314e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 8.07602464192314e-06,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-052",
+          "actual_speed_mps": 4.480462111934109,
+          "signed_error_mps": 1.779344044224338
+        },
+        {
+          "episode": [
+            13,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.383549213409424,
+          "flight_cost_terms": {
+            "speed": 3.5394161841395544e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 3.5394161841395544e-06,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        },
+        {
+          "episode": [
+            13,
+            22,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 4.748687744140625,
+          "flight_cost_terms": {
+            "speed": 0.16300959885120392,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.16300959885120392,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        }
+      ],
+      "guard": [
+        {
+          "episode": [
+            15,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.623226165771484,
+          "flight_cost_terms": {
+            "speed": 0.0009502209722995758,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.0009502209722995758,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.028389201421221,
+          "signed_error_mps": 1.5948369643502636
+        }
+      ],
+      "accepted_guard_pairs": [],
+      "flight_merit": null
+    },
+    {
+      "attempt": 251,
+      "update_accepted": true,
+      "proposal": [
+        {
+          "episode": [
+            16,
+            26,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.279460430145264,
+          "flight_cost_terms": {
+            "speed": 0.005465932190418243,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.005465932190418243,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "A-720401-026",
+          "actual_speed_mps": 4.736584931134202,
+          "signed_error_mps": 0.5428754990110614
+        },
+        {
+          "episode": [
+            15,
+            52,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.259806156158447,
+          "flight_cost_terms": {
+            "speed": 8.07602464192314e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 8.07602464192314e-06,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-052",
+          "actual_speed_mps": 4.480462111934109,
+          "signed_error_mps": 1.779344044224338
+        },
+        {
+          "episode": [
+            13,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.383549213409424,
+          "flight_cost_terms": {
+            "speed": 3.5394161841395544e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 3.5394161841395544e-06,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        },
+        {
+          "episode": [
+            13,
+            22,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 4.748687744140625,
+          "flight_cost_terms": {
+            "speed": 0.16300959885120392,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.16300959885120392,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        }
+      ],
+      "guard": [
+        {
+          "episode": [
+            15,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.623226165771484,
+          "flight_cost_terms": {
+            "speed": 0.0009502209722995758,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.0009502209722995758,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.028389201421221,
+          "signed_error_mps": 1.5948369643502636
+        }
+      ],
+      "accepted_guard_pairs": [
+        {
+          "before": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.623226165771484,
+            "flight_cost_terms": {
+              "speed": 0.0009502209722995758,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0009502209722995758,
+            "speed_loss_active": true,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 1.5948369643502636
+          },
+          "after": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.612154960632324,
+            "flight_cost_terms": {
+              "speed": 0.0010227605234831572,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0010227605234831572,
+            "speed_loss_active": true,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 1.5837657592111034
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.011071205139160156,
+          "flight_cost_delta": {
+            "speed": 7.253955118358135e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          }
+        }
+      ],
+      "flight_merit": {
+        "matched_lanes": 8,
+        "before": 0.02327505499124527,
+        "after": 0.02236849255859852,
+        "lost_release": false,
+        "lost_release_lanes": 0,
+        "legal_string_before": 8,
+        "legal_string_after": 8,
+        "stable_margin_lanes": 8,
+        "margin_q25_before_m": 0.0192724596709013,
+        "margin_q25_after_m": 0.01886742375791073,
+        "flight_ok": true,
+        "margin_ok": true,
+        "count_ok": true,
+        "objective_ok": true
+      }
+    },
+    {
+      "attempt": 252,
+      "update_accepted": true,
+      "proposal": [
+        {
+          "episode": [
+            15,
+            36,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.117955207824707,
+          "flight_cost_terms": {
+            "speed": 3.5217857657698914e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 3.5217857657698914e-05,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "A-720401-036",
+          "actual_speed_mps": 4.658359915969893,
+          "signed_error_mps": 1.4595952918548143
+        },
+        {
+          "episode": [
+            15,
+            52,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.241960048675537,
+          "flight_cost_terms": {
+            "speed": 9.096330359170679e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 9.096330359170679e-06,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-052",
+          "actual_speed_mps": 4.480462111934109,
+          "signed_error_mps": 1.7614979367414278
+        },
+        {
+          "episode": [
+            13,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.367588996887207,
+          "flight_cost_terms": {
+            "speed": 3.936775101465173e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 3.936775101465173e-06,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        },
+        {
+          "episode": [
+            13,
+            22,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 4.725798606872559,
+          "flight_cost_terms": {
+            "speed": 0.1785614937543869,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.1785614937543869,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        }
+      ],
+      "guard": [
+        {
+          "episode": [
+            15,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.612154960632324,
+          "flight_cost_terms": {
+            "speed": 0.0010227605234831572,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.0010227605234831572,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.028389201421221,
+          "signed_error_mps": 1.5837657592111034
+        }
+      ],
+      "accepted_guard_pairs": [
+        {
+          "before": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.612154960632324,
+            "flight_cost_terms": {
+              "speed": 0.0010227605234831572,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0010227605234831572,
+            "speed_loss_active": true,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 1.5837657592111034
+          },
+          "after": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.508805751800537,
+            "flight_cost_terms": {
+              "speed": 0.0020302042830735445,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0020302042830735445,
+            "speed_loss_active": true,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 1.4804165503793163
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.10334920883178711,
+          "flight_cost_delta": {
+            "speed": 0.0010074437595903873,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          }
+        }
+      ],
+      "flight_merit": {
+        "matched_lanes": 7,
+        "before": 0.310982346534729,
+        "after": 0.28892821073532104,
+        "lost_release": false,
+        "lost_release_lanes": 0,
+        "legal_string_before": 7,
+        "legal_string_after": 7,
+        "stable_margin_lanes": 7,
+        "margin_q25_before_m": 0.02146286517381668,
+        "margin_q25_after_m": 0.01962234452366829,
+        "flight_ok": true,
+        "margin_ok": true,
+        "count_ok": true,
+        "objective_ok": true
+      }
+    },
+    {
+      "attempt": 253,
+      "update_accepted": true,
+      "proposal": [
+        {
+          "episode": [
+            16,
+            26,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.430558681488037,
+          "flight_cost_terms": {
+            "speed": 0.0020192970987409353,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.0020192970987409353,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "A-720401-026",
+          "actual_speed_mps": 4.736584931134202,
+          "signed_error_mps": 0.6939737503538348
+        },
+        {
+          "episode": [
+            16,
+            35,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.246516704559326,
+          "flight_cost_terms": {
+            "speed": 0.006778490263968706,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.006778490263968706,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.711005532074564,
+          "signed_error_mps": 0.5355111724847621
+        },
+        {
+          "episode": [
+            15,
+            52,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.095449447631836,
+          "flight_cost_terms": {
+            "speed": 2.4156604922609404e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 2.4156604922609404e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-052",
+          "actual_speed_mps": 4.480462111934109,
+          "signed_error_mps": 1.6149873356977267
+        },
+        {
+          "episode": [
+            13,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.227403163909912,
+          "flight_cost_terms": {
+            "speed": 1.0023313734563999e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 1.0023313734563999e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        },
+        {
+          "episode": [
+            13,
+            22,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.148991107940674,
+          "flight_cost_terms": {
+            "speed": 0.019157296046614647,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.019157296046614647,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        }
+      ],
+      "guard": [
+        {
+          "episode": [
+            15,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": false,
+          "predicted_release": true,
+          "release_speed_mps": 4.899662017822266,
+          "flight_cost_terms": null,
+          "speed_loss": null,
+          "speed_loss_active": false,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.028389201421221,
+          "signed_error_mps": 0.8712728164010448
+        }
+      ],
+      "accepted_guard_pairs": [
+        {
+          "before": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": false,
+            "predicted_release": true,
+            "release_speed_mps": 4.899662017822266,
+            "flight_cost_terms": null,
+            "speed_loss": null,
+            "speed_loss_active": false,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 0.8712728164010448
+          },
+          "after": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": false,
+            "predicted_release": true,
+            "release_speed_mps": 4.887825965881348,
+            "flight_cost_terms": null,
+            "speed_loss": null,
+            "speed_loss_active": false,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 0.8594367644601268
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.011836051940917969,
+          "flight_cost_delta": null
+        }
+      ],
+      "flight_merit": {
+        "matched_lanes": 6,
+        "before": 0.43073710799217224,
+        "after": 0.4322147071361542,
+        "lost_release": false,
+        "lost_release_lanes": 0,
+        "legal_string_before": 6,
+        "legal_string_after": 6,
+        "stable_margin_lanes": 6,
+        "margin_q25_before_m": 0.03251274302601814,
+        "margin_q25_after_m": 0.03261582553386688,
+        "flight_ok": true,
+        "margin_ok": true,
+        "count_ok": true,
+        "objective_ok": true
+      }
+    },
+    {
+      "attempt": 254,
+      "update_accepted": false,
+      "proposal": [
+        {
+          "episode": [
+            15,
+            26,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.028695583343506,
+          "flight_cost_terms": {
+            "speed": 3.7695404898840934e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 3.7695404898840934e-05,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "A-720401-026",
+          "actual_speed_mps": 4.5073062471571,
+          "signed_error_mps": 1.521389336186406
+        },
+        {
+          "episode": [
+            15,
+            52,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.010564804077148,
+          "flight_cost_terms": {
+            "speed": 0.030179493129253387,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.030179493129253387,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-052",
+          "actual_speed_mps": 4.480462111934109,
+          "signed_error_mps": 0.5301026921430392
+        },
+        {
+          "episode": [
+            13,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.202308654785156,
+          "flight_cost_terms": {
+            "speed": 1.1848534086311702e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 1.1848534086311702e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        },
+        {
+          "episode": [
+            13,
+            22,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.201387882232666,
+          "flight_cost_terms": {
+            "speed": 0.013759027235209942,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.013759027235209942,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        }
+      ],
+      "guard": [
+        {
+          "episode": [
+            15,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.4933762550354,
+          "flight_cost_terms": {
+            "speed": 0.0022485158406198025,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.0022485158406198025,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.028389201421221,
+          "signed_error_mps": 1.4649870536141796
+        }
+      ],
+      "accepted_guard_pairs": [],
+      "flight_merit": null
+    },
+    {
+      "attempt": 255,
+      "update_accepted": true,
+      "proposal": [
+        {
+          "episode": [
+            15,
+            52,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.078125,
+          "flight_cost_terms": {
+            "speed": 2.711384695430752e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 2.711384695430752e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-052",
+          "actual_speed_mps": 4.480462111934109,
+          "signed_error_mps": 1.5976628880658907
+        },
+        {
+          "episode": [
+            13,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.202308654785156,
+          "flight_cost_terms": {
+            "speed": 1.1848534086311702e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 1.1848534086311702e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        },
+        {
+          "episode": [
+            16,
+            67,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.611649036407471,
+          "flight_cost_terms": {
+            "speed": 1.1899600167453173e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 1.1899600167453173e-06,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "B-720402-003",
+          "actual_speed_mps": 4.6368774282640235,
+          "signed_error_mps": 1.9747716081434472
+        },
+        {
+          "episode": [
+            13,
+            22,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.201389789581299,
+          "flight_cost_terms": {
+            "speed": 0.013758858665823936,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.013758858665823936,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        }
+      ],
+      "guard": [
+        {
+          "episode": [
+            16,
+            35,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.512176513671875,
+          "flight_cost_terms": {
+            "speed": 0.0019853878766298294,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.0019853878766298294,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.711005532074564,
+          "signed_error_mps": 0.8011709815973109
+        },
+        {
+          "episode": [
+            15,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": false,
+          "predicted_release": true,
+          "release_speed_mps": 4.887825965881348,
+          "flight_cost_terms": null,
+          "speed_loss": null,
+          "speed_loss_active": false,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.028389201421221,
+          "signed_error_mps": 0.8594367644601268
+        }
+      ],
+      "accepted_guard_pairs": [
+        {
+          "before": {
+            "episode": [
+              16,
+              35,
+              0
+            ],
+            "outcome": "success",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.512176513671875,
+            "flight_cost_terms": {
+              "speed": 0.0019853878766298294,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0019853878766298294,
+            "speed_loss_active": true,
+            "risk_group": "marginal_success",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.711005532074564,
+            "signed_error_mps": 0.8011709815973109
+          },
+          "after": {
+            "episode": [
+              16,
+              35,
+              0
+            ],
+            "outcome": "success",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.50186014175415,
+            "flight_cost_terms": {
+              "speed": 0.002125742379575968,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.002125742379575968,
+            "speed_loss_active": true,
+            "risk_group": "marginal_success",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.711005532074564,
+            "signed_error_mps": 0.7908546096795863
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.01031637191772461,
+          "flight_cost_delta": {
+            "speed": 0.00014035450294613838,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          }
+        },
+        {
+          "before": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": false,
+            "predicted_release": true,
+            "release_speed_mps": 4.887825965881348,
+            "flight_cost_terms": null,
+            "speed_loss": null,
+            "speed_loss_active": false,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 0.8594367644601268
+          },
+          "after": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": false,
+            "predicted_release": true,
+            "release_speed_mps": 4.873651027679443,
+            "flight_cost_terms": null,
+            "speed_loss": null,
+            "speed_loss_active": false,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 0.8452618262582225
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.014174938201904297,
+          "flight_cost_delta": null
+        }
+      ],
+      "flight_merit": {
+        "matched_lanes": 7,
+        "before": 0.013964531943202019,
+        "after": 0.01498725637793541,
+        "lost_release": false,
+        "lost_release_lanes": 0,
+        "legal_string_before": 7,
+        "legal_string_after": 7,
+        "stable_margin_lanes": 7,
+        "margin_q25_before_m": 0.019960876554250717,
+        "margin_q25_after_m": 0.01981661468744278,
+        "flight_ok": true,
+        "margin_ok": true,
+        "count_ok": true,
+        "objective_ok": true
+      }
+    },
+    {
+      "attempt": 256,
+      "update_accepted": true,
+      "proposal": [
+        {
+          "episode": [
+            15,
+            52,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 4.998306751251221,
+          "flight_cost_terms": {
+            "speed": 0.03248944878578186,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.03248944878578186,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-052",
+          "actual_speed_mps": 4.480462111934109,
+          "signed_error_mps": 0.5178446393171114
+        },
+        {
+          "episode": [
+            13,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.177187919616699,
+          "flight_cost_terms": {
+            "speed": 1.4008563994138967e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 1.4008563994138967e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        },
+        {
+          "episode": [
+            16,
+            67,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.585661888122559,
+          "flight_cost_terms": {
+            "speed": 1.4150482456898317e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 1.4150482456898317e-06,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "B-720402-003",
+          "actual_speed_mps": 4.6368774282640235,
+          "signed_error_mps": 1.948784459858535
+        },
+        {
+          "episode": [
+            13,
+            22,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.166235446929932,
+          "flight_cost_terms": {
+            "speed": 0.017191357910633087,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.017191357910633087,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        }
+      ],
+      "guard": [
+        {
+          "episode": [
+            15,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.479773044586182,
+          "flight_cost_terms": {
+            "speed": 0.00246021943166852,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.00246021943166852,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.028389201421221,
+          "signed_error_mps": 1.4513838431649608
+        }
+      ],
+      "accepted_guard_pairs": [
+        {
+          "before": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.479773044586182,
+            "flight_cost_terms": {
+              "speed": 0.00246021943166852,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.00246021943166852,
+            "speed_loss_active": true,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 1.4513838431649608
+          },
+          "after": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.46689510345459,
+            "flight_cost_terms": {
+              "speed": 0.00267881085164845,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.00267881085164845,
+            "speed_loss_active": true,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 1.438505902033369
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.012877941131591797,
+          "flight_cost_delta": {
+            "speed": 0.00021859141997992992,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          }
+        }
+      ],
+      "flight_merit": {
+        "matched_lanes": 10,
+        "before": 0.05298915132880211,
+        "after": 0.05383376032114029,
+        "lost_release": false,
+        "lost_release_lanes": 0,
+        "legal_string_before": 10,
+        "legal_string_after": 10,
+        "stable_margin_lanes": 10,
+        "margin_q25_before_m": 0.02482348494231701,
+        "margin_q25_after_m": 0.024563046172261238,
+        "flight_ok": true,
+        "margin_ok": true,
+        "count_ok": true,
+        "objective_ok": true
+      }
+    },
+    {
+      "attempt": 257,
+      "update_accepted": false,
+      "proposal": [
+        {
+          "episode": [
+            15,
+            52,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.0507731437683105,
+          "flight_cost_terms": {
+            "speed": 3.253680552006699e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 3.253680552006699e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-052",
+          "actual_speed_mps": 4.480462111934109,
+          "signed_error_mps": 1.5703110318342013
+        },
+        {
+          "episode": [
+            13,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.151713848114014,
+          "flight_cost_terms": {
+            "speed": 1.6601394236204214e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 1.6601394236204214e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        },
+        {
+          "episode": [
+            16,
+            67,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.559017658233643,
+          "flight_cost_terms": {
+            "speed": 1.690110593699501e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 1.690110593699501e-06,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "B-720402-003",
+          "actual_speed_mps": 4.6368774282640235,
+          "signed_error_mps": 1.922140229969619
+        },
+        {
+          "episode": [
+            13,
+            22,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.238590240478516,
+          "flight_cost_terms": {
+            "speed": 0.010843098163604736,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.010843098163604736,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        }
+      ],
+      "guard": [
+        {
+          "episode": [
+            15,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": false,
+          "predicted_release": true,
+          "release_speed_mps": 4.861927509307861,
+          "flight_cost_terms": null,
+          "speed_loss": null,
+          "speed_loss_active": false,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.028389201421221,
+          "signed_error_mps": 0.8335383078866405
+        },
+        {
+          "episode": [
+            16,
+            26,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.5814337730407715,
+          "flight_cost_terms": {
+            "speed": 0.0011393631575629115,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.0011393631575629115,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "A-720401-026",
+          "actual_speed_mps": 4.736584931134202,
+          "signed_error_mps": 0.8448488419065692
+        }
+      ],
+      "accepted_guard_pairs": [],
+      "flight_merit": null
+    },
+    {
+      "attempt": 258,
+      "update_accepted": true,
+      "proposal": [
+        {
+          "episode": [
+            15,
+            52,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.0507731437683105,
+          "flight_cost_terms": {
+            "speed": 3.253680552006699e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 3.253680552006699e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-052",
+          "actual_speed_mps": 4.480462111934109,
+          "signed_error_mps": 1.5703110318342013
+        },
+        {
+          "episode": [
+            13,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.151713848114014,
+          "flight_cost_terms": {
+            "speed": 1.6601394236204214e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 1.6601394236204214e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        },
+        {
+          "episode": [
+            13,
+            22,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.238590240478516,
+          "flight_cost_terms": {
+            "speed": 0.010843098163604736,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.010843098163604736,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        }
+      ],
+      "guard": [
+        {
+          "episode": [
+            15,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": false,
+          "predicted_release": true,
+          "release_speed_mps": 4.861927509307861,
+          "flight_cost_terms": null,
+          "speed_loss": null,
+          "speed_loss_active": false,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.028389201421221,
+          "signed_error_mps": 0.8335383078866405
+        },
+        {
+          "episode": [
+            16,
+            67,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.559021472930908,
+          "flight_cost_terms": {
+            "speed": 1.6900671653274912e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 1.6900671653274912e-06,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "B-720402-003",
+          "actual_speed_mps": 4.6368774282640235,
+          "signed_error_mps": 1.9221440446668847
+        },
+        {
+          "episode": [
+            16,
+            26,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.5814337730407715,
+          "flight_cost_terms": {
+            "speed": 0.0011393631575629115,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.0011393631575629115,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "A-720401-026",
+          "actual_speed_mps": 4.736584931134202,
+          "signed_error_mps": 0.8448488419065692
+        }
+      ],
+      "accepted_guard_pairs": [
+        {
+          "before": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": false,
+            "predicted_release": true,
+            "release_speed_mps": 4.861927509307861,
+            "flight_cost_terms": null,
+            "speed_loss": null,
+            "speed_loss_active": false,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 0.8335383078866405
+          },
+          "after": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": false,
+            "predicted_release": true,
+            "release_speed_mps": 4.8519287109375,
+            "flight_cost_terms": null,
+            "speed_loss": null,
+            "speed_loss_active": false,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 0.8235395095162792
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.009998798370361328,
+          "flight_cost_delta": null
+        },
+        {
+          "before": {
+            "episode": [
+              16,
+              67,
+              0
+            ],
+            "outcome": "success",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 6.559021472930908,
+            "flight_cost_terms": {
+              "speed": 1.6900671653274912e-06,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 1.6900671653274912e-06,
+            "speed_loss_active": true,
+            "risk_group": "marginal_success",
+            "case_id": "B-720402-003",
+            "actual_speed_mps": 4.6368774282640235,
+            "signed_error_mps": 1.9221440446668847
+          },
+          "after": {
+            "episode": [
+              16,
+              67,
+              0
+            ],
+            "outcome": "success",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 6.5328497886657715,
+            "flight_cost_terms": {
+              "speed": 2.012232471315656e-06,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 2.012232471315656e-06,
+            "speed_loss_active": true,
+            "risk_group": "marginal_success",
+            "case_id": "B-720402-003",
+            "actual_speed_mps": 4.6368774282640235,
+            "signed_error_mps": 1.895972360401748
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.02617168426513672,
+          "flight_cost_delta": {
+            "speed": 3.221653059881646e-07,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          }
+        },
+        {
+          "before": {
+            "episode": [
+              16,
+              26,
+              0
+            ],
+            "outcome": "success",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.5814337730407715,
+            "flight_cost_terms": {
+              "speed": 0.0011393631575629115,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0011393631575629115,
+            "speed_loss_active": true,
+            "risk_group": "marginal_success",
+            "case_id": "A-720401-026",
+            "actual_speed_mps": 4.736584931134202,
+            "signed_error_mps": 0.8448488419065692
+          },
+          "after": {
+            "episode": [
+              16,
+              26,
+              0
+            ],
+            "outcome": "success",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.565598964691162,
+            "flight_cost_terms": {
+              "speed": 0.0012656847247853875,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0012656847247853875,
+            "speed_loss_active": true,
+            "risk_group": "marginal_success",
+            "case_id": "A-720401-026",
+            "actual_speed_mps": 4.736584931134202,
+            "signed_error_mps": 0.8290140335569598
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.015834808349609375,
+          "flight_cost_delta": {
+            "speed": 0.000126321567222476,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          }
+        }
+      ],
+      "flight_merit": {
+        "matched_lanes": 10,
+        "before": 0.06151346117258072,
+        "after": 0.062277328222990036,
+        "lost_release": false,
+        "lost_release_lanes": 0,
+        "legal_string_before": 10,
+        "legal_string_after": 10,
+        "stable_margin_lanes": 10,
+        "margin_q25_before_m": 0.017694195732474327,
+        "margin_q25_after_m": 0.017910093069076538,
+        "flight_ok": true,
+        "margin_ok": true,
+        "count_ok": true,
+        "objective_ok": true
+      }
+    },
+    {
+      "attempt": 259,
+      "update_accepted": true,
+      "proposal": [
+        {
+          "episode": [
+            15,
+            52,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.040616035461426,
+          "flight_cost_terms": {
+            "speed": 3.481603562249802e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 3.481603562249802e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-052",
+          "actual_speed_mps": 4.480462111934109,
+          "signed_error_mps": 1.5601539235273165
+        },
+        {
+          "episode": [
+            13,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.136562824249268,
+          "flight_cost_terms": {
+            "speed": 1.8365763025940396e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 1.8365763025940396e-05,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        },
+        {
+          "episode": [
+            13,
+            22,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.208566188812256,
+          "flight_cost_terms": {
+            "speed": 0.01314343512058258,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.01314343512058258,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": null,
+          "actual_speed_mps": null,
+          "signed_error_mps": null
+        }
+      ],
+      "guard": [
+        {
+          "episode": [
+            15,
+            35,
+            0
+          ],
+          "outcome": "low_speed",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.520110607147217,
+          "flight_cost_terms": {
+            "speed": 0.0018837410025298595,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.0018837410025298595,
+          "speed_loss_active": true,
+          "risk_group": "low_speed",
+          "case_id": "A-720401-035",
+          "actual_speed_mps": 4.028389201421221,
+          "signed_error_mps": 1.491721405725996
+        },
+        {
+          "episode": [
+            16,
+            67,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 6.5328497886657715,
+          "flight_cost_terms": {
+            "speed": 2.012232471315656e-06,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 2.012232471315656e-06,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "B-720402-003",
+          "actual_speed_mps": 4.6368774282640235,
+          "signed_error_mps": 1.895972360401748
+        },
+        {
+          "episode": [
+            16,
+            26,
+            0
+          ],
+          "outcome": "success",
+          "predicted_legal_strings": true,
+          "predicted_release": true,
+          "release_speed_mps": 5.565598964691162,
+          "flight_cost_terms": {
+            "speed": 0.0012656847247853875,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          },
+          "speed_loss": 0.0012656847247853875,
+          "speed_loss_active": true,
+          "risk_group": "marginal_success",
+          "case_id": "A-720401-026",
+          "actual_speed_mps": 4.736584931134202,
+          "signed_error_mps": 0.8290140335569598
+        }
+      ],
+      "accepted_guard_pairs": [
+        {
+          "before": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.520110607147217,
+            "flight_cost_terms": {
+              "speed": 0.0018837410025298595,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0018837410025298595,
+            "speed_loss_active": true,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 1.491721405725996
+          },
+          "after": {
+            "episode": [
+              15,
+              35,
+              0
+            ],
+            "outcome": "low_speed",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.516519546508789,
+            "flight_cost_terms": {
+              "speed": 0.0019290907075628638,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0019290907075628638,
+            "speed_loss_active": true,
+            "risk_group": "low_speed",
+            "case_id": "A-720401-035",
+            "actual_speed_mps": 4.028389201421221,
+            "signed_error_mps": 1.4881303450875683
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.0035910606384277344,
+          "flight_cost_delta": {
+            "speed": 4.5349705033004284e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          }
+        },
+        {
+          "before": {
+            "episode": [
+              16,
+              67,
+              0
+            ],
+            "outcome": "success",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 6.5328497886657715,
+            "flight_cost_terms": {
+              "speed": 2.012232471315656e-06,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 2.012232471315656e-06,
+            "speed_loss_active": true,
+            "risk_group": "marginal_success",
+            "case_id": "B-720402-003",
+            "actual_speed_mps": 4.6368774282640235,
+            "signed_error_mps": 1.895972360401748
+          },
+          "after": {
+            "episode": [
+              16,
+              67,
+              0
+            ],
+            "outcome": "success",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 6.519409656524658,
+            "flight_cost_terms": {
+              "speed": 2.2008546238794224e-06,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 2.2008546238794224e-06,
+            "speed_loss_active": true,
+            "risk_group": "marginal_success",
+            "case_id": "B-720402-003",
+            "actual_speed_mps": 4.6368774282640235,
+            "signed_error_mps": 1.8825322282606347
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.013440132141113281,
+          "flight_cost_delta": {
+            "speed": 1.8862215256376658e-07,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          }
+        },
+        {
+          "before": {
+            "episode": [
+              16,
+              26,
+              0
+            ],
+            "outcome": "success",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.565598964691162,
+            "flight_cost_terms": {
+              "speed": 0.0012656847247853875,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.0012656847247853875,
+            "speed_loss_active": true,
+            "risk_group": "marginal_success",
+            "case_id": "A-720401-026",
+            "actual_speed_mps": 4.736584931134202,
+            "signed_error_mps": 0.8290140335569598
+          },
+          "after": {
+            "episode": [
+              16,
+              26,
+              0
+            ],
+            "outcome": "success",
+            "predicted_legal_strings": true,
+            "predicted_release": true,
+            "release_speed_mps": 5.557229995727539,
+            "flight_cost_terms": {
+              "speed": 0.001337981317192316,
+              "direction": 0.0,
+              "net": 0.0,
+              "landing": 0.0
+            },
+            "speed_loss": 0.001337981317192316,
+            "speed_loss_active": true,
+            "risk_group": "marginal_success",
+            "case_id": "A-720401-026",
+            "actual_speed_mps": 4.736584931134202,
+            "signed_error_mps": 0.8206450645933367
+          },
+          "lost_release": false,
+          "speed_delta_mps": -0.008368968963623047,
+          "flight_cost_delta": {
+            "speed": 7.229659240692854e-05,
+            "direction": 0.0,
+            "net": 0.0,
+            "landing": 0.0
+          }
+        }
+      ],
+      "flight_merit": {
+        "matched_lanes": 10,
+        "before": 0.035599756985902786,
+        "after": 0.036613598465919495,
+        "lost_release": false,
+        "lost_release_lanes": 0,
+        "legal_string_before": 10,
+        "legal_string_after": 10,
+        "stable_margin_lanes": 10,
+        "margin_q25_before_m": 0.033827945590019226,
+        "margin_q25_after_m": 0.033495426177978516,
+        "flight_ok": true,
+        "margin_ok": true,
+        "count_ok": true,
+        "objective_ok": true
+      }
+    }
+  ],
+  "label_source": {
+    "resolved_episodes": 78,
+    "legacy_checkpoints_without_labels": [
+      "approach_A016.pt"
+    ]
+  }
+}

@@ -70,9 +70,24 @@ def audit_history(history, labels):
     groups = ('low_speed', 'marginal_success')
     metrics = {group: {part: summarize([case for row in attempts for case in row[part] if case['risk_group'] == group])
                        for part in ('proposal', 'guard')} for group in groups}
+    accepted_pairs = [(pair, row['flight_merit']) for row in attempts for pair in row['accepted_guard_pairs']]
+    risk_tradeoffs = {}
+    for group in groups:
+        paired = [(pair, merit) for pair, merit in accepted_pairs if pair['before']['risk_group'] == group]
+        speed_changes = [pair['speed_delta_mps'] for pair, _ in paired if pair['speed_delta_mps'] is not None]
+        risk_tradeoffs[group] = dict(
+            paired_starts=len(paired), unique_episodes=len({tuple(pair['before']['episode']) for pair, _ in paired}),
+            modeled_speed_decreased=sum(change < 0 for change in speed_changes),
+            modeled_speed_delta_median_mps=median(speed_changes) if speed_changes else None,
+            speed_loss_increased_with_improved_aggregate_flight=sum(
+                pair['flight_cost_delta'] is not None and pair['flight_cost_delta']['speed'] > 0
+                and merit is not None and merit.get('after') is not None and merit['after'] < merit['before']
+                for pair, merit in paired),
+        )
     return dict(total_proposals=total_proposals, proposals_with_logging=proposals_with_logging,
                 attempts_with_risk=len(attempts), trials_with_accepted_guard_pairs=sum(
-        bool(row['accepted_guard_pairs']) for row in attempts), metrics=metrics, attempts=attempts)
+        bool(row['accepted_guard_pairs']) for row in attempts), metrics=metrics,
+                accepted_guard_speed_tradeoffs=risk_tradeoffs, attempts=attempts)
 
 
 def main():
@@ -83,12 +98,20 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     labels = {}
+    legacy_checkpoints = []
     for path in args.checkpoint:
         state = torch.load(path, map_location='cpu', mmap=True, weights_only=False)
-        labels.update((tuple(key), label) for key, (_, label) in state['actor_start_bank']['resolved_events'].items())
+        events = state['actor_start_bank'].get('resolved_events')
+        if events is None:
+            legacy_checkpoints.append(str(path))
+        else:
+            labels.update((tuple(key), label) for key, (_, label) in events.items())
         del state
+    if not labels:
+        parser.error('None of the supplied checkpoints contains resolved native episode labels')
     with args.history.open() as stream:
         result = audit_history(map(json.loads, stream), labels)
+    result['label_source'] = dict(resolved_episodes=len(labels), legacy_checkpoints_without_labels=legacy_checkpoints)
     dump(args.output, result)
 
 
