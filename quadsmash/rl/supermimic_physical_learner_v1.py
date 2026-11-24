@@ -793,9 +793,6 @@ class PhysicalHorizonTrainer:
 
     @torch.no_grad()
     def _native_gate_candidates(self, before, endpoint, before_budget, references, starts, stop):
-        from .supermimic_compact_starts import merge_physical_starts
-        from .supermimic_robot_net_clearance import check_robot_net_clearance
-
         if stop is not None and stop():
             return False, 0., before_budget, []
         self.actor.load_state_dict(endpoint, strict=True)
@@ -832,37 +829,13 @@ class PhysicalHorizonTrainer:
                 self._native_gate_target_rms = max(2.5e-5, target_rms * .5)
             return False, 0., before_budget, trials
 
-        group_count = len(candidates) + 1
         states = [before, *(candidate for candidate, _, _ in candidates)]
-        prefix = 'actor.approach.'
-        expected_layers = ('Linear', 'ELU', 'Linear', 'ELU', 'Linear')
-        layers = tuple(getattr(module, 'original_name', type(module).__name__)
-                       for module in self.actor.actor.approach.children())
-        if layers != expected_layers:
-            raise ValueError(f'Unsupported exported Approach head for candidate batching: {layers}')
-        self._approach_candidate_parameters = {
-            key[len(prefix):]: torch.stack([state[key] for state in states])
-            for key in before if key.startswith(prefix)}
-        try:
-            scores = [self._rollout_objective(merge_physical_starts(
-                                                  [start.branch() for _ in states], pack_execution=True),
-                                              collect_critic_data=False, coarse_guard=True)
-                      for start in starts]
-        finally:
-            self._approach_candidate_parameters = None
-        string, clearance, complete = [
-            torch.cat([score[key].reshape(group_count, -1) for score in scores], dim=1)
-            for key in ('string', 'clearance', 'complete')]
+        string, clearance, complete = self._coarse_approach_scores(states, starts)
         winner = None
         for i, (candidate, budget, trial) in enumerate(candidates, 1):
-            net_ok, net = check_robot_net_clearance(clearance[0], clearance[i])
-            net_ok = net_ok and bool(clearance[0].isfinite().all())
-            contacts_ok = bool(string[i].sum() >= string[0].sum())
-            complete_ok = bool((complete[i] | ~complete[0]).all())
-            trial.update(string_before=int(string[0].sum()), string_after=int(string[i].sum()),
-                         string_ok=contacts_ok, robot_net_ok=net_ok, robot_net=net,
-                         tail_coverage_ok=complete_ok, batched_guard_lanes=string.numel())
-            if winner is None and contacts_ok and net_ok and complete_ok:
+            check = self._coarse_approach_check(string, clearance, complete, i)
+            trial.update(check)
+            if winner is None and check['passed']:
                 winner = candidate, budget, trial
         if winner is None:
             self._native_gate_target_rms = max(2.5e-5, target_rms * .5)
@@ -873,6 +846,75 @@ class PhysicalHorizonTrainer:
             self._native_gate_target_rms = max(2.5e-5, target_rms * .5)
         self.actor.load_state_dict(candidate, strict=True)
         return True, trial['alpha'], budget, trials
+
+    @torch.no_grad()
+    def _coarse_approach_scores(self, states, starts):
+        from .supermimic_compact_starts import merge_physical_starts
+
+        group_count = len(states)
+        prefix = 'actor.approach.'
+        expected_layers = ('Linear', 'ELU', 'Linear', 'ELU', 'Linear')
+        layers = tuple(getattr(module, 'original_name', type(module).__name__)
+                       for module in self.actor.actor.approach.children())
+        if layers != expected_layers:
+            raise ValueError(f'Unsupported exported Approach head for candidate batching: {layers}')
+        self._approach_candidate_parameters = {
+            key[len(prefix):]: torch.stack([state[key] for state in states])
+            for key in states[0] if key.startswith(prefix)}
+        try:
+            scores = [self._rollout_objective(merge_physical_starts(
+                                                  [start.branch() for _ in states], pack_execution=True),
+                                              collect_critic_data=False, coarse_guard=True)
+                      for start in starts]
+        finally:
+            self._approach_candidate_parameters = None
+        return tuple(
+            torch.cat([score[key].reshape(group_count, -1) for score in scores], dim=1)
+            for key in ('string', 'clearance', 'complete'))
+
+    @staticmethod
+    def _coarse_approach_check(string, clearance, complete, index):
+        from .supermimic_robot_net_clearance import check_robot_net_clearance
+
+        net_ok, net = check_robot_net_clearance(clearance[0], clearance[index])
+        net_ok = net_ok and bool(clearance[0].isfinite().all())
+        contacts_ok = bool(string[index].sum() >= string[0].sum())
+        complete_ok = bool((complete[index] | ~complete[0]).all())
+        return dict(passed=contacts_ok and net_ok and complete_ok,
+                    string_before=int(string[0].sum()), string_after=int(string[index].sum()),
+                    string_ok=contacts_ok, robot_net_ok=net_ok, robot_net=net,
+                    tail_coverage_ok=complete_ok, batched_guard_lanes=string.numel())
+
+    @torch.no_grad()
+    def screen_native_arm_offsets(self, offsets, starts):
+        from .supermimic_native_approach_search import actor_with_bias
+
+        anchor = {name: value.detach().clone() for name, value in self.actor.state_dict().items()}
+        anchor_budget = self._budget_snapshot()
+        candidates = [actor_with_bias(anchor, offset) for offset in offsets]
+        reports = []
+        screened = []
+        try:
+            for index, candidate in enumerate(candidates):
+                self.actor.load_state_dict(candidate, strict=True)
+                budget = self._budget_snapshot()
+                delta = self._budget_deltas(budget, anchor_budget)
+                bounded = (delta['final_normalized_command_delta'] <= self.command_delta_budget
+                           and delta['final_joint_target_delta_rad'] <= self.target_delta_budget_rad)
+                if not index and not bounded:
+                    raise ValueError('The native incumbent exceeds the frozen A40 action budget')
+                reports.append(dict(offset=offsets[index], budget_ok=bounded, budget=delta, passed=not index))
+                if index and bounded:
+                    screened.append(index)
+            self.actor.load_state_dict(candidates[0], strict=True)
+            for first in range(0, len(screened), 3):
+                indices = screened[first:first + 3]
+                scores = self._coarse_approach_scores([candidates[0], *(candidates[i] for i in indices)], starts)
+                for lane, index in enumerate(indices, 1):
+                    reports[index].update(self._coarse_approach_check(*scores, lane))
+        finally:
+            self.actor.load_state_dict(anchor, strict=True)
+        return reports
 
     def imagine_update(self,initial_state,*,update_actor=True,guard_starts=None,stop_proposal=None):
         from .supermimic_approach_data_v1 import (

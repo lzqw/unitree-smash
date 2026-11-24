@@ -274,6 +274,8 @@ def main():
                         help='Archived risk receipt for the fixed-guard speed-risk pilot on a prepared block')
     parser.add_argument('--approach-native-gate-updates', type=int, choices=(2, 3, 4),
                         help='Pause a prepared Approach block after this many coarse-screened updates for native evaluation')
+    parser.add_argument('--approach-native-search-screen', action='store_true',
+                        help='Serve frozen-model candidate coarse checks in the output directory, without optimization')
     parser.add_argument('--approach-resident-eval-wait-seconds', type=int, default=0,
                         help='Opt in to waiting for a matched native decision at intermediate Approach boundaries')
     parser.add_argument('--approach-resident-coverage-baseline', type=Path,
@@ -453,6 +455,9 @@ def main():
         parser.error('Supply the risk history when resuming the prepared block')
     if args.approach_native_gate_updates and not (args.approach_directed_risk and args.approach_speed_risk_history):
         parser.error('Native gate requires directed Approach training from a prepared block')
+    if args.approach_native_search_screen and (args.approach_native_gate_updates
+            or not args.approach_directed_risk or not args.approach_speed_risk_history):
+        parser.error('Native search screening requires a prepared directed block and does not train')
     if args.approach_profile_collection_only and (not args.approach_prepare_only
             or args.approach_reuse_collected or args.native_ticks_per_actor_update < 1):
         parser.error('Collection profiling requires preparation mode with a positive live collection')
@@ -1629,7 +1634,7 @@ def run(args, *, alternating=None):
         config['approach_event_body_refresh'] = args.approach_event_body_refresh
         config['approach_speed_risk_history_sha256'] = file_sha(args.approach_speed_risk_history)
         trainer.approach_speed_risk = bool(args.approach_speed_risk_history)
-        trainer.approach_native_gate = bool(args.approach_native_gate_updates)
+        trainer.approach_native_gate = bool(args.approach_native_gate_updates or args.approach_native_search_screen)
         config['approach_native_gate_updates'] = args.approach_native_gate_updates
         metadata=dict(wm_action_collections=action_collections,policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
@@ -2498,7 +2503,7 @@ def run(args, *, alternating=None):
                 if use_prepared and attempts == 0:
                     world_stats = prepared_resume['world_stats']
                     prepared_used = True
-                    if trainer.approach_native_gate:
+                    if args.approach_native_gate_updates:
                         from quadsmash.rl.supermimic_release_calibration import calibrate_release_speed
                         calibration = calibrate_release_speed(
                             adapter, replay, launch, excluded_lanes=wm_holdout_lanes,
@@ -2750,6 +2755,32 @@ def run(args, *, alternating=None):
                         if trainer.approach_speed_risk:
                             trainer.fixed_speed_risk_guard = guard_start
                     start_sampling['guard']['packed_rollout_lane_counts'] = [len(s.physical) for s in guard_start]
+                if args.approach_native_search_screen:
+                    from quadsmash.rl.supermimic_native_approach_search import validate_offsets
+
+                    def serve_native_bias_screen():
+                        shape = dict(actor_sha256=tensor_digest(actor.state_dict().items()),
+                                     world_sha256=tensor_digest(adapter.state_dict().items()),
+                                     guard_lanes=sum(len(row.physical) for row in guard_start))
+                        torch.cuda.empty_cache()
+                        write(args.output/'screen_ready.json', shape)
+                        serial = 1
+                        while not (args.output/'screen_stop').exists():
+                            check_stop()
+                            path = args.output/f'screen_request_{serial:03d}.json'
+                            if not path.exists():
+                                time.sleep(.25)
+                                continue
+                            offsets = validate_offsets(json.loads(path.read_text())['offsets'])
+                            t0 = time.monotonic()
+                            results = trainer.screen_native_arm_offsets(offsets, guard_start)
+                            torch.cuda.empty_cache()
+                            write(args.output/f'screen_result_{serial:03d}.json', dict(
+                                candidates=results, seconds=time.monotonic()-t0, **shape))
+                            serial += 1
+
+                    serve_native_bias_screen()
+                    raise ApproachStageFinished
                 if research:
                     retained=global_accepted_id-research_origin
                     trainer.contact_aux_weight=(args.research_contact_weight if not args.approach_ball_only and block_name=='approach'

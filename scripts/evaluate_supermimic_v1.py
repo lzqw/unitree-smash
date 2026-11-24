@@ -63,6 +63,8 @@ def main():
                         help='Evaluate one stage-end batch of the declared independent 512 cases')
     panels.add_argument('--approach-quick64', action='store_true',
                         help='Score 64 registered training-side cases for block monitoring')
+    panels.add_argument('--approach-search-spec', type=Path,
+                        help='Score two to four bounded arm-bias variants in paired PhysX lanes')
     parser.add_argument('--approach-reset-probe', action='store_true',
                         help='Compare 64 continuation ticks with a scene restart on eight training cases')
     parser.add_argument('--approach-sensitivity', type=float, default=0.,
@@ -75,6 +77,10 @@ def main():
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus','candidate'),default=None)
     args = parser.parse_args()
+    if args.approach_search_spec and (not args.checkpoint or not args.approach_ball_only or not args.headless
+            or args.native_action_probe_spec or args.record_physical_transitions or args.shutdown_diagnostic_ticks
+            or args.diagnostic_grounded_miss):
+        parser.error('Native Approach search requires the frozen headless ball-only protocol')
     if not 0. <= args.approach_sensitivity <= 1e-3 or (args.approach_sensitivity and not args.approach_quick64):
         parser.error('Use a relative perturbation in [0, 0.001] on TRAIN64 only')
     if args.approach_prefix_checkpoint and (not args.approach_quick64 or args.approach_reset_probe
@@ -217,6 +223,14 @@ def _run_native(args, stop_request):
         if args.relaxed_survival_diagnostic and scoring_protocol['relaxed_scoring'] is None:
             raise ValueError('Post-success survival requires relaxed scoring')
         capture_contract = contract
+        search_spec = None
+        if args.approach_search_spec:
+            from quadsmash.rl.supermimic_native_approach_search import candidate_layout, validate_offsets
+            search_spec = json.loads(args.approach_search_spec.read_text())
+            offsets = validate_offsets(search_spec['offsets'], maximum=4)
+            cases = candidate_layout(cases, search_spec['case_indices'], offsets)
+            capture_contract = dict(contract, approach_native_search=dict(
+                case_indices=search_spec['case_indices'], offsets=offsets))
         if args.independent_panel_batch is not None:
             from quadsmash.rl.supermimic_independent_panel import panel_batch
             cases, panel_identity = panel_batch(args.independent_panel_batch, contract['protocol_sha256'], args.seed)
@@ -293,6 +307,14 @@ def _run_native(args, stop_request):
             execution_provenance = 'explicit early-arm zero-update baseline'
         if policy_execution.get('arm_preparation_seconds') is not None:
             actor.configure_approach_gate(policy_execution['arm_preparation_seconds'])
+        search_bias = None
+        if search_spec is not None:
+            if policy_execution['recovery_gate'] != POSTHIT:
+                raise ValueError('Native arm search requires the declared causal Approach controller')
+            search_bias = torch.zeros((lanes, 18), device=env.device)
+            offsets = search_bias.new_tensor(search_spec['offsets'])
+            search_bias[:, -6:] = offsets.repeat_interleave(32, dim=0)
+            search_bias = search_bias * actor.actor.approach_scale
         if args.diagnostic_grounded_miss:
             if policy_execution != execution_contract(POSTHIT):
                 raise ValueError('Grounded-miss comparison requires a post-hit checkpoint')
@@ -405,7 +427,12 @@ def _run_native(args, stop_request):
                 before = obs['policy'] if reference is None and probe_capture is None else obs['policy'].clone()
                 old_target = None
                 active_actor = prefix_actor if prefix_actor is not None and tick < args.approach_prefix_tick else actor
-                action = policy_forward(active_actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
+                if search_bias is None:
+                    action = policy_forward(active_actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
+                else:
+                    latch = recovery_gate(env.rally, before)
+                    action = (actor._gated_distribution(before, latch).loc
+                              + actor.approach_action_gate(before) * search_bias).clamp(-1., 1.)
                 if args.approach_reset_probe and tick == 235:
                     restart = NativeApproachRestart.capture(env)
                 if env.approach_ball_termination is not None:
@@ -528,7 +555,7 @@ def _run_native(args, stop_request):
             return
         if len(first) != lanes:
             raise RuntimeError(f'Only {len(first)}/{lanes} pre-reset records; no live-state backfill permitted')
-        if args.approach_quick64 or args.research_fixed128 or args.independent_panel_batch is not None:
+        if search_spec is not None or args.approach_quick64 or args.research_fixed128 or args.independent_panel_batch is not None:
             if any(first[i]['case_id'] != cases[i]['case_id'] for i in range(lanes)):
                 raise ValueError('Terminal case differs from the declared lane assignment')
         rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(lanes)]
@@ -580,6 +607,35 @@ def _run_native(args, stop_request):
             metrics.update(task_contract=capture_contract, evaluation_scope='fixed train64 Approach quick-check')
         actor_state_after=tensor_digest(actor.state_dict().items())
         if actor_state_after!=actor_state_before:raise RuntimeError('Frozen evaluation mutated actor weights')
+        if search_spec is not None:
+            from quadsmash.physics.full_racket_v4 import string_polygon
+            from quadsmash.rl.supermimic_native_approach_search import native_fitness
+            from quadsmash.tasks.stand.observation_contract import inverse_rotate
+
+            polygon = torch.tensor(string_polygon(env.racket_config))
+            edge = polygon.roll(-1, 0) - polygon
+            inward = torch.nn.functional.normalize(torch.stack((-edge[:, 1], edge[:, 0]), -1), dim=-1)
+            boundary = (polygon * inward).sum(-1)
+
+            def signed_margin(motion):
+                if not all(k in motion for k in ('point_m', 'racket_center_m', 'racket_quaternion_w')):
+                    return None
+                local = inverse_rotate(polygon.new_tensor([motion['racket_quaternion_w']]),
+                                       polygon.new_tensor([motion['point_m']]) - polygon.new_tensor([motion['racket_center_m']]))
+                return float((local[0, 1:] @ inward.T - boundary).min()) if local.isfinite().all() else None
+
+            raw = {row['env_id']: row for row in env.rally_records if row['episode_index'] == 0}
+            expected = [cases[i]['case_id'] for i in range(32)]
+            variants = []
+            for branch, bias in enumerate(search_spec['offsets']):
+                group = [raw[i] for i in range(branch * 32, (branch + 1) * 32)]
+                if [row['case_id'] for row in group] != expected:
+                    raise ValueError('Unpaired native search outcomes')
+                variants.append(dict(offset=bias, **native_fitness(group, env.court_config, signed_margin)))
+            write_json(args.output/'approach_search_results.json', dict(
+                offsets=search_spec['offsets'], case_indices=search_spec['case_indices'],
+                actor_sha256=actor_state_after, checkpoint_sha256=checkpoint_sha256, variants=variants,
+                elapsed_s=metrics['elapsed_s'], native_lanes=lanes))
         head_active_lane_steps = dict(zip(("recovery", "approach"), head_counts.tolist()))
         metrics.update(actor_state_sha256=actor_state_after,actor_parameters_unchanged=True,
             optimizer_updates=dict(actor=0,world=0,critic=0),head_active_lane_steps=head_active_lane_steps)
