@@ -71,10 +71,14 @@ def main():
                                                   for row in compared.values()),
                             baseline_success=sum(row['baseline']['ball_side_complete_except_recovery']
                                                  for row in compared.values()))
-    timing = json.loads((args.collection/'status.json').read_text())
-    for report, label in zip(result.values(), result, strict=True):
-        report['wall_seconds_by_branch'] = {t['branch']: t['elapsed_s'] for t in timing['completed']
-                                            if t['spec'] == label}
+    for name, report in result.items():
+        timing = {}
+        for branch in receipt['spec_branches'][name]:
+            file = args.collection / name / branch / 'shutdown_diagnostic.json'
+            completed = json.loads(file.read_text())
+            timing[branch] = dict(control_ticks=completed['control_ticks'],
+                                  native_loop_wall_seconds=completed['elapsed_s'])
+        report['native_timing_by_branch'] = timing
     args.output.write_text(json.dumps(dict(receipt=receipt, groups=result), indent=2, allow_nan=False)+'\n')
     for report in result.values():
         fits = report['body_response']['fit']['response_by_horizon']
