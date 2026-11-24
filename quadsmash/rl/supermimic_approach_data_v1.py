@@ -247,12 +247,18 @@ def approach_guard_merit(before, after, *, flight_tolerance=.002):
     margin_ok = not n_margin or new_q25 >= old_q25 - .003
     count_ok = candidate_count + allowed_losses >= count
     objective_ok = float(after['loss']) < float(before['loss'])
-    return bool(flight_ok and margin_ok and count_ok and objective_ok), dict(
+    net_ok, net_report = True, None
+    if before.get('robot_net_clearance_by_lane') is not None:
+        from .supermimic_robot_net_clearance import check_robot_net_clearance
+        net_ok, net_report = check_robot_net_clearance(before['robot_net_clearance_by_lane'],
+                                                        after['robot_net_clearance_by_lane'])
+    return bool(flight_ok and margin_ok and count_ok and objective_ok and net_ok), dict(
         matched_lanes=n_release, before=old_flight, after=new_flight,
         lost_release=bool(lost.any()), lost_release_lanes=int(lost.sum()),
         legal_string_before=count, legal_string_after=candidate_count,
         stable_margin_lanes=n_margin, margin_q25_before_m=old_q25, margin_q25_after_m=new_q25,
-        flight_ok=bool(flight_ok), margin_ok=bool(margin_ok), count_ok=count_ok, objective_ok=objective_ok)
+        flight_ok=bool(flight_ok), margin_ok=bool(margin_ok), count_ok=count_ok, objective_ok=objective_ok,
+        robot_net_ok=net_ok, robot_net=net_report)
 
 
 def approach_step_sizes(previous):

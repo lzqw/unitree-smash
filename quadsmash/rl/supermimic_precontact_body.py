@@ -123,6 +123,11 @@ def native_pair_groups(minus, plus, columns, *, threshold=4.5, margin=.25):
     def flags(window, name):
         return window['next_values'][..., columns['rally/' + name]].squeeze(-1) > .5
 
+    if 'terminal_response_group' in minus or 'terminal_response_group' in plus:
+        if 'terminal_response_group' not in minus or 'terminal_response_group' not in plus:
+            raise ValueError('Signed branches must share the terminal-label contract')
+        return torch.minimum(minus['terminal_response_group'][0], plus['terminal_response_group'][0])
+
     classifications = []
     for window in (minus, plus):
         outgoing = columns['rally/outgoing_velocity']

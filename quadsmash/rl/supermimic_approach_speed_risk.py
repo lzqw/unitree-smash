@@ -121,6 +121,8 @@ def proposal_risk_objectives(rollout):
     flight = rollout.get('guard_flight_cost_by_lane')
     if flight is not None and released.any():
         terms['flight'] = flight[released].mean()
+    if rollout.get('robot_net_loss') is not None:
+        terms['robot_net'] = rollout['robot_net_loss']
     return terms
 
 

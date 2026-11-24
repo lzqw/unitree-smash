@@ -180,7 +180,8 @@ def measured_body_pairs(replay, launch, *, offset, limit=4):
         if not valid.any():
             continue
         selected = torch.tensor(lanes)[valid]
-        windows = [{name: branch[name][:available, valid].to(launch.device) for name in fields}
+        windows = [{name: branch[name][:available, valid].to(launch.device)
+                    for name in (*fields, 'terminal_response_group') if name in branch}
                    for branch in (minus, plus)]
         pairs.append((*windows, launch[selected.to(launch.device)]))
         if len(pairs) == limit:

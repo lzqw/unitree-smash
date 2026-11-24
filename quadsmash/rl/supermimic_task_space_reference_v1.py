@@ -210,8 +210,14 @@ class TaskSpaceReferenceBankV1:
             tensors = [torch.as_tensor(motion[name], device=device, dtype=torch.float32) for name in required]
             center, linear, normal, angular, ball, incoming = tensors
             target = torch.cat((center - ball, linear, normal, angular))
+            contact = center.new_tensor(motion['point_m'])
+            face = center.new_tensor(motion.get('incoming_oriented_face_normal', motion['face_normal']))
+            face = torch.nn.functional.normalize(face, dim=-1)
+            touch = linear + torch.linalg.cross(angular, contact - center)
+            face_speed = ((touch - incoming) * face).sum()
             arrival = terminal['contact_time_s']
-            if not target.isfinite().all() or not incoming.isfinite().all() or not math.isfinite(arrival):
+            if (not target.isfinite().all() or not incoming.isfinite().all()
+                    or not torch.isfinite(face_speed) or not math.isfinite(arrival)):
                 continue
             states, times = [], []
             for frame in frames:
@@ -227,6 +233,8 @@ class TaskSpaceReferenceBankV1:
                                 features=task_space_features(states, geometry, 'approach'), times=times,
                                 choices=torch.arange(len(times), device=device), anchor_time=arrival,
                                 toi_time=arrival, toi_racket=target, incoming_velocity=incoming,
+                                measured_face_speed_mps=face_speed, measured_face_normal=face,
+                                measured_touch_offset=contact-ball,
                                 outgoing_velocity=flight.get('outgoing_velocity_mps'), landing_position=landing,
                                 contact_position=motion['point_m'], source_sha256=event_source,
                                 policy_id=f'{stream}:{frames[-1]["policy_version"]}', digest=digest,
@@ -276,9 +284,21 @@ class TaskSpaceReferenceBankV1:
         anchor_time=anchor_table[chosen]
         anchor_index=(time_table[chosen]-anchor_time[:,None]).abs().argmin(-1)
         anchor_features=feature_table[chosen,anchor_index]
-        toi_data = {'toi_racket':torch.stack([e['toi_racket'].to(current) for e in candidates])[chosen],
-                    'measured_interior_success':torch.tensor(
-                        ['landing_position' in e for e in candidates], device=current.device)[chosen]} if require_toi else {}
+        toi_data = {}
+        if require_toi:
+            toi_data = dict(toi_racket=torch.stack([e['toi_racket'].to(current) for e in candidates])[chosen],
+                measured_interior_success=torch.tensor(
+                    ['landing_position' in e for e in candidates], device=current.device)[chosen])
+            available = [e for e in candidates if 'measured_face_speed_mps' in e]
+            if available:
+                def lookup(name, default):
+                    return torch.stack([torch.as_tensor(e.get(name, default)).to(current) for e in candidates])[chosen]
+
+                toi_data['measured_face_target'] = dict(
+                    speed=lookup('measured_face_speed_mps', float('nan')),
+                    normal=lookup('measured_face_normal', [1., 0., 0.]),
+                    touch_offset=lookup('measured_touch_offset', [0., 0., 0.]),
+                    incoming=lookup('incoming_velocity', [0., 0., 0.]))
         return dict(**toi_data,reference_digests=[e['digest'] for e in candidates],indices=chosen,matched=torch.isfinite(best)&(best<=self.match_distance_threshold),
                     times=time_table[chosen],features=feature_table[chosen],lengths=sizes[chosen],
                     distance=best,offset=aligned-elapsed.detach().reshape(-1),

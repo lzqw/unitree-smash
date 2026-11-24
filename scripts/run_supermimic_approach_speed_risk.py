@@ -20,6 +20,8 @@ def main():
     parser.add_argument('--prepared', type=Path, help='Reuse an existing verified prepared block')
     parser.add_argument('--reuse-collected', type=Path, help='Recover preparation without repeating completed native collection')
     parser.add_argument('--prepare-only', action='store_true')
+    parser.add_argument('--directed-collection', type=Path)
+    parser.add_argument('--directed-validation-lane', action='append', type=int, default=[])
     args = parser.parse_args()
     source, output = args.source.resolve(strict=True), args.output.resolve()
     execution = registered_options(read(args.registration)['command'], ('g07-execution-root',))[1]
@@ -34,9 +36,15 @@ def main():
     status_file = output / 'status.json'
 
     def command(checkpoint, directory):
-        return train_command(registered, checkpoint, directory, True, stop_at=48, fresh=False,
+        result = train_command(registered, checkpoint, directory, True, stop_at=48, fresh=False,
                              prioritize_flight=True, start_lanes=32, guard_lanes=16, e1_v2=True,
                              labeled_start_checkpoint=args.history_checkpoint, labeled_snapshot_reserve=8)
+        if args.directed_collection:
+            result.extend(('--approach-directed-risk', '--wm-action-collection',
+                           str(args.directed_collection.resolve(strict=True))))
+            for lane in args.directed_validation_lane:
+                result.extend(('--approach-directed-validation-lane', str(lane)))
+        return result
 
     started = perf_counter()
     if args.prepared:

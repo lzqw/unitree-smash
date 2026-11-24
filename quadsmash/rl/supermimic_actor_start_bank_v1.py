@@ -62,6 +62,12 @@ def verified_labeled_start_history(older, resumed):
     return tuple(entry for entry in bank['entries'] if entry.get('ball_outcomes'))
 
 
+class ApproachStartShortfall(RuntimeError):
+    def __init__(self, report):
+        super().__init__('Need 32 proposal starts and 16 distinct guard cases on separate original lanes')
+        self.report = report
+
+
 class ActorStartBank:
     schema='causal-full-executor-start-bank-v1'
     def __init__(self,capacity=32,seed=20261117,*,ball_phase=False,label_reserve=0,excluded_lanes=(),
@@ -231,7 +237,8 @@ class ActorStartBank:
 
     def sample_ball_phase(self, eligible_lanes, attempt, *, fallback=(), count=16,
                           shuffle_unlabeled=False, labeled_history=(), excluded_episodes=(),
-                          require_labels=False, record_draw=True, reserve_for_proposal=0):
+                          require_labels=False, record_draw=True, reserve_for_proposal=0,
+                          distinct_cases=False, excluded_cases=(), risk_quotas=None):
         """Draw distinct episode starts with proportionate outcome and time quotas."""
         if not 1 <= count <= 128:
             raise ValueError('Ball-phase start count must be in [1,128]')
@@ -262,6 +269,7 @@ class ActorStartBank:
         timing = tuple(name for name, quota in time_quotas.items() for _ in range(quota))
         timing = timing[attempt % len(timing):] + timing[:attempt % len(timing)]
         seen, selected = set(), {}
+        seen_cases, excluded_cases = set(), set(excluded_cases)
         excluded_episodes = set(excluded_episodes)
         actual = {name: 0 for name in (*BALL_START_QUOTAS, 'unlabeled')}
         times = dict(early=0, middle=0, late=0, unknown=0)
@@ -272,6 +280,34 @@ class ActorStartBank:
         def episode_identity(start, lane):
             return (int(start.get('stream_id', start.get('_native_stream', 0))),
                     int(start.get('_lane_id', lane)), int(start['before']['episode_index'][lane]))
+
+        def case_identity(start, lane):
+            # Original128 stores the same declared launch in a lane across
+            # native streams. This is deliberately stricter than episode ID.
+            return episode_identity(start, lane)[1]
+
+        def risk_class(row):
+            start, lane, outcome, _ = row
+            key = episode_identity(start, lane)
+            label = self.resolved.get(key, (None, {}))[1]
+            speed = label.get('outgoing_speed_mps')
+            risks = set()
+            if outcome == 'low_speed':
+                risks.add('low_speed')
+            if outcome == 'success' and speed is not None and 4.5 <= speed < 4.75:
+                risks.add('marginal_success')
+            flight = label.get('native_flight') or {}
+            net = flight.get('net_margin_m')
+            if label.get('robot_net_fault'):
+                risks.add('robot_net_risk')
+            if flight.get('shuttle_net_contact') or (net is not None and 0 <= net <= .08):
+                risks.add('shuttle_net_risk')
+            landing = flight.get('first_landing_m')
+            edge = (landing is not None and len(landing) == 3
+                    and min(abs(landing[0] - 2.), abs(landing[0] - 4.), abs(abs(landing[1]) - 1.)) <= .15)
+            if (outcome == 'flight_failure' and flight.get('crossed_net')) or edge:
+                risks.add('landing_risk')
+            return risks
 
         outcome_caps = {}
         if reserve_for_proposal:
@@ -297,6 +333,8 @@ class ActorStartBank:
                 remaining = [row for row in candidates
                              if episode_identity(row[0], row[1]) not in seen
                              and episode_identity(row[0], row[1]) not in excluded_episodes
+                             and case_identity(row[0], row[1]) not in excluded_cases
+                             and (not distinct_cases or case_identity(row[0], row[1]) not in seen_cases)
                              and actual[row[2]] < outcome_caps.get(row[2], count)]
                 if not remaining:
                     return
@@ -305,6 +343,7 @@ class ActorStartBank:
                 before = start['before']
                 key = episode_identity(start, lane)
                 seen.add(key)
+                seen_cases.add(case_identity(start, lane))
                 if id(start) not in selected:
                     mask = torch.zeros(len(before['episode_index']), dtype=torch.bool)
                     selected[id(start)] = (dict(start, _actor_lane_mask=mask), [])
@@ -316,14 +355,30 @@ class ActorStartBank:
                 actual[outcome] += 1
                 times[time_group(lead)] += 1
 
+        risk_actual = {}
+        if risk_quotas:
+            all_labeled = [row for group in groups.values() for row in group]
+            stratified = {label: [row for row in all_labeled if label in risk_class(row)] for label in risk_quotas}
+            for label, quota in risk_quotas.items():
+                covered = {case_identity(row[0], row[1]) for row in stratified[label]
+                           if episode_identity(row[0], row[1]) in seen}
+                take(stratified[label], max(0, min(quota - len(covered), count - len(seen))))
+            risk_actual = {label: len({case_identity(row[0], row[1]) for row in rows
+                                      if episode_identity(row[0], row[1]) in seen})
+                           for label, rows in stratified.items()}
         for name, quota in outcome_quotas.items():
-            take(groups[name], quota)
+            take(groups[name], max(0, min(quota - actual[name], count - len(seen))))
         take([row for group in groups.values() for row in group] + ([] if require_labels else unlabeled),
              len(timing) - len(seen))
         report = dict(requested_by_outcome=outcome_quotas, actual_by_outcome=actual,
                       outcome_shortfall={name:max(0, quota-actual[name]) for name,quota in outcome_quotas.items()},
                       lead_time_counts=times, effective_lanes=len(seen), missing_episodes=len(timing)-len(seen),
-                      records=[dict(lane_episode_tick=details) for _, details in selected.values()])
+                      records=[dict(lane_episode_tick=details) for _, details in selected.values()],
+                      unique_original_cases=sorted(seen_cases), protected_case_quota=risk_quotas or {},
+                      protected_case_count=risk_actual,
+                      protected_case_pool_support=({
+                          label: len({case_identity(row[0], row[1]) for row in rows})
+                          for label, rows in stratified.items()} if risk_quotas else {}))
         if shuffle_unlabeled:
             report['unlabeled_pool_episodes'] = len(unlabeled)
         if reserve_for_proposal:
@@ -333,7 +388,7 @@ class ActorStartBank:
         return [row for row, _ in selected.values()], report
 
     def sample_proposal_and_guard(self, eligible_lanes, attempt, proposal_count, guard_count, *, labeled_history=(),
-                                  fixed_guard=None, record_draw=True):
+                                  fixed_guard=None, record_draw=True, guard_case_quotas=None):
         cache = {}
         def eligible(start):
             if id(start) not in cache:
@@ -345,22 +400,28 @@ class ActorStartBank:
         for n, g in settings:
             if fixed_guard is None:
                 guard, guard_report = self.sample_ball_phase(
-                    eligible, attempt, count=g, reserve_for_proposal=n, **options)
+                    eligible, attempt, count=g, reserve_for_proposal=0 if guard_case_quotas else n,
+                    distinct_cases=bool(guard_case_quotas), risk_quotas=guard_case_quotas, **options)
             else:
                 guard, guard_report = fixed_guard
             if guard_report['effective_lanes'] != g:
                 continue
             forbidden = {(stream, lane, episode) for record in guard_report['records']
                          for lane, episode, _, _, _, stream in record['lane_episode_tick']}
+            cases = guard_report['unique_original_cases'] if guard_case_quotas else ()
             proposal, report = self.sample_ball_phase(
-                eligible, attempt + g, count=n, excluded_episodes=forbidden, **options)
+                eligible, attempt + g, count=n, excluded_episodes=forbidden, excluded_cases=cases, **options)
             if report['effective_lanes'] != n:
                 continue
             report.update(guard=guard_report, disjoint_native_episodes=True,
+                          shared_original_cases=sorted(set(report['unique_original_cases'])
+                                                       & set(guard_report['unique_original_cases'])),
                           requested_proposal_lanes=proposal_count, requested_guard_lanes=guard_count)
             if record_draw:
                 self.sampling_history.append(report)
             return proposal, guard, report
+        if guard_case_quotas:
+            raise ApproachStartShortfall(guard_report)
         raise RuntimeError('Need at least 48 eligible labeled native episodes for disjoint Approach v2 batches')
 
     def sample(self, attempt, *, eligible_lanes=None, interleaved=False):

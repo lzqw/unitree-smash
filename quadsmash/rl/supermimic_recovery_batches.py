@@ -232,7 +232,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
     terms={k:[] for k in ('task','tracking','anchor')}
     ball_scored, ball_speeds, ball_metrics, ball_derivatives = [], [], {}, {}
     ball_costs, flight_priority, string_margins = [], [], []
-    speed_risks, guard_flight_costs = [], []
+    speed_risks, guard_flight_costs, net_clearances, net_losses = [], [], [], []
     outcome_audit = []
     counts={};covered={};weights=[];returns=[];data=[];usage={};by_record=[]
     tracking_vjp_wall_s = pooled_vjp_wall_s = 0.
@@ -276,6 +276,9 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         if row.get('speed_risk_by_lane') is not None:
             speed_risks.append(row['speed_risk_by_lane'])
             guard_flight_costs.append(row['guard_flight_cost_by_lane'])
+        if row.get('robot_net_clearance_by_lane') is not None:
+            net_clearances.append(row['robot_net_clearance_by_lane'])
+            net_losses.append(row['robot_net_loss'] * n)
         if row.get('string_margin_by_lane') is not None:
             string_margins.append(row['string_margin_by_lane'])
         if row.get('flight_priority_loss') is not None:
@@ -365,6 +368,8 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
                 flight_priority_loss=sum(flight_priority)/n if flight_priority else None,
                 speed_risk_by_lane=speed_risk,
                 guard_flight_cost_by_lane=torch.cat(guard_flight_costs) if guard_flight_costs else None,
+                robot_net_clearance_by_lane=torch.cat(net_clearances) if net_clearances else None,
+                robot_net_loss=sum(net_losses) / n if net_losses else None,
                 flight_losses={key: sum(values)/n for key,values in ball_derivatives.items()} | risk_losses,
                 tracking_vjp_wall_s=tracking_vjp_wall_s,pooled_vjp_wall_s=pooled_vjp_wall_s,
                 loss=loss,ret=ret if ret.numel() else loss.detach().reshape(1),

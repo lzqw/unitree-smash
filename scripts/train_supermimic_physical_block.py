@@ -264,6 +264,10 @@ def main():
                         help='Profile one fresh bounded native collection and stop before WM or Actor updates')
     parser.add_argument('--approach-reuse-collected', type=Path,
                         help='Replay a complete, identity-matched native cold collection during preparation')
+    parser.add_argument('--approach-directed-validation-lane', action='append', type=int, default=[],
+                        help='Original training case reserved from fitting the new signed intervention pair')
+    parser.add_argument('--approach-directed-risk', action='store_true',
+                        help='Use distinct training cases for the Approach guard and protect physical net clearance')
     parser.add_argument('--approach-speed-risk-history', type=Path,
                         help='Archived risk receipt for the fixed-guard speed-risk pilot on a prepared block')
     parser.add_argument('--approach-resident-eval-wait-seconds', type=int, default=0,
@@ -436,6 +440,9 @@ def main():
             or args.approach_body_overlay or args.resume_wm_replay or args.approach_resident_eval_wait_seconds
             or args.toi_effective_start_lanes != 32 or args.approach_guard_start_lanes != 16):
         parser.error('Prepared Approach stages require a bounded E1 v2 continuation with the 32+16 contract')
+    if args.approach_directed_risk and (not args.e1_v2_approach_scale or not args.approach_ball_only
+            or not (args.approach_prepare_only or args.approach_speed_risk_history)):
+        parser.error('Directed risk requires a prepared, bounded Approach-only block')
     if args.approach_prepare_only and args.approach_speed_risk_history:
         parser.error('Supply the risk history when resuming the prepared block')
     if args.approach_profile_collection_only and (not args.approach_prepare_only
@@ -736,7 +743,9 @@ def run(args, *, alternating=None):
         action_collections = []
         used_branches = set()
         for path in args.wm_action_collection:
-            receipt = import_training_collection(replay,path,manifest['task_contract'],physical_data_execution,wm_holdout_lanes)
+            receipt = import_training_collection(replay, path, manifest['task_contract'], physical_data_execution,
+                                                wm_holdout_lanes,
+                                                directed_validation_lanes=args.approach_directed_validation_lane)
             branches = {h for group in receipt['spec_branches'].values() for h in group.values()}
             if used_branches & branches:
                 raise ValueError('Duplicate native action-identification data')
@@ -1352,6 +1361,19 @@ def run(args, *, alternating=None):
         if env is None:
             phase = 'ENV'
             env, wrapper, obs = start_native_env()
+        if args.approach_directed_risk:
+            from quadsmash.rl.supermimic_robot_net_clearance import net_proxy_geometry
+            trainer.approach_net_proxy = net_proxy_geometry(env, adapter.physical_model.geometry)
+            from quadsmash.rl.supermimic_training_probe_replay import directed_start_events
+            from quadsmash.rl.supermimic_actor_start_bank_v1 import ball_start_outcome
+            bank = replay.actor_start_bank
+            for receipt in action_collections:
+                if not receipt.get('terminal_labeled_collection'):
+                    continue
+                for entry, terminal in directed_start_events(receipt['path'], receipt):
+                    for lane, label in terminal.items():
+                        key = (entry['stream'], lane, label['episode_index'])
+                        bank.resolved.setdefault(key, ((entry,), dict(label, failure_category=ball_start_outcome(label))))
         if args.resume_training:
             # Environment seeding must not overwrite the resumed learner RNG.
             torch.set_rng_state(resumed['torch_rng'].cpu());torch.cuda.set_rng_state(resumed['cuda_rng'].cpu())
@@ -2535,7 +2557,10 @@ def run(args, *, alternating=None):
                         allowed = training_start_mask(start, wm_holdout_lanes).cpu()
                         if 'arm_identification_episode' in start:
                             allowed &= ~start['arm_identification_episode'].cpu().reshape(-1)
-                        return allowed & precontact & early_approach_start(observation, activity).cpu()
+                        eligible = early_approach_start(observation, activity).cpu()
+                        if start.get('_directed_training_prefix'):
+                            eligible |= start['before']['physical']['ball_present'].reshape(-1).bool().cpu()
+                        return allowed & precontact & eligible
                     draw = schedule.head_attempts('approach')
                     if args.e1_v2_approach_scale:
                         audit = args.output/'approach_v2_throughput.json'
@@ -2571,21 +2596,36 @@ def run(args, *, alternating=None):
                             write(audit, dict(trials=trials, scope='frozen real native starts, no optimizer step'))
                         starts = replay.actor_start_bank
                         offsets = range(16) if trainer.approach_speed_risk and fixed_guard_rows is None else (0,)
+                        guard_case_quotas = (dict(low_speed=4, marginal_success=4, robot_net_risk=1,
+                                                  shuttle_net_risk=2, landing_risk=2)
+                                             if args.approach_directed_risk else None)
+                        last_guard_report = None
+                        from quadsmash.rl.supermimic_actor_start_bank_v1 import ApproachStartShortfall
                         for offset in offsets:
-                            proposal_rows, guard_rows, start_sampling = starts.sample_proposal_and_guard(
-                                ball_start_lanes, draw + offset, args.toi_effective_start_lanes, args.approach_guard_start_lanes,
-                                labeled_history=labeled_approach_history, fixed_guard=fixed_guard_rows,
-                                record_draw=not trainer.approach_speed_risk)
+                            try:
+                                proposal_rows, guard_rows, start_sampling = starts.sample_proposal_and_guard(
+                                    ball_start_lanes, draw + offset, args.toi_effective_start_lanes,
+                                    args.approach_guard_start_lanes, labeled_history=labeled_approach_history,
+                                    fixed_guard=fixed_guard_rows, record_draw=not trainer.approach_speed_risk,
+                                    guard_case_quotas=guard_case_quotas)
+                            except ApproachStartShortfall as error:
+                                last_guard_report = error.report
+                                continue
+                            last_guard_report = start_sampling['guard']
                             if not trainer.approach_speed_risk or fixed_guard_rows is not None:
                                 break
                             groups = {code for row in guard_rows
                                       for code in training_state(row, compact=True).clock_goal_context['approach_diagnostic'][:, -1].tolist()}
-                            if {1, 3} <= groups:
+                            actual = last_guard_report['protected_case_count']
+                            coverage_ok = not guard_case_quotas or all(actual.get(key, 0) >= quota
+                                                                        for key, quota in guard_case_quotas.items())
+                            if {1, 3} <= groups and coverage_ok:
                                 fixed_guard_rows = guard_rows, start_sampling['guard']
                                 write(args.output/'fixed_speed_risk_guard_starts.json', start_sampling['guard'])
                                 break
                         else:
-                            raise ValueError('Fixed guard lacks both low-speed and marginal-success native episodes')
+                            write(args.output/'directed_guard_shortfall.json', last_guard_report)
+                            raise ValueError('Fixed guard lacks required distinct native risk cases')
                         if trainer.approach_speed_risk:
                             starts.sampling_history.append(start_sampling)
                     else:

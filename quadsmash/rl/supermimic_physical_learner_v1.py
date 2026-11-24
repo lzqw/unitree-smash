@@ -307,6 +307,11 @@ class PhysicalHorizonTrainer:
             closest_approach = state.physical.new_full((len(selected),), 2.)
             impact_lead = torch.zeros_like(after_release)
             approach_speed = state.physical.new_full((len(selected),), torch.nan)
+        net_proxy = getattr(self, 'approach_net_proxy', None) if ball_protocol is not None else None
+        net_clearance = None
+        if net_proxy is not None:
+            from .supermimic_robot_net_clearance import robot_net_clearance, robot_net_cost
+            net_clearance = state.physical.new_full((len(selected),), torch.inf)
         if first_geometry:
             swing_started = torch.zeros_like(selected)
             first_string = torch.zeros_like(selected)
@@ -375,10 +380,13 @@ class PhysicalHorizonTrainer:
         approach_v2 = getattr(self, 'approach_v2', False) and ball_protocol is not None
         margin_m = .012 if approach_v2 else .005
         if ball_protocol is not None:
+            followthrough_ticks = ball_protocol['minimum_followthrough_ticks']
+            if net_proxy is not None:
+                followthrough_ticks = max(followthrough_ticks, 12)
             from .supermimic_toi_racket_objective import approach_horizon
             planned_steps = approach_horizon(reference, selected, state.clock_goal_context['elapsed'],
                                              maximum=cfg.imagination_steps, dt=cfg.control_dt_s,
-                                             followthrough_ticks=ball_protocol['minimum_followthrough_ticks'])
+                                             followthrough_ticks=followthrough_ticks)
         for tick in range(cfg.imagination_steps):
             active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7
             if not active.any():break
@@ -423,6 +431,9 @@ class PhysicalHorizonTrainer:
             if ball_protocol is not None:
                 gradient_options.update(detach_ball=False, ball_input_grad=True, return_geometry=True)
             state,reward,done,transition=self.adapter(state,action,**gradient_options)
+            if net_proxy is not None:
+                clearance = robot_net_clearance(transition['next_geometry'], net_proxy, self.research_court)
+                net_clearance = torch.where(usable, torch.minimum(net_clearance, clearance), net_clearance)
             if revised and self.block_name == 'recovery':
                 # Train on post-landing correction while the Critic keeps its original return target.
                 old_tilt = 2 * previous.physical[:, 4:6].square().sum(-1)
@@ -509,7 +520,7 @@ class PhysicalHorizonTrainer:
                 pending = (events['followthrough_crossed'].reshape(-1) > .5) & (
                     events['followthrough_finished'].reshape(-1) <= .5)
                 resolved = resolved | (usable & released & ~pending
-                    & (after_release >= ball_protocol['minimum_followthrough_ticks']))
+                    & (after_release >= followthrough_ticks))
             if reference is not None:
                 if toi_only:
                     fixed_weights = None
@@ -551,6 +562,7 @@ class PhysicalHorizonTrainer:
         flight_cost_by_lane = None
         flight_priority_loss = None
         guard_flight_cost = None
+        net_loss = None
         scored = None
         speed_risk = None
         outcome_audit = []
@@ -564,6 +576,10 @@ class PhysicalHorizonTrainer:
             denominator = weights.sum().clamp_min(1.)
             # Unresolved starts keep continuous pre-contact geometry supervision.
             task_loss = (closest_approach * (~impacted) * weights).sum() / denominator
+            if net_clearance is not None:
+                net_clearance = torch.where(selected & net_clearance.isfinite(), net_clearance, torch.nan)
+                net_loss = (robot_net_cost(net_clearance.nan_to_num(nan=1.)) * weights).sum() / denominator
+                task_loss = task_loss + .2 * net_loss
             if getattr(self, 'prioritize_approach_flight', False):
                 flight_cost_by_lane = ret.new_full(ret.shape, torch.nan)
             if getattr(self, 'approach_speed_risk', False):
@@ -700,6 +716,7 @@ class PhysicalHorizonTrainer:
             coverage.update(newly_landed_lanes=int(added.any(0).sum()), newly_landed_lane_steps=int(added.sum()))
         return dict(**aux_stats, **flight_metrics, outcome_audit=outcome_audit, ball_scored=scored, flight_losses=flight_losses,
                     speed_risk_by_lane=speed_risk, guard_flight_cost_by_lane=guard_flight_cost,
+                    robot_net_clearance_by_lane=net_clearance, robot_net_loss=net_loss,
                     flight_cost_by_lane=flight_cost_by_lane, flight_priority_loss=flight_priority_loss,
                     string_margin_by_lane=(first_margin.masked_fill(~(first_string & weights.bool()), torch.nan)
                                            if ball_protocol is not None and first_geometry else None),
@@ -979,6 +996,13 @@ class PhysicalHorizonTrainer:
                                         anchor_ok, anchored = compare_risk(self.speed_risk_anchor, evaluation, tol['risk'])
                                         trials[-1]['speed_risk_guard'] = dict(relative=relative, anchored=anchored)
                                         merit_ok = merit_ok and relative_ok and anchor_ok
+                                        if self.speed_risk_anchor.get('robot_net_clearance_by_lane') is not None:
+                                            from .supermimic_robot_net_clearance import check_robot_net_clearance
+                                            net_anchor_ok, net_anchor = check_robot_net_clearance(
+                                                self.speed_risk_anchor['robot_net_clearance_by_lane'],
+                                                evaluation['robot_net_clearance_by_lane'])
+                                            flight_report['robot_net_block_anchor'] = net_anchor
+                                            merit_ok = merit_ok and net_anchor_ok
                                     else:
                                         merit_ok, flight_report = approach_guard_merit(guard_baseline, evaluation)
                                     trials[-1]['baseline_release_flight'] = flight_report

@@ -126,3 +126,24 @@ def test_extended_probe_spec_declares_actual_recorded_boundaries(steps):
     assert spec['tick'] - spec['action_tick'] + 1 == steps
     recorder = TrainingWindowRecorder([4, 77], steps)
     assert recorder.steps == steps
+
+
+def test_delayed_probe_labels_require_exact_branch_actor_prefix_and_episode():
+    from quadsmash.rl.supermimic_native_pair_capture_v1 import tree_digest
+    from quadsmash.rl.supermimic_training_probe_replay import terminal_response_group, verified_terminal_records
+
+    spec = dict(lanes=[1])
+    actor = {'w': torch.ones(1)}
+    root = dict(spec=spec, actor_state=actor, prefix_sha256='prefix', branch='minus', seed=9,
+                raw={'start': {'before': {'episode_index': torch.tensor([0, 4])}}})
+    probe = tree_digest(spec)
+    label = dict(env_id=1, episode_index=4, prefix='prefix', branch='minus', probe=probe,
+                 actor=tree_digest(actor), stream=tree_digest((probe, 'prefix', 9, 'minus')),
+                 scoring_schema='approach_ball_only_v1', numerical_failures=0,
+                 approach_ball_terminal=dict(ball_terminal=True, numerical_abort=False),
+                 qualified_airborne_string_contact=True, ball_side_complete_except_recovery=True,
+                 rejection_reasons=[], outgoing_speed_mps=4.68)
+    assert terminal_response_group(verified_terminal_records(dict(root, terminal_labels={1: label}))[1]) == 1
+    assert terminal_response_group(None) == 3
+    with pytest.raises(ValueError, match='different native probe episode'):
+        verified_terminal_records(dict(root, terminal_labels={1: dict(label, episode_index=5)}))

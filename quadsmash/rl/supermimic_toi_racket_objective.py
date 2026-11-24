@@ -292,6 +292,20 @@ def intercept_loss(before, after, start, end, reference, mask, survival, geometr
         facing = 1 - F.cosine_similarity(kinematics[:, 6:9], axis, dim=-1).abs()
         linear = torch.where(target['valid'], speed, linear)
         normal = torch.where(target['valid'], .5 * (normal + facing), normal)
+    measured = reference.get('measured_face_target') if relative_face_speed else None
+    if measured is not None:
+        incoming = reference['intercept']['incoming_velocity']
+        compatible = ((incoming - measured['incoming']).norm(dim=-1) <= 1.)
+        valid = torch.isfinite(measured['speed']) & compatible
+        offset = reference['intercept']['position'] + measured['touch_offset'] - kinematics[:, :3]
+        surface = kinematics[:, 3:6] + torch.linalg.cross(kinematics[:, 9:12], offset)
+        face = F.normalize(kinematics[:, 6:9], dim=-1)
+        face = torch.where((face * measured['normal']).sum(-1, keepdim=True) >= 0., face, -face)
+        along = ((surface - incoming) * face).sum(-1)
+        desired = torch.where(valid, measured['speed'], along.detach())
+        error = ((along - desired).abs() - .25).relu()
+        speed = F.smooth_l1_loss(error, torch.zeros_like(error), reduction='none')
+        linear = linear + torch.where(valid, speed, 0.)
     return ((position+linear+normal+angular+edge_cost)*weights).sum(), weights
 
 

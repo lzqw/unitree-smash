@@ -104,3 +104,27 @@ def test_projection_allows_tangent_step_for_opposed_constraints():
     step, diagnostics = constrain_proposal(torch.tensor([1., -1.]), {'slow': g, 'flight': -g})
     torch.testing.assert_close(step, torch.tensor([0., -1.]), atol=1.e-6, rtol=0.)
     assert diagnostics['requested_margin'] == 0.
+
+
+def test_robot_net_clearance_uses_finite_band_and_blocks_new_physical_overlap():
+    import itertools
+    from quadsmash.physics.court_v4 import load_court
+    from quadsmash.rl.supermimic_robot_net_clearance import check_robot_net_clearance, robot_net_clearance
+
+    corners = .01 * torch.tensor(list(itertools.product((-1., 1.), repeat=3)))[None]
+    positions = torch.tensor([[[1.48, 0., 1.2]], [[1.5, 0., 1.62]], [[1.5, 4., 1.2]]], requires_grad=True)
+    rotation = torch.eye(3).expand(3, 1, 3, 3)
+    proxy = (torch.tensor([0]), corners)
+    def clearance(p):
+        return robot_net_clearance(dict(rotation=rotation, position=p), proxy, load_court())
+
+    old = clearance(positions)
+    assert (old > 0).all()
+    moved = positions.detach().clone()
+    moved[0, 0, 0] = 1.5
+    changed = clearance(moved)
+    assert changed[0] < 0 and changed[1] > 0
+    allowed, receipt = check_robot_net_clearance(old, changed)
+    assert not allowed and receipt['new_intersections'] == 1
+    old[0].backward()
+    assert positions.grad[0, 0, 0] < 0
