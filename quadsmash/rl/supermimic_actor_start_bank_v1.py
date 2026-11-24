@@ -62,6 +62,29 @@ def verified_labeled_start_history(older, resumed):
     return tuple(entry for entry in bank['entries'] if entry.get('ball_outcomes'))
 
 
+def assign_distinct_case_quotas(pools, quotas):
+    """Match risk slots to distinct native cases without a greedy overlap loss."""
+    slots = [kind for kind in sorted(quotas, key=lambda k: len(pools[k]) - quotas[k])
+             for _ in range(quotas[kind])]
+    assignments = {}
+
+    def match(slot, blocked):
+        kind = slots[slot]
+        for case in pools[kind]:
+            if case in blocked:
+                continue
+            blocked.add(case)
+            assigned = assignments.get(case)
+            if assigned is None or match(assigned, blocked):
+                assignments[case] = slot
+                return True
+        return False
+
+    for slot in range(len(slots)):
+        match(slot, set())
+    return [(slots[slot], case) for case, slot in sorted(assignments.items(), key=lambda item: item[1])]
+
+
 class ApproachStartShortfall(RuntimeError):
     def __init__(self, report):
         super().__init__('Need 32 proposal starts and 16 distinct guard cases on separate original lanes')
@@ -358,24 +381,23 @@ class ActorStartBank:
                 actual[outcome] += 1
                 times[time_group(lead)] += 1
 
-        risk_actual = {}
+        stratified = {}
         if risk_quotas:
             all_labeled = [row for group in groups.values() for row in group]
             stratified = {label: [row for row in all_labeled if label in risk_class(row)] for label in risk_quotas}
-            pool_counts = {label: len({case_identity(row[0], row[1]) for row in rows})
-                           for label, rows in stratified.items()}
-            for label in sorted(risk_quotas, key=lambda item: pool_counts[item] - risk_quotas[item]):
-                quota = risk_quotas[label]
-                covered = {case_identity(row[0], row[1]) for row in stratified[label]
-                           if episode_identity(row[0], row[1]) in seen}
-                take(stratified[label], max(0, min(quota - len(covered), count - len(seen))))
-            risk_actual = {label: len({case_identity(row[0], row[1]) for row in rows
-                                      if episode_identity(row[0], row[1]) in seen})
-                           for label, rows in stratified.items()}
+            choices = {
+                label: list(dict.fromkeys(case_identity(row[0], row[1]) for row in rows
+                                          if case_identity(row[0], row[1]) not in excluded_cases))
+                for label, rows in stratified.items()}
+            for label, case in assign_distinct_case_quotas(choices, risk_quotas)[:count]:
+                take([row for row in stratified[label] if case_identity(row[0], row[1]) == case], 1)
         for name, quota in outcome_quotas.items():
             take(groups[name], max(0, min(quota - actual[name], count - len(seen))))
         take([row for group in groups.values() for row in group] + ([] if require_labels else unlabeled),
              len(timing) - len(seen))
+        risk_actual = {label: len({case_identity(row[0], row[1]) for row in rows
+                                  if episode_identity(row[0], row[1]) in seen})
+                       for label, rows in stratified.items()}
         report = dict(requested_by_outcome=outcome_quotas, actual_by_outcome=actual,
                       outcome_shortfall={name:max(0, quota-actual[name]) for name,quota in outcome_quotas.items()},
                       lead_time_counts=times, effective_lanes=len(seen), missing_episodes=len(timing)-len(seen),

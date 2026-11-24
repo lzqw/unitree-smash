@@ -105,3 +105,13 @@ def test_directed_guard_excludes_same_original_case_across_streams():
     assert report['guard']['protected_case_count'] == {'low_speed': 4, 'marginal_success': 4}
     assert len(report['guard']['unique_original_cases']) == 16
     assert report['shared_original_cases'] == []
+
+
+def test_directed_guard_retains_marginal_cases_when_low_speed_sets_overlap():
+    from quadsmash.rl.supermimic_actor_start_bank_v1 import assign_distinct_case_quotas
+
+    pools = {'low': [0, 1, 2], 'marginal': [0, 1], 'landing': [2, 3]}
+    assignment = dict(assign_distinct_case_quotas(pools, {'low': 1, 'marginal': 2, 'landing': 1}))
+    assert assignment['low'] == 2
+    assert assignment['landing'] == 3
+    assert len(assign_distinct_case_quotas(pools, {'low': 1, 'marginal': 2, 'landing': 1})) == 4
