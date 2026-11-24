@@ -85,26 +85,31 @@ def test_delayed_native_label_survives_fifo_and_reloads_disjoint_batches():
 
 
 def test_directed_guard_excludes_same_original_case_across_streams():
-    from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank
+    from quadsmash.rl.supermimic_actor_start_bank_v1 import ActorStartBank, ApproachStartShortfall
 
     bank = ActorStartBank(capacity=4, ball_phase=True, persistent_events=True)
     n = 40
     for stream in (1, 2, 3):
         start = dict(stream_id=stream, before=dict(episode_index=torch.zeros(n, dtype=torch.long),
                                                    elapsed_tick=torch.full((n,), 230)))
-        outcomes = {lane: ('low_speed' if lane < 4 else 'success', 20) for lane in range(n)}
+        outcomes = {lane: ('low_speed' if lane < 6 else 'success', 20) for lane in range(n)}
         frame = dict(start=start, stream=stream, native_tick=230, policy_version=0,
                      masks=dict(pre_contact=torch.ones(n, dtype=torch.bool)), ball_outcomes=outcomes)
         for lane, (outcome, _) in outcomes.items():
-            speed = 4.30 if outcome == 'low_speed' else 4.65 if lane < 8 else 5.5
+            speed = 4.30 if outcome == 'low_speed' else 4.65 if lane < 12 else 5.5
             bank.resolved[(stream, lane, 0)] = (
                 (frame,), dict(case_id=f'case-{lane}', outgoing_speed_mps=speed, failure_category=outcome))
     _, _, report = bank.sample_proposal_and_guard(
         lambda _: torch.ones(n, dtype=torch.bool), 1, 32, 16,
         guard_case_quotas={'low_speed': 4, 'marginal_success': 4})
     assert report['guard']['protected_case_count'] == {'low_speed': 4, 'marginal_success': 4}
+    assert report['protected_case_count'] == {'low_speed': 2, 'marginal_success': 2}
     assert len(report['guard']['unique_original_cases']) == 16
     assert report['shared_original_cases'] == []
+    with pytest.raises(ApproachStartShortfall):
+        bank.sample_proposal_and_guard(
+            lambda _: torch.arange(n) != 0, 1, 32, 16,
+            guard_case_quotas={'low_speed': 4, 'marginal_success': 4})
 
 
 def test_directed_guard_retains_marginal_cases_when_low_speed_sets_overlap():

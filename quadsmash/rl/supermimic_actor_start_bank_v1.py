@@ -261,7 +261,8 @@ class ActorStartBank:
     def sample_ball_phase(self, eligible_lanes, attempt, *, fallback=(), count=16,
                           shuffle_unlabeled=False, labeled_history=(), excluded_episodes=(),
                           require_labels=False, record_draw=True, reserve_for_proposal=0,
-                          distinct_cases=False, excluded_cases=(), risk_quotas=None):
+                          distinct_cases=False, excluded_cases=(), risk_quotas=None,
+                          reserve_risk_quotas=None):
         """Draw distinct episode starts with proportionate outcome and time quotas."""
         if not 1 <= count <= 128:
             raise ValueError('Ball-phase start count must be in [1,128]')
@@ -389,7 +390,16 @@ class ActorStartBank:
                 label: list(dict.fromkeys(case_identity(row[0], row[1]) for row in rows
                                           if case_identity(row[0], row[1]) not in excluded_cases))
                 for label, rows in stratified.items()}
-            for label, case in assign_distinct_case_quotas(choices, risk_quotas)[:count]:
+            reserved = {f'proposal:{label}': quota for label, quota in (reserve_risk_quotas or {}).items()}
+            allocation = assign_distinct_case_quotas(
+                choices | {label: choices[label.split(':', 1)[1]] for label in reserved},
+                risk_quotas | reserved)
+            for label, case in allocation:
+                if label in reserved:
+                    excluded_cases.add(case)
+            for label, case in allocation:
+                if label in reserved:
+                    continue
                 take([row for row in stratified[label] if case_identity(row[0], row[1]) == case], 1)
         for name, quota in outcome_quotas.items():
             take(groups[name], max(0, min(quota - actual[name], count - len(seen))))
@@ -425,11 +435,14 @@ class ActorStartBank:
 
         options = dict(require_labels=True, labeled_history=labeled_history, record_draw=False)
         settings = dict.fromkeys(((proposal_count, guard_count), (32, 16)))
+        proposal_risk_quotas = dict(low_speed=2, marginal_success=2) if guard_case_quotas else None
+        proposal_risk_shortfall = None
         for n, g in settings:
             if fixed_guard is None:
                 guard, guard_report = self.sample_ball_phase(
                     eligible, attempt, count=g, reserve_for_proposal=0 if guard_case_quotas else n,
-                    distinct_cases=bool(guard_case_quotas), risk_quotas=guard_case_quotas, **options)
+                    distinct_cases=bool(guard_case_quotas), risk_quotas=guard_case_quotas,
+                    reserve_risk_quotas=proposal_risk_quotas, **options)
             else:
                 guard, guard_report = fixed_guard
             if guard_report['effective_lanes'] != g:
@@ -438,8 +451,12 @@ class ActorStartBank:
                          for lane, episode, _, _, _, stream in record['lane_episode_tick']}
             cases = guard_report['unique_original_cases'] if guard_case_quotas else ()
             proposal, report = self.sample_ball_phase(
-                eligible, attempt + g, count=n, excluded_episodes=forbidden, excluded_cases=cases, **options)
-            if report['effective_lanes'] != n:
+                eligible, attempt + g, count=n, excluded_episodes=forbidden, excluded_cases=cases,
+                risk_quotas=proposal_risk_quotas, **options)
+            proposal_risk_shortfall = {
+                key: max(0, quota - report['protected_case_count'][key])
+                for key, quota in (proposal_risk_quotas or {}).items()}
+            if report['effective_lanes'] != n or any(proposal_risk_shortfall.values()):
                 continue
             report.update(guard=guard_report, disjoint_native_episodes=True,
                           shared_original_cases=sorted(set(report['unique_original_cases'])
@@ -449,7 +466,7 @@ class ActorStartBank:
                 self.sampling_history.append(report)
             return proposal, guard, report
         if guard_case_quotas:
-            raise ApproachStartShortfall(guard_report)
+            raise ApproachStartShortfall(dict(guard_report, proposal_risk_shortfall=proposal_risk_shortfall))
         raise RuntimeError('Need at least 48 eligible labeled native episodes for disjoint Approach v2 batches')
 
     def sample(self, attempt, *, eligible_lanes=None, interleaved=False):
