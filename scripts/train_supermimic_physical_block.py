@@ -2104,6 +2104,19 @@ def run(args, *, alternating=None):
                     if regressions < 6 or compensated < 2 or incomplete < 3:
                         raise ValueError('Repeated-forward risk audit did not reproduce the archived evidence')
                 trainer.speed_risk_rejudge = write_risk_preflight
+            speed_risk_deadline = time.monotonic() + 35 * 60
+            consecutive_rejections = 0
+            speed_risk_stop = None
+
+            def stop_speed_risk():
+                if args.stop_request['signal'] is not None:
+                    return 'interrupted'
+                if time.monotonic() >= speed_risk_deadline:
+                    return 'wall_budget'
+                if consecutive_rejections >= 3:
+                    return 'consecutive_rejections'
+                return None
+
             trainer.actor_updates=accepted;trainer.actor_attempts=attempts
             trainer.rejected_actor_updates=progress.get('rejected',attempts-accepted)
             trainer.backtracked_actor_updates=progress.get('backtracked',0)
@@ -2112,6 +2125,8 @@ def run(args, *, alternating=None):
                 schedule.finish_approach_refresh(progress,refresh_frozen_policy(block_name))
                 save('latest.pt')
             while accepted<budget and attempts<max_attempts:
+                if trainer.approach_speed_risk and (speed_risk_stop := stop_speed_risk()):
+                    break
                 check_stop()
                 collect_block = (not research or attempts == 0) and not use_prepared
                 attempt_key = global_attempt_id + 1
@@ -2721,7 +2736,9 @@ def run(args, *, alternating=None):
                 trainer.audit_approach_outcomes = args.e1_v2_approach_scale and (
                     args.approach_audit_all_proposals or invocation_heads['approach']['attempts'] <= 2)
                 try:
-                    stats=trainer.imagine_update(actor_start, guard_starts=guard_start)
+                    stats=trainer.imagine_update(
+                        actor_start, guard_starts=guard_start,
+                        stop_proposal=stop_speed_risk if trainer.approach_speed_risk else None)
                 finally:
                     if research:adapter.action_ball_model.detach_residual_for_actor=False
                 if research:
@@ -2752,6 +2769,19 @@ def run(args, *, alternating=None):
                     post_metrics=post_native_metrics,
                     replay_stream=replay.current_stream)
                 progress.update(proposal_in_flight=False,attempts=attempts,accepted=accepted,rejected=progress.get('rejected',0)+int(not stats['update_accepted']),backtracked=progress.get('backtracked',0)+backtracked)
+                consecutive_rejections = 0 if stats['update_accepted'] else consecutive_rejections + 1
+                if trainer.approach_speed_risk and stats['update_accepted']:
+                    milestone = f'approach_A{global_accepted_id-research_origin:03d}.pt'
+                    save(milestone)
+                    receipt = dict(checkpoint=milestone, checkpoint_sha256=file_sha(args.output/milestone),
+                                   retained=global_accepted_id-research_origin, native_ticks=tick,
+                                   invocation=invocation_receipt(), guard=start_sampling['guard'],
+                                   guard_objective_before=stats['guard_objective_before'],
+                                   guard_objective_after=stats['guard_objective_after'],
+                                   parameter_max_changes=stats['parameter_max_changes'])
+                    write(args.output/'latest_speed_risk_actor_update.json', receipt)
+                    if args.approach_directed_risk and invocation_heads['approach']['accepted'] == 1:
+                        write(args.output/'first_directed_actor_update.json', receipt)
                 with torch.no_grad():request=trainer._actor_action(state,sample=False)[0];preview,_,_=adapter.executor.forward(state.observation,request,state.clock_goal_context['joint_default'][0],state.clock_goal_context['limits'],state.executor_memory)
                 record=dict(**stats,**{k:v for k,v in world_stats.items() if k not in stats},block=block_name,block_key=str(cycle_index),block_accepted_updates=accepted,block_rejected=progress['rejected'],block_backtracked=progress['backtracked'],attempt_id=global_attempt_id,accepted_id=global_accepted_id,global_attempts=global_attempt_id,global_accepted=global_accepted_id,global_rejected=global_rejected,global_backtracked=global_backtracked,native_ticks=tick,native_transitions=tick*128,native_collect_seconds=collect_s, native_reward_mean=block_reward_mean,completed_native_episodes=len(completed_returns),native_return_mean=sum(completed_returns)/len(completed_returns) if completed_returns else None,native_discounted_return_mean=sum(completed_discounted)/len(completed_discounted) if completed_discounted else None,raw_return_scope='completed mixed-policy monitoring; incomplete episodes excluded',peak_gpu_bytes=torch.cuda.max_memory_allocated(),model_calls=adapter.calls,window_sampling=world_stats.get('world_update_reports',[]),imagined_start_source='fresh_native' if replay.new_starts and any(pool_item is replay.new_starts[-1] for pool_item in pool) else 'event_aligned_replay')
                 if block_name=='recovery':
@@ -2788,16 +2818,6 @@ def run(args, *, alternating=None):
                     writer.add_scalar('performance/gpu_peak_memory',float(torch.cuda.max_memory_allocated()),step)
                     writer.flush()
                 if not research:save('latest.pt')
-                if (args.approach_directed_risk and stats['update_accepted']
-                        and invocation_heads['approach']['accepted'] == 1):
-                    milestone = f'approach_A{global_accepted_id-research_origin:03d}.pt'
-                    save(milestone)
-                    write(args.output/'first_directed_actor_update.json', dict(
-                        checkpoint=milestone, checkpoint_sha256=file_sha(args.output/milestone),
-                        invocation=invocation_receipt(), guard=start_sampling['guard'],
-                        guard_objective_before=stats['guard_objective_before'],
-                        guard_objective_after=stats['guard_objective_after'],
-                        parameter_max_changes=stats['parameter_max_changes']))
                 write(args.output/'progress.json',record)
                 with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                 print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
@@ -2810,10 +2830,12 @@ def run(args, *, alternating=None):
             if accepted<budget:
                 if trainer.approach_speed_risk:
                     retained = global_accepted_id - research_origin
-                    save(f'approach_A{retained:03d}.pt')
+                    if not accepted:
+                        save(f'approach_A{retained:03d}.pt')
                     write(args.output/'evaluation_boundary.json', dict(
                         approach_accepted=retained, recovery_accepted=0, native_ticks=tick, invocation=invocation_receipt(),
-                        actor_training_complete=False, stop_reason='proposal_budget', target=budget, attempts=attempts))
+                        actor_training_complete=False, stop_reason=speed_risk_stop or 'proposal_budget',
+                        target=budget, attempts=attempts))
                     raise ApproachStageFinished
                 save(f'{cycle_index}_{block_name}_candidate_{accepted:04d}.pt')
                 write(args.output/'block_incomplete.json',dict(block=block_name,target=budget,accepted=accepted,attempts=attempts,limit=max_attempts))

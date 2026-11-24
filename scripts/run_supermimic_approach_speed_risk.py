@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+from subprocess import CalledProcessError
 from time import perf_counter
 
 from run_supermimic_approach_ball_only import registered_options, train_command, verify_training_milestone
@@ -11,6 +12,26 @@ from run_supermimic_approach_v2 import dump, paired_quick_result, quick_check, r
 
 def read(path):
     return json.loads(path.read_text())
+
+
+def recover_timed_out_update(train, preparation):
+    receipt = read(train / 'latest_speed_risk_actor_update.json')
+    stage = receipt['retained']
+    checkpoint = train / f'approach_A{stage:03d}.pt'
+    invocation = receipt['invocation']
+    start = invocation['start']
+    if (not 40 < stage <= 48 or checkpoint.name != receipt['checkpoint']
+            or receipt['native_ticks'] != preparation['native_ticks']
+            or start['actor_sha256'] != preparation['actor_sha256']
+            or any(start[key] != preparation[key] for key in ('attempts', 'accepted'))
+            or invocation['actor_updates'] != stage - 40
+            or invocation['world_updates'] or invocation['critic_updates']
+            or invocation['heads']['recovery']['accepted']):
+        raise ValueError('Timeout recovery receipt does not match the prepared Approach block')
+    with checkpoint.open('rb') as stream:
+        if hashlib.file_digest(stream, 'sha256').hexdigest() != receipt['checkpoint_sha256']:
+            raise ValueError('Timeout recovery checkpoint checksum changed')
+    return checkpoint, invocation
 
 
 def main():
@@ -80,27 +101,49 @@ def main():
 
     train = output / 'train'
     dump(status_file, dict(status='training', preparation=receipt, prepared=str(prepared)))
-    run([*command(prepared, train), '--approach-speed-risk-history', str(args.risk_history.resolve(strict=True))],
-        output / 'train.log', 45)
-    boundary = read(train / 'evaluation_boundary.json')
-    stage = boundary['approach_accepted']
-    invocation = boundary['invocation']
-    if (not 40 <= stage <= 48 or invocation['actor_updates'] != stage - 40
-            or invocation['world_updates'] != 0 or boundary['native_ticks'] != receipt['native_ticks']):
-        raise ValueError('Actor-only risk block exceeded its budget or changed its prepared WM')
-    if stage == 40:
-        dump(status_file, dict(status='no_accepted_proposals', preparation=receipt, baseline=baseline,
-                               invocation=invocation, wall_seconds=perf_counter() - started))
-        return
-    checkpoint, invocation = verify_training_milestone(train, stage, prepared)
+    stop_reason = None
+    try:
+        run([*command(prepared, train), '--approach-speed-risk-history', str(args.risk_history.resolve(strict=True))],
+            output / 'train.log', 60)
+    except CalledProcessError as error:
+        if error.returncode not in (124, 137, -9):
+            dump(status_file, dict(status='training_failed', returncode=error.returncode, preparation=receipt))
+            raise
+        stop_reason = 'outer_timeout' if error.returncode == 124 else 'forced_exit'
+        if not (train / 'evaluation_boundary.json').is_file():
+            if not (train / 'latest_speed_risk_actor_update.json').is_file():
+                dump(status_file, dict(status=stop_reason, preparation=receipt, accepted_checkpoint=None))
+                raise
+    if (train / 'evaluation_boundary.json').is_file():
+        boundary = read(train / 'evaluation_boundary.json')
+        stage = boundary['approach_accepted']
+        invocation = boundary['invocation']
+        stop_reason = boundary.get('stop_reason', stop_reason)
+        if (not 40 <= stage <= 48 or invocation['actor_updates'] != stage - 40
+                or invocation['world_updates'] != 0 or boundary['native_ticks'] != receipt['native_ticks']):
+            raise ValueError('Actor-only risk block exceeded its budget or changed its prepared WM')
+        if stage == 40:
+            dump(status_file, dict(status='no_accepted_proposals', preparation=receipt, baseline=baseline,
+                                   invocation=invocation, stop_reason=stop_reason, wall_seconds=perf_counter() - started))
+            return
+        checkpoint, invocation = verify_training_milestone(train, stage, prepared)
+    else:
+        if stop_reason is None:
+            raise FileNotFoundError('Approach block exited without an evaluation boundary')
+        checkpoint, invocation = recover_timed_out_update(train, receipt)
+        stage = 40 + invocation['actor_updates']
     panel = output / f'A{stage:03d}_quick64'
-    dump(status_file, dict(status='native_quick_check', preparation=receipt, candidate=str(checkpoint), invocation=invocation))
+    dump(status_file, dict(status='native_quick_check', preparation=receipt, candidate=str(checkpoint),
+                           invocation=invocation, stop_reason=stop_reason))
     candidate = quick_check(checkpoint, panel, execution, 882072)
+    if read(panel / 'metrics.json')['actor_state_sha256'] != invocation['actor_end_sha256']:
+        raise ValueError('Native quick check did not evaluate the retained Approach actor')
     paired = paired_quick_result(baseline, candidate, args.baseline_panel, panel)
     preferred = 'candidate' if not paired['regressed'] and candidate['success'] > baseline['success'] else 'a40'
     dump(status_file, dict(status='native_regression_review' if paired['regressed'] else 'quick_check_complete',
                            preparation=receipt, invocation=invocation, baseline=baseline, candidate=candidate,
-                           preferred=preferred, paired=paired, wall_seconds=perf_counter() - started))
+                           preferred=preferred, paired=paired, stop_reason=stop_reason,
+                           wall_seconds=perf_counter() - started))
 
 
 if __name__ == '__main__':

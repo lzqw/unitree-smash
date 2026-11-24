@@ -757,7 +757,7 @@ class PhysicalHorizonTrainer:
                     lane_ticks_per_second=executed / elapsed, api_peak_bytes=torch.cuda.max_memory_allocated(),
                     gradient_norm=float(norm))
 
-    def imagine_update(self,initial_state,*,update_actor=True,guard_starts=None):
+    def imagine_update(self,initial_state,*,update_actor=True,guard_starts=None,stop_proposal=None):
         from .supermimic_approach_data_v1 import (
             approach_guard_merit, approach_step_sizes, comparable_flight_merit,
             gradient_parts, prioritize_flight_gradient)
@@ -932,6 +932,9 @@ class PhysicalHorizonTrainer:
                                 line_search = [(a, blend) for a in local_steps for blend in blends] + line_search
                             backtracking_started = time.perf_counter()
                             for index, (candidate_alpha, projection_fraction) in enumerate(line_search):
+                                if stop_proposal is not None and stop_proposal():
+                                    reason = 'proposal_interrupted'
+                                    break
                                 if unprojected is not None and projection_fraction != 1.:
                                     endpoint = dict(proposed)
                                     for name, raw in unprojected.items():
@@ -1025,7 +1028,7 @@ class PhysicalHorizonTrainer:
                                 # Adam moments correspond to the original same-gradient proposal;
                                 # alpha scales only the committed parameter displacement.
                                 self.actor_opt.load_state_dict(proposed_opt)
-                            else:
+                            elif reason != 'proposal_interrupted':
                                 if protect_speed and any('speed_risk_guard' in trial for trial in trials):
                                     reason = 'no_candidate_passed_flight_and_grouped_speed_risk_guard'
                                 else:

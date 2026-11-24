@@ -1,6 +1,8 @@
+import hashlib
 import json
 from pathlib import Path
 
+import pytest
 import torch
 
 from quadsmash.rl.supermimic_approach_data_v1 import approach_guard_merit
@@ -151,3 +153,20 @@ def test_matched_success_face_speed_loss_is_bounded_and_differentiable(monkeypat
     assert loss(measured(4.)) > loss(base)
     slope = torch.autograd.grad(loss(measured(4.)), value)[0]
     assert slope[0, 3] < 0
+def test_forced_exit_uses_verified_accepted_checkpoint(tmp_path):
+    from scripts.run_supermimic_approach_speed_risk import recover_timed_out_update
+
+    preparation = dict(native_ticks=120, actor_sha256='prepared', attempts=21, accepted=20)
+    invocation = dict(start=dict(actor_sha256='prepared', attempts=21, accepted=20),
+                      actor_updates=2, world_updates=0, critic_updates=0,
+                      heads={'recovery': {'accepted': 0}})
+    checkpoint = tmp_path / 'approach_A042.pt'
+    checkpoint.write_bytes(b'accepted actor')
+    receipt = dict(checkpoint=checkpoint.name, retained=42, native_ticks=120, invocation=invocation,
+                   checkpoint_sha256=hashlib.sha256(checkpoint.read_bytes()).hexdigest())
+    (tmp_path / 'latest_speed_risk_actor_update.json').write_text(json.dumps(receipt))
+    assert recover_timed_out_update(tmp_path, preparation) == (checkpoint, invocation)
+
+    checkpoint.write_bytes(b'partial write')
+    with pytest.raises(ValueError, match='checksum'):
+        recover_timed_out_update(tmp_path, preparation)
