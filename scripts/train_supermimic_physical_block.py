@@ -260,6 +260,8 @@ def main():
                         help='Preserve 20/32-step contact-aligned Body supervision during E1 v2 refresh')
     parser.add_argument('--approach-prepare-only', action='store_true',
                         help='Stop at a resumable checkpoint after refresh and before the first Approach proposal')
+    parser.add_argument('--approach-profile-collection-only', action='store_true',
+                        help='Profile one fresh bounded native collection and stop before WM or Actor updates')
     parser.add_argument('--approach-reuse-collected', type=Path,
                         help='Replay a complete, identity-matched native cold collection during preparation')
     parser.add_argument('--approach-speed-risk-history', type=Path,
@@ -436,6 +438,9 @@ def main():
         parser.error('Prepared Approach stages require a bounded E1 v2 continuation with the 32+16 contract')
     if args.approach_prepare_only and args.approach_speed_risk_history:
         parser.error('Supply the risk history when resuming the prepared block')
+    if args.approach_profile_collection_only and (not args.approach_prepare_only
+            or args.approach_reuse_collected or args.native_ticks_per_actor_update < 1):
+        parser.error('Collection profiling requires preparation mode with a positive live collection')
     if args.approach_reuse_collected and not args.approach_prepare_only:
         parser.error('Archived cold collection reuse requires preparation-only mode')
     args.resident_native_coverage_targets = None
@@ -2286,6 +2291,12 @@ def run(args, *, alternating=None):
                             timing['resident_coverage']['missing_critical_case_ids'] = sorted(
                                 args.resident_critical_cases.difference(coverage['training_case_ids']))
                     write(args.output/(str(cycle_index)+'_native_collection_timing.json'), timing)
+                    if args.approach_profile_collection_only:
+                        write(args.output/'approach_collection_profile.json',
+                              dict(native_ticks=collected_ticks, environment_ticks=collected_ticks * 128,
+                                   actor_sha256=tensor_digest(actor.state_dict().items()),
+                                   invocation=invocation_receipt(), timing=timing))
+                        raise ApproachStageFinished
                 if collect_block:
                     progress['collection_reward_mean']=float(reward.mean())
                     if research and args.recovery_rollout_landing:

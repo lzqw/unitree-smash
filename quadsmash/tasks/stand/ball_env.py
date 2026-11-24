@@ -106,6 +106,8 @@ class BallEnv(JumpEnv):
         self.previous_ball_velocity = torch.zeros((n, 3), device=device)
         self.previous_ball_position = torch.zeros((n, 3), device=device)
         self.previous_drag = torch.zeros((n, 3), device=device)
+        self._shuttle_force_constants_key = None
+        self._refresh_shuttle_force_constants(self.shuttle.data.root_lin_vel_w)
         self._latest_racket_force = torch.zeros((n, 3), device=device)
         self.previous_tool_position = torch.zeros((n,3), device=device)
         self.previous_tool_quaternion = torch.zeros((n,4), device=device)
@@ -238,10 +240,21 @@ class BallEnv(JumpEnv):
         CoupledEnv._apply_action(self)
         if frame == 0 or frame % self._jump_metric_stride == 0:
             self._consume_jump_frame(frame)
-        force = drag_force(self.shuttle.data.root_lin_vel_w, self.cfg.shuttle_mass_kg,
-                           self.cfg.drag_k_per_m, self.cfg.wind_m_s)
+        velocity = self.shuttle.data.root_lin_vel_w
+        self._refresh_shuttle_force_constants(velocity)
+        force = drag_force(velocity, self.cfg.shuttle_mass_kg, self.cfg.drag_k_per_m, self._shuttle_wind)
         self.previous_drag.copy_(force)
-        self.shuttle.set_external_force_and_torque(force[:, None], torch.zeros_like(force[:, None]), is_global=True)
+        self.shuttle.set_external_force_and_torque(force[:, None], self._shuttle_zero_torque, is_global=True)
+
+    def _refresh_shuttle_force_constants(self, velocity):
+        wind = tuple(self.cfg.wind_m_s)
+        gravity = tuple(self.cfg.sim.gravity)
+        key = (wind, gravity, self.physics_dt, velocity.device, velocity.dtype, velocity.shape)
+        if key != self._shuttle_force_constants_key:
+            self._shuttle_force_constants_key = key
+            self._shuttle_wind = velocity.new_tensor(wind)
+            self._shuttle_gravity_step = torch.tensor(gravity, device=velocity.device) * self.physics_dt
+            self._shuttle_zero_torque = velocity.new_zeros((len(velocity), 1, 3))
 
     def _consume_physics_frame(self, frame):
         if self.contact_events is None or frame <= self._last_physics_frame:
@@ -252,6 +265,7 @@ class BallEnv(JumpEnv):
         self._observe_physics_frame(frame)
         data, ball = self.robot.data, self.shuttle.data
         position, velocity = ball.root_pos_w, ball.root_lin_vel_w
+        self._refresh_shuttle_force_constants(velocity)
         forces = self.shuttle_contact.data.force_matrix_w
         if forces.shape != (self.num_envs, 1, 2, 3):
             raise RuntimeError(f"Unexpected filtered contact shape: {forces.shape}")
@@ -311,8 +325,7 @@ class BallEnv(JumpEnv):
         self.contact_seen |= new
         feet_air = self.observed_airborne
         self.airborne_contact_seen |= new & feet_air
-        gravity = torch.tensor(self.cfg.sim.gravity, device=self.device)
-        impulse = self.cfg.shuttle_mass_kg * (velocity - self.previous_ball_velocity - gravity*self.physics_dt) - self.previous_drag*self.physics_dt
+        impulse = self.cfg.shuttle_mass_kg * (velocity - self.previous_ball_velocity - self._shuttle_gravity_step) - self.previous_drag*self.physics_dt
         self.contact_impulse += torch.where(touching, impulse.norm(dim=-1), 0.0)
         torch.where(touching, velocity.norm(dim=-1), self.outgoing_speed, out=self.outgoing_speed)
         torch.where(touching, velocity[:, 2], self.outgoing_vz, out=self.outgoing_vz)

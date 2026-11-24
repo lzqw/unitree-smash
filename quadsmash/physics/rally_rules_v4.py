@@ -79,8 +79,8 @@ class RallyRulesV4:
         self.legal_initial_contact |= first & own_side & (~self.faulted())
         self.double_hit_fault |= event & self.had_contact & (~exception)
         self.contact_count += event.long()
-        self.contact_point[first]=contact_point[first]
-        self.contact_time[first]=time[first]
+        torch.where(first[:, None], contact_point, self.contact_point, out=self.contact_point)
+        torch.where(first, time, self.contact_time, out=self.contact_time)
         self.had_contact |= event
         self.frame_hit |= active & racket_touching & frame_contact
         self.string_hit |= active & racket_touching & string_contact
@@ -92,12 +92,12 @@ class RallyRulesV4:
         self.followthrough_finished |= returned
         self.followthrough_crossed |= active & racket_over_net & self.legal_initial_contact
         touched = active & racket_touching
-        self.last_touch_velocity[touched]=velocity[touched]
+        torch.where(touched[:, None], velocity, self.last_touch_velocity, out=self.last_touch_velocity)
         self.quiet_frames.copy_(torch.where(active & self.had_contact & separated,
                                            self.quiet_frames+1,torch.zeros_like(self.quiet_frames)))
         release = active & self.had_contact & (~self.released) & (self.quiet_frames>=2)
-        self.outgoing_velocity[release]=self.last_touch_velocity[release]
-        self.release_time[release]=time[release]
+        torch.where(release[:, None], self.last_touch_velocity, self.outgoing_velocity, out=self.outgoing_velocity)
+        torch.where(release, time, self.release_time, out=self.release_time)
         self.released |= release
         self.bad_return_fault |= release & (self.outgoing_velocity[:,0]<=0)
         self.shuttle_net_contact |= active & shuttle_net_touch
@@ -117,10 +117,10 @@ class RallyRulesV4:
         crossing,fraction,point = segment_plane_crossing(trailing_previous,trailing_position,0,self.court['net_plane_x_m'])
         point=point.clone();point[:,0]+=self.radius
         first_cross = active & crossing & self.legal_initial_contact & (velocity[:,0]>0) & torch.isnan(self.crossing_time)
-        self.crossing_time[first_cross]=time[first_cross]-dt+fraction[first_cross]*dt
-        self.crossing_point[first_cross]=point[first_cross]
+        torch.where(first_cross, time-dt+fraction*dt, self.crossing_time, out=self.crossing_time)
+        torch.where(first_cross[:, None], point, self.crossing_point, out=self.crossing_point)
         height = top_height(point[:,1],self.court)
-        self.net_margin[first_cross]=(point[:,2]-self.radius-height)[first_cross]
+        torch.where(first_cross, point[:,2]-self.radius-height, self.net_margin, out=self.net_margin)
         # Actual solid-band collision governs clearance. Touching the tape is
         # allowed; center must pass above its top, not below/around the net.
         self.crossed_net |= (first_cross & self.legal_initial_contact & self.string_hit
@@ -129,8 +129,9 @@ class RallyRulesV4:
         landing,fraction,point = segment_plane_crossing(previous_position,position,2,self.radius,-1)
         first_landing = active & (landing|ground_touch) & (~self.ground_seen)
         point = torch.where((landing|(~ground_touch))[:,None],point,position)
-        self.landing_point[first_landing]=point[first_landing]
-        self.landing_time[first_landing]=torch.where(landing,time-dt+fraction*dt,time)[first_landing]
+        torch.where(first_landing[:, None], point, self.landing_point, out=self.landing_point)
+        landing_time = torch.where(landing, time-dt+fraction*dt, time)
+        torch.where(first_landing, landing_time, self.landing_time, out=self.landing_time)
         low,high = self.court['opponent_x_limits_m']
         legal_court = (point[:,0]>=low)&(point[:,0]<=high)&(point[:,1].abs()<=self.court['singles_width_m']/2)
         target_low,target_high = self.court['target_x_limits_m']

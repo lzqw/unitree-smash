@@ -57,6 +57,8 @@ class FullRacketEnvV4(BallEnv):
             raise ValueError('Unknown explicit recovery association version')
         self.racket_config,self.court_config=load_racket(),load_court()
         self.rally=None;self._v4_ready=False;self.rally_records=[];self.contact_records=[]
+        self._contact_log = []
+        self._same_stroke_normal_cosine = float(np.cos(np.deg2rad(15)))
         self.ball_observation_enabled=torch.zeros(cfg.scene.num_envs,dtype=torch.bool,device=cfg.sim.device)
         self.cases=cases
         super().__init__(cfg,**kwargs)
@@ -155,6 +157,7 @@ class FullRacketEnvV4(BallEnv):
 
     def _get_dones(self):
         terminated, timeout = super()._get_dones()
+        self._flush_contact_log()
         tracker = self.approach_ball_termination
         if tracker is not None:
             robot, shuttle = self.robot.data, self.shuttle.data
@@ -191,10 +194,9 @@ class FullRacketEnvV4(BallEnv):
             tool,self.scene.env_origins,quaternion,candidates).tolist()
         self.racket_plane_gpu_broadphase_candidates+=len(ids)
         if not ids:return over
-        positions=(tool[ids]-self.scene.env_origins[ids]).cpu().numpy()
-        rotations=quaternion[ids].cpu().numpy()
+        poses = torch.cat((tool[ids] - self.scene.env_origins[ids], quaternion[ids]), -1).cpu().numpy()
         for index,i in enumerate(ids):
-            witness=self.racket_plane_geometry.first_above_net_overlap(positions[index],rotations[index])
+            witness=self.racket_plane_geometry.first_above_net_overlap(poses[index, :3], poses[index, 3:])
             self.racket_plane_query_calls+=1
             if witness:
                 over[i]=True
@@ -270,7 +272,8 @@ class FullRacketEnvV4(BallEnv):
         super()._consume_physics_frame(frame)
         if not self._v4_ready or frame==0:return
         fresh=self.launch_done&(~self.launch_signals_ready)&(frame>self.launch_frame)
-        self.rally.in_play[fresh]=True;self.launch_signals_ready[fresh]=True
+        self.rally.in_play |= fresh
+        self.launch_signals_ready |= fresh
         d=self.robot.data;tool=d.body_link_pos_w[:,self.racket_body_id];q=d.body_link_quat_w[:,self.racket_body_id]
         forces=self.shuttle_contact.data.force_matrix_w[:,0]
         net=self.scene.sensors['inverse_net'].data.force_matrix_w[:,0]
@@ -305,7 +308,7 @@ class FullRacketEnvV4(BallEnv):
         torch.where(first[:,None], head_velocity, self.first_tool_velocity, out=self.first_tool_velocity)
         same_pair=((self.rally.frame_hit&string)|(self.rally.string_hit&rim))
         same_stroke=(same_pair&((self.ball_clock-self.rally.contact_time)<.04)&
-                     ((normal*self.first_tool_normal).sum(-1)>np.cos(np.deg2rad(15)))&
+                     ((normal*self.first_tool_normal).sum(-1)>self._same_stroke_normal_cosine)&
                      ((head_velocity*self.first_tool_velocity).sum(-1)>=0))
         separated=(~touching)&(self._tool_gap(self.shuttle.data.root_pos_w,tool,q)>PHYSICS['separation_hysteresis_m'])
         recovery_active=self.rally.in_play.clone() if self.contact_recovery is not None else None
@@ -323,73 +326,107 @@ class FullRacketEnvV4(BallEnv):
             self.approach_ball_termination.observe_ground(
                 launched=self.rally.launched, had_contact=self.rally.had_contact,
                 touching_ground=self.rally.ground_seen | (ground_force.norm(dim=-1) > .001))
-        record_events=events.any()
         if self.contact_recovery is not None:
-            recovery_bind=(recovery_active&touching&string&self.observed_airborne&self.rally.legal_initial_contact&(~self.contact_recovery.bound))
-            record_events|=recovery_bind.any()
-        if bool(record_events):
-            if self.contact_recovery is not None:
-                self.contact_recovery.contact(self,legal_air_strings_touching=recovery_bind,
-                    time=self.ball_clock,rally_contact_time=self.rally.contact_time)
-            contact_velocity=head_velocity+torch.linalg.cross(d.body_link_ang_vel_w[:,self.racket_body_id],torch.nan_to_num(point)-tool)
-            expected=d.body_link_lin_vel_w[:,self.flange_id]+torch.linalg.cross(d.body_link_ang_vel_w[:,self.flange_id],torch.nan_to_num(point)-d.body_link_pos_w[:,self.flange_id])
-            self.hit_velocity_error[first]=(contact_velocity-expected).norm(dim=-1)[first]
-            for i in torch.where(events)[0].cpu().tolist():
-                self.contact_records.append(dict(env_id=i,episode_index=int(self.episode_index[i]),
-                    event_index=int(self.rally.contact_count[i]),first_racket_contact=bool(first[i]),
-                    same_stroke_frame_string=bool(same_stroke[i]),time_s=float(self.ball_clock[i]),
-                    point_m=(point[i]-self.scene.env_origins[i]).cpu().tolist(),string_contact=bool(string[i]),
-                    frame_contact=bool(rim[i]),fixture_contact=bool(clamp[i]),
-                    point_velocity_mps=contact_velocity[i].cpu().tolist(),face_normal=normal[i].cpu().tolist(),
-                    racket_center_m=(tool[i]-self.scene.env_origins[i]).cpu().tolist(),
-                    racket_quaternion_w=d.body_link_quat_w[i,self.racket_body_id].cpu().tolist(),
-                    racket_linear_velocity_mps=head_velocity[i].cpu().tolist(),
-                    racket_angular_velocity_rad_s=d.body_link_ang_vel_w[i,self.racket_body_id].cpu().tolist(),
-                    body_link_poses_local=torch.cat((d.body_link_pos_w[i]-self.scene.env_origins[i],
-                        d.body_link_quat_w[i]),-1).cpu().tolist(),
-                    ball_position_m=(self.shuttle.data.root_pos_w[i]-self.scene.env_origins[i]).cpu().tolist(),
-                    ball_velocity_mps=self.shuttle.data.root_lin_vel_w[i].cpu().tolist(),
-                    root_link_position_m=(d.root_link_pos_w[i]-self.scene.env_origins[i]).cpu().tolist(),
-                    root_com_position_m=(d.body_com_pos_w[i,0]-self.scene.env_origins[i]).cpu().tolist(),
-                    root_com_linear_velocity_mps=d.root_com_lin_vel_w[i].cpu().tolist(),
-                    root_angular_velocity_rad_s=d.root_com_ang_vel_w[i].cpu().tolist(),
-                    flange_position_m=(d.body_link_pos_w[i,self.flange_id]-self.scene.env_origins[i]).cpu().tolist(),
-                    flange_linear_velocity_mps=d.body_link_lin_vel_w[i,self.flange_id].cpu().tolist(),
-                    flange_angular_velocity_rad_s=d.body_link_ang_vel_w[i,self.flange_id].cpu().tolist(),
-                    joint_position_rad=d.joint_pos[i,self.joint_ids].cpu().tolist(),
-                    joint_velocity_rad_s=d.joint_vel[i,self.joint_ids].cpu().tolist(),
-                    commanded_joint_position_rad=self.targets[i,self.joint_ids].cpu().tolist(),
-                    legal_initial_contact=bool(self.rally.legal_initial_contact[i]),
-                    fault_flags={name:bool(getattr(self.rally,name)[i]) for name in self.rally.flags
-                                 if name.endswith('_fault') or name=='engineering_body_crossing'}))
-                if self.approach_ball_termination is not None:
-                    lever = point[i] - d.root_link_pos_w[i]
-                    translation = d.root_link_lin_vel_w[i]
-                    rotation_speed = torch.linalg.cross(d.root_ang_vel_w[i], lever)
-                    arm_speed = contact_velocity[i] - translation - rotation_speed
-                    # Orient the face normal toward the incoming shuttle.
-                    face = normal[i]
-                    face = torch.where(((previous[i] - point[i]) * face).sum() >= 0, face, -face)
-                    approach_speed = ((contact_velocity[i] - incoming_velocity[i]) * face).sum()
-                    onset = int(self.arm_gate_onset_tick[i])
-                    self.contact_records[-1].update(
-                        arm_gate_onset_tick=onset if onset >= 0 else None,
-                        arm_joint_velocity_at_toi=d.joint_vel[i,self.joint_ids[-6:]].cpu().tolist(),
-                        incoming_ball_velocity_mps=incoming_velocity[i].cpu().tolist(),
-                        incoming_oriented_face_normal=face.cpu().tolist(),
-                        normal_relative_velocity_at_toi=float(approach_speed),
-                        root_transport_mps=translation.cpu().tolist(),
-                        root_rotation_at_contact_mps=rotation_speed.cpu().tolist(),
-                        arm_contact_velocity_mps=arm_speed.cpu().tolist())
-                    requested = getattr(self, '_sm_requested_action', None)
-                    final = getattr(self, '_sm_final_action', None)
-                    if requested is not None and final is not None:
-                        self.contact_records[-1].update(residual_request=requested[i].cpu().tolist(),
-                                                       final_normalized_action=final[i].cpu().tolist())
-                    if bool(first[i]):
-                        self.first_approach_contact_motion[i] = self.contact_records[-1]
+            recovery_bind = (recovery_active & touching & string & self.observed_airborne
+                             & self.rally.legal_initial_contact & ~self.contact_recovery.bound)
+            if bool(recovery_bind.any()):
+                self.contact_recovery.contact(self, legal_air_strings_touching=recovery_bind,
+                    time=self.ball_clock, rally_contact_time=self.rally.contact_time)
+        ids = events.nonzero(as_tuple=True)[0]
+        if ids.numel():
+            self._capture_contact_log(ids, d, tool, q, head_velocity, point, normal, previous,
+                                      incoming_velocity, first, same_stroke, string, rim, clamp)
+
+    def _capture_contact_log(self, ids, d, tool, q, head_velocity, point, normal, previous,
+                             incoming_velocity, first, same_stroke, string, rim, clamp):
+        # Capture the force-confirmed event at this exact substep. Contacts
+        # can be recorded in several substeps before a single reset.
+        origin = self.scene.env_origins[ids]
+        racket = self.racket_body_id
+        flange = self.flange_id
+        contact = point[ids]
+        lever = torch.nan_to_num(contact) - tool[ids]
+        angular = d.body_link_ang_vel_w[ids, racket]
+        contact_velocity = head_velocity[ids] + torch.linalg.cross(angular, lever)
+        flange_position = d.body_link_pos_w[ids, flange]
+        flange_velocity = d.body_link_lin_vel_w[ids, flange]
+        flange_angular = d.body_link_ang_vel_w[ids, flange]
+        expected = flange_velocity + torch.linalg.cross(flange_angular, torch.nan_to_num(contact) - flange_position)
+        self.hit_velocity_error[ids] = torch.where(first[ids], (contact_velocity-expected).norm(dim=-1),
+                                                    self.hit_velocity_error[ids])
+        flags = dict(first_racket_contact=first[ids], same_stroke_frame_string=same_stroke[ids],
+                     string_contact=string[ids], frame_contact=rim[ids], fixture_contact=clamp[ids],
+                     legal_initial_contact=self.rally.legal_initial_contact[ids])
+        faults = {name: getattr(self.rally, name)[ids] for name in self.rally.flags
+                  if name.endswith('_fault') or name == 'engineering_body_crossing'}
+        integers = dict(env_id=ids, episode_index=self.episode_index[ids],
+                        event_index=self.rally.contact_count[ids])
+        fields = dict(
+            time_s=self.ball_clock[ids], point_m=contact-origin, point_velocity_mps=contact_velocity,
+            face_normal=normal[ids], racket_center_m=tool[ids]-origin, racket_quaternion_w=q[ids],
+            racket_linear_velocity_mps=head_velocity[ids], racket_angular_velocity_rad_s=angular,
+            body_link_poses_local=torch.cat((d.body_link_pos_w[ids]-origin[:, None],
+                                            d.body_link_quat_w[ids]), -1),
+            ball_position_m=self.shuttle.data.root_pos_w[ids]-origin,
+            ball_velocity_mps=self.shuttle.data.root_lin_vel_w[ids],
+            root_link_position_m=d.root_link_pos_w[ids]-origin,
+            root_com_position_m=d.body_com_pos_w[ids, 0]-origin,
+            root_com_linear_velocity_mps=d.root_com_lin_vel_w[ids],
+            root_angular_velocity_rad_s=d.root_com_ang_vel_w[ids],
+            flange_position_m=flange_position-origin, flange_linear_velocity_mps=flange_velocity,
+            flange_angular_velocity_rad_s=flange_angular,
+            joint_position_rad=d.joint_pos[ids][:, self.joint_ids],
+            joint_velocity_rad_s=d.joint_vel[ids][:, self.joint_ids],
+            commanded_joint_position_rad=self.targets[ids][:, self.joint_ids])
+        if incoming_velocity is not None:
+            root_lever = contact - d.root_link_pos_w[ids]
+            translation = d.root_link_lin_vel_w[ids]
+            root_rotation = torch.linalg.cross(d.root_ang_vel_w[ids], root_lever)
+            arm_speed = contact_velocity - translation - root_rotation
+            face = normal[ids]
+            toward_shuttle = ((previous[ids] - contact) * face).sum(-1, keepdim=True) >= 0
+            face = torch.where(toward_shuttle, face, -face)
+            integers['arm_gate_onset_tick'] = self.arm_gate_onset_tick[ids]
+            fields.update(
+                arm_joint_velocity_at_toi=d.joint_vel[ids][:, self.joint_ids[-6:]],
+                incoming_ball_velocity_mps=incoming_velocity[ids], incoming_oriented_face_normal=face,
+                normal_relative_velocity_at_toi=((contact_velocity - incoming_velocity[ids]) * face).sum(-1),
+                root_transport_mps=translation, root_rotation_at_contact_mps=root_rotation,
+                arm_contact_velocity_mps=arm_speed)
+            requested = getattr(self, '_sm_requested_action', None)
+            final = getattr(self, '_sm_final_action', None)
+            if requested is not None and final is not None:
+                fields.update(residual_request=requested[ids], final_normalized_action=final[ids])
+        packed = torch.cat([value.reshape(len(ids), -1) for value in fields.values()], dim=1)
+        metadata = torch.stack([*integers.values(), *flags.values(), *faults.values()], dim=1)
+        shapes = tuple((key, value.shape[1:]) for key, value in fields.items())
+        self._contact_log.append((tuple(integers), tuple(flags), tuple(faults), shapes, packed, metadata))
+
+    def _flush_contact_log(self):
+        for integer_keys, flag_keys, fault_keys, shapes, packed, metadata in self._contact_log:
+            values, stamps = packed.cpu(), metadata.cpu().tolist()
+            fields = []
+            index = 0
+            for key, shape in shapes:
+                width = int(np.prod(shape))
+                fields.append((key, values[:, index:index + width].reshape(len(values), *shape).tolist()))
+                index += width
+            for lane, stamp in enumerate(stamps):
+                ints = dict(zip(integer_keys, stamp[:len(integer_keys)], strict=True))
+                bits = stamp[len(integer_keys):]
+                entry = dict(ints, **{key: data[lane] for key, data in fields},
+                             **dict(zip(flag_keys, map(bool, bits[:len(flag_keys)]), strict=True)),
+                             fault_flags=dict(zip(fault_keys, map(bool, bits[len(flag_keys):]), strict=True)))
+                self.contact_records.append(entry)
+                if 'arm_gate_onset_tick' in entry:
+                    if entry['arm_gate_onset_tick'] < 0:
+                        entry['arm_gate_onset_tick'] = None
+                    if entry['first_racket_contact']:
+                        self.first_approach_contact_motion[entry['env_id']] = entry
+        self._contact_log.clear()
 
     def _reset_idx(self,ids):
+        self._flush_contact_log()
         if self._v4_ready:
             complete=ids[self._episode_has_stepped[ids]]
             strict_recovery = self.rally_recovery_success

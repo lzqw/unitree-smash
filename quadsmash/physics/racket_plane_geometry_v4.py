@@ -165,9 +165,9 @@ class RacketPlaneGeometry:
 
     def over_net_candidate_ids(self, world_position, origins, quaternion, eligible):
         """Return original lane IDs that still require an exact net-volume check."""
-        ids = eligible.nonzero(as_tuple=True)[0]
-        if ids.numel() == 0:
-            return ids
+        import torch
+        if not bool(eligible.any()):
+            return eligible.new_empty(0, dtype=torch.long)
         broad = self.gpu_broadphase_over_net(world_position - origins, quaternion)
         return (eligible & broad).nonzero(as_tuple=True)[0]
 
