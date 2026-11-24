@@ -69,6 +69,7 @@ def test_pooled_objective_normalizes_risk_across_start_records():
         zero = weight * 0.
         return dict(task=zero, tracking=zero, anchor=zero, effective_weights=active, ret=torch.zeros(n),
                     toi_weights=None, toi_coverage_preserved=True, speed_risk_by_lane=(values * weight, groups, active),
+                    guard_flight_cost_by_lane=values * weight,
                     reference_coverage=dict(selected_start_lanes=n, gate_active_selected_start_lanes=n),
                     gate_lanes=n, gate_steps=n, matched_references=0, tracking_steps=0,
                     tracking_active_lane_steps=0, tracking_effective_weight_sum=0., tracking_nonzero_gradient_lanes=0)
@@ -82,3 +83,24 @@ def test_pooled_objective_normalizes_risk_across_start_records():
     torch.testing.assert_close(packed['loss'], unified['loss'])
     packed['loss'].backward()
     torch.testing.assert_close(actor.weight.grad, torch.tensor([[.25 * ((2 + 8 + 12) / 3 + 4) / 2]]))
+
+
+def test_project_actual_adam_step_preserves_common_descent():
+    from quadsmash.rl.supermimic_approach_speed_risk import constrain_proposal
+
+    gradients = {'low_speed': torch.tensor([1., 0., 0.]), 'marginal_success': torch.tensor([0., 1., 0.]),
+                 'objective': torch.tensor([-1., -1., 4.])}
+    step = torch.tensor([1., 1., -2.])
+    corrected, diagnostics = constrain_proposal(step, gradients)
+    assert diagnostics['applied'] and corrected.norm() <= step.norm() + 1e-6
+    assert all(float(g @ corrected) < 0 for g in gradients.values())
+    assert diagnostics['normalized_slopes_before']['low_speed'] > 0
+
+
+def test_projection_allows_tangent_step_for_opposed_constraints():
+    from quadsmash.rl.supermimic_approach_speed_risk import constrain_proposal
+
+    g = torch.tensor([1., 0.])
+    step, diagnostics = constrain_proposal(torch.tensor([1., -1.]), {'slow': g, 'flight': -g})
+    torch.testing.assert_close(step, torch.tensor([0., -1.]), atol=1.e-6, rtol=0.)
+    assert diagnostics['requested_margin'] == 0.

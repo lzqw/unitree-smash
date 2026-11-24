@@ -550,6 +550,7 @@ class PhysicalHorizonTrainer:
         flight_losses = {}
         flight_cost_by_lane = None
         flight_priority_loss = None
+        guard_flight_cost = None
         scored = None
         speed_risk = None
         outcome_audit = []
@@ -572,6 +573,7 @@ class PhysicalHorizonTrainer:
                 groups = (codes == 1).long() + 2 * (codes == 3).long()
                 geometry = torch.where(impacted, first_cost, closest_approach)
                 lane_risk = incomplete_risk(geometry)
+                guard_flight_cost = ret.new_zeros(ret.shape)
             if scored.any():
                 terms = ball_only_flight_terms(
                     release_ball[scored, :3], release_ball[scored, 3:],
@@ -585,6 +587,7 @@ class PhysicalHorizonTrainer:
                     flight_cost_by_lane[scored] = sum(value.detach() for value in terms.values())
                 if getattr(self, 'approach_speed_risk', False):
                     lane_risk = lane_risk.masked_scatter(scored, release_risk(release_ball[scored, 3:].norm(dim=-1), terms['speed']))
+                    guard_flight_cost = guard_flight_cost.masked_scatter(scored, sum(terms.values()))
                 confidence = (first_margin[scored].detach() / .012).clamp(.2, 1.) if approach_v2 else 1.
                 terms = {name: (value * confidence).sum() / denominator for name, value in terms.items()}
                 ball_loss = sum(terms.values())
@@ -696,7 +699,7 @@ class PhysicalHorizonTrainer:
             added = (landing_trace > 0) & ~initial_landing
             coverage.update(newly_landed_lanes=int(added.any(0).sum()), newly_landed_lane_steps=int(added.sum()))
         return dict(**aux_stats, **flight_metrics, outcome_audit=outcome_audit, ball_scored=scored, flight_losses=flight_losses,
-                    speed_risk_by_lane=speed_risk,
+                    speed_risk_by_lane=speed_risk, guard_flight_cost_by_lane=guard_flight_cost,
                     flight_cost_by_lane=flight_cost_by_lane, flight_priority_loss=flight_priority_loss,
                     string_margin_by_lane=(first_margin.masked_fill(~(first_string & weights.bool()), torch.nan)
                                            if ball_protocol is not None and first_geometry else None),
@@ -741,7 +744,8 @@ class PhysicalHorizonTrainer:
         from .supermimic_approach_data_v1 import (
             approach_guard_merit, approach_step_sizes, comparable_flight_merit,
             gradient_parts, prioritize_flight_gradient)
-        from .supermimic_approach_speed_risk import compare_risk, forward_tolerances, risk_statistics
+        from .supermimic_approach_speed_risk import (
+            compare_risk, constrain_proposal, forward_tolerances, proposal_risk_objectives, risk_statistics)
         fast = getattr(self, 'approach_v2', False) and update_actor
         protect_speed = fast and getattr(self, 'approach_speed_risk', False)
         if fast and not guard_starts:
@@ -831,6 +835,13 @@ class PhysicalHorizonTrainer:
                         flight = None if fast else rollout.get('flight_priority_loss')
                         flight_gradients = (torch.autograd.grad(flight, parameters, retain_graph=True, allow_unused=True)
                                             if flight is not None and flight.requires_grad else ())
+                        constraint_gradients = {}
+                        if protect_speed:
+                            for name, value in proposal_risk_objectives(rollout).items():
+                                if value.requires_grad:
+                                    derivatives = torch.autograd.grad(value, parameters, retain_graph=True, allow_unused=True)
+                                    constraint_gradients[name] = {
+                                        id(p): g.detach() for p, g in zip(parameters, derivatives, strict=True) if g is not None}
                         rollout['loss'].backward()
                         if flight_gradients:
                             grad_stats['flight_gradient_correction'] = prioritize_flight_gradient(
@@ -876,6 +887,20 @@ class PhysicalHorizonTrainer:
                                 grad_stats['restarted_adam_proposal_loss_slope'] = proposal_slope(objective_grad)
                                 if flight_grad is not None:
                                     grad_stats['restarted_adam_proposal_flight_slope'] = proposal_slope(flight_grad)
+                            if constraint_gradients:
+                                gradients = {
+                                    key: torch.cat([values.get(id(p), torch.zeros_like(p)).flatten() for _, p in active_params])
+                                    for key, values in constraint_gradients.items()}
+                                gradients['objective'] = objective_grad
+                                displacement = torch.cat([(p.detach() - actor_before[name]).flatten()
+                                                          for name, p in active_params])
+                                corrected, diagnostics = constrain_proposal(displacement, gradients)
+                                grad_stats['speed_risk_proposal_projection'] = diagnostics
+                                if diagnostics['applied']:
+                                    with torch.no_grad():
+                                        for (name, parameter), delta in zip(active_params, corrected.split(
+                                                [p.numel() for _, p in active_params]), strict=True):
+                                            parameter.copy_(actor_before[name] + delta.view_as(parameter))
                             proposed={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
                             proposed_opt=copy.deepcopy(self.actor_opt.state_dict())
                             step_sizes = approach_step_sizes(getattr(self, 'last_approach_alpha', None) if fast else None)
@@ -959,9 +984,12 @@ class PhysicalHorizonTrainer:
                                 # alpha scales only the committed parameter displacement.
                                 self.actor_opt.load_state_dict(proposed_opt)
                             else:
-                                reason = ('flight_priority_budget_or_zero_final_command_response'
-                                          if rollout.get('flight_cost_by_lane') is not None
-                                          else 'objective_budget_or_zero_final_command_response')
+                                if protect_speed and any('speed_risk_guard' in trial for trial in trials):
+                                    reason = 'no_candidate_passed_flight_and_grouped_speed_risk_guard'
+                                else:
+                                    reason = ('flight_priority_budget_or_zero_final_command_response'
+                                              if rollout.get('flight_cost_by_lane') is not None
+                                              else 'objective_budget_or_zero_final_command_response')
                         else:reason='zero_total_gradient'
                     else:
                         proposal_timing['outer_gradient_wall_s'] = time.perf_counter() - gradient_started

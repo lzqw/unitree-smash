@@ -111,3 +111,58 @@ def rejudge_history(history, tolerances):
                          flight_failed=flight_delta > tolerances['flight'], risk_groups=diagnostics))
     return dict(total_logged=history['total_proposals'], measured_tolerances=tolerances, accepted_trials=rows,
                 scope='Archived partial line-search reconstruction; missing geometry is unresolved, not safe.')
+
+
+def proposal_risk_objectives(rollout):
+    """Differentiable objectives from proposal starts, in guard units."""
+    risk, groups, released = rollout['speed_risk_by_lane']
+    terms = {name: risk[groups == group].mean()
+             for group, name in GROUPS.items() if (groups == group).any()}
+    flight = rollout.get('guard_flight_cost_by_lane')
+    if flight is not None and released.any():
+        terms['flight'] = flight[released].mean()
+    return terms
+
+
+def constrain_proposal(displacement, gradients):
+    """Project an Adam displacement into a common descent cone and its original norm."""
+    import itertools
+
+    norms = {key: float(value.norm()) for key, value in gradients.items()}
+    if not all(math.isfinite(value) for value in norms.values()):
+        raise FloatingPointError('Nonfinite proposal constraint gradient')
+    keys = [key for key, norm in norms.items() if norm > 1.e-10]
+    scale = float(displacement.norm())
+    if not keys or scale == 0.:
+        return displacement, dict(applied=False, gradient_norms=norms)
+    unit = torch.stack([gradients[key] / norms[key] for key in keys])
+    direction = displacement / scale
+    gram = (unit @ unit.T).double().cpu()
+    starting = (unit @ direction).double().cpu()
+    n = len(keys)
+    for margin in (.20, .08, .02, 0.):
+        target = starting + margin
+        solution = None
+        best = float('inf')
+        for size in range(n + 1):
+            for active in itertools.combinations(range(n), size):
+                multipliers = torch.zeros_like(starting)
+                if active:
+                    idx = list(active)
+                    result = torch.linalg.solve_ex(gram[idx][:, idx], target[idx])
+                    if result.info != 0 or (result.result < -1.e-8).any():
+                        continue
+                    multipliers[idx] = result.result
+                if (starting - gram @ multipliers > -margin + 1.e-7).any():
+                    continue
+                movement = float(multipliers @ gram @ multipliers)
+                if movement < best:
+                    best, solution = movement, multipliers
+        if solution is not None:
+            corrected = direction - solution.to(unit) @ unit
+            corrected = corrected * (scale / corrected.norm().clamp_min(1.))
+            return corrected, dict(
+                applied=bool(best > 0.), gradient_norms=norms, requested_margin=margin,
+                normalized_slopes_before=dict(zip(keys, starting.tolist(), strict=True)),
+                normalized_slopes_after=dict(zip(keys, (unit @ corrected / scale).tolist(), strict=True)))
+    raise RuntimeError('Could not solve the zero-margin descent projection')
