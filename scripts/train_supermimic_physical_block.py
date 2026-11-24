@@ -2788,6 +2788,16 @@ def run(args, *, alternating=None):
                     writer.add_scalar('performance/gpu_peak_memory',float(torch.cuda.max_memory_allocated()),step)
                     writer.flush()
                 if not research:save('latest.pt')
+                if (args.approach_directed_risk and stats['update_accepted']
+                        and invocation_heads['approach']['accepted'] == 1):
+                    milestone = f'approach_A{global_accepted_id-research_origin:03d}.pt'
+                    save(milestone)
+                    write(args.output/'first_directed_actor_update.json', dict(
+                        checkpoint=milestone, checkpoint_sha256=file_sha(args.output/milestone),
+                        invocation=invocation_receipt(), guard=start_sampling['guard'],
+                        guard_objective_before=stats['guard_objective_before'],
+                        guard_objective_after=stats['guard_objective_after'],
+                        parameter_max_changes=stats['parameter_max_changes']))
                 write(args.output/'progress.json',record)
                 with (args.output/'training_history.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                 print('PHYSICAL_LEARNING='+json.dumps(record),flush=True)
