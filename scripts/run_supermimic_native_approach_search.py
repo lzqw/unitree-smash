@@ -68,6 +68,8 @@ def main():
                  'directed-collection', 'baseline-panel', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--resume', action='store_true', help='Resume from the last committed generation')
+    parser.add_argument('--refresh-wm', action='store_true',
+                        help='Supervise the screener Body and ball with verified native replay')
     args = parser.parse_args()
     output = args.output.resolve()
     source = args.source.resolve(strict=True)
@@ -94,15 +96,19 @@ def main():
             raise ValueError('Cannot resume a different native search')
         generator.bit_generator.state = saved['rng']
         history = saved['history']
+        for record in history:
+            record.setdefault('screening_world_sha256', preparation['world_sha256'])
         scale, center, incumbent = saved['scale'], np.array(saved['center']), saved['incumbent']
+        wm_handoff = saved.get('wm_handoff')
     else:
         output.mkdir()
         history, scale, center, incumbent = [], .004, np.zeros(6), [0.] * 6
+        wm_handoff = None
 
     def save_state():
         dump(baseline_file, dict(source=source_identity, cases=case_ids, history=history,
                                  scale=scale, center=center.tolist(), incumbent=incumbent,
-                                 rng=generator.bit_generator.state))
+                                 rng=generator.bit_generator.state, wm_handoff=wm_handoff))
 
     save_state()
     status = output/'status.json'
@@ -119,20 +125,38 @@ def main():
         command.extend(('--approach-native-search-screen', '--approach-directed-risk',
                         '--wm-action-collection', str(args.directed_collection.resolve(strict=True)),
                         '--approach-speed-risk-history', str(args.risk_history.resolve(strict=True))))
+        if wm_handoff and wm_handoff.get('checkpoint'):
+            world_file = Path(wm_handoff['checkpoint'])
+            if wm_handoff['checkpoint_sha256'] != file_sha(world_file):
+                raise ValueError('Recorded native supervision checkpoint changed')
+            command.extend(('--approach-native-search-wm-state', str(world_file)))
+        elif args.refresh_wm:
+            command.append('--approach-native-search-refresh-wm')
         for lane in (10, 28, 52, 78):
             command.extend(('--approach-directed-validation-lane', str(lane)))
-        dump(status, dict(status='loading_frozen_wm', completed_generations=len(history)))
+        refreshing = args.refresh_wm and not (wm_handoff and wm_handoff.get('checkpoint'))
+        dump(status, dict(status='supervised_wm_refresh' if refreshing else 'loading_frozen_wm',
+                          completed_generations=len(history)))
         log = screen.with_suffix('.log').open('ab')
         process = subprocess.Popen([sys.executable, '-u', *command], cwd=ROOT,
                                    env=dict(os.environ, PYTHONPATH='.:scripts', QUADSMASH_ZSTD_ARCHIVE='1'),
                                    stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT)
     serial = 1
     try:
-        screen_identity = wait_json(screen/'screen_ready.json', process) if process else None
-        if screen_identity and (screen_identity['actor_sha256'] != source_identity['actor_sha256']
-                or screen_identity['world_sha256'] != preparation['world_sha256']
-                or screen_identity['guard_lanes'] != 16):
-            raise ValueError('Frozen WM screener initialized with a different experiment identity')
+        if process:
+            ready = wait_json(screen/'screen_ready.json', process)
+            screen_identity = {k: ready[k] for k in ('actor_sha256', 'world_sha256', 'guard_lanes')}
+            refresh = ready.get('wm_refresh')
+            if refresh:
+                wm_handoff = dict(checkpoint=refresh['checkpoint'], checkpoint_sha256=refresh['checkpoint_sha256'],
+                                  retained_updates=refresh['retained_updates'],
+                                  world_sha256=screen_identity['world_sha256'],
+                                  report=str(screen/'native_search_wm_refresh.json'))
+                save_state()
+            expected_world = wm_handoff['world_sha256'] if wm_handoff else preparation['world_sha256']
+            if (screen_identity['actor_sha256'] != source_identity['actor_sha256']
+                    or screen_identity['world_sha256'] != expected_world or screen_identity['guard_lanes'] != 16):
+                raise ValueError('Frozen WM screener initialized with a different experiment identity')
         for generation in range(len(history) + 1, GENERATIONS + 1):
             dump(status, dict(status='screening', generation=generation, completed_generations=len(history)))
             screened = []
@@ -182,6 +206,7 @@ def main():
             history.append(dict(generation=generation, native_lanes=result['native_lanes'],
                                 case_indices=cases, incumbent_before=previous, incumbent_after=incumbent,
                                 actor_changed=previous != incumbent,
+                                screening_world_sha256=screen_identity['world_sha256'],
                                 baseline_success=result['variants'][0]['success'], selected_success=best['success'],
                                 screening_seconds=sum(row['seconds'] for row in screened),
                                 native_seconds=result['elapsed_s'], evaluation=str(directory.relative_to(output))))
@@ -206,10 +231,16 @@ def main():
     new_actor = actor_with_bias(original['actor'], incumbent)
     actor_sha = tensor_digest(new_actor.items())
     if not checkpoint.is_file():
-        atomic_torch_save(dict(algorithm='supermimic_v1', actor=new_actor,
-                               metadata=original['metadata'], adapter_schema=original['adapter_schema'],
-                               native_approach_search=dict(source=source_identity, generations=GENERATIONS,
-                                                           arm_bias=incumbent, optimizer='CEM')), checkpoint)
+        export = dict(algorithm='supermimic_v1', actor=new_actor,
+                      metadata=original['metadata'], adapter_schema=original['adapter_schema'],
+                      native_approach_search=dict(source=source_identity, generations=GENERATIONS,
+                                                  arm_bias=incumbent, optimizer='CEM', wm_handoff=wm_handoff))
+        if wm_handoff and wm_handoff.get('checkpoint'):
+            world = torch.load(wm_handoff['checkpoint'], map_location='cpu', weights_only=True)
+            if tensor_digest(world['world'].items()) != wm_handoff['world_sha256']:
+                raise ValueError('A8 WM export does not match the admitted model')
+            export['world'] = world['world']
+        atomic_torch_save(export, checkpoint)
     else:
         exported = torch.load(checkpoint, map_location='cpu', weights_only=False)
         if tensor_digest(exported['actor'].items()) != actor_sha:
@@ -228,7 +259,7 @@ def main():
                       actor_changes=sum(row['actor_changed'] for row in history), arm_bias=incumbent,
                       checkpoint_sha256=file_sha(checkpoint), selected_checkpoint=str(selected),
                       baseline=baseline, candidate=evaluated, paired=paired, generations=history,
-                      final_evaluation=str(panel.relative_to(output))))
+                      wm_handoff=wm_handoff, final_evaluation=str(panel.relative_to(output))))
 
 
 if __name__ == '__main__':

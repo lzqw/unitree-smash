@@ -276,6 +276,10 @@ def main():
                         help='Pause a prepared Approach block after this many coarse-screened updates for native evaluation')
     parser.add_argument('--approach-native-search-screen', action='store_true',
                         help='Serve frozen-model candidate coarse checks in the output directory, without optimization')
+    parser.add_argument('--approach-native-search-refresh-wm', action='store_true',
+                        help='Supervise Body and ball from verified native replay before serving the CEM screener')
+    parser.add_argument('--approach-native-search-wm-state', type=Path,
+                        help='Restore an admitted CEM screener WM from the same prepared block')
     parser.add_argument('--approach-resident-eval-wait-seconds', type=int, default=0,
                         help='Opt in to waiting for a matched native decision at intermediate Approach boundaries')
     parser.add_argument('--approach-resident-coverage-baseline', type=Path,
@@ -458,6 +462,10 @@ def main():
     if args.approach_native_search_screen and (args.approach_native_gate_updates
             or not args.approach_directed_risk or not args.approach_speed_risk_history):
         parser.error('Native search screening requires a prepared directed block and does not train')
+    if (args.approach_native_search_refresh_wm or args.approach_native_search_wm_state) and (
+            not args.approach_native_search_screen
+            or (args.approach_native_search_refresh_wm and args.approach_native_search_wm_state)):
+        parser.error('Native search WM requires screening and one of supervision or a prior admitted state')
     if args.approach_profile_collection_only and (not args.approach_prepare_only
             or args.approach_reuse_collected or args.native_ticks_per_actor_update < 1):
         parser.error('Collection profiling requires preparation mode with a positive live collection')
@@ -2758,12 +2766,88 @@ def run(args, *, alternating=None):
                 if args.approach_native_search_screen:
                     from quadsmash.rl.supermimic_native_approach_search import validate_offsets
 
+                    def refresh_native_search_world():
+                        from quadsmash.rl.supermimic_release_calibration import measured_contact_batches
+
+                        old_world = copy.deepcopy(adapter.state_dict())
+                        old_optimizer = copy.deepcopy(trainer.world_opt.state_dict())
+                        old_counter = trainer.world_updates
+                        old_guard = copy.deepcopy(metadata.get('online_forward_validation'))
+                        initial = approach_refresh_identity()
+                        fixed_actor = tensor_digest(actor.state_dict().items())
+                        initial_world = tensor_digest(old_world.items())
+                        trials = []
+                        retained = False
+                        for scale in (.5, .125):
+                            check_stop()
+                            adapter.load_state_dict(old_world, strict=True)
+                            trainer.world_opt.load_state_dict(copy.deepcopy(old_optimizer))
+                            trainer.world_updates = old_counter
+                            rates = [group['lr'] for group in trainer.world_opt.param_groups]
+                            for group, rate in zip(trainer.world_opt.param_groups, rates, strict=True):
+                                group['lr'] = rate * scale
+                            try:
+                                supervised = run_world_updates(attempt_key, count=3, head='approach')
+                                support, batches = measured_contact_batches(
+                                    replay, launch, excluded_lanes=wm_holdout_lanes, updates=2)
+                                contact = [trainer.fit_ball_only_contact(window, launch_rows)
+                                           for window, launch_rows in batches]
+                                verification = verify_online_forward('approach', attempt_key)
+                            finally:
+                                for group, rate in zip(trainer.world_opt.param_groups, rates, strict=True):
+                                    group['lr'] = rate
+                            changed = approach_refresh_identity()
+                            retained = (verification is not None and verification['passed']
+                                        and all(changed[key] != initial[key]
+                                                for key in ('body_sha256', 'ball_sha256', 'contact_sha256')))
+                            trials.append(dict(scale=scale, retained=retained, model_supervision=supervised,
+                                               independent_native_contact_windows=support, contact_fits=contact,
+                                               forward_validation=verification, after=changed))
+                            if retained:
+                                break
+                        if tensor_digest(actor.state_dict().items()) != fixed_actor:
+                            raise ValueError('Native WM supervision modified actor parameters')
+                        if not retained:
+                            adapter.load_state_dict(old_world, strict=True)
+                            trainer.world_opt.load_state_dict(old_optimizer)
+                            trainer.world_updates = old_counter
+                            if old_guard is None:
+                                metadata.pop('online_forward_validation', None)
+                            else:
+                                metadata['online_forward_validation'] = old_guard
+                        checkpoint = args.output/'native_search_wm.pt' if retained else None
+                        if checkpoint:
+                            atomic_torch_save(dict(schema='native-cem-supervised-wm-v1', world=adapter.state_dict(),
+                                                   world_sha256=tensor_digest(adapter.state_dict().items()),
+                                                   prepared_world_sha256=initial_world, actor_sha256=fixed_actor,
+                                                   world_updates=trainer.world_updates), checkpoint)
+                        report = dict(retained=retained, checkpoint=str(checkpoint) if checkpoint else None,
+                                      checkpoint_sha256=file_sha(checkpoint), before=initial, trials=trials,
+                                      after=approach_refresh_identity(), actor_sha256=fixed_actor,
+                                      retained_updates=trainer.world_updates-old_counter,
+                                      data_scope='verified recorded native replay; training lanes only')
+                        write(args.output/'native_search_wm_refresh.json', report)
+                        return report
+
+                    wm_refresh = None
+                    if args.approach_native_search_refresh_wm:
+                        wm_refresh = refresh_native_search_world()
+                    if args.approach_native_search_wm_state:
+                        stored = torch.load(args.approach_native_search_wm_state, map_location='cpu', weights_only=True)
+                        if (stored['schema'] != 'native-cem-supervised-wm-v1'
+                                or stored['world_sha256'] != tensor_digest(stored['world'].items())
+                                or stored['prepared_world_sha256'] != tensor_digest(adapter.state_dict().items())
+                                or stored['actor_sha256'] != tensor_digest(actor.state_dict().items())):
+                            raise ValueError('Native CEM WM refresh does not match the prepared block')
+                        adapter.load_state_dict(stored['world'], strict=True)
+                        trainer.world_updates = stored['world_updates']
+
                     def serve_native_bias_screen():
                         shape = dict(actor_sha256=tensor_digest(actor.state_dict().items()),
                                      world_sha256=tensor_digest(adapter.state_dict().items()),
                                      guard_lanes=sum(len(row.physical) for row in guard_start))
                         torch.cuda.empty_cache()
-                        write(args.output/'screen_ready.json', shape)
+                        write(args.output/'screen_ready.json', dict(**shape, wm_refresh=wm_refresh))
                         serial = 1
                         while not (args.output/'screen_stop').exists():
                             check_stop()
