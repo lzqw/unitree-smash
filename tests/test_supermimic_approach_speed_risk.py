@@ -128,3 +128,26 @@ def test_robot_net_clearance_uses_finite_band_and_blocks_new_physical_overlap():
     assert not allowed and receipt['new_intersections'] == 1
     old[0].backward()
     assert positions.grad[0, 0, 0] < 0
+
+
+def test_matched_success_face_speed_loss_is_bounded_and_differentiable(monkeypatch):
+    from quadsmash.rl import supermimic_toi_racket_objective as toi
+
+    monkeypatch.setattr(toi, 'racket_features', lambda state, _: state)
+    value = torch.tensor([[0., 0., 0., 1., 0., 0., 1., 0., 0., 0., 0., 0.]], requires_grad=True)
+    valid = torch.ones(1, dtype=torch.bool)
+    base = dict(matched=valid, toi_racket=value.detach(), intercept=dict(
+        time=torch.tensor([.005]), position=torch.zeros(1, 3), incoming_velocity=torch.tensor([[-2., 0., 0.]]),
+        valid=valid), ball_only_contact=dict(normal=torch.tensor([[1., 0., 0.]]),
+                                            surface_speed=torch.ones(1), valid=~valid))
+    def measured(speed):
+        return dict(base, measured_face_target=dict(speed=torch.tensor([speed]), normal=torch.tensor([[1., 0., 0.]]),
+                  touch_offset=torch.zeros(1, 3), incoming=torch.tensor([[-2., 0., 0.]])))
+
+    def loss(reference):
+        return toi.intercept_loss(value, value, torch.zeros(1), torch.tensor([.01]), reference,
+                                  valid, torch.ones(1), None, relative_face_speed=True)[0]
+    torch.testing.assert_close(loss(measured(3.1)), loss(base))
+    assert loss(measured(4.)) > loss(base)
+    slope = torch.autograd.grad(loss(measured(4.)), value)[0]
+    assert slope[0, 3] < 0

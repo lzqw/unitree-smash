@@ -338,6 +338,9 @@ class ActorStartBank:
                              and actual[row[2]] < outcome_caps.get(row[2], count)]
                 if not remaining:
                     return
+                if excluded_cases:
+                    fresh_cases = [row for row in remaining if case_identity(row[0], row[1]) not in seen_cases]
+                    remaining = fresh_cases or remaining
                 start, lane, outcome, lead = next(
                     (row for row in remaining if time_group(row[3]) == desired), remaining[0])
                 before = start['before']
@@ -359,7 +362,10 @@ class ActorStartBank:
         if risk_quotas:
             all_labeled = [row for group in groups.values() for row in group]
             stratified = {label: [row for row in all_labeled if label in risk_class(row)] for label in risk_quotas}
-            for label, quota in risk_quotas.items():
+            pool_counts = {label: len({case_identity(row[0], row[1]) for row in rows})
+                           for label, rows in stratified.items()}
+            for label in sorted(risk_quotas, key=lambda item: pool_counts[item] - risk_quotas[item]):
+                quota = risk_quotas[label]
                 covered = {case_identity(row[0], row[1]) for row in stratified[label]
                            if episode_identity(row[0], row[1]) in seen}
                 take(stratified[label], max(0, min(quota - len(covered), count - len(seen))))
@@ -576,3 +582,43 @@ def pool_toi_starts(first, alternatives, eligible_lanes, target, attempt):
     if not starts:
         raise ValueError('TOI batch has no eligible episode')
     return starts,layout
+
+
+def merge_directed_guard_history(bank, source, parent, *, source_sha256):
+    """Import actor-consistent starts from measured descendant streams only."""
+    import hashlib
+
+    for field in ('task_contract', 'policy_execution', 'phase_frozen_actor_sha256'):
+        if source['metadata'][field] != parent['metadata'][field]:
+            raise ValueError(f'Guard-history contract differs in {field}')
+    old_archives = parent['replay_archives']
+    n = len(old_archives)
+    if (source['replay_archives'][:n] != old_archives
+            or source['replay_archive_receipts'][:n] != parent['replay_archive_receipts']
+            or len(source['replay_archives']) <= n
+            or source['config']['wm_holdout_lanes'] != parent['config']['wm_holdout_lanes']):
+        raise ValueError('Guard history needs a verified descendant of the selected A40 lineage')
+    saved = source['actor_start_bank']
+    events, frames = saved['resolved_events'], saved['event_frames']
+    cache, imported = {}, []
+    for key, (indices, terminal) in events.items():
+        stream, lane, episode = key
+        behavior = terminal.get('behavior_at_terminal') or {}
+        actor = behavior.get('actor_sha256')
+        if lane in bank.excluded_lanes or not actor:
+            continue
+        selected = [i for i in indices if i[1] > parent['native_ticks']
+                    and frames[i]['start'].get('actor_state_sha256') == actor
+                    and int(frames[i]['start']['before']['episode_index'][lane]) == episode]
+        if not selected:
+            continue
+        namespaced = int(hashlib.sha256(f'{source_sha256}:{stream}'.encode()).hexdigest()[:12], 16)
+        for i in selected:
+            entry = frames[i]
+            cache.setdefault(i, dict(entry, stream=namespaced,
+                                     start=dict(entry['start'], stream_id=namespaced)))
+        key = (namespaced, lane, episode)
+        bank.resolved[key] = (tuple(cache[i] for i in selected), terminal)
+        imported.append((lane, terminal['case_id'], terminal['failure_category']))
+    return dict(source_sha256=source_sha256, exact_same_actor_episodes=len(imported),
+                original_cases=len({row[0] for row in imported}), records=imported)

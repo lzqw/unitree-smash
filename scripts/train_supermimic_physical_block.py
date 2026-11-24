@@ -264,6 +264,8 @@ def main():
                         help='Profile one fresh bounded native collection and stop before WM or Actor updates')
     parser.add_argument('--approach-reuse-collected', type=Path,
                         help='Replay a complete, identity-matched native cold collection during preparation')
+    parser.add_argument('--approach-directed-guard-history', type=Path,
+                        help='Import only original, same-actor labeled starts from a measured descendant archive')
     parser.add_argument('--approach-directed-validation-lane', action='append', type=int, default=[],
                         help='Original training case reserved from fitting the new signed intervention pair')
     parser.add_argument('--approach-directed-risk', action='store_true',
@@ -440,6 +442,8 @@ def main():
             or args.approach_body_overlay or args.resume_wm_replay or args.approach_resident_eval_wait_seconds
             or args.toi_effective_start_lanes != 32 or args.approach_guard_start_lanes != 16):
         parser.error('Prepared Approach stages require a bounded E1 v2 continuation with the 32+16 contract')
+    if args.approach_directed_guard_history and not (args.approach_directed_risk and args.approach_prepare_only):
+        parser.error('Import guard history only at the directed preparation boundary')
     if args.approach_directed_risk and (not args.e1_v2_approach_scale or not args.approach_ball_only
             or not (args.approach_prepare_only or args.approach_speed_risk_history)):
         parser.error('Directed risk requires a prepared, bounded Approach-only block')
@@ -1367,6 +1371,14 @@ def run(args, *, alternating=None):
             from quadsmash.rl.supermimic_training_probe_replay import directed_start_events
             from quadsmash.rl.supermimic_actor_start_bank_v1 import ball_start_outcome
             bank = replay.actor_start_bank
+            if args.approach_directed_guard_history:
+                from quadsmash.rl.supermimic_actor_start_bank_v1 import merge_directed_guard_history
+                history = torch.load(args.approach_directed_guard_history, map_location='cpu',
+                                     mmap=True, weights_only=False)
+                imported = merge_directed_guard_history(bank, history, resumed,
+                                                        source_sha256=file_sha(args.approach_directed_guard_history))
+                write(args.output/'directed_guard_history_receipt.json', imported)
+                del history
             for receipt in action_collections:
                 if not receipt.get('terminal_labeled_collection'):
                     continue

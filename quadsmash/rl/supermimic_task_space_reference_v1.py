@@ -229,12 +229,13 @@ class TaskSpaceReferenceBankV1:
             times = torch.tensor([times[i] for i in order], device=device)
             event_source = (terminal.get('behavior_at_terminal') or {}).get('actor_sha256') or source_sha256
             digest = hashlib.sha256(f'{event_source}:{stream}:{lane}:{episode}'.encode()).hexdigest()
-            entries.append(dict(mode='approach', lane_id=lane, episode_id=episode,
+            face_target = (dict(measured_face_speed_mps=face_speed, measured_face_normal=face,
+                                measured_touch_offset=contact-ball)
+                           if motion.get('string_contact') and motion.get('legal_initial_contact') else {})
+            entries.append(dict(**face_target, mode='approach', lane_id=lane, episode_id=episode,
                                 features=task_space_features(states, geometry, 'approach'), times=times,
                                 choices=torch.arange(len(times), device=device), anchor_time=arrival,
                                 toi_time=arrival, toi_racket=target, incoming_velocity=incoming,
-                                measured_face_speed_mps=face_speed, measured_face_normal=face,
-                                measured_touch_offset=contact-ball,
                                 outgoing_velocity=flight.get('outgoing_velocity_mps'), landing_position=landing,
                                 contact_position=motion['point_m'], source_sha256=event_source,
                                 policy_id=f'{stream}:{frames[-1]["policy_version"]}', digest=digest,

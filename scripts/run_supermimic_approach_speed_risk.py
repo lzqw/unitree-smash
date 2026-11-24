@@ -21,6 +21,7 @@ def main():
     parser.add_argument('--reuse-collected', type=Path, help='Recover preparation without repeating completed native collection')
     parser.add_argument('--prepare-only', action='store_true')
     parser.add_argument('--directed-collection', type=Path)
+    parser.add_argument('--directed-guard-history', type=Path)
     parser.add_argument('--directed-validation-lane', action='append', type=int, default=[])
     args = parser.parse_args()
     source, output = args.source.resolve(strict=True), args.output.resolve()
@@ -54,7 +55,10 @@ def main():
         prepared = preparation / 'approach_prepared.pt'
         dump(status_file, dict(status='preparing', source=str(source)))
         reuse = ['--approach-reuse-collected', str(args.reuse_collected.resolve(strict=True))] if args.reuse_collected else []
-        run([*command(source, preparation), '--approach-event-body-refresh', '--approach-prepare-only', *reuse],
+        history = (['--approach-directed-guard-history', str(args.directed_guard_history.resolve(strict=True))]
+                   if args.directed_guard_history else [])
+        run([*command(source, preparation), '--approach-event-body-refresh', '--approach-prepare-only',
+             *reuse, *history],
             output / 'prepare.log', 45)
     receipt = read(prepared.parent / 'approach_prepared.json')
     with prepared.open('rb') as stream:
