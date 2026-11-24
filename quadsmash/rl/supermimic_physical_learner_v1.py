@@ -557,7 +557,8 @@ class PhysicalHorizonTrainer:
             audit = (initial_state.clock_goal_context.get('approach_diagnostic')
                      if getattr(self, 'audit_approach_outcomes', False) else None)
             if audit is not None:
-                speed_cost = release_ball.new_zeros(len(selected))
+                audit_terms = ('speed', 'direction', 'net', 'landing')
+                lane_costs = release_ball.new_zeros((len(selected), len(audit_terms)))
             denominator = weights.sum().clamp_min(1.)
             # Unresolved starts keep continuous pre-contact geometry supervision.
             task_loss = (closest_approach * (~impacted) * weights).sum() / denominator
@@ -571,7 +572,7 @@ class PhysicalHorizonTrainer:
                     minimum=ball_protocol['minimum_outgoing_speed_mps'], speed_margin=.25 if approach_v2 else 0.)
                 flight_metrics['ball_speed_loss_supported_lanes'] = int((terms['speed'].detach() > 1e-6).sum())
                 if audit is not None:
-                    speed_cost[scored] = terms['speed'].detach()
+                    lane_costs[scored] = torch.stack(tuple(terms[name].detach() for name in audit_terms), dim=-1)
                 if flight_cost_by_lane is not None:
                     flight_cost_by_lane[scored] = sum(value.detach() for value in terms.values())
                 confidence = (first_margin[scored].detach() / .012).clamp(.2, 1.) if approach_v2 else 1.
@@ -593,14 +594,17 @@ class PhysicalHorizonTrainer:
             flight_metrics['demand_racket_target_lanes'] = int(target['valid'].sum()) if target is not None else 0
             if audit is not None:
                 keys = audit.tolist()
-                values = torch.stack((first_string, released, scored, release_ball[:, 3:].detach().norm(dim=-1),
-                                      speed_cost), dim=-1).tolist()
-                for (stream, lane, episode, code), (string, release, scored_lane, speed, loss) in zip(keys, values, strict=True):
+                flags = torch.stack((first_string, released, scored, release_ball[:, 3:].detach().norm(dim=-1)), dim=-1)
+                values = torch.cat((flags, lane_costs), dim=-1).tolist()
+                for (stream, lane, episode, code), (string, release, scored_lane, speed, *costs) in zip(keys, values, strict=True):
                     if code:
+                        components = dict(zip(audit_terms, costs, strict=True)) if scored_lane else None
+                        speed_loss = components['speed'] if components is not None else None
                         outcome_audit.append(dict(episode=[stream, lane, episode],
                             outcome='low_speed' if code == 1 else 'success', predicted_legal_strings=bool(string),
                             predicted_release=bool(release), release_speed_mps=speed if release else None,
-                            speed_loss=loss if scored_lane else None, speed_loss_active=bool(scored_lane and loss > 1e-6)))
+                            flight_cost_terms=components, speed_loss=speed_loss,
+                            speed_loss_active=speed_loss is not None and speed_loss > 1e-6))
         elif toi_only:
             task_loss=task_loss.detach()
             if contact_weight:

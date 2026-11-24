@@ -2388,7 +2388,8 @@ def run(args, *, alternating=None):
                     adapter.action_ball_model.detach_residual_for_actor=not args.approach_ball_only
                 trainer.diagnose_ball_gradients = args.approach_ball_only and collect_block
                 trainer.audit_approach_outcomes = args.e1_v2_approach_scale and (
-                    body_overlay_receipt is not None or invocation_heads['approach']['attempts'] <= 2)
+                    body_overlay_receipt is not None or args.approach_resident_eval_wait_seconds
+                    or invocation_heads['approach']['attempts'] <= 2)
                 try:
                     stats=trainer.imagine_update(actor_start, guard_starts=guard_start)
                 finally:

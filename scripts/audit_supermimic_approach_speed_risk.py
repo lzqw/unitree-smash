@@ -37,7 +37,11 @@ def summarize(rows):
 
 def audit_history(history, labels):
     attempts = []
+    total_proposals = 0
+    proposals_with_logging = 0
     for row in history:
+        total_proposals += 1
+        proposals_with_logging += bool(row.get('proposal_outcome_audit') or row.get('guard_outcome_audit_before'))
         proposal = labelled_speed_risk(row.get('proposal_outcome_audit', ()), labels)
         guard = labelled_speed_risk(row.get('guard_outcome_audit_before', ()), labels)
         if not (proposal or guard):
@@ -54,15 +58,20 @@ def audit_history(history, labels):
             candidate = after.get(tuple(before['episode']))
             if candidate is not None:
                 old_speed, new_speed = before['release_speed_mps'], candidate['release_speed_mps']
+                old_terms, new_terms = before.get('flight_cost_terms'), candidate.get('flight_cost_terms')
+                term_delta = ({name: new_terms[name] - value for name, value in old_terms.items()}
+                              if old_terms is not None and new_terms is not None else None)
                 paired.append(dict(before=before, after=candidate,
                     lost_release=before['predicted_release'] and not candidate['predicted_release'],
-                    speed_delta_mps=new_speed - old_speed if old_speed is not None and new_speed is not None else None))
+                    speed_delta_mps=new_speed - old_speed if old_speed is not None and new_speed is not None else None,
+                    flight_cost_delta=term_delta))
         attempts.append(dict(attempt=row['attempt_id'], update_accepted=row['update_accepted'],
                              proposal=proposal, guard=guard, accepted_guard_pairs=paired, flight_merit=merit))
     groups = ('low_speed', 'marginal_success')
     metrics = {group: {part: summarize([case for row in attempts for case in row[part] if case['risk_group'] == group])
                        for part in ('proposal', 'guard')} for group in groups}
-    return dict(attempts_with_risk=len(attempts), trials_with_accepted_guard_pairs=sum(
+    return dict(total_proposals=total_proposals, proposals_with_logging=proposals_with_logging,
+                attempts_with_risk=len(attempts), trials_with_accepted_guard_pairs=sum(
         bool(row['accepted_guard_pairs']) for row in attempts), metrics=metrics, attempts=attempts)
 
 
