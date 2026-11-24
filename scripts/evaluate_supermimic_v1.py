@@ -66,7 +66,7 @@ def main():
     parser.add_argument('--approach-reset-probe', action='store_true',
                         help='Compare 64 continuation ticks with a scene restart on eight training cases')
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
-    parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus'),default=None)
+    parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus','candidate'),default=None)
     args = parser.parse_args()
     if args.approach_reset_probe and not args.approach_quick64:
         parser.error('The restart probe requires the ball-only training-case panel')
@@ -94,7 +94,7 @@ def main():
             parser.error('Probe is a separate diagnostic, not evaluation/archive mode')
         from quadsmash.rl.supermimic_native_pair_capture_v1 import validate_spec
         probe_spec=validate_spec(json.loads(args.native_action_probe_spec.read_text()))
-        args.shutdown_diagnostic_ticks=probe_spec['tick']+1
+        args.shutdown_diagnostic_ticks=probe_spec.get('terminal_tick_cap', probe_spec['tick']+1)
 
     if args.shutdown_diagnostic_ticks is not None and not 1 <= args.shutdown_diagnostic_ticks < 800:
         parser.error('shutdown diagnostic ticks must be in [1,799]')
@@ -304,11 +304,35 @@ def _run_native(args, stop_request):
         if policy_execution['recovery_gate']==POSTHIT:
             mapping['scope']='Independent original executor and new executor with identical causal-gated requests; not legacy policy equivalence'
         probe_capture=None
+        candidate_actor = None
         if args.native_action_probe_spec:
             from quadsmash.rl.supermimic_native_pair_capture_v1 import NativePairCapture
             if policy_execution['recovery_gate']!=POSTHIT:
                 raise ValueError('Native training probe requires the causal execution contract')
             probe_capture=NativePairCapture(spec,args.native_action_probe_branch)
+            if spec.get('terminal_tick_cap') and scoring_protocol['approach_ball_scoring'] is None:
+                raise ValueError('Native probe terminal labels require ball-only scoring')
+            if probe_capture.branch == 'candidate':
+                from quadsmash.rl.supermimic_physical_loop_loading_v1 import APPROACH_NAMES
+                with Path(spec['candidate_checkpoint']).open('rb') as stream:
+                    if hashlib.file_digest(stream, 'sha256').hexdigest() != spec['candidate_checkpoint_sha256']:
+                        raise ValueError('Candidate checkpoint changed')
+                    candidate_path = Path(stream.name)
+                challenger = torch.load(candidate_path, map_location='cpu', mmap=True, weights_only=False)
+                require_resume_contract(challenger, contract)
+                if resolve_contract(challenger)[0] != policy_execution:
+                    raise ValueError('Candidate execution contract differs')
+                base = trained['actor']
+                state = challenger['actor']
+                if state.keys() != base.keys() or any(not torch.equal(state[k], base[k])
+                                                      for k in base if k not in APPROACH_NAMES):
+                    raise ValueError('Only Approach weights may differ in the candidate branch')
+                candidate_actor, _ = load_ppo_initialized_actor(source_path, env.device)
+                candidate_actor.load_state_dict(state, strict=True)
+                candidate_actor.eval()
+                if policy_execution.get('arm_preparation_seconds') is not None:
+                    candidate_actor.configure_approach_gate(policy_execution['arm_preparation_seconds'])
+                probe_capture.candidate_actor_sha256 = tensor_digest(candidate_actor.state_dict().items())
         start = time.perf_counter()
         step_wall_seconds = 0.
         phase_timing = None
@@ -332,7 +356,14 @@ def _run_native(args, stop_request):
                     restart = NativeApproachRestart.capture(env)
                 if env.approach_ball_termination is not None:
                     env.record_approach_gate(actor.approach_action_gate(before))
-                if probe_capture is not None:action=probe_capture.before(tick,env,before,action)
+                if probe_capture is not None:
+                    action = probe_capture.before(tick,env,before,action)
+                    if candidate_actor is not None and tick >= spec['action_tick']:
+                        alternate = policy_forward(candidate_actor, before, env.rally,
+                                                   mode=policy_execution['recovery_gate'], sample=False)[0].clamp(-1., 1.)
+                        probe_lanes = spec['lanes']
+                        action = action.clone()
+                        action[probe_lanes] = alternate[probe_lanes]
                 if policy_execution['recovery_gate'] == POSTHIT_OR_GROUNDED_MISS:
                     active_gate = recovery_gate(env.rally,before,mode=POSTHIT_OR_GROUNDED_MISS)
                     head_counts[0].add_(active_gate.sum())
@@ -396,6 +427,8 @@ def _run_native(args, stop_request):
                         if measured['episode_index'] != 0:
                             raise RuntimeError('Missing first episode; refusing later episode substitution')
                         first[lane]=measured
+                        if probe_capture is not None:
+                            probe_capture.capture_terminal(measured)
                         if args.diagnostic_grounded_miss:
                             first_active[lane] = False
                         with (args.output/'episodes.jsonl').open('a') as stream:
@@ -417,7 +450,10 @@ def _run_native(args, stop_request):
                     write_json(args.output/'progress.json',progress)
                     write_json(args.output/'command_consistency.json',mapping)
                     print('SUPERMIMIC_EVAL_PROGRESS='+json.dumps(progress),flush=True)
-                if scoring_protocol['approach_ball_scoring'] is not None and len(first) == lanes:
+                if probe_capture is not None and spec.get('terminal_tick_cap'):
+                    if tick >= spec['tick'] and len(probe_capture.terminal_records) == len(spec['lanes']):
+                        break
+                elif scoring_protocol['approach_ball_scoring'] is not None and len(first) == lanes:
                     break
         if env.physical_transition_archive is not None:
             env.physical_transition_archive.flush()

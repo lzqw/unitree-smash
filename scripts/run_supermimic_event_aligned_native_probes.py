@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES, validate_spec
+from quadsmash.rl.supermimic_native_pair_capture_v1 import BRANCHES, probe_branches, validate_spec
 
 
 def kit_args_option(value: str) -> str:
@@ -74,7 +74,7 @@ def completed_probe_hash(directory: Path, branch: str, spec: dict) -> str | None
     receipt = json.loads(receipt_path.read_text())
     diagnostic = json.loads(shutdown.read_text())
     if (receipt.get('branch') != branch or receipt.get('spec') != spec or
-            diagnostic.get('control_ticks') != spec['tick'] + 1):
+            not spec['tick'] + 1 <= diagnostic.get('control_ticks', 0) <= spec.get('terminal_tick_cap', spec['tick'] + 1)):
         return None
     digest = sha256(probe)
     return digest if digest == receipt.get('sha256') else None
@@ -188,7 +188,7 @@ def main() -> int:
     jobs = []
     for spec_path, spec in specs:
         spec_name = spec_path.stem
-        for branch in BRANCHES:
+        for branch in probe_branches(spec):
             branch_output = args.output / spec_name / branch
             probe_path = branch_output / 'native_probe.pt'
             digest = completed_probe_hash(branch_output, branch, spec) if args.resume else None
@@ -256,7 +256,7 @@ def main() -> int:
         for future in as_completed(futures):
             item = future.result()
             completed.append(item)
-            completed.sort(key=lambda row: (row['spec'], BRANCHES.index(row['branch'])))
+            completed.sort(key=lambda row: (row['spec'], (*BRANCHES, 'candidate').index(row['branch'])))
             (args.output / 'status.json').write_text(json.dumps(dict(
                 schema='event-aligned-native-probe-collection-v1', status='RUNNING',
                 workers=args.workers, total=total_branches, completed=completed), indent=2) + '\n')

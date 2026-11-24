@@ -8,6 +8,10 @@ from .supermimic_physical_dataset_v1 import encode_physical
 BRANCHES=('nominal_a','nominal_b','minus','plus')
 TRAINING_WINDOW_STEPS = (16, 20, 32)
 
+
+def probe_branches(spec):
+    return (*BRANCHES, 'candidate') if spec.get('candidate_checkpoint') else BRANCHES
+
 def probe_lanes(spec):
     return [spec['lane']] if spec['schema']=='native-paired-prefix-spec-v1' else list(spec['lanes'])
 
@@ -56,6 +60,15 @@ def validate_spec(spec):
     if spec.get('capture_wm_window') and (
             spec.get('data_role') != 'training_action_identification' or spec['tick'] - action_tick + 1 not in TRAINING_WINDOW_STEPS):
         raise ValueError('Mixed WM fitting requires a declared 16-step, 20-step or 32-step training intervention')
+    if 'terminal_tick_cap' in spec:
+        cap = spec['terminal_tick_cap']
+        if not spec.get('capture_wm_window') or type(cap) is not int or not spec['tick'] + 1 < cap < 800:
+            raise ValueError('Terminal labels require a short WM prefix and a later bounded native settlement')
+    if 'candidate_checkpoint' in spec:
+        digest = spec.get('candidate_checkpoint_sha256')
+        if (not spec.get('terminal_tick_cap') or not isinstance(digest, str) or len(digest) != 64
+                or spec.get('head') != 'approach'):
+            raise ValueError('Candidate branch requires a digest-bound Approach checkpoint and terminal capture')
     if 'capture_substeps' in spec and type(spec['capture_substeps']) is not bool:
         raise ValueError('capture_substeps must be an explicit boolean')
     if 'capture_substep_ticks' in spec:
@@ -76,9 +89,11 @@ def perturb_request(request,spec,branch):
     all selected lanes, and no previous perturbation is hidden in their state.
     """
     validate_spec(spec)
-    if branch not in BRANCHES:raise ValueError('Unknown probe branch')
+    if branch not in probe_branches(spec):raise ValueError('Unknown probe branch')
     if request.shape!=(128,18):raise ValueError('Probe requires original128 request shape')
     direction=([spec['request_direction']] if spec['schema']=='native-paired-prefix-spec-v1' else spec['request_directions'])
+    if branch == 'candidate':
+        return request
     action=request.clone();sign={'nominal_a':0.,'nominal_b':0.,'minus':-1.,'plus':1.}[branch]
     action[probe_lanes(spec)]+=sign*spec['epsilon_request']*request.new_tensor(direction)
     return action.clamp(-1,1)
@@ -157,6 +172,8 @@ class NativePairCapture:
         self.step_records=[]
         self.trace_ticks=set(spec.get('capture_substep_ticks',[spec['tick']])) if spec.get('capture_substeps') else set()
         self.earlier_traces={}
+        self.terminal_records = {}
+        self.candidate_actor_sha256 = None
     def before(self,tick,env,observation,request):
         action_tick = self.spec.get('action_tick', self.spec['tick'])
         event_tick = self.spec['tick']
@@ -222,6 +239,21 @@ class NativePairCapture:
                 env.physical_transition_archive = None
             if trace is not None:self.raw['substep_trace']=tensor_tree_copy(trace,cpu=True)
             if self.earlier_traces:self.raw['earlier_substep_traces']=self.earlier_traces
+    def capture_terminal(self, scored):
+        if not self.spec.get('terminal_tick_cap') or self.start is None:
+            return
+        lane = int(scored['env_id'])
+        starts = self.start['before']['episode_index']
+        if lane not in probe_lanes(self.spec) or int(starts[lane]) != scored['episode_index']:
+            return
+        if lane in self.terminal_records:
+            raise ValueError('Duplicate resolved native probe episode')
+        # Only independent, measured terminal scoring fields enter supervision.
+        keys = ('case_id', 'env_id', 'episode_index', 'qualified_airborne_string_contact',
+                'ball_side_complete_except_recovery', 'outgoing_speed_mps', 'scoring_schema',
+                'rejection_reasons', 'numerical_failures', 'approach_ball_terminal')
+        self.terminal_records[lane] = {key: scored[key] for key in keys}
+
     def save(self,output,actor,task_contract,policy_execution,physics,seed):
         if self.raw is None:raise ValueError('Native probe did not finish')
         from .supermimic_evidence_binding_v1 import runtime_identity
@@ -230,6 +262,16 @@ class NativePairCapture:
             prefix_sha256=self.prefix.hexdigest(),executor_before_sha256=tree_digest(self.start['executor_before']),
             actor_state=tensor_tree_copy(actor.state_dict(),cpu=True),task_contract=task_contract,policy_execution=policy_execution,
             physics=physics,seed=seed,restore_mode='from-ground-identical-prefix',actor_updates=0,world_updates=0,critic_updates=0)
+        if self.spec.get('terminal_tick_cap'):
+            value['terminal_labels'] = {}
+            actor_id = self.candidate_actor_sha256 or tree_digest(value['actor_state'])
+            prefix = value['prefix_sha256']
+            probe = tree_digest(self.spec)
+            stream = tree_digest((probe, prefix, seed, self.branch))
+            for lane, terminal in self.terminal_records.items():
+                value['terminal_labels'][lane] = dict(terminal, probe=probe, stream=stream,
+                    prefix=prefix, branch=self.branch, actor=actor_id)
+            value['candidate_actor_sha256'] = self.candidate_actor_sha256
         path=Path(output)/'native_probe.pt';tmp=path.with_suffix('.tmp');torch.save(value,tmp);tmp.replace(path)
         (Path(output)/'native_probe_manifest.json').write_text(json.dumps(dict(schema=value['schema'],branch=self.branch,
             spec=self.spec,sha256=hashlib.sha256(path.read_bytes()).hexdigest(),scope='diagnostic only; no score; requires four-branch comparison'),indent=2)+'\n')
