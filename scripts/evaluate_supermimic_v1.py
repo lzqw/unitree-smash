@@ -309,7 +309,13 @@ def _run_native(args, stop_request):
             from quadsmash.rl.supermimic_native_pair_capture_v1 import NativePairCapture
             if policy_execution['recovery_gate']!=POSTHIT:
                 raise ValueError('Native training probe requires the causal execution contract')
-            probe_capture=NativePairCapture(spec,args.native_action_probe_branch)
+            if args.native_action_probe_branch == 'candidate':
+                # Reuse the nominal recorder for a request with no injected
+                # pulse. The evaluator supplies the closed-loop policy suffix.
+                probe_capture = NativePairCapture(spec, 'nominal_a')
+                probe_capture.branch = 'candidate'
+            else:
+                probe_capture = NativePairCapture(spec, args.native_action_probe_branch)
             if spec.get('terminal_tick_cap') and scoring_protocol['approach_ball_scoring'] is None:
                 raise ValueError('Native probe terminal labels require ball-only scoring')
             if probe_capture.branch == 'candidate':
@@ -364,6 +370,8 @@ def _run_native(args, stop_request):
                         probe_lanes = spec['lanes']
                         action = action.clone()
                         action[probe_lanes] = alternate[probe_lanes]
+                        if tick == spec['action_tick']:
+                            probe_capture.request_after = action.detach().cpu().clone()
                 if policy_execution['recovery_gate'] == POSTHIT_OR_GROUNDED_MISS:
                     active_gate = recovery_gate(env.rally,before,mode=POSTHIT_OR_GROUNDED_MISS)
                     head_counts[0].add_(active_gate.sum())
