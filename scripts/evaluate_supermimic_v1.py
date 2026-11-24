@@ -74,9 +74,16 @@ def main():
     parser.add_argument('--approach-prefix-tick', type=int, default=235)
     parser.add_argument('--approach-verify-snapshot', action='store_true',
                         help='Validate the resident snapshot against a 64-tick uninterrupted control replay')
+    parser.add_argument('--approach-hybrid-spec', type=Path)
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus','candidate'),default=None)
     args = parser.parse_args()
+    if args.approach_hybrid_spec and (not args.checkpoint or not args.approach_ball_only
+            or not args.headless or args.approach_search_spec or args.research_fixed128
+            or args.approach_quick64 or args.independent_panel_batch is not None
+            or args.native_action_probe_spec or args.record_physical_transitions
+            or args.shutdown_diagnostic_ticks or args.diagnostic_grounded_miss):
+        parser.error('Hybrid boundary requires its own 128-lane frozen native layout')
     if args.approach_search_spec and (not args.checkpoint or not args.approach_ball_only or not args.headless
             or args.native_action_probe_spec or args.record_physical_transitions or args.shutdown_diagnostic_ticks
             or args.diagnostic_grounded_miss):
@@ -224,6 +231,18 @@ def _run_native(args, stop_request):
             raise ValueError('Post-success survival requires relaxed scoring')
         capture_contract = contract
         search_spec = None
+        hybrid = None
+        if args.approach_hybrid_spec:
+            from quadsmash.rl.supermimic_approach_data_v1 import approach_quick_panel
+            from quadsmash.rl.supermimic_hybrid_native import (
+                FIRST_CAPTURE_TICK, native_layout, native_state, pack_tapes, perturbation_envelope)
+
+            hybrid = json.loads(args.approach_hybrid_spec.read_text())
+            _, quick_identity = approach_quick_panel(cases)
+            cases = native_layout(cases, hybrid, trained['config']['wm_holdout_lanes'])
+            capture_contract = dict(contract, approach_quick_panel=quick_identity)
+            hybrid_frames = []
+
         if args.approach_search_spec:
             from quadsmash.rl.supermimic_native_approach_search import candidate_layout, validate_offsets
             search_spec = json.loads(args.approach_search_spec.read_text())
@@ -314,6 +333,10 @@ def _run_native(args, stop_request):
             search_bias = torch.zeros((lanes, 18), device=env.device)
             offsets = search_bias.new_tensor(search_spec['offsets'])
             search_bias[:, -6:] = offsets.repeat_interleave(32, dim=0)
+            search_bias = search_bias * actor.actor.approach_scale
+        if hybrid is not None:
+            search_bias = torch.zeros((lanes, 18), device=env.device)
+            search_bias[64:, -6:] = search_bias.new_tensor(hybrid['offsets']).repeat_interleave(16, dim=0)
             search_bias = search_bias * actor.actor.approach_scale
         if args.diagnostic_grounded_miss:
             if policy_execution != execution_contract(POSTHIT):
@@ -431,8 +454,11 @@ def _run_native(args, stop_request):
                     action = policy_forward(active_actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
                 else:
                     latch = recovery_gate(env.rally, before)
+                    offset = search_bias
+                    if hybrid is not None:
+                        offset = offset * perturbation_envelope(tick) * (~env.rally.had_contact[:, None])
                     action = (actor._gated_distribution(before, latch).loc
-                              + actor.approach_action_gate(before) * search_bias).clamp(-1., 1.)
+                              + actor.approach_action_gate(before) * offset).clamp(-1., 1.)
                 if args.approach_reset_probe and tick == 235:
                     restart = NativeApproachRestart.capture(env)
                 if env.approach_ball_termination is not None:
@@ -465,9 +491,18 @@ def _run_native(args, stop_request):
                     old_target = full_range_targets(old_final, env._sm_residual_limits).clone()
                 if not torch.isfinite(action).all():
                     raise FloatingPointError('Nonfinite evaluation action')
+                frame = None
+                if hybrid is not None and tick >= FIRST_CAPTURE_TICK:
+                    frame = native_state(env)
+                    frame['observation'] = before[64:].clone()
+                    frame['request'] = action[64:].clone()
+                    frame['gate'] = actor.approach_action_gate(before)[64:].amax(-1)
                 step_start = time.perf_counter()
                 obs, _, done, _ = (wrapper.step(action) if phase_timing is None else
                                    phase_timing.step(wrapper.step, action, before, tick))
+                if frame is not None:
+                    frame['targets'] = env._sm_joint_targets[64:].clone()
+                    hybrid_frames.append(frame)
                 if args.approach_reset_probe and restart is not None:
                     replay_actions.append(action.detach().clone())
                     continuation.append(observe_restart_state(env, obs))
@@ -555,7 +590,7 @@ def _run_native(args, stop_request):
             return
         if len(first) != lanes:
             raise RuntimeError(f'Only {len(first)}/{lanes} pre-reset records; no live-state backfill permitted')
-        if search_spec is not None or args.approach_quick64 or args.research_fixed128 or args.independent_panel_batch is not None:
+        if search_spec is not None or hybrid is not None or args.approach_quick64 or args.research_fixed128 or args.independent_panel_batch is not None:
             if any(first[i]['case_id'] != cases[i]['case_id'] for i in range(lanes)):
                 raise ValueError('Terminal case differs from the declared lane assignment')
         rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(lanes)]
@@ -607,7 +642,7 @@ def _run_native(args, stop_request):
             metrics.update(task_contract=capture_contract, evaluation_scope='fixed train64 Approach quick-check')
         actor_state_after=tensor_digest(actor.state_dict().items())
         if actor_state_after!=actor_state_before:raise RuntimeError('Frozen evaluation mutated actor weights')
-        if search_spec is not None:
+        if search_spec is not None or hybrid is not None:
             from quadsmash.physics.full_racket_v4 import string_polygon
             from quadsmash.rl.supermimic_native_approach_search import native_fitness
             from quadsmash.tasks.stand.observation_contract import inverse_rotate
@@ -625,17 +660,37 @@ def _run_native(args, stop_request):
                 return float((local[0, 1:] @ inward.T - boundary).min()) if local.isfinite().all() else None
 
             raw = {row['env_id']: row for row in env.rally_records if row['episode_index'] == 0}
-            expected = [cases[i]['case_id'] for i in range(32)]
-            variants = []
-            for branch, bias in enumerate(search_spec['offsets']):
-                group = [raw[i] for i in range(branch * 32, (branch + 1) * 32)]
-                if [row['case_id'] for row in group] != expected:
-                    raise ValueError('Unpaired native search outcomes')
-                variants.append(dict(offset=bias, **native_fitness(group, env.court_config, signed_margin)))
-            write_json(args.output/'approach_search_results.json', dict(
-                offsets=search_spec['offsets'], case_indices=search_spec['case_indices'],
-                actor_sha256=actor_state_after, checkpoint_sha256=checkpoint_sha256, variants=variants,
-                elapsed_s=metrics['elapsed_s'], native_lanes=lanes))
+            if hybrid is not None:
+                variants = []
+                for start in range(64, 128, 16):
+                    group = [raw[i] for i in range(start, start + 16)]
+                    variants.append(native_fitness(group, env.court_config, signed_margin))
+                quick = native_fitness([raw[i] for i in range(64)], env.court_config, signed_margin)
+                launch = torch.tensor([row['launch']['position_m'] + row['launch']['velocity_mps']
+                                       for row in cases[64:]])
+                data = pack_tapes(hybrid_frames, variants, hybrid['case_indices'], launch, actor_state_after)
+                data['flight_truth'] = dict(
+                    ball_net=torch.tensor([raw[i]['shuttle_net_contact'] for i in range(64, 128)]),
+                    landing=torch.tensor([raw[i]['first_landing_m'] for i in range(64, 128)]))
+                data['checkpoint_sha256'] = checkpoint_sha256
+                torch.save(data, args.output / 'hybrid_native.tmp')
+                (args.output / 'hybrid_native.tmp').replace(args.output / 'hybrid_native.pt')
+                write_json(args.output / 'hybrid_boundary.json', dict(
+                    panel=quick, variants=variants, panel_sha256=quick_identity['sha256'],
+                    examples=data['examples'], actor_sha256=actor_state_after,
+                    native_lanes=lanes, elapsed_s=metrics['elapsed_s']))
+            else:
+                expected = [cases[i]['case_id'] for i in range(32)]
+                variants = []
+                for branch, bias in enumerate(search_spec['offsets']):
+                    group = [raw[i] for i in range(branch * 32, (branch + 1) * 32)]
+                    if [row['case_id'] for row in group] != expected:
+                        raise ValueError('Unpaired native search outcomes')
+                    variants.append(dict(offset=bias, **native_fitness(group, env.court_config, signed_margin)))
+                write_json(args.output/'approach_search_results.json', dict(
+                    offsets=search_spec['offsets'], case_indices=search_spec['case_indices'],
+                    actor_sha256=actor_state_after, checkpoint_sha256=checkpoint_sha256, variants=variants,
+                    elapsed_s=metrics['elapsed_s'], native_lanes=lanes))
         head_active_lane_steps = dict(zip(("recovery", "approach"), head_counts.tolist()))
         metrics.update(actor_state_sha256=actor_state_after,actor_parameters_unchanged=True,
             optimizer_updates=dict(actor=0,world=0,critic=0),head_active_lane_steps=head_active_lane_steps)

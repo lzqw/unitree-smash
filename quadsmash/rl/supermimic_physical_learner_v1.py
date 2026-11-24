@@ -608,6 +608,9 @@ class PhysicalHorizonTrainer:
             denominator = weights.sum().clamp_min(1.)
             # Unresolved starts keep continuous pre-contact geometry supervision.
             task_loss = (closest_approach * (~impacted) * weights).sum() / denominator
+            if getattr(self, 'approach_hybrid', False):
+                geometry_cost = torch.where(impacted, first_cost, closest_approach)
+                task_loss = (geometry_cost * weights).sum() / denominator
             if net_clearance is not None:
                 net_clearance = torch.where(selected & net_clearance.isfinite(), net_clearance, torch.nan)
                 net_loss = (robot_net_cost(net_clearance.nan_to_num(nan=1.)) * weights).sum() / denominator
@@ -978,6 +981,14 @@ class PhysicalHorizonTrainer:
                     restore_rng()
                 objective_started = time.perf_counter()
                 rollout=self._rollout_objective(initial_state)
+                native_supervision = {}
+                if getattr(self, 'approach_hybrid', False):
+                    from .supermimic_hybrid_native import native_actor_loss
+
+                    aux, native_supervision = native_actor_loss(
+                        self.actor, self.hybrid_actor_samples, self.block_attempts)
+                    if aux is not None:
+                        rollout['loss'] = rollout['loss'] + aux
                 baseline_loss=float(rollout['loss'].detach())
                 proposal_timing['baseline_objective_wall_s'] = time.perf_counter() - objective_started
                 proposal_timing['baseline_tracking_vjp_wall_s'] = rollout.get('tracking_vjp_wall_s', 0.)
@@ -1296,7 +1307,7 @@ class PhysicalHorizonTrainer:
                 guard_terms_after=trials[-1]['objective_terms'] if accepted else objective_terms_before)
             if guard_baseline['outcome_audit']:
                 objective_report['guard_outcome_audit_before'] = guard_baseline['outcome_audit']
-        return dict(**objective_report, reference_coverage=coverage,actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,rejected_actor_updates=self.rejected_actor_updates,
+        return dict(**objective_report, **native_supervision, reference_coverage=coverage,actor_updates=self.actor_updates,actor_attempts=self.actor_attempts,rejected_actor_updates=self.rejected_actor_updates,
             update_accepted=accepted if update_actor else False,block_name=self.block_name,trainable_names=sorted(self.trainable_names),
             block_attempts=self.block_attempts,backtracked_actor_updates=self.backtracked_actor_updates,backtrack_alpha=alpha,
             rejection_reason=reason,backtrack_trials=trials,objective_before=objective_before,

@@ -14,6 +14,7 @@ INTERLEAVED_SCHEDULE = (
     'failure_pre', 'success_near', 'pre_contact', 'gate_onset', 'failure_pre',
 )
 BALL_START_QUOTAS = dict(contact_failure=4, low_speed=6, flight_failure=3, success=3)
+HYBRID_PROPOSAL_QUOTAS = dict(contact_failure=7, low_speed=2, flight_failure=3, success=4)
 BALL_START_TIME_QUOTAS = dict(early=5, middle=8, late=3)
 
 
@@ -262,11 +263,11 @@ class ActorStartBank:
                           shuffle_unlabeled=False, labeled_history=(), excluded_episodes=(),
                           require_labels=False, record_draw=True, reserve_for_proposal=0,
                           distinct_cases=False, excluded_cases=(), risk_quotas=None,
-                          reserve_risk_quotas=None):
+                          reserve_risk_quotas=None, outcome_mix=None, reserve_outcome_mix=None):
         """Draw distinct episode starts with proportionate outcome and time quotas."""
         if not 1 <= count <= 128:
             raise ValueError('Ball-phase start count must be in [1,128]')
-        outcome_quotas = _scale_start_quotas(BALL_START_QUOTAS, count)
+        outcome_quotas = _scale_start_quotas(outcome_mix or BALL_START_QUOTAS, count)
         order = torch.randperm(len(self.entries), generator=self.generator).tolist()
         groups = {name: [] for name in BALL_START_QUOTAS}
         unlabeled = []
@@ -335,7 +336,7 @@ class ActorStartBank:
 
         outcome_caps = {}
         if reserve_for_proposal:
-            proposal_quotas = _scale_start_quotas(BALL_START_QUOTAS, reserve_for_proposal)
+            proposal_quotas = _scale_start_quotas(reserve_outcome_mix or BALL_START_QUOTAS, reserve_for_proposal)
             for name, rows in groups.items():
                 support = len({episode_identity(start, lane) for start, lane, _, _ in rows} - excluded_episodes)
                 if support < outcome_quotas[name] + proposal_quotas[name]:
@@ -426,7 +427,8 @@ class ActorStartBank:
         return [row for row, _ in selected.values()], report
 
     def sample_proposal_and_guard(self, eligible_lanes, attempt, proposal_count, guard_count, *, labeled_history=(),
-                                  fixed_guard=None, record_draw=True, guard_case_quotas=None):
+                                  fixed_guard=None, record_draw=True, guard_case_quotas=None,
+                                  prioritize_contact=False):
         cache = {}
         def eligible(start):
             if id(start) not in cache:
@@ -437,12 +439,13 @@ class ActorStartBank:
         settings = dict.fromkeys(((proposal_count, guard_count), (32, 16)))
         proposal_risk_quotas = dict(low_speed=1, marginal_success=1) if guard_case_quotas else None
         proposal_risk_shortfall = None
+        proposal_mix = HYBRID_PROPOSAL_QUOTAS if prioritize_contact else None
         for n, g in settings:
             if fixed_guard is None:
                 guard, guard_report = self.sample_ball_phase(
                     eligible, attempt, count=g, reserve_for_proposal=0 if guard_case_quotas else n,
                     distinct_cases=bool(guard_case_quotas), risk_quotas=guard_case_quotas,
-                    reserve_risk_quotas=proposal_risk_quotas, **options)
+                    reserve_risk_quotas=proposal_risk_quotas, reserve_outcome_mix=proposal_mix, **options)
             else:
                 guard, guard_report = fixed_guard
             if guard_report['effective_lanes'] != g:
@@ -452,7 +455,7 @@ class ActorStartBank:
             cases = guard_report['unique_original_cases'] if guard_case_quotas else ()
             proposal, report = self.sample_ball_phase(
                 eligible, attempt + g, count=n, excluded_episodes=forbidden, excluded_cases=cases,
-                risk_quotas=proposal_risk_quotas, **options)
+                risk_quotas=proposal_risk_quotas, outcome_mix=proposal_mix, **options)
             proposal_risk_shortfall = {
                 key: max(0, quota - report['protected_case_count'][key])
                 for key, quota in (proposal_risk_quotas or {}).items()}

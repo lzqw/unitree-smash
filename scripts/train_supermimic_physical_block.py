@@ -272,6 +272,8 @@ def main():
                         help='Use distinct training cases for the Approach guard and protect physical net clearance')
     parser.add_argument('--approach-speed-risk-history', type=Path,
                         help='Archived risk receipt for the fixed-guard speed-risk pilot on a prepared block')
+    parser.add_argument('--approach-hybrid', action='store_true')
+    parser.add_argument('--hybrid-native-data', type=Path)
     parser.add_argument('--approach-native-gate-updates', type=int, choices=(2, 3, 4),
                         help='Pause a prepared Approach block after this many coarse-screened updates for native evaluation')
     parser.add_argument('--approach-native-search-screen', action='store_true',
@@ -457,6 +459,10 @@ def main():
         parser.error('Directed risk requires a prepared, bounded Approach-only block')
     if args.approach_prepare_only and args.approach_speed_risk_history:
         parser.error('Supply the risk history when resuming the prepared block')
+    if (args.approach_hybrid and (not args.e1_v2_approach_scale or not args.wm_forward_guard
+                                 or not args.approach_stop_at or args.approach_speed_risk_history)
+            or args.hybrid_native_data and not args.approach_hybrid):
+        parser.error('Hybrid training requires bounded E1 v2 with fixed native forward validation')
     if args.approach_native_gate_updates and not (args.approach_directed_risk and args.approach_speed_risk_history):
         parser.error('Native gate requires directed Approach training from a prepared block')
     if args.approach_native_search_screen and (args.approach_native_gate_updates
@@ -1382,9 +1388,10 @@ def run(args, *, alternating=None):
         if env is None:
             phase = 'ENV'
             env, wrapper, obs = start_native_env()
-        if args.approach_directed_risk:
+        if args.approach_directed_risk or args.approach_hybrid:
             from quadsmash.rl.supermimic_robot_net_clearance import net_proxy_geometry
             trainer.approach_net_proxy = net_proxy_geometry(env, adapter.physical_model.geometry)
+        if args.approach_directed_risk:
             from quadsmash.rl.supermimic_training_probe_replay import directed_start_events
             from quadsmash.rl.supermimic_actor_start_bank_v1 import ball_start_outcome
             bank = replay.actor_start_bank
@@ -1642,7 +1649,19 @@ def run(args, *, alternating=None):
         config['approach_event_body_refresh'] = args.approach_event_body_refresh
         config['approach_speed_risk_history_sha256'] = file_sha(args.approach_speed_risk_history)
         trainer.approach_speed_risk = bool(args.approach_speed_risk_history)
-        trainer.approach_native_gate = bool(args.approach_native_gate_updates or args.approach_native_search_screen)
+        trainer.approach_hybrid = args.approach_hybrid
+        trainer.hybrid_actor_samples = {}
+        trainer.approach_native_gate = bool(args.approach_hybrid or args.approach_native_gate_updates
+                                            or args.approach_native_search_screen)
+        if args.approach_hybrid:
+            trainer._native_gate_target_rms = .000075
+            if args.hybrid_native_data:
+                from quadsmash.rl.supermimic_hybrid_native import load_training_data
+
+                hybrid_data = load_training_data(args.hybrid_native_data, wm_holdout_lanes)
+                trainer.hybrid_actor_samples = hybrid_data['supervision']
+        config['approach_hybrid'] = args.approach_hybrid
+        config['hybrid_native_data_sha256'] = file_sha(args.hybrid_native_data)
         config['approach_native_gate_updates'] = args.approach_native_gate_updates
         metadata=dict(wm_action_collections=action_collections,policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
@@ -2150,6 +2169,9 @@ def run(args, *, alternating=None):
                     break
                 check_stop()
                 collect_block = (not research or attempts == 0) and not use_prepared
+                hybrid_refresh = args.approach_hybrid and args.hybrid_native_data and attempts == 0
+                if hybrid_refresh:
+                    collect_block = False
                 attempt_key = global_attempt_id + 1
                 proposal_checkpoint=args.output/('pre_block.pt' if research else f'pre_proposal_{cycle_index}_{block_name}.pt')
                 if collect_block:
@@ -2384,7 +2406,7 @@ def run(args, *, alternating=None):
                                       completed_native_episodes=len(completed_returns), first_episode_body_cases=body_count)
                         with (args.output/'native_collection_history.jsonl').open('a') as stream:
                             stream.write(json.dumps(sample)+'\n')
-                block_reward_mean=progress['collection_reward_mean']
+                block_reward_mean = progress.get('collection_reward_mean')
                 def approach_refresh_identity():
                     calibration = trainer.approach_speed_calibration
                     return dict(world_updates=trainer.world_updates,
@@ -2417,6 +2439,23 @@ def run(args, *, alternating=None):
 
                     event_validation_before = event_body_validation()
                 world_stats=run_world_updates(attempt_key,head=block_name) if collect_block else {}
+                if hybrid_refresh:
+                    from quadsmash.rl.supermimic_hybrid_native import refresh_world
+
+                    world_stats = refresh_world(trainer, hybrid_data, env.device,
+                                                lambda: verify_online_forward(block_name, attempt_key))
+                    if world_stats['committed']:
+                        from quadsmash.rl.supermimic_release_calibration import calibrate_release_speed
+
+                        calibration = calibrate_release_speed(
+                            adapter, replay, launch, excluded_lanes=wm_holdout_lanes,
+                            string_strips=trainer.string_strips, separation_m=trainer.approach_separation_m,
+                            threshold=phase_scoring['minimum_outgoing_speed_mps'])
+                        calibration.update(world_sha256=tensor_digest(adapter.state_dict().items()),
+                                           first_attempt=attempt_key, native_ticks=tick)
+                        trainer.approach_speed_calibration = calibration
+                        write(args.output / f'{cycle_index}_speed_calibration.json', calibration)
+                    write(args.output / f'{cycle_index}_hybrid_world_refresh.json', world_stats)
                 if args.approach_ball_only and collect_block:
                     from quadsmash.rl.supermimic_release_calibration import (
                         calibrate_release_speed, measured_body_pairs, measured_contact_batches, measured_contact_pairs)
@@ -2670,7 +2709,8 @@ def run(args, *, alternating=None):
                                     ball_start_lanes, draw + offset, args.toi_effective_start_lanes,
                                     args.approach_guard_start_lanes, labeled_history=labeled_approach_history,
                                     fixed_guard=fixed_guard_rows, record_draw=not trainer.approach_speed_risk,
-                                    guard_case_quotas=guard_case_quotas)
+                                    guard_case_quotas=guard_case_quotas,
+                                    prioritize_contact=bool(args.approach_hybrid and args.hybrid_native_data))
                             except ApproachStartShortfall as error:
                                 last_guard_report = error.report
                                 continue
@@ -2908,6 +2948,12 @@ def run(args, *, alternating=None):
                     replay_stream=replay.current_stream)
                 progress.update(proposal_in_flight=False,attempts=attempts,accepted=accepted,rejected=progress.get('rejected',0)+int(not stats['update_accepted']),backtracked=progress.get('backtracked',0)+backtracked)
                 consecutive_rejections = 0 if stats['update_accepted'] else consecutive_rejections + 1
+                if args.approach_hybrid:
+                    stats['consecutive_accepted'] = (progress.get('consecutive_accepted', 0) + 1
+                                                     if stats['update_accepted'] else 0)
+                    progress['consecutive_accepted'] = stats['consecutive_accepted']
+                    if stats['update_accepted']:
+                        save('hybrid_latest_accepted.pt')
                 if trainer.approach_speed_risk and stats['update_accepted']:
                     milestone = f'approach_A{global_accepted_id-research_origin:03d}.pt'
                     save(milestone)
@@ -2926,7 +2972,8 @@ def run(args, *, alternating=None):
                     stats['imagined_start_source']=start_sampling['source']
                 if writer is not None:
                     step=int(tick*128)
-                    writer.add_scalar('native/step_reward_mean',block_reward_mean,step)
+                    if block_reward_mean is not None:
+                        writer.add_scalar('native/step_reward_mean', block_reward_mean, step)
                     writer.add_scalar('native/completed_episodes',len(completed_returns),step)
                     if block_name=='recovery' and args.recovery_prefix_and_string_margin:
                         prefix_lanes = sum(len(group['lane_episode_tick']) for group in start_sampling.get('records', [])
