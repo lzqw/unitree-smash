@@ -1,0 +1,181 @@
+{
+  "scope": "same training-side TRAIN64 native evaluation with parked training scene",
+  "panel_sha256": "e42bce6665fb0a7baf2c372f3db56d3724e5f558e3c36ba25fd286dbee0f7477",
+  "scores": {
+    "A40": {
+      "success": 33,
+      "qualified": 39,
+      "frame": 15,
+      "low": 3,
+      "out_of_target": 2,
+      "landed_target": 36,
+      "checkpoint_sha256": "8181f8a8a0e03a70962bac74e39b5fcd00900ac65600d40b47df3d4a004cee3b"
+    },
+    "A48": {
+      "success": 28,
+      "qualified": 39,
+      "frame": 16,
+      "low": 4,
+      "out_of_target": 4,
+      "landed_target": 30,
+      "checkpoint_sha256": "d79ef20b96a600f81a0fc1ac319e07d1b0d6dea33167d2fe7ac3efaea28c0aa0"
+    }
+  },
+  "paired": {
+    "regressed": false,
+    "transitions": {
+      "string_to_frame": [
+        "A-720401-030",
+        "B-720402-054"
+      ],
+      "frame_to_string": [
+        "A-720401-044",
+        "B-720402-050"
+      ],
+      "success": {
+        "gained": [
+          "B-720402-016"
+        ],
+        "lost": [
+          "A-720401-030",
+          "A-720401-034",
+          "A-720401-062",
+          "B-720402-004",
+          "B-720402-008",
+          "B-720402-018"
+        ]
+      },
+      "string": {
+        "gained": [
+          "A-720401-044",
+          "B-720402-050"
+        ],
+        "lost": [
+          "A-720401-030",
+          "B-720402-054"
+        ]
+      },
+      "frame": {
+        "gained": [
+          "A-720401-030",
+          "B-720402-048",
+          "B-720402-054"
+        ],
+        "lost": [
+          "A-720401-044",
+          "B-720402-050"
+        ]
+      },
+      "low": {
+        "gained": [
+          "B-720402-008",
+          "B-720402-050"
+        ],
+        "lost": [
+          "B-720402-016"
+        ]
+      },
+      "net_hit": {
+        "gained": [
+          "A-720401-030",
+          "B-720402-008",
+          "B-720402-036",
+          "B-720402-048"
+        ],
+        "lost": []
+      },
+      "out": {
+        "gained": [
+          "A-720401-062",
+          "B-720402-008"
+        ],
+        "lost": []
+      }
+    },
+    "matched_speed": {
+      "adequate_to_low": [
+        "B-720402-008"
+      ],
+      "low_to_adequate": [
+        "B-720402-016"
+      ]
+    }
+  },
+  "mcnemar_exact_two_sided_p": 0.125,
+  "common_string_speed_delta": {
+    "cases": 37,
+    "mean_mps": -0.06652468537698772,
+    "median_mps": -0.08499877871816253
+  },
+  "success_losses": {
+    "A-720401-030": [
+      "legal_airborne_strings",
+      "no_rule_fault",
+      "actual_net_and_target",
+      "event_order"
+    ],
+    "A-720401-034": [
+      "actual_net_and_target",
+      "event_order"
+    ],
+    "A-720401-062": [
+      "actual_net_and_target"
+    ],
+    "B-720402-004": [
+      "no_rule_fault",
+      "actual_net_and_target",
+      "event_order"
+    ],
+    "B-720402-008": [
+      "actual_net_and_target",
+      "speed_threshold"
+    ],
+    "B-720402-018": [
+      "no_rule_fault",
+      "actual_net_and_target",
+      "event_order"
+    ]
+  },
+  "native": {
+    "episodes": 64,
+    "control_ticks": 437,
+    "elapsed_seconds": 532.9303521999973,
+    "numerical_failures": 0,
+    "optimizer_updates": {
+      "actor": 0,
+      "world": 0,
+      "critic": 0
+    },
+    "actor_parameters_unchanged": true
+  },
+  "training": {
+    "proposals": 11,
+    "accepted": 8,
+    "accepted_scales": [
+      0.0625,
+      0.0625,
+      0.0625,
+      0.0625,
+      0.0625,
+      0.5,
+      0.125,
+      0.25
+    ],
+    "actor_seconds": 447.07074087299407,
+    "world_update_seconds": 118.81021442601923,
+    "all_base_recovery_and_wm_frozen_for_actor": true,
+    "all_32_16_disjoint": true
+  },
+  "gpu": {
+    "parked": {
+      "used_mib": 5157,
+      "free_mib": 10678,
+      "total_mib": 16303
+    },
+    "peak_used_mib": 8184,
+    "samples": 271,
+    "seconds": 546.4974366610404,
+    "evaluator_exit": 0
+  },
+  "native_decision": "continue"
+}
