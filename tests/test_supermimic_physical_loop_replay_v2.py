@@ -156,3 +156,22 @@ def test_preferred_windows_use_the_entire_latest_online_policy_and_exclude_holdo
         assert 0 not in lanes.tolist()
         assert stats['latest_policy_windows'] == dict(
             requested=4, eligible=expected, sampled=expected, policy_version=13, stream=2)
+
+
+def test_signed_archive_keeps_variable_length_streams_separate():
+    data = _data(16, 4)
+    for key in ('state', 'next_state', 'values', 'valid', 'next_values', 'next_valid',
+                'targets', 'previous_action', 'torque'):
+        data[key] = torch.zeros(16, 4, 3)
+    for key in ('present', 'terminated', 'timeout'):
+        data[key] = torch.zeros(16, 4, dtype=torch.bool)
+    data['episode'] = torch.zeros(16, 4, dtype=torch.long)
+    replay = PhysicalLoopReplay({'tensors': data}, None, capacity_ticks=64)
+    for length in (16, 20, 32):
+        signed = {key: value[:1, [1, 3]].expand(length, *value[:, [1, 3]].shape[1:]).clone()
+                  for key, value in data.items()}
+        replay.training_probes.append(replay.training_probe_stream([1, 3], signed))
+    rows, streams, _, sources, policies, ticks = replay._ordered()
+    assert len(rows['state']) == len(streams) == len(sources) == len(policies) == len(ticks)
+    assert [(streams == lane).sum().item() for lane in (-1, -2, -3)] == [16, 20, 32]
+    assert (ticks[streams < 0] == -1).all()
