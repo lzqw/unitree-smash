@@ -5,6 +5,7 @@ Discrete retrieval is detached; task-space FK remains differentiable.
 """
 from dataclasses import dataclass, asdict
 import hashlib
+import json
 import math
 import torch
 
@@ -75,6 +76,18 @@ class TaskSpaceReferenceBankV1:
                     native_contact_certification=False,alignment='current causal event estimate / current-state phase match')
 
     def payload(self): return asdict(self)
+
+    def content_sha256(self):
+        from .supermimic_physical_loop_loading_v1 import tensor_digest
+
+        metadata = [self.manifest]
+        tensors = []
+        for index, entry in enumerate(self.entries):
+            metadata.append({key: value for key, value in entry.items() if not torch.is_tensor(value)})
+            tensors.extend((f'{index}/{key}', value) for key, value in entry.items() if torch.is_tensor(value))
+        digest = hashlib.sha256(json.dumps(metadata, sort_keys=True).encode())
+        digest.update(tensor_digest(tensors).encode())
+        return digest.hexdigest()
 
     @classmethod
     def from_payload(cls,payload):

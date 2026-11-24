@@ -250,6 +250,10 @@ def main():
     parser.add_argument('--wm-direct-long-body-supervision',action='store_true',help='Use measured 4/16/32/64-step robot, root angular velocity and racket FK targets for the robot gradient')
     parser.add_argument('--approach-body-overlay', type=Path,
                         help='Explicit event-aligned Body fit bound to the resumed Approach checkpoint')
+    parser.add_argument('--approach-audit-all-proposals', action='store_true',
+                        help='Persist per-case risk auditing through Approach checkpoint continuations')
+    parser.add_argument('--approach-event-body-refresh', action='store_true',
+                        help='Preserve 20/32-step contact-aligned Body supervision during E1 v2 refresh')
     parser.add_argument('--approach-resident-eval-wait-seconds', type=int, default=0,
                         help='Opt in to waiting for a matched native decision at intermediate Approach boundaries')
     parser.add_argument('--approach-resident-coverage-baseline', type=Path,
@@ -412,15 +416,20 @@ def main():
             not args.e1_v2_approach_scale or args.approach_stop_at is None
             or not 1 <= args.approach_resident_eval_wait_seconds <= 3600):
         parser.error('Resident evaluation requires E1 v2, a bounded final milestone and a wait within 1–3600 seconds')
+    if args.approach_event_body_refresh and not args.e1_v2_approach_scale:
+        parser.error('Contact-aligned Body refresh requires E1 v2')
     args.resident_native_coverage_targets = None
+    args.resident_critical_cases = None
     args.resident_native_coverage_sha256 = None
     if args.approach_resident_coverage_baseline:
         if not args.approach_resident_eval_wait_seconds:
             parser.error('Resident coverage targets apply only to resident warm collection')
-        from quadsmash.rl.supermimic_native_event_coverage import coverage_targets
+        from quadsmash.rl.supermimic_native_event_coverage import coverage_targets, critical_case_targets
         try:
             resident_baseline_bytes = args.approach_resident_coverage_baseline.read_bytes()
-            args.resident_native_coverage_targets = coverage_targets(json.loads(resident_baseline_bytes))
+            baseline_coverage = json.loads(resident_baseline_bytes)
+            args.resident_native_coverage_targets = coverage_targets(baseline_coverage)
+            args.resident_critical_cases = critical_case_targets(baseline_coverage)
             args.resident_native_coverage_sha256 = hashlib.sha256(resident_baseline_bytes).hexdigest()
         except (OSError, ValueError) as error:
             parser.error(str(error))
@@ -553,7 +562,7 @@ def run(args, *, alternating=None):
     research=args.training_profile=='research_scale'
     resident_targets = getattr(args, 'resident_native_coverage_targets', None)
     if resident_targets is not None:
-        from quadsmash.rl.supermimic_native_event_coverage import coverage_deficits, native_event_coverage
+        from quadsmash.rl.supermimic_native_event_coverage import collection_deficits, native_event_coverage
     from quadsmash.rl.supermimic_run_lifecycle import stage as lifecycle_stage
     # These audits are consumed by nested WM/actor callbacks.  Import them in
     # the run scope as well as the CLI setup scope so frozen refreshes cannot
@@ -898,6 +907,10 @@ def run(args, *, alternating=None):
                 args.relaxed_impulse_residual_scale = saved_scale
             if args.wm_latest_policy_windows is None and not args.resume_reset_schedule:
                 args.wm_latest_policy_windows = resumed['config'].get('wm_latest_policy_windows', 0)
+            if not args.resume_reset_schedule and resumed['config'].get('approach_audit_all_proposals'):
+                args.approach_audit_all_proposals = True
+            if args.e1_v2_approach_scale and not args.resume_reset_schedule and resumed['config'].get('approach_event_body_refresh'):
+                args.approach_event_body_refresh = True
             if not args.resume_reset_schedule and resumed['config'].get('shuffle_wm_quota_groups'):
                 args.shuffle_wm_quota_groups=True
             if research and not args.resume_reset_schedule and resumed['config'].get('diagnostic_critic_loss'):
@@ -1532,6 +1545,10 @@ def run(args, *, alternating=None):
             use_substep_toi_references=args.use_substep_toi_references,intercept_plane_calibration=plane_calibration,
             paired_evaluation_baseline=str(args.paired_evaluation_baseline.resolve()) if args.paired_evaluation_baseline else None,
             actor_start_ticks=APPROACH_TICKS,critic_start_ticks=CRITIC_TICKS,critic_coverage_period=len(CRITIC_TICKS))
+        args.approach_audit_all_proposals = bool(args.approach_audit_all_proposals or body_overlay_receipt is not None
+                                                or args.approach_resident_eval_wait_seconds or args.approach_event_body_refresh)
+        config['approach_audit_all_proposals'] = args.approach_audit_all_proposals
+        config['approach_event_body_refresh'] = args.approach_event_body_refresh
         metadata=dict(wm_action_collections=action_collections,policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
         if body_overlay_receipt is not None:
@@ -2015,20 +2032,31 @@ def run(args, *, alternating=None):
                 if warm_coverage:
                     collection_ticks = args.approach_initial_ticks
                 phase_timing = None
-                if first_scene_collection:
+                collection_wall = None
+                if args.approach_ball_only and collect_block:
                     from quadsmash.rl.supermimic_native_phase_timing import NativePhaseTiming
                     phase_timing = NativePhaseTiming(env)
+                    collection_wall = dict(action_seconds=0., control_step_seconds=0.,
+                                           terminal_bookkeeping_seconds=0., coverage_seconds=0.)
                 io_pipeline = getattr(archive, 'pipeline', None) if collect_block else None
                 io_before = io_pipeline.timing() if io_pipeline is not None else {}
                 with torch.inference_mode():
                     for collection_step in range(collection_ticks):
                         check_stop()
+                        if collection_wall is not None:
+                            step_started = time.perf_counter()
                         action = native_actor_action(obs)
                         if arm_identification is not None:
                             env.record_approach_gate(actor.approach_action_gate(obs['policy']))
                             action = arm_identification.apply(action, obs['policy'], env.episode_index, env.rally.had_contact)
+                        if collection_wall is not None:
+                            control_started = time.perf_counter()
+                            collection_wall['action_seconds'] += control_started - step_started
                         obs,reward,done,info=(wrapper.step(action) if phase_timing is None else
-                            phase_timing.step(wrapper.step, action, obs['policy'], tick - first_mixed_tick))
+                            phase_timing.step(wrapper.step, action, obs['policy'], collection_step))
+                        if collection_wall is not None:
+                            bookkeeping_started = time.perf_counter()
+                            collection_wall['control_step_seconds'] += bookkeeping_started - control_started
                         tick+=1
                         if not torch.isfinite(obs['policy']).all():raise FloatingPointError('Nonfinite native observation')
                         for raw in env.rally_records[cursor:]:
@@ -2085,36 +2113,50 @@ def run(args, *, alternating=None):
                             writer.add_scalar('native/return_mean_128_cases', len(completed_window), tick*128)
                             writer.flush()
                         cursor=len(env.rally_records)
+                        if collection_wall is not None:
+                            collection_wall['terminal_bookkeeping_seconds'] += time.perf_counter() - bookkeeping_started
                         if (warm_coverage and collection_step + 1 >= args.native_ticks_per_actor_update
                                 and len(warm_records) != coverage_record_count):
+                            coverage_started = time.perf_counter()
                             coverage_record_count = len(warm_records)
                             indexed = {(lane, episode) for stream, lane, episode in replay.actor_start_bank.resolved
                                        if stream == replay.current_stream}
                             measured_coverage = native_event_coverage(
                                 warm_records, wm_holdout_lanes, None, indexed_episodes=indexed)
-                            if not coverage_deficits(measured_coverage['counts'], resident_targets):
+                            if collection_wall is not None:
+                                collection_wall['coverage_seconds'] += time.perf_counter() - coverage_started
+                            if not collection_deficits(measured_coverage, resident_targets, args.resident_critical_cases):
                                 break
+                drain_started = time.perf_counter()
                 if research and collect_block:
                     # Publish the collected chunks to live native monitors before policy fitting.
                     archive.flush()
-                collect_s=time.perf_counter()-started;check_stop()
+                collection_finished = time.perf_counter()
+                collect_s=collection_finished-started;check_stop()
                 if args.approach_ball_only and collect_block:
                     collected_ticks = replay._native_tick_counter - replay_tick_before_collect
+                    collection_wall['archive_drain_seconds'] = collection_finished - drain_started
+                    phases = phase_timing.report()
                     timing = dict(native_ticks=collected_ticks, through_archive_drain_seconds=collect_s,
                         env_steps_per_second=(collected_ticks * 128 / collect_s) if collect_s else None,
                         archive={key: end - io_before[key] for key, end in io_pipeline.timing().items()}
                             if io_pipeline is not None else None,
-                        first_scene_phases=phase_timing.report() if phase_timing is not None else None)
+                        first_scene_phases=phases if first_scene_collection else None,
+                        control_phases=phases, collection_wall_seconds=collection_wall)
                     if warm_coverage:
                         indexed = {(lane, episode) for stream, lane, episode in replay.actor_start_bank.resolved
                                    if stream == replay.current_stream}
                         coverage = native_event_coverage(
                             warm_records, wm_holdout_lanes, collect_s, indexed_episodes=indexed)
-                        deficits = coverage_deficits(coverage['counts'], resident_targets)
+                        deficits = collection_deficits(coverage, resident_targets, args.resident_critical_cases)
                         timing['resident_coverage'] = dict(coverage, minimum_ticks=args.native_ticks_per_actor_update,
                             maximum_ticks=collection_ticks, targets=resident_targets, deficits=deficits,
                             stop_reason='tick_budget' if deficits else 'coverage_met',
                             baseline_sha256=args.resident_native_coverage_sha256)
+                        if args.resident_critical_cases is not None:
+                            timing['resident_coverage']['critical_case_ids'] = sorted(args.resident_critical_cases)
+                            timing['resident_coverage']['missing_critical_case_ids'] = sorted(
+                                args.resident_critical_cases.difference(coverage['training_case_ids']))
                     write(args.output/(str(cycle_index)+'_native_collection_timing.json'), timing)
                 if collect_block:
                     progress['collection_reward_mean']=float(reward.mean())
@@ -2134,6 +2176,37 @@ def run(args, *, alternating=None):
                         with (args.output/'native_collection_history.jsonl').open('a') as stream:
                             stream.write(json.dumps(sample)+'\n')
                 block_reward_mean=progress['collection_reward_mean']
+                def approach_refresh_identity():
+                    calibration = trainer.approach_speed_calibration
+                    return dict(world_updates=trainer.world_updates,
+                                body_sha256=tensor_digest(adapter.physical_model.body.state_dict().items()),
+                                ball_sha256=tensor_digest(adapter.ball_model.state_dict().items()),
+                                contact_sha256=tensor_digest(adapter.action_ball_model.state_dict().items()),
+                                task_sha256=tensor_digest(adapter.task_model.state_dict().items()),
+                                speed_calibration_world_sha256=calibration.get('world_sha256') if calibration else None,
+                                reference_bank_sha256=trainer.reference_bank.content_sha256() if trainer.reference_bank else None,
+                                reference_bank=trainer.reference_bank.manifest if trainer.reference_bank else None)
+
+                refresh_before = (approach_refresh_identity() if collect_block and args.e1_v2_approach_scale
+                                  and args.approach_audit_all_proposals else None)
+                if collect_block and args.approach_event_body_refresh:
+                    from quadsmash.rl.supermimic_precontact_body import (
+                        REVISION_POSITION_WEIGHT, body_rollout_loss, measured_precontact_body_windows)
+
+                    event_validation = measured_precontact_body_windows(replay, launch, global_accepted_id,
+                                                                         wm_holdout_lanes)
+
+                    def event_body_validation():
+                        rows = []
+                        with torch.no_grad():
+                            for window, scoped_launch, counts in event_validation:
+                                loss, (position, speed) = body_rollout_loss(
+                                    adapter.physical_model, window, scoped_launch, position_weight=REVISION_POSITION_WEIGHT)
+                                rows.append(dict(horizon=len(window['state']), counts=counts, loss=float(loss),
+                                                 racket_center_error_m=float(position), contact_point_speed_error_mps=float(speed)))
+                        return rows
+
+                    event_validation_before = event_body_validation()
                 world_stats=run_world_updates(global_attempt_id,head=block_name) if collect_block else {}
                 if args.approach_ball_only and collect_block:
                     from quadsmash.rl.supermimic_release_calibration import (
@@ -2147,7 +2220,11 @@ def run(args, *, alternating=None):
                             raise RuntimeError('E1 v2 Body refresh failed its native forward check')
                         body_fit = []
                         body_pairs = measured_body_pairs(replay, launch, offset=global_attempt_id)
-                        if body_pairs:
+                        event_batches = []
+                        if args.approach_event_body_refresh:
+                            train_lanes = sorted(set(range(replay.lanes)).difference(wm_holdout_lanes))
+                            event_batches = measured_precontact_body_windows(replay, launch, global_accepted_id, train_lanes)
+                        if body_pairs or event_batches:
                             body = adapter.physical_model.body
                             body_before = copy.deepcopy(body.state_dict())
                             optimizer_before = copy.deepcopy(trainer.world_opt.state_dict())
@@ -2156,7 +2233,12 @@ def run(args, *, alternating=None):
                             check_stop()
                             body_fit.append(trainer.fit_approach_body_pair(minus, plus, pair_launch))
                         world_stats['paired_precontact_body_supervision'] = body_fit
-                        if any(result['updated'] for result in body_fit):
+                        event_fit = []
+                        for window, scoped_launch, counts in event_batches:
+                            check_stop()
+                            fit = trainer.fit_event_aligned_approach_body(window, scoped_launch)
+                            event_fit.append(dict(horizon=len(window['state']), counts=counts, **fit))
+                        if any(result['updated'] for result in body_fit + event_fit):
                             verification = verify_online_forward(block_name, global_attempt_id)
                             if not verification['passed']:
                                 body.load_state_dict(body_before)
@@ -2167,6 +2249,12 @@ def run(args, *, alternating=None):
                                 if not verification['passed']:
                                     raise RuntimeError('Restored E1 v2 Body failed native replay validation')
                             world_stats['fixed_native_forward'] = verification
+                        if args.approach_event_body_refresh:
+                            event_report = dict(fits=event_fit, holdout_before=event_validation_before,
+                                                holdout_after=event_body_validation(),
+                                                restored='rejected_body_pair_forward_validation' in world_stats)
+                            world_stats['event_aligned_body_refresh'] = event_report
+                            write(args.output / f'{cycle_index}_event_body_refresh.json', event_report)
                     contact_started = time.perf_counter()
                     contact_pairs = measured_contact_pairs(
                         replay, launch, offset=global_attempt_id, limit=min(4, args.approach_contact_updates))
@@ -2204,6 +2292,12 @@ def run(args, *, alternating=None):
                             threshold=phase_scoring['minimum_outgoing_speed_mps'], max_cases=32,
                             training_calibration=calibration, flight_court=trainer.research_court)
                     write(args.output/f'{cycle_index}_speed_calibration.json', calibration)
+                if refresh_before is not None:
+                    write(args.output / f'{cycle_index}_model_refresh_identity.json', dict(
+                        native_ticks=tick, first_attempt=global_attempt_id,
+                        before=refresh_before, after=approach_refresh_identity(),
+                        direct_long_body_supervision=args.wm_direct_long_body_supervision,
+                        paired_body_fits=world_stats.get('paired_precontact_body_supervision', [])))
                 quality=check_head_quality(block_name,global_attempt_id)
                 # Rebuild the start pool for every proposal.  Recovery starts
                 # therefore follow fresh event-aligned native data as it
@@ -2388,8 +2482,7 @@ def run(args, *, alternating=None):
                     adapter.action_ball_model.detach_residual_for_actor=not args.approach_ball_only
                 trainer.diagnose_ball_gradients = args.approach_ball_only and collect_block
                 trainer.audit_approach_outcomes = args.e1_v2_approach_scale and (
-                    body_overlay_receipt is not None or args.approach_resident_eval_wait_seconds
-                    or invocation_heads['approach']['attempts'] <= 2)
+                    args.approach_audit_all_proposals or invocation_heads['approach']['attempts'] <= 2)
                 try:
                     stats=trainer.imagine_update(actor_start, guard_starts=guard_start)
                 finally:

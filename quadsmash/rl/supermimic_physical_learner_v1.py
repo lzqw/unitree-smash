@@ -1105,6 +1105,26 @@ class PhysicalHorizonTrainer:
         parts, lanes, _, _ = result
         return self._step_measured_contact(parts, len(lanes))
 
+    def fit_event_aligned_approach_body(self, window, launch):
+        from .supermimic_precontact_body import REVISION_POSITION_WEIGHT, body_rollout_loss
+
+        loss, (position, speed) = body_rollout_loss(
+            self.adapter.physical_model, window, launch, position_weight=REVISION_POSITION_WEIGHT)
+        norm = self._step_approach_body(loss)
+        return dict(updated=norm > 0, loss=float(loss.detach()), gradient=norm,
+                    racket_center_error_m=float(position), contact_point_speed_error_mps=float(speed))
+
+    def _step_approach_body(self, loss):
+        params = tuple(self.adapter.physical_model.body.parameters())
+        self.world_opt.zero_grad(set_to_none=True)
+        for param, grad in zip(params, torch.autograd.grad(loss, params), strict=True):
+            param.grad = grad
+        norm = float(torch.nn.utils.clip_grad_norm_(params, 1., error_if_nonfinite=True))
+        if norm > 0:
+            self.world_opt.step()
+            self.world_updates += 1
+        return norm
+
     def fit_approach_body_pair(self, minus, plus, launch):
         """Learn the signed, pre-contact racket response without fitting the ball."""
         world = self.adapter.physical_model
@@ -1149,16 +1169,9 @@ class PhysicalHorizonTrainer:
         if not losses:
             return dict(updated=False, supported_horizons=support)
         loss = torch.stack(losses).mean()
-        params = tuple(world.body.parameters())
-        self.world_opt.zero_grad(set_to_none=True)
-        for param, grad in zip(params, torch.autograd.grad(loss, params), strict=True):
-            param.grad = grad
-        norm = torch.nn.utils.clip_grad_norm_(params, 1., error_if_nonfinite=True)
-        if norm > 0:
-            self.world_opt.step()
-            self.world_updates += 1
+        norm = self._step_approach_body(loss)
         return dict(updated=bool(norm > 0), supported_horizons=support,
-                    body_pair_loss=float(loss.detach()), body_pair_gradient=float(norm))
+                    body_pair_loss=float(loss.detach()), body_pair_gradient=norm)
 
     def fit_ball_only_contact_pair(self, minus, plus, launch):
         low = self._measured_contact_terms(minus, launch)

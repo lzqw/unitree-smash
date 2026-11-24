@@ -1,4 +1,4 @@
-"""Continue a verified Body revision from A40 through a bounded resident A64 run."""
+"""Continue a verified Body revision from A40 with a bounded native check."""
 import argparse
 import hashlib
 import json
@@ -65,13 +65,16 @@ def evaluate_resident(directory, ready, baseline_path, baseline_panel, execution
 def resident_train(args, registered, execution, source, best_policy, best_panel, best, status, required):
     folder = args.output / 'train'
     command = train_command(
-        registered, source, folder, True, stop_at=64, fresh=False, prioritize_flight=True,
+        registered, source, folder, True, stop_at=args.stop_at, fresh=False, prioritize_flight=True,
         start_lanes=32, guard_lanes=16, e1_v2=True, labeled_start_checkpoint=args.history,
         labeled_snapshot_reserve=8,
     )
     command.extend(('--approach-resident-eval-wait-seconds', '2700',
                     '--approach-resident-coverage-baseline', str(args.coverage_baseline)))
-    command = ['timeout', '--signal=INT', '--kill-after=120s', '220m', sys.executable, '-u', *command]
+    if args.event_body_refresh:
+        command.append('--approach-event-body-refresh')
+    minutes = 90 if args.stop_at == 48 else 220
+    command = ['timeout', '--signal=INT', '--kill-after=120s', f'{minutes}m', sys.executable, '-u', *command]
     records = [dict(stage=int(best_policy.stem[-3:]), **best)]
     processed = []
     stop_reason = None
@@ -81,7 +84,7 @@ def resident_train(args, registered, execution, source, best_policy, best_panel,
         training = subprocess.Popen(command, cwd=ROOT, start_new_session=True, stdout=stream,
             stderr=subprocess.STDOUT, env=dict(os.environ, PYTHONPATH='.:scripts', QUADSMASH_ZSTD_ARCHIVE='1'))
         try:
-            for stage in (48, 56):
+            for stage in range(48, args.stop_at, 8):
                 directory = folder / f'A{stage:03d}_resident_gate'
                 ready_path = directory / 'ready.json'
                 while not ready_path.is_file() and training.poll() is None:
@@ -117,16 +120,20 @@ def resident_train(args, registered, execution, source, best_policy, best_panel,
     timing = block_timing(folder, perf_counter() - started)
     timing['resident_eval_seconds'] = sum(json.loads((d / 'gpu_telemetry.json').read_text())['seconds'] for d in processed)
     dump(args.output / 'timing.json', timing)
-    if stage < 64:
+    if stage < args.stop_at:
         dump(status, dict(status=stop_reason or 'resident_boundary_stopped', stage=stage, records=records,
                           checkpoint=str(checkpoint), best_quick_checkpoint=str(best_policy)))
         return
-    panel = args.output / 'A064_quick64'
+    panel = args.output / f'A{stage:03d}_quick64'
     result = quick_check(checkpoint, panel, execution, args.seed)
     pair = paired_quick_result(best, result, best_panel, panel)
-    records.append(dict(stage=64, **result, paired=pair))
-    if result['success'] > best['success']:
+    records.append(dict(stage=stage, **result, paired=pair))
+    if not pair['regressed'] and result['success'] > best['success']:
         best_policy = checkpoint
+    if args.stop_at == 48:
+        dump(status, dict(status='native_regression_review' if pair['regressed'] else 'quick_check_complete',
+                          stage=stage, records=records, checkpoint=str(checkpoint), best_quick_checkpoint=str(best_policy)))
+        return
     dump(status, dict(status='fixed128', stage=stage, records=records, checkpoint=str(checkpoint)))
     fixed = args.output / 'A064_fixed128'
     run(evaluate_command(checkpoint, fixed, True, execution, seed=args.seed, a0=False), fixed.with_suffix('.log'), 40)
@@ -141,7 +148,12 @@ def main():
     for name in ('registration', 'pilot', 'history', 'quick-baseline', 'development-baseline', 'coverage-baseline', 'output'):
         parser.add_argument('--' + name, type=lambda value: Path(value).resolve(), required=True)
     parser.add_argument('--seed', type=int, default=882072)
+    parser.add_argument('--stop-at', type=int, choices=(48, 64), default=64)
+    parser.add_argument('--event-body-refresh', action='store_true')
+    parser.add_argument('--verified-a40-development', type=Path)
     args = parser.parse_args()
+    if args.event_body_refresh and (args.stop_at != 48 or args.verified_a40_development is None):
+        parser.error('The event-aligned refresh pilot requires a verified A40 development panel and stops at A48')
     registered = json.loads(args.registration.read_text())['command']
     execution = registered_options(registered, ('g07-execution-root',))[1]
     pilot = json.loads((args.pilot / 'status.json').read_text())
@@ -151,6 +163,9 @@ def main():
     source, invocation = verify_training_milestone(args.pilot / 'train', 40, a32)
     if invocation['actor_updates'] != 8 or source != Path(pilot['checkpoint']):
         raise ValueError('Expected a verified eight-update A40 revision')
+    if args.verified_a40_development is not None:
+        verify_frozen_milestone(args.verified_a40_development, source, invocation)
+        compare(args.development_baseline, args.verified_a40_development)
     a32_score = quick_check(a32, args.quick_baseline, execution, args.seed)
     panel = args.pilot / 'A040_quick64'
     a40_score = quick_check(source, panel, execution, args.seed)

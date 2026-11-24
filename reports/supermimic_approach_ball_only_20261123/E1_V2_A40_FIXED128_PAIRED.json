@@ -1,0 +1,1008 @@
+{
+  "scoring_schema": "approach_ball_only_v1",
+  "cases": 128,
+  "before": {
+    "ball_success": 55,
+    "ball_success_rate": 0.4296875,
+    "qualified_contacts": 78,
+    "success_given_qualified": 0.7051282051282052,
+    "qualified_low_speed": 5,
+    "failure_reasons": {
+      "legal_airborne_strings": 50,
+      "no_rule_fault": 24,
+      "actual_net_and_target": 68,
+      "event_order": 45,
+      "released_forward": 23,
+      "speed_threshold": 28
+    },
+    "wall_seconds": 632.0679966550088,
+    "independent_qualified_contacts_per_minute": 7.404266668724262,
+    "completed_ball_episodes_per_hour": 729.0354873820812,
+    "qualified_releases_measured": 78,
+    "qualified_release_speed_mps": {
+      "minimum": 4.087103448363882,
+      "median": 5.121103165120723,
+      "average": 5.230025651548066,
+      "maximum": 6.742916288163982
+    },
+    "qualified_below_speed_threshold_rate": 0.0641025641025641,
+    "cleared_net": 77,
+    "target_landings": 60,
+    "frame_without_strings": 31,
+    "no_racket_contact": 19,
+    "matched_contact_motion": 78,
+    "arm_gate_onset_median_tick": 251.5,
+    "arm_contact_speed_median_mps": 3.5082806783508396,
+    "normal_relative_speed_median_mps": 6.477644443511963,
+    "components_along_incoming_face_normal": {
+      "root_transport_mps": {
+        "cases": 78,
+        "mean_mps": 0.11230118105774506
+      },
+      "root_rotation_at_contact_mps": {
+        "cases": 78,
+        "mean_mps": 0.17614594325870028
+      },
+      "arm_contact_velocity_mps": {
+        "cases": 78,
+        "mean_mps": -1.0523752756236273
+      }
+    }
+  },
+  "after": {
+    "ball_success": 54,
+    "ball_success_rate": 0.421875,
+    "qualified_contacts": 80,
+    "success_given_qualified": 0.675,
+    "qualified_low_speed": 9,
+    "failure_reasons": {
+      "legal_airborne_strings": 48,
+      "no_rule_fault": 31,
+      "actual_net_and_target": 66,
+      "event_order": 47,
+      "speed_threshold": 30,
+      "released_forward": 22
+    },
+    "wall_seconds": 570.417661829968,
+    "independent_qualified_contacts_per_minute": 8.414886707050806,
+    "completed_ball_episodes_per_hour": 807.8291238768775,
+    "qualified_releases_measured": 80,
+    "qualified_release_speed_mps": {
+      "minimum": 4.168973034294229,
+      "median": 5.234957897667343,
+      "average": 5.294431030375076,
+      "maximum": 6.968821657692815
+    },
+    "qualified_below_speed_threshold_rate": 0.1125,
+    "cleared_net": 79,
+    "target_landings": 62,
+    "frame_without_strings": 32,
+    "no_racket_contact": 16,
+    "matched_contact_motion": 80,
+    "arm_gate_onset_median_tick": 252.0,
+    "arm_contact_speed_median_mps": 3.443874852270172,
+    "normal_relative_speed_median_mps": 6.497528314590454,
+    "components_along_incoming_face_normal": {
+      "root_transport_mps": {
+        "cases": 80,
+        "mean_mps": 0.11840041995922042
+      },
+      "root_rotation_at_contact_mps": {
+        "cases": 80,
+        "mean_mps": 0.1422625221872944
+      },
+      "arm_contact_velocity_mps": {
+        "cases": 80,
+        "mean_mps": -0.9879488944363748
+      }
+    }
+  },
+  "improved_cases": [
+    "A-97124801-033",
+    "A-97124801-034",
+    "A-97124801-038",
+    "A-97124801-062",
+    "B-97124802-021",
+    "B-97124802-028",
+    "B-97124802-042",
+    "B-97124802-043"
+  ],
+  "regressed_cases": [
+    "A-97124801-020",
+    "A-97124801-027",
+    "A-97124801-032",
+    "A-97124801-036",
+    "A-97124801-048",
+    "A-97124801-059",
+    "B-97124802-007",
+    "B-97124802-034",
+    "B-97124802-058"
+  ],
+  "paired_contact_motion": {
+    "matched_first_legal_string_contacts": 75,
+    "projection_axis": "After-policy face normal oriented toward the incoming shuttle",
+    "summary": {
+      "speed_delta_mps": {
+        "cases": 75,
+        "mean": 0.09374418343867176,
+        "median": 0.12405351316700397
+      },
+      "first_contact_time_delta_ms": {
+        "cases": 75,
+        "mean": -0.15408198038736978,
+        "median": -0.18739700317382812
+      },
+      "arm_contact_speed_delta_mps": {
+        "cases": 75,
+        "mean": -0.2054726533122172,
+        "median": -0.25441087975673415
+      },
+      "point_velocity_mps_delta_on_after_face": {
+        "cases": 75,
+        "mean": 0.024953810643997296,
+        "median": 0.038157149716275596
+      },
+      "root_transport_mps_delta_on_after_face": {
+        "cases": 75,
+        "mean": 0.0015096349069102161,
+        "median": 0.001620116956499107
+      },
+      "root_rotation_at_contact_mps_delta_on_after_face": {
+        "cases": 75,
+        "mean": -0.003614011866551158,
+        "median": -0.0019376436656093204
+      },
+      "arm_contact_velocity_mps_delta_on_after_face": {
+        "cases": 75,
+        "mean": 0.027058178535822,
+        "median": 0.038683033901076413
+      },
+      "normal_relative_velocity_delta_mps": {
+        "cases": 75,
+        "mean": 0.05332485834757487,
+        "median": 0.06850481033325195
+      }
+    },
+    "cases": [
+      {
+        "case_id": "A-97124801-001",
+        "speed_delta_mps": 0.0816907399707194,
+        "first_contact_time_delta_ms": 0.6871223449707031,
+        "arm_contact_speed_delta_mps": -0.17865252526998487,
+        "point_velocity_mps_delta_on_after_face": -0.026298558678589323,
+        "root_transport_mps_delta_on_after_face": 0.0027154553002852744,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.045063410465200474,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.0740773753292534,
+        "normal_relative_velocity_delta_mps": 0.023147106170654297
+      },
+      {
+        "case_id": "A-97124801-003",
+        "speed_delta_mps": 0.15170161195092913,
+        "first_contact_time_delta_ms": -0.8745193481445312,
+        "arm_contact_speed_delta_mps": 0.13994798461272095,
+        "point_velocity_mps_delta_on_after_face": -0.05092537792464069,
+        "root_transport_mps_delta_on_after_face": 0.006392608597855676,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.0499481469616282,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.1072662359215446,
+        "normal_relative_velocity_delta_mps": -0.0848846435546875
+      },
+      {
+        "case_id": "A-97124801-005",
+        "speed_delta_mps": 0.17276856462406265,
+        "first_contact_time_delta_ms": 0.12493133544921875,
+        "arm_contact_speed_delta_mps": 0.6691780027237004,
+        "point_velocity_mps_delta_on_after_face": 0.06816868236158236,
+        "root_transport_mps_delta_on_after_face": -0.0036929003207260003,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.025290996377604236,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.09715256681518714,
+        "normal_relative_velocity_delta_mps": 0.03781318664550781
+      },
+      {
+        "case_id": "A-97124801-006",
+        "speed_delta_mps": 0.23495557135148726,
+        "first_contact_time_delta_ms": -0.37479400634765625,
+        "arm_contact_speed_delta_mps": -0.25619826371227106,
+        "point_velocity_mps_delta_on_after_face": 0.018584268290098516,
+        "root_transport_mps_delta_on_after_face": 0.0019118651678655674,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.024548557147228978,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.007876160306430346,
+        "normal_relative_velocity_delta_mps": 0.11927318572998047
+      },
+      {
+        "case_id": "A-97124801-007",
+        "speed_delta_mps": 0.2774645885036664,
+        "first_contact_time_delta_ms": -0.3123283386230469,
+        "arm_contact_speed_delta_mps": -0.2933029409086041,
+        "point_velocity_mps_delta_on_after_face": 0.18817522931452335,
+        "root_transport_mps_delta_on_after_face": -0.0011257479178899965,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.06430633440947636,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.25360727388361526,
+        "normal_relative_velocity_delta_mps": 0.22061729431152344
+      },
+      {
+        "case_id": "A-97124801-010",
+        "speed_delta_mps": 0.02413831300302771,
+        "first_contact_time_delta_ms": 0.499725341796875,
+        "arm_contact_speed_delta_mps": -0.384399571959837,
+        "point_velocity_mps_delta_on_after_face": 0.00968852901073558,
+        "root_transport_mps_delta_on_after_face": 0.002968858424248655,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.03754072478264239,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.03082102663167663,
+        "normal_relative_velocity_delta_mps": 0.0499424934387207
+      },
+      {
+        "case_id": "A-97124801-011",
+        "speed_delta_mps": -0.26695723306032804,
+        "first_contact_time_delta_ms": 0.6871223449707031,
+        "arm_contact_speed_delta_mps": 1.2397703628555041,
+        "point_velocity_mps_delta_on_after_face": -0.06710269736823693,
+        "root_transport_mps_delta_on_after_face": -0.008715660663780156,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.0397058628675786,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.018681207877219386,
+        "normal_relative_velocity_delta_mps": -0.03345346450805664
+      },
+      {
+        "case_id": "A-97124801-012",
+        "speed_delta_mps": 0.17269585550402144,
+        "first_contact_time_delta_ms": -0.4372596740722656,
+        "arm_contact_speed_delta_mps": -0.2963426016814088,
+        "point_velocity_mps_delta_on_after_face": -0.004220447002998062,
+        "root_transport_mps_delta_on_after_face": 0.002745628634076347,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.011533217451889455,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.018499371183870017,
+        "normal_relative_velocity_delta_mps": 0.04190683364868164
+      },
+      {
+        "case_id": "A-97124801-013",
+        "speed_delta_mps": 0.42764489207738965,
+        "first_contact_time_delta_ms": -1.2493133544921875,
+        "arm_contact_speed_delta_mps": 0.5851847431843709,
+        "point_velocity_mps_delta_on_after_face": 0.030731168001080444,
+        "root_transport_mps_delta_on_after_face": 0.003295361307345618,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.02829686621354438,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.05573258802509096,
+        "normal_relative_velocity_delta_mps": 0.0009980201721191406
+      },
+      {
+        "case_id": "A-97124801-014",
+        "speed_delta_mps": 0.2813841142693283,
+        "first_contact_time_delta_ms": -2.1238327026367188,
+        "arm_contact_speed_delta_mps": -1.0586221318359152,
+        "point_velocity_mps_delta_on_after_face": 0.25798899713164775,
+        "root_transport_mps_delta_on_after_face": -6.071682982333737e-06,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.08700716595984781,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.3450022430633197,
+        "normal_relative_velocity_delta_mps": 0.3383827209472656
+      },
+      {
+        "case_id": "A-97124801-015",
+        "speed_delta_mps": 0.07119409663322518,
+        "first_contact_time_delta_ms": -0.18739700317382812,
+        "arm_contact_speed_delta_mps": -0.3824675589801183,
+        "point_velocity_mps_delta_on_after_face": 0.038157149716275596,
+        "root_transport_mps_delta_on_after_face": 0.0028970738888557668,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.00572732686872332,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.040987417187207775,
+        "normal_relative_velocity_delta_mps": 0.04991865158081055
+      },
+      {
+        "case_id": "A-97124801-017",
+        "speed_delta_mps": 0.4049234098798138,
+        "first_contact_time_delta_ms": 0.5621910095214844,
+        "arm_contact_speed_delta_mps": -0.13776309437503143,
+        "point_velocity_mps_delta_on_after_face": 0.1913954032174101,
+        "root_transport_mps_delta_on_after_face": 0.0007772215105392721,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.04608496111823612,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.14453323529567208,
+        "normal_relative_velocity_delta_mps": 0.21830081939697266
+      },
+      {
+        "case_id": "A-97124801-019",
+        "speed_delta_mps": 0.3363564954290066,
+        "first_contact_time_delta_ms": -0.2498626708984375,
+        "arm_contact_speed_delta_mps": -0.25654860379728506,
+        "point_velocity_mps_delta_on_after_face": 0.07542900840433475,
+        "root_transport_mps_delta_on_after_face": 0.001620116956499107,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.005944515705960995,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.07975344489641856,
+        "normal_relative_velocity_delta_mps": 0.10431528091430664
+      },
+      {
+        "case_id": "A-97124801-020",
+        "speed_delta_mps": -0.13349861014020448,
+        "first_contact_time_delta_ms": -1.1243820190429688,
+        "arm_contact_speed_delta_mps": -0.19345141565096968,
+        "point_velocity_mps_delta_on_after_face": 0.0028513239088887588,
+        "root_transport_mps_delta_on_after_face": 0.006485724585389541,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.03870902315428104,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.042343468517808125,
+        "normal_relative_velocity_delta_mps": 0.024590015411376953
+      },
+      {
+        "case_id": "A-97124801-021",
+        "speed_delta_mps": 0.15370165908046296,
+        "first_contact_time_delta_ms": 0.5621910095214844,
+        "arm_contact_speed_delta_mps": 0.5159226237228745,
+        "point_velocity_mps_delta_on_after_face": 0.05539929582117126,
+        "root_transport_mps_delta_on_after_face": 0.0042202670766226524,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.0019376436656093204,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.05311666656499525,
+        "normal_relative_velocity_delta_mps": 0.03734254837036133
+      },
+      {
+        "case_id": "A-97124801-022",
+        "speed_delta_mps": -0.37275775148572876,
+        "first_contact_time_delta_ms": -1.4367103576660156,
+        "arm_contact_speed_delta_mps": 1.3478861105878113,
+        "point_velocity_mps_delta_on_after_face": -0.2454946674124927,
+        "root_transport_mps_delta_on_after_face": 0.008623719547916853,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.07902886934799014,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.33314729581861935,
+        "normal_relative_velocity_delta_mps": -0.32035064697265625
+      },
+      {
+        "case_id": "A-97124801-023",
+        "speed_delta_mps": -0.4101440398072542,
+        "first_contact_time_delta_ms": 1.1868476867675781,
+        "arm_contact_speed_delta_mps": -0.8635100072777413,
+        "point_velocity_mps_delta_on_after_face": -0.17792259479294437,
+        "root_transport_mps_delta_on_after_face": 0.011431871664314475,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.16286493094107343,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.3522194738766079,
+        "normal_relative_velocity_delta_mps": -0.1368255615234375
+      },
+      {
+        "case_id": "A-97124801-024",
+        "speed_delta_mps": 0.12405351316700397,
+        "first_contact_time_delta_ms": -0.2498626708984375,
+        "arm_contact_speed_delta_mps": -0.4098750041992947,
+        "point_velocity_mps_delta_on_after_face": 0.03154171050522381,
+        "root_transport_mps_delta_on_after_face": 0.0027905818756191747,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.018363769351067483,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.01038730331124249,
+        "normal_relative_velocity_delta_mps": 0.06887149810791016
+      },
+      {
+        "case_id": "A-97124801-025",
+        "speed_delta_mps": 0.011583288447180706,
+        "first_contact_time_delta_ms": 0.4372596740722656,
+        "arm_contact_speed_delta_mps": 1.050658507424723,
+        "point_velocity_mps_delta_on_after_face": 0.0397500242151112,
+        "root_transport_mps_delta_on_after_face": 0.00496091042572111,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.07156834976389959,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.03677926370716689,
+        "normal_relative_velocity_delta_mps": -0.03585386276245117
+      },
+      {
+        "case_id": "A-97124801-026",
+        "speed_delta_mps": -0.7170337020098971,
+        "first_contact_time_delta_ms": -1.9989013671875,
+        "arm_contact_speed_delta_mps": -1.2536132779957203,
+        "point_velocity_mps_delta_on_after_face": -0.5576380631033102,
+        "root_transport_mps_delta_on_after_face": 0.021219919868619597,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.23977891909110455,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.8186368313306356,
+        "normal_relative_velocity_delta_mps": -0.5199966430664062
+      },
+      {
+        "case_id": "A-97124801-027",
+        "speed_delta_mps": -1.0352876054671079,
+        "first_contact_time_delta_ms": 2.6235580444335938,
+        "arm_contact_speed_delta_mps": -0.6032554161303461,
+        "point_velocity_mps_delta_on_after_face": -0.4706680709022273,
+        "root_transport_mps_delta_on_after_face": 0.015054496947290108,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.06113735914009,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.5468599529611871,
+        "normal_relative_velocity_delta_mps": -0.677361011505127
+      },
+      {
+        "case_id": "A-97124801-028",
+        "speed_delta_mps": 0.09060484413177061,
+        "first_contact_time_delta_ms": -0.499725341796875,
+        "arm_contact_speed_delta_mps": -0.12703195924130517,
+        "point_velocity_mps_delta_on_after_face": 0.013680378202284738,
+        "root_transport_mps_delta_on_after_face": 0.0018981848816951308,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.014198173772354286,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.025980476558226995,
+        "normal_relative_velocity_delta_mps": 0.010468006134033203
+      },
+      {
+        "case_id": "A-97124801-029",
+        "speed_delta_mps": 0.06944602454551152,
+        "first_contact_time_delta_ms": -0.2498626708984375,
+        "arm_contact_speed_delta_mps": -0.14877518134440226,
+        "point_velocity_mps_delta_on_after_face": 0.030904913897562447,
+        "root_transport_mps_delta_on_after_face": 0.0017091296871056816,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.0006905947992943973,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.028505180993308343,
+        "normal_relative_velocity_delta_mps": 0.04843568801879883
+      },
+      {
+        "case_id": "A-97124801-030",
+        "speed_delta_mps": 0.36011489386309226,
+        "first_contact_time_delta_ms": -1.2493133544921875,
+        "arm_contact_speed_delta_mps": -0.6637436859166299,
+        "point_velocity_mps_delta_on_after_face": 0.11902464996262796,
+        "root_transport_mps_delta_on_after_face": 0.004347843142957775,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.023916262470300875,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.09076056986661762,
+        "normal_relative_velocity_delta_mps": 0.16110610961914062
+      },
+      {
+        "case_id": "A-97124801-031",
+        "speed_delta_mps": -0.03941700024229444,
+        "first_contact_time_delta_ms": 0.0,
+        "arm_contact_speed_delta_mps": -0.7851669529439618,
+        "point_velocity_mps_delta_on_after_face": 0.12778011980667126,
+        "root_transport_mps_delta_on_after_face": -0.001038037140414505,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.07153149611185883,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.20034962431104875,
+        "normal_relative_velocity_delta_mps": 0.19794940948486328
+      },
+      {
+        "case_id": "A-97124801-032",
+        "speed_delta_mps": 0.13278703580215367,
+        "first_contact_time_delta_ms": -0.2498626708984375,
+        "arm_contact_speed_delta_mps": -0.24961276165477653,
+        "point_velocity_mps_delta_on_after_face": 0.010406759272478694,
+        "root_transport_mps_delta_on_after_face": -0.0028385621921689363,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.02720309044617264,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.040448449662020325,
+        "normal_relative_velocity_delta_mps": 0.12388420104980469
+      },
+      {
+        "case_id": "A-97124801-034",
+        "speed_delta_mps": 0.2149175216521968,
+        "first_contact_time_delta_ms": -0.4372596740722656,
+        "arm_contact_speed_delta_mps": -0.3759672165188297,
+        "point_velocity_mps_delta_on_after_face": 0.030766720633011557,
+        "root_transport_mps_delta_on_after_face": 0.0014280422013023264,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.011596445222661345,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.01774214641198757,
+        "normal_relative_velocity_delta_mps": 0.13710784912109375
+      },
+      {
+        "case_id": "A-97124801-035",
+        "speed_delta_mps": 0.3207925917270975,
+        "first_contact_time_delta_ms": 0.0,
+        "arm_contact_speed_delta_mps": -0.3445486721211948,
+        "point_velocity_mps_delta_on_after_face": 0.0163425251206728,
+        "root_transport_mps_delta_on_after_face": 0.00147523141038855,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.011048816000793382,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.025916152341197263,
+        "normal_relative_velocity_delta_mps": 0.04375934600830078
+      },
+      {
+        "case_id": "A-97124801-037",
+        "speed_delta_mps": 0.10611384386597411,
+        "first_contact_time_delta_ms": -0.7495880126953125,
+        "arm_contact_speed_delta_mps": -0.10061139359155957,
+        "point_velocity_mps_delta_on_after_face": 0.0002911543124382021,
+        "root_transport_mps_delta_on_after_face": 0.004081229625811311,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.04339456587227283,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.04718462701371218,
+        "normal_relative_velocity_delta_mps": 0.12253332138061523
+      },
+      {
+        "case_id": "A-97124801-039",
+        "speed_delta_mps": 0.4517833357463381,
+        "first_contact_time_delta_ms": -1.0619163513183594,
+        "arm_contact_speed_delta_mps": -0.8448461315430151,
+        "point_velocity_mps_delta_on_after_face": 0.04787077977926035,
+        "root_transport_mps_delta_on_after_face": -0.0007700274035666865,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.02655249866813092,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.07519327173280255,
+        "normal_relative_velocity_delta_mps": 0.14650774002075195
+      },
+      {
+        "case_id": "A-97124801-040",
+        "speed_delta_mps": 0.3495608612555836,
+        "first_contact_time_delta_ms": -0.2498626708984375,
+        "arm_contact_speed_delta_mps": -0.29448995042149306,
+        "point_velocity_mps_delta_on_after_face": 0.029852333968027445,
+        "root_transport_mps_delta_on_after_face": 0.0008619201892678952,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.09116193460533412,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.06217150263547255,
+        "normal_relative_velocity_delta_mps": 0.14966487884521484
+      },
+      {
+        "case_id": "A-97124801-041",
+        "speed_delta_mps": 0.21812132290176045,
+        "first_contact_time_delta_ms": -0.4372596740722656,
+        "arm_contact_speed_delta_mps": -0.1754096694620806,
+        "point_velocity_mps_delta_on_after_face": -6.702921033518994e-05,
+        "root_transport_mps_delta_on_after_face": 0.0025985165874377048,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.011027304278072247,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.013692855736786913,
+        "normal_relative_velocity_delta_mps": 0.012034416198730469
+      },
+      {
+        "case_id": "A-97124801-044",
+        "speed_delta_mps": -0.1287162689706518,
+        "first_contact_time_delta_ms": -0.3123283386230469,
+        "arm_contact_speed_delta_mps": -0.9619366315282996,
+        "point_velocity_mps_delta_on_after_face": -0.03057990498352403,
+        "root_transport_mps_delta_on_after_face": 0.00524414443123522,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.015011159261405727,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.02081297785712133,
+        "normal_relative_velocity_delta_mps": 0.028437137603759766
+      },
+      {
+        "case_id": "A-97124801-045",
+        "speed_delta_mps": -0.005543232063388359,
+        "first_contact_time_delta_ms": 0.5621910095214844,
+        "arm_contact_speed_delta_mps": -0.2613977664048952,
+        "point_velocity_mps_delta_on_after_face": -0.07009808990124511,
+        "root_transport_mps_delta_on_after_face": 0.002624413154889371,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.01563882374161621,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.08836131732326813,
+        "normal_relative_velocity_delta_mps": -0.03631162643432617
+      },
+      {
+        "case_id": "A-97124801-047",
+        "speed_delta_mps": 0.9400895757597922,
+        "first_contact_time_delta_ms": -3.4356117248535156,
+        "arm_contact_speed_delta_mps": -0.3098192391078709,
+        "point_velocity_mps_delta_on_after_face": 0.29647035786495557,
+        "root_transport_mps_delta_on_after_face": -0.0025501848405285465,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.15532514879692383,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.4543456639622163,
+        "normal_relative_velocity_delta_mps": 0.32186222076416016
+      },
+      {
+        "case_id": "A-97124801-048",
+        "speed_delta_mps": -0.13788263915315646,
+        "first_contact_time_delta_ms": 1.499176025390625,
+        "arm_contact_speed_delta_mps": -0.2386539427165646,
+        "point_velocity_mps_delta_on_after_face": -0.03557112971131349,
+        "root_transport_mps_delta_on_after_face": 0.00029475885170227034,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.032373612146382735,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.06823950380264765,
+        "normal_relative_velocity_delta_mps": 0.007862091064453125
+      },
+      {
+        "case_id": "A-97124801-049",
+        "speed_delta_mps": -0.44046691313946695,
+        "first_contact_time_delta_ms": 2.5610923767089844,
+        "arm_contact_speed_delta_mps": -1.2473887789808276,
+        "point_velocity_mps_delta_on_after_face": -0.19331941720595602,
+        "root_transport_mps_delta_on_after_face": 0.007560026173474732,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.03512966137063278,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.1657497928376318,
+        "normal_relative_velocity_delta_mps": -0.1883687973022461
+      },
+      {
+        "case_id": "A-97124801-050",
+        "speed_delta_mps": 0.2726815641931708,
+        "first_contact_time_delta_ms": -0.18739700317382812,
+        "arm_contact_speed_delta_mps": -0.2605980911559618,
+        "point_velocity_mps_delta_on_after_face": 0.048148130618243634,
+        "root_transport_mps_delta_on_after_face": 0.0013193029372559062,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.010051000828232834,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.05687985861036293,
+        "normal_relative_velocity_delta_mps": 0.0708613395690918
+      },
+      {
+        "case_id": "A-97124801-051",
+        "speed_delta_mps": 0.19325257377377536,
+        "first_contact_time_delta_ms": 0.18739700317382812,
+        "arm_contact_speed_delta_mps": -0.23755533348234215,
+        "point_velocity_mps_delta_on_after_face": 0.04402954700365114,
+        "root_transport_mps_delta_on_after_face": 0.0013343473336907552,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.015667560640145073,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.058362776474431666,
+        "normal_relative_velocity_delta_mps": 0.06459903717041016
+      },
+      {
+        "case_id": "A-97124801-052",
+        "speed_delta_mps": 0.11481193125787037,
+        "first_contact_time_delta_ms": 0.8745193481445312,
+        "arm_contact_speed_delta_mps": -0.21760872384269625,
+        "point_velocity_mps_delta_on_after_face": -0.015865421049102046,
+        "root_transport_mps_delta_on_after_face": 0.00045473517706362543,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.012823579324318768,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.0034966505794655767,
+        "normal_relative_velocity_delta_mps": 0.00892496109008789
+      },
+      {
+        "case_id": "A-97124801-053",
+        "speed_delta_mps": 0.26770905480294616,
+        "first_contact_time_delta_ms": -0.99945068359375,
+        "arm_contact_speed_delta_mps": 0.4550693216581805,
+        "point_velocity_mps_delta_on_after_face": 0.16758225418641903,
+        "root_transport_mps_delta_on_after_face": -0.0004189194499493176,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.10355430659658249,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.27155558006960057,
+        "normal_relative_velocity_delta_mps": 0.1462721824645996
+      },
+      {
+        "case_id": "A-97124801-054",
+        "speed_delta_mps": -0.47107042547687605,
+        "first_contact_time_delta_ms": 0.5621910095214844,
+        "arm_contact_speed_delta_mps": 1.1137174019571394,
+        "point_velocity_mps_delta_on_after_face": -0.29659634944364754,
+        "root_transport_mps_delta_on_after_face": -0.00374983022932307,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.0009192439661935836,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.29376576507229646,
+        "normal_relative_velocity_delta_mps": -0.2715635299682617
+      },
+      {
+        "case_id": "A-97124801-055",
+        "speed_delta_mps": 0.20186277185013424,
+        "first_contact_time_delta_ms": 0.8120536804199219,
+        "arm_contact_speed_delta_mps": -0.584724991374201,
+        "point_velocity_mps_delta_on_after_face": 0.09066929790035116,
+        "root_transport_mps_delta_on_after_face": -0.005359233595518265,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.033459633576989056,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.12948815171948647,
+        "normal_relative_velocity_delta_mps": 0.18074560165405273
+      },
+      {
+        "case_id": "A-97124801-057",
+        "speed_delta_mps": -0.19310924373095695,
+        "first_contact_time_delta_ms": 0.4372596740722656,
+        "arm_contact_speed_delta_mps": 0.3618899690813704,
+        "point_velocity_mps_delta_on_after_face": -0.10233703592076182,
+        "root_transport_mps_delta_on_after_face": 0.0031021181539435116,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.047133350814333785,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.1525724621150728,
+        "normal_relative_velocity_delta_mps": -0.07169961929321289
+      },
+      {
+        "case_id": "A-97124801-058",
+        "speed_delta_mps": 0.38546343385159876,
+        "first_contact_time_delta_ms": -0.9369850158691406,
+        "arm_contact_speed_delta_mps": -0.25441087975673415,
+        "point_velocity_mps_delta_on_after_face": 0.22946456540855587,
+        "root_transport_mps_delta_on_after_face": -0.006599489169752282,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.12034581961150599,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.3564098719259515,
+        "normal_relative_velocity_delta_mps": 0.1981678009033203
+      },
+      {
+        "case_id": "A-97124801-059",
+        "speed_delta_mps": -0.04394064368685591,
+        "first_contact_time_delta_ms": 0.0,
+        "arm_contact_speed_delta_mps": -0.15808744586850398,
+        "point_velocity_mps_delta_on_after_face": 0.07371371566703738,
+        "root_transport_mps_delta_on_after_face": -0.00218557768999883,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.030646727516878747,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.10654604541450541,
+        "normal_relative_velocity_delta_mps": 0.14451122283935547
+      },
+      {
+        "case_id": "A-97124801-060",
+        "speed_delta_mps": 0.2830393920270158,
+        "first_contact_time_delta_ms": -2.186298370361328,
+        "arm_contact_speed_delta_mps": -0.5930843577158829,
+        "point_velocity_mps_delta_on_after_face": 0.023358625798282517,
+        "root_transport_mps_delta_on_after_face": -0.005003749269082425,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.048271059275178274,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.07663340855663847,
+        "normal_relative_velocity_delta_mps": 0.18086624145507812
+      },
+      {
+        "case_id": "A-97124801-062",
+        "speed_delta_mps": 0.17935793241681885,
+        "first_contact_time_delta_ms": -0.3123283386230469,
+        "arm_contact_speed_delta_mps": -0.34150062770355394,
+        "point_velocity_mps_delta_on_after_face": 0.13206285673297263,
+        "root_transport_mps_delta_on_after_face": -7.615073124289662e-05,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.07746095286930416,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.20959995784305585,
+        "normal_relative_velocity_delta_mps": 0.18922948837280273
+      },
+      {
+        "case_id": "A-97124801-063",
+        "speed_delta_mps": 0.2234848092721924,
+        "first_contact_time_delta_ms": -0.3123283386230469,
+        "arm_contact_speed_delta_mps": 0.21022618547875505,
+        "point_velocity_mps_delta_on_after_face": 0.06682121715029699,
+        "root_transport_mps_delta_on_after_face": -0.0019521426734190883,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.03127539354921555,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.03749790663533936,
+        "normal_relative_velocity_delta_mps": 0.14221620559692383
+      },
+      {
+        "case_id": "B-97124802-000",
+        "speed_delta_mps": 0.10368355765794313,
+        "first_contact_time_delta_ms": -0.6871223449707031,
+        "arm_contact_speed_delta_mps": -0.1555313592441978,
+        "point_velocity_mps_delta_on_after_face": 0.05948957068211602,
+        "root_transport_mps_delta_on_after_face": 0.001807931605481844,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.025060834160225753,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.08274248766757297,
+        "normal_relative_velocity_delta_mps": 0.08059024810791016
+      },
+      {
+        "case_id": "B-97124802-002",
+        "speed_delta_mps": -0.8392663868588492,
+        "first_contact_time_delta_ms": 1.9364356994628906,
+        "arm_contact_speed_delta_mps": 0.4936311520319645,
+        "point_velocity_mps_delta_on_after_face": -0.3989898316872741,
+        "root_transport_mps_delta_on_after_face": 0.006526293434288455,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.049209922032678266,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.45472600534805485,
+        "normal_relative_velocity_delta_mps": -0.7242646217346191
+      },
+      {
+        "case_id": "B-97124802-003",
+        "speed_delta_mps": 0.15435650717627958,
+        "first_contact_time_delta_ms": -0.3123283386230469,
+        "arm_contact_speed_delta_mps": -0.7356018068295969,
+        "point_velocity_mps_delta_on_after_face": 0.12157729730764855,
+        "root_transport_mps_delta_on_after_face": 0.004244891422040542,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.008972292434135998,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.10836014256116089,
+        "normal_relative_velocity_delta_mps": 0.1726241111755371
+      },
+      {
+        "case_id": "B-97124802-004",
+        "speed_delta_mps": 0.2411722917519059,
+        "first_contact_time_delta_ms": 0.0,
+        "arm_contact_speed_delta_mps": -0.20215476865425996,
+        "point_velocity_mps_delta_on_after_face": 0.06492162683205738,
+        "root_transport_mps_delta_on_after_face": 0.0011523222857471316,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.03222374586655352,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.09599299244246084,
+        "normal_relative_velocity_delta_mps": 0.07987499237060547
+      },
+      {
+        "case_id": "B-97124802-006",
+        "speed_delta_mps": -0.1481963232270216,
+        "first_contact_time_delta_ms": 3.498077392578125,
+        "arm_contact_speed_delta_mps": 0.7535421710695109,
+        "point_velocity_mps_delta_on_after_face": 0.047366766488111445,
+        "root_transport_mps_delta_on_after_face": -0.007372405219762013,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.015449845202990864,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.03928936331231436,
+        "normal_relative_velocity_delta_mps": 0.0787973403930664
+      },
+      {
+        "case_id": "B-97124802-010",
+        "speed_delta_mps": 0.017597953953019996,
+        "first_contact_time_delta_ms": 0.12493133544921875,
+        "arm_contact_speed_delta_mps": -0.5515514285682102,
+        "point_velocity_mps_delta_on_after_face": 0.04162466352380567,
+        "root_transport_mps_delta_on_after_face": 0.0016812065232301165,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.00025577147507083176,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.040199164350971595,
+        "normal_relative_velocity_delta_mps": 0.04604339599609375
+      },
+      {
+        "case_id": "B-97124802-011",
+        "speed_delta_mps": -0.1550979681788407,
+        "first_contact_time_delta_ms": -0.062465667724609375,
+        "arm_contact_speed_delta_mps": 0.82311256802471,
+        "point_velocity_mps_delta_on_after_face": -0.04082669145217921,
+        "root_transport_mps_delta_on_after_face": -0.002850857178305688,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.022218803255114272,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.060194588213483335,
+        "normal_relative_velocity_delta_mps": -0.03629922866821289
+      },
+      {
+        "case_id": "B-97124802-012",
+        "speed_delta_mps": -0.2340601655999599,
+        "first_contact_time_delta_ms": -0.18739700317382812,
+        "arm_contact_speed_delta_mps": -0.2982851241683053,
+        "point_velocity_mps_delta_on_after_face": -0.04174768776219162,
+        "root_transport_mps_delta_on_after_face": 0.005683560868555038,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.054551953332274805,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.1019832592103882,
+        "normal_relative_velocity_delta_mps": -0.037787437438964844
+      },
+      {
+        "case_id": "B-97124802-013",
+        "speed_delta_mps": -0.032099838437715356,
+        "first_contact_time_delta_ms": -0.2498626708984375,
+        "arm_contact_speed_delta_mps": -0.4583020361889645,
+        "point_velocity_mps_delta_on_after_face": -0.017379320329158787,
+        "root_transport_mps_delta_on_after_face": 0.003930173204590437,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.022424558014298768,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.04373406667979829,
+        "normal_relative_velocity_delta_mps": 0.02629566192626953
+      },
+      {
+        "case_id": "B-97124802-018",
+        "speed_delta_mps": -0.06644941210621891,
+        "first_contact_time_delta_ms": 0.18739700317382812,
+        "arm_contact_speed_delta_mps": -0.1257917835950526,
+        "point_velocity_mps_delta_on_after_face": 0.04119927362536746,
+        "root_transport_mps_delta_on_after_face": -0.00016283114403403687,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.02527657339116557,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.06663868420022356,
+        "normal_relative_velocity_delta_mps": 0.05237436294555664
+      },
+      {
+        "case_id": "B-97124802-020",
+        "speed_delta_mps": -0.027801684911216817,
+        "first_contact_time_delta_ms": 1.0619163513183594,
+        "arm_contact_speed_delta_mps": -0.013361990694876091,
+        "point_velocity_mps_delta_on_after_face": 0.02612308215072101,
+        "root_transport_mps_delta_on_after_face": -0.0005957484320120443,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.011964213093266451,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.038683033901076413,
+        "normal_relative_velocity_delta_mps": 0.06747674942016602
+      },
+      {
+        "case_id": "B-97124802-021",
+        "speed_delta_mps": 0.10905062520656106,
+        "first_contact_time_delta_ms": -0.18739700317382812,
+        "arm_contact_speed_delta_mps": -0.2846954356598186,
+        "point_velocity_mps_delta_on_after_face": 0.05865977392642119,
+        "root_transport_mps_delta_on_after_face": 0.001708817067217261,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.029733343770703247,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.08668426563786902,
+        "normal_relative_velocity_delta_mps": 0.06850481033325195
+      },
+      {
+        "case_id": "B-97124802-028",
+        "speed_delta_mps": 0.3245684957279735,
+        "first_contact_time_delta_ms": -1.3742446899414062,
+        "arm_contact_speed_delta_mps": 0.20816325163666072,
+        "point_velocity_mps_delta_on_after_face": 0.14211309690047225,
+        "root_transport_mps_delta_on_after_face": 0.0026822703045445984,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.020234742991465104,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.15966559047584195,
+        "normal_relative_velocity_delta_mps": 0.1806182861328125
+      },
+      {
+        "case_id": "B-97124802-029",
+        "speed_delta_mps": 0.25634539747269613,
+        "first_contact_time_delta_ms": -0.9369850158691406,
+        "arm_contact_speed_delta_mps": -0.36112736606448115,
+        "point_velocity_mps_delta_on_after_face": 0.1848590159179473,
+        "root_transport_mps_delta_on_after_face": 0.00011075809677585369,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.07731275006418148,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.26206082396308794,
+        "normal_relative_velocity_delta_mps": 0.1541438102722168
+      },
+      {
+        "case_id": "B-97124802-030",
+        "speed_delta_mps": 0.9810517794116285,
+        "first_contact_time_delta_ms": 0.0,
+        "arm_contact_speed_delta_mps": -1.7396769915032757,
+        "point_velocity_mps_delta_on_after_face": 0.4893253233768968,
+        "root_transport_mps_delta_on_after_face": -0.007420020888933898,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.36213924703241507,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.858884550762971,
+        "normal_relative_velocity_delta_mps": 0.4687986373901367
+      },
+      {
+        "case_id": "B-97124802-031",
+        "speed_delta_mps": 0.48769242030142923,
+        "first_contact_time_delta_ms": 1.2493133544921875,
+        "arm_contact_speed_delta_mps": -0.2400555881621882,
+        "point_velocity_mps_delta_on_after_face": 0.2348662255605103,
+        "root_transport_mps_delta_on_after_face": -0.0003350429121300458,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.032713653073397964,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.267914884024973,
+        "normal_relative_velocity_delta_mps": 0.29436349868774414
+      },
+      {
+        "case_id": "B-97124802-034",
+        "speed_delta_mps": 0.19130385221311208,
+        "first_contact_time_delta_ms": 0.062465667724609375,
+        "arm_contact_speed_delta_mps": -0.2742466612171257,
+        "point_velocity_mps_delta_on_after_face": 0.04873738590460419,
+        "root_transport_mps_delta_on_after_face": 0.0017746257009745303,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.020531427574097483,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.02643137054007838,
+        "normal_relative_velocity_delta_mps": 0.1494884490966797
+      },
+      {
+        "case_id": "B-97124802-037",
+        "speed_delta_mps": 0.06196873217132648,
+        "first_contact_time_delta_ms": 0.8745193481445312,
+        "arm_contact_speed_delta_mps": -0.5800357930358417,
+        "point_velocity_mps_delta_on_after_face": 0.10815267255028471,
+        "root_transport_mps_delta_on_after_face": -0.0015934474612024907,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.0014678386755676565,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.1112139411664359,
+        "normal_relative_velocity_delta_mps": 0.13692235946655273
+      },
+      {
+        "case_id": "B-97124802-042",
+        "speed_delta_mps": 0.17453070511561464,
+        "first_contact_time_delta_ms": -0.5621910095214844,
+        "arm_contact_speed_delta_mps": 0.14077664287147407,
+        "point_velocity_mps_delta_on_after_face": 0.1821760283469782,
+        "root_transport_mps_delta_on_after_face": -0.0008502220382731185,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.08223988209898825,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.26526604406276677,
+        "normal_relative_velocity_delta_mps": 0.20245885848999023
+      },
+      {
+        "case_id": "B-97124802-043",
+        "speed_delta_mps": 1.2788933687002428,
+        "first_contact_time_delta_ms": -4.435062408447266,
+        "arm_contact_speed_delta_mps": -1.7625884315671034,
+        "point_velocity_mps_delta_on_after_face": 0.2960947664023149,
+        "root_transport_mps_delta_on_after_face": -0.00488348505796693,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.07861271267674644,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.37959106363064965,
+        "normal_relative_velocity_delta_mps": 0.5801806449890137
+      },
+      {
+        "case_id": "B-97124802-045",
+        "speed_delta_mps": 0.10070878468099131,
+        "first_contact_time_delta_ms": -0.3123283386230469,
+        "arm_contact_speed_delta_mps": -0.10239677941229663,
+        "point_velocity_mps_delta_on_after_face": 0.06484273881594016,
+        "root_transport_mps_delta_on_after_face": 0.0020408741652725576,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.04613221550843338,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.016669663633924414,
+        "normal_relative_velocity_delta_mps": 0.13489675521850586
+      },
+      {
+        "case_id": "B-97124802-048",
+        "speed_delta_mps": 0.10756015595961177,
+        "first_contact_time_delta_ms": -0.12493133544921875,
+        "arm_contact_speed_delta_mps": -0.25908191366972044,
+        "point_velocity_mps_delta_on_after_face": 0.019247829714042264,
+        "root_transport_mps_delta_on_after_face": 0.002168660681574619,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.03883430875121039,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.021755185609467542,
+        "normal_relative_velocity_delta_mps": 0.02994823455810547
+      },
+      {
+        "case_id": "B-97124802-050",
+        "speed_delta_mps": 0.10731509042455123,
+        "first_contact_time_delta_ms": -0.99945068359375,
+        "arm_contact_speed_delta_mps": -0.10678849562390536,
+        "point_velocity_mps_delta_on_after_face": -0.07012127043309757,
+        "root_transport_mps_delta_on_after_face": 0.003945376328900185,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.052047721709482575,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.1261143323648306,
+        "normal_relative_velocity_delta_mps": -0.03670215606689453
+      },
+      {
+        "case_id": "B-97124802-058",
+        "speed_delta_mps": 0.17986262242542228,
+        "first_contact_time_delta_ms": -0.18739700317382812,
+        "arm_contact_speed_delta_mps": -0.14714079282187464,
+        "point_velocity_mps_delta_on_after_face": 0.06301834483730073,
+        "root_transport_mps_delta_on_after_face": 0.0010913258691775951,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.02257765091014352,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.08450466453814176,
+        "normal_relative_velocity_delta_mps": 0.07502937316894531
+      },
+      {
+        "case_id": "B-97124802-060",
+        "speed_delta_mps": 0.22459539864110756,
+        "first_contact_time_delta_ms": 0.37479400634765625,
+        "arm_contact_speed_delta_mps": 0.21854589434328942,
+        "point_velocity_mps_delta_on_after_face": 0.1225719162825234,
+        "root_transport_mps_delta_on_after_face": -0.001622961798167566,
+        "root_rotation_at_contact_mps_delta_on_after_face": -0.01714921257160129,
+        "arm_contact_velocity_mps_delta_on_after_face": 0.14134408336451232,
+        "normal_relative_velocity_delta_mps": 0.1555180549621582
+      },
+      {
+        "case_id": "B-97124802-061",
+        "speed_delta_mps": -0.47489892192516425,
+        "first_contact_time_delta_ms": -0.6871223449707031,
+        "arm_contact_speed_delta_mps": -0.9942845468278447,
+        "point_velocity_mps_delta_on_after_face": -0.23876363775492543,
+        "root_transport_mps_delta_on_after_face": 0.005997211842740047,
+        "root_rotation_at_contact_mps_delta_on_after_face": 0.08873786059918176,
+        "arm_contact_velocity_mps_delta_on_after_face": -0.3334987003204124,
+        "normal_relative_velocity_delta_mps": -0.19728755950927734
+      }
+    ]
+  },
+  "paired_qualified_release_speed": {
+    "cases": 75,
+    "mean_delta_mps": 0.09374418343867176,
+    "median_delta_mps": 0.12405351316700397,
+    "below_threshold_to_pass": [
+      "A-97124801-034"
+    ],
+    "pass_to_below_threshold": [
+      "A-97124801-020",
+      "A-97124801-048",
+      "B-97124802-018"
+    ]
+  },
+  "paired_exact_two_sided_p": 1.0
+}

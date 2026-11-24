@@ -9,6 +9,16 @@ def racket_state(state, geometry):
     return torch.cat((center, rotation.flatten(1), velocity, omega), -1)
 
 
+def racket_at_ball(racket, observed_ball_position, *, full_orientation=False):
+    orientation = racket[:, 3:12].reshape(-1, 3, 3)
+    axes = orientation.flatten(1) if full_orientation else orientation[:, :, 0]
+    offset = observed_ball_position - racket[:, :3]
+    # Far from the racket, supervise the twist at its center.
+    lever = torch.where(offset.norm(dim=-1, keepdim=True) <= .4, offset, torch.zeros_like(offset))
+    surface = racket[:, 12:15] + torch.linalg.cross(racket[:, 15:18], lever)
+    return torch.cat((racket[:, :3], surface, axes, racket[:, 15:18]), dim=-1)
+
+
 def racket_loss_components(predicted, target, *, per_row=False):
     """Return task-space position, velocity, normal and angular losses.
 

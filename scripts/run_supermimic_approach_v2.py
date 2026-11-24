@@ -55,6 +55,7 @@ def quick_check(source, output, execution, seed):
                         for r in summary),
                 out_of_target=sum(r['crossed_net'] and not r['landed_target']
                                   and all(map(math.isfinite, r['first_landing_m'])) for r in raw),
+                net_hit=sum(bool(r['shuttle_net_contact']) for r in raw),
                 landed_target=sum(r['landed_target'] for r in raw), outcomes=outcomes)
 
 
@@ -64,7 +65,9 @@ def clearly_regressed(baseline, candidate):
     # A small swing in successful cases alone is insufficient to stop.
     return (candidate['success'] <= baseline['success'] - 5 and (
         candidate['qualified'] <= baseline['qualified'] - 4 or candidate['low'] >= baseline['low'] + 4
-        or candidate['frame'] >= baseline['frame'] + 4))
+        or candidate['frame'] >= baseline['frame'] + 4
+        or candidate['landed_target'] <= baseline['landed_target'] - 5
+        or candidate['net_hit'] >= baseline['net_hit'] + 4))
 
 
 def paired_quick_result(baseline, candidate, before_dir, after_dir):

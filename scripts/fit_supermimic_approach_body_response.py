@@ -16,7 +16,7 @@ from quadsmash.rl.supermimic_physical_dataset_v1 import encode_physical, valid_w
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
 from quadsmash.rl.supermimic_policy_execution_v1 import contract
-from quadsmash.rl.supermimic_racket_dynamics_v1 import racket_state, robot_loss
+from quadsmash.rl.supermimic_racket_dynamics_v1 import racket_at_ball, racket_state, robot_loss
 from quadsmash.rl.supermimic_toi_racket_objective import string_boundary
 from quadsmash.rl.supermimic_training_probe_replay import training_windows
 
@@ -89,16 +89,6 @@ def sample_windows(data, eligible, horizon, count, rng, *, clearance=False):
             ticks = options.nonzero().flatten()
             selected.append(torch.stack((ticks[torch.randint(len(ticks), (), generator=rng)], lane)))
     return torch.stack(selected)
-
-
-def racket_at_ball(racket, observed_ball_position, *, full_orientation=False):
-    orientation = racket[:, 3:12].reshape(-1, 3, 3)
-    axes = orientation.flatten(1) if full_orientation else orientation[:, :, 0]
-    offset = observed_ball_position - racket[:, :3]
-    # Far from the racket, supervise the twist at its center.
-    lever = torch.where(offset.norm(dim=-1, keepdim=True) <= .4, offset, torch.zeros_like(offset))
-    surface = racket[:, 12:15] + torch.linalg.cross(racket[:, 15:18], lever)
-    return torch.cat((racket[:, :3], surface, axes, racket[:, 15:18]), dim=-1)
 
 
 def ball_in_racket_frame(racket, observed_ball_position):

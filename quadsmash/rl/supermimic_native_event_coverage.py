@@ -18,8 +18,33 @@ def coverage_targets(receipt):
     return counts
 
 
+def critical_case_targets(receipt):
+    """Use baseline marginal returns to fix cases before observing new outcomes."""
+    if 'marginal_success_case_ids' not in receipt:
+        return None  # Legacy baseline: retain its original outcome quota.
+    counts = coverage_targets(receipt)
+    ids = receipt['marginal_success_case_ids']
+    training = receipt.get('training_case_ids')
+    if (not isinstance(ids, list) or any(not isinstance(key, str) or not key for key in ids)
+            or len(ids) != len(set(ids)) or len(ids) != counts['marginal_success']
+            or not isinstance(training, list) or any(not isinstance(key, str) for key in training)
+            or not set(ids) <= set(training)):
+        raise ValueError('Expected distinct marginal-success cases from the training-side baseline')
+    return frozenset(ids)
+
+
 def coverage_deficits(counts, targets):
     return {key: targets[key] - counts[key] for key in COVERAGE_KEYS if counts[key] < targets[key]}
+
+
+def collection_deficits(report, targets, critical_cases):
+    deficits = coverage_deficits(report['counts'], targets)
+    if critical_cases is not None:
+        deficits.pop('marginal_success', None)
+        missing = critical_cases.difference(report['training_case_ids'])
+        if missing:
+            deficits['critical_cases_observed'] = len(missing)
+    return deficits
 
 
 def native_event_coverage(episodes, holdout_lanes, seconds, *, indexed_episodes=None):
@@ -43,6 +68,8 @@ def native_event_coverage(episodes, holdout_lanes, seconds, *, indexed_episodes=
     qualified_ids = {row['case_id'] for row in qualified}
     margins = [(row['case_id'], row['native_contact'].get('signed_string_margin_m')) for row in qualified]
     known_margins = [(case_id, value) for case_id, value in margins if value is not None and math.isfinite(value)]
+    marginal = {row['case_id'] for row in qualified if row['ball_side_complete_except_recovery']
+                and row['outgoing_speed_mps'] is not None and 4.5 <= row['outgoing_speed_mps'] < 4.75}
     counts = dict(
         settled_cases=len(training_ids),
         qualified_string=len(qualified_ids),
@@ -50,13 +77,12 @@ def native_event_coverage(episodes, holdout_lanes, seconds, *, indexed_episodes=
         frame=len({row['case_id'] for row in training
                    if row['native_contact']['frame_hit'] and not row['native_contact']['string_hit']}),
         near_edge_under_10_mm=len({case_id for case_id, value in known_margins if value < .010}),
-        marginal_success=len({row['case_id'] for row in qualified if row['ball_side_complete_except_recovery']
-                              and row['outgoing_speed_mps'] is not None
-                              and 4.5 <= row['outgoing_speed_mps'] < 4.75}),
+        marginal_success=len(marginal),
     )
     scope = ('settled training-side cases with indexed Actor starts' if indexed_episodes is not None
              else 'settled training-side cases, before checking start snapshot availability')
     return dict(scope=scope, settled_episodes=len(distinct), training_case_ids=sorted(training_ids),
+                marginal_success_case_ids=sorted(marginal),
                 missing_qualified_margins=len(qualified_ids - {case_id for case_id, _ in known_margins}),
                 counts=counts, per_collection_hour={key: count * 3600 / seconds if seconds else None
                                                    for key, count in counts.items()})

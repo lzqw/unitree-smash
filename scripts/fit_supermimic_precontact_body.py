@@ -6,17 +6,12 @@ import json
 from pathlib import Path
 
 import torch
-import torch.nn.functional as F
 
-from fit_supermimic_approach_body_response import native_data, racket_at_ball
+from fit_supermimic_approach_body_response import native_data
 from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
 from quadsmash.rl.supermimic_physical_world_v2 import PhysicalWorldV2
-from quadsmash.rl.supermimic_racket_dynamics_v1 import racket_state, robot_loss
+from quadsmash.rl.supermimic_precontact_body import HORIZONS, body_rollout_loss, make_window
 from run_supermimic_approach_v2 import dump
-
-
-FIELDS = ('state', 'next_state', 'targets', 'previous_action', 'feet', 'present', 'elapsed')
-HORIZONS = (20, 32)
 
 
 def sha256(path):
@@ -48,50 +43,6 @@ def event_windows(data, terminals, holdout, horizon):
             continue
         pools[kind].append((start, lane, episode))
     return pools
-
-
-def body_rollout_loss(body, window, launch, position_weight=1.):
-    state = window['state'][0]
-    horizon = len(window['state'])
-    losses = []
-    endpoint_metrics = None
-    for step in range(horizon):
-        # Preserve BPTT through robot kinematics. The incoming shuttle and
-        # control history are recorded inputs, independent of the Body fit.
-        state = torch.cat((state[:, :49], window['state'][step, :, 49:]), -1)
-        state, _, _ = body(
-            state, window['targets'][step], window['previous_action'][step], window['feet'][step],
-            window['present'][step], window['elapsed'][step], launch, detach_contacts=True)
-        if step + 1 not in (4, 8, 16, horizon):
-            continue
-        truth = window['next_state'][step]
-        predicted_pose = racket_state(state, body.geometry)
-        target_pose = racket_state(truth, body.geometry)
-        # Both twists are evaluated at the same measured shuttle center.
-        ball = truth[:, 49:52]
-        predicted_racket = racket_at_ball(predicted_pose, ball, full_orientation=True)
-        target_racket = racket_at_ball(target_pose, ball, full_orientation=True)
-        position = predicted_racket[:, :3] - target_racket[:, :3]
-        surface = predicted_racket[:, 3:6] - target_racket[:, 3:6]
-        rotation = predicted_racket[:, 6:15] - target_racket[:, 6:15]
-        angular = predicted_racket[:, 15:18] - target_racket[:, 15:18]
-        terms = (F.smooth_l1_loss(position / .025, torch.zeros_like(position)),
-                 F.smooth_l1_loss(surface, torch.zeros_like(surface)),
-                 F.smooth_l1_loss(rotation / .12, torch.zeros_like(rotation)),
-                 F.smooth_l1_loss(angular / 3., torch.zeros_like(angular)))
-        racket_loss = (position_weight * terms[0] + sum(terms[1:])) / (position_weight + 3.)
-        losses.append(racket_loss + robot_loss(state, truth)
-                      + F.smooth_l1_loss(state[:, :3], truth[:, :3], beta=.025)
-                      + F.smooth_l1_loss(state[:, 10:13], truth[:, 10:13], beta=.1))
-        endpoint_metrics = (position.norm(dim=-1).mean().detach(), surface.norm(dim=-1).mean().detach())
-    # The final state is the contact-adjacent supervision reference.
-    return (torch.stack(losses).mean() + losses[-1]) / 2, endpoint_metrics
-
-
-def make_window(data, members, horizon, device):
-    starts, lanes, _ = torch.tensor(members).T
-    indices = starts[None] + torch.arange(horizon)[:, None]
-    return {k: data[k][indices, lanes].to(device) for k in FIELDS}, lanes
 
 
 def load_event_source(checkpoint, archive, task, excluded):
