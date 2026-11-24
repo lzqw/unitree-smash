@@ -1,0 +1,148 @@
+{
+  "scope": "Same deterministic holdout window sampler reconstructed from verified native archive chunks. The base values match the live pre-refresh GPU results before using the historical A48 model.",
+  "archive_chunk_sha256": [
+    "a33a9869ddb9021df9cc0c2fde3689be6851f58e52f66d8da91fc351afd0c0a4",
+    "030b5c234323e2170a2d0aac019936aa76bf9bedf19bc0e4bd53db252f96d077",
+    "6333d765a465aec6a1d323e0e49b98b3019be3e39ad8a3707f947e03aa027c03",
+    "a9e1fd22beccdb49dc43c5c65f9ae37227215aa2e59d7529eeac7100af2e8122"
+  ],
+  "cpu": {
+    "a40": [
+      {
+        "horizon": 20,
+        "counts": {
+          "current_string": 4,
+          "current_frame": 4,
+          "historical_string": 4,
+          "historical_frame": 4
+        },
+        "loss": 0.26270246505737305,
+        "racket_center_error_m": 0.028616253286600113,
+        "contact_point_speed_error_mps": 0.4363476634025574
+      },
+      {
+        "horizon": 32,
+        "counts": {
+          "current_string": 4,
+          "current_frame": 4,
+          "historical_string": 4,
+          "historical_frame": 4
+        },
+        "loss": 0.2441716492176056,
+        "racket_center_error_m": 0.035164956003427505,
+        "contact_point_speed_error_mps": 0.4563080072402954
+      }
+    ],
+    "old_a48": [
+      {
+        "horizon": 20,
+        "counts": {
+          "current_string": 4,
+          "current_frame": 4,
+          "historical_string": 4,
+          "historical_frame": 4
+        },
+        "loss": 0.2627025544643402,
+        "racket_center_error_m": 0.027871090918779373,
+        "contact_point_speed_error_mps": 0.42816436290740967
+      },
+      {
+        "horizon": 32,
+        "counts": {
+          "current_string": 4,
+          "current_frame": 4,
+          "historical_string": 4,
+          "historical_frame": 4
+        },
+        "loss": 0.24358448386192322,
+        "racket_center_error_m": 0.03428283706307411,
+        "contact_point_speed_error_mps": 0.44495195150375366
+      }
+    ]
+  },
+  "live": {
+    "fits": [
+      {
+        "horizon": 20,
+        "counts": {
+          "current_string": 4,
+          "current_frame": 4,
+          "historical_string": 4,
+          "historical_frame": 4
+        },
+        "updated": true,
+        "loss": 0.22286877036094666,
+        "gradient": 19.887813568115234,
+        "racket_center_error_m": 0.020626306533813477,
+        "contact_point_speed_error_mps": 0.400270938873291
+      },
+      {
+        "horizon": 32,
+        "counts": {
+          "current_string": 4,
+          "current_frame": 4,
+          "historical_string": 4,
+          "historical_frame": 4
+        },
+        "updated": true,
+        "loss": 0.18159444630146027,
+        "gradient": 19.006065368652344,
+        "racket_center_error_m": 0.022105101495981216,
+        "contact_point_speed_error_mps": 0.4077925384044647
+      }
+    ],
+    "holdout_before": [
+      {
+        "horizon": 20,
+        "counts": {
+          "current_string": 4,
+          "current_frame": 4,
+          "historical_string": 4,
+          "historical_frame": 4
+        },
+        "loss": 0.2627022862434387,
+        "racket_center_error_m": 0.028616219758987427,
+        "contact_point_speed_error_mps": 0.4363477826118469
+      },
+      {
+        "horizon": 32,
+        "counts": {
+          "current_string": 4,
+          "current_frame": 4,
+          "historical_string": 4,
+          "historical_frame": 4
+        },
+        "loss": 0.24417179822921753,
+        "racket_center_error_m": 0.035164982080459595,
+        "contact_point_speed_error_mps": 0.4563080072402954
+      }
+    ],
+    "holdout_after": [
+      {
+        "horizon": 20,
+        "counts": {
+          "current_string": 4,
+          "current_frame": 4,
+          "historical_string": 4,
+          "historical_frame": 4
+        },
+        "loss": 0.25541582703590393,
+        "racket_center_error_m": 0.026947539299726486,
+        "contact_point_speed_error_mps": 0.4266756474971771
+      },
+      {
+        "horizon": 32,
+        "counts": {
+          "current_string": 4,
+          "current_frame": 4,
+          "historical_string": 4,
+          "historical_frame": 4
+        },
+        "loss": 0.2390242964029312,
+        "racket_center_error_m": 0.03339739143848419,
+        "contact_point_speed_error_mps": 0.4429810643196106
+      }
+    ],
+    "restored": false
+  }
+}
