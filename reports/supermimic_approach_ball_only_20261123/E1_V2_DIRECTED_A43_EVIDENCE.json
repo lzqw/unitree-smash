@@ -1,0 +1,3923 @@
+{
+  "schema": "supermimic-approach-directed-a43-evidence-v1",
+  "training_code_commit": "08740818",
+  "preferred": "a40",
+  "stop_reason": "consecutive_rejections",
+  "invocation": {
+    "start": {
+      "actor_sha256": "6448d83b8fc5cf8d569b75dbaf2f3609061e061fda12a8eefe23a958b9f8e5c4",
+      "accepted": 235,
+      "attempts": 248,
+      "world": 385,
+      "critic": 6190
+    },
+    "actor_end_sha256": "c4cc3bc946139affa7b6bae1af002b6b48a9d0a073f7940ce6e88479b2fe4ebd",
+    "actor_updates": 3,
+    "actor_attempts": 6,
+    "world_updates": 0,
+    "critic_updates": 0,
+    "heads": {
+      "recovery": {
+        "accepted": 0,
+        "attempts": 0
+      },
+      "approach": {
+        "accepted": 3,
+        "attempts": 6
+      }
+    },
+    "approach_objective": "toi_racket_only",
+    "scope": "updates executed in this process only"
+  },
+  "end_to_end_wall_seconds": 2218.557326018985,
+  "checkpoint_sha256": "26adea77bc4110360c03f36174c5f5a925f21b96b7c27dd3a62febef6902af39",
+  "guard_case_counts": {
+    "low_speed": 3,
+    "marginal_success": 3,
+    "robot_net_risk": 1,
+    "shuttle_net_risk": 6,
+    "landing_risk": 6
+  },
+  "proposals": [
+    {
+      "attempt": 249,
+      "accepted": true,
+      "alpha": 0.0625,
+      "rejected_reason": null,
+      "candidate_count": 1,
+      "scored_count": 1,
+      "flight_pass_count": 1,
+      "relative_risk_pass_count": {
+        "low_speed": 1,
+        "marginal_success": 1
+      },
+      "accepted_flight": {
+        "matched_lanes": 8,
+        "before": 0.2280845046043396,
+        "after": 0.22012941539287567,
+        "lost_release": false,
+        "lost_release_lanes": 0,
+        "legal_string_before": 8,
+        "legal_string_after": 8,
+        "stable_margin_lanes": 8,
+        "margin_q25_before_m": 0.01818791776895523,
+        "margin_q25_after_m": 0.017814714461565018,
+        "flight_ok": true,
+        "margin_ok": true,
+        "count_ok": true,
+        "objective_ok": true,
+        "robot_net_ok": true,
+        "robot_net": {
+          "compared": 16,
+          "new_intersections": 0,
+          "mean_risk_before": 0.0,
+          "mean_risk_after": 0.0
+        },
+        "robot_net_block_anchor": {
+          "compared": 16,
+          "new_intersections": 0,
+          "mean_risk_before": 0.0,
+          "mean_risk_after": 0.0
+        }
+      },
+      "proposal_wall_s": 193.7246209899895,
+      "timing": {
+        "baseline_objective_wall_s": 21.706724086019676,
+        "guard_baseline_wall_s": 41.997696685022675,
+        "baseline_tracking_vjp_wall_s": 5.671261163020972,
+        "baseline_pooled_vjp_wall_s": 0.0,
+        "outer_gradient_wall_s": 114.42213202599669,
+        "backtracking_wall_s": 15.374150401970837
+      },
+      "proposal_risk_cases": {
+        "low_speed": 2,
+        "marginal_success": 1
+      },
+      "shared_original_cases": []
+    },
+    {
+      "attempt": 250,
+      "accepted": true,
+      "alpha": 0.125,
+      "rejected_reason": null,
+      "candidate_count": 14,
+      "scored_count": 14,
+      "flight_pass_count": 12,
+      "relative_risk_pass_count": {
+        "low_speed": 1,
+        "marginal_success": 11
+      },
+      "accepted_flight": {
+        "matched_lanes": 8,
+        "before": 0.22012941539287567,
+        "after": 0.16482308506965637,
+        "lost_release": false,
+        "lost_release_lanes": 0,
+        "legal_string_before": 8,
+        "legal_string_after": 8,
+        "stable_margin_lanes": 8,
+        "margin_q25_before_m": 0.017814714461565018,
+        "margin_q25_after_m": 0.019911549985408783,
+        "flight_ok": true,
+        "margin_ok": true,
+        "count_ok": true,
+        "objective_ok": true,
+        "robot_net_ok": true,
+        "robot_net": {
+          "compared": 16,
+          "new_intersections": 0,
+          "mean_risk_before": 0.0,
+          "mean_risk_after": 0.0
+        },
+        "robot_net_block_anchor": {
+          "compared": 16,
+          "new_intersections": 0,
+          "mean_risk_before": 0.0,
+          "mean_risk_after": 0.0
+        }
+      },
+      "proposal_wall_s": 299.9270311410073,
+      "timing": {
+        "baseline_objective_wall_s": 19.047760548943188,
+        "guard_baseline_wall_s": 14.690634164959192,
+        "baseline_tracking_vjp_wall_s": 0.0,
+        "baseline_pooled_vjp_wall_s": 0.0,
+        "outer_gradient_wall_s": 59.568379377014935,
+        "backtracking_wall_s": 206.39649896300398
+      },
+      "proposal_risk_cases": {
+        "low_speed": 2,
+        "marginal_success": 1
+      },
+      "shared_original_cases": []
+    },
+    {
+      "attempt": 251,
+      "accepted": true,
+      "alpha": 0.0625,
+      "rejected_reason": null,
+      "candidate_count": 2,
+      "scored_count": 2,
+      "flight_pass_count": 2,
+      "relative_risk_pass_count": {
+        "low_speed": 1,
+        "marginal_success": 2
+      },
+      "accepted_flight": {
+        "matched_lanes": 8,
+        "before": 0.16482308506965637,
+        "after": 0.1636621206998825,
+        "lost_release": false,
+        "lost_release_lanes": 0,
+        "legal_string_before": 8,
+        "legal_string_after": 8,
+        "stable_margin_lanes": 8,
+        "margin_q25_before_m": 0.019911549985408783,
+        "margin_q25_after_m": 0.019321493804454803,
+        "flight_ok": true,
+        "margin_ok": true,
+        "count_ok": true,
+        "objective_ok": true,
+        "robot_net_ok": true,
+        "robot_net": {
+          "compared": 16,
+          "new_intersections": 0,
+          "mean_risk_before": 0.0,
+          "mean_risk_after": 0.0
+        },
+        "robot_net_block_anchor": {
+          "compared": 16,
+          "new_intersections": 0,
+          "mean_risk_before": 0.0,
+          "mean_risk_after": 0.0
+        }
+      },
+      "proposal_wall_s": 122.26722411601804,
+      "timing": {
+        "baseline_objective_wall_s": 18.38026693603024,
+        "guard_baseline_wall_s": 14.493994274991564,
+        "baseline_tracking_vjp_wall_s": 0.0,
+        "baseline_pooled_vjp_wall_s": 0.0,
+        "outer_gradient_wall_s": 60.11910838994663,
+        "backtracking_wall_s": 29.05680471099913
+      },
+      "proposal_risk_cases": {
+        "low_speed": 2,
+        "marginal_success": 1
+      },
+      "shared_original_cases": []
+    },
+    {
+      "attempt": 252,
+      "accepted": false,
+      "alpha": 0.0,
+      "rejected_reason": "no_candidate_passed_flight_and_grouped_speed_risk_guard",
+      "candidate_count": 17,
+      "scored_count": 16,
+      "flight_pass_count": 0,
+      "relative_risk_pass_count": {
+        "low_speed": 1,
+        "marginal_success": 15
+      },
+      "accepted_flight": null,
+      "proposal_wall_s": 296.3057394219795,
+      "timing": {
+        "baseline_objective_wall_s": 11.931795627984684,
+        "guard_baseline_wall_s": 14.274066744023003,
+        "baseline_tracking_vjp_wall_s": 0.0,
+        "baseline_pooled_vjp_wall_s": 0.0,
+        "outer_gradient_wall_s": 39.971517345984466,
+        "backtracking_wall_s": 230.05434271297418
+      },
+      "proposal_risk_cases": {
+        "low_speed": 2,
+        "marginal_success": 1
+      },
+      "shared_original_cases": []
+    },
+    {
+      "attempt": 253,
+      "accepted": false,
+      "alpha": 0.0,
+      "rejected_reason": "no_candidate_passed_flight_and_grouped_speed_risk_guard",
+      "candidate_count": 17,
+      "scored_count": 17,
+      "flight_pass_count": 0,
+      "relative_risk_pass_count": {
+        "low_speed": 0,
+        "marginal_success": 15
+      },
+      "accepted_flight": null,
+      "proposal_wall_s": 319.45237425202504,
+      "timing": {
+        "baseline_objective_wall_s": 14.644724938028958,
+        "guard_baseline_wall_s": 13.95353790401714,
+        "baseline_tracking_vjp_wall_s": 0.0,
+        "baseline_pooled_vjp_wall_s": 0.0,
+        "outer_gradient_wall_s": 49.56390171905514,
+        "backtracking_wall_s": 241.110655668017
+      },
+      "proposal_risk_cases": {
+        "low_speed": 2,
+        "marginal_success": 1
+      },
+      "shared_original_cases": []
+    },
+    {
+      "attempt": 254,
+      "accepted": false,
+      "alpha": 0.0,
+      "rejected_reason": "no_candidate_passed_flight_and_grouped_speed_risk_guard",
+      "candidate_count": 17,
+      "scored_count": 16,
+      "flight_pass_count": 2,
+      "relative_risk_pass_count": {
+        "low_speed": 1,
+        "marginal_success": 14
+      },
+      "accepted_flight": null,
+      "proposal_wall_s": 304.8355115589802,
+      "timing": {
+        "baseline_objective_wall_s": 13.539722996996716,
+        "guard_baseline_wall_s": 14.050413449993357,
+        "baseline_tracking_vjp_wall_s": 0.0,
+        "baseline_pooled_vjp_wall_s": 0.0,
+        "outer_gradient_wall_s": 49.21092729503289,
+        "backtracking_wall_s": 227.91939141700277
+      },
+      "proposal_risk_cases": {
+        "low_speed": 2,
+        "marginal_success": 1
+      },
+      "shared_original_cases": []
+    }
+  ],
+  "panels": {
+    "a40": {
+      "checkpoint_sha256": "8181f8a8a0e03a70962bac74e39b5fcd00900ac65600d40b47df3d4a004cee3b",
+      "actor_sha256": "6448d83b8fc5cf8d569b75dbaf2f3609061e061fda12a8eefe23a958b9f8e5c4",
+      "panel_sha256": "e42bce6665fb0a7baf2c372f3db56d3724e5f558e3c36ba25fd286dbee0f7477",
+      "seed": 882072,
+      "numerical_failures": 0,
+      "control_ticks": 485,
+      "elapsed_s": 614.436992088973,
+      "cases": {
+        "A-720401-000": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.301671868625571,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-002": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.779542630788637,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-004": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.504746482000129,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-006": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 7.6464653051228275,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-008": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.129225980489376,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-010": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.22172342749454,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-012": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.309776311274603,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-014": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-016": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.3426294484955195,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-018": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.487741763320109,
+          "rejection_reasons": [
+            "speed_threshold"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-020": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.8679362103895745,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-022": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.008114299251047,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-024": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.810441020160615,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-026": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.554661686510922,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-028": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.173990247097735,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-030": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.556066116583078,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-032": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.341127163627356,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-034": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.1916835004895105,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-036": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.488199921578121,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-038": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.727930855765732,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-040": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.562440989751437,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-042": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.78496280496921,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-044": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.74795791059676,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-046": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.640217908869886,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-048": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.60830579654851,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-050": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.887004659252608,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-052": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.724319412111371,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-054": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.7098652038049815,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-056": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.744738773789488,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-058": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.010256763783385,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-060": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.100624070995091,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-062": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.496094132115104,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-000": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.062934925279772,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-002": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.164493214442867,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-004": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.662455402695987,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-006": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.789041069354888,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-008": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.725603320092842,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-010": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.799003000410835,
+          "rejection_reasons": [
+            "actual_net_and_target"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-012": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-014": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.52867797310173,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-016": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.300481368192537,
+          "rejection_reasons": [
+            "speed_threshold"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-018": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.9304522495655405,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-020": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.1196166249084385,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-022": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.474251655129383,
+          "rejection_reasons": [
+            "speed_threshold"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-024": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-026": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.879322389568344,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-028": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-030": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.306559584331378,
+          "rejection_reasons": [
+            "actual_net_and_target"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-032": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.387729300750065,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-034": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.244236390108902,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-036": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.654457686686643,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-038": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.811542366678914,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-040": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.184113469672906,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-042": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.833904832493514,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-044": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-046": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-048": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-050": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 3.4361684759591333,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-052": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-054": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.149015839334551,
+          "rejection_reasons": [
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": true,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-056": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 4.442577516030839,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": true,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-058": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-060": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-062": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 4.687388824504801,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        }
+      }
+    },
+    "a41": {
+      "checkpoint_sha256": "bed5012b4b3f9c6f04545bc55bb2e2ec8403c5375effc0021c5771d9df192940",
+      "actor_sha256": "683ca3da04d2defbc8f662dadc24ab5c14e31fa03abcf237180325a1b225a4b1",
+      "panel_sha256": "e42bce6665fb0a7baf2c372f3db56d3724e5f558e3c36ba25fd286dbee0f7477",
+      "seed": 882072,
+      "numerical_failures": 0,
+      "control_ticks": 488,
+      "elapsed_s": 590.4496002320084,
+      "cases": {
+        "A-720401-000": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.317267972103514,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-002": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.702082519784311,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-004": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.438274593864156,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-006": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 7.626730865681253,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-008": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.008808582593021,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-010": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.174175857950347,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-012": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.24188602554949,
+          "rejection_reasons": [
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "A-720401-014": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-016": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.385190520251778,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-018": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.423718142755955,
+          "rejection_reasons": [
+            "speed_threshold"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-020": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.734394594459198,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-022": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.850410754992336,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-024": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.903491970346686,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-026": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.565767670006389,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-028": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.212822640376703,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-030": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.573211342742905,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-032": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.444994072950648,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-034": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.172040978599441,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-036": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.4830220963170575,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-038": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.734924685856787,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-040": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.720592594361219,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-042": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.745257525885663,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-044": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.728704803329808,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-046": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.625168325396038,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-048": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.619181246786929,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-050": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.922366305659466,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-052": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.780782677746848,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-054": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.703136950130093,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-056": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.841832532584625,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-058": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.255169805967248,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-060": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.093996019803644,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-062": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.472832460899154,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-000": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.173497138668445,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-002": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.041265637101032,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-004": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.778247189776052,
+          "rejection_reasons": [
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": true,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-006": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.780866954404096,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-008": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.4774040681034215,
+          "rejection_reasons": [
+            "speed_threshold"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-010": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.871123745596724,
+          "rejection_reasons": [
+            "actual_net_and_target"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-012": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.7193661728765735,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-014": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.8937399012616405,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": true,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-016": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.329042376838162,
+          "rejection_reasons": [
+            "speed_threshold"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-018": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.894636485871165,
+          "rejection_reasons": [
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-020": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.026669536376376,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-022": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.483679745882781,
+          "rejection_reasons": [
+            "speed_threshold"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-024": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-026": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.843189803271154,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-028": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-030": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.443110599477505,
+          "rejection_reasons": [
+            "actual_net_and_target"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-032": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.518257006837655,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-034": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.113331075566964,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-036": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.640046608404285,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-038": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.79104672286919,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-040": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.110881731278499,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-042": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.852685370798125,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-044": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-046": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-048": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-050": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 3.7478366910415493,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-052": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-054": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.108091871304405,
+          "rejection_reasons": [
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": true,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-056": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 4.365445585394873,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": true,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-058": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-060": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-062": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 4.7061872436424,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        }
+      }
+    },
+    "a43": {
+      "checkpoint_sha256": "26adea77bc4110360c03f36174c5f5a925f21b96b7c27dd3a62febef6902af39",
+      "actor_sha256": "c4cc3bc946139affa7b6bae1af002b6b48a9d0a073f7940ce6e88479b2fe4ebd",
+      "panel_sha256": "e42bce6665fb0a7baf2c372f3db56d3724e5f558e3c36ba25fd286dbee0f7477",
+      "seed": 882072,
+      "numerical_failures": 0,
+      "control_ticks": 443,
+      "elapsed_s": 506.6303327330388,
+      "cases": {
+        "A-720401-000": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.4760271690047535,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-002": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.8477902722417205,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-004": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.310871585696008,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-006": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.555551939247459,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-008": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.7536448373169415,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-010": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.8673748867942574,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-012": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.4028633465974085,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-014": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-016": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.227155214460713,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-018": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.577983383080394,
+          "rejection_reasons": [
+            "actual_net_and_target"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "A-720401-020": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.803231906213248,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-022": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 4.819806801942835,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": true,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-024": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.7738544448419855,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-026": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.587957074066269,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-028": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.271301343740751,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-030": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.52628991126027,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-032": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.492678745154236,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-034": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.291866022249421,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-036": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.595725283861259,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-038": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.244144726107699,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-040": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.576041228770133,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-042": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.703005294489652,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-044": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-046": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.38095604823439,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-048": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.01239553801733,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-050": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.973229760763948,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-052": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.24242021427778,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-054": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.776308455605424,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-056": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.645405977806255,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-058": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.278526980602711,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "A-720401-060": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.170096322071178,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "A-720401-062": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.557120733622389,
+          "rejection_reasons": [
+            "actual_net_and_target"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-000": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.040647244209928,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-002": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.824088492483984,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-004": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.816273989967402,
+          "rejection_reasons": [
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": true,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-006": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.8891340209316345,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-008": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.7523367824768865,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-010": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.092559241439821,
+          "rejection_reasons": [
+            "actual_net_and_target"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-012": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-014": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.649759715064384,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-016": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.336682340515076,
+          "rejection_reasons": [
+            "speed_threshold"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-018": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.796585677111645,
+          "rejection_reasons": [
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-020": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.872209413859885,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-022": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.4577512849973315,
+          "rejection_reasons": [
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-024": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-026": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.802039607167421,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-028": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 7.322805477071649,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-030": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.274569899659849,
+          "rejection_reasons": [
+            "actual_net_and_target"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": true
+        },
+        "B-720402-032": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 6.552083737328056,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-034": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 5.976877713171108,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-036": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.562735340502768,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-038": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 6.609610502712403,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": true,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-040": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 4.98354537700736,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-042": {
+          "ball_side_complete_except_recovery": true,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 4.730069502865565,
+          "rejection_reasons": [],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-044": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-046": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-048": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.879819316934999,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-050": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": true,
+          "outgoing_speed_mps": 3.5906379151568895,
+          "rejection_reasons": [
+            "speed_threshold"
+          ],
+          "string_hit": true,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": true,
+          "crossed_net": true
+        },
+        "B-720402-052": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-054": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 5.206864165476429,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "actual_net_and_target"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-056": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 4.334222004247987,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": true,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-058": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-060": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": null,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "released_forward",
+            "actual_net_and_target",
+            "event_order",
+            "speed_threshold"
+          ],
+          "string_hit": false,
+          "frame_hit": false,
+          "shuttle_net_contact": false,
+          "robot_net_fault": false,
+          "net_blocked_fault": false,
+          "landed_target": false,
+          "crossed_net": false
+        },
+        "B-720402-062": {
+          "ball_side_complete_except_recovery": false,
+          "qualified_airborne_string_contact": false,
+          "outgoing_speed_mps": 4.638802655839605,
+          "rejection_reasons": [
+            "legal_airborne_strings",
+            "no_rule_fault",
+            "actual_net_and_target",
+            "event_order"
+          ],
+          "string_hit": false,
+          "frame_hit": true,
+          "shuttle_net_contact": true,
+          "robot_net_fault": false,
+          "net_blocked_fault": true,
+          "landed_target": false,
+          "crossed_net": false
+        }
+      }
+    }
+  },
+  "directed_acquisition": {
+    "terminal_count": {
+      "nominal_a": 20,
+      "nominal_b": 20,
+      "minus": 20,
+      "plus": 20,
+      "candidate": 20
+    },
+    "common_native_cases": 20,
+    "baseline_success": 12,
+    "candidate_success": 12,
+    "native_timing_by_branch": {
+      "nominal_a": {
+        "control_ticks": 428,
+        "native_loop_wall_seconds": 1124.0359519490157
+      },
+      "nominal_b": {
+        "control_ticks": 428,
+        "native_loop_wall_seconds": 1123.782901432016
+      },
+      "minus": {
+        "control_ticks": 472,
+        "native_loop_wall_seconds": 1221.7741853399784
+      },
+      "plus": {
+        "control_ticks": 458,
+        "native_loop_wall_seconds": 1202.6550368230091
+      },
+      "candidate": {
+        "control_ticks": 429,
+        "native_loop_wall_seconds": 521.3879633340403
+      }
+    },
+    "body_response": {
+      "fit": {
+        "lanes": [
+          12,
+          20,
+          22,
+          24,
+          26,
+          36,
+          42,
+          54,
+          56,
+          58,
+          64,
+          66,
+          68,
+          72,
+          80,
+          82
+        ],
+        "support": {
+          "4": 16,
+          "8": 16,
+          "16": 16,
+          "20": 16,
+          "32": 16
+        },
+        "response_by_horizon": {
+          "4": {
+            "low_speed": {
+              "pairs": 2,
+              "normal_response_mae_mps": 0.02402520179748535,
+              "normal_response_measurable": 1,
+              "normal_response_sign_correct": 0,
+              "normal_response_gain": 1.304999589920044,
+              "normal_response_cosine": -1.0,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.036983609199523926,
+              "face_normal_response_mae": 0.001882821787148714,
+              "signed_plane_gap_response_mae_m": 0.002796173095703125,
+              "predicted_discrete_kinematic_residual_mps": 0.24698258936405182,
+              "native_discrete_kinematic_residual_mps": 0.04533861577510834,
+              "excess_discrete_kinematic_residual_mps": 0.2204923778772354
+            },
+            "marginal_success": {
+              "pairs": 3,
+              "normal_response_mae_mps": 0.07004594802856445,
+              "normal_response_measurable": 2,
+              "normal_response_sign_correct": 1,
+              "normal_response_gain": 0.09925020486116409,
+              "normal_response_cosine": -0.9785449504852295,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.049219951033592224,
+              "face_normal_response_mae": 0.0021931936498731375,
+              "signed_plane_gap_response_mae_m": 0.0025871593970805407,
+              "predicted_discrete_kinematic_residual_mps": 0.20927198231220245,
+              "native_discrete_kinematic_residual_mps": 0.09135308116674423,
+              "excess_discrete_kinematic_residual_mps": 0.2472963184118271
+            },
+            "ordinary_success": {
+              "pairs": 7,
+              "normal_response_mae_mps": 0.044286999851465225,
+              "normal_response_measurable": 4,
+              "normal_response_sign_correct": 0,
+              "normal_response_gain": 0.10333677381277084,
+              "normal_response_cosine": -0.432452529668808,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.04652731865644455,
+              "face_normal_response_mae": 0.003056630492210388,
+              "signed_plane_gap_response_mae_m": 0.0029580253176391125,
+              "predicted_discrete_kinematic_residual_mps": 0.27027270197868347,
+              "native_discrete_kinematic_residual_mps": 0.03850122168660164,
+              "excess_discrete_kinematic_residual_mps": 0.26004475355148315
+            },
+            "unclassified": {
+              "pairs": 4,
+              "normal_response_mae_mps": 0.020541787147521973,
+              "normal_response_measurable": 3,
+              "normal_response_sign_correct": 2,
+              "normal_response_gain": 0.49817389249801636,
+              "normal_response_cosine": 0.18071222305297852,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.023998502641916275,
+              "face_normal_response_mae": 0.0021015210077166557,
+              "signed_plane_gap_response_mae_m": 0.0016235113143920898,
+              "predicted_discrete_kinematic_residual_mps": 0.2600826621055603,
+              "native_discrete_kinematic_residual_mps": 0.04681532084941864,
+              "excess_discrete_kinematic_residual_mps": 0.24794533848762512
+            }
+          },
+          "8": {
+            "low_speed": {
+              "pairs": 2,
+              "normal_response_mae_mps": 0.021325111389160156,
+              "normal_response_measurable": 0,
+              "normal_response_sign_correct": 0,
+              "normal_response_gain": null,
+              "normal_response_cosine": null,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.009235508739948273,
+              "face_normal_response_mae": 0.002351207658648491,
+              "signed_plane_gap_response_mae_m": 0.0038869380950927734,
+              "predicted_discrete_kinematic_residual_mps": 0.24944379925727844,
+              "native_discrete_kinematic_residual_mps": 0.029094912111759186,
+              "excess_discrete_kinematic_residual_mps": 0.2633790373802185
+            },
+            "marginal_success": {
+              "pairs": 3,
+              "normal_response_mae_mps": 0.021049657836556435,
+              "normal_response_measurable": 2,
+              "normal_response_sign_correct": 2,
+              "normal_response_gain": 1.5393006801605225,
+              "normal_response_cosine": 0.9950760006904602,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.024027084931731224,
+              "face_normal_response_mae": 0.0038497692439705133,
+              "signed_plane_gap_response_mae_m": 0.0056627593003213406,
+              "predicted_discrete_kinematic_residual_mps": 0.19221051037311554,
+              "native_discrete_kinematic_residual_mps": 0.03160106763243675,
+              "excess_discrete_kinematic_residual_mps": 0.19476830959320068
+            },
+            "ordinary_success": {
+              "pairs": 7,
+              "normal_response_mae_mps": 0.03006921522319317,
+              "normal_response_measurable": 5,
+              "normal_response_sign_correct": 4,
+              "normal_response_gain": 1.269145131111145,
+              "normal_response_cosine": 0.19267383217811584,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.027177099138498306,
+              "face_normal_response_mae": 0.0034880905877798796,
+              "signed_plane_gap_response_mae_m": 0.004019975662231445,
+              "predicted_discrete_kinematic_residual_mps": 0.21995426714420319,
+              "native_discrete_kinematic_residual_mps": 0.03308442607522011,
+              "excess_discrete_kinematic_residual_mps": 0.23784075677394867
+            },
+            "unclassified": {
+              "pairs": 4,
+              "normal_response_mae_mps": 0.05069255828857422,
+              "normal_response_measurable": 0,
+              "normal_response_sign_correct": 0,
+              "normal_response_gain": null,
+              "normal_response_cosine": null,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.0648881271481514,
+              "face_normal_response_mae": 0.002555651357397437,
+              "signed_plane_gap_response_mae_m": 0.002969980239868164,
+              "predicted_discrete_kinematic_residual_mps": 0.2146405577659607,
+              "native_discrete_kinematic_residual_mps": 0.03612971305847168,
+              "excess_discrete_kinematic_residual_mps": 0.23467177152633667
+            }
+          },
+          "16": {
+            "low_speed": {
+              "pairs": 2,
+              "normal_response_mae_mps": 0.017429113388061523,
+              "normal_response_measurable": 1,
+              "normal_response_sign_correct": 1,
+              "normal_response_gain": 0.40117600560188293,
+              "normal_response_cosine": 1.0,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.016640469431877136,
+              "face_normal_response_mae": 0.0013811048120260239,
+              "signed_plane_gap_response_mae_m": 0.0025216341018676758,
+              "predicted_discrete_kinematic_residual_mps": 0.12984007596969604,
+              "native_discrete_kinematic_residual_mps": 0.04516277462244034,
+              "excess_discrete_kinematic_residual_mps": 0.14744143187999725
+            },
+            "marginal_success": {
+              "pairs": 3,
+              "normal_response_mae_mps": 0.03570222854614258,
+              "normal_response_measurable": 2,
+              "normal_response_sign_correct": 1,
+              "normal_response_gain": 0.6577844023704529,
+              "normal_response_cosine": -0.4108422100543976,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.015687592327594757,
+              "face_normal_response_mae": 0.003981506451964378,
+              "signed_plane_gap_response_mae_m": 0.005587657447904348,
+              "predicted_discrete_kinematic_residual_mps": 0.18112249672412872,
+              "native_discrete_kinematic_residual_mps": 0.02844824828207493,
+              "excess_discrete_kinematic_residual_mps": 0.1964511275291443
+            },
+            "ordinary_success": {
+              "pairs": 7,
+              "normal_response_mae_mps": 0.04030275344848633,
+              "normal_response_measurable": 5,
+              "normal_response_sign_correct": 2,
+              "normal_response_gain": 0.9832971096038818,
+              "normal_response_cosine": 0.2196606546640396,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.032924141734838486,
+              "face_normal_response_mae": 0.004204362630844116,
+              "signed_plane_gap_response_mae_m": 0.004958766046911478,
+              "predicted_discrete_kinematic_residual_mps": 0.13625432550907135,
+              "native_discrete_kinematic_residual_mps": 0.04232771322131157,
+              "excess_discrete_kinematic_residual_mps": 0.15293897688388824
+            },
+            "unclassified": {
+              "pairs": 4,
+              "normal_response_mae_mps": 0.03783094882965088,
+              "normal_response_measurable": 1,
+              "normal_response_sign_correct": 1,
+              "normal_response_gain": 0.060159116983413696,
+              "normal_response_cosine": 1.0,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.02079618349671364,
+              "face_normal_response_mae": 0.005201083142310381,
+              "signed_plane_gap_response_mae_m": 0.007381647825241089,
+              "predicted_discrete_kinematic_residual_mps": 0.1738196611404419,
+              "native_discrete_kinematic_residual_mps": 0.046017225831747055,
+              "excess_discrete_kinematic_residual_mps": 0.20750808715820312
+            }
+          },
+          "20": {
+            "low_speed": {
+              "pairs": 2,
+              "normal_response_mae_mps": 0.008420705795288086,
+              "normal_response_measurable": 2,
+              "normal_response_sign_correct": 2,
+              "normal_response_gain": 0.49884986877441406,
+              "normal_response_cosine": 0.9800285696983337,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.024679772555828094,
+              "face_normal_response_mae": 0.0013430225662887096,
+              "signed_plane_gap_response_mae_m": 0.002099275588989258,
+              "predicted_discrete_kinematic_residual_mps": 0.1987069845199585,
+              "native_discrete_kinematic_residual_mps": 0.025481104850769043,
+              "excess_discrete_kinematic_residual_mps": 0.20718324184417725
+            },
+            "marginal_success": {
+              "pairs": 3,
+              "normal_response_mae_mps": 0.051461536437273026,
+              "normal_response_measurable": 3,
+              "normal_response_sign_correct": 1,
+              "normal_response_gain": 0.4749155342578888,
+              "normal_response_cosine": -0.5837944149971008,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.02593063749372959,
+              "face_normal_response_mae": 0.004471517167985439,
+              "signed_plane_gap_response_mae_m": 0.0038095712661743164,
+              "predicted_discrete_kinematic_residual_mps": 0.18482105433940887,
+              "native_discrete_kinematic_residual_mps": 0.04487179219722748,
+              "excess_discrete_kinematic_residual_mps": 0.2157818078994751
+            },
+            "ordinary_success": {
+              "pairs": 7,
+              "normal_response_mae_mps": 0.05502292141318321,
+              "normal_response_measurable": 5,
+              "normal_response_sign_correct": 4,
+              "normal_response_gain": 0.8187987208366394,
+              "normal_response_cosine": 0.31450387835502625,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.03409606218338013,
+              "face_normal_response_mae": 0.005518266465514898,
+              "signed_plane_gap_response_mae_m": 0.0061931610107421875,
+              "predicted_discrete_kinematic_residual_mps": 0.1855025589466095,
+              "native_discrete_kinematic_residual_mps": 0.03713920712471008,
+              "excess_discrete_kinematic_residual_mps": 0.2043236941099167
+            },
+            "unclassified": {
+              "pairs": 4,
+              "normal_response_mae_mps": 0.019719362258911133,
+              "normal_response_measurable": 2,
+              "normal_response_sign_correct": 1,
+              "normal_response_gain": 0.5176539421081543,
+              "normal_response_cosine": 0.07676896452903748,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.02523938938975334,
+              "face_normal_response_mae": 0.005358249414712191,
+              "signed_plane_gap_response_mae_m": 0.007576167583465576,
+              "predicted_discrete_kinematic_residual_mps": 0.1523372083902359,
+              "native_discrete_kinematic_residual_mps": 0.04044117406010628,
+              "excess_discrete_kinematic_residual_mps": 0.16861125826835632
+            }
+          },
+          "32": {
+            "low_speed": {
+              "pairs": 2,
+              "normal_response_mae_mps": 0.1004338264465332,
+              "normal_response_measurable": 2,
+              "normal_response_sign_correct": 2,
+              "normal_response_gain": 0.5934419631958008,
+              "normal_response_cosine": 0.8151581287384033,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.12389379739761353,
+              "face_normal_response_mae": 0.008283755742013454,
+              "signed_plane_gap_response_mae_m": 0.004098713397979736,
+              "predicted_discrete_kinematic_residual_mps": 0.18773460388183594,
+              "native_discrete_kinematic_residual_mps": 0.11827437579631805,
+              "excess_discrete_kinematic_residual_mps": 0.16659748554229736
+            },
+            "marginal_success": {
+              "pairs": 3,
+              "normal_response_mae_mps": 0.0264434814453125,
+              "normal_response_measurable": 3,
+              "normal_response_sign_correct": 3,
+              "normal_response_gain": 0.9974203705787659,
+              "normal_response_cosine": 0.9801203012466431,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.03656727448105812,
+              "face_normal_response_mae": 0.010846990160644054,
+              "signed_plane_gap_response_mae_m": 0.002483765361830592,
+              "predicted_discrete_kinematic_residual_mps": 0.1678703874349594,
+              "native_discrete_kinematic_residual_mps": 0.08921035379171371,
+              "excess_discrete_kinematic_residual_mps": 0.17369119822978973
+            },
+            "ordinary_success": {
+              "pairs": 7,
+              "normal_response_mae_mps": 0.20413753390312195,
+              "normal_response_measurable": 6,
+              "normal_response_sign_correct": 4,
+              "normal_response_gain": 0.5582078099250793,
+              "normal_response_cosine": 0.7626265287399292,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.26841115951538086,
+              "face_normal_response_mae": 0.026451660320162773,
+              "signed_plane_gap_response_mae_m": 0.01233914028853178,
+              "predicted_discrete_kinematic_residual_mps": 0.16817231476306915,
+              "native_discrete_kinematic_residual_mps": 0.12004105001688004,
+              "excess_discrete_kinematic_residual_mps": 0.14342062175273895
+            },
+            "unclassified": {
+              "pairs": 4,
+              "normal_response_mae_mps": 0.189261794090271,
+              "normal_response_measurable": 3,
+              "normal_response_sign_correct": 1,
+              "normal_response_gain": 0.5314975380897522,
+              "normal_response_cosine": -0.30461373925209045,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.28725847601890564,
+              "face_normal_response_mae": 0.008817167021334171,
+              "signed_plane_gap_response_mae_m": 0.00793592631816864,
+              "predicted_discrete_kinematic_residual_mps": 0.17009766399860382,
+              "native_discrete_kinematic_residual_mps": 0.1174224242568016,
+              "excess_discrete_kinematic_residual_mps": 0.1688886433839798
+            }
+          }
+        },
+        "loss": 0.20311126112937927
+      },
+      "held_interventions": {
+        "lanes": [
+          10,
+          28,
+          52,
+          78
+        ],
+        "support": {
+          "4": 4,
+          "8": 4,
+          "16": 4,
+          "20": 4,
+          "32": 4
+        },
+        "response_by_horizon": {
+          "4": {
+            "ordinary_success": {
+              "pairs": 3,
+              "normal_response_mae_mps": 0.020612874999642372,
+              "normal_response_measurable": 2,
+              "normal_response_sign_correct": 1,
+              "normal_response_gain": 0.1253955066204071,
+              "normal_response_cosine": -0.47283780574798584,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.033009085804224014,
+              "face_normal_response_mae": 0.0019466920057311654,
+              "signed_plane_gap_response_mae_m": 0.0017659664154052734,
+              "predicted_discrete_kinematic_residual_mps": 0.23744051158428192,
+              "native_discrete_kinematic_residual_mps": 0.03268688544631004,
+              "excess_discrete_kinematic_residual_mps": 0.2385801076889038
+            },
+            "unclassified": {
+              "pairs": 1,
+              "normal_response_mae_mps": 0.0642709732055664,
+              "normal_response_measurable": 1,
+              "normal_response_sign_correct": 0,
+              "normal_response_gain": 2.6057355403900146,
+              "normal_response_cosine": -1.0,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.02010374702513218,
+              "face_normal_response_mae": 0.0034192430321127176,
+              "signed_plane_gap_response_mae_m": 0.0013210773468017578,
+              "predicted_discrete_kinematic_residual_mps": 0.21818870306015015,
+              "native_discrete_kinematic_residual_mps": 0.027695003896951675,
+              "excess_discrete_kinematic_residual_mps": 0.2193821668624878
+            }
+          },
+          "8": {
+            "ordinary_success": {
+              "pairs": 3,
+              "normal_response_mae_mps": 0.08772945404052734,
+              "normal_response_measurable": 1,
+              "normal_response_sign_correct": 0,
+              "normal_response_gain": 5.662365436553955,
+              "normal_response_cosine": -1.0,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.12404801696538925,
+              "face_normal_response_mae": 0.0019172029569745064,
+              "signed_plane_gap_response_mae_m": 0.0017882982501760125,
+              "predicted_discrete_kinematic_residual_mps": 0.24953334033489227,
+              "native_discrete_kinematic_residual_mps": 0.03636458143591881,
+              "excess_discrete_kinematic_residual_mps": 0.2700004279613495
+            },
+            "unclassified": {
+              "pairs": 1,
+              "normal_response_mae_mps": 0.03516864776611328,
+              "normal_response_measurable": 0,
+              "normal_response_sign_correct": 0,
+              "normal_response_gain": null,
+              "normal_response_cosine": null,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.03297528252005577,
+              "face_normal_response_mae": 0.002759925089776516,
+              "signed_plane_gap_response_mae_m": 0.0030438899993896484,
+              "predicted_discrete_kinematic_residual_mps": 0.1506880521774292,
+              "native_discrete_kinematic_residual_mps": 0.05928929150104523,
+              "excess_discrete_kinematic_residual_mps": 0.18124306201934814
+            }
+          },
+          "16": {
+            "ordinary_success": {
+              "pairs": 3,
+              "normal_response_mae_mps": 0.036955516785383224,
+              "normal_response_measurable": 3,
+              "normal_response_sign_correct": 2,
+              "normal_response_gain": 2.6248738765716553,
+              "normal_response_cosine": 0.038522157818078995,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.018226036801934242,
+              "face_normal_response_mae": 0.006933374330401421,
+              "signed_plane_gap_response_mae_m": 0.008927901275455952,
+              "predicted_discrete_kinematic_residual_mps": 0.18918158113956451,
+              "native_discrete_kinematic_residual_mps": 0.0455201119184494,
+              "excess_discrete_kinematic_residual_mps": 0.2244831770658493
+            },
+            "unclassified": {
+              "pairs": 1,
+              "normal_response_mae_mps": 0.05361366271972656,
+              "normal_response_measurable": 1,
+              "normal_response_sign_correct": 1,
+              "normal_response_gain": 3.574202060699463,
+              "normal_response_cosine": 1.0,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.0048667010851204395,
+              "face_normal_response_mae": 0.009179158136248589,
+              "signed_plane_gap_response_mae_m": 0.015502572059631348,
+              "predicted_discrete_kinematic_residual_mps": 0.257565438747406,
+              "native_discrete_kinematic_residual_mps": 0.09570884704589844,
+              "excess_discrete_kinematic_residual_mps": 0.33109039068222046
+            }
+          },
+          "20": {
+            "ordinary_success": {
+              "pairs": 3,
+              "normal_response_mae_mps": 0.03292878344655037,
+              "normal_response_measurable": 3,
+              "normal_response_sign_correct": 2,
+              "normal_response_gain": 1.4762729406356812,
+              "normal_response_cosine": -0.2476838082075119,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.033209800720214844,
+              "face_normal_response_mae": 0.008241930976510048,
+              "signed_plane_gap_response_mae_m": 0.011791308410465717,
+              "predicted_discrete_kinematic_residual_mps": 0.16377200186252594,
+              "native_discrete_kinematic_residual_mps": 0.048524681478738785,
+              "excess_discrete_kinematic_residual_mps": 0.19038450717926025
+            },
+            "unclassified": {
+              "pairs": 1,
+              "normal_response_mae_mps": 0.013731956481933594,
+              "normal_response_measurable": 1,
+              "normal_response_sign_correct": 1,
+              "normal_response_gain": 2.045527219772339,
+              "normal_response_cosine": 1.0,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.09087199717760086,
+              "face_normal_response_mae": 0.011237364262342453,
+              "signed_plane_gap_response_mae_m": 0.01732790470123291,
+              "predicted_discrete_kinematic_residual_mps": 0.142784982919693,
+              "native_discrete_kinematic_residual_mps": 0.08410891890525818,
+              "excess_discrete_kinematic_residual_mps": 0.0899232029914856
+            }
+          },
+          "32": {
+            "ordinary_success": {
+              "pairs": 3,
+              "normal_response_mae_mps": 0.2895401418209076,
+              "normal_response_measurable": 3,
+              "normal_response_sign_correct": 2,
+              "normal_response_gain": 0.8803579211235046,
+              "normal_response_cosine": 0.21113815903663635,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.16889579594135284,
+              "face_normal_response_mae": 0.0188872292637825,
+              "signed_plane_gap_response_mae_m": 0.014328211545944214,
+              "predicted_discrete_kinematic_residual_mps": 0.16378898918628693,
+              "native_discrete_kinematic_residual_mps": 0.12851114571094513,
+              "excess_discrete_kinematic_residual_mps": 0.1509924679994583
+            },
+            "unclassified": {
+              "pairs": 1,
+              "normal_response_mae_mps": 0.2601284980773926,
+              "normal_response_measurable": 1,
+              "normal_response_sign_correct": 1,
+              "normal_response_gain": 2.9419994354248047,
+              "normal_response_cosine": 1.0,
+              "native_paired_contact_ticks": 0,
+              "native_contact_tick_delta_mean": null,
+              "tangent_response_mae_mps": 0.39827415347099304,
+              "face_normal_response_mae": 0.07122134417295456,
+              "signed_plane_gap_response_mae_m": 0.008232533931732178,
+              "predicted_discrete_kinematic_residual_mps": 0.07000966370105743,
+              "native_discrete_kinematic_residual_mps": 0.09059371054172516,
+              "excess_discrete_kinematic_residual_mps": 0.11858012527227402
+            }
+          }
+        },
+        "loss": 0.3123873770236969
+      }
+    }
+  },
+  "paired": {
+    "regressed": false,
+    "transitions": {
+      "string_to_frame": [
+        "A-720401-022",
+        "B-720402-054"
+      ],
+      "frame_to_string": [
+        "B-720402-050"
+      ],
+      "success": {
+        "gained": [],
+        "lost": [
+          "A-720401-022",
+          "A-720401-062",
+          "B-720402-004",
+          "B-720402-018"
+        ]
+      },
+      "string": {
+        "gained": [
+          "B-720402-050"
+        ],
+        "lost": [
+          "A-720401-022",
+          "B-720402-054"
+        ]
+      },
+      "frame": {
+        "gained": [
+          "A-720401-022",
+          "B-720402-028",
+          "B-720402-048",
+          "B-720402-054"
+        ],
+        "lost": [
+          "A-720401-044",
+          "B-720402-050"
+        ]
+      },
+      "low": {
+        "gained": [
+          "B-720402-050"
+        ],
+        "lost": [
+          "A-720401-018"
+        ]
+      },
+      "net_hit": {
+        "gained": [
+          "A-720401-018",
+          "A-720401-022",
+          "B-720402-008",
+          "B-720402-062"
+        ],
+        "lost": [
+          "B-720402-014",
+          "B-720402-054"
+        ]
+      },
+      "out": {
+        "gained": [
+          "A-720401-018",
+          "A-720401-062"
+        ],
+        "lost": []
+      }
+    },
+    "matched_speed": {
+      "adequate_to_low": [],
+      "low_to_adequate": [
+        "A-720401-018"
+      ]
+    }
+  }
+}
