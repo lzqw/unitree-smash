@@ -153,7 +153,20 @@ class PhysicalHorizonTrainer:
         if type(self.actor) is ResidualPPOInitializedActor and type(reference) is ResidualPPOInitializedActor:
             observation = state.observation
             latch = recovery_gate(state.task_memory.get('rally', {}), observation)
-            action = self.actor.gated_request(observation, latch)
+            candidate_parameters = getattr(self, '_approach_candidate_parameters', None)
+            if candidate_parameters is None:
+                action = self.actor.gated_request(observation, latch)
+            else:
+                module = self.actor.actor
+                normalized = module.normalizer(observation)
+                candidate_count = len(next(iter(candidate_parameters.values())))
+                from .supermimic_approach_data_v1 import batched_approach_head
+                approach = batched_approach_head(
+                    normalized.reshape(candidate_count, -1, normalized.shape[-1]), candidate_parameters)
+                action = (module.base(normalized)
+                          + latch.reshape(-1, 1) * module.recovery(normalized) * module.recovery_scale
+                          + self.actor.approach_action_gate(observation)
+                          * approach.flatten(0, 1) * module.approach_scale).clamp(-1., 1.)
             with torch.no_grad():
                 anchor = reference.gated_request(observation, latch)
             gate = latch.float() if self.block_name == 'recovery' else self._head_gate(state)
@@ -272,7 +285,8 @@ class PhysicalHorizonTrainer:
 
     def _rollout_objective(self, initial_state, *, effective_weights=None, baseline_toi_weights=None,
                            baseline_landing_weights=None, baseline_ball_scored=None,
-                           tracking_parameters=(), collect_critic_data=True, defer_speed_risk=False):
+                           tracking_parameters=(), collect_critic_data=True, defer_speed_risk=False,
+                           coarse_guard=False):
         ball_protocol = getattr(self, 'approach_ball_protocol', None)
         if ball_protocol is not None:
             collect_critic_data = False
@@ -308,6 +322,7 @@ class PhysicalHorizonTrainer:
             impact_lead = torch.zeros_like(after_release)
             approach_speed = state.physical.new_full((len(selected),), torch.nan)
         net_proxy = getattr(self, 'approach_net_proxy', None) if ball_protocol is not None else None
+        native_gate = getattr(self, 'approach_native_gate', False) and ball_protocol is not None
         net_clearance = None
         if net_proxy is not None:
             from .supermimic_robot_net_clearance import robot_net_clearance, robot_net_cost
@@ -358,7 +373,7 @@ class PhysicalHorizonTrainer:
                     elapsed=state.clock_goal_context['elapsed'],event_time=event_time)
             if reference is not None:
                 reference['matched'] = reference['matched'] & selected
-                if ball_protocol is not None and self.actor.early_arm_gate is not None:
+                if ball_protocol is not None and self.actor.early_arm_gate is not None and not coarse_guard:
                     from .supermimic_toi_racket_objective import search_outgoing_target
                     cache = getattr(self, '_proposal_ball_targets', {})
                     key = id(initial_state)
@@ -370,24 +385,25 @@ class PhysicalHorizonTrainer:
                         cache[key] = search_outgoing_target(
                             search_reference, self.adapter.action_ball_model.impulse_prior, self.research_court,
                             minimum_speed=ball_protocol['minimum_outgoing_speed_mps'] + (.25 if v2_tracking else 0.),
-                            interior_m=.12 if v2_tracking else .03)
+                            interior_m=.30 if native_gate else .12 if v2_tracking else .03)
                     reference['ball_only_contact'] = cache[key]
         toi_coverage_preserved=True
         reuse_geometry = (not torch.is_grad_enabled() and reference is not None and not toi_only
                           and type(self.reference_bank) is TaskSpaceReferenceBankV1
                           and type(self.adapter) is PhysicalImaginationAdapter)
-        planned_steps = cfg.imagination_steps
+        maximum_steps = cfg.imagination_steps + 60 if native_gate else cfg.imagination_steps
+        planned_steps = maximum_steps
         approach_v2 = getattr(self, 'approach_v2', False) and ball_protocol is not None
         margin_m = .012 if approach_v2 else .005
         if ball_protocol is not None:
             followthrough_ticks = ball_protocol['minimum_followthrough_ticks']
             if net_proxy is not None:
-                followthrough_ticks = max(followthrough_ticks, 12)
+                followthrough_ticks = max(followthrough_ticks, 60 if native_gate else 12)
             from .supermimic_toi_racket_objective import approach_horizon
             planned_steps = approach_horizon(reference, selected, state.clock_goal_context['elapsed'],
-                                             maximum=cfg.imagination_steps, dt=cfg.control_dt_s,
+                                             maximum=maximum_steps, dt=cfg.control_dt_s,
                                              followthrough_ticks=followthrough_ticks)
-        for tick in range(cfg.imagination_steps):
+        for tick in range(maximum_steps):
             active=state.clock_goal_context['elapsed']<cfg.episode_s-1e-7
             if not active.any():break
             if collect_critic_data:
@@ -399,7 +415,7 @@ class PhysicalHorizonTrainer:
                 usable = usable & ~resolved
                 if not usable.any():
                     break
-                if tick >= planned_steps:
+                if tick >= (min(planned_steps, cfg.imagination_steps) if native_gate else planned_steps):
                     # An unsettled contact overrides the short horizon.
                     # An unresolved miss retains the measured geometry objective.
                     settling = usable & impacted
@@ -429,7 +445,12 @@ class PhysicalHorizonTrainer:
             if reuse_geometry:
                 gradient_options['return_geometry'] = True
             if ball_protocol is not None:
-                gradient_options.update(detach_ball=False, ball_input_grad=True, return_geometry=True)
+                gradient_options.update(detach_ball=native_gate, ball_input_grad=True, return_geometry=True)
+                if native_gate and tick >= 32:
+                    beyond = ((state.physical[:, 49] > self.research_court['net_plane_x_m'] + .15)
+                              & (state.physical[:, 52] > 0))
+                    if bool((~usable | (released & beyond)).all()):
+                        gradient_options['robot_net_tail'] = True
             state,reward,done,transition=self.adapter(state,action,**gradient_options)
             if net_proxy is not None:
                 clearance = robot_net_clearance(transition['next_geometry'], net_proxy, self.research_court)
@@ -519,9 +540,16 @@ class PhysicalHorizonTrainer:
                 first_string = first_string & ~(usable & faulted)
                 pending = (events['followthrough_crossed'].reshape(-1) > .5) & (
                     events['followthrough_finished'].reshape(-1) <= .5)
+                if native_gate:
+                    from .supermimic_robot_net_clearance import racket_back_on_own_side
+                    back = racket_back_on_own_side(
+                        transition['next_geometry'], net_proxy, self.adapter.physical_model.geometry.ids['Racket'],
+                        self.research_court)
+                    settled = (ball[:, 2] <= self.adapter.action_ball_model.impulse_prior.preview.radius)
+                    pending = (pending | ~back) & ~settled
                 resolved = resolved | (usable & released & ~pending
                     & (after_release >= followthrough_ticks))
-            if reference is not None:
+            if reference is not None and not coarse_guard:
                 if toi_only:
                     fixed_weights = None
                     if baseline_toi_weights is not None:
@@ -533,6 +561,7 @@ class PhysicalHorizonTrainer:
                         fixed_weights=fixed_weights,
                         detach_empty=True, boundary=getattr(self, 'string_boundary', None),
                         minimum_margin=margin_m,
+                        prefer_measured_contact=native_gate,
                         relative_face_speed=getattr(self, 'approach_relative_face_speed',
                                                     getattr(self, 'prioritize_approach_flight', False)))
                 else:
@@ -543,6 +572,9 @@ class PhysicalHorizonTrainer:
             rewards.append(reward*active[:,None]);dones.append(done)
             if ball_protocol is None:
                 survival=survival*(1-done.reshape(-1))
+        if coarse_guard:
+            return dict(string=first_string & selected, clearance=net_clearance,
+                        complete=~impacted | resolved)
         if not rewards:raise ValueError('No active in-episode imagination start')
         final = None
         if ball_protocol is None:
@@ -595,7 +627,9 @@ class PhysicalHorizonTrainer:
                     release_ball[scored, :3], release_ball[scored, 3:],
                     self.adapter.action_ball_model.impulse_prior, self.research_court,
                     speed_bias=speed_bias_at_lead(impact_lead[scored], getattr(self, 'approach_speed_calibration', None)),
-                    minimum=ball_protocol['minimum_outgoing_speed_mps'], speed_margin=.25 if approach_v2 else 0.)
+                    minimum=ball_protocol['minimum_outgoing_speed_mps'], speed_margin=.25 if approach_v2 else 0.,
+                    net_margin=getattr(self, 'approach_net_margin_m', .02),
+                    landing_margin=.30 if native_gate else .03, center_landing=native_gate)
                 flight_metrics['ball_speed_loss_supported_lanes'] = int((terms['speed'].detach() > 1e-6).sum())
                 if audit is not None:
                     lane_costs[scored] = torch.stack(tuple(terms[name].detach() for name in audit_terms), dim=-1)
@@ -607,7 +641,7 @@ class PhysicalHorizonTrainer:
                 confidence = (first_margin[scored].detach() / .012).clamp(.2, 1.) if approach_v2 else 1.
                 terms = {name: (value * confidence).sum() / denominator for name, value in terms.items()}
                 ball_loss = sum(terms.values())
-                task_loss = task_loss + (.25 if approach_v2 else 1.) * ball_loss
+                task_loss = task_loss + (.075 if native_gate else .25 if approach_v2 else 1.) * ball_loss
                 if flight_cost_by_lane is not None:
                     flight_priority_loss = ball_loss
                 flight_losses = terms
@@ -616,7 +650,7 @@ class PhysicalHorizonTrainer:
                 speed_risk = (lane_risk, groups, scored)
                 if not defer_speed_risk:
                     risk_loss = group_mean(lane_risk, groups)
-                    task_loss = task_loss + .25 * risk_loss
+                    task_loss = task_loss + (.075 if native_gate else .25) * risk_loss
                     flight_losses['grouped_speed_risk'] = risk_loss
             if getattr(self, 'diagnose_ball_gradients', False):
                 geometry = (closest_approach * (~impacted) + first_cost * impacted) * weights
@@ -757,6 +791,89 @@ class PhysicalHorizonTrainer:
                     lane_ticks_per_second=executed / elapsed, api_peak_bytes=torch.cuda.max_memory_allocated(),
                     gradient_norm=float(norm))
 
+    @torch.no_grad()
+    def _native_gate_candidates(self, before, endpoint, before_budget, references, starts, stop):
+        from .supermimic_compact_starts import merge_physical_starts
+        from .supermimic_robot_net_clearance import check_robot_net_clearance
+
+        if stop is not None and stop():
+            return False, 0., before_budget, []
+        self.actor.load_state_dict(endpoint, strict=True)
+        endpoint_budget = self._budget_snapshot()
+        delta = torch.cat([(new[2] - old[2]).flatten()
+                           for new, old in zip(endpoint_budget, before_budget, strict=True)])
+        rms = float(delta.square().mean().sqrt())
+        target_rms = getattr(self, '_native_gate_target_rms', .0003)
+        alpha = min(1., target_rms / max(rms, 1.e-12))
+        candidates, trials = [], []
+        for fraction in (alpha, alpha * .5):
+            candidate = {key: torch.lerp(value, endpoint[key], fraction) if key in self.trainable_names else value
+                         for key, value in before.items()}
+            self.actor.load_state_dict(candidate, strict=True)
+            budget = self._budget_snapshot()
+            report = self._relative_budget_report(budget, references)
+            local = report['relative_last_accepted']
+            native = report['relative_native_accepted']
+            bounded = (local['final_normalized_command_delta'] <= self.command_delta_budget
+                       and local['final_joint_target_delta_rad'] <= self.target_delta_budget_rad)
+            if self.native_reference_command_budget is not None:
+                bounded &= (native['final_normalized_command_delta'] <= self.native_reference_command_budget
+                            and native['final_joint_target_delta_rad'] <= self.native_reference_target_budget_rad)
+            effect = self._budget_deltas(budget, before_budget)['final_joint_target_delta_rad']
+            actual = torch.cat([(new[2] - old[2]).flatten() for new, old in zip(budget, before_budget, strict=True)])
+            trial = dict(alpha=fraction, budget_ok=bounded, budget_report=report, final_command_change=effect,
+                         final_target_delta_rms_rad=float(actual.square().mean().sqrt()), target_rms_rad=target_rms)
+            trials.append(trial)
+            if bounded and effect > 0.:
+                candidates.append((candidate, budget, trial))
+        self.actor.load_state_dict(before, strict=True)
+        if not candidates or (stop is not None and stop()):
+            if not candidates:
+                self._native_gate_target_rms = max(2.5e-5, target_rms * .5)
+            return False, 0., before_budget, trials
+
+        group_count = len(candidates) + 1
+        states = [before, *(candidate for candidate, _, _ in candidates)]
+        prefix = 'actor.approach.'
+        expected_layers = ('Linear', 'ELU', 'Linear', 'ELU', 'Linear')
+        layers = tuple(getattr(module, 'original_name', type(module).__name__)
+                       for module in self.actor.actor.approach.children())
+        if layers != expected_layers:
+            raise ValueError(f'Unsupported exported Approach head for candidate batching: {layers}')
+        self._approach_candidate_parameters = {
+            key[len(prefix):]: torch.stack([state[key] for state in states])
+            for key in before if key.startswith(prefix)}
+        try:
+            scores = [self._rollout_objective(merge_physical_starts(
+                                                  [start.branch() for _ in states], pack_execution=True),
+                                              collect_critic_data=False, coarse_guard=True)
+                      for start in starts]
+        finally:
+            self._approach_candidate_parameters = None
+        string, clearance, complete = [
+            torch.cat([score[key].reshape(group_count, -1) for score in scores], dim=1)
+            for key in ('string', 'clearance', 'complete')]
+        winner = None
+        for i, (candidate, budget, trial) in enumerate(candidates, 1):
+            net_ok, net = check_robot_net_clearance(clearance[0], clearance[i])
+            net_ok = net_ok and bool(clearance[0].isfinite().all())
+            contacts_ok = bool(string[i].sum() >= string[0].sum())
+            complete_ok = bool((complete[i] | ~complete[0]).all())
+            trial.update(string_before=int(string[0].sum()), string_after=int(string[i].sum()),
+                         string_ok=contacts_ok, robot_net_ok=net_ok, robot_net=net,
+                         tail_coverage_ok=complete_ok, batched_guard_lanes=string.numel())
+            if winner is None and contacts_ok and net_ok and complete_ok:
+                winner = candidate, budget, trial
+        if winner is None:
+            self._native_gate_target_rms = max(2.5e-5, target_rms * .5)
+            return False, 0., before_budget, trials
+        candidate, budget, trial = winner
+        trial['selected'] = True
+        if trial['alpha'] < alpha:
+            self._native_gate_target_rms = max(2.5e-5, target_rms * .5)
+        self.actor.load_state_dict(candidate, strict=True)
+        return True, trial['alpha'], budget, trials
+
     def imagine_update(self,initial_state,*,update_actor=True,guard_starts=None,stop_proposal=None):
         from .supermimic_approach_data_v1 import (
             approach_guard_merit, approach_step_sizes, comparable_flight_merit,
@@ -764,7 +881,8 @@ class PhysicalHorizonTrainer:
         from .supermimic_approach_speed_risk import (
             compare_risk, constrain_proposal, forward_tolerances, proposal_risk_objectives, risk_statistics)
         fast = getattr(self, 'approach_v2', False) and update_actor
-        protect_speed = fast and getattr(self, 'approach_speed_risk', False)
+        native_gate = fast and getattr(self, 'approach_native_gate', False)
+        protect_speed = fast and getattr(self, 'approach_speed_risk', False) and not native_gate
         if fast and not guard_starts:
             raise ValueError('Approach v2 requires a separate guard batch')
         if protect_speed and self.fixed_speed_risk_guard is not guard_starts:
@@ -823,7 +941,7 @@ class PhysicalHorizonTrainer:
                 proposal_timing['baseline_tracking_vjp_wall_s'] = rollout.get('tracking_vjp_wall_s', 0.)
                 proposal_timing['baseline_pooled_vjp_wall_s'] = rollout.get('pooled_vjp_wall_s', 0.)
                 if update_actor and rollout['gate_lanes']:
-                    if fast and guard_baseline is None:
+                    if fast and guard_baseline is None and not native_gate:
                         guard_baseline = score_guard()
                     gradient_started = time.perf_counter()
                     diagnose = not fast or getattr(self, 'diagnose_ball_gradients', False)
@@ -853,12 +971,14 @@ class PhysicalHorizonTrainer:
                         flight_gradients = (torch.autograd.grad(flight, parameters, retain_graph=True, allow_unused=True)
                                             if flight is not None and flight.requires_grad else ())
                         constraint_gradients = {}
-                        if protect_speed:
-                            for name, value in proposal_risk_objectives(rollout).items():
-                                if value.requires_grad:
-                                    derivatives = torch.autograd.grad(value, parameters, retain_graph=True, allow_unused=True)
-                                    constraint_gradients[name] = {
-                                        id(p): g.detach() for p, g in zip(parameters, derivatives, strict=True) if g is not None}
+                        constraint_objectives = proposal_risk_objectives(rollout) if protect_speed else {}
+                        if native_gate and rollout['robot_net_loss'] is not None and float(rollout['robot_net_loss'].detach()) > 0.:
+                            constraint_objectives['robot_net'] = rollout['robot_net_loss']
+                        for name, value in constraint_objectives.items():
+                            if value.requires_grad:
+                                derivatives = torch.autograd.grad(value, parameters, retain_graph=True, allow_unused=True)
+                                constraint_gradients[name] = {
+                                    id(p): g.detach() for p, g in zip(parameters, derivatives, strict=True) if g is not None}
                         rollout['loss'].backward()
                         if flight_gradients:
                             grad_stats['flight_gradient_correction'] = prioritize_flight_gradient(
@@ -922,6 +1042,23 @@ class PhysicalHorizonTrainer:
                                             parameter.copy_(actor_before[name] + delta.view_as(parameter))
                             proposed={k:v.detach().clone() for k,v in self.actor.state_dict().items()}
                             proposed_opt=copy.deepcopy(self.actor_opt.state_dict())
+                            if native_gate:
+                                native_started = time.perf_counter()
+                                endpoint = proposed
+                                if unprojected is not None:
+                                    endpoint = dict(proposed)
+                                    for name, raw in unprojected.items():
+                                        endpoint[name] = torch.lerp(raw, proposed[name], .25)
+                                accepted, alpha, committed_budget, trials = self._native_gate_candidates(
+                                    actor_before, endpoint, before_budget, budget_references, guard_starts, stop_proposal)
+                                for trial in trials:
+                                    trial['projection_fraction'] = .25 if unprojected is not None else 0.
+                                proposal_timing['backtracking_wall_s'] = time.perf_counter() - native_started
+                                if accepted:
+                                    self.actor_opt.load_state_dict(proposed_opt)
+                                    self.last_approach_alpha = alpha
+                                else:
+                                    reason = 'coarse_guard_rejected'
                             step_sizes = approach_step_sizes(getattr(self, 'last_approach_alpha', None) if fast else None)
                             line_search = [(a, 1.) for a in step_sizes]
                             if unprojected is not None:
@@ -930,6 +1067,8 @@ class PhysicalHorizonTrainer:
                                 local_steps = (.0625, .125, .25)
                                 blends = (.25, .375, .125, .50)
                                 line_search = [(a, blend) for a in local_steps for blend in blends] + line_search
+                            if native_gate:
+                                line_search = []
                             backtracking_started = time.perf_counter()
                             for index, (candidate_alpha, projection_fraction) in enumerate(line_search):
                                 if stop_proposal is not None and stop_proposal():
@@ -1021,14 +1160,15 @@ class PhysicalHorizonTrainer:
                                 if bounded and coverage_ok and effect>0 and merit_ok:
                                     committed_budget=candidate_budget
                                     alpha=candidate_alpha;accepted=True;break
-                            proposal_timing['backtracking_wall_s'] = time.perf_counter() - backtracking_started
-                            if accepted:
+                            if not native_gate:
+                                proposal_timing['backtracking_wall_s'] = time.perf_counter() - backtracking_started
+                            if accepted and not native_gate:
                                 if fast:
                                     self.last_approach_alpha = alpha
                                 # Adam moments correspond to the original same-gradient proposal;
                                 # alpha scales only the committed parameter displacement.
                                 self.actor_opt.load_state_dict(proposed_opt)
-                            elif reason != 'proposal_interrupted':
+                            elif not native_gate and reason != 'proposal_interrupted':
                                 if protect_speed and any('speed_risk_guard' in trial for trial in trials):
                                     reason = 'no_candidate_passed_flight_and_grouped_speed_risk_guard'
                                 else:
@@ -1119,7 +1259,8 @@ class PhysicalHorizonTrainer:
             block_attempts=self.block_attempts,backtracked_actor_updates=self.backtracked_actor_updates,backtrack_alpha=alpha,
             rejection_reason=reason,backtrack_trials=trials,objective_before=objective_before,
             objective_terms_before=objective_terms_before,
-            objective_after=trials[-1]['loss'] if accepted else objective_before,adam_scaling='full proposal moments with alpha-scaled parameters',
+            objective_after=trials[-1]['loss'] if accepted and not native_gate else objective_before,
+            adam_scaling='full proposal moments with alpha-scaled parameters',
             command_delta_budget=self.command_delta_budget,target_delta_budget_rad=self.target_delta_budget_rad,
             critic_updates=self.critic_updates,world_updates=self.world_updates,imagined_return_mean=ret_mean,
             actor_gradient=gradient,parameter_max_changes=changes,tracking_loss=track_value,

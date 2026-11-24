@@ -270,6 +270,17 @@ def approach_step_sizes(previous):
     return tuple(scales[i] for i in sorted(range(len(scales)), key=lambda i: (abs(i - index), i)))
 
 
+def batched_approach_head(observations, parameters):
+    """Score independent frozen heads without mutating their TorchScript parameters."""
+    result = observations
+    for layer in (0, 2, 4):
+        result = (result @ parameters[f'{layer}.weight'].transpose(1, 2)
+                  + parameters[f'{layer}.bias'][:, None])
+        if layer != 4:
+            result = torch.nn.functional.elu(result)
+    return result
+
+
 def gradient_parts(terms, parameters):
     """Diagnostics only; does not accumulate .grad or step an optimizer."""
     result={}; vectors={}

@@ -368,6 +368,8 @@ def _flight_chain_report(adapter, schema, data, streams, ticks, releases, lanes,
                     net_crossing_agreement=int((native_crossing == flight['crossed_net']).sum()),
                     net_clearance_cases=int(paired_net.sum()),
                     net_clearance_mae_m=float((flight['net_clearance'][paired_net] - native_clearance[paired_net]).abs().mean()) if paired_net.any() else None,
+                    net_clearance_error_q90_m=float(torch.quantile(
+                        (flight['net_clearance'][paired_net] - native_clearance[paired_net]).abs(), .90)) if paired_net.any() else None,
                     release_speed_mae_mps=float((ball[indices, 3:].norm(dim=-1) - native_velocity[indices].norm(dim=-1)).abs().mean()),
                     free_flight_samples=traces)
 

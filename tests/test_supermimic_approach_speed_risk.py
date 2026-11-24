@@ -170,3 +170,12 @@ def test_forced_exit_uses_verified_accepted_checkpoint(tmp_path):
     checkpoint.write_bytes(b'partial write')
     with pytest.raises(ValueError, match='checksum'):
         recover_timed_out_update(tmp_path, preparation)
+
+
+def test_native_gate_uses_clean_repeatability_band():
+    from scripts.run_supermimic_approach_speed_risk import native_gate_outcome
+
+    assert native_gate_outcome(-4, 0) == 'rollback'
+    assert native_gate_outcome(-1, 1) == 'retain_reference'
+    assert native_gate_outcome(1, 1) == 'retain_reference'
+    assert native_gate_outcome(2, 1) == 'promote'

@@ -60,8 +60,17 @@ def merge_physical_starts(states, *, pack_execution=False):
                 raise ValueError(f'Incompatible shared physical contract at {path}')
         return first
 
-    branches = tuple(state.executor_memory for state in states)
-    executor = pack_planned_execution(branches, counts) if pack_execution else G07BatchMemory(branches, counts)
+    branches, branch_counts = [], []
+    for state, count in zip(states, counts, strict=True):
+        memory = state.executor_memory
+        if isinstance(memory, G07BatchMemory):
+            branches.extend(memory.branches)
+            branch_counts.extend(memory.lane_counts)
+        else:
+            branches.append(memory)
+            branch_counts.append(count)
+    executor = (pack_planned_execution(tuple(branches), tuple(branch_counts)) if pack_execution
+                else G07BatchMemory(tuple(branches), tuple(branch_counts)))
     return PhysicalImaginationStateV1(
         physical=torch.cat([state.physical for state in states]),
         executor_memory=executor,

@@ -65,9 +65,23 @@ def main():
                         help='Score 64 registered training-side cases for block monitoring')
     parser.add_argument('--approach-reset-probe', action='store_true',
                         help='Compare 64 continuation ticks with a scene restart on eight training cases')
+    parser.add_argument('--approach-sensitivity', type=float, default=0.,
+                        help='TRAIN64 only: seeded relative RMS perturbation of Approach parameters')
+    parser.add_argument('--approach-prefix-checkpoint', type=Path,
+                        help='Replay a frozen TRAIN64 ground prefix before applying the candidate Approach head')
+    parser.add_argument('--approach-prefix-tick', type=int, default=235)
+    parser.add_argument('--approach-verify-snapshot', action='store_true',
+                        help='Validate the resident snapshot against a 64-tick uninterrupted control replay')
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus','candidate'),default=None)
     args = parser.parse_args()
+    if not 0. <= args.approach_sensitivity <= 1e-3 or (args.approach_sensitivity and not args.approach_quick64):
+        parser.error('Use a relative perturbation in [0, 0.001] on TRAIN64 only')
+    if args.approach_prefix_checkpoint and (not args.approach_quick64 or args.approach_reset_probe
+                                            or args.approach_sensitivity or not 0 < args.approach_prefix_tick < 800):
+        parser.error('A prefix requires ordinary frozen TRAIN64 and a positive switch tick')
+    if args.approach_verify_snapshot and not args.approach_prefix_checkpoint:
+        parser.error('Snapshot verification requires a frozen prefix actor')
     if args.approach_reset_probe and not args.approach_quick64:
         parser.error('The restart probe requires the ball-only training-case panel')
     if args.approach_quick64 and (not args.approach_ball_only or not args.checkpoint
@@ -248,8 +262,30 @@ def _run_native(args, stop_request):
         actor.eval()
         from quadsmash.rl.supermimic_policy_execution_v1 import resolve_contract,policy_forward,recovery_gate,contract as execution_contract,POSTHIT,POSTHIT_OR_GROUNDED_MISS
         from quadsmash.rl.supermimic_physical_loop_loading_v1 import tensor_digest
+        clean_actor_sha = tensor_digest(actor.state_dict().items())
+        if args.approach_sensitivity:
+            generator = torch.Generator().manual_seed(args.seed + 1)
+            with torch.no_grad():
+                for parameter in actor.actor.approach.parameters():
+                    direction = torch.randn(parameter.shape, generator=generator).to(parameter)
+                    magnitude = parameter.norm() * args.approach_sensitivity
+                    parameter.add_(direction * (magnitude / direction.norm().clamp_min(1e-12)))
         actor_state_before=tensor_digest(actor.state_dict().items())
         policy_execution,execution_provenance=resolve_contract(trained)
+        prefix_actor = None
+        if args.approach_prefix_checkpoint:
+            from quadsmash.rl.supermimic_physical_loop_loading_v1 import APPROACH_NAMES
+            prefix = torch.load(args.approach_prefix_checkpoint, map_location='cpu', mmap=True, weights_only=False)
+            require_resume_contract(prefix, contract)
+            if (resolve_contract(prefix)[0] != policy_execution or prefix['actor'].keys() != trained['actor'].keys()
+                    or any(not torch.equal(value, trained['actor'][name])
+                           for name, value in prefix['actor'].items() if name not in APPROACH_NAMES)):
+                raise ValueError('Native gate prefix must share the execution contract and frozen actor heads')
+            prefix_actor, _ = load_ppo_initialized_actor(source_path, env.device)
+            prefix_actor.load_state_dict(prefix['actor'], strict=True)
+            prefix_actor.eval()
+            prefix_actor.configure_approach_gate(policy_execution.get('arm_preparation_seconds'))
+            prefix_actor_sha = tensor_digest(prefix_actor.state_dict().items())
         if trained is None and args.init_policy_recovery_gate=='causal':
             policy_execution=execution_contract(POSTHIT);execution_provenance='explicit frozen initialization under training causal gate'
         if args.early_arm_seconds is not None:
@@ -355,13 +391,25 @@ def _run_native(args, stop_request):
             for tick in range(args.shutdown_diagnostic_ticks or 800):
                 if stop_request['signal'] is not None:
                     raise InterruptedError(f"Evaluation stopped at control boundary: {stop_request['signal']}")
+                if args.approach_verify_snapshot and tick == args.approach_prefix_tick:
+                    from quadsmash.rl.supermimic_native_approach_reset import verify_resident_snapshot
+
+                    def prefix_request(observations):
+                        return policy_forward(prefix_actor, observations['policy'], env.rally,
+                                              mode=policy_execution['recovery_gate'], sample=False)[0].clamp(-1., 1.)
+
+                    obs, restart_report = verify_resident_snapshot(env, wrapper, obs, prefix_request)
+                    write_json(args.output/'approach_snapshot_verification.json', restart_report)
+                    if not restart_report['passed']:
+                        raise RuntimeError('Resident PhysX snapshot failed continuation verification')
                 before = obs['policy'] if reference is None and probe_capture is None else obs['policy'].clone()
                 old_target = None
-                action = policy_forward(actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
+                active_actor = prefix_actor if prefix_actor is not None and tick < args.approach_prefix_tick else actor
+                action = policy_forward(active_actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
                 if args.approach_reset_probe and tick == 235:
                     restart = NativeApproachRestart.capture(env)
                 if env.approach_ball_termination is not None:
-                    env.record_approach_gate(actor.approach_action_gate(before))
+                    env.record_approach_gate(active_actor.approach_action_gate(before))
                 if probe_capture is not None:
                     action = probe_capture.before(tick,env,before,action)
                     if candidate_actor is not None and tick >= spec['action_tick']:
@@ -535,6 +583,14 @@ def _run_native(args, stop_request):
         head_active_lane_steps = dict(zip(("recovery", "approach"), head_counts.tolist()))
         metrics.update(actor_state_sha256=actor_state_after,actor_parameters_unchanged=True,
             optimizer_updates=dict(actor=0,world=0,critic=0),head_active_lane_steps=head_active_lane_steps)
+        if args.approach_sensitivity:
+            metrics.update(approach_sensitivity=dict(relative_rms=args.approach_sensitivity,
+                                                       seed=args.seed + 1, source_actor_sha256=clean_actor_sha))
+        if prefix_actor is not None:
+            metrics.update(approach_native_prefix=dict(
+                mode='verified_scene_restart' if args.approach_verify_snapshot else 'ground_prefix_replay',
+                switch_tick=args.approach_prefix_tick,
+                                                         actor_sha256=prefix_actor_sha))
         metrics['native_episode_metrics'] = native_summary
         if scoring_protocol['relaxed_scoring'] is not None:
             strict = [r['strict_observed'] for r in rows]

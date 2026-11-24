@@ -70,7 +70,7 @@ class PhysicalImaginationAdapter(nn.Module):
         self.manifest['contact_bptt_mode']=self.contact_bptt_mode
 
     def forward(self,state:PhysicalImaginationStateV1,actor_action,*,detach_ball=False,ball_input_grad=True,
-                scoring_step=None, return_geometry=False, impulse_residual_scale=1.):
+                scoring_step=None, return_geometry=False, impulse_residual_scale=1., robot_net_tail=False):
         if int(self.task_model.fit_updates)==0:
             raise RuntimeError('Physical loop requires fitted task memory/event model')
         c=state.clock_goal_context
@@ -79,10 +79,25 @@ class PhysicalImaginationAdapter(nn.Module):
             preview,executor,base=self.executor.forward(*command_args, state.executor_memory)
         else:
             preview,executor,base=scoring_step(*command_args)
-        predicted,feet,present,ball_details=ball_transition(self.physical_model,self.ball_model,
-            state.physical,preview.final_joint_targets,c['final_action'],c['foot_contact'],
-            c['ball_present'],c['elapsed'],c['launch'],action_model=self.action_ball_model,
-            return_details=True,ball_input_grad=ball_input_grad,impulse_residual_scale=impulse_residual_scale)
+        if robot_net_tail:
+            # The shuttle is already moving away on the far side. Keep its
+            # free-flight observation while tracking the robot and its G07 memory.
+            free, available = self.physical_model.prior(
+                state.physical.detach(), c['ball_present'], c['elapsed'], c['launch'])
+            body, logits, present = self.physical_model(
+                state.physical, preview.final_joint_targets, c['final_action'], c['foot_contact'],
+                c['ball_present'], c['elapsed'], c['launch'], prior_result=(free, available))
+            predicted = torch.cat((body[:, :49], free[:, 49:]), -1)
+            feet = logits.sigmoid()
+            inactive = torch.zeros(len(body), device=body.device, dtype=torch.bool)
+            ball_details = dict(predicted_robot=body[:, :49], predicted_ball=free[:, 49:],
+                                impulse_info=dict(active=inactive, object_id=inactive.long(),
+                                                  normal_speed=body.new_zeros(len(body))))
+        else:
+            predicted,feet,present,ball_details=ball_transition(self.physical_model,self.ball_model,
+                state.physical,preview.final_joint_targets,c['final_action'],c['foot_contact'],
+                c['ball_present'],c['elapsed'],c['launch'],action_model=self.action_ball_model,
+                return_details=True,ball_input_grad=ball_input_grad,impulse_residual_scale=impulse_residual_scale)
         # Keep robot dynamics differentiable while controlling when the
         # unverified ball/contact Jacobian can reach the actor.  This only
         # affects imagination gradients.  World-model supervision continues to

@@ -250,7 +250,7 @@ def first_racket_cost(before, after, impact, geometry, preview, strips, boundary
 
 def intercept_loss(before, after, start, end, reference, mask, survival, geometry, *,
                    fixed_weights=None, detach_empty=False, boundary=None, relative_face_speed=False,
-                   minimum_margin=.005):
+                   minimum_margin=.005, prefer_measured_contact=False):
     """Sample racket kinematics at the requested sub-tick arrival. Each lane contributes once."""
     arrival = reference['intercept']['time']
     active = intercept_interval(start, end, reference, mask)
@@ -294,6 +294,7 @@ def intercept_loss(before, after, start, end, reference, mask, survival, geometr
         normal = torch.where(target['valid'], .5 * (normal + facing), normal)
     measured = reference.get('measured_face_target') if relative_face_speed else None
     if measured is not None:
+        native = reference['toi_racket']
         incoming = reference['intercept']['incoming_velocity']
         compatible = ((incoming - measured['incoming']).norm(dim=-1) <= 1.)
         valid = torch.isfinite(measured['speed']) & compatible
@@ -301,6 +302,19 @@ def intercept_loss(before, after, start, end, reference, mask, survival, geometr
         surface = kinematics[:, 3:6] + torch.linalg.cross(kinematics[:, 9:12], offset)
         face = F.normalize(kinematics[:, 6:9], dim=-1)
         face = torch.where((face * measured['normal']).sum(-1, keepdim=True) >= 0., face, -face)
+        if prefer_measured_contact:
+            native_offset = measured['touch_offset'] - native[:, :3]
+            rotation = torch.linalg.cross(measured['normal'], face)
+            tangent = torch.linalg.cross(rotation, native_offset)
+            aligned_offset = (native_offset + tangent + torch.linalg.cross(rotation, tangent)
+                              / (1. + (face * measured['normal']).sum(-1, keepdim=True)).clamp_min(1.e-6))
+            point_error = (aligned_offset - offset) / .025
+            point_loss = F.smooth_l1_loss(point_error, torch.zeros_like(point_error), reduction='none').mean(-1)
+            position = torch.where(valid, .5 * (position + point_loss), position)
+            surface = kinematics[:, 3:6] + torch.linalg.cross(kinematics[:, 9:12], aligned_offset)
+            native_surface = native[:, 3:6] + torch.linalg.cross(native[:, 9:12], native_offset)
+            surface_loss = F.smooth_l1_loss(surface, native_surface, reduction='none').mean(-1)
+            linear = torch.where(valid, surface_loss, linear)
         along = ((surface - incoming) * face).sum(-1)
         desired = torch.where(valid, measured['speed'], along.detach())
         error = ((along - desired).abs() - .25).relu()

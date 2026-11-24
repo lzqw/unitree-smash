@@ -34,6 +34,39 @@ def recover_timed_out_update(train, preparation):
     return checkpoint, invocation
 
 
+def paired_repeatability(source, baseline, calibration, execution):
+    """Separate frozen-policy nondeterminism from sensitivity to a changed actor."""
+    for name in ('repeat', 'perturbed'):
+        if not (calibration / name / 'completed.json').is_file():
+            raise ValueError(f'Native gate requires a completed {name} TRAIN64 panel')
+    repeat = quick_check(source, calibration / 'repeat', execution, 882072)
+    perturbed = quick_check(source, calibration / 'perturbed', execution, 882072)
+    same = read(calibration / 'repeat/metrics.json')
+    changed = read(calibration / 'perturbed/metrics.json')
+    identity = same['actor_state_sha256']
+    sensitivity = changed.get('approach_sensitivity', {})
+    if (identity == changed['actor_state_sha256'] or not sensitivity.get('relative_rms')
+            or sensitivity['source_actor_sha256'] != identity or same.get('approach_sensitivity')):
+        raise ValueError('Repeatability panels do not identify the clean and perturbed actors')
+
+    def flips(panel):
+        if panel['panel_sha256'] != baseline['panel_sha256'] or panel['outcomes'].keys() != baseline['outcomes'].keys():
+            raise ValueError('Repeatability panels use different native cases')
+        return sorted(case for case, old in baseline['outcomes'].items() if old != panel['outcomes'][case])
+
+    return dict(clean_actor_sha256=identity, clean_success=repeat['success'],
+                clean_flip_cases=flips(repeat), sensitivity_success=perturbed['success'],
+                sensitivity_flip_cases=flips(perturbed), sensitivity=sensitivity)
+
+
+def native_gate_outcome(paired_net_gain, clean_flips):
+    if paired_net_gain > clean_flips:
+        return 'promote'
+    if paired_net_gain < -clean_flips:
+        return 'rollback'
+    return 'retain_reference'
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('registration', 'source', 'baseline-panel', 'history-checkpoint', 'risk-history', 'output'):
@@ -44,6 +77,11 @@ def main():
     parser.add_argument('--directed-collection', type=Path)
     parser.add_argument('--directed-guard-history', type=Path)
     parser.add_argument('--directed-validation-lane', action='append', type=int, default=[])
+    parser.add_argument('--native-gate-calibration', type=Path,
+                        help='Use measured TRAIN64 repeatability and PhysX as the final acceptance check')
+    parser.add_argument('--native-gate-updates', type=int, choices=(2, 3, 4), default=2)
+    parser.add_argument('--native-gate-try-snapshot', action='store_true',
+                        help='Check a live snapshot and fall back to an uninterrupted prefix when it diverges')
     args = parser.parse_args()
     source, output = args.source.resolve(strict=True), args.output.resolve()
     execution = registered_options(read(args.registration)['command'], ('g07-execution-root',))[1]
@@ -51,7 +89,17 @@ def main():
     if not (args.baseline_panel / 'completed.json').is_file():
         parser.error('Supply the completed A40 TRAIN64 baseline')
     baseline = quick_check(source, args.baseline_panel, execution, 882072)
+    native_gate = args.native_gate_calibration is not None
+    if native_gate and (not args.directed_collection or not args.prepared or args.prepare_only):
+        parser.error('Native gate requires the directed collection and a bound prepared checkpoint')
+    if args.native_gate_try_snapshot and not native_gate:
+        parser.error('Snapshot verification is available only on the native gate')
+    noise = paired_repeatability(source, baseline, args.native_gate_calibration, execution) if native_gate else None
+    if native_gate and noise['clean_actor_sha256'] != read(args.baseline_panel / 'metrics.json')['actor_state_sha256']:
+        raise ValueError('Unperturbed repeat changed baseline actor identity')
     output.mkdir()
+    if noise is not None:
+        dump(output / 'native_repeatability.json', noise)
     cache = output.parent / '.native_replay_cache'
     if cache.is_dir():
         (output / '.native_replay_cache').symlink_to(cache.resolve(), target_is_directory=True)
@@ -102,8 +150,9 @@ def main():
     train = output / 'train'
     dump(status_file, dict(status='training', preparation=receipt, prepared=str(prepared)))
     stop_reason = None
+    gate_args = ['--approach-native-gate-updates', str(args.native_gate_updates)] if native_gate else []
     try:
-        run([*command(prepared, train), '--approach-speed-risk-history', str(args.risk_history.resolve(strict=True))],
+        run([*command(prepared, train), '--approach-speed-risk-history', str(args.risk_history.resolve(strict=True)), *gate_args],
             output / 'train.log', 60)
     except CalledProcessError as error:
         if error.returncode not in (124, 137, -9):
@@ -124,7 +173,8 @@ def main():
             raise ValueError('Actor-only risk block exceeded its budget or changed its prepared WM')
         if stage == 40:
             dump(status_file, dict(status='no_accepted_proposals', preparation=receipt, baseline=baseline,
-                                   invocation=invocation, stop_reason=stop_reason, wall_seconds=perf_counter() - started))
+                                   invocation=invocation, stop_reason=stop_reason, preferred='a40',
+                                   noise=noise, wall_seconds=perf_counter() - started))
             return
         checkpoint, invocation = verify_training_milestone(train, stage, prepared)
     else:
@@ -135,14 +185,43 @@ def main():
     panel = output / f'A{stage:03d}_quick64'
     dump(status_file, dict(status='native_quick_check', preparation=receipt, candidate=str(checkpoint),
                            invocation=invocation, stop_reason=stop_reason))
-    candidate = quick_check(checkpoint, panel, execution, 882072)
-    if read(panel / 'metrics.json')['actor_state_sha256'] != invocation['actor_end_sha256']:
+    snapshot = None
+    if args.native_gate_try_snapshot:
+        attempted = output / f'A{stage:03d}_snapshot'
+        try:
+            candidate = quick_check(checkpoint, attempted, execution, 882072, prefix=source, verify_snapshot=True)
+            panel = attempted
+        except CalledProcessError:
+            evidence = attempted / 'approach_snapshot_verification.json'
+            if not evidence.is_file() or read(evidence)['passed'] is not False:
+                raise
+        snapshot = read(attempted / 'approach_snapshot_verification.json')
+    if panel.name.endswith('_quick64'):
+        candidate = quick_check(checkpoint, panel, execution, 882072, prefix=source if native_gate else None)
+    native_metrics = read(panel / 'metrics.json')
+    if native_metrics['actor_state_sha256'] != invocation['actor_end_sha256']:
         raise ValueError('Native quick check did not evaluate the retained Approach actor')
     paired = paired_quick_result(baseline, candidate, args.baseline_panel, panel)
     preferred = 'candidate' if not paired['regressed'] and candidate['success'] > baseline['success'] else 'a40'
+    decision = None
+    if native_gate:
+        prefix = native_metrics['approach_native_prefix']
+        if prefix['actor_sha256'] != noise['clean_actor_sha256']:
+            raise ValueError('Native candidate did not use the registered common prefix')
+        net_gain = candidate['success'] - baseline['success']
+        tolerance = len(noise['clean_flip_cases'])
+        outcome = native_gate_outcome(net_gain, tolerance)
+        preferred = 'candidate' if outcome == 'promote' else 'a40'
+        paired['regressed'] = outcome == 'rollback'
+        decision = dict(selected_checkpoint=str(checkpoint if preferred == 'candidate' else source),
+                        selected_checkpoint_sha256=(candidate if preferred == 'candidate' else baseline)['checkpoint_sha256'],
+                        result=outcome,
+                        paired_net_gain=net_gain, repeatability_tolerance=tolerance, prefix=prefix, noise=noise,
+                        snapshot_validation=snapshot)
+        dump(output / 'native_decision.json', decision)
     dump(status_file, dict(status='native_regression_review' if paired['regressed'] else 'quick_check_complete',
                            preparation=receipt, invocation=invocation, baseline=baseline, candidate=candidate,
-                           preferred=preferred, paired=paired, stop_reason=stop_reason,
+                           preferred=preferred, paired=paired, stop_reason=stop_reason, native_decision=decision,
                            wall_seconds=perf_counter() - started))
 
 

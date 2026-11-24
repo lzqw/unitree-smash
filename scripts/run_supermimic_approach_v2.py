@@ -30,9 +30,13 @@ def run(command, log, minutes):
             stdout=stream, stderr=subprocess.STDOUT, check=True)
 
 
-def quick_check(source, output, execution, seed):
+def quick_check(source, output, execution, seed, *, prefix=None, verify_snapshot=False):
     command = evaluate_command(source, output, True, execution, seed=seed, a0=False)
     command[command.index('--research-fixed128')] = '--approach-quick64'
+    if prefix is not None:
+        command.extend(('--approach-prefix-checkpoint', str(prefix)))
+    if verify_snapshot:
+        command.append('--approach-verify-snapshot')
     if not (output / 'completed.json').is_file():
         run(command, output.with_suffix('.log'), 40)
     metrics = json.loads((output / 'metrics.json').read_text())

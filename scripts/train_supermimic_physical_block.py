@@ -272,6 +272,8 @@ def main():
                         help='Use distinct training cases for the Approach guard and protect physical net clearance')
     parser.add_argument('--approach-speed-risk-history', type=Path,
                         help='Archived risk receipt for the fixed-guard speed-risk pilot on a prepared block')
+    parser.add_argument('--approach-native-gate-updates', type=int, choices=(2, 3, 4),
+                        help='Pause a prepared Approach block after this many coarse-screened updates for native evaluation')
     parser.add_argument('--approach-resident-eval-wait-seconds', type=int, default=0,
                         help='Opt in to waiting for a matched native decision at intermediate Approach boundaries')
     parser.add_argument('--approach-resident-coverage-baseline', type=Path,
@@ -449,6 +451,8 @@ def main():
         parser.error('Directed risk requires a prepared, bounded Approach-only block')
     if args.approach_prepare_only and args.approach_speed_risk_history:
         parser.error('Supply the risk history when resuming the prepared block')
+    if args.approach_native_gate_updates and not (args.approach_directed_risk and args.approach_speed_risk_history):
+        parser.error('Native gate requires directed Approach training from a prepared block')
     if args.approach_profile_collection_only and (not args.approach_prepare_only
             or args.approach_reuse_collected or args.native_ticks_per_actor_update < 1):
         parser.error('Collection profiling requires preparation mode with a positive live collection')
@@ -1625,6 +1629,8 @@ def run(args, *, alternating=None):
         config['approach_event_body_refresh'] = args.approach_event_body_refresh
         config['approach_speed_risk_history_sha256'] = file_sha(args.approach_speed_risk_history)
         trainer.approach_speed_risk = bool(args.approach_speed_risk_history)
+        trainer.approach_native_gate = bool(args.approach_native_gate_updates)
+        config['approach_native_gate_updates'] = args.approach_native_gate_updates
         metadata=dict(wm_action_collections=action_collections,policy_execution=policy_execution,init_policy_checkpoint=dict(path=str(source_path),sha256=manifest['source_sha256'],g07_execution_root=str(execution_root)),
                       task_contract=contract,physical_imagination=adapter.manifest)
         if body_overlay_receipt is not None:
@@ -2115,6 +2121,8 @@ def run(args, *, alternating=None):
                     return 'wall_budget'
                 if consecutive_rejections >= 3:
                     return 'consecutive_rejections'
+                if args.approach_native_gate_updates and accepted >= args.approach_native_gate_updates:
+                    return 'native_gate_boundary'
                 return None
 
             trainer.actor_updates=accepted;trainer.actor_attempts=attempts
@@ -2490,6 +2498,21 @@ def run(args, *, alternating=None):
                 if use_prepared and attempts == 0:
                     world_stats = prepared_resume['world_stats']
                     prepared_used = True
+                    if trainer.approach_native_gate:
+                        from quadsmash.rl.supermimic_release_calibration import calibrate_release_speed
+                        calibration = calibrate_release_speed(
+                            adapter, replay, launch, excluded_lanes=wm_holdout_lanes,
+                            string_strips=trainer.string_strips, separation_m=trainer.approach_separation_m,
+                            threshold=phase_scoring['minimum_outgoing_speed_mps'],
+                            flight_court=trainer.research_court)
+                        chain = calibration['flight_chain'] or {}
+                        net = chain.get('predicted_robot_contact_to_flight', {})
+                        error = net.get('net_clearance_error_q90_m')
+                        trainer.approach_net_margin_m = .02 + (error or 0.)
+                        write(args.output/'native_gate_flight_margin.json', dict(
+                            scope='training-side baseline releases with measured commands',
+                            support=net.get('net_clearance_cases', 0), error_q90_m=error,
+                            margin_m=trainer.approach_net_margin_m))
                 if args.approach_prepare_only:
                     checkpoint = args.output / 'approach_prepared.pt'
                     calibration = trainer.approach_speed_calibration
@@ -2776,8 +2799,8 @@ def run(args, *, alternating=None):
                     receipt = dict(checkpoint=milestone, checkpoint_sha256=file_sha(args.output/milestone),
                                    retained=global_accepted_id-research_origin, native_ticks=tick,
                                    invocation=invocation_receipt(), guard=start_sampling['guard'],
-                                   guard_objective_before=stats['guard_objective_before'],
-                                   guard_objective_after=stats['guard_objective_after'],
+                                   guard_objective_before=stats.get('guard_objective_before'),
+                                   guard_objective_after=stats.get('guard_objective_after'),
                                    parameter_max_changes=stats['parameter_max_changes'])
                     write(args.output/'latest_speed_risk_actor_update.json', receipt)
                     if args.approach_directed_risk and invocation_heads['approach']['accepted'] == 1:

@@ -93,7 +93,8 @@ def calibrated_speed_loss(velocity, bias, *, minimum=4.5, task_margin=0., temper
     return temperature * F.softplus((minimum + task_margin - calibrated) / temperature)
 
 
-def ball_only_flight_terms(position, velocity, prior, court, *, speed_bias, minimum=4.5, speed_margin=0.):
+def ball_only_flight_terms(position, velocity, prior, court, *, speed_bias, minimum=4.5, speed_margin=0.,
+                           net_margin=.02, landing_margin=.03, center_landing=False):
     """Separate speed, direction, net and landing costs on actual predicted events."""
     events = predict_flight_events(position, velocity, prior, court)
     # Replace absent witnesses before computing penalties to keep backward finite.
@@ -104,9 +105,12 @@ def ball_only_flight_terms(position, velocity, prior, court, *, speed_bias, mini
     width_cost = (events['net_lateral_position'].nan_to_num().abs() - court['net_width_m'] / 2).relu()
     shortfall = (court['net_plane_x_m'] + prior.preview.radius - events['furthest_x']).relu()
     net = torch.where(events['crossed_net'] | events['net_contact'],
-                      (.02 - clearance).relu() + width_cost, .1 + shortfall)
-    lane_landing = ((low + .03 - landing[:, 0]).relu() + (landing[:, 0] - high + .03).relu()
-                    + (landing[:, 1].abs() - width + .03).relu())
+                      (net_margin - clearance).relu() + width_cost, .1 + shortfall)
+    lane_landing = ((low + landing_margin - landing[:, 0]).relu() + (landing[:, 0] - high + landing_margin).relu()
+                    + (landing[:, 1].abs() - width + landing_margin).relu())
+    if center_landing:
+        center = landing.new_tensor(((low + high) / 2, 0.))
+        lane_landing = lane_landing + .25 * (landing[:, :2] - center).abs().sum(-1)
     lane_landing = torch.where(events['landed'], lane_landing, torch.ones_like(lane_landing))
     return dict(speed=calibrated_speed_loss(velocity, speed_bias, minimum=minimum, task_margin=speed_margin),
                 direction=(.1 - velocity[:, 0]).relu(), net=net, landing=lane_landing)

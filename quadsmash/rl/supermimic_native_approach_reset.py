@@ -50,6 +50,7 @@ class NativeApproachRestart:
     history_sizes: dict
     first_contacts: dict
     controller: object
+    drive_targets: tuple
     cpu_rng: torch.Tensor
     cuda_rng: torch.Tensor
     numpy_rng: tuple
@@ -69,6 +70,8 @@ class NativeApproachRestart:
                 'rally_records', 'contact_records', 'racket_plane_records')},
             first_contacts=copy.deepcopy(env.first_approach_contact_motion),
             controller=clone_execution_graph(env._sm_residual_controller),
+            drive_targets=tuple(getattr(env.robot.data, key).detach().clone() for key in
+                                ('joint_pos_target', 'joint_vel_target', 'joint_effort_target')),
             cpu_rng=torch.get_rng_state(), cuda_rng=torch.cuda.get_rng_state(env.device),
             numpy_rng=np.random.get_state())
 
@@ -84,7 +87,10 @@ class NativeApproachRestart:
             del getattr(env, name)[size:]
         env.first_approach_contact_motion = copy.deepcopy(self.first_contacts)
         env._sm_residual_controller = clone_execution_graph(self.controller)
-        env.robot.set_joint_position_target(env.targets)
+        position_target, velocity_target, effort_target = self.drive_targets
+        env.robot.set_joint_position_target(position_target)
+        env.robot.set_joint_velocity_target(velocity_target)
+        env.robot.set_joint_effort_target(effort_target)
         env.scene.write_data_to_sim()
         env.sim.forward()
         torch.set_rng_state(self.cpu_rng)
@@ -118,3 +124,38 @@ def restart_comparison(expected, actual):
     return dict(passed=passed, ticks=64, maximum_absolute_error=errors, tolerances=tolerances,
                 contact_equal=contact_equal, episodes_equal=episodes_equal,
                 collection_mode='verified_scene_restart' if passed else 'native_ground_prefix_replay')
+
+
+@torch.inference_mode()
+def verify_resident_snapshot(env, wrapper, observation, request):
+    """Recover the same scene only when uninterrupted replay agrees at all audit ticks."""
+    initial_observation = {name: value.clone() for name, value in observation.items()}
+
+    def failed(exc):
+        return initial_observation, dict(passed=False, collection_mode='native_ground_prefix_replay',
+                                         error_type=type(exc).__name__, error=str(exc))
+
+    try:
+        snapshot = NativeApproachRestart.capture(env)
+    except (RuntimeError, ValueError) as exc:
+        return failed(exc)
+    commands, expected, actual = [], [], []
+    for _ in range(64):
+        command = request(observation)
+        commands.append(command.clone())
+        observation, _, _, _ = wrapper.step(command)
+        expected.append(observe_restart_state(env, observation))
+    try:
+        snapshot.restore(env)
+    except (RuntimeError, ValueError) as exc:
+        return failed(exc)
+    for command in commands:
+        observation, _, _, _ = wrapper.step(command)
+        actual.append(observe_restart_state(env, observation))
+    result = restart_comparison(expected, actual)
+    if result['passed']:
+        try:
+            snapshot.restore(env)
+        except (RuntimeError, ValueError) as exc:
+            return failed(exc)
+    return initial_observation, result

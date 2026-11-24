@@ -64,6 +64,14 @@ def robot_net_cost(clearance, *, margin=.015):
     return ((margin - clearance).relu() / margin).square()
 
 
+def racket_back_on_own_side(geometry, proxy, racket_id, court):
+    ids, corners = proxy
+    rotation = geometry['rotation'][:, ids, 0]
+    x = (corners[None] * rotation[:, :, None]).sum(-1) + geometry['position'][:, ids, 0, None]
+    edge = court['net_plane_x_m'] - court['net_equivalent_thickness_m'] / 2.
+    return x.masked_fill(ids[None, :, None] != racket_id, -torch.inf).amax(dim=(1, 2)) < edge
+
+
 def check_robot_net_clearance(before, after, *, tolerance=1.e-6):
     selected = before.isfinite()
     if not selected.any():

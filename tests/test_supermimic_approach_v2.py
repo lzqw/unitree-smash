@@ -18,6 +18,19 @@ def test_guard_checks_aggregate_and_preserves_large_string_margins():
     assert approach_step_sizes(.25) == (.25, .5, .125, 1., .0625)
 
 
+def test_batched_approach_head_matches_independent_scripted_policies():
+    from quadsmash.rl.supermimic_approach_data_v1 import batched_approach_head
+
+    heads = [torch.jit.script(torch.nn.Sequential(
+        torch.nn.Linear(10, 7), torch.nn.ELU(), torch.nn.Linear(7, 5),
+        torch.nn.ELU(), torch.nn.Linear(5, 3))) for _ in range(3)]
+    observations = torch.randn(3, 16, 10)
+    states = [dict(head.named_parameters()) for head in heads]
+    parameters = {name: torch.stack([state[name] for state in states]) for name in states[0]}
+    independently = torch.stack([head(obs) for head, obs in zip(heads, observations, strict=True)])
+    torch.testing.assert_close(batched_approach_head(observations, parameters), independently)
+
+
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='CUDA discrete adjoint')
 @pytest.mark.parametrize('trajectory', [False, True])
 def test_cuda_flight_values_and_adjoint_match_eager(trajectory):

@@ -349,7 +349,7 @@ def pooled_objective(trainer, starts, effective_weights=None, baseline_toi_weigh
         from .supermimic_approach_speed_risk import group_mean
 
         risk_loss = group_mean(*speed_risk[:2])
-        scalars['task'] = scalars['task'] + .25 * risk_loss
+        scalars['task'] = scalars['task'] + (.075 if getattr(trainer, 'approach_native_gate', False) else .25) * risk_loss
         risk_losses['grouped_speed_risk'] = risk_loss
     loss=trainer.tracking_coefficient(trainer.block_name)*scalars['tracking']+trainer.anchor_coeff*scalars['anchor']
     if not toi or getattr(trainer, 'approach_ball_protocol', None) is not None:
