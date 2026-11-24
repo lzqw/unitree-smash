@@ -1179,51 +1179,16 @@ class PhysicalHorizonTrainer:
         return norm
 
     def fit_approach_body_pair(self, minus, plus, launch):
-        """Learn the signed, pre-contact racket response without fitting the ball."""
-        world = self.adapter.physical_model
-        horizons = (4, 8, 16)
-        reference = []
-        for window in (minus, plus):
-            state = window['state'][0]
-            poses, truth_poses, body_errors = [], [], []
-            for i in range(min(len(window['state']), horizons[-1])):
-                measured = window['state'][i]
-                # The input ball trajectory is observed throughout this Body
-                # intervention to avoid fitting away an error in Contact WM.
-                state = torch.cat((state[:, :49], measured[:, 49:]), -1)
-                state, _, _ = world(state, window['targets'][i], window['previous_action'][i],
-                                     window['feet'][i], window['present'][i], window['elapsed'][i], launch,
-                                     detach_contacts=True)
-                if i + 1 in horizons:
-                    truth = window['next_state'][i]
-                    poses.append(racket_state(state, world.geometry))
-                    truth_poses.append(racket_state(truth, world.geometry))
-                    body_errors.append(robot_loss(state, truth, per_row=True))
-            reference.append((poses, truth_poses, body_errors))
-        if not reference[0][0] or len(reference[0][0]) != len(reference[1][0]):
-            return dict(updated=False, supported_horizons={})
+        """Learn signed, pre-contact racket responses on authenticated intervention pairs."""
+        from .supermimic_precontact_body import body_pair_loss
         from .supermimic_release_calibration import _native_event_columns
-        contact_col = _native_event_columns(self.adapter.task_model.memory_schema)['rally/had_contact']
-        scale = launch.new_tensor([.03] * 3 + [.12] * 9 + [1.] * 3 + [3.] * 3)
-        losses, support = [], {}
-        for h, a, b, measured_a, measured_b, body_a, body_b in zip(
-                horizons[:len(reference[0][0])], reference[0][0], reference[1][0], reference[0][1],
-                reference[1][1], reference[0][2], reference[1][2], strict=True):
-            valid = ((minus['next_values'][:h, :, contact_col] <= .5)
-                     & (plus['next_values'][:h, :, contact_col] <= .5)).squeeze(-1).all(0)
-            if not valid.any():
-                continue
-            support[h] = int(valid.sum())
-            a, b, measured_a, measured_b = (value[valid] / scale for value in (a, b, measured_a, measured_b))
-            huber = torch.nn.functional.smooth_l1_loss
-            losses.append(huber(b-a, measured_b-measured_a)
-                          + .5 * (huber(a, measured_a) + huber(b, measured_b))
-                          + .5 * (body_a[valid].mean() + body_b[valid].mean()))
-        if not losses:
+
+        columns = _native_event_columns(self.adapter.task_model.memory_schema)
+        loss, support, diagnostics = body_pair_loss(self.adapter.physical_model, minus, plus, launch, columns)
+        if loss is None:
             return dict(updated=False, supported_horizons=support)
-        loss = torch.stack(losses).mean()
         norm = self._step_approach_body(loss)
-        return dict(updated=bool(norm > 0), supported_horizons=support,
+        return dict(updated=bool(norm > 0), supported_horizons=support, response_by_horizon=diagnostics,
                     body_pair_loss=float(loss.detach()), body_pair_gradient=norm)
 
     def fit_ball_only_contact_pair(self, minus, plus, launch):

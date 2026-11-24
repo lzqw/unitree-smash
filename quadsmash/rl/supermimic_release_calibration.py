@@ -158,21 +158,25 @@ def measured_contact_pairs(replay, launch, *, offset, limit):
 
 
 def measured_body_pairs(replay, launch, *, offset, limit=4):
-    """Return genuine interventions that contain at least four pre-impact steps."""
+    """Return authenticated same-clock interventions for every supported pre-impact horizon."""
+    from .supermimic_precontact_body import PAIR_HORIZONS, paired_precontact_mask
+
     columns = _native_event_columns(replay.schema)
     contact = columns['rally/had_contact']
-    fields = ('state', 'next_state', 'next_values', 'targets', 'previous_action', 'feet', 'present', 'elapsed')
+    fields = ('state', 'next_state', 'values', 'next_values', 'next_valid',
+              'targets', 'previous_action', 'feet', 'present', 'elapsed')
     records = replay.training_probe_pairs
     if not records:
         return []
     pairs = []
     for index in range(len(records)):
         lanes, minus, plus = records[(index + offset) % len(records)]
-        available = min(len(minus['state']), len(plus['state']), 16)
-        if available < 4:
+        if len(minus['state']) != len(plus['state']) or not torch.equal(minus['elapsed'], plus['elapsed']):
+            raise ValueError('Native Body pair branches must use identical control boundaries')
+        available = min(len(minus['state']), PAIR_HORIZONS[-1])
+        if available < PAIR_HORIZONS[0]:
             continue
-        valid = ((minus['next_values'][:4, :, contact] <= .5)
-                 & (plus['next_values'][:4, :, contact] <= .5)).squeeze(-1).all(0)
+        valid = paired_precontact_mask(minus, plus, contact)[PAIR_HORIZONS[0] - 1]
         if not valid.any():
             continue
         selected = torch.tensor(lanes)[valid]

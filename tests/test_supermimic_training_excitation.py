@@ -60,3 +60,69 @@ def test_distinct_window_capacity_uses_only_signed_eligible_lanes():
     assert identification_window_capacity([first],128)['unavoidable_shortfall']==4
     assert identification_window_capacity([first, dict(measured_windows=16)],128)['unavoidable_shortfall']==0
     assert identification_window_capacity([],0)['unavoidable_shortfall']==0
+
+
+def test_signed_long_pair_masks_contacts_on_the_shared_clock_and_retains_gradients(monkeypatch):
+    from quadsmash.rl import supermimic_precontact_body as body
+
+    names = ('had_contact', 'legal_initial_contact', 'airborne_string_hit', 'string_hit',
+             'released', 'robot_net_fault', 'crossed_net', 'landed_target', 'outgoing_velocity')
+    columns = {'rally/' + name: slice(i, i + (3 if name == 'outgoing_velocity' else 1))
+               for i, name in enumerate(names)}
+
+    def pose(state, _):
+        rotation = torch.eye(3).flatten().expand(len(state), -1)
+        return torch.cat((state[:, :3], rotation, state[:, 7:10], state[:, 10:13]), -1)
+
+    monkeypatch.setattr(body, 'racket_state', pose)
+
+    class World:
+        geometry = None
+        dt = .01
+        gain = torch.tensor(.5, requires_grad=True)
+
+        def __call__(self, state, targets, *args, detach_contacts):
+            output = state.clone()
+            output[:, :3] += self.gain * targets[:, :3] * self.dt
+            output[:, 7:10] = self.gain * targets[:, :3]
+            return output, None, None
+
+    def branch(sign):
+        shape = (32, 3)
+        state = torch.zeros(*shape, 55)
+        state[:, :, 3] = 1.
+        state[:, :, 49] = .2
+        targets = torch.zeros(*shape, 18)
+        targets[..., :3] = sign
+        state[..., :3] = .01 * sign * torch.arange(32)[:, None, None]
+        truth = state.clone()
+        truth[..., :3] += .01 * sign
+        truth[..., 7:10] = sign
+        events = torch.zeros(*shape, 11)
+        if sign == 1:
+            events[22:, 0, 0] = 1.
+            events[23:, 0, 1:5] = 1.
+            events[23:, 0, 8] = 4.3
+            events[30:, 1, :5] = 1.
+            events[30:, 1, 6:8] = 1.
+            events[30:, 1, 8] = 4.6
+        return dict(state=state, next_state=truth, targets=targets, previous_action=targets,
+                    values=events.clone(), next_values=events, next_valid=torch.ones_like(events),
+                    feet=torch.zeros(*shape, 4), present=torch.ones(shape, dtype=torch.bool),
+                    elapsed=torch.arange(32)[:, None].expand(shape) * .01)
+
+    model = World()
+    loss, support, report = body.body_pair_loss(model, branch(-1), branch(1), torch.zeros(3, 6), columns)
+    assert support == {4: 3, 8: 3, 16: 3, 20: 3, 32: 1}
+    assert set(report[20]) == {'low_speed', 'marginal_success', 'unclassified'}
+    assert set(report[32]) == {'unclassified'}
+    assert report[20]['low_speed']['normal_response_mae_mps'] > 0
+    assert torch.autograd.grad(loss, model.gain)[0] < 0
+
+
+@pytest.mark.parametrize('steps', [20, 32])
+def test_extended_probe_spec_declares_actual_recorded_boundaries(steps):
+    spec = make_spec([4, 77], 267, steps + 2, 4, .01, 123, steps)
+    assert spec['tick'] - spec['action_tick'] + 1 == steps
+    recorder = TrainingWindowRecorder([4, 77], steps)
+    assert recorder.steps == steps

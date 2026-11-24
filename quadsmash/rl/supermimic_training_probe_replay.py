@@ -5,7 +5,7 @@ from pathlib import Path
 import torch
 
 from .supermimic_action_identification_dataset_v1 import _load_branch, _same_contract, _sha256
-from .supermimic_native_pair_capture_v1 import BRANCHES, tree_digest
+from .supermimic_native_pair_capture_v1 import BRANCHES, TRAINING_WINDOW_STEPS, tree_digest
 
 
 def training_windows(directory, task_contract, policy_execution, excluded_lanes=(), *, expected_schema=None):
@@ -28,6 +28,7 @@ def training_windows(directory, task_contract, policy_execution, excluded_lanes=
         raise ValueError('Missing native branches')
     staged = []
     included = {}
+    collected_steps = {}
     reserved = set(excluded_lanes)
     for name, hashes in sorted(groups.items()):
         if set(hashes) != set(BRANCHES):
@@ -40,6 +41,10 @@ def training_windows(directory, task_contract, policy_execution, excluded_lanes=
                 or spec.get('data_role') != 'training_action_identification'
                 or base['task_contract'] != task_contract or base['policy_execution'] != policy_execution):
             raise ValueError('Training probe has incompatible physics, execution, or split')
+        steps = spec['tick'] - spec.get('action_tick', spec['tick']) + 1
+        if steps not in TRAINING_WINDOW_STEPS:
+            raise ValueError('Unsupported signed native training window length')
+        collected_steps[name] = steps
         if len(set(spec['lanes'])) != len(spec['lanes']):
             raise ValueError('Duplicate lane in signed native training windows')
         indices = [i for i,lane in enumerate(spec['lanes']) if lane not in reserved]
@@ -56,10 +61,10 @@ def training_windows(directory, task_contract, policy_execution, excluded_lanes=
             if ((expected_schema is not None and window['schema'] != expected_schema)
                     or window['schema'] != base['raw']['wm_window']['schema'] or window['lanes'] != spec['lanes']):
                 raise ValueError('Native probe task-memory schema or lane order differs')
+            tensors = window['tensors']
+            if any(v.shape[:2] != (steps, len(spec['lanes'])) for v in tensors.values()):
+                raise ValueError('Native window must cover the full declared signed sequence')
             if b in ('minus','plus'):
-                tensors = window['tensors']
-                if any(v.shape[:2] != (16,len(spec['lanes'])) for v in tensors.values()):
-                    raise ValueError('Native window must cover the full 16-step signed sequence')
                 values = {k:v[:,indices] for k,v in tensors.items()}
                 if ((values['terminated'] | values['timeout']).any() or
                         not (values['episode'] == values['episode'][0]).all()):
@@ -77,7 +82,7 @@ def training_windows(directory, task_contract, policy_execution, excluded_lanes=
                 source_checkpoint_sha256=startup['source_sha256'], spec_branches=groups,
                 included_lanes=included, excluded_lanes=sorted(reserved),
                 measured_windows=sum(2*len(lanes) for lanes in included.values()),
-                signed_streams=2*len(staged), world_window_steps=16)
+                signed_streams=2*len(staged), world_window_steps=16, signed_window_steps=collected_steps)
 
 
 def import_training_collection(replay, directory, task_contract, policy_execution, excluded_lanes=(), *,

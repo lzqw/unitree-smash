@@ -7,7 +7,7 @@ from pathlib import Path
 
 import torch
 
-from quadsmash.rl.supermimic_native_pair_capture_v1 import validate_spec
+from quadsmash.rl.supermimic_native_pair_capture_v1 import TRAINING_WINDOW_STEPS, validate_spec
 
 
 def training_lanes(exclusions):
@@ -20,13 +20,13 @@ def training_lanes(exclusions):
     return lanes
 
 
-def make_spec(lanes, event_tick, lead, hold, epsilon, seed):
+def make_spec(lanes, event_tick, lead, hold, epsilon, seed, window_steps=16):
     generator = torch.Generator().manual_seed(seed)
     arm = torch.nn.functional.normalize(torch.randn(len(lanes), 6, generator=generator), dim=-1)
     direction = torch.cat((torch.zeros(len(lanes), 12), arm), dim=-1)
     start = event_tick - lead
     return validate_spec(dict(
-        schema='native-paired-prefix-batch-spec-v2', tick=start+15, action_tick=start,
+        schema='native-paired-prefix-batch-spec-v2', tick=start+window_steps-1, action_tick=start,
         action_hold_ticks=hold, head='approach', lanes=lanes, epsilon_request=epsilon,
         request_directions=direction.tolist(), direction_seed=seed,
         capture_wm_window=True, capture_substeps=False, data_role='training_action_identification',
@@ -40,6 +40,7 @@ def main():
     p.add_argument('--packed-data', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
     p.add_argument('--direction-seed', type=int, default=20261121)
+    p.add_argument('--window-steps', type=int, choices=TRAINING_WINDOW_STEPS, default=16)
     a = p.parse_args()
     reference = json.loads(a.reference_verification.read_bytes())
     holdout = json.loads(a.probe_holdout_manifest.read_bytes())
@@ -52,7 +53,8 @@ def main():
     schedule = [(4,4,.01), (2,2,.005), (8,8,.02), (1,2,.002)]
     if len(ticks) < len(schedule):
         raise ValueError('Insufficient distinct observed contact ticks on training lanes')
-    specs = [make_spec(lanes,t,l,h,e,a.direction_seed+i)
+    specs = [make_spec(lanes,t,l if a.window_steps == 16 else a.window_steps + 2,h,e,
+                       a.direction_seed+i, a.window_steps)
              for i,(t,(l,h,e)) in enumerate(zip(ticks,schedule))]
     a.output.mkdir(parents=True, exist_ok=False)
     for i,spec in enumerate(specs):
@@ -64,7 +66,7 @@ def main():
                     training_lanes=lanes, withheld_lanes=sorted(set(range(128))-set(lanes)),
                     packed_sha256=digest(a.packed_data), reference_sha256=digest(a.reference_verification),
                     probe_holdout_sha256=digest(a.probe_holdout_manifest), windows=len(specs),
-                    window_steps=16, seed=a.direction_seed)
+                    window_steps=a.window_steps, seed=a.direction_seed)
     (a.output/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 
 

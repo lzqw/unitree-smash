@@ -450,24 +450,28 @@ class PhysicalLoopReplay:
         """Expand measured lanes to the fixed suite layout. Missing lanes are never eligible."""
         if (not lanes or len(set(lanes)) != len(lanes) or min(lanes)<0 or max(lanes)>=self.lanes):
             raise ValueError('Invalid training probe lanes')
+        from .supermimic_native_pair_capture_v1 import TRAINING_WINDOW_STEPS
+        steps = len(tensors['state'])
+        if steps not in TRAINING_WINDOW_STEPS:
+            raise ValueError('Unsupported training intervention horizon')
         data = {}
         for key in self.required:
             value, example = tensors[key], self.initial_data[key]
-            if value.shape != (16, len(lanes), *example.shape[2:]):
+            if value.shape != (steps, len(lanes), *example.shape[2:]):
                 raise ValueError(f'Native probe field shape mismatch: {key}')
             if value.is_floating_point() and not torch.isfinite(value).all():
                 raise ValueError(f'Nonfinite native probe field: {key}')
-            data[key] = example.new_zeros((16, self.lanes, *example.shape[2:]))
+            data[key] = example.new_zeros((steps, self.lanes, *example.shape[2:]))
             data[key][:, lanes] = value.to(example)
         if ((tensors['terminated'] | tensors['timeout']).any()
                 or not (tensors['episode'] == tensors['episode'][0]).all()):
             raise ValueError('Training intervention crosses reset')
-        source = torch.full((16,self.lanes), -1, dtype=torch.long)
+        source = torch.full((steps,self.lanes), -1, dtype=torch.long)
         source[:,lanes] = SOURCE_CODES['action_identification']
         metadata = {}
         if self.approach_labeler is not None:
             for key, values in self.approach_labeler(tensors).items():
-                field = values.new_full((16,self.lanes), float('nan'))
+                field = values.new_full((steps,self.lanes), float('nan'))
                 field[:,lanes] = values
                 metadata[key] = field
         return data, source, _stage_ids_from_tensors(data, self.schema), metadata
@@ -495,14 +499,16 @@ class PhysicalLoopReplay:
             # Negative stream identities cannot collide with native online streams.
             # All proposal starts, native RTG and returns stay on the policy replay.
             data = {k:torch.cat([v]+[p[0][k] for p in self.training_probes]) for k,v in data.items()}
-            extra = len(self.training_probes)*16
-            streams = torch.cat((streams,-torch.arange(1,len(self.training_probes)+1).repeat_interleave(16)))
+            lengths = torch.tensor([len(p[1]) for p in self.training_probes])
+            extra = int(lengths.sum())
+            probe_ids = -torch.arange(1, len(self.training_probes) + 1).repeat_interleave(lengths)
+            streams = torch.cat((streams, probe_ids))
             sources = torch.cat([sources]+[p[1] for p in self.training_probes])
             stages = torch.cat([stages]+[p[2] for p in self.training_probes])
             policies = torch.cat((policies,torch.full((extra,self.lanes),-1,dtype=torch.long)))
             ticks = torch.cat((ticks,torch.full((extra,),-1,dtype=torch.long)))
             self._ordered_approach = {
-                k:torch.cat([v] + [p[3][k] if k in p[3] else v.new_full((16,self.lanes),float('nan'))
+                k:torch.cat([v] + [p[3][k] if k in p[3] else v.new_full((len(p[1]),self.lanes),float('nan'))
                                     for p in self.training_probes])
                 for k,v in self._ordered_approach.items()}
         self._ordered_cache=(data,streams,stages,sources,policies,ticks)

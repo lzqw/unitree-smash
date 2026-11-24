@@ -6,6 +6,7 @@ from .supermimic_physical_capture_v1 import capture_state,capture_controller,ten
 from .supermimic_physical_dataset_v1 import encode_physical
 
 BRANCHES=('nominal_a','nominal_b','minus','plus')
+TRAINING_WINDOW_STEPS = (16, 20, 32)
 
 def probe_lanes(spec):
     return [spec['lane']] if spec['schema']=='native-paired-prefix-spec-v1' else list(spec['lanes'])
@@ -53,8 +54,8 @@ def validate_spec(spec):
     if direction.shape!=(len(probe_lanes(spec)),18) or not torch.isfinite(direction).all() or not (direction.norm(dim=-1)>0).all():
         raise ValueError('Need finite nonzero18D request direction per lane')
     if spec.get('capture_wm_window') and (
-            spec.get('data_role') != 'training_action_identification' or spec['tick'] - action_tick + 1 != 16):
-        raise ValueError('Mixed WM fitting requires a declared 16-step training intervention')
+            spec.get('data_role') != 'training_action_identification' or spec['tick'] - action_tick + 1 not in TRAINING_WINDOW_STEPS):
+        raise ValueError('Mixed WM fitting requires a declared 16-step, 20-step or 32-step training intervention')
     if 'capture_substeps' in spec and type(spec['capture_substeps']) is not bool:
         raise ValueError('capture_substeps must be an explicit boolean')
     if 'capture_substep_ticks' in spec:
@@ -84,8 +85,9 @@ def perturb_request(request,spec,branch):
 
 class TrainingWindowRecorder:
     """Record true pre-reset WM supervision exclusively on intervened training lanes."""
-    def __init__(self, lanes):
+    def __init__(self, lanes, steps=16):
         self.lanes = list(lanes)
+        self.steps = steps
         self.schema = None
         self.before_state = None
         self.rows = []
@@ -118,7 +120,7 @@ class TrainingWindowRecorder:
         self.before_state = None
 
     def payload(self):
-        if self.before_state is not None or len(self.rows) != 16:
+        if self.before_state is not None or len(self.rows) != self.steps:
             raise ValueError('Incomplete native WM window')
         data = {key: torch.stack([r[key] for r in self.rows]) for key in self.rows[0]}
         if (data['terminated'] | data['timeout']).any() or not (data['episode'] == data['episode'][0]).all():
@@ -166,7 +168,7 @@ class NativePairCapture:
             if self.spec.get('capture_wm_window'):
                 if env.physical_transition_archive is not None:
                     raise ValueError('A native recorder already owns this environment')
-                self.wm_recorder = TrainingWindowRecorder(probe_lanes(self.spec))
+                self.wm_recorder = TrainingWindowRecorder(probe_lanes(self.spec), event_tick - action_tick + 1)
                 env.physical_transition_archive = self.wm_recorder
             state=capture_state(env)
             self.start=tensor_tree_copy(dict(before=state,observation=observation,executor_before=capture_controller(env._sm_residual_controller)),cpu=True)
