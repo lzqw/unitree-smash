@@ -57,3 +57,15 @@ def test_warm_coverage_uses_independent_unperturbed_labelled_starts():
     assert partial['per_collection_hour']['settled_cases'] == 80
     complete = native_event_coverage(records, {4}, 120., indexed_episodes={(i, 0) for i in range(7)})
     assert not coverage_deficits(complete['counts'], target)
+
+
+def test_repeated_case_keeps_earlier_indexed_contact_outcome():
+    low = dict(env_id=0, episode_index=0, case_id='same-launch', arm_identification_episode=False,
+               numerical_failures=0, qualified_airborne_string_contact=True, outgoing_speed_mps=4.2,
+               rejection_reasons=['speed_threshold'], ball_side_complete_except_recovery=False,
+               native_contact=dict(frame_hit=False, string_hit=True, signed_string_margin_m=.008))
+    frame = dict(low, episode_index=1, qualified_airborne_string_contact=False,
+                 native_contact=dict(frame_hit=True, string_hit=False))
+    report = native_event_coverage([low, frame], set(), 120., indexed_episodes={(0, 0), (0, 1)})
+    assert coverage_targets(report) == dict(settled_cases=1, qualified_string=1, low_speed=1, frame=1,
+                                            near_edge_under_10_mm=1, marginal_success=0)
