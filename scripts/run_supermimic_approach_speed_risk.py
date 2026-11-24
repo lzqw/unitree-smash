@@ -67,6 +67,14 @@ def main():
             read(args.baseline_panel / 'metrics.json')['actor_state_sha256']):
         raise ValueError('Prepared checkpoint did not preserve the A40 actor identity')
     dump(status_file, dict(status='prepared', preparation=receipt, prepared=str(prepared)))
+    if args.directed_collection:
+        audit = ['scripts/audit_supermimic_directed_approach.py',
+                 '--collection', str(args.directed_collection), '--checkpoint', str(prepared),
+                 '--output', str(output / 'prepared_directed_response.json')]
+        for lane in args.directed_validation_lane:
+            audit.extend(('--validation-lane', str(lane)))
+        run(audit, output / 'prepared_directed_response.log', 5)
+
     if args.prepare_only:
         return
 

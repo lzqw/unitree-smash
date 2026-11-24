@@ -584,6 +584,39 @@ def pool_toi_starts(first, alternatives, eligible_lanes, target, attempt):
     return starts,layout
 
 
+def measured_history_robot_net(source, parent):
+    """Read exact pre-reset terminal fault bits from the descendant native archive."""
+    from pathlib import Path
+    from .supermimic_archive_storage_v1 import read_archive_rows
+
+    captures = source['actor_start_bank']['resolved_events']
+    first = parent['native_ticks']
+    targets = {}
+    for key, (_, terminal) in captures.items():
+        behavior = terminal.get('behavior_at_terminal') or {}
+        tick = behavior.get('native_tick', 0) - 1
+        if tick >= first and 'no_rule_fault' in terminal.get('rejection_reasons', ()):
+            targets.setdefault(tick, []).append((key, behavior.get('actor_sha256')))
+    result = {}
+    # The measured descendant may have several complete chunks or streams.
+    n = len(parent['replay_archives'])
+    for directory, receipt in zip(source['replay_archives'][n:], source['replay_archive_receipts'][n:], strict=True):
+        root = Path(directory)
+        for chunk in receipt['chunks']:
+            stop = first + chunk['ticks']
+            if any(tick in targets for tick in range(first, stop)):
+                with read_archive_rows(root, chunk, scratch=root.parent) as rows:
+                    for row in rows:
+                        for key, actor_sha in targets.get(row['native_tick'], ()):
+                            stream, lane, episode = key
+                            if (row['stream_id'] == stream and row['actor_state_sha256'] == actor_sha
+                                    and int(row['after']['episode_index'][lane]) == episode
+                                    and bool(row['terminated'][lane] | row['timeout'][lane])):
+                                result[key] = bool(row['after']['task']['robot_net_fault'][lane])
+            first = stop
+    return result
+
+
 def merge_directed_guard_history(bank, source, parent, *, source_sha256):
     """Import actor-consistent starts from measured descendant streams only."""
     import hashlib
@@ -598,6 +631,7 @@ def merge_directed_guard_history(bank, source, parent, *, source_sha256):
             or len(source['replay_archives']) <= n
             or source['config']['wm_holdout_lanes'] != parent['config']['wm_holdout_lanes']):
         raise ValueError('Guard history needs a verified descendant of the selected A40 lineage')
+    robot_net = measured_history_robot_net(source, parent)
     saved = source['actor_start_bank']
     events, frames = saved['resolved_events'], saved['event_frames']
     cache, imported = {}, []
@@ -617,8 +651,13 @@ def merge_directed_guard_history(bank, source, parent, *, source_sha256):
             entry = frames[i]
             cache.setdefault(i, dict(entry, stream=namespaced,
                                      start=dict(entry['start'], stream_id=namespaced)))
+        labeled = dict(terminal)
+        if key in robot_net:
+            labeled['robot_net_fault'] = robot_net[key]
         key = (namespaced, lane, episode)
-        bank.resolved[key] = (tuple(cache[i] for i in selected), terminal)
+        bank.resolved[key] = (tuple(cache[i] for i in selected), labeled)
         imported.append((lane, terminal['case_id'], terminal['failure_category']))
     return dict(source_sha256=source_sha256, exact_same_actor_episodes=len(imported),
-                original_cases=len({row[0] for row in imported}), records=imported)
+                original_cases=len({row[0] for row in imported}),
+                verified_robot_net_terminals=len(robot_net),
+                robot_net_fault_cases=len({key[1] for key, flag in robot_net.items() if flag}), records=imported)
