@@ -48,3 +48,37 @@ def test_historical_rejudge_preserves_missing_evidence_and_two_compensated_trial
     assert sum(row['flight_failed'] for row in rows) == 6
     assert sum(not row['flight_failed'] and row['risk_groups']['low_speed']['comparable_failed'] for row in rows) == 2
     assert sum(row['risk_groups']['low_speed']['incomplete'] for row in rows) == 3
+
+
+def test_pooled_objective_normalizes_risk_across_start_records():
+    from types import SimpleNamespace
+    from quadsmash.rl.supermimic_recovery_batches import pooled_objective
+
+    actor = torch.nn.Linear(1, 1, bias=False)
+    weight = actor.weight.reshape(())
+    trainer = SimpleNamespace(actor=actor, block_name='approach', approach_objective='toi_racket_only',
+                              approach_v2=True, approach_speed_risk=True, approach_ball_protocol={},
+                              tracking_coefficient=lambda _: 1., anchor_coeff=0.)
+
+    def rollout(start, *, effective_weights=None, baseline_toi_weights=None, collect_critic_data=False,
+                defer_speed_risk=False):
+        assert defer_speed_risk
+        values, groups = start
+        n = len(values)
+        active = torch.ones(n, dtype=torch.bool)
+        zero = weight * 0.
+        return dict(task=zero, tracking=zero, anchor=zero, effective_weights=active, ret=torch.zeros(n),
+                    toi_weights=None, toi_coverage_preserved=True, speed_risk_by_lane=(values * weight, groups, active),
+                    reference_coverage=dict(selected_start_lanes=n, gate_active_selected_start_lanes=n),
+                    gate_lanes=n, gate_steps=n, matched_references=0, tracking_steps=0,
+                    tracking_active_lane_steps=0, tracking_effective_weight_sum=0., tracking_nonzero_gradient_lanes=0)
+
+    trainer._rollout_objective = rollout
+    short = (torch.tensor([2., 4.]), torch.tensor([1, 2]))
+    long = (torch.tensor([8., 100., 12.]), torch.tensor([1, 0, 1]))
+    packed = pooled_objective(trainer, [short, long], collect_critic_data=False)
+    unified = pooled_objective(trainer, [tuple(torch.cat(x) for x in zip(short, long, strict=True))],
+                               collect_critic_data=False)
+    torch.testing.assert_close(packed['loss'], unified['loss'])
+    packed['loss'].backward()
+    torch.testing.assert_close(actor.weight.grad, torch.tensor([[.25 * ((2 + 8 + 12) / 3 + 4) / 2]]))

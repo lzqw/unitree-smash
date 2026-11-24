@@ -98,12 +98,16 @@ def rejudge_history(history, tolerances):
                 continue
             groups[name].append(float(release_risk(after['release_speed_mps'], after['speed_loss']) -
                                       release_risk(before['release_speed_mps'], before['speed_loss'])))
+        diagnostics = {}
+        for name, values in groups.items():
+            missing = incomplete[name]
+            delta = sum(values) / len(values) if values else None
+            worse = delta is not None and delta > tolerances['risk']
+            status = ('worse_on_comparable_subset' if worse else 'unresolved_missing_geometry' if missing
+                      else 'comparable_non_worse' if values else 'no_group')
+            diagnostics[name] = dict(incomplete=missing, comparable_risk_delta=delta, comparable_failed=worse,
+                                     complete_geometry_evidence=missing == 0, status=status)
         rows.append(dict(attempt=entry['attempt'], flight_delta=flight_delta,
-                         flight_failed=flight_delta > tolerances['flight'],
-                         risk_groups={name: dict(incomplete=incomplete[name],
-                             comparable_risk_delta=sum(values) / len(values) if values else None,
-                             comparable_failed=bool(values and sum(values) / len(values) > tolerances['risk']),
-                             complete_geometry_evidence=incomplete[name] == 0)
-                             for name, values in groups.items()}))
+                         flight_failed=flight_delta > tolerances['flight'], risk_groups=diagnostics))
     return dict(total_logged=history['total_proposals'], measured_tolerances=tolerances, accepted_trials=rows,
                 scope='Archived partial line-search reconstruction; missing geometry is unresolved, not safe.')
