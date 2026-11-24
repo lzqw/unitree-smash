@@ -260,6 +260,8 @@ def main():
                         help='Preserve 20/32-step contact-aligned Body supervision during E1 v2 refresh')
     parser.add_argument('--approach-prepare-only', action='store_true',
                         help='Stop at a resumable checkpoint after refresh and before the first Approach proposal')
+    parser.add_argument('--approach-reuse-collected', type=Path,
+                        help='Replay a complete, identity-matched native cold collection during preparation')
     parser.add_argument('--approach-speed-risk-history', type=Path,
                         help='Archived risk receipt for the fixed-guard speed-risk pilot on a prepared block')
     parser.add_argument('--approach-resident-eval-wait-seconds', type=int, default=0,
@@ -434,6 +436,8 @@ def main():
         parser.error('Prepared Approach stages require a bounded E1 v2 continuation with the 32+16 contract')
     if args.approach_prepare_only and args.approach_speed_risk_history:
         parser.error('Supply the risk history when resuming the prepared block')
+    if args.approach_reuse_collected and not args.approach_prepare_only:
+        parser.error('Archived cold collection reuse requires preparation-only mode')
     args.resident_native_coverage_targets = None
     args.resident_critical_cases = None
     args.resident_native_coverage_sha256 = None
@@ -2106,6 +2110,63 @@ def run(args, *, alternating=None):
                                            terminal_bookkeeping_seconds=0., coverage_seconds=0.)
                 io_pipeline = getattr(archive, 'pipeline', None) if collect_block else None
                 io_before = io_pipeline.timing() if io_pipeline is not None else {}
+                reused_collection = args.approach_reuse_collected if first_scene_collection else None
+                if reused_collection is not None:
+                    from collections import defaultdict
+                    source = reused_collection.resolve(strict=True)
+                    native_dir = source / 'native_transitions'
+                    native_manifest = json.loads((native_dir / 'manifest.json').read_text())
+                    if (str(native_dir) in replay_archives or native_manifest['task_contract'] != contract
+                            or native_manifest['policy_execution'] != policy_execution
+                            or native_manifest['seed'] != NATIVE_TRAIN128_SEED or native_manifest['num_envs'] != replay.lanes
+                            or native_manifest['pending_transition'] or native_manifest['control_ticks'] != collection_ticks
+                            or sum(chunk['ticks'] for chunk in native_manifest['chunks']) != collection_ticks):
+                        raise ValueError('Archived Approach cold collection does not match this preparation')
+                    actor_sha = tensor_digest(actor.state_dict().items())
+                    by_tick = defaultdict(list)
+                    identities = set()
+                    terminals = (source / 'native_episodes.jsonl').read_text().splitlines()
+                    for line in terminals:
+                        record = json.loads(line)
+                        behavior = record['behavior_at_terminal']
+                        key = record['env_id'], record['episode_index']
+                        if (key in identities or not 0 <= key[0] < replay.lanes or key[1] != 0
+                                or behavior['actor_sha256'] != actor_sha or behavior['policy_version'] != global_accepted_id
+                                or not tick < behavior['native_tick'] <= tick + collection_ticks):
+                            raise ValueError('Archived Approach terminal labels do not match the actor or collection window')
+                        identities.add(key)
+                        by_tick[behavior['native_tick']].append(record)
+                    if len(identities) != replay.lanes:
+                        raise ValueError('Archived Approach cold collection lacks a first terminal for every lane')
+                    for chunk in native_manifest['chunks']:
+                        check_stop()
+                        with read_archive_rows(native_dir, chunk, scratch=args.output) as records:
+                            for row in records:
+                                if (row['native_tick'] != tick or row['stream_id'] != replay.current_stream
+                                        or row['actor_state_sha256'] != actor_sha or row['policy_version'] != global_accepted_id
+                                        or row['collection_mode'] != 'mixed_training' or row['block_name'] != block_name):
+                                    raise ValueError('Archived Approach rows do not match the actor, stream or tick')
+                                replay.append(row, policy_version=global_accepted_id, native_tick=tick,
+                                              approach_metadata=row['sampling_metadata'])
+                                reward = row['reward'].clone()
+                                tick += 1
+                                for record in by_tick.pop(tick, ()):
+                                    if not bool(row['after']['episode_index'][record['env_id']] == record['episode_index']):
+                                        raise ValueError('Archived Approach terminal belongs to another native episode')
+                                    if not record['arm_identification_episode']:
+                                        replay.actor_start_bank.label_terminal(record, replay.current_stream)
+                                    completed_returns.append(record['native_episode_return'])
+                                    completed_discounted.append(record['native_episode_discounted_return'])
+                                    episode_stats.add(record)
+                    if by_tick:
+                        raise ValueError('Unconsumed archived Approach terminal labels')
+                    replay_archives.append(str(native_dir))
+                    replay_receipts.append(native_manifest)
+                    (args.output / 'native_episodes.jsonl').write_text('\n'.join(terminals) + '\n')
+                    write(args.output / 'reused_approach_collection.json', dict(
+                        source=str(source), manifest_sha256=file_sha(native_dir / 'manifest.json'), actor_sha256=actor_sha,
+                        terminal_count=len(identities), replayed_ticks=collection_ticks, simulated_ticks=0))
+                    collection_ticks = 0
                 with torch.inference_mode():
                     for collection_step in range(collection_ticks):
                         check_stop()
@@ -2208,7 +2269,8 @@ def run(args, *, alternating=None):
                         archive={key: end - io_before[key] for key, end in io_pipeline.timing().items()}
                             if io_pipeline is not None else None,
                         first_scene_phases=phases if first_scene_collection else None,
-                        control_phases=phases, collection_wall_seconds=collection_wall)
+                        control_phases=phases, collection_wall_seconds=collection_wall,
+                        mode='verified_archive_replay' if reused_collection is not None else 'live_simulation')
                     if warm_coverage:
                         indexed = {(lane, episode) for stream, lane, episode in replay.actor_start_bank.resolved
                                    if stream == replay.current_stream}

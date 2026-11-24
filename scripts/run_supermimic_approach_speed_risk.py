@@ -18,6 +18,7 @@ def main():
     for name in ('registration', 'source', 'baseline-panel', 'history-checkpoint', 'risk-history', 'output'):
         parser.add_argument('--' + name, type=Path, required=True)
     parser.add_argument('--prepared', type=Path, help='Reuse an existing verified prepared block')
+    parser.add_argument('--reuse-collected', type=Path, help='Recover preparation without repeating completed native collection')
     parser.add_argument('--prepare-only', action='store_true')
     args = parser.parse_args()
     source, output = args.source.resolve(strict=True), args.output.resolve()
@@ -44,7 +45,8 @@ def main():
         preparation = output / 'prepare'
         prepared = preparation / 'approach_prepared.pt'
         dump(status_file, dict(status='preparing', source=str(source)))
-        run([*command(source, preparation), '--approach-event-body-refresh', '--approach-prepare-only'],
+        reuse = ['--approach-reuse-collected', str(args.reuse_collected.resolve(strict=True))] if args.reuse_collected else []
+        run([*command(source, preparation), '--approach-event-body-refresh', '--approach-prepare-only', *reuse],
             output / 'prepare.log', 45)
     receipt = read(prepared.parent / 'approach_prepared.json')
     with prepared.open('rb') as stream:
