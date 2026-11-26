@@ -12,6 +12,7 @@ def main():
     for name in ('checkpoint','companion','panel','baseline','output','gpu-lock'):
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--iterations', type=int, default=1)
+    p.add_argument('--ground-prefix', action='store_true')
     args = p.parse_args()
     if args.iterations < 1:
         p.error('iterations must be positive')
@@ -30,7 +31,8 @@ def main():
                 block.mkdir()
                 train = run_stage([*command,'--checkpoint',str(policy),'--recovery-ppo-panel',str(args.panel),
                                    '--recovery-probe-companion',str(args.companion),
-                                   '--recovery-ppo-iterations',str(count),*resume],block/'train',lock,status)
+                                   '--recovery-ppo-iterations',str(count),*resume,
+                                   *(['--recovery-ground-prefix'] if args.ground_prefix else [])],block/'train',lock,status)
                 policy = train/'policy.pt'
                 resume = ['--recovery-ppo-resume',str(train/'optimizer.pt')]
                 eval_dir = run_stage([*command,'--checkpoint',str(policy),'--research-fixed128'],

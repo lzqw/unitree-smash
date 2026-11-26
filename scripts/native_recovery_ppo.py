@@ -100,21 +100,27 @@ def train(args, env, wrapper, obs, actor, companion, trained, cases, stop_reques
                 raise ValueError('Unexpected prefix termination')
         return observation
 
+    def restart_ground():
+        # Explicitly discard unfinished prefixes and auto-reset successor episodes.
+        # The terminal recorder only scores real done transitions in wrapper.step.
+        env._episode_has_stepped.zero_()
+        return advance_prefix(wrapper.reset()[0])
+
     root = args.output
     obs = advance_prefix(obs)
     snapshot = None
-    if args.recovery_ppo_iterations > 1:
+    if args.recovery_ppo_iterations > 1 and not args.recovery_ground_prefix:
         obs, audit = verify_resident_snapshot(
             env, wrapper, obs, lambda o: request(o['policy'], env.rally.released & env.rally.had_contact).clamp(-1, 1))
         dump(root/'snapshot_audit.json', audit)
         if audit['passed']:
             snapshot = NativeApproachRestart.capture(env)
         else:
-            obs = advance_prefix(wrapper.reset()[0])
+            obs = restart_ground()
     initial = obs['policy'].detach().clone()
     for iteration in range(first_iteration, first_iteration + args.recovery_ppo_iterations):
         if iteration != first_iteration and snapshot is None:
-            obs = advance_prefix(wrapper.reset()[0])
+            obs = restart_ground()
         else:
             if iteration != first_iteration:
                 snapshot.restore(env)

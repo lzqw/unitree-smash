@@ -50,6 +50,7 @@ def main():
     parser.add_argument('--recovery-ppo-panel', type=Path)
     parser.add_argument('--recovery-ppo-iterations', type=int, default=1)
     parser.add_argument('--recovery-ppo-resume', type=Path)
+    parser.add_argument('--recovery-ground-prefix', action='store_true')
     parser.add_argument('--recovery-training-probes', type=Path)
     parser.add_argument('--recovery-full-tail', action='store_true',
                         help='Full-length fixed128 recovery baseline with strict and relaxed diagnostics')
