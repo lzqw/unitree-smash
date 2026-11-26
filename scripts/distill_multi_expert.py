@@ -120,9 +120,10 @@ def pack_split(eps, exp_a, exp_b, device, pa_mult: float, pb_mult: float, hard_b
 
 
 @torch.no_grad()
-def evaluate_pack(actor, pack):
+def evaluate_pack(actor, pack, s_vec=None):
     mod = actor.actor
-    pred = (pack['base'] + pack['agate'] * mod.approach(pack['norm']) * mod.approach_scale).clamp(-1.0, 1.0)
+    inp = pack['norm'] if s_vec is None else (pack['norm'] * s_vec[None, :])
+    pred = (pack['base'] + pack['agate'] * mod.approach(inp) * mod.approach_scale).clamp(-1.0, 1.0)
     m_arm = pack['gate'][:, 12:18] > 0.05
     m_leg = pack['gate'][:, :12] > 0.05
     out = {}
@@ -167,6 +168,8 @@ def main():
     parser.add_argument('--prox-weight', type=float, default=0.015)
     parser.add_argument('--ball-tool-focus', type=float, default=6.0)
     parser.add_argument('--norm-obs-noise', type=float, default=0.018)
+    parser.add_argument('--unsquash-ball', action='store_true',
+                        help='Temporarily un-squash frozen normalizer ball_pos/ball_vel/elapsed columns during Adam and fold back into W0!')
     parser.add_argument('--epochs', type=int, default=220)
     parser.add_argument('--batch-size', type=int, default=1024)
     parser.add_argument('--lr', type=float, default=4.5e-4)
@@ -206,14 +209,29 @@ def main():
     n_bo = sum((not e['is_a']) and e['alpha'] >= 0.85 for e in eps)
     print(f'[MultiExpert] Loaded {len(eps)} episodes (PA={n_a}, PB={n_b}, PB_out={n_bo}) from {len(args.data_dirs)} dirs')
 
-    # Column-wise proximal mask (focus changes on ball/tool/phase columns!)
+    # Column-wise proximal mask + optional exact ball/elapsed un-squashing!
     w0_col_mult = torch.full((794,), float(args.ball_tool_focus), dtype=torch.float32, device=device)
+    s_vec = torch.ones((794,), dtype=torch.float32, device=device)
+    noise_col_mult = torch.ones((794,), dtype=torch.float32, device=device)
     for f in range(11):
         b = f * 69
         w0_col_mult[b + 0:b + 9] = 0.75
         w0_col_mult[b + 45:b + 57] = 0.40
         w0_col_mult[b + 61:b + 67] = 0.08
+        if args.unsquash_ball:
+            s_vec[b + 61] = 16.0
+            s_vec[b + 62] = 14.0
+            s_vec[b + 63] = 10.0
+            s_vec[b + 64:b + 67] = 6.0
+            noise_col_mult[b + 61:b + 64] = 0.08
+            noise_col_mult[b + 64:b + 67] = 0.15
     w0_col_mult[759:776] = 0.40
+    if args.unsquash_ball:
+        s_vec[775] = 12.0
+        noise_col_mult[775] = 0.05
+        w0_col_mult[775] = 0.08
+        print('[MultiExpert] Enabled EXACT --unsquash-ball column re-parametrization (16x/14x/10x ball_pos, 6x ball_vel, 12x elapsed)!', flush=True)
+    s_vec_cpu = s_vec.cpu()
 
     # Group by case_id for leakage-free K-fold splits
     by_cid = {}
@@ -250,6 +268,11 @@ def main():
             p.requires_grad_(name in APPROACH_NAMES)
         trainable = [(n, p) for n, p in student.named_parameters() if p.requires_grad]
         anchor_dev = {n: anchor_cpu[n].to(device) for n, _ in trainable}
+        if args.unsquash_ball:
+            for name, p in trainable:
+                if name == 'actor.approach.0.weight':
+                    p.data.div_(s_vec[None, :])
+            anchor_dev['actor.approach.0.weight'] = anchor_dev['actor.approach.0.weight'] / s_vec[None, :]
         opt = torch.optim.Adam([p for _, p in trainable], lr=args.lr)
         sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=args.epochs, eta_min=args.lr * 0.04)
 
@@ -268,7 +291,9 @@ def main():
                 inp = trn['norm'][idx]
                 if args.norm_obs_noise > 0:
                     ns = torch.where(trn['is_a'][idx], args.norm_obs_noise * 0.5, args.norm_obs_noise)[:, None]
-                    inp = inp + torch.randn_like(inp) * ns
+                    inp = inp + torch.randn_like(inp) * ns * noise_col_mult[None, :]
+                if args.unsquash_ball:
+                    inp = inp * s_vec[None, :]
                 pred = (trn['base'][idx] + trn['agate'][idx] * mod.approach(inp) * mod.approach_scale).clamp(-1.0, 1.0)
                 gm = (trn['gate'][idx] > 0.02).float()
                 jw = torch.ones_like(gm)
@@ -303,16 +328,18 @@ def main():
 
             if ep % 10 == 0 or ep == args.epochs:
                 student.eval()
-                mv = evaluate_pack(student, val)
+                mv = evaluate_pack(student, val, s_vec if args.unsquash_ball else None)
                 sc = 2.0 * (mv.get('pa_rms', 0.0) ** 2) + 1.0 * (mv.get('bo_rms', 0.0) ** 2) + 1.5 * max(0.0, mv.get('pa_q95', 0.0) - 0.024) ** 2
                 if sc < best_sc:
                     best_sc = sc
                     best_st = {k: v.detach().cpu().clone() for k, v in student.state_dict().items()}
                     best_ep = ep
 
+        if args.unsquash_ball:
+            best_st['actor.approach.0.weight'] = (best_st['actor.approach.0.weight'].float() * s_vec_cpu[None, :]).to(init_state['actor.approach.0.weight'].dtype)
         student.load_state_dict({k: v.to(device) for k, v in best_st.items()}, strict=True)
         student.eval()
-        mv = evaluate_pack(student, val)
+        mv = evaluate_pack(student, val, None)
         oos_metrics.append(mv)
         member_states.append(best_st)
         print(f'  [fold {m_idx}] best@{best_ep:3d} OOS | PA rms={mv["pa_rms"]:.4f} q95={mv["pa_q95"]:.4f} max={mv["pa_max"]:.3f} '

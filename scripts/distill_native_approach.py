@@ -211,7 +211,10 @@ def load_datasets(nominal_dirs, probe_dirs, probe_specs, *,
             fail_w = 1.0 if was_nom_ok else float(fail_teacher_mult)
             z_w = 1.0 + (float(high_z_mult) - 1.0) * min(1.5, max(0.0, (iz - 1.80) / 0.06))
             y_w = 1.0 + (float(wide_y_mult) - 1.0) * min(1.5, max(0.0, (abs(iy) - 0.10) / 0.06))
-            total_tw = lx_soft_w * fail_w * z_w * y_w
+            m_i = meta[i] if isinstance(meta[i], dict) else {}
+            rc_i = int(m_i.get('rob_cnt', 0))
+            rob_w = 1.65 if rc_i >= 4 else (1.30 if rc_i == 3 else 1.0)
+            total_tw = lx_soft_w * fail_w * z_w * y_w * rob_w
             ep_teacher['weight'] = ep_teacher['weight'] * total_tw
 
             # Build paired nominal-obs -> (nom_req + nom_gate * delta) frames to kill action-history shortcut!
@@ -292,11 +295,16 @@ def active_loss(pred, target, gate, weight, *, arm_only: bool, quadratic: bool =
 
 
 @torch.no_grad()
-def eval_metrics(actor, batch, *, arm_only: bool, base_actor=None):
+def eval_metrics(actor, batch, *, arm_only: bool, base_actor=None, s_vec=None):
     if batch is None:
         return dict(mse=0.0, rms_arm=0.0, rms_leg=0.0, max_arm=0.0, cos_delta=0.0, mag_ratio=0.0)
     no_rec = torch.zeros(len(batch['obs']), dtype=torch.bool, device=batch['obs'].device)
-    pred = actor.forward_with_recovery_gate(batch['obs'], no_rec, sample=False)[0].clamp(-1.0, 1.0)
+    if s_vec is None:
+        pred = actor.forward_with_recovery_gate(batch['obs'], no_rec, sample=False)[0].clamp(-1.0, 1.0)
+    else:
+        mod = actor.actor
+        nobs = mod.normalizer(batch['obs'])
+        pred = (mod.base(nobs) + actor.approach_action_gate(batch['obs']) * mod.approach(nobs * s_vec[None, :]) * mod.approach_scale).clamp(-1.0, 1.0)
     aw = batch.get('arm_weight') if not arm_only else None
     mse = float(active_loss(pred, batch['req'], batch['gate'], batch['weight'], arm_only=arm_only, quadratic=True, arm_weight=aw))
     diff = pred - batch['req']
@@ -380,6 +388,8 @@ def main():
     parser.add_argument('--weight-decay', type=float, default=0.0)
     parser.add_argument('--obs-noise', type=float, default=0.0)
     parser.add_argument('--norm-obs-noise', type=float, default=0.0)
+    parser.add_argument('--unsquash-ball', action='store_true',
+                        help='Temporarily un-squash frozen normalizer ball_pos/vel/elapsed columns during Adam and fold back into W0!')
     parser.add_argument('--n-soup', type=int, default=1)
     parser.add_argument('--max-teacher-delta', type=float, default=0.55)
     parser.add_argument('--nominal-pair-weight', type=float, default=4.5)
@@ -533,12 +543,27 @@ def main():
     # Build per-column proximal weight mask for actor.approach.0.weight (128 x 794):
     # Keep low penalty on ball(61:67), tool(45:57), phase/time(759:776); apply ball_tool_focus on joint/action history!
     w0_col_mult = torch.full((794,), float(args.ball_tool_focus), dtype=torch.float32, device=device)
+    s_vec = torch.ones((794,), dtype=torch.float32, device=device)
+    noise_col_mult = torch.ones((794,), dtype=torch.float32, device=device)
     for f in range(11):
         b = f * 69
         w0_col_mult[b + 0:b + 9] = 1.5 * float(args.tool_prox_mult)  # root lin/ang vel & gravity
         w0_col_mult[b + 45:b + 57] = float(args.tool_prox_mult)      # tool pos/normal/vel
         w0_col_mult[b + 61:b + 67] = float(args.ball_prox_mult)      # ball pos/vel (HIGHEST priority!)
+        if args.unsquash_ball:
+            s_vec[b + 61] = 16.0
+            s_vec[b + 62] = 14.0
+            s_vec[b + 63] = 10.0
+            s_vec[b + 64:b + 67] = 6.0
+            noise_col_mult[b + 61:b + 64] = 0.08
+            noise_col_mult[b + 64:b + 67] = 0.15
     w0_col_mult[759:776] = float(args.tool_prox_mult)                # command/phase/clock (776:794 last_action penalized!)
+    if args.unsquash_ball:
+        s_vec[775] = 12.0
+        noise_col_mult[775] = 0.05
+        w0_col_mult[775] = float(args.ball_prox_mult)
+        print('[Distill] Enabled EXACT --unsquash-ball column re-parametrization (16x/14x/10x ball_pos, 6x ball_vel, 12x elapsed)!', flush=True)
+    s_vec_cpu = s_vec.cpu()
     effs = [e['eff_max'] for e in teachers]
     n_fail_t = sum(1 for e in teachers if not e.get('was_nom_ok', False))
     n_hz82 = sum(1 for e in teachers if e.get('iz', 0.0) >= 1.82)
@@ -565,7 +590,9 @@ def main():
         return batch
 
     def forward_fast(mod, norm_obs, base_out, agate, noise_std=0.0):
-        inp = norm_obs + torch.randn_like(norm_obs) * noise_std if noise_std > 0.0 else norm_obs
+        inp = norm_obs + torch.randn_like(norm_obs) * (noise_std * noise_col_mult[None, :]) if noise_std > 0.0 else norm_obs
+        if args.unsquash_ball:
+            inp = inp * s_vec[None, :]
         return (base_out + agate * mod.approach(inp) * mod.approach_scale).clamp(-1.0, 1.0)
 
     def train_one_member(member_idx: int, t_trn_eps, t_val_eps, r_trn_eps, r_val_eps):
@@ -577,6 +604,12 @@ def main():
         trainable_m = [(name, p) for name, p in actor.named_parameters() if name in APPROACH_NAMES]
         for name, p in actor.named_parameters():
             p.requires_grad_(name in APPROACH_NAMES)
+        anchor_m = {name: anchor_params[name].clone() for name, _ in trainable_m}
+        if args.unsquash_ball:
+            for name, p in trainable_m:
+                if name == 'actor.approach.0.weight':
+                    p.data.div_(s_vec[None, :])
+            anchor_m['actor.approach.0.weight'] = anchor_m['actor.approach.0.weight'] / s_vec[None, :]
 
         t_trn = precompute_frozen(concat_teacher_episodes(t_trn_eps, device, mode='both'))
         t_val_nom = concat_teacher_episodes(t_val_eps, device, mode='nominal')
@@ -636,10 +669,10 @@ def main():
                 prox_terms = []
                 for name, p in trainable_m:
                     if name == 'actor.approach.0.weight' and args.ball_tool_focus != 1.0:
-                        prox_terms.append(args.l0_prox_mult * ((p - anchor_params[name]).square() * w0_col_mult[None, :]).mean())
+                        prox_terms.append(args.l0_prox_mult * ((p - anchor_m[name]).square() * w0_col_mult[None, :]).mean())
                     else:
                         mult = args.l0_prox_mult if name == 'actor.approach.0.weight' else args.head_prox_mult
-                        prox_terms.append(mult * (p - anchor_params[name]).square().mean())
+                        prox_terms.append(mult * (p - anchor_m[name]).square().mean())
                 prox = sum(prox_terms) / len(prox_terms)
                 loss = args.teacher_weight * loss_t + args.retention_weight * loss_r + args.proximal_weight * prox
                 loss.backward()
@@ -649,8 +682,9 @@ def main():
 
             if epoch % 5 == 0 or epoch == args.epochs:
                 actor.eval()
-                mn = eval_metrics(actor, t_val_nom, arm_only=True, base_actor=base_actor)
-                mr = eval_metrics(actor, r_val, arm_only=False)
+                sv = s_vec if args.unsquash_ball else None
+                mn = eval_metrics(actor, t_val_nom, arm_only=True, base_actor=base_actor, s_vec=sv)
+                mr = eval_metrics(actor, r_val, arm_only=False, s_vec=sv)
                 score = args.teacher_weight * mn['mse'] + args.retention_weight * mr['mse']
                 if score < best_score:
                     best_score = score
@@ -660,6 +694,8 @@ def main():
                     print(f'  [m{member_idx}] ep={epoch:3d} val_NOM_rms={mn["rms_arm"]:.4f} cos={mn["cos_delta"]:+.3f} '
                           f'mag={mn["mag_ratio"]:.2f} | val_RET_arm={mr["rms_arm"]:.4f}(max={mr["max_arm"]:.3f}) '
                           f'leg={mr["rms_leg"]:.4f} score={score:.6f} (best@{best_epoch})')
+        if args.unsquash_ball:
+            best_state['actor.approach.0.weight'] = (best_state['actor.approach.0.weight'].float() * s_vec_cpu[None, :]).to(init_full_state['actor.approach.0.weight'].dtype)
         return best_state, best_epoch, (t_trn_nom, t_val_nom, t_val_tea, r_trn, r_val)
 
     def make_splits(eps, k_folds: int):
