@@ -7,6 +7,7 @@ does not switch the correction off. No future outcomes or hidden latches enter
 the deployed actor or PPO likelihood.
 """
 from copy import deepcopy
+from typing import Optional
 
 import torch
 from torch import nn
@@ -68,6 +69,7 @@ class CausalApproachActorExport(nn.Module):
         super().__init__()
         self.policy = deepcopy(actor.actor).eval()
         self.early_arm_gate = deepcopy(actor.early_arm_gate)
+        self.release_reference = deepcopy(getattr(actor, "release_arm_reference", None))
 
     @torch.jit.export
     def action_gate(self, observation: torch.Tensor) -> torch.Tensor:
@@ -77,14 +79,21 @@ class CausalApproachActorExport(nn.Module):
         return self.early_arm_gate(observation, legacy)
 
     def forward(self, observation: torch.Tensor, had_contact: torch.Tensor,
-                released: torch.Tensor) -> torch.Tensor:
+                released: torch.Tensor, release_time: Optional[torch.Tensor] = None) -> torch.Tensor:
         torch._assert(observation.ndim == 2 and observation.size(1) == 794, 'Expected [batch,794] observation')
         torch._assert(had_contact.numel() == observation.size(0)
                       and released.numel() == observation.size(0), 'Expected one causal latch per lane')
         normalized = self.policy.normalizer(observation)
         recovery = (had_contact.reshape(-1, 1) > .5) & (released.reshape(-1, 1) > .5)
+        head = self.policy.recovery(normalized)
+        if self.release_reference is not None:
+            if release_time is None or release_time.numel() != observation.size(0):
+                raise ValueError('Recovery arm delay requires one release time per lane')
+            ready = observation[:, 775:776] - release_time.reshape(-1, 1) >= .04
+            head = torch.cat((head[:, :12], torch.where(
+                ready, head[:, 12:], self.release_reference(normalized)[:, 12:])), dim=-1)
         raw = (self.policy.base(normalized)
-               + recovery.to(observation.dtype) * self.policy.recovery(normalized) * self.policy.recovery_scale
+               + recovery.to(observation.dtype) * head * self.policy.recovery_scale
                + self.action_gate(observation) * self.policy.approach(normalized) * self.policy.approach_scale)
         return raw.clamp(-1., 1.)
 

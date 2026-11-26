@@ -46,6 +46,7 @@ def main():
     parser.add_argument('--relaxed-survival-diagnostic', action='store_true',
                         help='Continue successful lanes for post-success survival and uncensored strict scoring')
     parser.add_argument('--recovery-probe-companion', type=Path)
+    parser.add_argument('--recovery-probe-shard', type=int, choices=range(8), default=0)
     parser.add_argument('--recovery-training-probes', type=Path)
     parser.add_argument('--recovery-full-tail', action='store_true',
                         help='Full-length fixed128 recovery baseline with strict and relaxed diagnostics')
@@ -317,7 +318,7 @@ def _run_native(args, stop_request):
         teachers = None
         if args.recovery_training_probes:
             from scripts.recovery_native_teachers import NativeTeachers, training_layout
-            cases = training_layout(args.recovery_training_probes, contract['protocol_sha256'], args.seed)
+            cases = training_layout(args.recovery_training_probes, contract['protocol_sha256'], args.seed, args.recovery_probe_shard)
             teachers = NativeTeachers(args.device)
         lanes = len(cases)
         cfg = make_task_cfg(lanes, contract, protocol, receipt, execution_root=execution_root)

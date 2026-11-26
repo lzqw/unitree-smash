@@ -71,4 +71,8 @@ def policy_forward(actor,observation,rally,*,mode=POSTHIT,sample=False):
         raise ValueError('Unknown policy execution mode: '+str(mode))
     if not hasattr(actor,'forward_with_recovery_gate'):
         raise ValueError('Causal recovery contract requires explicit gate forward; no silent fallback')
-    return actor.forward_with_recovery_gate(observation,recovery_gate(rally,observation,mode=mode),sample=sample)
+    gate = recovery_gate(rally, observation, mode=mode)
+    if getattr(actor, 'release_arm_reference', None) is not None:
+        release_time = rally.get('release_time') if isinstance(rally, Mapping) else rally.release_time
+        return actor.forward_with_recovery_gate(observation, gate, sample=sample, release_time=release_time)
+    return actor.forward_with_recovery_gate(observation, gate, sample=sample)

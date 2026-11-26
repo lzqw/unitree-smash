@@ -1,0 +1,172 @@
+{
+  "branches": [
+    {
+      "scale": 0.0,
+      "qualified_body_ground": 20,
+      "body_ground_seen": {
+        "count": 21,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      },
+      "physical_recovery_success": {
+        "count": 9,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      },
+      "strict_physical_recovery": {
+        "count": 1,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      },
+      "robot_net_fault": {
+        "count": 0,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      },
+      "ball_side_complete_except_recovery": {
+        "count": 28,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      },
+      "qualified_airborne_string_contact": {
+        "count": 30,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      }
+    },
+    {
+      "scale": 0.5,
+      "qualified_body_ground": 21,
+      "body_ground_seen": {
+        "count": 23,
+        "gained": 3,
+        "lost": 1,
+        "p_one_sided_increase": 0.3125
+      },
+      "physical_recovery_success": {
+        "count": 8,
+        "gained": 2,
+        "lost": 3,
+        "p_one_sided_increase": 0.8125
+      },
+      "strict_physical_recovery": {
+        "count": 2,
+        "gained": 2,
+        "lost": 1,
+        "p_one_sided_increase": 0.5
+      },
+      "robot_net_fault": {
+        "count": 0,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      },
+      "ball_side_complete_except_recovery": {
+        "count": 27,
+        "gained": 0,
+        "lost": 1,
+        "p_one_sided_increase": 1.0
+      },
+      "qualified_airborne_string_contact": {
+        "count": 30,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      }
+    },
+    {
+      "scale": 1.0,
+      "qualified_body_ground": 23,
+      "body_ground_seen": {
+        "count": 25,
+        "gained": 6,
+        "lost": 2,
+        "p_one_sided_increase": 0.14453125
+      },
+      "physical_recovery_success": {
+        "count": 7,
+        "gained": 2,
+        "lost": 4,
+        "p_one_sided_increase": 0.890625
+      },
+      "strict_physical_recovery": {
+        "count": 0,
+        "gained": 0,
+        "lost": 1,
+        "p_one_sided_increase": 1.0
+      },
+      "robot_net_fault": {
+        "count": 0,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      },
+      "ball_side_complete_except_recovery": {
+        "count": 27,
+        "gained": 0,
+        "lost": 1,
+        "p_one_sided_increase": 1.0
+      },
+      "qualified_airborne_string_contact": {
+        "count": 30,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      }
+    },
+    {
+      "scale": -0.5,
+      "qualified_body_ground": 22,
+      "body_ground_seen": {
+        "count": 23,
+        "gained": 3,
+        "lost": 1,
+        "p_one_sided_increase": 0.3125
+      },
+      "physical_recovery_success": {
+        "count": 2,
+        "gained": 0,
+        "lost": 7,
+        "p_one_sided_increase": 1.0
+      },
+      "strict_physical_recovery": {
+        "count": 0,
+        "gained": 0,
+        "lost": 1,
+        "p_one_sided_increase": 1.0
+      },
+      "robot_net_fault": {
+        "count": 0,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      },
+      "ball_side_complete_except_recovery": {
+        "count": 27,
+        "gained": 0,
+        "lost": 1,
+        "p_one_sided_increase": 1.0
+      },
+      "qualified_airborne_string_contact": {
+        "count": 30,
+        "gained": 0,
+        "lost": 0,
+        "p_one_sided_increase": 1.0
+      }
+    }
+  ],
+  "qualified_branches": [],
+  "expand": false,
+  "paired_launches": 32,
+  "criterion": "Lower body-ground among qualified hits, no increase overall; strict and relaxed each improve with one-sided paired exact p <= 0.05; no new robot-net or lost ball-side success. Exploratory per-branch tests.",
+  "control_ticks": 800,
+  "numerical_failures": 0,
+  "elapsed_s": 2222.420561561943,
+  "recorded_held_lane_frames": 124
+}

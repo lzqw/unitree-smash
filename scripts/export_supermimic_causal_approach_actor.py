@@ -42,7 +42,7 @@ def export_checkpoint(checkpoint, output, *, initial_gate_seconds=None):
         task['approach_ball_scoring'] = approach_ball_scoring_protocol()
     contract_json = json.dumps(dict(
         schema='supermimic-causal-approach-request-v1', policy_execution=execution,
-        inputs=['observation', 'had_contact', 'released'], initial_actor_sha256=source['sha256'],
+        inputs=['observation', 'had_contact', 'released'] + (['release_time'] if getattr(actor, 'release_arm_reference', None) is not None else []), initial_actor_sha256=source['sha256'],
         checkpoint_sha256=source_sha256, actor_state_sha256=tensor_digest(actor.state_dict().items()),
         task_contract=task), sort_keys=True)
     tmp = output.with_suffix(output.suffix + '.tmp')

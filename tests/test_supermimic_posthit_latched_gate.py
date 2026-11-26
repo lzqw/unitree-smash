@@ -34,3 +34,25 @@ def test_explicit_posthit_gate_preserves_legacy_hit_and_suppresses_missed_touchd
     assert float(recovery.abs().max()) > 1e-7
     assert float((base + approach + recovery - (base + approach)).abs().max()) > 1e-7
     assert torch.isfinite(gated_off).all()
+
+
+def test_release_arm_reference_survives_save_load_and_export():
+    if not SOURCE.exists():
+        return
+    from quadsmash.rl.frozen_v2_approach_v1 import CausalApproachActorExport
+    actor, _ = load_ppo_initialized_actor(SOURCE, torch.device('cpu'))
+    raw = torch.zeros(3,794)
+    raw[:,775] = torch.tensor([.01,.039,.05])
+    gate = torch.ones(3,dtype=torch.bool)
+    release = torch.zeros(3)
+    original = actor._gated_distribution(raw,gate).loc.detach().clone()
+    actor.install_release_arm_reference()
+    with torch.no_grad():
+        dict(actor.actor.recovery.named_parameters())['4.bias'][12:] += .1
+    clone,_ = load_ppo_initialized_actor(SOURCE,torch.device('cpu'))
+    clone.load_state_dict(actor.state_dict())
+    actual = clone._gated_distribution(raw,gate,release_time=release).loc
+    assert torch.equal(actual[:2],original[:2])
+    assert not torch.equal(actual[2,12:],original[2,12:])
+    deployed = torch.jit.script(CausalApproachActorExport(clone))
+    torch.testing.assert_close(deployed(raw,gate,gate,release),actual.clamp(-1.,1.))

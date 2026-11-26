@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -36,7 +37,15 @@ def run_stage(command, folder, lock, status):
                 try:
                     while child.poll() is None:
                         free, gpu = gpu_state()
-                        if free < 5000 or gpu - approach_jobs() - {child.pid}:
+                        if free < 5000:
+                            # Child owns this process group. Release CUDA immediately for Approach.
+                            try:
+                                os.killpg(child.pid, signal.SIGKILL)
+                            except ProcessLookupError:
+                                pass
+                            child.wait()
+                            raise RuntimeError(f'Recovery stopped for GPU reserve ({free} MiB free)')
+                        if gpu - approach_jobs() - {child.pid}:
                             interrupted = True
                             break
                         dump(status, dict(state='running', stage=folder.name, pid=child.pid, free_mib=free))
@@ -69,7 +78,21 @@ def main():
             probe = a.existing_probe or run_stage([*native,'--checkpoint',str(a.checkpoint),'--recovery-training-probes',
                                str(a.training_panel),'--recovery-probe-companion',str(a.companion)],
                               a.output/'probe', lock, status)
-            fitted = run_stage(['scripts/distill_native_recovery.py','--probe',str(probe),
+            from scripts.score_recovery_probe_round import score_folder
+            score = score_folder(probe)
+            dump(a.output/'pilot_comparison.json', score)
+            if not score['expand']:
+                dump(status, dict(state='pilot_complete_no_expansion', comparison=score))
+                return
+            probes = [probe]
+            for shard in range(1,8):
+                probes.append(run_stage([*native,'--checkpoint',str(a.checkpoint),
+                                         '--recovery-training-probes',str(a.training_panel),
+                                         '--recovery-probe-shard',str(shard),
+                                         '--recovery-probe-companion',str(a.companion)],
+                                        a.output/f'shard{shard}',lock,status))
+            inputs = [arg for folder in probes for arg in ('--probe',str(folder))]
+            fitted = run_stage(['scripts/distill_native_recovery.py',*inputs,
                                 '--checkpoint',str(a.checkpoint)], a.output/'fit', lock, status)
             result = run_stage([*native,'--checkpoint',str(fitted/'policy.pt'),'--research-fixed128'],
                                a.output/'fixed128', lock, status)

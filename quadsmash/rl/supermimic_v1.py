@@ -8,6 +8,7 @@ The implementation is intentionally explicit so every transition can be audited.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass
 import json
 import io
@@ -164,11 +165,27 @@ class ResidualPPOInitializedActor(nn.Module):
         self.log_std = nn.Parameter(torch.full((action_dim,), -3.0))
         self.early_arm_gate = None
 
+    def load_state_dict(self, state_dict, strict=True, assign=False):
+        # This submodule is optional so legacy checkpoints retain their exact layout.
+        if any(k.startswith('release_arm_reference.') for k in state_dict):
+            self.install_release_arm_reference()
+        elif getattr(self, 'release_arm_reference', None) is not None:
+            del self.release_arm_reference
+        return super().load_state_dict(state_dict, strict=strict, assign=assign)
+
+    def install_release_arm_reference(self):
+        if getattr(self, 'release_arm_reference', None) is None:
+            self.release_arm_reference = deepcopy(self.actor.recovery)
+            for parameter in self.release_arm_reference.parameters():
+                parameter.requires_grad_(False)
+
     def configure_approach_gate(self, preparation_seconds):
         from .frozen_v2_approach_v1 import EarlyArmApproachGate
         self.early_arm_gate = None if preparation_seconds is None else EarlyArmApproachGate(preparation_seconds)
 
     def forward(self, obs: torch.Tensor, sample: bool = False):
+        if getattr(self, 'release_arm_reference', None) is not None:
+            raise ValueError('Delayed Recovery requires causal release time and the explicit gate')
         mean = self.actor(obs)
         std = self.log_std.clamp(-8.0, 1.0).exp().expand_as(mean)
         dist = Normal(mean, std)
@@ -178,7 +195,7 @@ class ResidualPPOInitializedActor(nn.Module):
         return action, log_prob, dist.entropy().sum(-1, keepdim=True)
 
     def forward_with_recovery_gate(self, obs: torch.Tensor, recovery_gate: torch.Tensor,
-                                   sample: bool = False):
+                                   sample: bool = False, release_time=None):
         """Evaluate the full-racket actor with an explicit causal recovery latch.
 
         The verified exported actor historically gates its recovery head from
@@ -188,7 +205,7 @@ class ResidualPPOInitializedActor(nn.Module):
         with the caller's per-lane ``had_contact & released`` latch.  The
         ordinary ``forward`` path remains byte-compatible for legacy callers.
         """
-        dist = self._gated_distribution(obs, recovery_gate)
+        dist = self._gated_distribution(obs, recovery_gate, release_time=release_time)
         raw = dist.rsample() if sample else dist.loc
         action = raw.clamp(-1.0, 1.0)
         log_prob = dist.log_prob(raw).sum(-1, keepdim=True)
@@ -198,7 +215,7 @@ class ResidualPPOInitializedActor(nn.Module):
         """Deterministic imagined control uses the validated mean of the native request."""
         return self._gated_distribution(obs, recovery_gate).loc.clamp(-1., 1.)
 
-    def _gated_distribution(self, obs: torch.Tensor, recovery_gate: torch.Tensor):
+    def _gated_distribution(self, obs: torch.Tensor, recovery_gate: torch.Tensor, release_time=None):
         if recovery_gate.ndim == 1:
             recovery_gate = recovery_gate[:, None]
         if recovery_gate.shape != (obs.shape[0], 1):
@@ -209,8 +226,16 @@ class ResidualPPOInitializedActor(nn.Module):
         if not all(hasattr(module, name) for name in required):
             raise ValueError('Explicit recovery gate requires FrozenV2 approach export')
         normalized = module.normalizer(obs)
+        recovery = module.recovery(normalized)
+        reference = getattr(self, 'release_arm_reference', None)
+        if reference is not None:
+            if release_time is None or release_time.numel() != len(obs):
+                raise ValueError('Recovery arm delay requires native per-lane release times')
+            ready = obs[:, 775:776] - release_time.reshape(-1, 1) >= .04
+            recovery = torch.cat((recovery[:, :12], torch.where(
+                ready, recovery[:, 12:], reference(normalized)[:, 12:])), dim=-1)
         mean = (module.base(normalized)
-                + recovery_gate.to(obs.dtype) * module.recovery(normalized) * module.recovery_scale
+                + recovery_gate.to(obs.dtype) * recovery * module.recovery_scale
                 + self.approach_action_gate(obs) * module.approach(normalized) * module.approach_scale)
         std = self.log_std.clamp(-8.0, 1.0).exp().expand_as(mean)
         return Normal(mean, std)
