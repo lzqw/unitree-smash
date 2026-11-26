@@ -173,6 +173,7 @@ class ResidualPPOInitializedActor(nn.Module):
             del self.release_arm_reference
         return super().load_state_dict(state_dict, strict=strict, assign=assign)
 
+    @torch.no_grad()
     def install_release_arm_reference(self):
         if getattr(self, 'release_arm_reference', None) is None:
             self.release_arm_reference = deepcopy(self.actor.recovery)

@@ -59,7 +59,8 @@ def approach_jobs():
             arguments = [arg.strip("'\"") for arg in command.decode(errors='replace').split()]
         except OSError:
             continue
-        if any(Path(arg).name.startswith(prefixes) and arg.endswith('.py') for arg in arguments):
+        if (arguments and Path(arguments[0]).name.startswith('python')) or any(
+                Path(arg).name.startswith(prefixes) and arg.endswith('.py') for arg in arguments):
             jobs.add(int(proc.name))
     return jobs
 

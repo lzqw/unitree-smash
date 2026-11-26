@@ -47,6 +47,7 @@ def main():
                         help='Continue successful lanes for post-success survival and uncensored strict scoring')
     parser.add_argument('--recovery-probe-companion', type=Path)
     parser.add_argument('--recovery-probe-shard', type=int, choices=range(8), default=0)
+    parser.add_argument('--recovery-ppo-panel', type=Path)
     parser.add_argument('--recovery-training-probes', type=Path)
     parser.add_argument('--recovery-full-tail', action='store_true',
                         help='Full-length fixed128 recovery baseline with strict and relaxed diagnostics')
@@ -83,14 +84,18 @@ def main():
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus','candidate'),default=None)
     args = parser.parse_args()
-    if bool(args.recovery_training_probes) != bool(args.recovery_probe_companion):
+    if args.recovery_ppo_panel and (args.recovery_training_probes or args.research_fixed128 or
+            args.independent_panel_batch is not None or args.approach_quick64 or args.approach_hybrid_spec or
+            args.record_physical_transitions or not args.recovery_full_tail):
+        parser.error('Recovery PPO requires separate full-tail training cases')
+    if bool(args.recovery_training_probes or args.recovery_ppo_panel) != bool(args.recovery_probe_companion):
         parser.error('Recovery training pairs require a companion Approach')
     if args.recovery_training_probes and (not args.recovery_full_tail or args.research_fixed128
             or args.independent_panel_batch is not None or args.approach_quick64
             or args.approach_hybrid_spec or args.record_physical_transitions):
         parser.error('Native recovery teachers require a separate full-tail training rollout')
     if args.recovery_full_tail:
-        if (not args.checkpoint or not (args.research_fixed128 or args.recovery_training_probes) or args.approach_ball_only
+        if (not args.checkpoint or not (args.research_fixed128 or args.recovery_training_probes or args.recovery_ppo_panel) or args.approach_ball_only
                 or args.native_action_probe_spec or args.shutdown_diagnostic_ticks
                 or args.diagnostic_grounded_miss or args.approach_search_spec):
             parser.error('Recovery baseline requires a frozen checkpoint and the fixed128 panel')
@@ -320,6 +325,10 @@ def _run_native(args, stop_request):
             from scripts.recovery_native_teachers import NativeTeachers, training_layout
             cases = training_layout(args.recovery_training_probes, contract['protocol_sha256'], args.seed, args.recovery_probe_shard)
             teachers = NativeTeachers(args.device)
+        if args.recovery_ppo_panel:
+            from scripts.recovery_native_teachers import training_layout
+            cases = [case for shard in range(8) for case in training_layout(
+                args.recovery_ppo_panel,contract['protocol_sha256'],args.seed,shard)[:32]]
         lanes = len(cases)
         cfg = make_task_cfg(lanes, contract, protocol, receipt, execution_root=execution_root)
         cfg.seed, cfg.sim.device = args.seed, args.physics_device
@@ -327,6 +336,14 @@ def _run_native(args, stop_request):
         noise = zero_panel_reset_noise(len(cases), args.seed)
         stage = 'BEFORE_ENV'
         env_type = RecoveryEvaluationEnv if args.recovery_full_tail and teachers is None else EvaluationEnv
+        if args.recovery_ppo_panel:
+            from scripts.native_recovery_ppo import reward_state
+            class RecoveryPPOEnv(EvaluationEnv):
+                def _get_dones(self):
+                    result = super()._get_dones()
+                    self.recovery_ppo_boundary = reward_state(self)
+                    return result
+            env_type = RecoveryPPOEnv
         env = env_type(cfg, cases=cases, reset_noise=noise,
             residual_policy_checkpoint=source, g07_execution_root=execution_root,
             contact_flight_recovery=contract['contact_flight_recovery'],
@@ -338,7 +355,7 @@ def _run_native(args, stop_request):
         obs, _ = wrapper.reset()
         stage = 'AFTER_RESET'
         write_json(args.output/'initial_states.json', env.initial_states)
-        if args.recovery_full_tail and teachers is None:
+        if args.recovery_full_tail and teachers is None and not args.recovery_ppo_panel:
             from quadsmash.tasks.stand.jump_env import PROTOCOL
             from quadsmash.tasks.stand.recovery_baseline_diagnostics import RecoveryBaselineDiagnostics
             env.diagnostic = RecoveryBaselineDiagnostics(env, PROTOCOL['recovery'])
@@ -382,7 +399,7 @@ def _run_native(args, stop_request):
         if policy_execution.get('arm_preparation_seconds') is not None:
             actor.configure_approach_gate(policy_execution['arm_preparation_seconds'])
         companion = None
-        if teachers is not None:
+        if teachers is not None or args.recovery_ppo_panel:
             from scripts.run_supermimic_recovery_baseline import verify
             verify([args.checkpoint, args.recovery_probe_companion])
             companion, _ = load_ppo_initialized_actor(source_path, env.device)
@@ -391,6 +408,10 @@ def _run_native(args, stop_request):
             companion.eval()
             if policy_execution.get('arm_preparation_seconds') is not None:
                 companion.configure_approach_gate(policy_execution['arm_preparation_seconds'])
+        if args.recovery_ppo_panel:
+            from scripts.native_recovery_ppo import train
+            train(args, env, wrapper, obs, actor, companion, trained, cases, stop_request)
+            return
         search_bias = None
         if search_spec is not None:
             if policy_execution['recovery_gate'] != POSTHIT:
