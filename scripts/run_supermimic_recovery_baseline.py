@@ -83,7 +83,7 @@ def stop_native(child):
         child.wait()
 
 
-def verify(checkpoints):
+def verify(checkpoints, *, synchronize_recovery=False):
     import torch
     from quadsmash.rl.supermimic_physical_loop_loading_v1 import RECOVERY_NAMES
     from quadsmash.rl.supermimic_policy_execution_v1 import POSTHIT, resolve_contract
@@ -99,6 +99,9 @@ def verify(checkpoints):
         protected = {k: v for k, v in state.items() if not k.startswith('actor.approach.')}
         if not set(RECOVERY_NAMES).issubset(protected):
             raise ValueError(f'Missing Recovery tensors: {checkpoint}')
+        if synchronize_recovery:
+            protected = {k: v for k, v in protected.items()
+                         if k not in RECOVERY_NAMES and not k.startswith('release_arm_reference.')}
         identity = (execution, payload['metadata']['task_contract'])
         if reference is None:
             reference = {k: v.clone() for k, v in protected.items()}

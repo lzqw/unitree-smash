@@ -48,6 +48,8 @@ def main():
     parser.add_argument('--recovery-probe-companion', type=Path)
     parser.add_argument('--recovery-probe-shard', type=int, choices=range(8), default=0)
     parser.add_argument('--recovery-ppo-panel', type=Path)
+    parser.add_argument('--recovery-ppo-iterations', type=int, default=1)
+    parser.add_argument('--recovery-ppo-resume', type=Path)
     parser.add_argument('--recovery-training-probes', type=Path)
     parser.add_argument('--recovery-full-tail', action='store_true',
                         help='Full-length fixed128 recovery baseline with strict and relaxed diagnostics')
@@ -401,7 +403,7 @@ def _run_native(args, stop_request):
         companion = None
         if teachers is not None or args.recovery_ppo_panel:
             from scripts.run_supermimic_recovery_baseline import verify
-            verify([args.checkpoint, args.recovery_probe_companion])
+            verify([args.checkpoint, args.recovery_probe_companion], synchronize_recovery=bool(args.recovery_ppo_panel))
             companion, _ = load_ppo_initialized_actor(source_path, env.device)
             companion.load_state_dict(torch.load(args.recovery_probe_companion, map_location='cpu',
                                                   weights_only=False)['actor'])
