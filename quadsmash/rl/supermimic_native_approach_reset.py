@@ -48,7 +48,7 @@ class NativeApproachRestart:
     tasks: dict
     clocks: dict
     history_sizes: dict
-    first_contacts: dict
+    first_contacts: dict | None
     controller: object
     drive_targets: tuple
     cpu_rng: torch.Tensor
@@ -68,7 +68,7 @@ class NativeApproachRestart:
             clocks={name: int(getattr(env, name)) for name in (*TIMING_FIELDS, 'common_step_counter')},
             history_sizes={name: len(getattr(env, name)) for name in (
                 'rally_records', 'contact_records', 'racket_plane_records')},
-            first_contacts=copy.deepcopy(env.first_approach_contact_motion),
+            first_contacts=copy.deepcopy(getattr(env, 'first_approach_contact_motion', None)),
             controller=clone_execution_graph(env._sm_residual_controller),
             drive_targets=tuple(getattr(env.robot.data, key).detach().clone() for key in
                                 ('joint_pos_target', 'joint_vel_target', 'joint_effort_target')),
@@ -85,7 +85,8 @@ class NativeApproachRestart:
             setattr(env, name, value)
         for name, size in self.history_sizes.items():
             del getattr(env, name)[size:]
-        env.first_approach_contact_motion = copy.deepcopy(self.first_contacts)
+        if self.first_contacts is not None:
+            env.first_approach_contact_motion = copy.deepcopy(self.first_contacts)
         env._sm_residual_controller = clone_execution_graph(self.controller)
         position_target, velocity_target, effort_target = self.drive_targets
         env.robot.set_joint_position_target(position_target)
