@@ -126,17 +126,20 @@ def proposal_risk_objectives(rollout):
     return terms
 
 
-def constrain_proposal(displacement, gradients):
+def constrain_proposal(displacement, gradients, *, min_relative_norm=1.e-2):
     """Project an Adam displacement into a common descent cone and its original norm."""
     import itertools
 
     norms = {key: float(value.norm()) for key, value in gradients.items()}
     if not all(math.isfinite(value) for value in norms.values()):
         raise FloatingPointError('Nonfinite proposal constraint gradient')
-    keys = [key for key, norm in norms.items() if norm > 1.e-10]
+    obj_norm = norms.get('objective', 0.)
+    noise_floor = max(1.e-10, min_relative_norm * obj_norm) if obj_norm > 1.e-10 else 1.e-10
+    keys = [key for key, norm in norms.items() if norm > (1.e-10 if key == 'objective' else noise_floor)]
+    filtered = [key for key, norm in norms.items() if key != 'objective' and 1.e-10 < norm <= noise_floor]
     scale = float(displacement.norm())
     if not keys or scale == 0.:
-        return displacement, dict(applied=False, gradient_norms=norms)
+        return displacement, dict(applied=False, gradient_norms=norms, filtered_noise_keys=filtered)
     unit = torch.stack([gradients[key] / norms[key] for key in keys])
     direction = displacement / scale
     gram = (unit @ unit.T).double().cpu()
@@ -164,7 +167,8 @@ def constrain_proposal(displacement, gradients):
             corrected = direction - solution.to(unit) @ unit
             corrected = corrected * (scale / corrected.norm().clamp_min(1.))
             return corrected, dict(
-                applied=bool(best > 0.), gradient_norms=norms, requested_margin=margin,
+                applied=bool(best > 0.), gradient_norms=norms, filtered_noise_keys=filtered,
+                requested_margin=margin,
                 normalized_slopes_before=dict(zip(keys, starting.tolist(), strict=True)),
                 normalized_slopes_after=dict(zip(keys, (unit @ corrected / scale).tolist(), strict=True)))
     raise RuntimeError('Could not solve the zero-margin descent projection')

@@ -60,7 +60,7 @@ def robot_net_clearance(geometry, proxy, court):
     return torch.minimum(band, post_gap.amin(dim=-1)).amin(dim=-1)
 
 
-def robot_net_cost(clearance, *, margin=.015):
+def robot_net_cost(clearance, *, margin=.045):
     return ((margin - clearance).relu() / margin).square()
 
 

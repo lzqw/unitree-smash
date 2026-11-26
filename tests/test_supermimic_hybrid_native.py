@@ -55,3 +55,29 @@ def test_quick_actuator_contract_compares_effective_lane_profiles():
     assert quick_actuator_contract(baseline) == quick_actuator_contract(mixed)
     mixed['lane_profile'][17] = 0
     assert quick_actuator_contract(baseline) != quick_actuator_contract(mixed)
+
+
+def test_native_actor_loss_anchors_legs_on_preserve_and_uses_sharp_weights():
+    from quadsmash.rl.supermimic_hybrid_native import native_actor_loss
+
+    class DummyActor(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.w = torch.nn.Parameter(torch.zeros(18))
+
+        def forward_with_recovery_gate(self, obs, no_rec, sample=False):
+            out = self.w[None].expand(len(obs), 18)
+            return out, None, None
+
+    actor = DummyActor()
+    req = torch.zeros(4, 18)
+    req[:, 0] = 0.05  # leg offset on preserve
+    req[:, 12] = 0.05  # arm offset
+    samples = {
+        'teacher': {'observation': torch.zeros(4, 2), 'request': req.clone()},
+        'preserve': {'observation': torch.zeros(4, 2), 'request': req.clone()},
+    }
+    loss, stats = native_actor_loss(actor, samples, attempt=1)
+    assert 'native_preserve_leg_loss' in stats and stats['native_preserve_leg_loss'] > 0.
+    loss.backward()
+    assert actor.w.grad[0].abs() > 0. and actor.w.grad[12].abs() > 0.

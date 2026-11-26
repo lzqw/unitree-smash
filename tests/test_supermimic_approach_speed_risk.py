@@ -108,6 +108,18 @@ def test_projection_allows_tangent_step_for_opposed_constraints():
     assert diagnostics['requested_margin'] == 0.
 
 
+def test_projection_ignores_tiny_noise_constraint_gradient():
+    from quadsmash.rl.supermimic_approach_speed_risk import constrain_proposal
+
+    obj = torch.tensor([10., 0.])
+    tiny_net = torch.tensor([-1.e-3, 1.e-3])  # 1.4e-4 relative to objective -> noise floor
+    step = torch.tensor([-1., 0.])
+    corrected, diagnostics = constrain_proposal(step, {'objective': obj, 'robot_net': tiny_net})
+    assert diagnostics['filtered_noise_keys'] == ['robot_net']
+    assert not diagnostics['applied']
+    torch.testing.assert_close(corrected, step)
+
+
 def test_robot_net_clearance_uses_finite_band_and_blocks_new_physical_overlap():
     import itertools
     from quadsmash.physics.court_v4 import load_court

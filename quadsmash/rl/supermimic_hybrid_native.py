@@ -104,7 +104,7 @@ def load_training_data(path, holdout):
 def native_actor_loss(actor, samples, attempt):
     parameter = next(actor.parameters())
     loss, stats = None, {}
-    for name, weight in (('teacher', .20), ('preserve', .25)):
+    for name, weight in (('teacher', 2.0), ('preserve', 3.0)):
         group = samples.get(name)
         if not group or not len(group['request']):
             continue
@@ -116,7 +116,11 @@ def native_actor_loss(actor, samples, attempt):
         # Use the request at the unchanged G07 interface; WM uses actual PD targets.
         no_recovery = torch.zeros(len(observation), dtype=torch.bool, device=observation.device)
         prediction = actor.forward_with_recovery_gate(observation, no_recovery, sample=False)[0].clamp(-1., 1.)
-        term = F.smooth_l1_loss(prediction[:, 12:], request[:, 12:], beta=.02)
+        term = F.smooth_l1_loss(prediction[:, 12:], request[:, 12:], beta=.008)
+        if name == 'preserve':
+            leg_term = F.smooth_l1_loss(prediction[:, :12], request[:, :12], beta=.008)
+            term = term + .5 * leg_term
+            stats['native_preserve_leg_loss'] = float(leg_term.detach())
         loss = weight * term if loss is None else loss + weight * term
         stats[f'native_{name}_frames'] = len(ids)
         stats[f'native_{name}_loss'] = float(term.detach())
