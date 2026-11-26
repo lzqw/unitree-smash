@@ -143,7 +143,12 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--gpu-lock', type=Path, required=True)
     parser.add_argument('--max-idle-wait-minutes', type=float, default=0.)
+    parser.add_argument('--share-with-approach-pid', type=int, action='append', default=[],
+                        help='Allow these active Approach jobs while reserving 5000 MiB')
     args = parser.parse_args()
+    shared = set(args.share_with_approach_pid)
+    if shared - approach_jobs():
+        parser.error('Shared PIDs must be active Approach jobs')
     checkpoints = [path.resolve(strict=True) for path in args.checkpoint]
     verify(checkpoints)
     output = args.output.resolve()
@@ -159,7 +164,7 @@ def main():
             while True:
                 free, competitors = gpu_state()
                 competitors |= approach_jobs()
-                if not competitors and free >= 10000:
+                if not (competitors - shared) and free >= 10000:
                     try:
                         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
                     except BlockingIOError:
@@ -186,8 +191,8 @@ def main():
                                       gpu_free_mib=free, results=results))
                     while child.poll() is None:
                         free, competitors = gpu_state()
-                        other = (competitors - {child.pid}) | approach_jobs()
-                        if other or free < 2500 or time.monotonic() >= until:
+                        other = ((competitors - {child.pid}) | approach_jobs()) - shared
+                        if other or free < (5000 if shared else 2500) or time.monotonic() >= until:
                             dump(status, dict(state='stopped_for_gpu_or_wall_limit', gpu_free_mib=free,
                                               gpu_occupants=sorted(other), results=results))
                             return

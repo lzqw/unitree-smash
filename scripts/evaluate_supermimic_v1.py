@@ -45,6 +45,8 @@ def main():
                         help='Zero-update early-arm execution window for the Approach-only A0 panel')
     parser.add_argument('--relaxed-survival-diagnostic', action='store_true',
                         help='Continue successful lanes for post-success survival and uncensored strict scoring')
+    parser.add_argument('--recovery-probe-companion', type=Path)
+    parser.add_argument('--recovery-training-probes', type=Path)
     parser.add_argument('--recovery-full-tail', action='store_true',
                         help='Full-length fixed128 recovery baseline with strict and relaxed diagnostics')
     parser.add_argument('--g07-execution-root', type=Path)
@@ -80,8 +82,14 @@ def main():
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus','candidate'),default=None)
     args = parser.parse_args()
+    if bool(args.recovery_training_probes) != bool(args.recovery_probe_companion):
+        parser.error('Recovery training pairs require a companion Approach')
+    if args.recovery_training_probes and (not args.recovery_full_tail or args.research_fixed128
+            or args.independent_panel_batch is not None or args.approach_quick64
+            or args.approach_hybrid_spec or args.record_physical_transitions):
+        parser.error('Native recovery teachers require a separate full-tail training rollout')
     if args.recovery_full_tail:
-        if (not args.checkpoint or not args.research_fixed128 or args.approach_ball_only
+        if (not args.checkpoint or not (args.research_fixed128 or args.recovery_training_probes) or args.approach_ball_only
                 or args.native_action_probe_spec or args.shutdown_diagnostic_ticks
                 or args.diagnostic_grounded_miss or args.approach_search_spec):
             parser.error('Recovery baseline requires a frozen checkpoint and the fixed128 panel')
@@ -306,13 +314,18 @@ def _run_native(args, stop_request):
                 capture_contract = dict(contract, contact_training_panel_sha256=training_digest,
                                         contact_training_only=True)
         write_json(args.output/'task_contract.json', capture_contract)
+        teachers = None
+        if args.recovery_training_probes:
+            from scripts.recovery_native_teachers import NativeTeachers, training_layout
+            cases = training_layout(args.recovery_training_probes, contract['protocol_sha256'], args.seed)
+            teachers = NativeTeachers(args.device)
         lanes = len(cases)
         cfg = make_task_cfg(lanes, contract, protocol, receipt, execution_root=execution_root)
         cfg.seed, cfg.sim.device = args.seed, args.physics_device
         validate_sweep_contract(cfg, contract, args.sweep_audit_iterations)
         noise = zero_panel_reset_noise(len(cases), args.seed)
         stage = 'BEFORE_ENV'
-        env_type = RecoveryEvaluationEnv if args.recovery_full_tail else EvaluationEnv
+        env_type = RecoveryEvaluationEnv if args.recovery_full_tail and teachers is None else EvaluationEnv
         env = env_type(cfg, cases=cases, reset_noise=noise,
             residual_policy_checkpoint=source, g07_execution_root=execution_root,
             contact_flight_recovery=contract['contact_flight_recovery'],
@@ -324,7 +337,7 @@ def _run_native(args, stop_request):
         obs, _ = wrapper.reset()
         stage = 'AFTER_RESET'
         write_json(args.output/'initial_states.json', env.initial_states)
-        if args.recovery_full_tail:
+        if args.recovery_full_tail and teachers is None:
             from quadsmash.tasks.stand.jump_env import PROTOCOL
             from quadsmash.tasks.stand.recovery_baseline_diagnostics import RecoveryBaselineDiagnostics
             env.diagnostic = RecoveryBaselineDiagnostics(env, PROTOCOL['recovery'])
@@ -367,6 +380,16 @@ def _run_native(args, stop_request):
             execution_provenance = 'explicit early-arm zero-update baseline'
         if policy_execution.get('arm_preparation_seconds') is not None:
             actor.configure_approach_gate(policy_execution['arm_preparation_seconds'])
+        companion = None
+        if teachers is not None:
+            from scripts.run_supermimic_recovery_baseline import verify
+            verify([args.checkpoint, args.recovery_probe_companion])
+            companion, _ = load_ppo_initialized_actor(source_path, env.device)
+            companion.load_state_dict(torch.load(args.recovery_probe_companion, map_location='cpu',
+                                                  weights_only=False)['actor'])
+            companion.eval()
+            if policy_execution.get('arm_preparation_seconds') is not None:
+                companion.configure_approach_gate(policy_execution['arm_preparation_seconds'])
         search_bias = None
         if search_spec is not None:
             if policy_execution['recovery_gate'] != POSTHIT:
@@ -500,6 +523,10 @@ def _run_native(args, stop_request):
                         offset = offset * perturbation_envelope(tick) * (~env.rally.had_contact[:, None])
                     action = (actor._gated_distribution(before, latch).loc
                               + actor.approach_action_gate(before) * offset).clamp(-1., 1.)
+                if teachers is not None:
+                    companion_action = policy_forward(companion, before, env.rally, mode=POSTHIT, sample=False)[0]
+                    action[1::2] = companion_action[1::2].clamp(-1., 1.)
+                    action = teachers.apply(tick, before, action, env.rally, env.episode_index)
                 if args.approach_reset_probe and tick == 235:
                     restart = NativeApproachRestart.capture(env)
                 if env.approach_ball_termination is not None:
@@ -586,7 +613,9 @@ def _run_native(args, stop_request):
                         if measured['episode_index'] != 0:
                             raise RuntimeError('Missing first episode; refusing later episode substitution')
                         if args.recovery_full_tail:
-                            measured['recovery_baseline_diagnostic'] = record['recovery_baseline_diagnostic']
+                            if teachers is None:
+                                measured['recovery_baseline_diagnostic'] = record['recovery_baseline_diagnostic']
+                            measured['strict_run_s'] = record['contact_flight_recovery']['recovery_s']
                             measured['strict_physical_recovery'] = bool(
                                 record['contact_flight_recovery']['success'] and not record['jump']['terminated'])
                             measured['robot_net_fault'] = bool(record['robot_net_fault'])
@@ -640,6 +669,8 @@ def _run_native(args, stop_request):
             if any(first[i]['case_id'] != cases[i]['case_id'] for i in range(lanes)):
                 raise ValueError('Terminal case differs from the declared lane assignment')
         rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(lanes)]
+        if teachers is not None:
+            teachers.save(args.output)
         if scoring_protocol['approach_ball_scoring'] is not None:
             contacts = [event for event in env.contact_records if event['episode_index'] == 0]
             write_json(args.output/'native_contact_motion.json', contacts)
@@ -748,6 +779,8 @@ def _run_native(args, stop_request):
                 mode='verified_scene_restart' if args.approach_verify_snapshot else 'ground_prefix_replay',
                 switch_tick=args.approach_prefix_tick,
                                                          actor_sha256=prefix_actor_sha))
+        if teachers is not None:
+            metrics.update(evaluation_scope='Recovery training teacher branches', extra_teacher_interventions=True)
         metrics['native_episode_metrics'] = native_summary
         if scoring_protocol['relaxed_scoring'] is not None:
             strict = [r['strict_observed'] for r in rows]
