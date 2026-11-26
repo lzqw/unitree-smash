@@ -45,6 +45,8 @@ def main():
                         help='Zero-update early-arm execution window for the Approach-only A0 panel')
     parser.add_argument('--relaxed-survival-diagnostic', action='store_true',
                         help='Continue successful lanes for post-success survival and uncensored strict scoring')
+    parser.add_argument('--recovery-full-tail', action='store_true',
+                        help='Full-length fixed128 recovery baseline with strict and relaxed diagnostics')
     parser.add_argument('--g07-execution-root', type=Path)
     parser.add_argument('--precision-receipt', type=Path)
     parser.add_argument('--seed', type=int, default=882072)
@@ -78,6 +80,12 @@ def main():
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus','candidate'),default=None)
     args = parser.parse_args()
+    if args.recovery_full_tail:
+        if (not args.checkpoint or not args.research_fixed128 or args.approach_ball_only
+                or args.native_action_probe_spec or args.shutdown_diagnostic_ticks
+                or args.diagnostic_grounded_miss or args.approach_search_spec):
+            parser.error('Recovery baseline requires a frozen checkpoint and the fixed128 panel')
+        args.relaxed_scoring = args.relaxed_survival_diagnostic = True
     if args.approach_hybrid_spec and (not args.checkpoint or not args.approach_ball_only
             or not args.headless or args.approach_search_spec or args.research_fixed128
             or args.approach_quick64 or args.independent_panel_batch is not None
@@ -192,6 +200,26 @@ def _run_native(args, stop_request):
         class EvaluationEnv(SuperMimicEnvV1, FrozenPanelEnv):
             """Use the historical panel's ground-reset procedure without noise."""
 
+        class RecoveryEvaluationEnv(EvaluationEnv):
+            diagnostic = None
+
+            def _consume_jump_frame(self, frame):
+                if self.diagnostic is None or frame <= self._jump_physics_frame or frame == 0:
+                    return super()._consume_jump_frame(frame)
+                previous_time = self.jump_clock.clone()
+                previous_run = self.contact_recovery.stable_run.clone()
+                super()._consume_jump_frame(frame)
+                self.diagnostic.observe(self, previous_time, previous_run)
+
+            def _reset_idx(self, ids):
+                if self.diagnostic is None:
+                    return super()._reset_idx(ids)
+                evidence = self.diagnostic.take(self, ids)
+                offset = len(self.rally_records)
+                super()._reset_idx(ids)
+                for row in self.rally_records[offset:]:
+                    row['recovery_baseline_diagnostic'] = evidence[row['env_id'], row['episode_index']]
+
         torch.manual_seed(args.seed)
         trained = None
         if args.checkpoint:
@@ -220,6 +248,12 @@ def _run_native(args, stop_request):
                 if args.early_arm_seconds is not None:
                     raise ValueError('A trained ball-only checkpoint retains its recorded gate')
             require_resume_contract(trained, contract)
+        if args.recovery_full_tail:
+            if contract['contact_flight_recovery'] is None:
+                raise ValueError('Recovery baseline requires native contact-flight association')
+            # Keep the checkpoint's identity check above. Disable only the
+            # diagnostic rollout's ball-side early termination.
+            contract.pop('approach_ball_scoring', None)
         if args.relaxed_scoring:
             contract = dict(contract, relaxed_scoring=relaxed_scoring_protocol())
         if args.approach_ball_only:
@@ -278,7 +312,8 @@ def _run_native(args, stop_request):
         validate_sweep_contract(cfg, contract, args.sweep_audit_iterations)
         noise = zero_panel_reset_noise(len(cases), args.seed)
         stage = 'BEFORE_ENV'
-        env = EvaluationEnv(cfg, cases=cases, reset_noise=noise,
+        env_type = RecoveryEvaluationEnv if args.recovery_full_tail else EvaluationEnv
+        env = env_type(cfg, cases=cases, reset_noise=noise,
             residual_policy_checkpoint=source, g07_execution_root=execution_root,
             contact_flight_recovery=contract['contact_flight_recovery'],
             relaxed_protocol=contract.get('relaxed_scoring'),
@@ -289,6 +324,10 @@ def _run_native(args, stop_request):
         obs, _ = wrapper.reset()
         stage = 'AFTER_RESET'
         write_json(args.output/'initial_states.json', env.initial_states)
+        if args.recovery_full_tail:
+            from quadsmash.tasks.stand.jump_env import PROTOCOL
+            from quadsmash.tasks.stand.recovery_baseline_diagnostics import RecoveryBaselineDiagnostics
+            env.diagnostic = RecoveryBaselineDiagnostics(env, PROTOCOL['recovery'])
         actor, init_meta = load_ppo_initialized_actor(source_path, env.device)
         if trained is not None:
             actor.load_state_dict(trained['actor'], strict=True)
@@ -305,6 +344,8 @@ def _run_native(args, stop_request):
                     parameter.add_(direction * (magnitude / direction.norm().clamp_min(1e-12)))
         actor_state_before=tensor_digest(actor.state_dict().items())
         policy_execution,execution_provenance=resolve_contract(trained)
+        if args.recovery_full_tail and policy_execution['recovery_gate'] != POSTHIT:
+            raise ValueError('Recovery baseline expects the causal contact-and-release gate')
         prefix_actor = None
         if args.approach_prefix_checkpoint:
             from quadsmash.rl.supermimic_physical_loop_loading_v1 import APPROACH_NAMES
@@ -544,6 +585,11 @@ def _run_native(args, stop_request):
                         measured=score_terminal_episode(record, scoring_protocol)
                         if measured['episode_index'] != 0:
                             raise RuntimeError('Missing first episode; refusing later episode substitution')
+                        if args.recovery_full_tail:
+                            measured['recovery_baseline_diagnostic'] = record['recovery_baseline_diagnostic']
+                            measured['strict_physical_recovery'] = bool(
+                                record['contact_flight_recovery']['success'] and not record['jump']['terminated'])
+                            measured['robot_net_fault'] = bool(record['robot_net_fault'])
                         first[lane]=measured
                         if probe_capture is not None:
                             probe_capture.capture_terminal(measured)
