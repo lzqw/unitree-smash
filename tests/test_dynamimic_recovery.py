@@ -230,3 +230,15 @@ def test_native_body_fault_does_not_fit_held_lanes_and_remains_differentiable():
     score = body_fault_score(q, v, data['feet'][4], after)
     grad, = torch.autograd.grad(score.sum(), q)
     assert torch.isfinite(grad).all() and grad.abs().max() > 0
+
+
+def test_fixed128_rechecks_native_ball_and_recovery_contract():
+    from scripts.run_dynamimic_recovery_loop import passes_fixed128
+
+    score = dict(qualified_contacts=108, relaxed_ball_side=95, robot_net=0,
+                 body_ground_given_contact=63, strict_physical_recovery=16, relaxed_physical_recovery=35)
+    assert passes_fixed128(score)
+    for key, failing in [('qualified_contacts', 107), ('relaxed_ball_side', 94), ('robot_net', 1),
+                         ('body_ground_given_contact', 64), ('strict_physical_recovery', 15),
+                         ('relaxed_physical_recovery', 34)]:
+        assert not passes_fixed128(dict(score, **{key: failing}))

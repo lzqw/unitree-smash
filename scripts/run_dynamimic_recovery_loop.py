@@ -29,6 +29,12 @@ def first_block_candidate_to_score(selected, scores):
                scores[i]['qualified'], -scores[i]['body'], scores[i]['strict'], scores[i]['relaxed'], -i))
 
 
+def passes_fixed128(score):
+    return (score['qualified_contacts'] == 108 and score['relaxed_ball_side'] >= 95 and score['robot_net'] == 0
+            and score['body_ground_given_contact'] <= 63 and score['strict_physical_recovery'] >= 16
+            and score['relaxed_physical_recovery'] >= 35)
+
+
 def retention_candidates(folder, behavior, companion):
     receipt = json.loads((folder/'fit.json').read_text())
     if receipt['behavior'] != behavior or receipt['companion'] != companion:
@@ -73,6 +79,7 @@ def main():
     validate_flags = ['--dynamimic-validation',args.validation,'--dynamimic-companion',args.companion,
                       '--dynamimic-exclude-training',args.panel]
     current = args.checkpoint
+    confirmed = current
     incumbent = None
     history = []
     old_wm, old_critic = None,None
@@ -100,7 +107,7 @@ def main():
                     *(x for source in history[-3:] for x in ('--history-native',source))])
                 validation = json.loads((wm/'validation.json').read_text())
                 if not validation['passed']:
-                    dump(status,dict(state='wm_gate_failed', block=block, retained=str(current),
+                    dump(status,dict(state='wm_gate_failed', block=block, retained=str(confirmed),
                                      native=str(native), evidence=str(wm/'validation.json')))
                     return
                 old_wm, old_critic = wm, critic
@@ -141,7 +148,7 @@ def main():
                     current = candidates[selected]
                     incumbent = None  # Rescore the promoted policy in both native lane positions.
                 decision = dict(comparison=result, selected=selected, previous=str(previous),
-                                retained=str(current))
+                                native64_choice=str(current), retained=str(confirmed))
                 dump(folder/'decision.json', decision)
                 if block==1 or block%2==0 or block==args.blocks:
                     checkpoint_to_score = (candidates[first_block_candidate_to_score(selected, result['metrics'])]
@@ -155,17 +162,24 @@ def main():
                     score = summarize(frozen)
                     dump(folder/'fixed128.json',score)
                     compare_fixed128(args.baseline, frozen, folder/'fixed128_paired.json')
-                    if block==1 and (selected is None or not (score['body_ground_given_contact']<=63 and score['strict_physical_recovery']>=16
-                            and score['relaxed_physical_recovery']>=35 and score['relaxed_ball_side']>=95
-                            and score['robot_net']==0 and score['qualified_contacts']==108)):
-                        decision.update(retained=str(args.checkpoint), first_block_passed=False)
-                        dump(folder/'decision.json', decision)
+                    passed = passes_fixed128(score) and not decision['fixed128_diagnostic_only']
+                    decision['fixed128_passed'] = passed
+                    if block == 1:
+                        decision['first_block_passed'] = passed
+                    if passed:
+                        confirmed = current
+                    else:
+                        current = confirmed
+                        incumbent = None
+                    decision['retained'] = str(confirmed)
+                    dump(folder/'decision.json', decision)
+                    if block == 1 and not passed:
                         dump(status,dict(state='first_block_native_gate_failed',evidence=str(folder/'fixed128.json'),
-                                         retained=str(args.checkpoint)))
+                                         retained=str(confirmed)))
                         return
             dump(status,dict(state='blocks_evaluated', retained=str(current), blocks=args.blocks))
         except Exception as exc:
-            dump(status,dict(state='stopped',reason=str(exc),retained=str(current)))
+            dump(status,dict(state='stopped',reason=str(exc),retained=str(confirmed)))
             raise
 
 
