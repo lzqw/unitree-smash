@@ -29,6 +29,21 @@ def first_block_candidate_to_score(selected, scores):
                scores[i]['qualified'], -scores[i]['body'], scores[i]['strict'], scores[i]['relaxed'], -i))
 
 
+def retention_candidates(folder, behavior, companion):
+    receipt = json.loads((folder/'fit.json').read_text())
+    if receipt['behavior'] != behavior or receipt['companion'] != companion:
+        raise ValueError('Retention fit belongs to a different behavior or companion')
+    paths = []
+    for label, budget in (('conservative', .020), ('moderate', .035)):
+        path = folder/(label+'.pt')
+        fit = receipt['candidates'][label]
+        if (hashlib.sha256(path.read_bytes()).hexdigest() != fit['after']
+                or not 0 < fit['rms'] <= budget or not 0 <= fit['replay_max_error'] <= 2e-6):
+            raise ValueError(f'Invalid {label} retention candidate or action replay')
+        paths.append(path)
+    return paths
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('checkpoint','companion','panel','validation','asset','baseline','output','gpu-lock'):
@@ -37,11 +52,18 @@ def main():
     parser.add_argument('--initial-wm', type=Path, help='Accepted first-block WM folder for the same native archive')
     parser.add_argument('--initial-critic', type=Path, help='Native tail fit folder for the same behavior policy')
     parser.add_argument('--initial-validation-baseline', type=Path, help='Completed two-slot baseline for the same native validation setup')
+    parser.add_argument('--retain-success-actions', action='store_true',
+                        help='Fit the Recovery output layer to preserve successful native actions after BPTT')
+    parser.add_argument('--initial-retention', type=Path,
+                        help='Reuse previously fitted and replay-verified first-block retention candidates')
     parser.add_argument('--blocks', type=int, default=8, choices=range(1,9))
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
     if (args.initial_wm or args.initial_critic) and not args.initial_native:
         parser.error('First-block fit reuse requires its native archive')
+    if args.initial_retention and not (args.retain_success_actions and args.initial_native
+                                      and args.initial_wm and args.initial_critic):
+        parser.error('Retention reuse requires the original native, WM and Critic and --retain-success-actions')
     root = args.output
     root.mkdir(parents=True,exist_ok=False)
     status = root/'status.json'
@@ -82,9 +104,18 @@ def main():
                     return
                 old_wm, old_critic = wm, critic
                 history.append(native)
-                fit = run('bptt',['scripts/train_dynamimic_recovery_bptt.py','--native',native,
-                    '--wm',wm,'--critic',critic,'--asset',args.asset,'--checkpoint',current,
-                    '--companion',args.companion,'--device',args.device])
+                retention = args.initial_retention if block == 1 else None
+                if retention is None:
+                    fit = run('bptt',['scripts/train_dynamimic_recovery_bptt.py','--native',native,
+                        '--wm',wm,'--critic',critic,'--asset',args.asset,'--checkpoint',current,
+                        '--companion',args.companion,'--device',args.device])
+                    if args.retain_success_actions:
+                        retention = run('retention',['scripts/fit_dynamimic_recovery_retention.py','--native',native,
+                            '--checkpoint',current,'--companion',args.companion,'--bptt',fit])
+                if retention is not None:
+                    candidates = retention_candidates(retention, current_sha, manifest['companion_sha256'])
+                else:
+                    candidates = [fit/'conservative.pt',fit/'moderate.pt']
                 if incumbent is None:
                     base = (args.initial_validation_baseline if block == 1 else None) or run('frozen_native64',[*native_flags,*validate_flags,'--checkpoint',current,
                                                    '--dynamimic-alternate',current])
@@ -92,7 +123,6 @@ def main():
                     if incumbent['checkpoints'] != [current_sha, current_sha]:
                         raise ValueError('Both validation reference slots must use the incumbent')
                     # Each half keeps its own lane positions for the paired comparison.
-                candidates = [fit/'conservative.pt',fit/'moderate.pt']
                 evaluated = run('candidates_native64',[*native_flags,*validate_flags,'--checkpoint',candidates[0],
                                                         '--dynamimic-alternate',candidates[1]])
                 result = json.loads((evaluated/'dyna_validation.json').read_text())
