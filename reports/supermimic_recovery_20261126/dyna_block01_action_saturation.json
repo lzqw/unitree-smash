@@ -1,0 +1,61 @@
+{
+  "quantity": "normalized request before action clipping, measured on the same PPO01 observations",
+  "panels": {
+    "train": {
+      "frames": 37924,
+      "cases": 223,
+      "baseline_command_max_error": 1.0281801223754883e-06,
+      "results": {
+        "ppo01": {
+          "action_rms_vs_ppo01": 0.0,
+          "saturated_fraction": {
+            "FR_thigh_joint": 0.4781932234764099,
+            "RL_calf_joint": 0.6048676371574402
+          }
+        },
+        "conservative": {
+          "action_rms_vs_ppo01": 0.011229289695620537,
+          "saturated_fraction": {
+            "FR_thigh_joint": 0.3692648410797119,
+            "RL_calf_joint": 0.5217540264129639
+          }
+        },
+        "moderate": {
+          "action_rms_vs_ppo01": 0.022595398128032684,
+          "saturated_fraction": {
+            "FR_thigh_joint": 0.25820061564445496,
+            "RL_calf_joint": 0.4231884777545929
+          }
+        }
+      }
+    },
+    "holdout": {
+      "frames": 6169,
+      "cases": 32,
+      "baseline_command_max_error": 6.854534149169922e-07,
+      "results": {
+        "ppo01": {
+          "action_rms_vs_ppo01": 0.0,
+          "saturated_fraction": {
+            "FR_thigh_joint": 0.4715512990951538,
+            "RL_calf_joint": 0.6252228617668152
+          }
+        },
+        "conservative": {
+          "action_rms_vs_ppo01": 0.011405257508158684,
+          "saturated_fraction": {
+            "FR_thigh_joint": 0.3543524146080017,
+            "RL_calf_joint": 0.5171016454696655
+          }
+        },
+        "moderate": {
+          "action_rms_vs_ppo01": 0.02297242544591427,
+          "saturated_fraction": {
+            "FR_thigh_joint": 0.23569460213184357,
+            "RL_calf_joint": 0.41740962862968445
+          }
+        }
+      }
+    }
+  }
+}
