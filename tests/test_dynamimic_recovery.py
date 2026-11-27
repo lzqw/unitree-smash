@@ -152,3 +152,10 @@ def test_native_critic_retains_return_units_after_reload_and_reads_old_fits():
     assert torch.autograd.grad(scaled.sum(), obs)[0].norm() > 0
     value.load_native_fit(legacy)
     torch.testing.assert_close(value(obs), initial)
+
+
+def test_candidate_steps_remain_distinct_after_budget_halvings():
+    from scripts.train_dynamimic_recovery_bptt import candidate_steps
+    moderate, conservative = candidate_steps(lambda alpha: .076 * alpha)
+    assert moderate == ('moderate', .035, .25, .019)
+    assert conservative == ('conservative', .020, .125, .0095)

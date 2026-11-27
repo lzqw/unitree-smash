@@ -9,6 +9,23 @@ from torch.nn import functional as F
 from quadsmash.rl.dynamimic_lagrangian_v1 import mv, rotation
 
 
+def candidate_steps(measure):
+    """Apply each interpolated policy before yielding its measured action-space step."""
+    alpha = 1.
+    previous_rms = math.inf
+    for label, budget in [('moderate', .035), ('conservative', .020)]:
+        for _ in range(25):
+            rms = measure(alpha)
+            if math.isfinite(rms) and 0 < rms <= budget and rms < previous_rms:
+                break
+            alpha *= .5
+        else:
+            raise ValueError(f'No distinct nonzero {label} proposal within the action budget')
+        yield label, budget, alpha, rms
+        previous_rms = rms
+        alpha *= .5
+
+
 def recovery_start_groups(data, snapshot_ticks, held_lanes):
     """Classify (tick, lane) using native events; future falls only select training starts."""
     ticks = torch.arange(len(data['live']))[:, None]
@@ -356,18 +373,12 @@ def main():
         print(evidence[-1],flush=True)
     with torch.no_grad():
         final = {k:p.clone() for k,p in params.items()}
-        for label, budget in [('conservative',.020),('moderate',.035)]:
-            # Use a distinct half proposal even when the full step fits both budgets.
-            alpha = .5 if label=='conservative' else 1.
-            for _ in range(25):
-                for k,p in params.items():
-                    p.copy_(torch.lerp(anchor[k],final[k],alpha))
-                rms = float((actions(checks)-original).square().mean().sqrt())
-                if rms <= budget:
-                    break
-                alpha *= .5
-            if not 0 < rms <= budget:
-                raise ValueError('No nonzero proposal within the action budget')
+        def measure(alpha):
+            for k, p in params.items():
+                p.copy_(torch.lerp(anchor[k], final[k], alpha))
+            return float((actions(checks)-original).square().mean().sqrt())
+
+        for label, budget, alpha, rms in candidate_steps(measure):
             state = {k:v.cpu().clone() for k,v in primary.state_dict().items()}
             if state.keys() != ckpt['actor'].keys() or any(not torch.equal(val,ckpt['actor'][k])
                     for k,val in state.items() if k not in RECOVERY_NAMES):
