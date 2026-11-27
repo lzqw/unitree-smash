@@ -37,3 +37,28 @@ def test_landing_dynamics_512_configurations():
     assert errors.max() < 1e-5
     gradients = torch.autograd.grad(mass.square().mean()+bias.square().mean()+jac.square().mean(),q_t)[0]
     assert gradients.isfinite().all() and gradients[:,7:].abs().sum() > 0
+
+
+def test_contact_forces_and_integrator_propagate_target_gradients():
+    from quadsmash.rl.dynamimic_recovery_wm_v1 import DynaMimicRecoveryWorldModel, local_robot_state
+    from quadsmash.rl.supermimic_physical_observation_v1 import JOINT_NAMES
+    import hashlib
+
+    contract = dict(schema='native-joint-drive-v1', asset_sha256=hashlib.sha256(ASSET.read_bytes()).hexdigest(),
+                    control_dt_s=.01, joint_names=JOINT_NAMES,
+                    profiles=[dict(kp=[25.]*12+[80.]*6, kd=[.5]*12+[4.]*6,
+                                   effort_limit=[23.5]*12+[100.]*6)])
+    wm = DynaMimicRecoveryWorldModel(ASSET, contract).double()
+    state = torch.zeros(2, 55, dtype=torch.float64)
+    state[:, 2] = .38
+    state[:, 3] = 1.
+    q, v = local_robot_state(state)
+    target = torch.full_like(q[:, 7:], .01, requires_grad=True)
+    for member in range(3):
+        q1, v1, aux = wm(q, v, target, member)
+        force = aux['contact_force']
+        assert (force[..., 2] >= 0).all()
+        assert (force[..., :2].norm(dim=-1) <= .9*force[..., 2]+1e-12).all()
+        assert torch.allclose(q1[:, 3:7].norm(dim=-1), torch.ones_like(q1[:, 0]))
+        grad, = torch.autograd.grad(v1.square().mean(), target)
+        assert grad.isfinite().all() and grad.abs().sum() > 0

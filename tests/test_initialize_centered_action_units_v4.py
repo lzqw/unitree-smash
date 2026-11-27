@@ -4,6 +4,7 @@ import copy
 import hashlib
 import io
 import json
+import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -17,7 +18,10 @@ from scripts.initialize_centered_action_units_v4 import apply_action_unit_mapped
 from scripts.initialize_centered_policy_v4 import apply_centered_public_actor
 
 ROOT = Path(__file__).resolve().parents[1]
-MAIN = ROOT.parent/'unitree_smash'
+# Resolve the archived recordings in the primary checkout from any worktree.
+MAIN = Path(subprocess.check_output(
+    ['git', '-C', str(ROOT), 'rev-parse', '--path-format=absolute', '--git-common-dir'],
+    text=True).strip()).parent
 REPORTS = MAIN/'reports/G07_full_racket_v4'
 
 

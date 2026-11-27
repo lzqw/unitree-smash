@@ -155,10 +155,11 @@ def test_real_training_and_eval_entrypoints_use_shared_contract():
     evaluation=(root/'scripts/evaluate_supermimic_v1.py').read_text()
     recording=(root/'scripts/record_supermimic_selected_case.py').read_text()
     assert "policy_forward(actor,observation['policy'],env.rally" in training
-    assert 'policy_forward(actor,before,env.rally' in evaluation
+    assert "policy_forward(active_actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)" in evaluation
     assert 'policy_forward(learned_actor' in recording
     assert 'action = actor(before, sample=False)' not in evaluation
-    assert training.index('quality=check_head_quality(block_name')<training.index('stats=trainer.imagine_update(state)',training.index('quality=check_head_quality(block_name'))
+    block = training[training.index("quality = prepared_resume['quality']"):]
+    assert block.index('check_head_quality(block_name, attempt_key)') < block.index('stats=trainer.imagine_update(')
 
 
 def test_native_value_policy_identity_includes_execution_gate_contract():

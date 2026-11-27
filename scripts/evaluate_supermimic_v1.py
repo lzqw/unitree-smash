@@ -47,6 +47,7 @@ def main():
                         help='Continue successful lanes for post-success survival and uncensored strict scoring')
     parser.add_argument('--recovery-probe-companion', type=Path)
     parser.add_argument('--recovery-probe-shard', type=int, choices=range(8), default=0)
+    parser.add_argument('--dynamimic-capture', action='store_true')
     parser.add_argument('--recovery-ppo-panel', type=Path)
     parser.add_argument('--recovery-ppo-iterations', type=int, default=1)
     parser.add_argument('--recovery-ppo-resume', type=Path)
@@ -87,6 +88,8 @@ def main():
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus','candidate'),default=None)
     args = parser.parse_args()
+    if args.dynamimic_capture and not args.recovery_ppo_panel:
+        parser.error('Dyna capture requires a mixed Recovery training panel')
     if args.recovery_ppo_panel and (args.recovery_training_probes or args.research_fixed128 or
             args.independent_panel_batch is not None or args.approach_quick64 or args.approach_hybrid_spec or
             args.record_physical_transitions or not args.recovery_full_tail):
@@ -345,6 +348,9 @@ def _run_native(args, stop_request):
                 def _get_dones(self):
                     result = super()._get_dones()
                     self.recovery_ppo_boundary = reward_state(self)
+                    if args.dynamimic_capture:
+                        from scripts.capture_dynamimic_recovery import native_boundary
+                        self.dyna_boundary = native_boundary(self)
                     return result
             env_type = RecoveryPPOEnv
         env = env_type(cfg, cases=cases, reset_noise=noise,
@@ -412,6 +418,10 @@ def _run_native(args, stop_request):
             if policy_execution.get('arm_preparation_seconds') is not None:
                 companion.configure_approach_gate(policy_execution['arm_preparation_seconds'])
         if args.recovery_ppo_panel:
+            if args.dynamimic_capture:
+                from scripts.capture_dynamimic_recovery import collect
+                collect(args, env, wrapper, obs, actor, companion, cases, stop_request)
+                return
             from scripts.native_recovery_ppo import train
             train(args, env, wrapper, obs, actor, companion, trained, cases, stop_request)
             return

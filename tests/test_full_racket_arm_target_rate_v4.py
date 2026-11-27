@@ -43,7 +43,8 @@ class ArmTargetRateTest(unittest.TestCase):
         self.assertTrue(torch.allclose(output, torch.full((1, 6), -.05)))
 
     def test_invalid_rate_and_nonfinite_input_rejected(self):
-        for value in [0., -1., 5.1, float('nan')]:
+        self.assertEqual(ArmTargetRateV4(1, 'cpu', 20.).rate, 20.)
+        for value in [0., -1., 20.1, float('nan')]:
             with self.assertRaises(ValueError):ArmTargetRateV4(1, 'cpu', value)
         rate = ArmTargetRateV4(1, 'cpu', 4.5)
         with self.assertRaises(ValueError):
