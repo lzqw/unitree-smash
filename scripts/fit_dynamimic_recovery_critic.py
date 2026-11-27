@@ -88,12 +88,32 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('native','checkpoint','output'):
         parser.add_argument('--'+name, type=Path, required=True)
+    parser.add_argument('--history-native', type=Path)
     parser.add_argument('--resume', type=Path)
     parser.add_argument('--device', default='cpu')
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     torch.manual_seed(67319)
     data, manifest = read_rollout(args.native, args.checkpoint)
+    current_lanes = data['active'].shape[1]
+    if args.history_native:
+        from scripts.fit_dynamimic_recovery_wm import verify_replay_cases
+        historical, previous = read_rollout(args.history_native, args.checkpoint)
+        if previous['companion_sha256'] != manifest['companion_sha256']:
+            raise ValueError('Historical Critic targets require the same companion policy')
+        verify_replay_cases([manifest['cases'], previous['cases']])
+        current_ids = {case['case_id'] for case in manifest['cases']}
+        if any(case['case_id'] in current_ids for case in previous['cases']):
+            raise ValueError('Historical Critic archive repeats current cases')
+        # Keep episodes in separate lanes when computing GAE.
+        duration = max(len(historical['active']), len(data['active']))
+        for key in data:
+            columns = []
+            for tensor in (data[key], historical[key]):
+                pad_shape = (duration - len(tensor), *tensor.shape[1:])
+                columns.append(torch.cat((tensor, tensor.new_zeros(pad_shape))))
+            data[key] = torch.cat(columns, dim=1)
+        del historical
     tail, source = make_tail(args.checkpoint, args.device)
     opt = torch.optim.AdamW(tail.value.parameters(), lr=3e-4, weight_decay=1e-4)
     matching_return = False
@@ -107,7 +127,7 @@ def main():
     active = data['active']
     held = torch.arange(active.size(1)) % 16 < 2
     train = active & ~held
-    valid = active & held
+    valid = active & held & (torch.arange(active.size(1)) < current_lanes)
     if not train.any() or not valid.any():
         raise ValueError('No eligible transitions in train or held-out split')
     with torch.no_grad():
@@ -134,9 +154,11 @@ def main():
     report = dict(return_schema=NATIVE_RETURN_SCHEMA, source=source, native_checkpoint=manifest['checkpoint_sha256'], training_frames=len(obs),
                   held_frames=len(predictions),
                   root_only_terminal_train=int(data['root_only_terminal'][:,~held].sum()),
-                  root_only_terminal_held=int(data['root_only_terminal'][:,held].sum()), held_explained_variance_before=explained_variance(values[valid], targets[valid]),
+                  root_only_terminal_held=int((data['root_only_terminal'] & valid).sum()), held_explained_variance_before=explained_variance(values[valid], targets[valid]),
                   held_explained_variance_after=explained_variance(predictions, targets[valid]),
                   held_mae=float((predictions-targets[valid]).abs().mean()), returned_targets='native TD(lambda)')
+    if args.history_native:
+        report['history_native'] = str(args.history_native)
     torch.save(dict(return_schema=NATIVE_RETURN_SCHEMA, critic=tail.value.state_dict(), optimizer=opt.state_dict(), source=source,
                     return_mean=float(tail.return_mean), return_scale=float(tail.return_scale)), args.output/'critic.pt')
     (args.output/'fit.json').write_text(json.dumps(report, indent=2)+'\n')
