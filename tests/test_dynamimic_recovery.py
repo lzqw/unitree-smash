@@ -62,3 +62,40 @@ def test_contact_forces_and_integrator_propagate_target_gradients():
         assert torch.allclose(q1[:, 3:7].norm(dim=-1), torch.ones_like(q1[:, 0]))
         grad, = torch.autograd.grad(v1.square().mean(), target)
         assert grad.isfinite().all() and grad.abs().sum() > 0
+
+
+def test_recovery_starts_require_release_and_keep_prefall_states():
+    from scripts.train_dynamimic_recovery_bptt import recovery_start_groups
+    n, t = 3, 130
+    live = torch.ones(t,n,dtype=torch.bool)
+    landed = live.clone()
+    landed[:15] = False
+    body = torch.zeros_like(live)
+    body[80:,0] = True
+    obs = torch.zeros(t,n,794)
+    obs[:,:,775] = torch.arange(t)[:,None]*.01
+    data = dict(body=body,active=live & ~body,obs=obs,live=live,release_time=torch.zeros(t,n),
+                landed=landed,strict=torch.zeros_like(live))
+    groups = recovery_start_groups(data,[2,8,16,48,96],torch.tensor([False,False,True]))
+    assert [8,0] in groups[0].tolist() and [2,0] not in groups[0].tolist()
+    assert [48,0] in groups[1].tolist() and [48,1] in groups[2].tolist()
+    assert all(not (pool[:,1]==2).any() for pool in groups)
+
+
+def test_native_promotion_keeps_ball_side_and_rejects_robot_net():
+    from scripts.run_dynamimic_recovery_loop import choose_candidate
+    old = dict(qualified=50,body=28,net=0,ball=39,relaxed=12,strict=6)
+    assert choose_candidate(old,[old,dict(old,strict=7)]) == 1
+    assert choose_candidate(old,[dict(old,body=26,net=1),dict(old,strict=7,ball=38)]) is None
+
+
+def test_recovery_only_saturation_gradient_and_focus_coverage():
+    from scripts.train_dynamimic_recovery_bptt import saturation_cost, focus_cost
+    raw = torch.tensor([1.1,-1.2,.5],requires_grad=True)
+    saturation_cost(raw).backward()
+    assert raw.grad[0]>0 and raw.grad[1]<0 and raw.grad[2]==0
+    w = torch.ones(128,794,requires_grad=True)
+    focus_cost(w,torch.zeros_like(w)).backward()
+    assert (w.grad[:,:759].reshape(128,11,69)[:,:,61:67]>0).all()
+    assert (w.grad[:,776:794]>0).all()
+    assert (w.grad[:,:759].reshape(128,11,69)[:,:,:61]==0).all()

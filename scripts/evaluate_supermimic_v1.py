@@ -67,6 +67,11 @@ def main():
     parser.add_argument('--shutdown-diagnostic-ticks', type=int, default=None,
                         help='Lifecycle-only partial run on original 128 lanes; never writes scores/completed.json')
     panels = parser.add_mutually_exclusive_group()
+    panels.add_argument('--dynamimic-validation', type=Path,
+                        help='Score two Recovery candidates deterministically on the same 64 validation cases')
+    parser.add_argument('--dynamimic-alternate', type=Path)
+    parser.add_argument('--dynamimic-companion', type=Path)
+    parser.add_argument('--dynamimic-exclude-training', type=Path)
     panels.add_argument('--research-fixed128', action='store_true',
                         help='Score the predeclared research cases held out from native training')
     panels.add_argument('--independent-panel-batch', type=int, choices=range(4),
@@ -88,6 +93,12 @@ def main():
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus','candidate'),default=None)
     args = parser.parse_args()
+    dyna_flags = (args.dynamimic_validation, args.dynamimic_alternate,
+                  args.dynamimic_companion, args.dynamimic_exclude_training)
+    if any(dyna_flags) and (not all(dyna_flags) or not args.recovery_full_tail or
+            args.recovery_training_probes or args.recovery_ppo_panel or args.approach_prefix_checkpoint or
+            args.approach_sensitivity or args.early_arm_seconds is not None or args.approach_hybrid_spec):
+        parser.error('Paired Dyna validation requires a separate deterministic full-tail evaluation')
     if args.dynamimic_capture and not args.recovery_ppo_panel:
         parser.error('Dyna capture requires a mixed Recovery training panel')
     if args.recovery_ppo_panel and (args.recovery_training_probes or args.research_fixed128 or
@@ -101,7 +112,7 @@ def main():
             or args.approach_hybrid_spec or args.record_physical_transitions):
         parser.error('Native recovery teachers require a separate full-tail training rollout')
     if args.recovery_full_tail:
-        if (not args.checkpoint or not (args.research_fixed128 or args.recovery_training_probes or args.recovery_ppo_panel) or args.approach_ball_only
+        if (not args.checkpoint or not (args.research_fixed128 or args.recovery_training_probes or args.recovery_ppo_panel or args.dynamimic_validation or args.independent_panel_batch is not None) or args.approach_ball_only
                 or args.native_action_probe_spec or args.shutdown_diagnostic_ticks
                 or args.diagnostic_grounded_miss or args.approach_search_spec):
             parser.error('Recovery baseline requires a frozen checkpoint and the fixed128 panel')
@@ -304,6 +315,11 @@ def _run_native(args, stop_request):
             cases = candidate_layout(cases, search_spec['case_indices'], offsets)
             capture_contract = dict(contract, approach_native_search=dict(
                 case_indices=search_spec['case_indices'], offsets=offsets))
+        if args.dynamimic_validation:
+            from scripts.dynamimic_recovery_validation import panel_layout
+            cases = panel_layout(args.dynamimic_validation, args.dynamimic_exclude_training,
+                                 contract['protocol_sha256'], args.seed)
+            capture_contract = dict(contract, dynamimic_paired_validation=True)
         if args.independent_panel_batch is not None:
             from quadsmash.rl.supermimic_independent_panel import panel_batch
             cases, panel_identity = panel_batch(args.independent_panel_batch, contract['protocol_sha256'], args.seed)
@@ -407,6 +423,11 @@ def _run_native(args, stop_request):
             execution_provenance = 'explicit early-arm zero-update baseline'
         if policy_execution.get('arm_preparation_seconds') is not None:
             actor.configure_approach_gate(policy_execution['arm_preparation_seconds'])
+        dyna_policies = None
+        if args.dynamimic_validation:
+            from scripts.dynamimic_recovery_validation import policies, paired_requests
+            dyna_policies = policies(args.checkpoint, args.dynamimic_alternate, args.dynamimic_companion,
+                                     lambda: load_ppo_initialized_actor(source_path, env.device)[0])
         companion = None
         if teachers is not None or args.recovery_ppo_panel:
             from scripts.run_supermimic_recovery_baseline import verify
@@ -549,7 +570,10 @@ def _run_native(args, stop_request):
                 before = obs['policy'] if reference is None and probe_capture is None else obs['policy'].clone()
                 old_target = None
                 active_actor = prefix_actor if prefix_actor is not None and tick < args.approach_prefix_tick else actor
-                if search_bias is None:
+                if dyna_policies is not None:
+                    action = paired_requests(dyna_policies, before, env.rally.had_contact & env.rally.released,
+                                             env.rally.release_time)
+                elif search_bias is None:
                     action = policy_forward(active_actor,before,env.rally,mode=policy_execution['recovery_gate'],sample=False)[0].clamp(-1.,1.)
                 else:
                     latch = recovery_gate(env.rally, before)
@@ -704,6 +728,11 @@ def _run_native(args, stop_request):
             if any(first[i]['case_id'] != cases[i]['case_id'] for i in range(lanes)):
                 raise ValueError('Terminal case differs from the declared lane assignment')
         rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(lanes)]
+        if args.dynamimic_validation:
+            from scripts.dynamimic_recovery_validation import report
+            write_json(args.output/'dyna_validation.json', report(rows, args.checkpoint, args.dynamimic_alternate,
+                                                                 args.dynamimic_companion,
+                                                                 json.loads((args.output/'initial_states.json').read_text())))
         if teachers is not None:
             teachers.save(args.output)
         if scoring_protocol['approach_ball_scoring'] is not None:

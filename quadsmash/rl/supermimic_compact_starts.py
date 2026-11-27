@@ -9,7 +9,7 @@ def compact_start(row, selected, launch):
     ids=selected.nonzero().flatten()
     if not len(ids):
         raise ValueError('Empty compact imagination start')
-    if n!=128:
+    if n not in (128, 256):
         if n==len(ids):
             return row,launch
         raise ValueError('Unsupported source controller batch shape')
