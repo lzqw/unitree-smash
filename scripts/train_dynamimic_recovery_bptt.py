@@ -59,6 +59,18 @@ def recovery_start_groups(data, snapshot_ticks, held_lanes):
     return tuple((eligible & mask).nonzero() for mask in masks)
 
 
+def native_segments(rows, horizon, active, snapshots):
+    segments = []
+    for offset in range(0,horizon,16):
+        tick = rows[:,0]+offset
+        lane = rows[:,1]
+        exists = (tick<len(active)) & torch.isin(tick, torch.as_tensor(snapshots))
+        exists &= active[tick.clamp_max(len(active)-1),lane]
+        if exists.any():
+            segments.append((torch.stack((tick[exists],lane[exists]),1),min(16,horizon-offset)))
+    return segments
+
+
 def imminent_root_rows(data):
     root_only = data['root_terminated'] & data['live'] & ~data['body'] & ~data['net']
     # G07 snapshots are 16 ticks apart. This includes the last recoverable
@@ -287,6 +299,7 @@ def main():
     group.add_argument('--absorbing-body-fault', action='store_true')
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--horizon', type=int, choices=(48,64), default=48)
+    parser.add_argument('--native-segments', action='store_true', help='Re-anchor every 16 ticks to measured state and G07 memory')
     parser.add_argument('--updates', type=int, choices=range(15,26), default=20)
     parser.add_argument('--starts', type=int, default=128)
     parser.add_argument('--microbatch', type=int, default=64)
@@ -422,12 +435,18 @@ def main():
         rows = stratified_starts(pools,args.starts,generator,imminent=imminent)
         optimizer.zero_grad(set_to_none=True)
         total = 0.
-        for group in rows.split(args.microbatch):
-            start, memory = context(group, audit=step==0)
-            loss = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,step%3,args.horizon,body_fault,args.absorbing_body_fault)
-            weighted = loss*len(group)/len(rows)
-            weighted.backward()
-            total += float(weighted.detach())
+        segments = [(rows,args.horizon)]
+        if args.native_segments:
+            segments = native_segments(rows, args.horizon, data['active'], ticks)
+        weight_sum = sum(len(batch) for batch,_ in segments)
+        for batch,length in segments:
+            for group in batch.split(args.microbatch):
+                start, memory = context(group, audit=step==0)
+                loss = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,
+                               step%3,length,body_fault,args.absorbing_body_fault)
+                weighted = loss*len(group)/weight_sum
+                weighted.backward()
+                total += float(weighted.detach())
         retention_rows = keep[torch.randint(len(keep),(args.starts,),generator=generator)]
         rt,rl = retention_rows.T
         retention = (actions(retention_rows)-data['request'][rt,rl].to(device)).square().mean()
@@ -439,7 +458,7 @@ def main():
             raise ValueError('Recovery gradient is zero')
         optimizer.step()
         evidence.append(dict(step=step+1, objective=total, gradient_norm=float(grad),
-                             seconds=perf_counter()-started, microbatch=args.microbatch,
+                             segment_counts=[len(batch) for batch,_ in segments], seconds=perf_counter()-started, microbatch=args.microbatch,
                              peak_cuda_mib=torch.cuda.max_memory_allocated(device)/2**20 if device.type=='cuda' else None,
                              unique_native_cases=len(rows[:,1].unique()),
                              imminent_root_starts=int(imminent[rows[:,0],rows[:,1]].sum()),
@@ -462,7 +481,7 @@ def main():
                        args.output/(label+'.pt'))
             dump(args.output/(label+'.json'),dict(alpha=alpha,rms=rms,budget=budget))
     dump(args.output/'training.json',dict(updates=evidence, pools=[len(p) for p in pools], retained_cases=int(success.sum()),
-                                         horizon=args.horizon, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
+                                         horizon=args.horizon, native_segments=args.native_segments, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
 
 
 if __name__ == '__main__':

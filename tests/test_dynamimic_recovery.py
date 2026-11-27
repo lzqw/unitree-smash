@@ -276,3 +276,14 @@ def test_absorbing_fault_charges_once_and_removes_success_tail():
     torch.testing.assert_close(result, (1 - hazard) + (1 - hazard)**2 - FALL_COST)
     result.backward()
     torch.testing.assert_close(hazard.grad, torch.tensor(-2.5))
+
+
+def test_native_segments_keep_lane_and_exclude_post_terminal_and_missing_snapshots():
+    from scripts.train_dynamimic_recovery_bptt import native_segments
+
+    active = torch.ones(65, 3, dtype=torch.bool)
+    active[33:,1] = False
+    rows = torch.tensor([[16,0],[16,1],[48,2]])
+    parts = native_segments(rows,48,active,[16,32,48])
+    assert [p.tolist() for p,_ in parts] == [rows.tolist(),[[32,0],[32,1]],[[48,0]]]
+    assert [length for _,length in parts] == [16,16,16]
