@@ -173,3 +173,13 @@ def test_root_failure_charged_once_and_blocks_tail_after_rebound():
     s.sum().backward()
     assert height.grad[1] > 0
     assert root_termination(torch.tensor([True,False,True]), height).tolist() == [False,False,True]
+
+
+def test_first_block_diagnostic_scores_rejected_candidate_without_promoting():
+    from scripts.run_dynamimic_recovery_loop import choose_candidate, first_block_candidate_to_score
+    baseline = dict(qualified=54, body=32, strict=3, relaxed=8, ball=46, net=0)
+    trials = [dict(baseline, ball=45, body=30), dict(baseline, ball=45, body=28)]
+    selection = choose_candidate(baseline, trials)
+    assert selection is None
+    assert first_block_candidate_to_score(selection, trials) == 1
+    assert first_block_candidate_to_score(0, trials) == 0

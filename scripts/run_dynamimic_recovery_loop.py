@@ -20,6 +20,15 @@ def choose_candidate(baseline, metrics):
                                        metrics[i]['ball'], -i), default=None)
 
 
+def first_block_candidate_to_score(selected, scores):
+    if selected is not None:
+        return selected
+    # On rollback, score one rejected proposal for diagnosis. This result
+    # cannot promote it; the incumbent already has a full fixed128 baseline.
+    return max(range(len(scores)), key=lambda i: (-scores[i]['net'], scores[i]['ball'],
+               scores[i]['qualified'], -scores[i]['body'], scores[i]['strict'], scores[i]['relaxed'], -i))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('checkpoint','companion','panel','validation','asset','baseline','output','gpu-lock'):
@@ -99,18 +108,26 @@ def main():
                 if selected is not None:
                     current = candidates[selected]
                     incumbent = None  # Rescore the promoted policy in both native lane positions.
-                dump(folder/'decision.json',dict(comparison=result, selected=selected, previous=str(previous),
-                                                 retained=str(current)))
+                decision = dict(comparison=result, selected=selected, previous=str(previous),
+                                retained=str(current))
+                dump(folder/'decision.json', decision)
                 if block==1 or block%2==0 or block==args.blocks:
-                    frozen = run('fixed128',[*native_flags,'--checkpoint',current,'--research-fixed128'])
+                    checkpoint_to_score = (candidates[first_block_candidate_to_score(selected, result['metrics'])]
+                                           if block == 1 else current)
+                    decision.update(fixed128_checkpoint=str(checkpoint_to_score),
+                                    fixed128_diagnostic_only=block == 1 and selected is None)
+                    dump(folder/'decision.json', decision)
+                    frozen = run('fixed128',[*native_flags,'--checkpoint',checkpoint_to_score,'--research-fixed128'])
                     if (frozen/'initial_states.json').read_bytes() != (args.baseline/'initial_states.json').read_bytes():
                         raise ValueError('Fixed128 starts changed')
                     score = summarize(frozen)
                     dump(folder/'fixed128.json',score)
                     compare_fixed128(args.baseline, frozen, folder/'fixed128_paired.json')
-                    if block==1 and not (score['body_ground_given_contact']<=63 and score['strict_physical_recovery']>=16
+                    if block==1 and (selected is None or not (score['body_ground_given_contact']<=63 and score['strict_physical_recovery']>=16
                             and score['relaxed_physical_recovery']>=35 and score['relaxed_ball_side']>=95
-                            and score['robot_net']==0 and score['qualified_contacts']==108):
+                            and score['robot_net']==0 and score['qualified_contacts']==108)):
+                        decision.update(retained=str(args.checkpoint), first_block_passed=False)
+                        dump(folder/'decision.json', decision)
                         dump(status,dict(state='first_block_native_gate_failed',evidence=str(folder/'fixed128.json'),
                                          retained=str(args.checkpoint)))
                         return
