@@ -138,6 +138,15 @@ def test_recovery_sampling_preserves_phase_mix_and_equal_approach_counts():
     assert int((rows[:, 1] % 2).sum()) == 64
     assert len(rows.unique(dim=0)) == 128
 
+    for available, expected in ((0, 0), (5, 5), (60, 12), (200, 51)):
+        urgent = torch.zeros(3, 200, dtype=torch.bool)
+        urgent[1, :available] = True
+        rows = stratified_starts(groups, 128, torch.Generator().manual_seed(17), imminent=urgent)
+        assert rows[:, 0].bincount().tolist() == [38, 51, 39]
+        assert int((rows[:, 1] % 2).sum()) == 64
+        assert len(rows.unique(dim=0)) == 128
+        assert int(urgent[rows[:, 0], rows[:, 1]].sum()) == expected
+
 
 def test_native_critic_retains_return_units_after_reload_and_reads_old_fits():
     from scripts.fit_dynamimic_recovery_critic import NativeTailValue

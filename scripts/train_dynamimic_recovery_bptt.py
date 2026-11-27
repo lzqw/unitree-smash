@@ -55,14 +55,21 @@ def recovery_start_groups(data, snapshot_ticks, held_lanes):
     return tuple((eligible & mask).nonzero() for mask in masks)
 
 
-def stratified_starts(groups, count, generator):
+def imminent_root_rows(data):
+    root_only = data['root_terminated'] & data['live'] & ~data['body'] & ~data['net']
+    # G07 snapshots are 16 ticks apart. This includes the last recoverable
+    # snapshot while the measured dynamics still resolve the height cutoff.
+    return F.pad(root_only, (0, 0, 0, 15)).unfold(0, 16, 1).any(-1)
+
+
+def stratified_starts(groups, count, generator, imminent=None):
     if not 128 <= count <= 256:
         raise ValueError('Recovery expects 128 to 256 native starts')
     sizes = [round(.3*count), round(.4*count)]
     sizes.append(count-sum(sizes))
     sampled = []
     taken = 0
-    for pool, size in zip(groups, sizes, strict=True):
+    for phase, (pool, size) in enumerate(zip(groups, sizes, strict=True)):
         # Odd phase sizes alternate their extra slot across the complete batch.
         primary_count = (taken+size+1)//2 - (taken+1)//2
         taken += size
@@ -70,6 +77,17 @@ def stratified_starts(groups, count, generator):
             cases = pool[pool[:,1] % 2 == policy]
             if len(cases) < needed:
                 raise ValueError(f'Approach {policy} has {len(cases)} starts for {needed} requested')
+            if phase == 1 and imminent is not None:
+                urgent = imminent[cases[:, 0], cases[:, 1]]
+                # Reserve one quarter of the touchdown allocation for these
+                # short windows. Spill either way if a policy has few failures.
+                n_urgent = min(int(urgent.sum()), max(round(needed/4), needed-int((~urgent).sum())))
+                if n_urgent:
+                    candidates = cases[urgent]
+                    ids = torch.randperm(len(candidates), generator=generator)[:n_urgent]
+                    sampled.extend(candidates[ids])
+                    needed -= n_urgent
+                    cases = cases[~urgent]
             ordered = cases[torch.randperm(len(cases), generator=generator)]
             cursors = {}
             tiers = []
@@ -316,6 +334,7 @@ def main():
     origins_z = torch.as_tensor(manifest['origins'])[:, 2]
     data['root_terminated'] = root_termination(data['done'], data['after'][..., 2] + origins_z)
     pools = recovery_start_groups(data, ticks, held)
+    imminent = imminent_root_rows(data)
     generator = torch.Generator().manual_seed(9917)
     success = ((data['relaxed']|data['strict']) & data['live']).any(0) & ~(
         (data['body']|data['net']|data['root_terminated']) & data['live']).any(0)
@@ -363,7 +382,7 @@ def main():
         original = actions(checks)
     for step in range(args.updates):
         started = perf_counter()
-        rows = stratified_starts(pools,args.starts,generator)
+        rows = stratified_starts(pools,args.starts,generator,imminent=imminent)
         optimizer.zero_grad(set_to_none=True)
         total = 0.
         for group in rows.split(args.microbatch):
@@ -386,6 +405,7 @@ def main():
                              seconds=perf_counter()-started, microbatch=args.microbatch,
                              peak_cuda_mib=torch.cuda.max_memory_allocated(device)/2**20 if device.type=='cuda' else None,
                              unique_native_cases=len(rows[:,1].unique()),
+                             imminent_root_starts=int(imminent[rows[:,0],rows[:,1]].sum()),
                              h8d_starts=int((rows[:,1]%2).sum()),
                              retention=float(retention.detach())))
         print(evidence[-1],flush=True)
