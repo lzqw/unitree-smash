@@ -20,11 +20,21 @@ class NativeTailValue(nn.Module):
             parameter.requires_grad_(False)
         self.value = nn.Sequential(nn.Linear(794, 256), nn.LayerNorm(256), nn.Tanh(),
                                    nn.Linear(256, 128), nn.Tanh(), nn.Linear(128, 1))
+        self.register_buffer('return_scale', torch.ones(()))
+        self.register_buffer('return_mean', torch.zeros(()))
         nn.init.zeros_(self.value[-1].weight)
         nn.init.zeros_(self.value[-1].bias)
 
     def forward(self, obs):
-        return self.value(self.normalizer(obs).clamp(-10, 10)).squeeze(-1)
+        z = self.normalizer(obs).clamp(-10, 10)
+        return self.return_mean + self.return_scale * self.value(z).squeeze(-1)
+
+    def load_native_fit(self, saved):
+        self.value.load_state_dict(saved['critic'])
+        self.return_scale.fill_(saved.get('return_scale', 1.))
+        self.return_mean.fill_(saved.get('return_mean', 0.))
+        if not torch.isfinite(self.return_mean) or not self.return_scale.isfinite() or self.return_scale <= 0:
+            raise ValueError('Invalid native return scaling')
 
 
 def read_rollout(root, checkpoint):
@@ -73,7 +83,7 @@ def main():
         saved = torch.load(args.resume, weights_only=True, map_location=args.device)
         if saved['source'] != source:
             raise ValueError('Frozen actor used for normalization differs')
-        tail.value.load_state_dict(saved['critic'])
+        tail.load_native_fit(saved)
         opt.load_state_dict(saved['optimizer'])
     active = data['active']
     held = torch.arange(active.size(1)) % 16 < 2
@@ -87,10 +97,15 @@ def main():
         done = data['done'] | data['body'] | data['net']
         targets = values + gae(data['reward'], values, active, done, lam=.95 if args.resume else 1.)
     obs, truth = data['obs'][train], targets[train]
+    if not args.resume:
+        # Normalize the regression target once. All GAE, reports and Actor tail
+        # values stay in native return units; later blocks retain the same scale.
+        tail.return_mean.copy_(truth.mean())
+        tail.return_scale.copy_(truth.std().clamp_min(1.))
     for _ in range(3):
         for ids in torch.randperm(len(obs)).split(1024):
             pred = tail(obs[ids].to(args.device))
-            loss = F.smooth_l1_loss(pred, truth[ids].to(args.device))
+            loss = F.smooth_l1_loss((pred-truth[ids].to(args.device))/tail.return_scale, torch.zeros_like(pred))
             opt.zero_grad(set_to_none=True)
             loss.backward()
             nn.utils.clip_grad_norm_(tail.value.parameters(), 1., error_if_nonfinite=True)
@@ -101,7 +116,8 @@ def main():
                   held_frames=len(predictions), held_explained_variance_before=explained_variance(values[valid], targets[valid]),
                   held_explained_variance_after=explained_variance(predictions, targets[valid]),
                   held_mae=float((predictions-targets[valid]).abs().mean()), returned_targets='native TD(lambda)')
-    torch.save(dict(critic=tail.value.state_dict(), optimizer=opt.state_dict(), source=source), args.output/'critic.pt')
+    torch.save(dict(critic=tail.value.state_dict(), optimizer=opt.state_dict(), source=source,
+                    return_mean=float(tail.return_mean), return_scale=float(tail.return_scale)), args.output/'critic.pt')
     (args.output/'fit.json').write_text(json.dumps(report, indent=2)+'\n')
 
 

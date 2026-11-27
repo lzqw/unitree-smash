@@ -248,7 +248,7 @@ def main():
     critic_fit = json.loads((args.critic/'fit.json').read_text())
     if value_state['source'] != source_sha or critic_fit['native_checkpoint'] != manifest['checkpoint_sha256']:
         raise ValueError('Native critic identity mismatch')
-    tail.value.load_state_dict(value_state['critic'])
+    tail.load_native_fit(value_state)
     for param in tail.parameters():
         param.requires_grad_(False)
     ckpt = torch.load(args.checkpoint, mmap=True,map_location='cpu',weights_only=False)

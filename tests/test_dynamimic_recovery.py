@@ -135,3 +135,20 @@ def test_recovery_sampling_preserves_phase_mix_and_equal_approach_counts():
     assert rows[:, 0].bincount().tolist() == [38, 51, 39]
     assert int((rows[:, 1] % 2).sum()) == 64
     assert len(rows.unique(dim=0)) == 128
+
+
+def test_native_critic_retains_return_units_after_reload_and_reads_old_fits():
+    from scripts.fit_dynamimic_recovery_critic import NativeTailValue
+    value = NativeTailValue(torch.nn.Identity())
+    with torch.no_grad():
+        value.value[-1].weight.fill_(.01)
+    legacy = {'critic': value.value.state_dict()}
+    value.load_native_fit(legacy)
+    obs = torch.randn(8, 794, requires_grad=True)
+    initial = value(obs)
+    value.load_native_fit(dict(legacy, return_scale=17., return_mean=-3.))
+    scaled = value(obs)
+    torch.testing.assert_close(scaled, 17 * initial - 3.)
+    assert torch.autograd.grad(scaled.sum(), obs)[0].norm() > 0
+    value.load_native_fit(legacy)
+    torch.testing.assert_close(value(obs), initial)
