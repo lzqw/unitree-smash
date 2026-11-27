@@ -121,6 +121,30 @@ def rollout(wm, member, data, rows, horizon, device, profiles, geometry=None):
     return loss, results
 
 
+def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, device, profiles):
+    """Compare both executed command sequences from identical native release states."""
+    times = starts[lanes][None] + torch.arange(horizon)[:, None]
+    q0, v0 = local_robot_state(baseline['before'][starts[lanes], lanes].to(device))
+    states = []
+    truth = []
+    for branch in (baseline, other):
+        q, v = q0, v0
+        commands = branch['final_joint_targets'][times, lanes].to(device)
+        profile = profiles[lanes].to(device)
+        for command in commands:
+            q, v, _ = checkpoint(wm, q, v, command, members, profile,
+                                 use_reentrant=False, preserve_rng_state=False)
+        states.append((rotation(q[:,3:7])[:,2], v[:,3:6], q[:,7:]))
+        q, v = local_robot_state(branch['after'][times[-1], lanes].to(device))
+        truth.append((rotation(q[:,3:7])[:,2], v[:,3:6], q[:,7:]))
+    losses = []
+    for a,b,x,y,floor in zip(*states, *truth, (.01,.1,.01), strict=True):
+        actual = y-x
+        scale = actual.square().mean().sqrt().clamp_min(floor)
+        losses.append(F.smooth_l1_loss((b-a)/scale, actual/scale))
+    return sum(losses)/len(losses)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('native','asset','output'):
@@ -128,6 +152,7 @@ def main():
     parser.add_argument('--steps-per-horizon', type=int, default=40)
     parser.add_argument('--batch-size', type=int, default=32)
     parser.add_argument('--history-native', type=Path, action='append', default=[])
+    parser.add_argument('--paired-native', type=Path)
     parser.add_argument('--resume', type=Path)
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
@@ -139,6 +164,24 @@ def main():
     contract = json.loads((args.native/'actuator_contract.json').read_text())
     if len(args.history_native) > 3 or len(set([args.native, *args.history_native])) != 1+len(args.history_native):
         raise ValueError('Expected up to four distinct native archives')
+    paired = None
+    if args.paired_native:
+        from scripts.compare_dynamimic_native_behavior import compare, first_tick
+        audit = compare(args.native, args.paired_native)
+        paired, _ = read_data(args.paired_native, ('active',))
+        starts = first_tick(data['live'] & data['gate'])
+        idx = starts.clamp_max(min(len(data['live']),len(paired['live']))-1)
+        lanes = torch.arange(len(starts))
+        same = torch.tensor([r['paired_active'] and all(r['prefix_max_abs_'+k] == 0 for k in
+                            ('before','request','final_joint_targets')) for r in audit['cases']])
+        same &= (starts == first_tick(paired['active'])) & (starts == idx)
+        same &= (data['before'][idx,lanes] == paired['before'][idx,lanes]).all(-1)
+        valid = same & (lanes%16 >= 4) & (starts+48 <= min(len(data['live']),len(paired['live'])))
+        times = (idx[None]+torch.arange(48)[:,None]).clamp_max(min(len(data['live']),len(paired['live']))-1)
+        valid &= (paired['active'][times,lanes] & data['live'][times,lanes] & ~data['body'][times,lanes]).all(0)
+        pair_lanes = lanes[valid]
+        if len(pair_lanes) < 2:
+            raise ValueError('No usable independent training pairs')
     latest_length = len(data['live'])
     prior_data = []
     archive_cases = [manifest['cases']]
@@ -174,7 +217,7 @@ def main():
     per_case = []
     members = tuple(range(len(wm.members)))
     generators = [torch.Generator().manual_seed(2315+i) for i in members]
-    optimizer = torch.optim.AdamW(wm.members.parameters(), lr=3e-4)
+    optimizer = torch.optim.AdamW(wm.members.parameters(), lr=3e-5 if paired is not None else 3e-4)
     for horizon, (all_rows, crossing, _) in pools.items():
         if not len(crossing):
             raise ValueError(f'No train-side touchdown support at H{horizon}')
@@ -185,6 +228,11 @@ def main():
                               for pool, size in ((crossing, n), (all_rows, args.batch_size-n))])
             optimizer.zero_grad(set_to_none=True)
             loss, _ = rollout(wm, members, data, rows, horizon, args.device, profiles)
+            if paired is not None:
+                sampled = torch.cat([pair_lanes[torch.randint(len(pair_lanes), (n,), generator=g)] for g in generators])
+                paired_horizon = {4:16,16:32,32:48}[horizon]
+                loss = loss + .2 * paired_response_loss(wm, members, data, paired, starts, sampled,
+                                                       paired_horizon, args.device, profiles)
             # Batched mean includes all members. Restore each independent batch's
             # gradient scale before clipping its parameters separately.
             (loss * len(members)).backward()
@@ -230,6 +278,8 @@ def main():
                  m['joint_speed_mae']<1.2 for m in metrics)
     torch.save(wm.state_dict(), args.output/'ensemble.pt')
     (args.output/'validation.json').write_text(json.dumps(dict(passed=passed, members=metrics, ensemble_sha256=hashlib.sha256((args.output/'ensemble.pt').read_bytes()).hexdigest(), native_checkpoint=manifest['checkpoint_sha256'],
+        paired_native=str(args.paired_native) if paired is not None else None,
+        paired_training_cases=len(pair_lanes) if paired is not None else 0,
         sources=[str(args.native), *map(str,args.history_native)], horizon_errors=horizon_errors,
         selected_horizons=[selected[i][2] for i in members],
         development_cases=[manifest['cases'][int(l)]['case_id'] for l in dev_rows[:,1]],
