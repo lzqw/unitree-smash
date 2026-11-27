@@ -88,6 +88,9 @@ def main():
                         help='TRAIN64 only: seeded relative RMS perturbation of Approach parameters')
     parser.add_argument('--approach-prefix-checkpoint', type=Path,
                         help='Replay a frozen TRAIN64 ground prefix before applying the candidate Approach head')
+    parser.add_argument('--recovery-prefix-checkpoint', type=Path,
+                        help='Diagnostic only: use incumbent requests across all lanes before switching Recovery')
+    parser.add_argument('--recovery-prefix-tick', type=int)
     parser.add_argument('--approach-prefix-tick', type=int, default=235)
     parser.add_argument('--approach-verify-snapshot', action='store_true',
                         help='Validate the resident snapshot against a 64-tick uninterrupted control replay')
@@ -95,6 +98,12 @@ def main():
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus','candidate'),default=None)
     args = parser.parse_args()
+    if bool(args.recovery_prefix_checkpoint) != (args.recovery_prefix_tick is not None):
+        parser.error('Recovery prefix requires both checkpoint and switch tick')
+    if args.recovery_prefix_checkpoint and (not args.research_fixed128 or not args.recovery_full_tail
+            or not 0 < args.recovery_prefix_tick < 800 or args.dynamimic_validation
+            or args.approach_prefix_checkpoint or args.early_arm_seconds is not None):
+        parser.error('Recovery prefix is restricted to a full-tail fixed128 diagnostic')
     if args.official_full_episode and (args.independent_panel_batch is None or not args.checkpoint
             or args.recovery_full_tail or args.relaxed_scoring or args.relaxed_survival_diagnostic
             or args.approach_ball_only or args.early_arm_seconds is not None):
@@ -414,14 +423,17 @@ def _run_native(args, stop_request):
         if args.recovery_full_tail and policy_execution['recovery_gate'] != POSTHIT:
             raise ValueError('Recovery baseline expects the causal contact-and-release gate')
         prefix_actor = None
-        if args.approach_prefix_checkpoint:
-            from quadsmash.rl.supermimic_physical_loop_loading_v1 import APPROACH_NAMES
-            prefix = torch.load(args.approach_prefix_checkpoint, map_location='cpu', mmap=True, weights_only=False)
+        prefix_path = args.recovery_prefix_checkpoint or args.approach_prefix_checkpoint
+        prefix_tick = args.recovery_prefix_tick if args.recovery_prefix_checkpoint else args.approach_prefix_tick
+        if prefix_path:
+            from quadsmash.rl.supermimic_physical_loop_loading_v1 import APPROACH_NAMES, RECOVERY_NAMES
+            allowed = RECOVERY_NAMES if args.recovery_prefix_checkpoint else APPROACH_NAMES
+            prefix = torch.load(prefix_path, map_location='cpu', mmap=True, weights_only=False)
             require_resume_contract(prefix, contract)
             if (resolve_contract(prefix)[0] != policy_execution or prefix['actor'].keys() != trained['actor'].keys()
                     or any(not torch.equal(value, trained['actor'][name])
-                           for name, value in prefix['actor'].items() if name not in APPROACH_NAMES)):
-                raise ValueError('Native gate prefix must share the execution contract and frozen actor heads')
+                           for name, value in prefix['actor'].items() if name not in allowed)):
+                raise ValueError('Prefix checkpoint differs outside the selected head or execution contract')
             prefix_actor, _ = load_ppo_initialized_actor(source_path, env.device)
             prefix_actor.load_state_dict(prefix['actor'], strict=True)
             prefix_actor.eval()
@@ -580,7 +592,7 @@ def _run_native(args, stop_request):
                         raise RuntimeError('Resident PhysX snapshot failed continuation verification')
                 before = obs['policy'] if reference is None and probe_capture is None else obs['policy'].clone()
                 old_target = None
-                active_actor = prefix_actor if prefix_actor is not None and tick < args.approach_prefix_tick else actor
+                active_actor = prefix_actor if prefix_actor is not None and tick < prefix_tick else actor
                 if dyna_policies is not None:
                     action = paired_requests(dyna_policies, before, env.rally.had_contact & env.rally.released,
                                              env.rally.release_time)
@@ -850,7 +862,7 @@ def _run_native(args, stop_request):
         if args.approach_sensitivity:
             metrics.update(approach_sensitivity=dict(relative_rms=args.approach_sensitivity,
                                                        seed=args.seed + 1, source_actor_sha256=clean_actor_sha))
-        if prefix_actor is not None:
+        if args.approach_prefix_checkpoint:
             metrics.update(approach_native_prefix=dict(
                 mode='verified_scene_restart' if args.approach_verify_snapshot else 'ground_prefix_replay',
                 switch_tick=args.approach_prefix_tick,
@@ -878,6 +890,10 @@ def _run_native(args, stop_request):
         metrics['native_episode_discounted_return_mean'] = sum(r['native_episode_discounted_return'] for r in rows)/len(rows)
         metrics['native_return_gamma'] = env._sm_native_returns.gamma
         write_json(args.output/'episodes_summary.json',rows)
+        if args.recovery_prefix_checkpoint:
+            metrics.update(evaluation_scope='fixed128 mixed-policy Recovery prefix diagnostic',
+                           recovery_prefix_checkpoint=str(prefix_path), recovery_prefix_actor_sha=prefix_actor_sha,
+                           recovery_switch_tick=prefix_tick, eligible_for_promotion=False)
         write_json(args.output/'metrics.json',metrics)
         write_json(args.output/'command_consistency.json',mapping)
         write_json(args.output/'completed.json',dict(control_ticks=ticks_completed,episodes=lanes,formal_acceptance=False))
