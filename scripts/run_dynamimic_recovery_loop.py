@@ -67,6 +67,7 @@ def main():
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--native-body-fault', action='store_true')
     group.add_argument('--absorbing-body-fault', action='store_true')
+    parser.add_argument('--sample-late-body', action='store_true')
     parser.add_argument('--native-segments', action='store_true')
     parser.add_argument('--blocks', type=int, default=8, choices=range(1,9))
     parser.add_argument('--device', default='cuda:0')
@@ -125,6 +126,7 @@ def main():
                         '--wm',wm,'--critic',critic,'--asset',args.asset,'--checkpoint',current,
                         '--companion',args.companion,'--device',args.device,
                         *(['--native-body-fault'] if args.native_body_fault else []),
+                        *(['--sample-late-body'] if args.sample_late_body else []),
                         *(['--native-segments'] if args.native_segments else []),
                         *(['--absorbing-body-fault'] if args.absorbing_body_fault else [])])
                     if args.retain_success_actions:

@@ -78,7 +78,16 @@ def imminent_root_rows(data):
     return F.pad(root_only, (0, 0, 0, 15)).unfold(0, 16, 1).any(-1)
 
 
-def stratified_starts(groups, count, generator, imminent=None):
+def late_body_windows(data, horizon):
+    ticks = torch.arange(len(data['live']))[:, None]
+    end = len(ticks)
+    landing = torch.where(data['landed'] & data['live'], ticks + 1, end).amin(0)
+    fault = torch.where(data['body'] & data['live'], ticks, end).amin(0)
+    return ((ticks >= landing + 100) & (ticks <= fault) & (fault < ticks + horizon)
+            & (fault < end) & data['active'])
+
+
+def stratified_starts(groups, count, generator, imminent=None, late_body=None):
     if not 128 <= count <= 256:
         raise ValueError('Recovery expects 128 to 256 native starts')
     sizes = [round(.3*count), round(.4*count)]
@@ -104,6 +113,17 @@ def stratified_starts(groups, count, generator, imminent=None):
                     sampled.extend(candidates[ids])
                     needed -= n_urgent
                     cases = cases[~urgent]
+            if phase == 1 and late_body is not None and needed:
+                late = cases[late_body[cases[:, 0], cases[:, 1]]]
+                # Each reserved slot covers a different measured fall for this Approach.
+                lanes = late[:, 1].unique()
+                lanes = lanes[torch.randperm(len(lanes), generator=generator)[:round(needed / 3)]]
+                for lane in lanes:
+                    choices = late[late[:, 1] == lane]
+                    row = choices[torch.randint(len(choices), (), generator=generator)]
+                    sampled.append(row)
+                    cases = cases[~(cases == row).all(1)]
+                needed -= len(lanes)
             ordered = cases[torch.randperm(len(cases), generator=generator)]
             cursors = {}
             tiers = []
@@ -299,6 +319,7 @@ def main():
     group.add_argument('--absorbing-body-fault', action='store_true')
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--horizon', type=int, choices=(48,64), default=48)
+    parser.add_argument('--sample-late-body', action='store_true')
     parser.add_argument('--native-segments', action='store_true', help='Re-anchor every 16 ticks to measured state and G07 memory')
     parser.add_argument('--updates', type=int, choices=range(15,26), default=20)
     parser.add_argument('--starts', type=int, default=128)
@@ -385,6 +406,7 @@ def main():
     data['root_terminated'] = root_termination(data['done'], data['after'][..., 2] + origins_z)
     pools = recovery_start_groups(data, ticks, held)
     imminent = imminent_root_rows(data)
+    late_body = late_body_windows(data, args.horizon)
     generator = torch.Generator().manual_seed(9917)
     success = ((data['relaxed']|data['strict']) & data['live']).any(0) & ~(
         (data['body']|data['net']|data['root_terminated']) & data['live']).any(0)
@@ -432,7 +454,8 @@ def main():
         original = actions(checks)
     for step in range(args.updates):
         started = perf_counter()
-        rows = stratified_starts(pools,args.starts,generator,imminent=imminent)
+        rows = stratified_starts(pools,args.starts,generator,imminent=imminent,
+                                 late_body=late_body if args.sample_late_body else None)
         optimizer.zero_grad(set_to_none=True)
         total = 0.
         segments = [(rows,args.horizon)]
@@ -461,6 +484,7 @@ def main():
                              segment_counts=[len(batch) for batch,_ in segments], seconds=perf_counter()-started, microbatch=args.microbatch,
                              peak_cuda_mib=torch.cuda.max_memory_allocated(device)/2**20 if device.type=='cuda' else None,
                              unique_native_cases=len(rows[:,1].unique()),
+                             late_body_prefall_starts=int(late_body[rows[:,0],rows[:,1]].sum()),
                              imminent_root_starts=int(imminent[rows[:,0],rows[:,1]].sum()),
                              h8d_starts=int((rows[:,1]%2).sum()),
                              retention=float(retention.detach())))
