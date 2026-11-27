@@ -192,3 +192,18 @@ def test_first_block_diagnostic_scores_rejected_candidate_without_promoting():
     assert selection is None
     assert first_block_candidate_to_score(selection, trials) == 1
     assert first_block_candidate_to_score(0, trials) == 0
+
+
+def test_retention_ridge_balances_case_phases_and_excludes_validation():
+    from scripts.fit_dynamimic_recovery_retention import ridge_correction
+
+    x = torch.tensor([[1., 1.], [2., 1.], [3., 1.], [4., 1.]], dtype=torch.double)
+    y = x[:, :1].clone()
+    success = torch.tensor([True, True, False, True])
+    keys = torch.arange(4)
+    training = torch.tensor([True, True, True, False])
+    expected = ridge_correction(x, y, success, keys, training)
+    y[-1] = 10000
+    ix = torch.tensor([0, 0, 0, 1, 2, 3])
+    actual = ridge_correction(x[ix], y[ix], success[ix], keys[ix], training[ix])
+    torch.testing.assert_close(actual, expected)

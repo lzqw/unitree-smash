@@ -1,0 +1,207 @@
+{
+  "behavior": "0c16c7181f28267f841ba95b8ba6aa115af8835cf1b8013a7b894653b6d68d9d",
+  "companion": "48228839ccc884fa92366d7d321f8f742c35b564a717c02ab76f9ed31c4959f2",
+  "successful_cases": 35,
+  "training_cases": 220,
+  "scope": "native training-side action replay only",
+  "candidates": {
+    "conservative": {
+      "before": "8f4929f49a74870a2c6175d126b164a1e5856779c6fa2e24f103e039e463414b",
+      "after": "27e9110cf2518f0a285445f1346b1465fd4df747ed601413458a505aa5c77add",
+      "rms": 0.006632714997977018,
+      "budget": 0.02,
+      "replay_max_error": 5.960464477539062e-07,
+      "folds": [
+        {
+          "fold": 0,
+          "group": "success",
+          "cases": 8,
+          "before_rms": 0.011519288644194603,
+          "after_rms": 0.004785930272191763,
+          "directional_gain": 0.32301169633865356,
+          "direction_cosine": 0.7774590849876404
+        },
+        {
+          "fold": 0,
+          "group": "prefall",
+          "cases": 35,
+          "before_rms": 0.011291172355413437,
+          "after_rms": 0.007995178923010826,
+          "directional_gain": 0.6710940003395081,
+          "direction_cosine": 0.9477508664131165
+        },
+        {
+          "fold": 1,
+          "group": "success",
+          "cases": 6,
+          "before_rms": 0.011082593351602554,
+          "after_rms": 0.005011415109038353,
+          "directional_gain": 0.37302666902542114,
+          "direction_cosine": 0.8249372243881226
+        },
+        {
+          "fold": 1,
+          "group": "prefall",
+          "cases": 38,
+          "before_rms": 0.01143968477845192,
+          "after_rms": 0.008104052394628525,
+          "directional_gain": 0.6752868890762329,
+          "direction_cosine": 0.9532353281974792
+        },
+        {
+          "fold": 2,
+          "group": "success",
+          "cases": 5,
+          "before_rms": 0.01141494233161211,
+          "after_rms": 0.004356626886874437,
+          "directional_gain": 0.2788306474685669,
+          "direction_cosine": 0.7305734753608704
+        },
+        {
+          "fold": 2,
+          "group": "prefall",
+          "cases": 39,
+          "before_rms": 0.011538581922650337,
+          "after_rms": 0.008159967139363289,
+          "directional_gain": 0.6477785706520081,
+          "direction_cosine": 0.9159896373748779
+        },
+        {
+          "fold": 3,
+          "group": "success",
+          "cases": 8,
+          "before_rms": 0.010802976787090302,
+          "after_rms": 0.005648543126881123,
+          "directional_gain": 0.4286915361881256,
+          "direction_cosine": 0.8198830485343933
+        },
+        {
+          "fold": 3,
+          "group": "prefall",
+          "cases": 37,
+          "before_rms": 0.011697075329720974,
+          "after_rms": 0.0091180931776762,
+          "directional_gain": 0.7434312701225281,
+          "direction_cosine": 0.9537050724029541
+        },
+        {
+          "fold": 4,
+          "group": "success",
+          "cases": 8,
+          "before_rms": 0.011481005698442459,
+          "after_rms": 0.004473969340324402,
+          "directional_gain": 0.3053339421749115,
+          "direction_cosine": 0.7835415601730347
+        },
+        {
+          "fold": 4,
+          "group": "prefall",
+          "cases": 36,
+          "before_rms": 0.011767681688070297,
+          "after_rms": 0.00797263253480196,
+          "directional_gain": 0.6332215070724487,
+          "direction_cosine": 0.9346410036087036
+        }
+      ]
+    },
+    "moderate": {
+      "before": "067526c68f2c6f970244a728bdc78a21006f8bc847cc749aadbdb0985dd2ad2d",
+      "after": "0b5f109ec3ede7208d7700c1555f9aea1b1209870c441b83ae57a861b09644ba",
+      "rms": 0.013227101415395737,
+      "budget": 0.035,
+      "replay_max_error": 6.556510925292969e-07,
+      "folds": [
+        {
+          "fold": 0,
+          "group": "success",
+          "cases": 8,
+          "before_rms": 0.023182151839137077,
+          "after_rms": 0.009554862976074219,
+          "directional_gain": 0.3177347183227539,
+          "direction_cosine": 0.7708927392959595
+        },
+        {
+          "fold": 0,
+          "group": "prefall",
+          "cases": 35,
+          "before_rms": 0.02280699647963047,
+          "after_rms": 0.016147619113326073,
+          "directional_gain": 0.6701691150665283,
+          "direction_cosine": 0.9465510249137878
+        },
+        {
+          "fold": 1,
+          "group": "success",
+          "cases": 6,
+          "before_rms": 0.022349774837493896,
+          "after_rms": 0.010017475113272667,
+          "directional_gain": 0.3664480745792389,
+          "direction_cosine": 0.8175745010375977
+        },
+        {
+          "fold": 1,
+          "group": "prefall",
+          "cases": 38,
+          "before_rms": 0.023078037425875664,
+          "after_rms": 0.016345495358109474,
+          "directional_gain": 0.6746748089790344,
+          "direction_cosine": 0.9525665044784546
+        },
+        {
+          "fold": 2,
+          "group": "success",
+          "cases": 5,
+          "before_rms": 0.023045741021633148,
+          "after_rms": 0.008694624528288841,
+          "directional_gain": 0.2731219530105591,
+          "direction_cosine": 0.723929762840271
+        },
+        {
+          "fold": 2,
+          "group": "prefall",
+          "cases": 39,
+          "before_rms": 0.023198002949357033,
+          "after_rms": 0.016437450423836708,
+          "directional_gain": 0.648378312587738,
+          "direction_cosine": 0.9150495529174805
+        },
+        {
+          "fold": 3,
+          "group": "success",
+          "cases": 8,
+          "before_rms": 0.02177022211253643,
+          "after_rms": 0.011304953135550022,
+          "directional_gain": 0.4230879843235016,
+          "direction_cosine": 0.8147507905960083
+        },
+        {
+          "fold": 3,
+          "group": "prefall",
+          "cases": 37,
+          "before_rms": 0.023571468889713287,
+          "after_rms": 0.018362294882535934,
+          "directional_gain": 0.7420966625213623,
+          "direction_cosine": 0.9526209235191345
+        },
+        {
+          "fold": 4,
+          "group": "success",
+          "cases": 8,
+          "before_rms": 0.023129452019929886,
+          "after_rms": 0.008925084955990314,
+          "directional_gain": 0.30014124512672424,
+          "direction_cosine": 0.7778192162513733
+        },
+        {
+          "fold": 4,
+          "group": "prefall",
+          "cases": 36,
+          "before_rms": 0.023747362196445465,
+          "after_rms": 0.016057917848229408,
+          "directional_gain": 0.6314815878868103,
+          "direction_cosine": 0.9338709115982056
+        }
+      ]
+    }
+  }
+}
