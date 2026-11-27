@@ -39,6 +39,8 @@ def main():
                         help='Frozen TRAIN128 comparison: also activate Recovery after a confirmed grounded miss')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--relaxed-scoring', action='store_true')
+    parser.add_argument('--official-full-episode', action='store_true',
+                        help='Use the historical independent512 full-episode task after verifying the checkpoint')
     parser.add_argument('--approach-ball-only', action='store_true',
                         help='Score the complete measured ball outcome independently of robot recovery')
     parser.add_argument('--early-arm-seconds', type=float, default=None,
@@ -93,6 +95,10 @@ def main():
     parser.add_argument('--native-action-probe-spec',type=Path,default=None)
     parser.add_argument('--native-action-probe-branch',choices=('nominal_a','nominal_b','minus','plus','candidate'),default=None)
     args = parser.parse_args()
+    if args.official_full_episode and (args.independent_panel_batch is None or not args.checkpoint
+            or args.recovery_full_tail or args.relaxed_scoring or args.relaxed_survival_diagnostic
+            or args.approach_ball_only or args.early_arm_seconds is not None):
+        parser.error('Official full-episode scoring requires an independent batch and a frozen checkpoint')
     dyna_flags = (args.dynamimic_validation, args.dynamimic_alternate,
                   args.dynamimic_companion, args.dynamimic_exclude_training)
     if any(dyna_flags) and (not all(dyna_flags) or not args.recovery_full_tail or
@@ -279,6 +285,11 @@ def _run_native(args, stop_request):
                 if args.early_arm_seconds is not None:
                     raise ValueError('A trained ball-only checkpoint retains its recorded gate')
             require_resume_contract(trained, contract)
+        if args.official_full_episode:
+            # Validate the source training contract above, then run the original
+            # strict task through native episode termination on the declared panel.
+            contract.pop('approach_ball_scoring', None)
+            contract.pop('relaxed_scoring', None)
         if args.recovery_full_tail:
             if contract['contact_flight_recovery'] is None:
                 raise ValueError('Recovery baseline requires native contact-flight association')

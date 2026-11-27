@@ -82,7 +82,7 @@ def main():
                 for i in range(4):
                     path = run_stage(['scripts/evaluate_supermimic_v1.py','--checkpoint',str(checkpoint),
                         '--headless','--kit_args=--renderer/multiGpu/enabled=false','--device','cuda:0','--physics-device','cuda:0',
-                        '--seed',str(panel['native_reset_seed']),'--independent-panel-batch',str(i)],
+                        '--seed',str(panel['native_reset_seed']),'--official-full-episode','--independent-panel-batch',str(i)],
                         folder/f'native_{i}',lock,status)
                     (folder/f'batch_{i}').symlink_to(path.name)
                     batch_paths.append(path)
