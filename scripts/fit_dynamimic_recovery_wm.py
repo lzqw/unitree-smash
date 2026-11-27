@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import math
 from pathlib import Path
 
 import torch
@@ -39,6 +40,24 @@ def sampling_pools(data, held, horizon):
     # At least one sample on each side of the rising edge of the touchdown latch.
     crossing = usable & ~landed[:len(usable)] & landed[horizon-1:]
     return (usable & ~held).nonzero(), (crossing & ~held).nonzero(), (crossing & held).nonzero()
+
+
+def crossing_panel(rows, lane_mask, latest_length):
+    rows = rows[(rows[:, 0] + 32 <= latest_length) & lane_mask[rows[:, 1]]]
+    lanes = rows[:, 1].unique()
+    if not len(lanes):
+        raise ValueError('No independent crossing windows for panel')
+    selected = []
+    for lane in lanes:
+        windows = rows[rows[:, 1] == lane]
+        selected.append(windows[len(windows)//2])
+    return torch.stack(selected)
+
+
+def crossing_metrics(sequence):
+    last = sequence[-1]
+    return dict(tilt_deg=float(last[:, 0].median()), com_height_mae_m=float(last[:, 1].mean()),
+                contact_accuracy=float(sequence[..., 2].mean()), joint_speed_mae=float(last[:, 3].mean()))
 
 
 def center_z(geometry, q, v):
@@ -120,33 +139,58 @@ def main():
         wm.load_state_dict(torch.load(args.resume, weights_only=True, map_location=args.device))
     geometry = FullBodyGeometryV1(wm.body.asset_sha256).to(args.device)
     geometry.enable_depth_batches()
-    pools = {k:sampling_pools(data, held, k) for k in (4, 16, 32)}
-    valid = pools[32][2]
-    valid = valid[valid[:,0]+32 <= latest_length]
-    # Only one window per independent held-out case; center each window around touchdown.
-    lanes = valid[:, 1].unique()
-    if len(lanes) == 0:
-        raise ValueError('No independent held-out crossing windows')
-    validation = torch.stack([valid[valid[:, 1] == lane][len(valid[valid[:, 1] == lane])//2] for lane in lanes])
+    # Reserve separate cases for choosing curriculum checkpoints and for the final gate.
+    development = torch.arange(len(profiles)) % 16 // 2 == 1
+    pools = {k:sampling_pools(data, held | development, k) for k in (4, 16, 32)}
+    validation = crossing_panel(pools[32][2], held, latest_length)
+    lanes = validation[:, 1]
+    dev_rows = crossing_panel(pools[32][2], development, latest_length)
+    selected = {}
+    selection_log = []
     metrics = []
     horizon_errors = []
     per_case = []
-    for member in range(3):
-        optimizer = torch.optim.AdamW(wm.members[member].parameters(), lr=3e-4)
-        generator = torch.Generator().manual_seed(2315+member)
-        for horizon, (all_rows, crossing, _) in pools.items():
-            if not len(crossing):
-                raise ValueError(f'No train-side touchdown support at H{horizon}')
-            for i in range(args.steps_per_horizon):
-                n = args.batch_size//2
-                rows = torch.cat([pool[torch.randint(len(pool), (size,), generator=generator)]
-                                  for pool,size in ((crossing,n), (all_rows,args.batch_size-n))])
-                optimizer.zero_grad(set_to_none=True)
-                loss, _ = rollout(wm, member, data, rows, horizon, args.device, profiles)
-                loss.backward()
-                torch.nn.utils.clip_grad_norm_(wm.members[member].parameters(), 1., error_if_nonfinite=True)
-                optimizer.step()
-            print(f'Member {member}, H{horizon}, final train loss {float(loss):.6g}', flush=True)
+    members = tuple(range(len(wm.members)))
+    generators = [torch.Generator().manual_seed(2315+i) for i in members]
+    optimizer = torch.optim.AdamW(wm.members.parameters(), lr=3e-4)
+    for horizon, (all_rows, crossing, _) in pools.items():
+        if not len(crossing):
+            raise ValueError(f'No train-side touchdown support at H{horizon}')
+        for i in range(args.steps_per_horizon):
+            n = args.batch_size//2
+            rows = torch.cat([pool[torch.randint(len(pool), (size,), generator=generator)]
+                              for generator in generators
+                              for pool, size in ((crossing, n), (all_rows, args.batch_size-n))])
+            optimizer.zero_grad(set_to_none=True)
+            loss, _ = rollout(wm, members, data, rows, horizon, args.device, profiles)
+            # Batched mean includes all members. Restore each independent batch's
+            # gradient scale before clipping its parameters separately.
+            (loss * len(members)).backward()
+            for net in wm.members:
+                torch.nn.utils.clip_grad_norm_(net.parameters(), 1., error_if_nonfinite=True)
+            optimizer.step()
+            if i == 0 or (i+1) % 10 == 0 or i+1 == args.steps_per_horizon:
+                print(f'H{horizon} step {i+1}/{args.steps_per_horizon} per member, '
+                      f'mean train loss {float(loss):.6g}', flush=True)
+        with torch.no_grad():
+            _, by_tick = rollout(wm, members, data, dev_rows.repeat(len(members), 1),
+                                 32, args.device, profiles, geometry)
+            for member, sequence in enumerate(torch.stack(by_tick).chunk(len(members), dim=1)):
+                result = crossing_metrics(sequence)
+                # Minimize the worst normalized error, then the sum in case of a tie.
+                errors = [result['tilt_deg']/4, result['com_height_mae_m']/.02,
+                          (1-result['contact_accuracy'])/.1, result['joint_speed_mae']/1.2]
+                if not all(math.isfinite(e) for e in errors):
+                    raise ValueError('Non-finite development score')
+                score = (max(errors), sum(errors))
+                selection_log.append(dict(horizon=horizon, member=member, **result))
+                if member not in selected or score < selected[member][0]:
+                    state = {key: value.detach().cpu().clone() for key, value in
+                             wm.members[member].state_dict().items()}
+                    selected[member] = (score, state, horizon)
+        (args.output/'development.json').write_text(json.dumps(selection_log, indent=2)+'\n')
+    for member in members:
+        wm.members[member].load_state_dict(selected[member][1])
         with torch.no_grad():
             _, per_tick = rollout(wm, member, data, validation, 32, args.device, profiles, geometry)
             # Terminal H32 body errors and all 32 steps of per-foot contact agreement.
@@ -159,14 +203,14 @@ def main():
                                   tilt_deg=float(score[0]), height_absolute_error_m=float(score[1]),
                                   foot_accuracy=float(sequence[:,idx,2].mean()), joint_speed_mae=float(score[3]))
                              for idx,(lane,row,score) in enumerate(zip(lanes.tolist(),validation,scores))])
-            metrics.append(dict(tilt_deg=float(scores[:,0].median()), com_height_mae_m=float(scores[:,1].mean()),
-                                contact_accuracy=float(torch.stack(per_tick)[...,2].mean()),
-                                joint_speed_mae=float(scores[:,3].mean())))
+            metrics.append(crossing_metrics(sequence))
     passed = all(m['tilt_deg']<4 and m['com_height_mae_m']<.02 and m['contact_accuracy']>.9 and
                  m['joint_speed_mae']<1.2 for m in metrics)
     torch.save(wm.state_dict(), args.output/'ensemble.pt')
     (args.output/'validation.json').write_text(json.dumps(dict(passed=passed, members=metrics, ensemble_sha256=hashlib.sha256((args.output/'ensemble.pt').read_bytes()).hexdigest(), native_checkpoint=manifest['checkpoint_sha256'],
         sources=[str(args.native), *map(str,args.history_native)], horizon_errors=horizon_errors,
+        selected_horizons=[selected[i][2] for i in members],
+        development_cases=[manifest['cases'][int(l)]['case_id'] for l in dev_rows[:,1]],
         per_case=per_case, train_pool_sizes={h:[len(a),len(b)] for h,(a,b,_) in pools.items()},
         held_cases=[manifest['cases'][i]['case_id'] for i in lanes.tolist()]),indent=2)+'\n')
 

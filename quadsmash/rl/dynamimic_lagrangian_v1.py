@@ -70,6 +70,30 @@ class DynaMimicLagrangianV1(nn.Module):
                                 [head_frame.placement.act(transform[3, :3])])
         buffer('sphere_radius', [by_name[n]['radius_m'] for n in parsed.feet] + [head['radius']])
 
+        # Fixed tree topology. Batch independent limbs at each depth, preserving
+        # the spatial inertia recursion and the public policy joint ordering.
+        levels = []
+        previous = [0]
+        while previous:
+            children = [i for i in range(1, len(ids)) if self.parents[i] in previous]
+            if not children:
+                break
+            parents = [previous.index(self.parents[i]) for i in children]
+            level = nn.Module()
+            level.register_buffer('joints', torch.tensor(children) - 1, persistent=False)
+            level.register_buffer('sources', torch.tensor(parents), persistent=False)
+            level.register_buffer('sum_children', torch.from_numpy(np.eye(len(previous))[parents].T.copy()),
+                                  persistent=False)
+            levels.append(level)
+            previous = children
+        self.levels = nn.ModuleList(levels)
+        traversal = torch.cat([level.joints for level in levels])
+        self.register_buffer('joint_order', traversal.argsort(), persistent=False)
+        self.level_sizes = [1] + [len(level.joints) for level in levels]
+        self.register_buffer('link_order', torch.cat((torch.zeros(1, dtype=torch.long),
+                                                      1 + traversal.argsort())), persistent=False)
+        self.register_buffer('surface_ids', torch.tensor(self.surface_parents), persistent=False)
+
     def forward(self, q, v, *, collision_surface=False):
         if q.shape != (v.shape[0], 25) or v.shape[-1] != 24:
             raise ValueError('Expected batch of 25 configuration and 24 tangent coordinates')
@@ -82,53 +106,59 @@ class DynaMimicLagrangianV1(nn.Module):
         top = torch.cat((rt, -rt @ skew(self.rest_t)), -1)
         X = torch.cat((top, torch.cat((torch.zeros_like(rt), rt), -1)), -2)
         S = torch.cat((torch.zeros_like(self.axis), self.axis), -1)
-        R = [rotation(q[:,3:7])]
-        pos = [q[:,:3]]
-        vel = [v[:,:6]]
-        grav = q.new_tensor([0.,0.,9.81]).expand(b,-1)
-        acc = [torch.cat((mv(R[0].mT,grav),torch.zeros_like(grav)), -1)]
-        J = [torch.eye(6,24,device=q.device,dtype=q.dtype).expand(b,-1,-1)]
-        basis = torch.eye(24,device=q.device,dtype=q.dtype)
-        for j, parent in enumerate(self.parents[1:]):
-            x = X[:,j]
-            pos.append(pos[parent] + mv(R[parent], self.rest_t[j]))
-            R.append(R[parent] @ rot[:,j])
-            joint_v = v[:,6+j,None] * S[j]
-            vi = mv(x, vel[parent]) + joint_v
+        R = [rotation(q[:,3:7])[:, None]]
+        pos = [q[:, None, :3]]
+        vel = [v[:, None, :6]]
+        grav = q.new_tensor([0., 0., 9.81]).expand(b, 1, -1)
+        acc = [torch.cat((mv(R[0].mT, grav), torch.zeros_like(grav)), -1)]
+        basis = torch.eye(24, device=q.device, dtype=q.dtype)
+        J = [basis[:6].expand(b, 1, -1, -1)]
+        joint_motion = S[..., None] * basis[6:, None]
+        joint_velocity = v[:, 6:, None] * S
+        transforms = []
+        for level in self.levels:
+            joints, parents = level.joints, level.sources
+            x = X.index_select(1, joints)
+            transforms.append(x)
+            parent_rot = R[-1].index_select(1, parents)
+            pos.append(pos[-1].index_select(1, parents) + mv(parent_rot, self.rest_t[joints]))
+            R.append(parent_rot @ rot.index_select(1, joints))
+            jv = joint_velocity.index_select(1, joints)
+            vi = mv(x, vel[-1].index_select(1, parents)) + jv
             vel.append(vi)
-            joint_w = joint_v[:,3:]
-            cross = torch.cat((torch.linalg.cross(vi[:,:3], joint_w),
-                               torch.linalg.cross(vi[:,3:], joint_w)), -1)
-            acc.append(mv(x, acc[parent]) + cross)
-            J.append(x @ J[parent] + S[j,:,None]*basis[6+j])
-        vc, ac = torch.stack(vel,1), torch.stack(acc,1)
-        mom = mv(self.inertia,vc)
-        wrench = mv(self.inertia,ac) + torch.cat((
-            torch.linalg.cross(vc[...,3:],mom[...,:3]),
-            torch.linalg.cross(vc[...,:3],mom[...,:3])+torch.linalg.cross(vc[...,3:],mom[...,3:])), -1)
-        forces = list(wrench.unbind(1))
-        composite = [m.expand(b,-1,-1) for m in self.inertia.unbind(0)]
+            cross = torch.cat((torch.linalg.cross(vi[..., :3], jv[..., 3:]),
+                               torch.linalg.cross(vi[..., 3:], jv[..., 3:])), -1)
+            acc.append(mv(x, acc[-1].index_select(1, parents)) + cross)
+            J.append(x @ J[-1].index_select(1, parents) + joint_motion[joints])
+        traversal = torch.cat((self.inertia[:1], *(self.inertia[level.joints+1] for level in self.levels)))
+        vc, ac = torch.cat(vel, 1), torch.cat(acc, 1)
+        mom = mv(traversal, vc)
+        wrench = mv(traversal, ac) + torch.cat((
+            torch.linalg.cross(vc[..., 3:], mom[..., :3]),
+            torch.linalg.cross(vc[..., :3], mom[..., :3]) + torch.linalg.cross(vc[..., 3:], mom[..., 3:])), -1)
+        forces = list(wrench.split(self.level_sizes, dim=1))
+        composite = list(traversal.expand(b, -1, -1, -1).split(self.level_sizes, dim=1))
         rows, tau = [], []
-        for i in range(18,0,-1):
-            j, parent = i-1, self.parents[i]
-            x = X[:,j]
-            tau.append((forces[i]*S[j]).sum(-1))
-            forces[parent] = forces[parent] + mv(x.mT,forces[i])
-            rows.append(mv(J[i].mT,mv(composite[i],S[j])))
-            composite[parent] = composite[parent] + x.mT @ composite[i] @ x
-        base = torch.nn.functional.pad(composite[0], (0,18,0,18))
-        lower = torch.nn.functional.pad(torch.stack(rows[::-1],1),(0,0,6,0))
+        for i in range(len(self.levels), 0, -1):
+            level, x = self.levels[i-1], transforms[i-1]
+            motion = S[level.joints]
+            tau.append((forces[i] * motion).sum(-1))
+            rows.append(mv(J[i].mT, mv(composite[i], motion)))
+            forces[i-1] = forces[i-1] + level.sum_children @ mv(x.mT, forces[i])
+            projected = (x.mT @ composite[i] @ x).flatten(-2)
+            composite[i-1] = composite[i-1] + (level.sum_children @ projected).unflatten(-1, (6, 6))
+        base = torch.nn.functional.pad(composite[0][:, 0], (0,18,0,18))
+        lower = torch.nn.functional.pad(torch.cat(rows[::-1],1).index_select(1,self.joint_order),(0,0,6,0))
         mass = base + lower + lower.tril(-1).mT
-        feet, jac = [], []
+        bias = torch.cat((forces[0][:, 0], torch.cat(tau[::-1],1).index_select(1,self.joint_order)), -1)
         offsets = self.sphere_offset if collision_surface else self.foot_offset
-        for i, (parent, off) in enumerate(zip(self.surface_parents if collision_surface else self.foot_parents, offsets)):
-            point = pos[parent] + mv(R[parent],off)
-            linear = R[parent] @ (J[parent][:,:3] - skew(off) @ J[parent][:,3:])
-            if collision_surface:
-                bottom = q.new_tensor([0., 0., -1.]) * self.sphere_radius[i]
-                point = point + bottom
-                linear = linear - skew(bottom) @ R[parent] @ J[parent][:,3:]
-            feet.append(point)
-            jac.append(linear)
-        jac = torch.stack(jac,1)
-        return mass, torch.cat((forces[0],torch.stack(tau[::-1],1)),-1), torch.stack(feet,1), mv(jac,v[:,None]), jac
+        parents = self.link_order[self.surface_ids[:len(offsets)]]
+        rot_parent = torch.cat(R, 1).index_select(1, parents)
+        jac_parent = torch.cat(J, 1).index_select(1, parents)
+        feet = torch.cat(pos, 1).index_select(1, parents) + mv(rot_parent, offsets)
+        jac = rot_parent @ (jac_parent[..., :3, :] - skew(offsets) @ jac_parent[..., 3:, :])
+        if collision_surface:
+            bottom = q.new_tensor([0., 0., -1.]) * self.sphere_radius[:, None]
+            feet = feet + bottom
+            jac = jac - skew(bottom) @ rot_parent @ jac_parent[..., 3:, :]
+        return mass, bias, feet, mv(jac, v[:,None]), jac

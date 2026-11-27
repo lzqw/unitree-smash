@@ -126,3 +126,12 @@ def test_head_sphere_is_a_separate_support_even_without_foot_contact():
     assert abs(result[0, 2]) < .04
     assert force[0, :4].abs().max() == 0
     assert force[0, 4, 2] > 750
+
+
+def test_recovery_sampling_preserves_phase_mix_and_equal_approach_counts():
+    from scripts.train_dynamimic_recovery_bptt import stratified_starts
+    groups = [torch.stack((torch.full((200,), stage), torch.arange(200)), 1) for stage in range(3)]
+    rows = stratified_starts(groups, 128, torch.Generator().manual_seed(17))
+    assert rows[:, 0].bincount().tolist() == [38, 51, 39]
+    assert int((rows[:, 1] % 2).sum()) == 64
+    assert len(rows.unique(dim=0)) == 128

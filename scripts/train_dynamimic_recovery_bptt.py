@@ -1,5 +1,6 @@
 """Recovery imagination objectives and sampling from audited native execution snapshots."""
 import math
+from functools import lru_cache
 
 import torch
 from torch.nn import functional as F
@@ -32,21 +33,26 @@ def stratified_starts(groups, count, generator):
     sizes = [round(.3*count), round(.4*count)]
     sizes.append(count-sum(sizes))
     sampled = []
+    taken = 0
     for pool, size in zip(groups, sizes, strict=True):
-        if len(pool) < size:
-            raise ValueError(f'Insufficient independent lane/tick starts: {len(pool)} for {size}')
-        # Randomized first pass assigns at most one window to each case before reuse.
-        ordered = pool[torch.randperm(len(pool), generator=generator)]
-        cursors = {}
-        tiers = []
-        for row in ordered:
-            lane = int(row[1])
-            rank = cursors.get(lane, 0)
-            cursors[lane] = rank + 1
-            if rank == len(tiers):
-                tiers.append([])
-            tiers[rank].append(row)
-        sampled.extend([row for tier in tiers for row in tier][:size])
+        # Odd phase sizes alternate their extra slot across the complete batch.
+        primary_count = (taken+size+1)//2 - (taken+1)//2
+        taken += size
+        for policy, needed in enumerate((primary_count, size-primary_count)):
+            cases = pool[pool[:,1] % 2 == policy]
+            if len(cases) < needed:
+                raise ValueError(f'Approach {policy} has {len(cases)} starts for {needed} requested')
+            ordered = cases[torch.randperm(len(cases), generator=generator)]
+            cursors = {}
+            tiers = []
+            for row in ordered:
+                lane = int(row[1])
+                rank = cursors.get(lane, 0)
+                cursors[lane] = rank + 1
+                if rank == len(tiers):
+                    tiers.append([])
+                tiers[rank].append(row)
+            sampled.extend([row for tier in tiers for row in tier][:needed])
     return torch.stack(sampled)
 
 
@@ -283,6 +289,10 @@ def main():
     if any(profile['position_limits'] != contract['profiles'][0]['position_limits'] for profile in contract['profiles']):
         raise ValueError('G07 expects shared physical joint limits')
 
+    @lru_cache(maxsize=32)
+    def archived_execution(tick):
+        return torch.load(directory/f'g07_{tick:04d}.pt', weights_only=False, mmap=True, map_location='cpu')
+
     def context(rows, audit):
         branches, sizes, ordered = [], [], []
         for tick in rows[:,0].unique().tolist():
@@ -290,7 +300,7 @@ def main():
             ids = subset[:,1].sort().values
             mask = torch.zeros(256,dtype=torch.bool)
             mask[ids] = True
-            snap = torch.load(directory/f'g07_{tick:04d}.pt',weights_only=False,map_location='cpu')
+            snap = archived_execution(tick)
             row,_ = compact_start(dict(before={},observation=data['obs'][tick],executor_before=snap),
                                   mask, torch.zeros(256,6))
             branches.append(restore_archive_execution(controller,row['executor_before'],device=device,
@@ -334,6 +344,8 @@ def main():
             raise ValueError('Recovery gradient is zero')
         optimizer.step()
         evidence.append(dict(step=step+1, objective=total, gradient_norm=float(grad),
+                             unique_native_cases=len(rows[:,1].unique()),
+                             h8d_starts=int((rows[:,1]%2).sum()),
                              retention=float(retention.detach())))
         print(evidence[-1],flush=True)
     with torch.no_grad():
