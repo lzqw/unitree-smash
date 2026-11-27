@@ -14,3 +14,5 @@
 正式更新的 KL 为 0.00790、0.00372。第二次更新发生一次相对当轮起点的折半。两次共 195 次小批量更新，只有 Recovery 六个参数张量发生变化。三次带探索采集的归一化前优势标准差依次为 3.57、3.41、3.38。采集时 Critic 对固定 GAE 回报目标的解释方差依次为 0.640、0.794、0.858。Fixed128 和扩训按止损规则跳过。
 
 原始记录位于 /home/autodrive/LZQW/experiments/E1_v2_recovery_scale/ppo03_controlled 。代码提交 fd987f21。
+
+[逐轮训练记录](ppo03_training.json) · [held32 止损记录](ppo03_early_stop.json)

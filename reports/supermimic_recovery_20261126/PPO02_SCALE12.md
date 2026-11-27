@@ -18,3 +18,5 @@
 第 197 步快照的 64 步原生重放中，关节位置最大偏差为 0.189 rad，训练采用从地面重放前缀。训练按 5、5、2 轮在进程内连续运行，跨块恢复 Critic 和 Adam。完成训练及三次冻结复评约用 9 小时 3 分钟，另有启动和快照诊断耗时。显存保护只管理 Recovery 自身的进程组。本轮未做 independent512 或 h8d 的完整冻结验收。
 
 本机逐例数据与各轮权重位于 /home/autodrive/LZQW/experiments/E1_v2_recovery_scale/ppo02_ground12 。
+
+固定面板逐例配对记录：[第 5 轮](ppo02_fixed128_05.json)、[第 10 轮](ppo02_fixed128_10.json)、[第 12 轮](ppo02_fixed128_12.json)。

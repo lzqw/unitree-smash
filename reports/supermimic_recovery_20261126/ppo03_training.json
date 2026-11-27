@@ -1,0 +1,173 @@
+{
+  "iteration_00": {
+    "control_ticks": 800,
+    "completed": 256,
+    "samples": 37032,
+    "elapsed_s": 1765.6614009840414,
+    "held32": {
+      "body": 20,
+      "net": 0,
+      "strict": 2,
+      "relaxed": 7,
+      "contact": 32
+    },
+    "evaluated_actor_update": 0,
+    "mean_episode_return": 21.73686408996582,
+    "train_body_ground_rate": 0.6875000596046448,
+    "critic_explained_variance": 0.0,
+    "advantage_std_before_normalization": 23.86151885986328,
+    "critic_explained_variance_after_fit": 0.1656808853149414,
+    "phase": "critic_warmup",
+    "cases": 256,
+    "active_cases": 223,
+    "sigma_leg": 0.054999999701976776,
+    "sigma_arm": 0.03500000014901161,
+    "iteration": 0,
+    "heldout_before_update": {
+      "body": 20,
+      "net": 0,
+      "strict": 2,
+      "relaxed": 7,
+      "contact": 32
+    },
+    "discarded_after_fault": 63476,
+    "minibatch_updates": 0,
+    "epochs": 0,
+    "accepted_kl": 1.179101177728226e-15,
+    "halvings": 0,
+    "frozen_verified": true,
+    "changed": [],
+    "train_elapsed_s": 1765.9746597920312,
+    "approach_frames": {
+      "final_best": 16493,
+      "h8d": 20539
+    }
+  },
+  "iteration_01": {
+    "control_ticks": 800,
+    "completed": 256,
+    "samples": 40621,
+    "elapsed_s": 1732.3443681829376,
+    "held32": {
+      "body": 21,
+      "net": 0,
+      "strict": 2,
+      "relaxed": 8,
+      "contact": 32
+    },
+    "evaluated_actor_update": 0,
+    "mean_episode_return": 24.64864730834961,
+    "train_body_ground_rate": 0.6428571939468384,
+    "critic_explained_variance": 0.6403161883354187,
+    "advantage_std_before_normalization": 3.5746750831604004,
+    "critic_explained_variance_after_fit": 0.835163414478302,
+    "phase": "actor_ppo",
+    "cases": 256,
+    "active_cases": 223,
+    "sigma_leg": 0.054999999701976776,
+    "sigma_arm": 0.03500000014901161,
+    "iteration": 1,
+    "heldout_before_update": {
+      "body": 21,
+      "net": 0,
+      "strict": 2,
+      "relaxed": 8,
+      "contact": 32
+    },
+    "discarded_after_fault": 58858,
+    "minibatch_updates": 160,
+    "epochs": 4,
+    "accepted_kl": 0.007902190650114852,
+    "halvings": 0,
+    "frozen_verified": true,
+    "changed": [
+      "actor.recovery.0.bias",
+      "actor.recovery.0.weight",
+      "actor.recovery.2.bias",
+      "actor.recovery.2.weight",
+      "actor.recovery.4.bias",
+      "actor.recovery.4.weight"
+    ],
+    "train_elapsed_s": 1733.0508845970035,
+    "approach_frames": {
+      "final_best": 18863,
+      "h8d": 21758
+    }
+  },
+  "iteration_02": {
+    "control_ticks": 800,
+    "completed": 256,
+    "samples": 35542,
+    "elapsed_s": 1694.3799661409575,
+    "held32": {
+      "body": 21,
+      "net": 0,
+      "strict": 2,
+      "relaxed": 7,
+      "contact": 32
+    },
+    "evaluated_actor_update": 1,
+    "mean_episode_return": 17.426820755004883,
+    "train_body_ground_rate": 0.660714328289032,
+    "critic_explained_variance": 0.7943202257156372,
+    "advantage_std_before_normalization": 3.4076342582702637,
+    "critic_explained_variance_after_fit": 0.8898067474365234,
+    "phase": "actor_ppo",
+    "cases": 256,
+    "active_cases": 224,
+    "sigma_leg": 0.04500000178813934,
+    "sigma_arm": 0.027499999850988388,
+    "iteration": 2,
+    "heldout_before_update": {
+      "body": 21,
+      "net": 0,
+      "strict": 2,
+      "relaxed": 7,
+      "contact": 32
+    },
+    "discarded_after_fault": 61036,
+    "minibatch_updates": 35,
+    "epochs": 1,
+    "accepted_kl": 0.003717038306902299,
+    "halvings": 1,
+    "frozen_verified": true,
+    "changed": [
+      "actor.recovery.0.bias",
+      "actor.recovery.0.weight",
+      "actor.recovery.2.bias",
+      "actor.recovery.2.weight",
+      "actor.recovery.4.bias",
+      "actor.recovery.4.weight"
+    ],
+    "train_elapsed_s": 1694.753289083019,
+    "approach_frames": {
+      "final_best": 16344,
+      "h8d": 19198
+    }
+  },
+  "iteration_03": {
+    "held32": {
+      "body": 21,
+      "net": 0,
+      "strict": 4,
+      "relaxed": 6,
+      "contact": 32
+    },
+    "evaluated_actor_update": 2,
+    "mean_episode_return": 21.338153839111328,
+    "train_body_ground_rate": 0.6651785969734192,
+    "critic_explained_variance": 0.8583589196205139,
+    "advantage_std_before_normalization": 3.376612663269043,
+    "baseline": {
+      "body": 20,
+      "net": 0,
+      "strict": 2,
+      "relaxed": 7,
+      "contact": 32
+    },
+    "consecutive": 2,
+    "completed_actor_updates": 2,
+    "reason": "two consecutive held32 regressions",
+    "minibatch_updates": 0
+  }
+}
