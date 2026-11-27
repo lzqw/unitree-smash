@@ -19,6 +19,10 @@ def root_survival(previous, height_w):
     return torch.minimum(previous, x.square() * (3. - 2. * x))
 
 
+def expected_live_reward(previous_survival, next_survival, reward):
+    return next_survival * reward - FALL_COST * (previous_survival - next_survival)
+
+
 def candidate_steps(measure):
     """Apply each interpolated policy before yielding its measured action-space step."""
     alpha = 1.
@@ -102,7 +106,7 @@ def stratified_starts(groups, count, generator, imminent=None):
     return torch.stack(sampled)
 
 
-def recovery_reward(q, v, contacts, geometry, landed, body_fault=None):
+def recovery_reward(q, v, contacts, geometry, landed, body_fault=None, absorbing_body=False):
     """Smooth physical margins. Link origins are calibrated surrogates for the ground barrier."""
     rot = rotation(q[:, 3:7])
     linear, angular = mv(rot, v[:, :3]), mv(rot, v[:, 3:6])
@@ -127,7 +131,9 @@ def recovery_reward(q, v, contacts, geometry, landed, body_fault=None):
              *(geometry.ids[name+'_hip'] for name in ('FL','FR','RL','RR')))
     h_min = fk['position'][:,sites,2].amin(-1)
     net = (fk['position'][:,geometry.ids['Racket'],0]-1.38).relu().square() + (q[:,0]-1.06).relu().square()
-    if body_fault is None:
+    if absorbing_body:
+        ground_cost = 0.
+    elif body_fault is None:
         ground_cost = 20*(.14-h_min).relu().square()
     else:
         from scripts.dynamimic_body_fault import body_fault_score
@@ -189,7 +195,7 @@ def released_ball_path(ball, horizon):
     return path
 
 
-def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon, body_fault=None):
+def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon, body_fault=None, absorbing_body=False):
     from quadsmash.rl.dynamimic_recovery_wm_v1 import local_robot_state
     from quadsmash.rl.supermimic_physical_observation_v1 import PhysicalPolicyInputs
     from torch.utils.checkpoint import checkpoint
@@ -206,6 +212,8 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
     present = obs[:, 67].bool()
     ever_airborne = (obs[:, 773:775].sum(-1)>0) | starts['landed']
     survival = q.new_ones(len(q))
+    root_alive = survival
+    body_alive = survival
     discount = 1.
     value = q.new_zeros(len(q))
     saturation = q.new_zeros(())
@@ -230,9 +238,13 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
         q, v, contacts, variance = checkpoint(body_step, q, v, command.final_joint_targets, use_reentrant=False)
         disagreement = disagreement + variance/horizon
         landed = torch.maximum(landed, contacts.amax(-1))
-        next_survival = root_survival(survival, q[:, 2] + starts['origin_z'])
-        step_reward = next_survival * recovery_reward(q, v, contacts, geometry, landed, body_fault)
-        value = value + discount * (step_reward - FALL_COST * (survival - next_survival))
+        root_alive = root_survival(root_alive, q[:, 2] + starts['origin_z'])
+        if absorbing_body:
+            from scripts.dynamimic_body_fault import body_fault_score
+            body_alive = body_alive * (1 - body_fault_score(q, v, contacts, body_fault))
+        next_survival = root_alive * body_alive
+        step_reward = recovery_reward(q, v, contacts, geometry, landed, body_fault, absorbing_body)
+        value = value + discount * expected_live_reward(survival, next_survival, step_reward)
         survival = next_survival
         discount *= .995
         elapsed = elapsed + .01
@@ -270,7 +282,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('native','checkpoint','companion','asset','wm','critic','output'):
         parser.add_argument('--'+name, required=True, type=Path)
-    parser.add_argument('--native-body-fault', action='store_true')
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument('--native-body-fault', action='store_true')
+    group.add_argument('--absorbing-body-fault', action='store_true')
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--horizon', type=int, choices=(48,64), default=48)
     parser.add_argument('--updates', type=int, choices=range(15,26), default=20)
@@ -295,7 +309,17 @@ def main():
             raise ValueError('Native rollout identity differs from BPTT start')
     device = torch.device(args.device)
     body_fault = None
-    if args.native_body_fault:
+    if args.absorbing_body_fault:
+        from scripts.dynamimic_body_fault import calibrate
+        ranking, calibration = calibrate(data)
+        body_fault = ranking * calibration[0]
+        body_fault[-1] += calibration[1]
+        if not body_fault.isfinite().all() or calibration[0] <= 0:
+            raise ValueError('Invalid native first-contact incidence calibration')
+        dump(args.output/'body_fault.json', dict(calibration=calibration.tolist(), coefficients=body_fault.tolist(),
+                                                 native=manifest['checkpoint_sha256'], terminal_cost=FALL_COST))
+        body_fault = body_fault.to(device)
+    elif args.native_body_fault:
         from scripts.dynamimic_body_fault import fit_native_body_fault
         body_fault, fault_metrics = fit_native_body_fault(data)
         dump(args.output/'body_fault.json', dict(held=fault_metrics, coefficients=body_fault.tolist(),
@@ -400,7 +424,7 @@ def main():
         total = 0.
         for group in rows.split(args.microbatch):
             start, memory = context(group, audit=step==0)
-            loss = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,step%3,args.horizon,body_fault)
+            loss = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,step%3,args.horizon,body_fault,args.absorbing_body_fault)
             weighted = loss*len(group)/len(rows)
             weighted.backward()
             total += float(weighted.detach())
@@ -438,7 +462,7 @@ def main():
                        args.output/(label+'.pt'))
             dump(args.output/(label+'.json'),dict(alpha=alpha,rms=rms,budget=budget))
     dump(args.output/'training.json',dict(updates=evidence, pools=[len(p) for p in pools], retained_cases=int(success.sum()),
-                                         horizon=args.horizon, native_body_fault=args.native_body_fault, native=manifest['checkpoint_sha256']))
+                                         horizon=args.horizon, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
 
 
 if __name__ == '__main__':

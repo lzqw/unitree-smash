@@ -259,3 +259,20 @@ def test_native_replay_keeps_case_and_launch_splits_across_training_panels():
     second[4] = dict(case_id=first[4]['case_id'], launch=[9999])
     with pytest.raises(ValueError, match='case'):
         verify_replay_cases([first, second])
+
+
+def test_absorbing_fault_charges_once_and_removes_success_tail():
+    from scripts.train_dynamimic_recovery_bptt import expected_live_reward
+    from scripts.fit_dynamimic_recovery_critic import FALL_COST
+
+    hazard = torch.tensor(.25, requires_grad=True)
+    alive = torch.ones_like(hazard)
+    result = torch.zeros_like(hazard)
+    for step_risk in (hazard, hazard, torch.ones_like(hazard)):
+        remaining = alive * (1 - step_risk)
+        result = result + expected_live_reward(alive, remaining, 1.)
+        alive = remaining
+    result = result + 10 * alive
+    torch.testing.assert_close(result, (1 - hazard) + (1 - hazard)**2 - FALL_COST)
+    result.backward()
+    torch.testing.assert_close(hazard.grad, torch.tensor(-2.5))

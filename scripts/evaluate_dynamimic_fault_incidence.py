@@ -4,36 +4,10 @@ import json
 from pathlib import Path
 
 import torch
-import torch.nn.functional as F
 
-from scripts.dynamimic_body_fault import features, fit_native_body_fault
+
+from scripts.dynamimic_body_fault import calibrate, scores
 from scripts.fit_dynamimic_recovery_wm import read_data
-from quadsmash.rl.dynamimic_recovery_wm_v1 import local_robot_state
-
-
-def scores(data, coefficients):
-    tick, lane = data['active'].nonzero().T
-    q, v = local_robot_state(data['after'][tick, lane])
-    x = features(q, v, data['feet'][tick, lane])
-    return tick, lane, x @ coefficients[:-1] + coefficients[-1]
-
-
-def calibrate(data):
-    coefficients, _ = fit_native_body_fault(data)
-    tick, lane, logit = scores(data, coefficients)
-    train = lane % 16 >= 2
-    y = data['body'][tick[train], lane[train]].float()
-    params = torch.tensor([.5, -5.], requires_grad=True)
-    optimizer = torch.optim.LBFGS([params], max_iter=80, line_search_fn='strong_wolfe')
-
-    def closure():
-        optimizer.zero_grad()
-        loss = F.binary_cross_entropy_with_logits(params[0] * logit[train] + params[1], y)
-        loss.backward()
-        return loss
-
-    optimizer.step(closure)
-    return coefficients, params.detach()
 
 
 def evaluate(data, coefficients, params, selected):
