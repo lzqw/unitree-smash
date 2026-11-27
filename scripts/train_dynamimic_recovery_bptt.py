@@ -102,7 +102,7 @@ def stratified_starts(groups, count, generator, imminent=None):
     return torch.stack(sampled)
 
 
-def recovery_reward(q, v, contacts, geometry, landed):
+def recovery_reward(q, v, contacts, geometry, landed, body_fault=None):
     """Smooth physical margins. Link origins are calibrated surrogates for the ground barrier."""
     rot = rotation(q[:, 3:7])
     linear, angular = mv(rot, v[:, :3]), mv(rot, v[:, 3:6])
@@ -127,7 +127,12 @@ def recovery_reward(q, v, contacts, geometry, landed):
              *(geometry.ids[name+'_hip'] for name in ('FL','FR','RL','RR')))
     h_min = fk['position'][:,sites,2].amin(-1)
     net = (fk['position'][:,geometry.ids['Racket'],0]-1.38).relu().square() + (q[:,0]-1.06).relu().square()
-    return landed*ground_reward + (1-landed)*air_reward - 20*(.14-h_min).relu().square() - 20*net
+    if body_fault is None:
+        ground_cost = 20*(.14-h_min).relu().square()
+    else:
+        from scripts.dynamimic_body_fault import body_fault_score
+        ground_cost = .15 * body_fault_score(q, v, contacts, body_fault)
+    return landed*ground_reward + (1-landed)*air_reward - ground_cost - 20*net
 
 
 def saturation_cost(raw):
@@ -184,7 +189,7 @@ def released_ball_path(ball, horizon):
     return path
 
 
-def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon):
+def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon, body_fault=None):
     from quadsmash.rl.dynamimic_recovery_wm_v1 import local_robot_state
     from quadsmash.rl.supermimic_physical_observation_v1 import PhysicalPolicyInputs
     from torch.utils.checkpoint import checkpoint
@@ -226,7 +231,7 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
         disagreement = disagreement + variance/horizon
         landed = torch.maximum(landed, contacts.amax(-1))
         next_survival = root_survival(survival, q[:, 2] + starts['origin_z'])
-        step_reward = next_survival * recovery_reward(q, v, contacts, geometry, landed)
+        step_reward = next_survival * recovery_reward(q, v, contacts, geometry, landed, body_fault)
         value = value + discount * (step_reward - FALL_COST * (survival - next_survival))
         survival = next_survival
         discount *= .995
@@ -265,6 +270,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('native','checkpoint','companion','asset','wm','critic','output'):
         parser.add_argument('--'+name, required=True, type=Path)
+    parser.add_argument('--native-body-fault', action='store_true')
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--horizon', type=int, choices=(48,64), default=48)
     parser.add_argument('--updates', type=int, choices=range(15,26), default=20)
@@ -288,6 +294,13 @@ def main():
         if manifest[key] != hashlib.sha256(path.read_bytes()).hexdigest():
             raise ValueError('Native rollout identity differs from BPTT start')
     device = torch.device(args.device)
+    body_fault = None
+    if args.native_body_fault:
+        from scripts.dynamimic_body_fault import fit_native_body_fault
+        body_fault, fault_metrics = fit_native_body_fault(data)
+        dump(args.output/'body_fault.json', dict(held=fault_metrics, coefficients=body_fault.tolist(),
+                                                native=manifest['checkpoint_sha256'], cost_scale=.15))
+        body_fault = body_fault.to(device)
     contract = json.loads((args.native/'actuator_contract.json').read_text())
     wm = DynaMimicRecoveryWorldModel(args.asset, contract).to(device)
     wm.load_state_dict(torch.load(args.wm/'ensemble.pt',map_location=device,weights_only=True))
@@ -387,7 +400,7 @@ def main():
         total = 0.
         for group in rows.split(args.microbatch):
             start, memory = context(group, audit=step==0)
-            loss = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,step%3,args.horizon)
+            loss = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,step%3,args.horizon,body_fault)
             weighted = loss*len(group)/len(rows)
             weighted.backward()
             total += float(weighted.detach())
@@ -425,7 +438,7 @@ def main():
                        args.output/(label+'.pt'))
             dump(args.output/(label+'.json'),dict(alpha=alpha,rms=rms,budget=budget))
     dump(args.output/'training.json',dict(updates=evidence, pools=[len(p) for p in pools], retained_cases=int(success.sum()),
-                                         horizon=args.horizon, native=manifest['checkpoint_sha256']))
+                                         horizon=args.horizon, native_body_fault=args.native_body_fault, native=manifest['checkpoint_sha256']))
 
 
 if __name__ == '__main__':

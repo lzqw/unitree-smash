@@ -207,3 +207,26 @@ def test_retention_ridge_balances_case_phases_and_excludes_validation():
     ix = torch.tensor([0, 0, 0, 1, 2, 3])
     actual = ridge_correction(x[ix], y[ix], success[ix], keys[ix], training[ix])
     torch.testing.assert_close(actual, expected)
+
+
+def test_native_body_fault_does_not_fit_held_lanes_and_remains_differentiable():
+    from scripts.dynamimic_body_fault import body_fault_score, fit_native_body_fault
+    from quadsmash.rl.dynamimic_recovery_wm_v1 import local_robot_state
+
+    rng = torch.Generator().manual_seed(7)
+    state = torch.randn((24, 16, 55), generator=rng)
+    active = torch.ones(24, 16, dtype=torch.bool)
+    fault = torch.zeros_like(active)
+    fault[19, 2:8] = True
+    data = dict(after=state, feet=torch.rand(24, 16, 4, generator=rng), active=active,
+                body=fault, strict=torch.zeros_like(active), relaxed=torch.zeros_like(active))
+    before, _ = fit_native_body_fault(data)
+    data['body'][10, :2] = True
+    after, metrics = fit_native_body_fault(data)
+    torch.testing.assert_close(before, after, atol=0, rtol=0)
+    assert metrics['first_body']['cases'] == 2
+    q, v = local_robot_state(state[4])
+    q.requires_grad_()
+    score = body_fault_score(q, v, data['feet'][4], after)
+    grad, = torch.autograd.grad(score.sum(), q)
+    assert torch.isfinite(grad).all() and grad.abs().max() > 0

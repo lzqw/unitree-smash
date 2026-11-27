@@ -56,6 +56,7 @@ def main():
                         help='Fit the Recovery output layer to preserve successful native actions after BPTT')
     parser.add_argument('--initial-retention', type=Path,
                         help='Reuse previously fitted and replay-verified first-block retention candidates')
+    parser.add_argument('--native-body-fault', action='store_true')
     parser.add_argument('--blocks', type=int, default=8, choices=range(1,9))
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
@@ -108,7 +109,8 @@ def main():
                 if retention is None:
                     fit = run('bptt',['scripts/train_dynamimic_recovery_bptt.py','--native',native,
                         '--wm',wm,'--critic',critic,'--asset',args.asset,'--checkpoint',current,
-                        '--companion',args.companion,'--device',args.device])
+                        '--companion',args.companion,'--device',args.device,
+                        *(['--native-body-fault'] if args.native_body_fault else [])])
                     if args.retain_success_actions:
                         retention = run('retention',['scripts/fit_dynamimic_recovery_retention.py','--native',native,
                             '--checkpoint',current,'--companion',args.companion,'--bptt',fit])
