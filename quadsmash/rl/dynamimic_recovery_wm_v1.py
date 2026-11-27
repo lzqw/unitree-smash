@@ -34,6 +34,37 @@ def integrate_configuration(q, v, dt):
                       new_quat, q[:, 7:] + dt * v[:, 6:]), dim=-1)
 
 
+def solve_support_impulses(mobility, jac, free_velocity, gap, prior, dt, rate_bounds):
+    """Couple the four foot spheres, head collision sphere and native joint stops."""
+    contact_dims = jac.shape[1] * 3
+    rows = jac.flatten(1, 2)
+    joint_rows = torch.eye(24, device=rows.device, dtype=rows.dtype)[6:]
+    rows = torch.cat((rows, joint_rows.expand(len(rows), -1, -1)), dim=1)
+    response = torch.linalg.solve_ex(mobility, rows.mT).result
+    coupling = rows @ response
+    diagonal = coupling.diagonal(dim1=-2, dim2=-1).clamp_min(1e-6)
+    foot_diag = diagonal[:, :contact_dims].reshape_as(prior)
+    free = mv(rows, free_velocity)
+    normal_target = -torch.where(gap > 0, gap / dt, gap / .01)
+    impulse = prior * dt
+    joint = torch.zeros_like(free[:, contact_dims:])
+    for _ in range(14):
+        combined = torch.cat((impulse.flatten(1), joint), 1)
+        speed = free + mv(coupling, combined)
+        foot_speed = speed[:, :contact_dims].reshape_as(prior)
+        candidate = impulse + ((prior * dt - impulse) * .015 - foot_speed / foot_diag)
+        normal = (candidate[..., 2] + normal_target / foot_diag[..., 2]).relu()
+        tangent = candidate[..., :2]
+        fraction = (.9 * normal / tangent.norm(dim=-1).clamp_min(1e-8)).clamp_max(1)
+        impulse = impulse.lerp(torch.cat((tangent * fraction[..., None], normal[..., None]), -1), .5)
+        lower, upper = rate_bounds
+        joint_low = joint + (lower - speed[:, contact_dims:]) / diagonal[:, contact_dims:]
+        joint_high = joint + (upper - speed[:, contact_dims:]) / diagonal[:, contact_dims:]
+        joint = joint.lerp(joint_low.relu() - (-joint_high).relu(), .5)
+    combined = torch.cat((impulse.flatten(1), joint), 1)
+    return free_velocity + mv(response, combined), impulse / dt
+
+
 class ContactForces(nn.Module):
     def __init__(self):
         super().__init__()
@@ -75,6 +106,12 @@ class DynaMimicRecoveryWorldModel(nn.Module):
                     or (values < 0).any() or (key == 'effort_limit' and (values == 0).any())):
                 raise ValueError('Invalid actuator contract field ' + key)
             self.register_buffer(key, values)
+        self.register_buffer('stops', torch.tensor([p['position_limits'] for p in contract['profiles']]))
+        self.register_buffer('max_rate', torch.tensor([p['velocity_limit'] for p in contract['profiles']]))
+        if (self.stops.shape != (*self.kp.shape, 2) or self.max_rate.shape != self.kp.shape
+                or not torch.isfinite(self.stops).all() or not torch.isfinite(self.max_rate).all()
+                or not (self.stops[..., 0] < self.stops[..., 1]).all() or not (self.max_rate > 0).all()):
+            raise ValueError('Invalid native drive position or velocity limits')
         self.members = nn.ModuleList(ContactForces() for _ in range(3))
 
     def forward(self, q, v, target, member, profile=None):
@@ -84,24 +121,37 @@ class DynaMimicRecoveryWorldModel(nn.Module):
             profile = 0
         kp, kd, limit = self.kp[profile], self.kd[profile], self.effort_limit[profile]
         for _ in range(self.substeps):
-            mass, bias, feet, foot_v, jac = self.body(q, v)
-            foot_z = feet[..., 2]
+            mass, bias, feet, foot_v, jac = self.body(q, v, collision_surface=True)
+            gap = feet[..., 2]
+            foot_z = gap[:, :4] + self.body.sphere_radius[:4]
             gravity = -rotation(q[:, 3:7])[:, 2]
             features = torch.cat((v[:, :6], gravity, q[:, 7:], v[:, 6:], foot_z,
-                                  foot_v.flatten(1), target), -1)
-            force, prob, residual, ground_logit = self.members[member](features, foot_z)
-            external = mv(jac.mT, force).sum(1) + residual - bias
+                                  foot_v[:, :4].flatten(1), target), -1)
+            if isinstance(member, tuple):
+                # Lane groups follow member order. Physics kernels run once for all groups.
+                groups = [self.members[index](f, z) for index, f, z in zip(
+                    member, features.chunk(len(member)), foot_z.chunk(len(member)), strict=True)]
+                force, _, residual, ground_logit = [torch.cat(values) for values in zip(*groups)]
+            else:
+                force, _, residual, ground_logit = self.members[member](features, foot_z)
+            external = residual - bias
             regularized = mass + 1e-6 * torch.eye(24, device=q.device, dtype=q.dtype)
             # Use end-of-substep position/velocity for the implicit native drives.
             # An explicit derivative term excites the low-inertia wrist at 2.5 ms.
             damping = self.dt * (kd + self.dt * kp)
             drive = kp * (target - q[:, 7:] - self.dt * v[:, 6:]) - kd * v[:, 6:]
             implicit_mass = regularized + torch.diag_embed(F.pad(damping, (6, 0)))
-            prediction = torch.linalg.solve(implicit_mass, (external + F.pad(drive, (6, 0))).unsqueeze(-1)).squeeze(-1)
+            prediction = torch.linalg.solve_ex(implicit_mass, (external + F.pad(drive, (6, 0))).unsqueeze(-1)).result.squeeze(-1)
             torque = limit * ((drive - damping * prediction[:, 6:]) / limit).tanh()
             net = external + F.pad(torque, (6, 0))
-            acceleration = torch.linalg.solve(regularized, net.unsqueeze(-1)).squeeze(-1)
-            v = v + self.dt * acceleration
+            acceleration = torch.linalg.solve_ex(regularized, net.unsqueeze(-1)).result.squeeze(-1)
+            lower, upper = self.stops[profile].unbind(-1)
+            max_rate = self.max_rate[profile]
+            bounds = (((lower - q[:, 7:]) / self.dt).clamp(-max_rate, max_rate),
+                      ((upper - q[:, 7:]) / self.dt).clamp(-max_rate, max_rate))
+            v, force = solve_support_impulses(implicit_mass, jac, v + self.dt * acceleration,
+                                           gap, F.pad(force, (0, 0, 0, 1)), self.dt, bounds)
+            prob = 1 - torch.exp(-force[:, :4, 2] / 2)
             q = integrate_configuration(q, v, self.dt)
-        return q, v, dict(foot_contact=prob, contact_force=force, residual_force=residual,
+        return q, v, dict(foot_contact=prob, contact_force=force[:, :4], head_support_force=force[:, 4], residual_force=residual,
                           body_ground_logit=ground_logit)

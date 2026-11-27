@@ -47,21 +47,29 @@ def test_contact_forces_and_integrator_propagate_target_gradients():
     contract = dict(schema='native-joint-drive-v1', asset_sha256=hashlib.sha256(ASSET.read_bytes()).hexdigest(),
                     control_dt_s=.01, joint_names=JOINT_NAMES,
                     profiles=[dict(kp=[25.]*12+[80.]*6, kd=[.5]*12+[4.]*6,
-                                   effort_limit=[23.5]*12+[100.]*6)])
+                                   effort_limit=[23.5]*12+[100.]*6, velocity_limit=[30.]*12+[5.]*6,
+                                   position_limits=[[-3., 3.]]*18)])
     wm = DynaMimicRecoveryWorldModel(ASSET, contract).double()
     state = torch.zeros(2, 55, dtype=torch.float64)
     state[:, 2] = .38
     state[:, 3] = 1.
     q, v = local_robot_state(state)
     target = torch.full_like(q[:, 7:], .01, requires_grad=True)
+    sequential = []
     for member in range(3):
         q1, v1, aux = wm(q, v, target, member)
+        sequential.append((q1.detach(), v1.detach(), aux['foot_contact'].detach()))
         force = aux['contact_force']
         assert (force[..., 2] >= 0).all()
         assert (force[..., :2].norm(dim=-1) <= .9*force[..., 2]+1e-12).all()
         assert torch.allclose(q1[:, 3:7].norm(dim=-1), torch.ones_like(q1[:, 0]))
         grad, = torch.autograd.grad(v1.square().mean(), target)
         assert grad.isfinite().all() and grad.abs().sum() > 0
+
+    with torch.no_grad():
+        qb, vb, aux = wm(q.repeat(3, 1), v.repeat(3, 1), target.repeat(3, 1), (0, 1, 2))
+        for actual, parts in zip((qb, vb, aux['foot_contact']), zip(*sequential)):
+            torch.testing.assert_close(actual, torch.cat(parts))
 
 
 def test_recovery_starts_require_release_and_keep_prefall_states():
@@ -99,3 +107,22 @@ def test_recovery_only_saturation_gradient_and_focus_coverage():
     assert (w.grad[:,:759].reshape(128,11,69)[:,:,61:67]>0).all()
     assert (w.grad[:,776:794]>0).all()
     assert (w.grad[:,:759].reshape(128,11,69)[:,:,:61]==0).all()
+
+
+def test_head_sphere_is_a_separate_support_even_without_foot_contact():
+    from quadsmash.rl.dynamimic_recovery_wm_v1 import solve_support_impulses
+
+    # A body descending onto the fifth sphere with all four feet above ground.
+    tensor = torch.float64
+    mobility = torch.eye(24, dtype=tensor)[None]
+    jac = torch.zeros(1, 5, 3, 24, dtype=tensor)
+    jac[..., :3] = torch.eye(3, dtype=tensor)
+    velocity = torch.zeros(1, 24, dtype=tensor)
+    velocity[:, 2] = -2
+    gap = torch.tensor([[.20]*4 + [0]], dtype=tensor)
+    rates = torch.full((1, 18), 30., dtype=tensor)
+    result, force = solve_support_impulses(mobility, jac, velocity, gap,
+        torch.zeros(1, 5, 3, dtype=tensor), .0025, (-rates, rates))
+    assert abs(result[0, 2]) < .04
+    assert force[0, :4].abs().max() == 0
+    assert force[0, 4, 2] > 750

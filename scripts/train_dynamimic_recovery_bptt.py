@@ -156,13 +156,12 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
     history = obs[:,:759].reshape(-1,11,69)
 
     def body_step(q_in, v_in, command):
-        q_next, v_next, aux = wm(q_in, v_in, command, member, starts['profile'])
-        ensemble = [torch.cat((q_next, v_next), -1)]
-        for offset in (1, 2):
-            other_q, other_v, _ = wm(q_in, v_in, command, (member+offset)%3, starts['profile'])
-            ensemble.append(torch.cat((other_q, other_v), -1))
-        variance = torch.stack(ensemble).var(dim=0, unbiased=False).mean()
-        return q_next, v_next, aux['foot_contact'], variance
+        indices = (member, (member + 1) % 3, (member + 2) % 3)
+        all_q, all_v, aux = wm(q_in.repeat(3, 1), v_in.repeat(3, 1), command.repeat(3, 1),
+                               indices, starts['profile'].repeat(3))
+        ensemble = torch.cat((all_q, all_v), -1).unflatten(0, (3, len(q_in)))
+        variance = ensemble.var(dim=0, unbiased=False).mean()
+        return all_q[:len(q_in)], all_v[:len(q_in)], aux['foot_contact'][:len(q_in)], variance
 
     for step in range(horizon):
         request = mixed_request(primary, secondary, obs, starts['companion'], starts['release_time'])

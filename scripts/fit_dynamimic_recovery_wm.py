@@ -6,6 +6,7 @@ from pathlib import Path
 
 import torch
 from torch.nn import functional as F
+from torch.utils.checkpoint import checkpoint
 
 from quadsmash.rl.dynamimic_lagrangian_v1 import rotation
 from quadsmash.rl.dynamimic_recovery_wm_v1 import DynaMimicRecoveryWorldModel, local_robot_state
@@ -59,7 +60,11 @@ def rollout(wm, member, data, rows, horizon, device, profiles, geometry=None):
     loss = q.new_zeros(())
     results = []
     for t in range(horizon):
-        q, v, aux = wm(q, v, targets[t], member, profile)
+        if q.is_cuda and horizon >= 16 and torch.is_grad_enabled():
+            q, v, aux = checkpoint(wm, q, v, targets[t], member, profile,
+                                   use_reentrant=False, preserve_rng_state=False)
+        else:
+            q, v, aux = wm(q, v, targets[t], member, profile)
         q_ref, v_ref = local_robot_state(truth[t])
         r, r_ref = rotation(q[:, 3:7]), rotation(q_ref[:, 3:7])
         p = aux['foot_contact'].clamp(1e-6, 1-1e-6)

@@ -1,5 +1,6 @@
 """Batched CRBA/RNEA in link-local linear/angular tangent coordinates."""
 import hashlib
+import json
 from pathlib import Path
 
 import torch
@@ -49,7 +50,27 @@ class DynaMimicLagrangianV1(nn.Module):
         self.foot_parents = [ids.index(f.parent) for f in feet]
         buffer('foot_offset', [f.placement.translation for f in feet])
 
-    def forward(self, q, v):
+        spheres = json.loads((Path(__file__).resolve().parents[2] / 'configs' /
+                              'go2_piper_authored_foot_spheres_v1.json').read_text())
+        if self.asset_sha256 not in spheres['asset_sha256'].values():
+            raise ValueError('Foot collision geometry differs from robot asset')
+        by_name = {s['body']: s for s in spheres['spheres']}
+        shapes = json.loads((Path(__file__).resolve().parents[2] / 'configs' /
+                             'go2_piper_authored_ground_geometry_v1.json').read_text())
+        if self.asset_sha256 not in shapes['asset_sha256'].values():
+            raise ValueError('Head collision geometry differs from robot asset')
+        head, = [s for s in shapes['shapes'] if s['body'] == 'Head_lower']
+        transform = np.asarray(head['transform'])
+        if head['kind'] != 'Sphere' or not np.allclose(transform[:3, :3], np.eye(3)):
+            raise ValueError('Expected the authored lower-head sphere')
+        head_frame = model.frames[parsed.body_frames[head['body']]]
+        self.surface_parents = self.foot_parents + [ids.index(head_frame.parent)]
+        buffer('sphere_offset', [f.placement.act(np.asarray(by_name[n]['center_body_m']))
+                                 for f, n in zip(feet, parsed.feet)] +
+                                [head_frame.placement.act(transform[3, :3])])
+        buffer('sphere_radius', [by_name[n]['radius_m'] for n in parsed.feet] + [head['radius']])
+
+    def forward(self, q, v, *, collision_surface=False):
         if q.shape != (v.shape[0], 25) or v.shape[-1] != 24:
             raise ValueError('Expected batch of 25 configuration and 24 tangent coordinates')
         b = len(q)
@@ -99,8 +120,15 @@ class DynaMimicLagrangianV1(nn.Module):
         lower = torch.nn.functional.pad(torch.stack(rows[::-1],1),(0,0,6,0))
         mass = base + lower + lower.tril(-1).mT
         feet, jac = [], []
-        for parent, off in zip(self.foot_parents,self.foot_offset):
-            feet.append(pos[parent] + mv(R[parent],off))
-            jac.append(R[parent] @ (J[parent][:,:3] - skew(off) @ J[parent][:,3:]))
+        offsets = self.sphere_offset if collision_surface else self.foot_offset
+        for i, (parent, off) in enumerate(zip(self.surface_parents if collision_surface else self.foot_parents, offsets)):
+            point = pos[parent] + mv(R[parent],off)
+            linear = R[parent] @ (J[parent][:,:3] - skew(off) @ J[parent][:,3:])
+            if collision_surface:
+                bottom = q.new_tensor([0., 0., -1.]) * self.sphere_radius[i]
+                point = point + bottom
+                linear = linear - skew(bottom) @ R[parent] @ J[parent][:,3:]
+            feet.append(point)
+            jac.append(linear)
         jac = torch.stack(jac,1)
         return mass, torch.cat((forces[0],torch.stack(tau[::-1],1)),-1), torch.stack(feet,1), mv(jac,v[:,None]), jac
