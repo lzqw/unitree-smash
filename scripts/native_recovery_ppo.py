@@ -54,7 +54,7 @@ def rollout_targets(rewards, values, active, done, warmup):
 
 
 def heldout_regression(baseline, current):
-    return current['relaxed'] < baseline['relaxed'] or current['body'] > baseline['body']
+    return current['relaxed'] < baseline['relaxed'] - 1 or current['body'] > baseline['body'] + 1
 
 
 def explained_variance(values, targets):
@@ -209,7 +209,7 @@ def update(env, wrapper, obs, actor, trained, cases, stop_request, request, held
             if iteration:
                 raw[use] += epsilon
             if len(z):
-                samples.append((z.cpu(),epsilon.cpu(),rec(z).cpu()))
+                samples.append((z.cpu(),epsilon.cpu(),rec(z).cpu(),mean[use].cpu()))
             value = torch.zeros_like(prev_run)
             value[use] = critic(z.clamp(-10,10)).flatten()
             obs,_,dones,_ = wrapper.step(raw.clamp(-1,1))
@@ -240,7 +240,7 @@ def update(env, wrapper, obs, actor, trained, cases, stop_request, request, held
            if row['episode_index'] == ids[row['env_id']]):
         raise ValueError('Native numerical failure')
     rewards,values,active,done = [torch.stack(col) for col in zip(*rollout)]
-    z,eps,old = [torch.cat(col) for col in zip(*samples)]
+    z,eps,old,raw_mean = [torch.cat(col) for col in zip(*samples)]
     validation = {k:int(v[held].sum()) for k,v in measured.items()}
     validation['strict'] = int((held & measured['strict'] & ~measured['body'] & ~measured['net']).sum())
     validation['relaxed'] = int((held & measured['relaxed'] & ~measured['body'] & ~measured['net']).sum())
@@ -301,6 +301,8 @@ def update(env, wrapper, obs, actor, trained, cases, stop_request, request, held
             weight = dict(rec.named_parameters())['0.weight']
             prox = ((weight-anchor['0.weight']).square() * col).mean()
             loss = -torch.minimum(ratio*advantage,ratio.clamp(.85,1.15)*advantage).mean()+.1*prox
+            preclip = raw_mean[ix].to(device) + shift
+            loss = loss + .08 * (preclip.abs() - .90).relu().square().mean()
             if len(retention['z']):
                 indices = torch.randint(len(retention['z']), (128,), device=device)
                 loss = loss + .01 * (((rec(retention['z'][indices])-retention['target'][indices])*scale / sigma).square().mean())
