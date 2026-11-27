@@ -1,0 +1,322 @@
+{
+  "scope": "Same native PPO01 observations, training lanes only. Percentages over frames. Replays clipped normalized requests, not torques. The 48-tick fault window includes first body contact.",
+  "checkpoint_sha256": {
+    "ppo01": "0c16c7181f28267f841ba95b8ba6aa115af8835cf1b8013a7b894653b6d68d9d",
+    "conservative": "8f4929f49a74870a2c6175d126b164a1e5856779c6fa2e24f103e039e463414b",
+    "revised_moderate": "067526c68f2c6f970244a728bdc78a21006f8bc847cc749aadbdb0985dd2ad2d"
+  },
+  "groups": {
+    "48_ticks_before_body_fault": {
+      "frames": 7344,
+      "cases": 153,
+      "checkpoints": {
+        "ppo01": {
+          "FL_hip_joint": {
+            "clipped_percent": 24.24,
+            "near_limit_percent": 42.76
+          },
+          "FR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RL_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_thigh_joint": {
+            "clipped_percent": 64.12,
+            "near_limit_percent": 77.78
+          },
+          "RL_thigh_joint": {
+            "clipped_percent": 32.16,
+            "near_limit_percent": 61.04
+          },
+          "RR_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_calf_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_calf_joint": {
+            "clipped_percent": 22.34,
+            "near_limit_percent": 40.25
+          },
+          "RL_calf_joint": {
+            "clipped_percent": 71.68,
+            "near_limit_percent": 80.01
+          },
+          "RR_calf_joint": {
+            "clipped_percent": 31.55,
+            "near_limit_percent": 57.75
+          }
+        },
+        "conservative": {
+          "FL_hip_joint": {
+            "clipped_percent": 19.39,
+            "near_limit_percent": 36.17
+          },
+          "FR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RL_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_thigh_joint": {
+            "clipped_percent": 53.85,
+            "near_limit_percent": 76.03
+          },
+          "RL_thigh_joint": {
+            "clipped_percent": 27.49,
+            "near_limit_percent": 49.26
+          },
+          "RR_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_calf_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_calf_joint": {
+            "clipped_percent": 20.96,
+            "near_limit_percent": 38.3
+          },
+          "RL_calf_joint": {
+            "clipped_percent": 66.76,
+            "near_limit_percent": 78.3
+          },
+          "RR_calf_joint": {
+            "clipped_percent": 29.52,
+            "near_limit_percent": 52.1
+          }
+        },
+        "revised_moderate": {
+          "FL_hip_joint": {
+            "clipped_percent": 15.13,
+            "near_limit_percent": 32.16
+          },
+          "FR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RL_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_thigh_joint": {
+            "clipped_percent": 43.83,
+            "near_limit_percent": 72.6
+          },
+          "RL_thigh_joint": {
+            "clipped_percent": 22.28,
+            "near_limit_percent": 39.98
+          },
+          "RR_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_calf_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_calf_joint": {
+            "clipped_percent": 19.5,
+            "near_limit_percent": 36.53
+          },
+          "RL_calf_joint": {
+            "clipped_percent": 57.41,
+            "near_limit_percent": 76.8
+          },
+          "RR_calf_joint": {
+            "clipped_percent": 27.02,
+            "near_limit_percent": 46.08
+          }
+        }
+      }
+    },
+    "clean_recovered_cases": {
+      "frames": 18383,
+      "cases": 35,
+      "checkpoints": {
+        "ppo01": {
+          "FL_hip_joint": {
+            "clipped_percent": 3.87,
+            "near_limit_percent": 15.2
+          },
+          "FR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RL_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_thigh_joint": {
+            "clipped_percent": 52.54,
+            "near_limit_percent": 86.72
+          },
+          "RL_thigh_joint": {
+            "clipped_percent": 5.71,
+            "near_limit_percent": 43.77
+          },
+          "RR_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_calf_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_calf_joint": {
+            "clipped_percent": 3.49,
+            "near_limit_percent": 12.22
+          },
+          "RL_calf_joint": {
+            "clipped_percent": 71.6,
+            "near_limit_percent": 88.67
+          },
+          "RR_calf_joint": {
+            "clipped_percent": 5.63,
+            "near_limit_percent": 40.38
+          }
+        },
+        "conservative": {
+          "FL_hip_joint": {
+            "clipped_percent": 2.75,
+            "near_limit_percent": 8.11
+          },
+          "FR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RL_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_thigh_joint": {
+            "clipped_percent": 35.43,
+            "near_limit_percent": 82.72
+          },
+          "RL_thigh_joint": {
+            "clipped_percent": 4.47,
+            "near_limit_percent": 25.91
+          },
+          "RR_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_calf_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_calf_joint": {
+            "clipped_percent": 3.2,
+            "near_limit_percent": 10.0
+          },
+          "RL_calf_joint": {
+            "clipped_percent": 57.26,
+            "near_limit_percent": 87.31
+          },
+          "RR_calf_joint": {
+            "clipped_percent": 4.94,
+            "near_limit_percent": 30.94
+          }
+        },
+        "revised_moderate": {
+          "FL_hip_joint": {
+            "clipped_percent": 1.52,
+            "near_limit_percent": 5.64
+          },
+          "FR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RL_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "RR_hip_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_thigh_joint": {
+            "clipped_percent": 18.57,
+            "near_limit_percent": 74.55
+          },
+          "RL_thigh_joint": {
+            "clipped_percent": 3.52,
+            "near_limit_percent": 11.92
+          },
+          "RR_thigh_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FL_calf_joint": {
+            "clipped_percent": 0.0,
+            "near_limit_percent": 0.0
+          },
+          "FR_calf_joint": {
+            "clipped_percent": 2.85,
+            "near_limit_percent": 8.33
+          },
+          "RL_calf_joint": {
+            "clipped_percent": 40.79,
+            "near_limit_percent": 83.88
+          },
+          "RR_calf_joint": {
+            "clipped_percent": 4.37,
+            "near_limit_percent": 21.51
+          }
+        }
+      }
+    }
+  }
+}
