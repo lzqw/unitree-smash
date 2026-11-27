@@ -1,0 +1,295 @@
+{
+  "scope": "Offline CPU diagnostics only; active candidates and the native score are unaffected.",
+  "value_errors_definition": "Predicted minus observed discounted native return on PPO01 held lanes. Pre-failure is the last 48 ticks through first body contact or root-only terminal. Clean strict excludes any subsequent fault.",
+  "alternatives": "Physical alternative masks ball channels across all eleven frames, planning command and preceding action, retaining phase and time. Height variant additionally supplies native root height. Same training archive, seed, optimizer, number of updates and frozen normalizer.",
+  "native_errors": {
+    "original": {
+      "all": {
+        "cases": 32,
+        "ticks": 6169,
+        "bias": -1.4161301851272583,
+        "mae": 9.851351737976074
+      },
+      "pre_failure": {
+        "cases": 25,
+        "ticks": 1200,
+        "bias": 8.104340553283691,
+        "mae": 8.853266716003418
+      },
+      "clean_strict": {
+        "cases": 2,
+        "ticks": 1046,
+        "bias": -7.633656978607178,
+        "mae": 14.403176307678223
+      }
+    },
+    "physical": {
+      "all": {
+        "cases": 32,
+        "ticks": 6169,
+        "bias": -0.932451605796814,
+        "mae": 9.646984100341797
+      },
+      "pre_failure": {
+        "cases": 25,
+        "ticks": 1200,
+        "bias": 7.567994117736816,
+        "mae": 8.839599609375
+      },
+      "clean_strict": {
+        "cases": 2,
+        "ticks": 1046,
+        "bias": -6.984718322753906,
+        "mae": 12.347442626953125
+      }
+    },
+    "physical_with_height": {
+      "all": {
+        "cases": 32,
+        "ticks": 6169,
+        "bias": -1.1040793657302856,
+        "mae": 9.53840160369873
+      },
+      "pre_failure": {
+        "cases": 25,
+        "ticks": 1200,
+        "bias": 7.842282772064209,
+        "mae": 9.105484008789062
+      },
+      "clean_strict": {
+        "cases": 2,
+        "ticks": 1046,
+        "bias": -7.712895393371582,
+        "mae": 12.055784225463867
+      }
+    }
+  },
+  "gradient_paths": {
+    "0": {
+      "rows": [
+        [
+          288,
+          104
+        ],
+        [
+          288,
+          158
+        ],
+        [
+          304,
+          34
+        ],
+        [
+          304,
+          101
+        ],
+        [
+          304,
+          233
+        ],
+        [
+          288,
+          55
+        ]
+      ],
+      "components": {
+        "total": {
+          "norm": 762.1707763671875,
+          "cosine": 1.0000001192092896,
+          "projection": 1.0
+        },
+        "critic_state": {
+          "norm": 675.4154052734375,
+          "cosine": 0.8415675163269043,
+          "projection": 0.745774507522583
+        },
+        "root": {
+          "norm": 357.7787780761719,
+          "cosine": 0.8242216110229492,
+          "projection": 0.3869066834449768
+        },
+        "joints": {
+          "norm": 410.98614501953125,
+          "cosine": 0.6273338198661804,
+          "projection": 0.3382779061794281
+        },
+        "tool": {
+          "norm": 58.42488479614258,
+          "cosine": 0.21584191918373108,
+          "projection": 0.016545558348298073
+        },
+        "feet": {
+          "norm": 6.434057235717773,
+          "cosine": -0.4103873670101166,
+          "projection": -0.0034643879625946283
+        },
+        "ball": {
+          "norm": 133.31333923339844,
+          "cosine": -0.1917356550693512,
+          "projection": -0.033536992967128754
+        },
+        "command_phase": {
+          "norm": 48.249046325683594,
+          "cosine": 0.5938141942024231,
+          "projection": 0.037591271102428436
+        },
+        "action": {
+          "norm": 22.190141677856445,
+          "cosine": 0.11866024881601334,
+          "projection": 0.0034547210671007633
+        }
+      }
+    },
+    "1": {
+      "rows": [
+        [
+          320,
+          14
+        ],
+        [
+          320,
+          114
+        ],
+        [
+          320,
+          60
+        ],
+        [
+          336,
+          61
+        ],
+        [
+          352,
+          249
+        ],
+        [
+          304,
+          189
+        ]
+      ],
+      "components": {
+        "total": {
+          "norm": 659.6109008789062,
+          "cosine": 1.0,
+          "projection": 1.0
+        },
+        "critic_state": {
+          "norm": 524.2658081054688,
+          "cosine": 0.5853273868560791,
+          "projection": 0.4652244746685028
+        },
+        "root": {
+          "norm": 189.07728576660156,
+          "cosine": 0.390567809343338,
+          "projection": 0.1119561493396759
+        },
+        "joints": {
+          "norm": 315.9188232421875,
+          "cosine": 0.450970858335495,
+          "projection": 0.21599124372005463
+        },
+        "tool": {
+          "norm": 51.31520462036133,
+          "cosine": 0.13474173843860626,
+          "projection": 0.010482393205165863
+        },
+        "feet": {
+          "norm": 3.2835209369659424,
+          "cosine": 0.23872379958629608,
+          "projection": 0.001188359223306179
+        },
+        "ball": {
+          "norm": 80.11914825439453,
+          "cosine": 0.7679919004440308,
+          "projection": 0.09328355640172958
+        },
+        "command_phase": {
+          "norm": 25.872413635253906,
+          "cosine": 0.7054733633995056,
+          "projection": 0.02767130732536316
+        },
+        "action": {
+          "norm": 14.0231294631958,
+          "cosine": 0.21879872679710388,
+          "projection": 0.004651594441384077
+        }
+      }
+    },
+    "2": {
+      "rows": [
+        [
+          352,
+          200
+        ],
+        [
+          336,
+          18
+        ],
+        [
+          432,
+          42
+        ],
+        [
+          352,
+          133
+        ],
+        [
+          432,
+          39
+        ],
+        [
+          336,
+          197
+        ]
+      ],
+      "components": {
+        "total": {
+          "norm": 833.4918823242188,
+          "cosine": 1.0000001192092896,
+          "projection": 1.0
+        },
+        "critic_state": {
+          "norm": 349.9365539550781,
+          "cosine": -0.23796187341213226,
+          "projection": -0.09990685433149338
+        },
+        "root": {
+          "norm": 129.50636291503906,
+          "cosine": -0.3050285577774048,
+          "projection": -0.04739474877715111
+        },
+        "joints": {
+          "norm": 201.40956115722656,
+          "cosine": -0.22182683646678925,
+          "projection": -0.05360345169901848
+        },
+        "tool": {
+          "norm": 55.352840423583984,
+          "cosine": 0.2605381906032562,
+          "projection": 0.017302539199590683
+        },
+        "feet": {
+          "norm": 22.373023986816406,
+          "cosine": 0.010924347676336765,
+          "projection": 0.0002932371571660042
+        },
+        "ball": {
+          "norm": 54.143165588378906,
+          "cosine": -0.21695366501808167,
+          "projection": -0.01409318670630455
+        },
+        "command_phase": {
+          "norm": 13.16260814666748,
+          "cosine": -0.3479505479335785,
+          "projection": -0.005494878627359867
+        },
+        "action": {
+          "norm": 12.359910011291504,
+          "cosine": 0.20795845985412598,
+          "projection": 0.0030838302336633205
+        }
+      }
+    }
+  },
+  "gradient_scope": "At initial PPO01 weights, six training starts per stratum. Component projection uses total Actor loss gradient as denominator; raw-coordinate paths sum to critic_state. Survival derivative is separate."
+}
