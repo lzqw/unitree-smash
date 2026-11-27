@@ -1,0 +1,210 @@
+{
+  "selected": null,
+  "reference": [
+    {
+      "qualified": 54,
+      "body": 31,
+      "strict": 3,
+      "relaxed": 9,
+      "net": 0,
+      "ball": 46
+    },
+    {
+      "qualified": 54,
+      "body": 32,
+      "strict": 3,
+      "relaxed": 8,
+      "net": 0,
+      "ball": 46
+    }
+  ],
+  "candidate_metrics": [
+    {
+      "qualified": 54,
+      "body": 30,
+      "strict": 4,
+      "relaxed": 10,
+      "net": 0,
+      "ball": 45
+    },
+    {
+      "qualified": 54,
+      "body": 28,
+      "strict": 6,
+      "relaxed": 10,
+      "net": 0,
+      "ball": 45
+    }
+  ],
+  "paired": {
+    "conservative": {
+      "flips": {
+        "body_ground_seen": {
+          "false_to_true": [
+            "B-991102-011"
+          ],
+          "true_to_false": [
+            "B-991102-004",
+            "B-991102-016"
+          ]
+        },
+        "strict_physical_recovery": {
+          "false_to_true": [
+            "A-991101-023",
+            "B-991102-028"
+          ],
+          "true_to_false": [
+            "B-991102-003"
+          ]
+        },
+        "physical_recovery_success": {
+          "false_to_true": [
+            "A-991101-023",
+            "B-991102-009",
+            "B-991102-028"
+          ],
+          "true_to_false": [
+            "B-991102-003",
+            "B-991102-014"
+          ]
+        },
+        "ball_side_complete_except_recovery": {
+          "false_to_true": [],
+          "true_to_false": [
+            "A-991101-002"
+          ]
+        },
+        "robot_net_fault": {
+          "false_to_true": [],
+          "true_to_false": []
+        },
+        "qualified_airborne_string_contact": {
+          "false_to_true": [],
+          "true_to_false": []
+        }
+      },
+      "ball_flips": [
+        {
+          "case_id": "A-991101-002",
+          "baseline": {
+            "first_landing_m": [
+              3.980901002883911,
+              0.5721600651741028,
+              0.025051452219486237
+            ],
+            "outgoing_velocity_mps": [
+              6.454321384429932,
+              1.2822242975234985,
+              -1.845550775527954
+            ],
+            "contact_time_s": 2.7106120586395264,
+            "release_time_s": 2.7110493183135986,
+            "crossed_net": true,
+            "robot_net_fault": false
+          },
+          "candidate": {
+            "first_landing_m": [
+              4.035015106201172,
+              0.5789322257041931,
+              0.025231746956706047
+            ],
+            "outgoing_velocity_mps": [
+              6.410123825073242,
+              1.2645412683486938,
+              -1.679065465927124
+            ],
+            "contact_time_s": 2.7106120586395264,
+            "release_time_s": 2.7110493183135986,
+            "crossed_net": true,
+            "robot_net_fault": false
+          }
+        }
+      ]
+    },
+    "moderate": {
+      "flips": {
+        "body_ground_seen": {
+          "false_to_true": [
+            "B-991102-013"
+          ],
+          "true_to_false": [
+            "A-991101-006",
+            "A-991101-007",
+            "B-991102-004",
+            "B-991102-006",
+            "B-991102-016"
+          ]
+        },
+        "strict_physical_recovery": {
+          "false_to_true": [
+            "A-991101-006",
+            "A-991101-023",
+            "B-991102-006"
+          ],
+          "true_to_false": []
+        },
+        "physical_recovery_success": {
+          "false_to_true": [
+            "A-991101-006",
+            "A-991101-023",
+            "B-991102-006"
+          ],
+          "true_to_false": [
+            "B-991102-014"
+          ]
+        },
+        "ball_side_complete_except_recovery": {
+          "false_to_true": [],
+          "true_to_false": [
+            "A-991101-002"
+          ]
+        },
+        "robot_net_fault": {
+          "false_to_true": [],
+          "true_to_false": []
+        },
+        "qualified_airborne_string_contact": {
+          "false_to_true": [],
+          "true_to_false": []
+        }
+      },
+      "ball_flips": [
+        {
+          "case_id": "A-991101-002",
+          "baseline": {
+            "first_landing_m": [
+              3.9197592735290527,
+              0.551673412322998,
+              0.025207705795764923
+            ],
+            "outgoing_velocity_mps": [
+              6.403906345367432,
+              1.252763032913208,
+              -1.9372639656066895
+            ],
+            "contact_time_s": 2.7106120586395264,
+            "release_time_s": 2.7110493183135986,
+            "crossed_net": true,
+            "robot_net_fault": false
+          },
+          "candidate": {
+            "first_landing_m": [
+              4.035015106201172,
+              0.5789322257041931,
+              0.025231746956706047
+            ],
+            "outgoing_velocity_mps": [
+              6.410123825073242,
+              1.2645412683486938,
+              -1.679065465927124
+            ],
+            "contact_time_s": 2.7106120586395264,
+            "release_time_s": 2.7110493183135986,
+            "crossed_net": true,
+            "robot_net_fault": false
+          }
+        }
+      ]
+    }
+  }
+}
