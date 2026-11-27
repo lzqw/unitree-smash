@@ -429,7 +429,7 @@ def _run_native(args, stop_request):
             from quadsmash.rl.supermimic_physical_loop_loading_v1 import APPROACH_NAMES, RECOVERY_NAMES
             allowed = RECOVERY_NAMES if args.recovery_prefix_checkpoint else APPROACH_NAMES
             prefix = torch.load(prefix_path, map_location='cpu', mmap=True, weights_only=False)
-            require_resume_contract(prefix, contract)
+            require_resume_contract(prefix, stored if args.recovery_prefix_checkpoint else contract)
             if (resolve_contract(prefix)[0] != policy_execution or prefix['actor'].keys() != trained['actor'].keys()
                     or any(not torch.equal(value, trained['actor'][name])
                            for name, value in prefix['actor'].items() if name not in allowed)):
