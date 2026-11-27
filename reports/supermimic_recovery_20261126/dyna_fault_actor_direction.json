@@ -1,0 +1,236 @@
+{
+  "scope": "PPO01 training-side PhysX archive only. H48 derivative at the initial checkpoint, six distinct native starts per group, half from each Approach. Model member differs by group. This is not an estimate of causal PhysX improvement.",
+  "projection_definition": "dot(component gradient,total gradient)/squared total norm. The risk component is included in reward. Critic state and survival are disjoint chain-rule contributions.",
+  "behavior": "0c16c7181f28267f841ba95b8ba6aa115af8835cf1b8013a7b894653b6d68d9d",
+  "gradients": {
+    "0": {
+      "rows": [
+        [
+          288,
+          104
+        ],
+        [
+          288,
+          158
+        ],
+        [
+          304,
+          34
+        ],
+        [
+          304,
+          101
+        ],
+        [
+          304,
+          233
+        ],
+        [
+          288,
+          55
+        ]
+      ],
+      "components": {
+        "total": {
+          "norm": 762.1707763671875,
+          "cosine": 1.0000001192092896,
+          "projection": 1.0
+        },
+        "risk": {
+          "norm": 12.916563034057617,
+          "cosine": 0.7028222680091858,
+          "projection": 0.011910777539014816
+        },
+        "reward": {
+          "norm": 123.82337188720703,
+          "cosine": 0.5344493985176086,
+          "projection": 0.08682741224765778
+        },
+        "critic_state": {
+          "norm": 675.4154052734375,
+          "cosine": 0.8415675163269043,
+          "projection": 0.745774507522583
+        },
+        "critic_survival": {
+          "norm": 290.353759765625,
+          "cosine": 0.4393625855445862,
+          "projection": 0.16737793385982513
+        },
+        "saturation": {
+          "norm": 0.021482694894075394,
+          "cosine": 0.1766631305217743,
+          "projection": 4.979460754839238e-06
+        },
+        "disagreement": {
+          "norm": 0.16246187686920166,
+          "cosine": 0.06974044442176819,
+          "projection": 1.4865646335238125e-05
+        }
+      }
+    },
+    "1": {
+      "rows": [
+        [
+          320,
+          14
+        ],
+        [
+          320,
+          114
+        ],
+        [
+          320,
+          60
+        ],
+        [
+          336,
+          61
+        ],
+        [
+          352,
+          249
+        ],
+        [
+          304,
+          189
+        ]
+      ],
+      "components": {
+        "total": {
+          "norm": 659.6109008789062,
+          "cosine": 1.0,
+          "projection": 1.0
+        },
+        "risk": {
+          "norm": 56.17115020751953,
+          "cosine": 0.9127230644226074,
+          "projection": 0.07772567123174667
+        },
+        "reward": {
+          "norm": 204.96035766601562,
+          "cosine": 0.728871762752533,
+          "projection": 0.22648172080516815
+        },
+        "critic_state": {
+          "norm": 524.2658081054688,
+          "cosine": 0.5853273868560791,
+          "projection": 0.4652244746685028
+        },
+        "critic_survival": {
+          "norm": 350.8291320800781,
+          "cosine": 0.5796559453010559,
+          "projection": 0.30830323696136475
+        },
+        "saturation": {
+          "norm": 0.024592339992523193,
+          "cosine": 0.2958211302757263,
+          "projection": 1.1029128472728189e-05
+        },
+        "disagreement": {
+          "norm": 0.09760963171720505,
+          "cosine": -0.13709786534309387,
+          "projection": -2.028782546403818e-05
+        }
+      }
+    },
+    "2": {
+      "rows": [
+        [
+          352,
+          200
+        ],
+        [
+          336,
+          18
+        ],
+        [
+          432,
+          42
+        ],
+        [
+          352,
+          133
+        ],
+        [
+          432,
+          39
+        ],
+        [
+          336,
+          197
+        ]
+      ],
+      "components": {
+        "total": {
+          "norm": 833.4918823242188,
+          "cosine": 1.0000001192092896,
+          "projection": 1.0
+        },
+        "risk": {
+          "norm": 55.03204345703125,
+          "cosine": 0.35316911339759827,
+          "projection": 0.023318301886320114
+        },
+        "reward": {
+          "norm": 547.8359985351562,
+          "cosine": 0.9400368332862854,
+          "projection": 0.6178655624389648
+        },
+        "critic_state": {
+          "norm": 349.9365539550781,
+          "cosine": -0.23796187341213226,
+          "projection": -0.09990685433149338
+        },
+        "critic_survival": {
+          "norm": 436.2315979003906,
+          "cosine": 0.9210362434387207,
+          "projection": 0.4820502996444702
+        },
+        "saturation": {
+          "norm": 0.02362259104847908,
+          "cosine": 0.12653537094593048,
+          "projection": 3.5862292406818597e-06
+        },
+        "disagreement": {
+          "norm": 0.06614859402179718,
+          "cosine": -0.158511221408844,
+          "projection": -1.2579955182445701e-05
+        }
+      }
+    }
+  },
+  "conservative_policy_action_drift": {
+    "prefall_primary": {
+      "cases": 79,
+      "ticks": 3792,
+      "old_rms": 0.00818732287734747,
+      "new_rms": 0.00814544316381216,
+      "change_rms": 0.000713408226147294,
+      "cosine": 0.9961975812911987
+    },
+    "prefall_h8d": {
+      "cases": 74,
+      "ticks": 3552,
+      "old_rms": 0.008238669484853745,
+      "new_rms": 0.008206918835639954,
+      "change_rms": 0.0007270908099599183,
+      "cosine": 0.996099054813385
+    },
+    "strict_success_primary": {
+      "cases": 3,
+      "ticks": 1584,
+      "old_rms": 0.005068762693554163,
+      "new_rms": 0.005068003199994564,
+      "change_rms": 0.00032477444619871676,
+      "cosine": 0.9979477524757385
+    },
+    "strict_success_h8d": {
+      "cases": 9,
+      "ticks": 4748,
+      "old_rms": 0.0032270776573568583,
+      "new_rms": 0.003241945058107376,
+      "change_rms": 0.00026882989914156497,
+      "cosine": 0.9965607523918152
+    }
+  }
+}
