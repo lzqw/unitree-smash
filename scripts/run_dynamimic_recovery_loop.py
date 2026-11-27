@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
+from scripts.run_recovery_ppo_round import compare as compare_fixed128
 from scripts.run_recovery_training_round import run_stage
 from scripts.run_supermimic_recovery_baseline import dump, summarize
 
@@ -96,6 +97,7 @@ def main():
                         raise ValueError('Fixed128 starts changed')
                     score = summarize(frozen)
                     dump(folder/'fixed128.json',score)
+                    compare_fixed128(args.baseline, frozen, folder/'fixed128_paired.json')
                     if block==1 and not (score['body_ground_given_contact']<=63 and score['strict_physical_recovery']>=16
                             and score['relaxed_physical_recovery']>=35 and score['relaxed_ball_side']>=95
                             and score['robot_net']==0 and score['qualified_contacts']==108):
