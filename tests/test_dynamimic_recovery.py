@@ -2,6 +2,7 @@
 from pathlib import Path
 import numpy as np
 import pinocchio as pin
+import pytest
 import torch
 
 from scripts.loaded_pinocchio_model_v1 import LoadedPinocchioModelV1
@@ -242,3 +243,19 @@ def test_fixed128_rechecks_native_ball_and_recovery_contract():
                          ('body_ground_given_contact', 64), ('strict_physical_recovery', 15),
                          ('relaxed_physical_recovery', 34)]:
         assert not passes_fixed128(dict(score, **{key: failing}))
+
+
+def test_native_replay_keeps_case_and_launch_splits_across_training_panels():
+    from scripts.fit_dynamimic_recovery_wm import verify_replay_cases
+
+    def panel(offset):
+        return [dict(case_id=str(i+offset), launch=[i+offset]) for i in range(256)]
+
+    first, second = panel(0), panel(256)
+    verify_replay_cases([first, second, first])
+    second[4] = dict(case_id='renamed', launch=first[0]['launch'])
+    with pytest.raises(ValueError, match='partition'):
+        verify_replay_cases([first, second])
+    second[4] = dict(case_id=first[4]['case_id'], launch=[9999])
+    with pytest.raises(ValueError, match='case'):
+        verify_replay_cases([first, second])

@@ -33,6 +33,23 @@ def read_data(root, extra_fields=()):
     return data, manifest
 
 
+def verify_replay_cases(archives):
+    """Keep repeated cases and launches within their original train/dev/holdout partition."""
+    known_ids, known_launches = {}, {}
+    for cases in archives:
+        if len(cases) != 256:
+            raise ValueError('Each native archive requires 256 lanes')
+        for lane, case in enumerate(cases):
+            slot = lane % 16
+            split = 'holdout' if slot < 2 else 'development' if slot < 4 else 'training'
+            identifier = case['case_id']
+            launch = json.dumps(case['launch'], sort_keys=True)
+            if known_ids.setdefault(identifier, (launch, split)) != (launch, split):
+                raise ValueError('Historical case changed launch or partition')
+            if known_launches.setdefault(launch, split) != split:
+                raise ValueError('Historical launch crossed native partitions')
+
+
 def sampling_pools(data, held, horizon):
     eligible = data['live'] & data['gate']
     usable = eligible.unfold(0, horizon, 1).all(-1)
@@ -124,12 +141,17 @@ def main():
         raise ValueError('Expected up to four distinct native archives')
     latest_length = len(data['live'])
     prior_data = []
+    archive_cases = [manifest['cases']]
     for directory in args.history_native:
         history, history_manifest = read_data(directory)
         other_contract = json.loads((directory/'actuator_contract.json').read_text())
-        if history_manifest['cases'] != manifest['cases'] or other_contract != contract:
-            raise ValueError('Historical case split or actuator contract changed')
+        if other_contract != contract:
+            raise ValueError('Historical actuator contract changed')
+        if (history['live'][0] & history['gate'][0]).any():
+            raise ValueError('A historical rollout window could cross the native reset')
+        archive_cases.append(history_manifest['cases'])
         prior_data.append(history)
+    verify_replay_cases(archive_cases)
     if prior_data:
         data = {k:torch.cat([h[k] for h in [data,*prior_data]]) for k in data}
     profiles = torch.tensor(contract['lane_profile'])

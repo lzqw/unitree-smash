@@ -55,6 +55,8 @@ def main():
     for name in ('checkpoint','companion','panel','validation','asset','baseline','output','gpu-lock'):
         parser.add_argument('--'+name, type=Path, required=True)
     parser.add_argument('--initial-native', type=Path, help='Reuse a completed first native collection')
+    parser.add_argument('--prior-native', type=Path, action='append', default=[],
+                        help='Earlier native training archives for the first WM refresh')
     parser.add_argument('--initial-wm', type=Path, help='Accepted first-block WM folder for the same native archive')
     parser.add_argument('--initial-critic', type=Path, help='Native tail fit folder for the same behavior policy')
     parser.add_argument('--initial-validation-baseline', type=Path, help='Completed two-slot baseline for the same native validation setup')
@@ -71,6 +73,8 @@ def main():
     if args.initial_retention and not (args.retain_success_actions and args.initial_native
                                       and args.initial_wm and args.initial_critic):
         parser.error('Retention reuse requires the original native, WM and Critic and --retain-success-actions')
+    if args.prior_native and (args.initial_wm or len(args.prior_native) > 3):
+        parser.error('Up to three prior archives may be used when fitting the first WM')
     root = args.output
     root.mkdir(parents=True,exist_ok=False)
     status = root/'status.json'
@@ -81,7 +85,7 @@ def main():
     current = args.checkpoint
     confirmed = current
     incumbent = None
-    history = []
+    history = list(args.prior_native)
     old_wm, old_critic = None,None
 
     with args.gpu_lock.open('a') as lock:
