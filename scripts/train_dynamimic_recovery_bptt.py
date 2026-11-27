@@ -1,6 +1,7 @@
 """Recovery imagination objectives and sampling from audited native execution snapshots."""
 import math
 from functools import lru_cache
+from time import perf_counter
 
 import torch
 from torch.nn import functional as F
@@ -219,8 +220,10 @@ def main():
     parser.add_argument('--horizon', type=int, choices=(48,64), default=48)
     parser.add_argument('--updates', type=int, choices=range(15,26), default=20)
     parser.add_argument('--starts', type=int, default=128)
-    parser.add_argument('--microbatch', type=int, default=16)
+    parser.add_argument('--microbatch', type=int, default=64)
     args = parser.parse_args()
+    if not 1 <= args.microbatch <= args.starts:
+        parser.error('Microbatch must fit the full native start batch')
     report = json.loads((args.wm/'validation.json').read_text())
     if not report['passed'] or not all(m['tilt_deg']<4 and m['com_height_mae_m']<.02 and
                                        m['contact_accuracy']>.9 and m['joint_speed_mae']<1.2 for m in report['members']) or len(report['members']) != 3:
@@ -324,6 +327,7 @@ def main():
     with torch.no_grad():
         original = actions(checks)
     for step in range(args.updates):
+        started = perf_counter()
         rows = stratified_starts(pools,args.starts,generator)
         optimizer.zero_grad(set_to_none=True)
         total = 0.
@@ -344,6 +348,8 @@ def main():
             raise ValueError('Recovery gradient is zero')
         optimizer.step()
         evidence.append(dict(step=step+1, objective=total, gradient_norm=float(grad),
+                             seconds=perf_counter()-started, microbatch=args.microbatch,
+                             peak_cuda_mib=torch.cuda.max_memory_allocated(device)/2**20 if device.type=='cuda' else None,
                              unique_native_cases=len(rows[:,1].unique()),
                              h8d_starts=int((rows[:,1]%2).sum()),
                              retention=float(retention.detach())))
