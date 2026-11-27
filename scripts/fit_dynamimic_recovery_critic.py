@@ -12,6 +12,16 @@ from quadsmash.rl.supermimic_v1 import load_ppo_initialized_actor
 from scripts.native_recovery_ppo import explained_variance, gae
 
 
+# Native JumpEnv terminates at this world-frame root height independently of contact.
+ROOT_FAILURE_HEIGHT = .12
+FALL_COST = 15.
+NATIVE_RETURN_SCHEMA = 'recovery-native-low-root-terminal-v1'
+
+
+def root_termination(done, root_height_w):
+    return done & (root_height_w < ROOT_FAILURE_HEIGHT)
+
+
 class NativeTailValue(nn.Module):
     def __init__(self, normalizer):
         super().__init__()
@@ -46,11 +56,18 @@ def read_rollout(root, checkpoint):
         raise ValueError('Critic rollout checkpoint mismatch')
     keys = ('obs', 'active', 'reward', 'done', 'body', 'net', 'live')
     parts = {k:[] for k in keys}
+    root_events = []
     for name in manifest['chunks']:
         block = torch.load(directory/name, weights_only=True, mmap=True)
+        root_events.append(root_termination(block['done'], block['after'][..., 2]))
         for k in keys:
             parts[k].append(block[k])
     data = {k:torch.cat(v) for k,v in parts.items()}
+    # Raw native rewards already charge the first body or net event. A low-root
+    # terminal may occur before either sensor, while the lane is still eligible.
+    root_only = torch.cat(root_events) & data['active'] & ~data['body'] & ~data['net']
+    data['reward'] = torch.where(root_only, -FALL_COST, data['reward'])
+    data['root_only_terminal'] = root_only
     if not torch.all((data['done'] & data['live']).sum(0) == 1):
         raise ValueError('Expected exactly one native episode end per lane')
     return data, manifest
@@ -79,10 +96,12 @@ def main():
     data, manifest = read_rollout(args.native, args.checkpoint)
     tail, source = make_tail(args.checkpoint, args.device)
     opt = torch.optim.AdamW(tail.value.parameters(), lr=3e-4, weight_decay=1e-4)
+    matching_return = False
     if args.resume:
         saved = torch.load(args.resume, weights_only=True, map_location=args.device)
         if saved['source'] != source:
             raise ValueError('Frozen actor used for normalization differs')
+        matching_return = saved.get('return_schema') == NATIVE_RETURN_SCHEMA
         tail.load_native_fit(saved)
         opt.load_state_dict(saved['optimizer'])
     active = data['active']
@@ -95,7 +114,7 @@ def main():
         values = torch.zeros_like(data['reward'])
         values[active] = torch.cat([tail(z.to(args.device)).cpu() for z in data['obs'][active].split(1024)])
         done = data['done'] | data['body'] | data['net']
-        targets = values + gae(data['reward'], values, active, done, lam=.95 if args.resume else 1.)
+        targets = values + gae(data['reward'], values, active, done, lam=.95 if matching_return else 1.)
     obs, truth = data['obs'][train], targets[train]
     if not args.resume:
         # Normalize the regression target once. All GAE, reports and Actor tail
@@ -112,11 +131,13 @@ def main():
             opt.step()
     with torch.no_grad():
         predictions = torch.cat([tail(z.to(args.device)).cpu() for z in data['obs'][valid].split(1024)])
-    report = dict(source=source, native_checkpoint=manifest['checkpoint_sha256'], training_frames=len(obs),
-                  held_frames=len(predictions), held_explained_variance_before=explained_variance(values[valid], targets[valid]),
+    report = dict(return_schema=NATIVE_RETURN_SCHEMA, source=source, native_checkpoint=manifest['checkpoint_sha256'], training_frames=len(obs),
+                  held_frames=len(predictions),
+                  root_only_terminal_train=int(data['root_only_terminal'][:,~held].sum()),
+                  root_only_terminal_held=int(data['root_only_terminal'][:,held].sum()), held_explained_variance_before=explained_variance(values[valid], targets[valid]),
                   held_explained_variance_after=explained_variance(predictions, targets[valid]),
                   held_mae=float((predictions-targets[valid]).abs().mean()), returned_targets='native TD(lambda)')
-    torch.save(dict(critic=tail.value.state_dict(), optimizer=opt.state_dict(), source=source,
+    torch.save(dict(return_schema=NATIVE_RETURN_SCHEMA, critic=tail.value.state_dict(), optimizer=opt.state_dict(), source=source,
                     return_mean=float(tail.return_mean), return_scale=float(tail.return_scale)), args.output/'critic.pt')
     (args.output/'fit.json').write_text(json.dumps(report, indent=2)+'\n')
 

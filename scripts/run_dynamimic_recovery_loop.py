@@ -25,9 +25,14 @@ def main():
     for name in ('checkpoint','companion','panel','validation','asset','baseline','output','gpu-lock'):
         parser.add_argument('--'+name, type=Path, required=True)
     parser.add_argument('--initial-native', type=Path, help='Reuse a completed first native collection')
+    parser.add_argument('--initial-wm', type=Path, help='Accepted first-block WM folder for the same native archive')
+    parser.add_argument('--initial-critic', type=Path, help='Native tail fit folder for the same behavior policy')
+    parser.add_argument('--initial-validation-baseline', type=Path, help='Completed two-slot baseline for the same native validation setup')
     parser.add_argument('--blocks', type=int, default=8, choices=range(1,9))
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
+    if (args.initial_wm or args.initial_critic) and not args.initial_native:
+        parser.error('First-block fit reuse requires its native archive')
     root = args.output
     root.mkdir(parents=True,exist_ok=False)
     status = root/'status.json'
@@ -56,9 +61,9 @@ def main():
                 current_sha = hashlib.sha256(current.read_bytes()).hexdigest()
                 if manifest['checkpoint_sha256'] != current_sha or manifest['companion_sha256'] != hashlib.sha256(args.companion.read_bytes()).hexdigest():
                     raise ValueError('Native collection policy mismatch')
-                critic = run('value',['scripts/fit_dynamimic_recovery_critic.py','--checkpoint',current,
+                critic = (args.initial_critic if block == 1 else None) or run('value',['scripts/fit_dynamimic_recovery_critic.py','--checkpoint',current,
                     '--native',native, '--device',args.device, *(['--resume',old_critic/'critic.pt'] if old_critic else [])])
-                wm = run('wm',['scripts/fit_dynamimic_recovery_wm.py','--asset',args.asset,'--native',native,
+                wm = (args.initial_wm if block == 1 else None) or run('wm',['scripts/fit_dynamimic_recovery_wm.py','--asset',args.asset,'--native',native,
                     '--device',args.device,*(['--resume',old_wm/'ensemble.pt'] if old_wm else []),
                     *(x for source in history[-3:] for x in ('--history-native',source))])
                 validation = json.loads((wm/'validation.json').read_text())
@@ -72,14 +77,19 @@ def main():
                     '--wm',wm,'--critic',critic,'--asset',args.asset,'--checkpoint',current,
                     '--companion',args.companion,'--device',args.device])
                 if incumbent is None:
-                    base = run('frozen_native64',[*native_flags,*validate_flags,'--checkpoint',current,
+                    base = (args.initial_validation_baseline if block == 1 else None) or run('frozen_native64',[*native_flags,*validate_flags,'--checkpoint',current,
                                                    '--dynamimic-alternate',current])
                     incumbent = json.loads((base/'dyna_validation.json').read_text())
+                    if incumbent['checkpoints'] != [current_sha, current_sha]:
+                        raise ValueError('Both validation reference slots must use the incumbent')
                     # Each half keeps its own lane positions for the paired comparison.
                 candidates = [fit/'conservative.pt',fit/'moderate.pt']
                 evaluated = run('candidates_native64',[*native_flags,*validate_flags,'--checkpoint',candidates[0],
                                                         '--dynamimic-alternate',candidates[1]])
                 result = json.loads((evaluated/'dyna_validation.json').read_text())
+                if base is not None and any((base/file).read_bytes() != (evaluated/file).read_bytes()
+                                            for file in ('task_contract.json', 'actuator_contract.json', 'policy_execution.json')):
+                    raise ValueError('Candidate and reference validation contracts differ')
                 if any(result[k] != incumbent[k] for k in ('case_ids','reset_sha256','companion_sha256')):
                     raise ValueError('Native promotion panel changed')
                 indices = [i for i in range(2) if choose_candidate(incumbent['metrics'][i], [result['metrics'][i]]) is not None]

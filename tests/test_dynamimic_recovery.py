@@ -82,11 +82,13 @@ def test_recovery_starts_require_release_and_keep_prefall_states():
     body[80:,0] = True
     obs = torch.zeros(t,n,794)
     obs[:,:,775] = torch.arange(t)[:,None]*.01
-    data = dict(body=body,active=live & ~body,obs=obs,live=live,release_time=torch.zeros(t,n),
+    data = dict(body=body,root_terminated=torch.zeros_like(body),active=live & ~body,obs=obs,live=live,release_time=torch.zeros(t,n),
                 landed=landed,strict=torch.zeros_like(live))
+    data['root_terminated'][122,1] = True
     groups = recovery_start_groups(data,[2,8,16,48,96],torch.tensor([False,False,True]))
     assert [8,0] in groups[0].tolist() and [2,0] not in groups[0].tolist()
     assert [48,0] in groups[1].tolist() and [48,1] in groups[2].tolist()
+    assert [96,1] in groups[1].tolist() and [96,1] not in groups[2].tolist()
     assert all(not (pool[:,1]==2).any() for pool in groups)
 
 
@@ -159,3 +161,15 @@ def test_candidate_steps_remain_distinct_after_budget_halvings():
     moderate, conservative = candidate_steps(lambda alpha: .076 * alpha)
     assert moderate == ('moderate', .035, .25, .019)
     assert conservative == ('conservative', .020, .125, .0095)
+
+
+def test_root_failure_charged_once_and_blocks_tail_after_rebound():
+    from scripts.train_dynamimic_recovery_bptt import root_survival
+    from scripts.fit_dynamimic_recovery_critic import root_termination
+    height = torch.tensor([.23, .12, .10], requires_grad=True)
+    s = root_survival(torch.ones_like(height), height)
+    torch.testing.assert_close(s, torch.tensor([1., .5, 0.]))
+    torch.testing.assert_close(root_survival(s, torch.full_like(s,.34)), s)
+    s.sum().backward()
+    assert height.grad[1] > 0
+    assert root_termination(torch.tensor([True,False,True]), height).tolist() == [False,False,True]

@@ -9,6 +9,16 @@ from torch.nn import functional as F
 from quadsmash.rl.dynamimic_lagrangian_v1 import mv, rotation
 
 
+from scripts.fit_dynamimic_recovery_critic import FALL_COST, NATIVE_RETURN_SCHEMA, ROOT_FAILURE_HEIGHT, root_termination
+
+
+def root_survival(previous, height_w):
+    # Smooth the terminal boundary over +/- 1 cm. Latching the lowest survival
+    # prevents paying the same fall cost again or rewarding an imagined rebound.
+    x = ((height_w - ROOT_FAILURE_HEIGHT + .01) / .02).clamp(0., 1.)
+    return torch.minimum(previous, x.square() * (3. - 2. * x))
+
+
 def candidate_steps(measure):
     """Apply each interpolated policy before yielding its measured action-space step."""
     alpha = 1.
@@ -37,9 +47,9 @@ def recovery_start_groups(data, snapshot_ticks, held_lanes):
     eligible = data['active'] & ~held_lanes
     eligible &= data['obs'][..., 775] - data['release_time'] >= .04
     eligible &= torch.isin(ticks, torch.as_tensor(snapshot_ticks))
-    future_body = F.pad(data['body'] & data['live'], (0,0,0,49)).unfold(0,50,1).any(dim=-1)
+    future_fall = F.pad((data['body'] | data['root_terminated']) & data['live'], (0,0,0,49)).unfold(0,50,1).any(dim=-1)
     age = ticks - touchdown
-    near = had_landed & ((age < 30) | future_body)
+    near = had_landed & ((age < 30) | future_fall)
     stable = F.pad(data['strict'][:-1], (0, 0, 1, 0))
     masks = (~had_landed, near, had_landed & ~near & ~stable & (age >= 30) & (age <= 250))
     return tuple((eligible & mask).nonzero() for mask in masks)
@@ -172,6 +182,7 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
     elapsed = obs[:, 775]
     present = obs[:, 67].bool()
     ever_airborne = (obs[:, 773:775].sum(-1)>0) | starts['landed']
+    survival = q.new_ones(len(q))
     discount = 1.
     value = q.new_zeros(len(q))
     saturation = q.new_zeros(())
@@ -196,7 +207,10 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
         q, v, contacts, variance = checkpoint(body_step, q, v, command.final_joint_targets, use_reentrant=False)
         disagreement = disagreement + variance/horizon
         landed = torch.maximum(landed, contacts.amax(-1))
-        value = value + discount * recovery_reward(q, v, contacts, geometry, landed)
+        next_survival = root_survival(survival, q[:, 2] + starts['origin_z'])
+        step_reward = next_survival * recovery_reward(q, v, contacts, geometry, landed)
+        value = value + discount * (step_reward - FALL_COST * (survival - next_survival))
+        survival = next_survival
         discount *= .995
         elapsed = elapsed + .01
         rot = rotation(q[:,3:7])
@@ -208,7 +222,7 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
             airborne=contacts.amax(-1)<.5, airborne_seen=ever_airborne, hit_seen=all_active,
             elapsed_s=elapsed, final_action=command.final_normalized, **context)
         obs, history = observer(physical, history)
-    return -(value+discount*tail(obs)).mean() + saturation + disagreement
+    return -(value+discount*survival*tail(obs)).mean() + saturation + disagreement
 
 
 def main():
@@ -249,7 +263,7 @@ def main():
         raise ValueError('World model weights differ from the scored ensemble')
     args.output.mkdir(parents=True, exist_ok=False)
     verify([args.checkpoint,args.companion], synchronize_recovery=True)
-    data, manifest = read_data(args.native, ('active','obs','release_time','strict','relaxed','net','request'))
+    data, manifest = read_data(args.native, ('active','obs','release_time','strict','relaxed','net','request','done'))
     if report['native_checkpoint'] != manifest['checkpoint_sha256']:
         raise ValueError('World model acceptance refers to a different behavior policy')
     for key, path in [('checkpoint_sha256',args.checkpoint),('companion_sha256',args.companion)]:
@@ -268,6 +282,8 @@ def main():
     critic_fit = json.loads((args.critic/'fit.json').read_text())
     if value_state['source'] != source_sha or critic_fit['native_checkpoint'] != manifest['checkpoint_sha256']:
         raise ValueError('Native critic identity mismatch')
+    if value_state.get('return_schema') != NATIVE_RETURN_SCHEMA:
+        raise ValueError('Native tail must use the same low-root terminal cost as imagination')
     tail.load_native_fit(value_state)
     for param in tail.parameters():
         param.requires_grad_(False)
@@ -297,10 +313,12 @@ def main():
     held = torch.arange(256)%16 < 2
     directory = args.native/'trajectories'
     ticks = sorted(int(p.stem.split('_')[-1]) for p in directory.glob('g07_*.pt'))
+    origins_z = torch.as_tensor(manifest['origins'])[:, 2]
+    data['root_terminated'] = root_termination(data['done'], data['after'][..., 2] + origins_z)
     pools = recovery_start_groups(data, ticks, held)
     generator = torch.Generator().manual_seed(9917)
     success = ((data['relaxed']|data['strict']) & data['live']).any(0) & ~(
-        (data['body']|data['net']) & data['live']).any(0)
+        (data['body']|data['net']|data['root_terminated']) & data['live']).any(0)
     keep = (data['active'] & success & ~held).nonzero()
     if not len(keep):
         raise ValueError('No original successful training trajectories for retention')
@@ -330,7 +348,7 @@ def main():
         t,l = torch.cat(ordered).T
         start = dict(physical=data['before'][t,l].to(device), obs=data['obs'][t,l].to(device),
                      release_time=data['release_time'][t,l].to(device), companion=(l%2==1).to(device),
-                     profile=profiles[l].to(device), landed=data['landed'][(t-1).clamp_min(0),l].to(device),
+                     profile=profiles[l].to(device), origin_z=origins_z[l].to(device), landed=data['landed'][(t-1).clamp_min(0),l].to(device),
                      limits=limits, audit_target=data['final_joint_targets'][t,l].to(device) if audit else None)
         return start,pack_planned_execution(tuple(branches),tuple(sizes))
 
