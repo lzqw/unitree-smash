@@ -735,7 +735,8 @@ def _run_native(args, stop_request):
             return
         if len(first) != lanes:
             raise RuntimeError(f'Only {len(first)}/{lanes} pre-reset records; no live-state backfill permitted')
-        if search_spec is not None or hybrid is not None or args.approach_quick64 or args.research_fixed128 or args.independent_panel_batch is not None:
+        if (search_spec is not None or hybrid is not None or args.approach_quick64
+                or args.research_fixed128 or args.independent_panel_batch is not None or args.dynamimic_validation):
             if any(first[i]['case_id'] != cases[i]['case_id'] for i in range(lanes)):
                 raise ValueError('Terminal case differs from the declared lane assignment')
         rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(lanes)]
