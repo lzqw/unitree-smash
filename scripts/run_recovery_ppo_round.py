@@ -33,6 +33,10 @@ def main():
                                    '--recovery-probe-companion',str(args.companion),
                                    '--recovery-ppo-iterations',str(count),*resume,
                                    *(['--recovery-ground-prefix'] if args.ground_prefix else [])],block/'train',lock,status)
+                if (train/'early_stop.json').exists():
+                    dump(status, dict(state='stopped_by_held32', training=str(train),
+                                      evidence=json.loads((train/'early_stop.json').read_text())))
+                    return
                 policy = train/'policy.pt'
                 resume = ['--recovery-ppo-resume',str(train/'optimizer.pt')]
                 eval_dir = run_stage([*command,'--checkpoint',str(policy),'--research-fixed128'],

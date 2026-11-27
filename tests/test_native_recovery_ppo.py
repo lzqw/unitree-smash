@@ -38,6 +38,38 @@ def test_two_phase_reward_and_native_longest_window():
                           contact_recovery=r, body_ground_seen=zeros.bool(),
                           rally=SimpleNamespace(robot_net_fault=zeros.bool()))
     dense, strict_tick, longest, *_ = reward_state(env)
+    assert torch.all(dense >= 0)
     assert dense[0] > dense[1] and dense[2] > dense[3]
     assert not strict_tick.any()
     torch.testing.assert_close(longest, zeros+.7)
+
+
+def test_targets_frozen_even_when_value_function_changes():
+    from scripts.native_recovery_ppo import rollout_targets
+    v = torch.tensor([[1.], [2.]], requires_grad=True)
+    reward = torch.tensor([[0.], [3.]])
+    active = torch.ones_like(reward, dtype=torch.bool)
+    done = torch.tensor([[False], [True]])
+    adv, ret = rollout_targets(reward, v, active, done, False)
+    expected = ret.clone()
+    with torch.no_grad():
+        v.fill_(100.)
+    assert not adv.requires_grad and not ret.requires_grad
+    torch.testing.assert_close(ret, expected)
+    torch.testing.assert_close(ret[-1], torch.tensor(3.))
+
+
+def test_halving_preserves_previous_iterations_and_heldout_guard():
+    from scripts.native_recovery_ppo import halve_update, heldout_regression
+    head = torch.nn.Linear(2, 1)
+    start = {k: p.detach().clone() for k,p in head.named_parameters()}
+    with torch.no_grad():
+        for p in head.parameters():
+            p.add_(2.)
+    halve_update(head, start)
+    for k,p in head.named_parameters():
+        torch.testing.assert_close(p, start[k]+1.)
+    base = dict(relaxed=8, body=20)
+    assert not heldout_regression(base, base)
+    assert heldout_regression(base, dict(relaxed=7, body=20))
+    assert heldout_regression(base, dict(relaxed=8, body=21))
