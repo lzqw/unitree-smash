@@ -30,12 +30,14 @@ def metrics(pred, truth):
 @torch.no_grad()
 def score(args):
     m = json.loads(args.pairs.read_text())
-    a, baseline = read_data(args.before, ('active',))
+    impulse_audit = getattr(args, 'foot_impulse', False)
+    extras = ('active', 'foot_impulse_w') if impulse_audit else ('active',)
+    a, baseline = read_data(args.before, extras)
     pulse = 'pulse' in m
     timed = pulse and 'start_ticks' in m['pulse']
     air_pulse = timed and m['pulse'].get('phase') == 'air_preparation'
     schema = 'dynamimic-native-recovery-pulse-v1' if pulse else 'dynamimic-native-recovery-v1'
-    b, candidate = read_data(args.after, ('active',), expected_schema=schema)
+    b, candidate = read_data(args.after, extras, expected_schema=schema)
     if baseline['cases'] != candidate['cases'] or baseline['companion_sha256'] != candidate['companion_sha256']:
         raise ValueError('Different launches or Approach mixture')
     if pulse:
@@ -52,6 +54,13 @@ def score(args):
             or fit['native_checkpoint'] != baseline['checkpoint_sha256']):
         raise ValueError('Expected the validated ensemble from the baseline behavior')
     contract = json.loads((args.before/'actuator_contract.json').read_text())
+    if impulse_audit:
+        sampling = dict(frame='world', units='N s', substeps=contract['hold_physics_steps'],
+                        physics_dt_s=contract['physics_dt_s'])
+        for manifest in (baseline, candidate):
+            if (manifest.get('foot_impulse_sampling') != sampling or
+                    manifest.get('foot_force_body_names') != ['FL_foot','FR_foot','RL_foot','RR_foot']):
+                raise ValueError('Native foot impulse timing or foot order differs')
     model = DynaMimicRecoveryWorldModel(args.asset, contract)
     model.load_state_dict(torch.load(weights, weights_only=True, map_location='cpu'))
     model.eval()
@@ -159,6 +168,25 @@ def score(args):
                     q,v,_ = model(q,v,data['final_joint_targets'][t+i,l],member,profile)
                 branches.append(quantities(q,v))
             predicted = {k:branches[1][k]-x for k,x in branches[0].items()}
+            if impulse_audit:
+                # Restart each branch at its measured state four ticks before the endpoint.
+                short = t + h - 4
+                impulses, native = [], []
+                for data in (a, b):
+                    q, v = local_robot_state(data['before'][short,l])
+                    steps, labels = [], []
+                    for offset in range(4):
+                        tick = short + offset
+                        q, v, aux = model(q, v, data['final_joint_targets'][tick,l], member, profile,
+                                          return_foot_impulse=True)
+                        steps.append(aux['foot_impulse_w'])
+                        labels.append(data['foot_impulse_w'][tick,l])
+                    impulses.append(torch.stack(steps).sum(0))
+                    native.append(torch.stack(labels).sum(0))
+                for j, foot in enumerate(('FL','FR','RL','RR')):
+                    key = 'last4_world_impulse_' + foot
+                    predicted[key] = impulses[1][:,j] - impulses[0][:,j]
+                    truth[key] = native[1][:,j] - native[0][:,j]
             if support_audit:
                 # Remove pre-existing branch differences. Scoring only endpoint
                 # velocities after re-anchoring would give credit for inherited motion.
@@ -198,6 +226,7 @@ if __name__ == '__main__':
         parser.add_argument('--'+name, required=True, type=Path)
     parser.add_argument('--ground-surfaces', action='store_true')
     parser.add_argument('--air-preparation', action='store_true')
+    parser.add_argument('--foot-impulse', action='store_true', help='Compare four-tick integrated world impulses per foot')
     parser.add_argument('--support-audit', action='store_true',
                         help='Split timed pre-fall responses by observed foot contact sequence')
     args = parser.parse_args()

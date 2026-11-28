@@ -56,6 +56,21 @@ def test_contact_forces_and_integrator_propagate_target_gradients():
     state[:, 3] = 1.
     q, v = local_robot_state(state)
     target = torch.full_like(q[:, 7:], .01, requires_grad=True)
+    # Check the optional control-period impulse against individual solver substeps.
+    with torch.no_grad():
+        q_full, v_full, aux = wm(q, v, target, 0, return_foot_impulse=True)
+        q_part, v_part = q, v
+        impulses = []
+        steps = wm.substeps
+        wm.substeps = 1
+        for _ in range(steps):
+            q_part, v_part, part = wm(q_part, v_part, target, 0)
+            impulses.append(wm.dt * part['contact_force'])
+        wm.substeps = steps
+        torch.testing.assert_close(q_part, q_full)
+        torch.testing.assert_close(v_part, v_full)
+        torch.testing.assert_close(aux['foot_impulse_w'], torch.stack(impulses).sum(0))
+
     sequential = []
     for member in range(3):
         q1, v1, aux = wm(q, v, target, member)

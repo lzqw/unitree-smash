@@ -114,12 +114,13 @@ class DynaMimicRecoveryWorldModel(nn.Module):
             raise ValueError('Invalid native drive position or velocity limits')
         self.members = nn.ModuleList(ContactForces() for _ in range(3))
 
-    def forward(self, q, v, target, member, profile=None):
+    def forward(self, q, v, target, member, profile=None, *, return_foot_impulse=False):
         if profile is None:
             if self.kp.shape[0] != 1:
                 raise ValueError('Multiple native drive profiles require per-lane profile indices')
             profile = 0
         kp, kd, limit = self.kp[profile], self.kd[profile], self.effort_limit[profile]
+        foot_impulse = q.new_zeros((len(q), 4, 3)) if return_foot_impulse else None
         for _ in range(self.substeps):
             mass, bias, feet, foot_v, jac = self.body(q, v, collision_surface=True)
             gap = feet[..., 2]
@@ -151,7 +152,12 @@ class DynaMimicRecoveryWorldModel(nn.Module):
                       ((upper - q[:, 7:]) / self.dt).clamp(-max_rate, max_rate))
             v, force = solve_support_impulses(implicit_mass, jac, v + self.dt * acceleration,
                                            gap, F.pad(force, (0, 0, 0, 1)), self.dt, bounds)
+            if return_foot_impulse:
+                foot_impulse = foot_impulse + self.dt * force[:, :4]
             prob = 1 - torch.exp(-force[:, :4, 2] / 2)
             q = integrate_configuration(q, v, self.dt)
-        return q, v, dict(foot_contact=prob, contact_force=force[:, :4], head_support_force=force[:, 4], residual_force=residual,
-                          body_ground_logit=ground_logit)
+        aux = dict(foot_contact=prob, contact_force=force[:, :4], head_support_force=force[:, 4],
+                   residual_force=residual, body_ground_logit=ground_logit)
+        if return_foot_impulse:
+            aux['foot_impulse_w'] = foot_impulse
+        return q, v, aux
