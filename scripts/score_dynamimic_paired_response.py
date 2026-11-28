@@ -80,6 +80,10 @@ def score(args):
         if int(same.sum()) != m['eligible'] or len(eligible) != m['eligible']:
             raise ValueError('Native prefix audit case identities differ')
         horizons = [h for h in (4,8,16) if h <= m['pulse']['duration_ticks']]
+        if timed:
+            # The policy switches back to the incumbent after 16 ticks. Each branch
+            # then uses its own recorded closed-loop commands up to the nominal fall.
+            horizons.append(m['pulse']['duration_ticks'] + 16)
     else:
         ta, tb = [first_tick(d['active']) for d in (a,b)]
         start = ta.clamp_max(min(len(a['active']), len(b['active']))-1)
@@ -95,8 +99,13 @@ def score(args):
         times = (start[None,:] + torch.arange(h)[:,None]).clamp_max(min(len(a['active']),len(b['active']))-1)
         valid &= (a['active'][times,lanes] & b['active'][times,lanes]).all(0)
         l = lanes[valid]; t = start[l]
+        coverage = {}
+        if timed:
+            held = lanes % 16 < 2
+            for label, group in [('held_prefall', held & baseline_fall), ('held_control', held & ~baseline_fall)]:
+                coverage[label] = dict(matched=int((same & group).sum()), active_both=int((valid & group).sum()))
         if not len(l):
-            out['horizons'][h] = dict(cases=0)
+            out['horizons'][h] = dict(cases=0, **({'coverage': coverage} if timed else {}))
             continue
         profile = torch.tensor(contract['lane_profile'])[l]
         q0,v0 = local_robot_state(a['before'][t,l])
@@ -131,6 +140,9 @@ def score(args):
                     groups[group][key] = result
             members.append(groups)
         out['horizons'][h] = dict(cases=len(l), members=members)
+        if timed:
+            out['horizons'][h]['coverage'] = coverage
+            out['horizons'][h]['incumbent_continuation_ticks'] = max(0, h-m['pulse']['duration_ticks'])
     return out
 
 
