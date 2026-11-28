@@ -22,6 +22,21 @@ def training_layout(path, protocol_sha, seed, shard=0):
     return selected * 4
 
 
+def development_cases(path, training, protocol_sha, seed):
+    from quadsmash.rl.supermimic_independent_panel import fixed128_cases, load_panel
+    cases = json.loads(path.read_text())['cases']
+    excluded = (json.loads(training.read_text())['cases'] +
+                fixed128_cases(protocol_sha, seed)[0] + load_panel()['cases'])
+    def signatures(rows):
+        return {json.dumps(row['launch'], sort_keys=True) for row in rows}
+    if (len(cases) != 128 or len(signatures(cases)) != 128 or
+            len({c['case_id'] for c in cases}) != 128 or
+            signatures(cases) & signatures(excluded) or
+            {c['case_id'] for c in cases} & {c['case_id'] for c in excluded}):
+        raise ValueError('Development cases must be distinct from training and official panels')
+    return cases
+
+
 class NativeTeachers:
     def __init__(self, device):
         self.branch = torch.arange(4, device=device).repeat_interleave(32)

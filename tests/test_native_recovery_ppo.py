@@ -75,3 +75,65 @@ def test_halving_preserves_previous_iterations_and_heldout_guard():
     assert heldout_regression(base, dict(relaxed=6, body=20))
     assert not heldout_regression(base, dict(relaxed=8, body=21))
     assert heldout_regression(base, dict(relaxed=8, body=22))
+
+
+def test_lift_has_low_height_slope_and_relaxes_leg_damping():
+    from scripts.native_recovery_ppo import lift_and_damping
+    height = torch.tensor([.14, .15, .23, .24])
+    slow = lift_and_damping(height, torch.zeros(4), torch.full((4,), .08))
+    fast = lift_and_damping(height, torch.full((4,), 4.), torch.full((4,), .08))
+    torch.testing.assert_close(slow[1]-slow[0], torch.tensor(.06/18))
+    torch.testing.assert_close(slow[0]-fast[0], .5*(slow[2]-fast[2]))
+
+
+def test_low_root_terminal_filters_timeout_success_and_existing_faults():
+    from scripts.native_recovery_ppo import low_root_terminal
+    eye = torch.eye(6, dtype=torch.bool)
+    result = low_root_terminal(~eye[0],eye[1],eye[2],eye[3],eye[4],torch.full((6,),.11))
+    torch.testing.assert_close(result, eye[5])
+
+
+def test_macro_likelihood_scores_actuator_stops_by_probability_mass():
+    from scripts.native_recovery_ppo import exploration_center, executed_log_prob
+    mean = torch.tensor([[-1.22, 0., 1.22]], requires_grad=True)
+    center = exploration_center(mean)
+    action = torch.tensor([[-1., .05, 1.]])
+    sigma = torch.tensor(.1)
+    normal = torch.distributions.Normal(center, sigma)
+    expected = normal.cdf(action)[0,0].log() + normal.log_prob(action)[0,1] + (1-normal.cdf(action)[0,2]).log()
+    result = executed_log_prob(action, center, sigma)
+    torch.testing.assert_close(result.squeeze(), expected)
+    result.backward()
+    assert (mean.grad.abs() > 0).all()
+
+
+def test_macro_partial_terminal_keeps_last_reward_only_once():
+    from scripts.native_recovery_ppo import decision_targets
+    rewards = torch.ones(7, 1)
+    values = torch.zeros_like(rewards)
+    live = torch.tensor([True]*6+[False])[:,None]
+    done = torch.tensor([False]*5+[True,False])[:,None]
+    decisions = torch.tensor([True,False,False,False,True,False,False])[:,None]
+    adv, targets = decision_targets(rewards,values,live,done,decisions,False,gamma=1.)
+    torch.testing.assert_close(targets,torch.tensor([5.9,2.]))
+    torch.testing.assert_close(adv, targets)
+
+
+def test_native_thigh_clearance_uses_rotated_authored_box():
+    from types import SimpleNamespace
+    import json
+    import itertools
+    from quadsmash.rl.dynamimic_ground_clearance import SHAPES
+    from scripts.native_recovery_ppo import NativeThighClearance
+    geom = json.loads(SHAPES.read_text())
+    shape, = [s for s in geom['shapes'] if s['body']=='RL_thigh']
+    data = SimpleNamespace(body_link_quat_w=torch.tensor([[[.5,.5,.5,.5]]]),
+                           body_link_pos_w=torch.tensor([[[0.,0.,1.3]]]))
+    env = SimpleNamespace(robot=SimpleNamespace(body_names=['RL_thigh'],data=data), device='cpu',
+                          scene=SimpleNamespace(env_origins=torch.tensor([[0.,0.,1.]])))
+    geometry = NativeThighClearance(env, next(iter(geom['asset_sha256'].values())))
+    vertices = torch.tensor(list(itertools.product([-.5,.5],repeat=3))) * shape['size']
+    transform = torch.tensor(shape['transform'])
+    body_vertices = vertices @ transform[:3,:3] + transform[3,:3]
+    # A 120-degree rotation about (1,1,1) sends local Y into world Z.
+    torch.testing.assert_close(geometry(env), (.3 + body_vertices[:,1].min()).reshape(1))

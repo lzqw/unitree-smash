@@ -61,6 +61,8 @@ def main():
                        help='Apply the candidate on the first control decision after measured touchdown')
     phase.add_argument('--dynamimic-pulse-air-preparation', action='store_true',
                         help='Start the training pulse at the first airborne state at least 50 ms after release')
+    parser.add_argument('--recovery-macro', action='store_true')
+    parser.add_argument('--recovery-lift-reward', action='store_true')
     parser.add_argument('--recovery-cem-generations', type=int, choices=range(1,21))
     parser.add_argument('--recovery-ppo-panel', type=Path)
     parser.add_argument('--recovery-ppo-iterations', type=int, default=1)
@@ -86,6 +88,8 @@ def main():
     parser.add_argument('--dynamimic-alternate', type=Path)
     parser.add_argument('--dynamimic-companion', type=Path)
     parser.add_argument('--dynamimic-exclude-training', type=Path)
+    panels.add_argument('--recovery-dev128', type=Path)
+    parser.add_argument('--recovery-dev-exclude-training', type=Path)
     panels.add_argument('--research-fixed128', action='store_true',
                         help='Score the predeclared research cases held out from native training')
     panels.add_argument('--independent-panel-batch', type=int, choices=range(4),
@@ -132,6 +136,8 @@ def main():
         parser.error('Recovery intervention requires a checkpoint and a timing source')
     if args.dynamimic_pulse_checkpoint and (not args.dynamimic_capture or (args.dynamimic_pulse_start is not None and not 0 <= args.dynamimic_pulse_start <= 784)):
         parser.error('Recovery intervention requires native training capture and a complete 16-tick interval')
+    if (args.recovery_macro or args.recovery_lift_reward) and (not args.recovery_ppo_panel or args.recovery_cem_generations or args.dynamimic_capture):
+        parser.error('The lift reward is specific to native Recovery PPO')
     if args.recovery_cem_generations and (not args.recovery_ppo_panel or args.dynamimic_capture or args.recovery_ppo_resume):
         parser.error('Native Recovery CEM requires a separate training panel and fresh search')
     if args.dynamimic_capture and not args.recovery_ppo_panel:
@@ -146,8 +152,10 @@ def main():
             or args.independent_panel_batch is not None or args.approach_quick64
             or args.approach_hybrid_spec or args.record_physical_transitions):
         parser.error('Native recovery teachers require a separate full-tail training rollout')
+    if bool(args.recovery_dev128) != bool(args.recovery_dev_exclude_training) or (args.recovery_dev128 and (not args.recovery_full_tail or args.recovery_probe_companion or args.approach_hybrid_spec)):
+        parser.error('Recovery dev128 requires a separate deterministic full-tail scene')
     if args.recovery_full_tail:
-        if (not args.checkpoint or not (args.research_fixed128 or args.recovery_training_probes or args.recovery_ppo_panel or args.dynamimic_validation or args.independent_panel_batch is not None) or args.approach_ball_only
+        if (not args.checkpoint or not (args.recovery_dev128 or args.research_fixed128 or args.recovery_training_probes or args.recovery_ppo_panel or args.dynamimic_validation or args.independent_panel_batch is not None) or args.approach_ball_only
                 or args.native_action_probe_spec or args.shutdown_diagnostic_ticks
                 or args.diagnostic_grounded_miss or args.approach_search_spec):
             parser.error('Recovery baseline requires a frozen checkpoint and the fixed128 panel')
@@ -364,6 +372,10 @@ def _run_native(args, stop_request):
             from quadsmash.rl.supermimic_independent_panel import panel_batch
             cases, panel_identity = panel_batch(args.independent_panel_batch, contract['protocol_sha256'], args.seed)
             capture_contract = dict(contract, independent_evaluation=panel_identity)
+        if args.recovery_dev128:
+            from scripts.recovery_native_teachers import development_cases
+            cases = development_cases(args.recovery_dev128, args.recovery_dev_exclude_training, contract['protocol_sha256'], args.seed)
+            capture_contract = dict(contract, recovery_dev128_sha256=hashlib.sha256(args.recovery_dev128.read_bytes()).hexdigest())
         if args.research_fixed128:
             from quadsmash.rl.supermimic_independent_panel import fixed128_cases
             cases, panel_identity = fixed128_cases(contract['protocol_sha256'], args.seed)
@@ -403,7 +415,7 @@ def _run_native(args, stop_request):
         stage = 'BEFORE_ENV'
         env_type = RecoveryEvaluationEnv if args.recovery_full_tail and teachers is None else EvaluationEnv
         if args.recovery_ppo_panel:
-            from scripts.native_recovery_ppo import reward_state
+            from scripts.native_recovery_ppo import NativeThighClearance, low_root_terminal, reward_state
             class RecoveryPPOEnv(EvaluationEnv):
                 def _observe_physics_frame(self, frame):
                     fresh = frame > self._observation_physics_frame and frame > 0
@@ -414,7 +426,15 @@ def _run_native(args, stop_request):
 
                 def _get_dones(self):
                     result = super()._get_dones()
-                    self.recovery_ppo_boundary = reward_state(self)
+                    geometry = None
+                    if args.recovery_lift_reward:
+                        if not hasattr(self, 'recovery_thigh_geometry'):
+                            self.recovery_thigh_geometry = NativeThighClearance(self, contract['asset']['sha256'])
+                        geometry = self.recovery_thigh_geometry
+                        self.recovery_low_root_terminal = low_root_terminal(
+                            *result, self.terminated_success, self.body_ground_seen, self.rally.robot_net_fault,
+                            self.robot.data.root_pos_w[:, 2])
+                    self.recovery_ppo_boundary = reward_state(self, geometry)
                     if args.dynamimic_capture:
                         from scripts.capture_dynamimic_recovery import native_boundary
                         self.dyna_boundary = native_boundary(self)
@@ -787,7 +807,7 @@ def _run_native(args, stop_request):
         if len(first) != lanes:
             raise RuntimeError(f'Only {len(first)}/{lanes} pre-reset records; no live-state backfill permitted')
         if (search_spec is not None or hybrid is not None or args.approach_quick64
-                or args.research_fixed128 or args.independent_panel_batch is not None or args.dynamimic_validation):
+                or args.recovery_dev128 or args.research_fixed128 or args.independent_panel_batch is not None or args.dynamimic_validation):
             if any(first[i]['case_id'] != cases[i]['case_id'] for i in range(lanes)):
                 raise ValueError('Terminal case differs from the declared lane assignment')
         rows=[dict(first[i],source_case_index=i,case_id=cases[i].get('case_id',i)) for i in range(lanes)]
@@ -840,6 +860,8 @@ def _run_native(args, stop_request):
                            first_episode_extra_gate_onset=gate_first_tick.tolist())
         if args.independent_panel_batch is not None:
             metrics.update(task_contract=capture_contract, evaluation_scope='independent512 stage-end research evaluation')
+        if args.recovery_dev128:
+            metrics.update(task_contract=capture_contract, evaluation_scope='Recovery deterministic development 128')
         if args.research_fixed128:
             metrics.update(task_contract=capture_contract, evaluation_scope='fixed128 held-out research development')
         if args.approach_quick64:

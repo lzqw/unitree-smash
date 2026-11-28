@@ -13,8 +13,15 @@ def main():
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--iterations', type=int, default=1)
     p.add_argument('--cem-generations', type=int, choices=range(1,21))
+    p.add_argument('--dev128', type=Path)
+    p.add_argument('--macro', action='store_true')
+    p.add_argument('--lift-reward', action='store_true')
     p.add_argument('--ground-prefix', action='store_true')
     args = p.parse_args()
+    if bool(args.dev128) != args.macro:
+        p.error('Macro PPO requires a separate dev128 panel')
+    if args.cem_generations and (args.lift_reward or args.macro):
+        p.error('Lift reward is specific to native PPO')
     if args.iterations < 1:
         p.error('iterations must be positive')
     verify([args.checkpoint,args.companion], synchronize_recovery=True)
@@ -40,13 +47,24 @@ def main():
                 return
             policy = args.checkpoint
             resume = []
-            for start in range(0, args.iterations, 5):
-                count = min(5, args.iterations-start)
+            block_size = 3 if args.macro else 5
+            if args.macro:
+                dev_flags = ['--recovery-dev128',str(args.dev128),'--recovery-dev-exclude-training',str(args.panel)]
+                dev_baseline = run_stage([*command,'--checkpoint',str(policy),*dev_flags],
+                                         args.output/'dev128_baseline',lock,status)
+                original = summarize(dev_baseline)
+                if original['strict_physical_recovery'] < 8:
+                    dump(status, dict(state='insufficient_dev_strict_cases', baseline=original))
+                    return
+            for start in range(0, args.iterations, block_size):
+                count = min(block_size, args.iterations-start)
                 block = args.output / f'block_{start+count:02d}'
                 block.mkdir()
                 train = run_stage([*command,'--checkpoint',str(policy),'--recovery-ppo-panel',str(args.panel),
                                    '--recovery-probe-companion',str(args.companion),
                                    '--recovery-ppo-iterations',str(count),*resume,
+                                   *(['--recovery-macro'] if args.macro else []),
+                                   *(['--recovery-lift-reward'] if args.lift_reward else []),
                                    *(['--recovery-ground-prefix'] if args.ground_prefix else [])],block/'train',lock,status)
                 if (train/'early_stop.json').exists():
                     dump(status, dict(state='stopped_by_held32', training=str(train),
@@ -54,6 +72,17 @@ def main():
                     return
                 policy = train/'policy.pt'
                 resume = ['--recovery-ppo-resume',str(train/'optimizer.pt')]
+                if args.macro:
+                    dev = run_stage([*command,'--checkpoint',str(policy),*dev_flags],block/'dev128',lock,status)
+                    compare(dev_baseline, dev, block/'dev128_comparison.json')
+                    current = summarize(dev)
+                    if (current['robot_net'] > original['robot_net'] or
+                            (current['body_ground_given_contact'] > original['body_ground_given_contact'] and
+                             current['relaxed_physical_recovery'] < original['relaxed_physical_recovery'])):
+                        dump(status, dict(state='stopped_by_dev128', baseline=original, candidate=current))
+                        return
+                    if start+count < args.iterations:
+                        continue
                 eval_dir = run_stage([*command,'--checkpoint',str(policy),'--research-fixed128'],
                                      block/'fixed128',lock,status)
                 compare(args.baseline, eval_dir, block/'comparison.json')
