@@ -78,6 +78,21 @@ def imminent_root_rows(data):
     return F.pad(root_only, (0, 0, 0, 15)).unfold(0, 16, 1).any(-1)
 
 
+def body_fault_window_counts(rows, landing_tick, first_fault_tick, horizon, archive_ticks):
+    """Count sampled starts and independent lanes whose rollout reaches first body contact."""
+    tick, lane = rows.T
+    fault = first_fault_tick[lane]
+    landing = landing_tick[lane]
+    reached = (fault < archive_ticks) & (tick <= fault) & (fault < tick + horizon)
+    delay = fault - landing
+    counts = {}
+    for name, condition in (('before_landing', delay < 0), ('first_second', (delay >= 0) & (delay < 100)),
+                            ('later', delay >= 100)):
+        covered = lane[reached & condition]
+        counts[name] = dict(starts=len(covered), distinct_cases=len(covered.unique()))
+    return counts
+
+
 def late_body_windows(data, horizon):
     ticks = torch.arange(len(data['live']))[:, None]
     end = len(ticks)
@@ -446,6 +461,10 @@ def main():
     pools = recovery_start_groups(data, ticks, held)
     imminent = imminent_root_rows(data)
     late_body = late_body_windows(data, args.horizon)
+    end_tick = len(data['live'])
+    control_tick = torch.arange(end_tick)[:, None]
+    landing_tick = torch.where(data['live'] & data['landed'], control_tick, end_tick).amin(0)
+    first_fault_tick = torch.where(data['live'] & data['body'], control_tick, end_tick).amin(0)
     generator = torch.Generator().manual_seed(9917)
     success = ((data['relaxed']|data['strict']) & data['live']).any(0) & ~(
         (data['body']|data['net']|data['root_terminated']) & data['live']).any(0)
@@ -557,6 +576,8 @@ def main():
                              segment_counts=[len(batch) for batch,_ in segments], seconds=perf_counter()-started, microbatch=args.microbatch,
                              peak_cuda_mib=torch.cuda.max_memory_allocated(device)/2**20 if device.type=='cuda' else None,
                              unique_native_cases=len(rows[:,1].unique()),
+                             native_first_body_in_window=body_fault_window_counts(
+                                 rows, landing_tick, first_fault_tick, args.horizon, end_tick),
                              late_body_prefall_starts=int(late_body[rows[:,0],rows[:,1]].sum()),
                              imminent_root_starts=int(imminent[rows[:,0],rows[:,1]].sum()),
                              h8d_starts=int((rows[:,1]%2).sum()),
