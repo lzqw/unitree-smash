@@ -40,3 +40,11 @@ Both candidates finished deterministic native evaluation on the same 64 launches
 | Moderate | 32 → 32 | 3 → 6 | 8 → 12 |
 
 The conservative candidate avoided three baseline body contacts and incurred two new ones. Its lower body count selected it for the official fixed128 run. The moderate candidate avoided three and incurred three. This experiment used the preceding H4 objective. The directed-clamp and height-ramp block is queued behind fixed128. [Paired case flips and checkpoint identities](r13_h4_native64_flips.json)
+
+## Preserving early corrections through the final distillation
+
+The final localization step previously trained the student to reproduce PPO01 until a 12-tick sustained warning fired. On the training partition, the warning was inactive on all 2,775 eligible airborne ticks of 110 episodes with later measured body contact, and on 2,480 of their 2,640 initial-support ticks. This defeated the airborne preparation objective at the final distillation step.
+
+With landing assistance enabled, the student now receives the teacher correction on these native airborne and initial-support windows from 50 ms after release. Initial support comprises the first 24 states after measured touchdown and ends early on a body fault. The loss still anchors clean successes and anchors early leg commands during the 40 ms release protection. The future fall label selects training targets only.
+
+A CPU replay held the post-retention H4 teacher fixed and changed only the localization procedure. Across 19 held fall cases, the projection of the conservative student's raw head correction onto the teacher correction increased from −0.073 to 0.873 in air and from 0.349 to 0.908 during initial support. The corresponding moderate projections were −0.048 → 0.838 and 0.341 → 0.869. Final clipped request RMS stayed within the two action budgets. These are teacher-fidelity measurements at recorded states. The running H4 native evaluation uses the original localization; the queued directed-lift block uses the repaired one. [Fitting coverage and paired changes](r13_landing_teacher_coverage.json)

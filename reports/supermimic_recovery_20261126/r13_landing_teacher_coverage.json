@@ -1,0 +1,184 @@
+{
+  "behavior": "0c16c7181f28267f841ba95b8ba6aa115af8835cf1b8013a7b894653b6d68d9d",
+  "companion": "48228839ccc884fa92366d7d321f8f742c35b564a717c02ab76f9ed31c4959f2",
+  "threshold": 0.9093046188354492,
+  "action_batch_per_approach": 128,
+  "early_leg_anchor_batch_per_approach": 32,
+  "early_leg_anchor_cases": 190,
+  "focus_cost_weight": 0.1,
+  "train_cases": 190,
+  "warning_train_cases": 109,
+  "landing_assist": true,
+  "phase_targets": {
+    "air_preparation": {
+      "train_cases": 110,
+      "train_ticks": 2775,
+      "previously_unwarned_ticks": 2775
+    },
+    "first_support": {
+      "train_cases": 110,
+      "train_ticks": 2640,
+      "previously_unwarned_ticks": 2480
+    }
+  },
+  "candidates": {
+    "conservative": {
+      "source": "988aa2dec3bd9575b48eb630fec98468e9e5f4334f4fe2bd682ccf88a5438fe9",
+      "after": "c1cc0e40c20b29689070145856eb05032f4be8dd0645ae43e788283d390af1df",
+      "rms": 0.005107302218675613,
+      "budget": 0.02,
+      "replay_max_error": 5.21540641784668e-07,
+      "held_head_changes": {
+        "warning": {
+          "cases": 19,
+          "ticks": 427,
+          "before_rms": 0.013545792549848557,
+          "after_rms": 0.012449176982045174,
+          "directional_gain": 0.9020406603813171,
+          "direction_cosine": 0.9814990758895874
+        },
+        "clean": {
+          "cases": 6,
+          "ticks": 3124,
+          "before_rms": 0.004260851535946131,
+          "after_rms": 0.0017812489531934261,
+          "directional_gain": 0.22146037220954895,
+          "direction_cosine": 0.5297461748123169
+        },
+        "no_warning": {
+          "cases": 31,
+          "ticks": 5847,
+          "before_rms": 0.007561640348285437,
+          "after_rms": 0.004905583802610636,
+          "directional_gain": 0.5465892553329468,
+          "direction_cosine": 0.8425320386886597
+        },
+        "air_preparation": {
+          "cases": 19,
+          "ticks": 483,
+          "before_rms": 0.005104192532598972,
+          "after_rms": 0.004675636533647776,
+          "directional_gain": 0.8728523254394531,
+          "direction_cosine": 0.9528555870056152
+        },
+        "first_support": {
+          "cases": 19,
+          "ticks": 456,
+          "before_rms": 0.008602575398981571,
+          "after_rms": 0.00801352970302105,
+          "directional_gain": 0.9075913429260254,
+          "direction_cosine": 0.9743051528930664
+        }
+      },
+      "paired_localization": {
+        "air_preparation": {
+          "old": {
+            "before_rms": 0.005104192532598972,
+            "after_rms": 0.001060339156538248,
+            "directional_gain": -0.07336270064115524,
+            "direction_cosine": -0.3531486690044403
+          },
+          "phase_aware": {
+            "before_rms": 0.005104192532598972,
+            "after_rms": 0.004675636533647776,
+            "directional_gain": 0.8728523254394531,
+            "direction_cosine": 0.9528555870056152
+          }
+        },
+        "first_support": {
+          "old": {
+            "before_rms": 0.008602575398981571,
+            "after_rms": 0.004675871692597866,
+            "directional_gain": 0.3491085469722748,
+            "direction_cosine": 0.6422828435897827
+          },
+          "phase_aware": {
+            "before_rms": 0.008602575398981571,
+            "after_rms": 0.00801352970302105,
+            "directional_gain": 0.9075913429260254,
+            "direction_cosine": 0.9743051528930664
+          }
+        }
+      }
+    },
+    "moderate": {
+      "source": "f7f476598d985f039a7eb163790c78c6c95255e4c7ecc6f6cdddc64800d7add9",
+      "after": "19e598d4d6d58efc43dd2ec31936ebbcc79d1e6b9aa68c6b740a526ed5dffd3f",
+      "rms": 0.009519292041659355,
+      "budget": 0.035,
+      "replay_max_error": 5.21540641784668e-07,
+      "held_head_changes": {
+        "warning": {
+          "cases": 19,
+          "ticks": 427,
+          "before_rms": 0.02694377861917019,
+          "after_rms": 0.023803094401955605,
+          "directional_gain": 0.8657162189483643,
+          "direction_cosine": 0.9799426198005676
+        },
+        "clean": {
+          "cases": 6,
+          "ticks": 3124,
+          "before_rms": 0.0084339939057827,
+          "after_rms": 0.0031410311348736286,
+          "directional_gain": 0.12885349988937378,
+          "direction_cosine": 0.3459849953651428
+        },
+        "no_warning": {
+          "cases": 31,
+          "ticks": 5847,
+          "before_rms": 0.01503867655992508,
+          "after_rms": 0.009095277637243271,
+          "directional_gain": 0.4887232184410095,
+          "direction_cosine": 0.80808424949646
+        },
+        "air_preparation": {
+          "cases": 19,
+          "ticks": 483,
+          "before_rms": 0.010263514705002308,
+          "after_rms": 0.008897174149751663,
+          "directional_gain": 0.8375824689865112,
+          "direction_cosine": 0.9662101864814758
+        },
+        "first_support": {
+          "cases": 19,
+          "ticks": 456,
+          "before_rms": 0.017121130600571632,
+          "after_rms": 0.015275146812200546,
+          "directional_gain": 0.8685232400894165,
+          "direction_cosine": 0.973483145236969
+        }
+      },
+      "paired_localization": {
+        "air_preparation": {
+          "old": {
+            "before_rms": 0.010263514705002308,
+            "after_rms": 0.0016859318129718304,
+            "directional_gain": -0.04804108664393425,
+            "direction_cosine": -0.29246166348457336
+          },
+          "phase_aware": {
+            "before_rms": 0.010263514705002308,
+            "after_rms": 0.008897174149751663,
+            "directional_gain": 0.8375824689865112,
+            "direction_cosine": 0.9662101864814758
+          }
+        },
+        "first_support": {
+          "old": {
+            "before_rms": 0.017121130600571632,
+            "after_rms": 0.009339742362499237,
+            "directional_gain": 0.3412713408470154,
+            "direction_cosine": 0.6256008744239807
+          },
+          "phase_aware": {
+            "before_rms": 0.017121130600571632,
+            "after_rms": 0.015275146812200546,
+            "directional_gain": 0.8685232400894165,
+            "direction_cosine": 0.973483145236969
+          }
+        }
+      }
+    }
+  }
+}

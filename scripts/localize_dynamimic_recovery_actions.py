@@ -50,6 +50,16 @@ def sample(pools, sizes):
     return torch.cat(batches)
 
 
+def landing_teacher_masks(tick, lane, release_age, landing, fault, end):
+    # Events are sampled at the end of each control tick; observations are
+    # sampled at its start. Future failure is only a native teacher label.
+    first_ground_state = landing[lane] + 1
+    eligible = ((fault[lane] < end) & (landing[lane] < end)
+                & (tick <= fault[lane]) & (release_age[tick, lane] >= .05))
+    return (eligible & (tick < first_ground_state),
+            eligible & (tick >= first_ground_state) & (tick < first_ground_state + 24))
+
+
 def fit_warning(obs, tick, lane, fault, clean, length):
     train = lane % 16 >= 4
     features = observable_features(obs)
@@ -83,6 +93,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('native','checkpoint','companion','retention','output'):
         parser.add_argument('--'+name,type=Path,required=True)
+    parser.add_argument('--landing-assist',action='store_true')
     args = parser.parse_args()
     data, manifest = read_data(args.native, ('active','obs','release_time','done','relaxed','strict','net','request'))
     digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
@@ -106,7 +117,14 @@ def main():
     torch.manual_seed(323)
     warned, threshold = fit_warning(obs,t,l,first_fault,clean,length)
     train = l%16 >= 4
-    masks = (warned, clean[l], ~clean[l]&~warned)
+    target = warned
+    phases = {}
+    if args.landing_assist:
+        landing = torch.where(data['live'] & data['landed'],torch.arange(length)[:,None],length).amin(0)
+        air, impact = landing_teacher_masks(t,l,data['obs'][...,775]-data['release_time'],landing,first_fault,length)
+        target = (warned | air | impact) & ~clean[l]
+        phases = dict(air_preparation=air, first_support=impact)
+    masks = (target, clean[l], ~clean[l]&~target)
     pools = [(train & mask).nonzero().flatten() for mask in masks]
     if any(not len(p) for p in pools):
         raise ValueError('Insufficient native states for conditional correction')
@@ -123,7 +141,11 @@ def main():
                   action_batch_per_approach=128, early_leg_anchor_batch_per_approach=32,
                   early_leg_anchor_cases=int(early_lane.unique().numel()), focus_cost_weight=.1,
                   train_cases=int(l[train].unique().numel()), warning_train_cases=int(l[train&warned].unique().numel()),
-                  candidates={})
+                  landing_assist=args.landing_assist,
+                  phase_targets={key:dict(train_cases=len(l[mask&train].unique()),
+                                          train_ticks=int((train&mask).sum()),
+                                          previously_unwarned_ticks=int((train&mask&~warned).sum()))
+                                 for key,mask in phases.items()}, candidates={})
     for label,path,budget in zip(('conservative','moderate'),candidates,(.020,.035),strict=True):
         parent,other,teacher,_ = policies(args.checkpoint,path,args.companion,lambda:load_ppo_initialized_actor(source,'cpu')[0])
         student,_ = load_ppo_initialized_actor(source,'cpu')
@@ -146,14 +168,14 @@ def main():
             prediction = student.actor.recovery(z[idx])-nominal[idx]
             early = sample(early_pool,(64,))
             leg_error = F.mse_loss(student.actor.recovery(early_z[early])[:,:12], early_target[early])
-            loss = 100*(F.mse_loss(prediction,warned[idx,None]*delta[idx]) + leg_error)
+            loss = 100*(F.mse_loss(prediction,target[idx,None]*delta[idx]) + leg_error)
             loss = loss + .1*focus_cost(first_layer,anchor)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
         with torch.no_grad():
             metrics = {}
-            for key,mask in [('warning',warned),('clean',clean[l]),('no_warning',~warned)]:
+            for key,mask in [('warning',warned),('clean',clean[l]),('no_warning',~warned), *phases.items()]:
                 group = (held[l]&mask).nonzero().flatten()
                 if len(group):
                     actual = student.actor.recovery(z[group])-nominal[group]

@@ -448,3 +448,14 @@ def test_air_only_extension_avoids_touchdown_overlap_and_unknown_landings():
     assert per_lane[0] == [(0,24),(32,4)]
     assert per_lane[1] == [(0,16),(16,4),(32,4)]
     assert per_lane[2] == per_lane[3] == [(0,4),(16,4),(32,4)]
+
+
+def test_localized_landing_targets_follow_native_step_timing():
+    from scripts.localize_dynamimic_recovery_actions import landing_teacher_masks
+    tick = torch.tensor([4, 5, 8, 9, 32, 33, 38, 9, 9])
+    lane = torch.tensor([0, 0, 0, 0, 0, 0, 0, 1, 2])
+    release_age = torch.arange(40)[:, None].expand(-1, 3) / 100
+    air, impact = landing_teacher_masks(tick, lane, release_age, torch.tensor([8, 8, 40]),
+                                      torch.tensor([35, 40, 38]), 40)
+    assert air.tolist() == [False, True, True, False, False, False, False, False, False]
+    assert impact.tolist() == [False, False, False, True, True, False, False, False, False]

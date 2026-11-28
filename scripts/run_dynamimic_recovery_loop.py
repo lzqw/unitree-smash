@@ -161,7 +161,8 @@ def main():
                             '--checkpoint',current,'--companion',args.companion,'--bptt',fit])
                         if args.localize_fall_actions:
                             retention = run('localized',['scripts/localize_dynamimic_recovery_actions.py',
-                                '--native',native,'--checkpoint',current,'--companion',args.companion,'--retention',retention])
+                                '--native',native,'--checkpoint',current,'--companion',args.companion,'--retention',retention,
+                                *(['--landing-assist'] if args.landing_assist else [])])
                 if retention is not None:
                     candidates = retention_candidates(retention, current_sha, manifest['companion_sha256'])
                 else:
