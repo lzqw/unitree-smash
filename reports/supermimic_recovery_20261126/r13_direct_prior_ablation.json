@@ -1,0 +1,212 @@
+{
+  "direct_prior_fit_development": {
+    "train_cases": 190,
+    "dev_cases": 32,
+    "members": [
+      {
+        "member": 0,
+        "prior_maes": [
+          0.129245325922966,
+          0.035041723400354385
+        ],
+        "solver_maes": [
+          0.1177227795124054,
+          0.11811420321464539
+        ],
+        "mean_output_change_ns": 0.0008479757816530764
+      },
+      {
+        "member": 1,
+        "prior_maes": [
+          0.2114127278327942,
+          0.036592669785022736
+        ],
+        "solver_maes": [
+          0.12461826205253601,
+          0.12551124393939972
+        ],
+        "mean_output_change_ns": 0.0014728913083672523
+      },
+      {
+        "member": 2,
+        "prior_maes": [
+          0.21322548389434814,
+          0.03775995969772339
+        ],
+        "solver_maes": [
+          0.13120487332344055,
+          0.13241524994373322
+        ],
+        "mean_output_change_ns": 0.001514093717560172
+      }
+    ]
+  },
+  "hybrid_contact_development": [
+    {
+      "weight": 0,
+      "fit": false,
+      "members": [
+        {
+          "tilt_deg": 1.7299745082855225,
+          "com_height_mae_m": 0.004306764807552099,
+          "contact_accuracy": 0.982666015625,
+          "joint_speed_mae": 0.8432824611663818,
+          "foot_impulse_mae_ns": 0.09586982429027557
+        },
+        {
+          "tilt_deg": 2.569179058074951,
+          "com_height_mae_m": 0.0038796691223978996,
+          "contact_accuracy": 0.985107421875,
+          "joint_speed_mae": 0.7192210555076599,
+          "foot_impulse_mae_ns": 0.09101541340351105
+        },
+        {
+          "tilt_deg": 2.6458966732025146,
+          "com_height_mae_m": 0.0049290708266198635,
+          "contact_accuracy": 0.9833984375,
+          "joint_speed_mae": 0.6926624178886414,
+          "foot_impulse_mae_ns": 0.09095844626426697
+        }
+      ]
+    },
+    {
+      "weight": 0,
+      "fit": true,
+      "members": [
+        {
+          "tilt_deg": 1.7450673580169678,
+          "com_height_mae_m": 0.004322189372032881,
+          "contact_accuracy": 0.982177734375,
+          "joint_speed_mae": 0.8430135846138,
+          "foot_impulse_mae_ns": 0.09617932885885239
+        },
+        {
+          "tilt_deg": 2.569636106491089,
+          "com_height_mae_m": 0.0038509462028741837,
+          "contact_accuracy": 0.98486328125,
+          "joint_speed_mae": 0.7269307374954224,
+          "foot_impulse_mae_ns": 0.09185189753770828
+        },
+        {
+          "tilt_deg": 2.745521306991577,
+          "com_height_mae_m": 0.004988923668861389,
+          "contact_accuracy": 0.983154296875,
+          "joint_speed_mae": 0.6998990178108215,
+          "foot_impulse_mae_ns": 0.0921715721487999
+        }
+      ]
+    },
+    {
+      "weight": 0.5,
+      "fit": true,
+      "members": [
+        {
+          "tilt_deg": 1.7486522197723389,
+          "com_height_mae_m": 0.003994980826973915,
+          "contact_accuracy": 0.949951171875,
+          "joint_speed_mae": 0.7010193467140198,
+          "foot_impulse_mae_ns": 0.0725952610373497
+        },
+        {
+          "tilt_deg": 1.8402621746063232,
+          "com_height_mae_m": 0.003962481394410133,
+          "contact_accuracy": 0.93212890625,
+          "joint_speed_mae": 0.7097622156143188,
+          "foot_impulse_mae_ns": 0.0738053247332573
+        },
+        {
+          "tilt_deg": 1.7628082036972046,
+          "com_height_mae_m": 0.00442920345813036,
+          "contact_accuracy": 0.948974609375,
+          "joint_speed_mae": 0.6677746772766113,
+          "foot_impulse_mae_ns": 0.07532645016908646
+        }
+      ]
+    },
+    {
+      "weight": 0.85,
+      "fit": true,
+      "members": [
+        {
+          "tilt_deg": 2.7812931537628174,
+          "com_height_mae_m": 0.010110958479344845,
+          "contact_accuracy": 0.891357421875,
+          "joint_speed_mae": 0.8120664954185486,
+          "foot_impulse_mae_ns": 0.06191644445061684
+        },
+        {
+          "tilt_deg": 3.114453077316284,
+          "com_height_mae_m": 0.00917548593133688,
+          "contact_accuracy": 0.87451171875,
+          "joint_speed_mae": 0.9162632822990417,
+          "foot_impulse_mae_ns": 0.06348410993814468
+        },
+        {
+          "tilt_deg": 2.9500844478607178,
+          "com_height_mae_m": 0.009948761202394962,
+          "contact_accuracy": 0.873779296875,
+          "joint_speed_mae": 0.8638548851013184,
+          "foot_impulse_mae_ns": 0.06423577666282654
+        }
+      ]
+    }
+  ],
+  "hybrid_contact_holdout": [
+    {
+      "weight": 0,
+      "fit": false,
+      "members": [
+        {
+          "tilt_deg": 2.5090506076812744,
+          "com_height_mae_m": 0.00436900882050395,
+          "contact_accuracy": 0.9826108813285828,
+          "joint_speed_mae": 0.720603883266449,
+          "foot_impulse_mae_ns": 0.09765889495611191
+        },
+        {
+          "tilt_deg": 2.0409514904022217,
+          "com_height_mae_m": 0.004018683917820454,
+          "contact_accuracy": 0.9861391186714172,
+          "joint_speed_mae": 0.6112297177314758,
+          "foot_impulse_mae_ns": 0.08809664100408554
+        },
+        {
+          "tilt_deg": 2.369429349899292,
+          "com_height_mae_m": 0.005259529687464237,
+          "contact_accuracy": 0.9841229915618896,
+          "joint_speed_mae": 0.5908214449882507,
+          "foot_impulse_mae_ns": 0.09007954597473145
+        }
+      ]
+    },
+    {
+      "weight": 0.5,
+      "fit": true,
+      "members": [
+        {
+          "tilt_deg": 2.031147003173828,
+          "com_height_mae_m": 0.0052979569882154465,
+          "contact_accuracy": 0.9511088728904724,
+          "joint_speed_mae": 0.6989694237709045,
+          "foot_impulse_mae_ns": 0.07569415867328644
+        },
+        {
+          "tilt_deg": 1.6041306257247925,
+          "com_height_mae_m": 0.00512824347242713,
+          "contact_accuracy": 0.9286794066429138,
+          "joint_speed_mae": 0.6726706624031067,
+          "foot_impulse_mae_ns": 0.07614628225564957
+        },
+        {
+          "tilt_deg": 1.6025439500808716,
+          "com_height_mae_m": 0.005697507876902819,
+          "contact_accuracy": 0.9369959831237793,
+          "joint_speed_mae": 0.6579131484031677,
+          "foot_impulse_mae_ns": 0.07853331416845322
+        }
+      ]
+    }
+  ],
+  "fit_sha256": "c99727f1be46fcf53c2306cd6bdc17a724b455881603eb95ac78df931fe75fb1",
+  "native_manifest_sha256": "1523480c1d5fa0e4ee210af0f6faa1c81004d8ebc8a5a79bca1b33409236dac2"
+}
