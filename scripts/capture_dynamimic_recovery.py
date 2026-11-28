@@ -21,7 +21,7 @@ def native_boundary(env):
 
 
 @torch.no_grad()
-def collect(args, env, wrapper, obs, actor, companion, cases, stop):
+def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
     from quadsmash.rl.supermimic_actuator_identification import actuator_contract
     import json
 

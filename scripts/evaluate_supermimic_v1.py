@@ -471,7 +471,7 @@ def _run_native(args, stop_request):
         if args.recovery_ppo_panel:
             if args.dynamimic_capture:
                 from scripts.capture_dynamimic_recovery import collect
-                collect(args, env, wrapper, obs, actor, companion, cases, stop_request)
+                collect(args, env, wrapper, obs, actor, companion, trained, cases, stop_request)
                 return
             from scripts.native_recovery_ppo import train
             train(args, env, wrapper, obs, actor, companion, trained, cases, stop_request)
