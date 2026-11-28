@@ -177,9 +177,9 @@ def score(args):
                     impulses.append(torch.stack(steps).sum(0))
                     native.append(torch.stack(labels).sum(0))
                 for j, foot in enumerate(('FL','FR','RL','RR')):
-                    key = 'last4_world_impulse_' + foot
-                    predicted[key] = impulses[1][:,j] - impulses[0][:,j]
-                    truth[key] = native[1][:,j] - native[0][:,j]
+                    key = 'last4_vertical_impulse_' + foot
+                    predicted[key] = impulses[1][:,j,2] - impulses[0][:,j,2]
+                    truth[key] = native[1][:,j,2] - native[0][:,j,2]
             if support_audit:
                 # Remove pre-existing branch differences. Scoring only endpoint
                 # velocities after re-anchoring would give credit for inherited motion.

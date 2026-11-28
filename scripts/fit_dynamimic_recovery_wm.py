@@ -83,7 +83,7 @@ def crossing_metrics(sequence):
     result = dict(tilt_deg=float(last[:, 0].median()), com_height_mae_m=float(last[:, 1].mean()),
                 contact_accuracy=float(sequence[..., 2].mean()), joint_speed_mae=float(last[:, 3].mean()))
     if sequence.shape[-1] == 5:
-        result['foot_impulse_mae_ns'] = float(sequence[..., 4].mean())
+        result['foot_vertical_impulse_mae_ns'] = float(sequence[..., 4].mean())
     return result
 
 
@@ -124,7 +124,9 @@ def rollout(wm, member, data, rows, horizon, device, profiles, geometry=None):
                 F.binary_cross_entropy_with_logits(aux['body_ground_logit'], ground[t]) +
                 .001*aux['residual_force'].square().mean())
         if impulses is not None:
-            impulse_error = aux['foot_impulse_w'] - impulses[t]
+            # Isaac Lab net_forces_w measures normal contact only. On level ground
+            # its vertical component is comparable to the solved support load.
+            impulse_error = aux['foot_impulse_w'][..., 2] - impulses[t, ..., 2]
             # One foot supporting a quarter of a 20 kg robot for 10 ms delivers ~0.5 N s.
             step = step + F.smooth_l1_loss(impulse_error / .5, torch.zeros_like(impulse_error))
         loss = loss + step/horizon
@@ -135,7 +137,7 @@ def rollout(wm, member, data, rows, horizon, device, profiles, geometry=None):
                 ((p >= .5) == feet[t].bool()).float().mean(-1),
                 (v[:, 6:]-v_ref[:, 6:]).abs().mean(-1)]
             if impulses is not None:
-                columns.append(impulse_error.abs().mean(dim=(1,2)))
+                columns.append(impulse_error.abs().mean(dim=1))
             results.append(torch.stack(columns, -1))
     return loss, results
 
@@ -225,7 +227,7 @@ def main():
                         help='Fit native absolute and paired minimum and rear thigh surface gaps')
     parser.add_argument('--fit-trunk-innovation', action='store_true',
                         help='Also fit four-tick paired changes from both native branch states')
-    parser.add_argument('--fit-foot-impulse', action='store_true', help='Supervise control-period per-foot world impulses')
+    parser.add_argument('--fit-foot-impulse', action='store_true', help='Supervise control-period per-foot vertical support impulses')
     parser.add_argument('--resume', type=Path)
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
@@ -376,7 +378,7 @@ def main():
                         result['four_tick_innovation'] = innovation
                         score = (score[0], innovation, *score[1:])
                 if args.fit_foot_impulse:
-                    impulse_error = result['foot_impulse_mae_ns']
+                    impulse_error = result['foot_vertical_impulse_mae_ns']
                     if not math.isfinite(impulse_error):
                         raise ValueError('Nonfinite native foot impulse error')
                     score = (max(0., max(errors)-1), impulse_error, *score)

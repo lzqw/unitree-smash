@@ -140,6 +140,7 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
          schema='dynamimic-native-recovery-pulse-v1' if pulse else 'dynamimic-native-recovery-v1',
          pulse=pulse_meta, cases=cases, foot_force_body_names=list(env.feet_contact.body_names),
          foot_force_sampling="world-frame N at control boundary before reset",
+         foot_force_source="Isaac Lab ContactSensor.net_forces_w (normal forces only)",
          foot_impulse_sampling=dict(frame="world", units="N s", substeps=int(env.cfg.decimation),
                                     physics_dt_s=float(env.physics_dt)),
          episode_indices=episode.cpu().tolist(), origins=env.scene.env_origins.cpu().tolist(),
