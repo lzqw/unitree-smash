@@ -5,6 +5,13 @@ import time
 import torch
 
 
+def initial_distribution(device):
+    mu = torch.zeros(24, device=device)
+    sigma = torch.full_like(mu, .28)
+    mu[0], sigma[0] = .65, .55
+    return mu, sigma
+
+
 def panel_layout(bank, generation):
     """Eight feedback candidates share eight Panel A and eight Panel B serves."""
     offset = (generation % 16) * 8
@@ -60,9 +67,7 @@ def search(args, env, wrapper, obs, actor, companion, bank, protocol, stop):
     companion.actor.recovery.load_state_dict(actor.actor.recovery.state_dict())
     root, device = args.output, env.device
     start_sha = hashlib.sha256(args.checkpoint.read_bytes()).hexdigest()
-    mu = torch.zeros(24, device=device)
-    sigma = torch.full_like(mu, .28)
-    mu[0], sigma[0] = .65, .55
+    mu, sigma = initial_distribution(device)
     rng = torch.Generator(device=device).manual_seed(args.seed+8301)
     for generation in range(args.recovery_cem_generations):
         cases = panel_layout(bank, generation)

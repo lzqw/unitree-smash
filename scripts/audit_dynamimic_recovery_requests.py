@@ -16,7 +16,7 @@ from scripts.fit_dynamimic_recovery_wm import read_data
 
 
 @torch.inference_mode()
-def audit(native, checkpoint, companion, candidates):
+def audit(native, checkpoint, companion, candidates, *, cem_initial_mean=False):
     data, manifest = read_data(native, ('active','obs','request','release_time'))
     digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     if digest(checkpoint) != manifest['checkpoint_sha256'] or digest(companion) != manifest['companion_sha256']:
@@ -36,6 +36,9 @@ def audit(native, checkpoint, companion, candidates):
     report = dict(source=digest(checkpoint), cases=len(lane), candidates=[])
     if not len(lane):
         return report
+    if cem_initial_mean:
+        from scripts.native_recovery_cem import correction, initial_distribution
+        candidates = [checkpoint]
     for candidate in candidates:
         bank = policies(checkpoint,candidate,companion,lambda:load_ppo_initialized_actor(source,'cpu')[0])
         raw = torch.empty(2,len(lane),18)
@@ -46,6 +49,17 @@ def audit(native, checkpoint, companion, candidates):
             t,l = tick[sel],lane[sel]
             raw[j//2,sel] = policy._gated_distribution(data['obs'][t,l], data['gate'][t,l],
                                                        release_time=data['release_time'][t,l]).loc
+        if cem_initial_mean:
+            x = data['obs'][tick,lane]
+            age = x[:,775] - data['release_time'][tick,lane].reshape(-1)
+            # Archived landed is the post-step latch; use the preceding boundary.
+            landed = (tick > 0) & data['landed'][(tick-1).clamp_min(0),lane]
+            active = data['gate'][tick,lane].reshape(-1) & (age > .05)
+            coefficients, _ = initial_distribution('cpu')
+            raw[1] = raw[0] + correction(x, data['before'][tick,lane,2], landed, age,
+                                          coefficients.expand(len(lane),-1)) * active[:,None]
+            report['feedback'] = dict(kind='generation_one_mean', parameters=coefficients.tolist(),
+                                      active=int(active.sum()), landed=int(landed.sum()))
         requests = raw.clamp(-1.,1.)
         torch.testing.assert_close(requests[0], data['request'][tick,lane], rtol=0, atol=2e-6)
         output = torch.empty_like(raw)
@@ -96,6 +110,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for field in ('native','checkpoint','companion','output'):
         parser.add_argument('--'+field, required=True, type=Path)
-    parser.add_argument('--candidates', nargs='+', required=True, type=Path)
+    inputs = parser.add_mutually_exclusive_group(required=True)
+    inputs.add_argument('--candidates', nargs='+', type=Path)
+    inputs.add_argument('--cem-initial-mean', action='store_true')
     args = parser.parse_args()
-    dump(args.output, audit(args.native, args.checkpoint, args.companion, args.candidates))
+    dump(args.output, audit(args.native, args.checkpoint, args.companion, args.candidates, cem_initial_mean=args.cem_initial_mean))
