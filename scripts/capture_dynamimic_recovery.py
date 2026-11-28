@@ -34,6 +34,24 @@ def collect(args, env, wrapper, obs, actor, companion, cases, stop):
     companion.install_release_arm_reference()
     companion.release_arm_reference.load_state_dict(actor.release_arm_reference.state_dict())
     companion.actor.recovery.load_state_dict(actor.actor.recovery.state_dict())
+    pulse = args.dynamimic_pulse_checkpoint
+    pulse_meta = {}
+    if pulse:
+        from quadsmash.rl.supermimic_physical_loop_loading_v1 import RECOVERY_NAMES
+        from quadsmash.rl.supermimic_policy_execution_v1 import resolve_contract
+        challenger = torch.load(pulse, weights_only=False, mmap=True, map_location='cpu')
+        if (resolve_contract(challenger)[0] != resolve_contract(trained)[0]
+                or challenger['metadata']['task_contract'] != trained['metadata']['task_contract']
+                or challenger['actor'].keys() != trained['actor'].keys()
+                or any(not torch.equal(v.cpu(), challenger['actor'][k]) for k,v in trained['actor'].items()
+                       if k not in RECOVERY_NAMES)):
+            raise ValueError('Pulse checkpoint must differ only in Recovery parameters')
+        def recovery_weights(payload):
+            return {k.removeprefix('actor.recovery.'): payload['actor'][k] for k in RECOVERY_NAMES}
+        incumbent_head = recovery_weights(trained)
+        pulse_head = recovery_weights(challenger)
+        pulse_meta = dict(start_tick=args.dynamimic_pulse_start, duration_ticks=16,
+                          candidate_sha256=hashlib.sha256(pulse.read_bytes()).hexdigest())
     prev = physical_state(env)
     episode = env.episode_index.clone()
     closed = torch.zeros_like(episode, dtype=torch.bool)
@@ -48,6 +66,10 @@ def collect(args, env, wrapper, obs, actor, companion, cases, stop):
     for tick in range(800):
         if stop['signal']:
             raise InterruptedError(stop['signal'])
+        if pulse and tick in (args.dynamimic_pulse_start, args.dynamimic_pulse_start + 16):
+            head = pulse_head if tick == args.dynamimic_pulse_start else incumbent_head
+            for policy in (actor, companion):
+                policy.actor.recovery.load_state_dict(head, strict=True)
         x = obs['policy'].clone()
         gate = env.rally.had_contact & env.rally.released
         release = env.rally.release_time.clone()
@@ -86,7 +108,9 @@ def collect(args, env, wrapper, obs, actor, companion, cases, stop):
             break
     if not closed.all() or any(r['numerical_failures'] for r in env.rally_records):
         raise ValueError('Incomplete or numerically invalid native batch')
-    dump(storage/'manifest.json', dict(schema='dynamimic-native-recovery-v1', cases=cases,
+    dump(storage/'manifest.json', dict(
+         schema='dynamimic-native-recovery-pulse-v1' if pulse else 'dynamimic-native-recovery-v1',
+         pulse=pulse_meta, cases=cases,
          episode_indices=episode.cpu().tolist(), origins=env.scene.env_origins.cpu().tolist(),
          lane_approach=['h8d' if i%2 else 'primary' for i in range(256)], chunks=chunks,
          checkpoint_sha256=hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),

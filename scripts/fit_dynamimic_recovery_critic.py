@@ -47,10 +47,10 @@ class NativeTailValue(nn.Module):
             raise ValueError('Invalid native return scaling')
 
 
-def read_rollout(root, checkpoint):
+def read_rollout(root, checkpoint, *, expected_schema='dynamimic-native-recovery-v1'):
     directory = root/'trajectories'
     manifest = json.loads((directory/'manifest.json').read_text())
-    if manifest['schema'] != 'dynamimic-native-recovery-v1':
+    if manifest['schema'] != expected_schema:
         raise ValueError('Tail value requires a completed native Recovery archive')
     if manifest['checkpoint_sha256'] != hashlib.sha256(checkpoint.read_bytes()).hexdigest():
         raise ValueError('Critic rollout checkpoint mismatch')
