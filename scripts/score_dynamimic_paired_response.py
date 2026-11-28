@@ -58,15 +58,12 @@ def score(args):
     if getattr(args, 'ground_surfaces', False):
         from quadsmash.rl.dynamimic_ground_clearance import Go2GroundClearance
         from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1
-        from quadsmash.rl.dynamimic_lagrangian_v1 import mv
         geometry = FullBodyGeometryV1(model.body.asset_sha256)
         geometry.enable_depth_batches()
         shapes = Go2GroundClearance(geometry)
         def quantities(q, v):
-            rot = rotation(q[:,3:7])
-            fk = geometry(q[:,7:],v[:,6:],q[:,:3],q[:,3:7],mv(rot,v[:,:3]),mv(rot,v[:,3:6]))
-            gaps = shapes(fk['position'], fk['rotation'])
-            result = dict(go2_floor_gap_m=gaps.amin(-1), left_rear_thigh_gap_m=gaps[:,shapes.left_rear_thigh])
+            gaps = shapes.monitored_gaps(geometry, q, v)
+            result = dict(go2_floor_gap_m=gaps[:,0], left_rear_thigh_gap_m=gaps[:,1])
             if timed:
                 result.update(response(q, v))
             return result

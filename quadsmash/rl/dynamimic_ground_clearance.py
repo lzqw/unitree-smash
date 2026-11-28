@@ -45,6 +45,14 @@ class Go2GroundClearance(nn.Module):
         radial = self.radius * (direction * (1-self.axis)).norm(dim=-1)
         return z - box - axial - radial
 
+    def monitored_gaps(self, geometry, q, v):
+        from .dynamimic_lagrangian_v1 import mv, rotation
+        rot = rotation(q[:, 3:7])
+        fk = geometry(q[:, 7:], v[:, 6:], q[:, :3], q[:, 3:7],
+                      mv(rot, v[:, :3]), mv(rot, v[:, 3:6]))
+        gaps = self(fk['position'], fk['rotation'])
+        return torch.stack((gaps.amin(-1), gaps[:, self.left_rear_thigh]), -1)
+
     def thigh_margin_reward(self, gaps):
         # Native R13 training cases 16 ticks before a late fall have median
         # thigh clearance 41 mm. Clean relaxed milestones have a tenth percentile

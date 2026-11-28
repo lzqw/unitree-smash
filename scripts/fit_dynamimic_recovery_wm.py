@@ -121,15 +121,17 @@ def rollout(wm, member, data, rows, horizon, device, profiles, geometry=None):
     return loss, results
 
 
-def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, device, profiles, *, impact=False):
+def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, device, profiles, *, impact=False, ground_geometry=None):
     """Compare both executed command sequences from identical native starting states."""
     times = starts[lanes][None] + torch.arange(horizon)[:, None]
     q0, v0 = local_robot_state(baseline['before'][starts[lanes], lanes].to(device))
     def outputs(q, v):
         body = (rotation(q[:,3:7])[:,2], v[:,3:6], q[:,7:])
-        if impact:
-            return (*body, q[:,2:3], v[:,:3])
-        return body
+        values = (*body, q[:,2:3], v[:,:3]) if impact else body
+        if ground_geometry is not None:
+            shapes, geometry = ground_geometry
+            values = (*values, shapes.monitored_gaps(geometry, q, v))
+        return values
 
     states = []
     truth = []
@@ -145,11 +147,18 @@ def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, d
         truth.append(outputs(q,v))
     losses = []
     floors = (.01,.1,.01,.001,.02) if impact else (.01,.1,.01)
+    if ground_geometry is not None:
+        floors = (*floors, .001)
     for a,b,x,y,floor in zip(*states, *truth, floors, strict=True):
         actual = y-x
         scale = actual.square().mean().sqrt().clamp_min(floor)
         losses.append(F.smooth_l1_loss((b-a)/scale, actual/scale))
-    return sum(losses)/len(losses)
+    loss = sum(losses)/len(losses)
+    if ground_geometry is not None:
+        # Native FK constrains the common offset that cancels from the branch difference.
+        for predicted, measured in zip(states, truth, strict=True):
+            loss = loss + .125 * F.smooth_l1_loss(predicted[-1]/.01, measured[-1]/.01)
+    return loss
 
 
 def main():
@@ -162,6 +171,8 @@ def main():
     parser.add_argument('--paired-native', type=Path)
     parser.add_argument('--pulse-audit', type=Path,
                         help='Use exact-prefix H4/H8/H16 native intervention pairs and development response selection')
+    parser.add_argument('--fit-ground-response', action='store_true',
+                        help='Fit native absolute and paired minimum and rear thigh surface gaps')
     parser.add_argument('--resume', type=Path)
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
@@ -169,6 +180,8 @@ def main():
         parser.error('Positive updates and at least two starts per batch required')
     if args.pulse_audit and not (args.resume and args.paired_native):
         parser.error('Intervention fitting requires the nominal ensemble and its paired archive')
+    if args.fit_ground_response and not args.pulse_audit:
+        parser.error('Ground response fitting requires an audited native intervention pair')
     args.output.mkdir(parents=True, exist_ok=False)
     torch.manual_seed(7372)
     data, manifest = read_data(args.native, ('active',) if args.pulse_audit else ())
@@ -245,6 +258,10 @@ def main():
         wm.load_state_dict(torch.load(args.resume, weights_only=True, map_location=args.device))
     geometry = FullBodyGeometryV1(wm.body.asset_sha256).to(args.device)
     geometry.enable_depth_batches()
+    ground_geometry = None
+    if args.fit_ground_response:
+        from quadsmash.rl.dynamimic_ground_clearance import Go2GroundClearance
+        ground_geometry = (Go2GroundClearance(geometry).to(args.device), geometry)
     # Reserve separate cases for choosing curriculum checkpoints and for the final gate.
     development = torch.arange(len(profiles)) % 16 // 2 == 1
     pools = {k:sampling_pools(data, held | development, k) for k in (4, 16, 32)}
@@ -273,7 +290,7 @@ def main():
                 score = (max(errors), sum(errors))
                 if args.pulse_audit:
                     delta = float(paired_response_loss(wm, member, data, paired, starts,
-                                  dev_pairs[16], 16, args.device, profiles, impact=True))
+                                  dev_pairs[16], 16, args.device, profiles, impact=True, ground_geometry=ground_geometry))
                     if not math.isfinite(delta):
                         raise ValueError('Nonfinite development response score')
                     result['paired_h16'] = delta
@@ -305,7 +322,8 @@ def main():
                     paired_horizon = {4:16,16:32,32:48}[horizon]
                 sampled = torch.cat([pair_lanes[torch.randint(len(pair_lanes), (n,), generator=g)] for g in generators])
                 loss = loss + .2 * paired_response_loss(wm, members, data, paired, starts, sampled,
-                                                       paired_horizon, args.device, profiles, impact=bool(args.pulse_audit))
+                                                       paired_horizon, args.device, profiles, impact=bool(args.pulse_audit),
+                                                       ground_geometry=ground_geometry)
             # Batched mean includes all members. Restore each independent batch's
             # gradient scale before clipping its parameters separately.
             (loss * len(members)).backward()
@@ -335,7 +353,7 @@ def main():
                  m['joint_speed_mae']<1.2 for m in metrics)
     torch.save(wm.state_dict(), args.output/'ensemble.pt')
     (args.output/'validation.json').write_text(json.dumps(dict(passed=passed, members=metrics, ensemble_sha256=hashlib.sha256((args.output/'ensemble.pt').read_bytes()).hexdigest(), native_checkpoint=manifest['checkpoint_sha256'],
-        paired_train_by_horizon={k:len(v) for k,v in train_pairs.items()} if args.pulse_audit else None,
+        fit_ground_response=args.fit_ground_response, paired_train_by_horizon={k:len(v) for k,v in train_pairs.items()} if args.pulse_audit else None,
         paired_development_by_horizon={k:len(v) for k,v in dev_pairs.items()} if args.pulse_audit else None,
         paired_native=str(args.paired_native) if paired is not None else None,
         paired_training_cases=len(pair_lanes) if paired is not None else 0,
