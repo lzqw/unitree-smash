@@ -29,3 +29,14 @@ In the R13 training partition, we compared each eligible first body contact with
 A separate, completed 16-tick native intervention started 32 ticks before first body contact. On 67 of 145 exact paired falls, a previously clipped left rear calf request came inside the box and the commanded joint target extended by more than 0.001 rad on at least one such tick. The median per-case peak extension on these ticks was 0.0105 rad. Of these 67 falls, 35 occurred later, 18 at the same tick and 14 earlier; median delay was one control tick. All 67 still fell. Multiple joints changed simultaneously. This historical intervention used the earlier moderate candidate; the directed-lift policy still requires its own native outcomes.
 
 As a model-only check, we isolated the left rear calf command sequence from the other 17 commands in the same windows. We averaged the calf contribution across both insertion orders. Among 124 pairs with more than 0.001 rad calf target change by H4, the projection of the calf component onto the model's full thigh-clearance response was .055–.085 across members. This estimates a contribution within the WM and cannot assign a causal share of native falls. [Paired control and intervention data](r13_native_calf_controls.json)
+
+## Preceding H4 block on native64
+
+Both candidates finished deterministic native evaluation on the same 64 launches. Each candidate was paired to PPO01 in its own simulator lane positions. All 54 qualified contacts and all 46 ball-side successes retained their case identities in both slots. Neither candidate incurred a robot net fault.
+
+| Candidate | Body contact / 54 | Strict / 54 | Relaxed / 54 |
+|---|---:|---:|---:|
+| Conservative | 31 → 30 | 3 → 4 | 9 → 11 |
+| Moderate | 32 → 32 | 3 → 6 | 8 → 12 |
+
+The conservative candidate avoided three baseline body contacts and incurred two new ones. Its lower body count selected it for the official fixed128 run. The moderate candidate avoided three and incurred three. This experiment used the preceding H4 objective. The directed-clamp and height-ramp block is queued behind fixed128. [Paired case flips and checkpoint identities](r13_h4_native64_flips.json)
