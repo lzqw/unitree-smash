@@ -54,6 +54,15 @@ def paired_requests(bank, obs, gate, release):
     return out
 
 
+def native_metrics(rows):
+    contact = [row for row in rows if row['qualified_airborne_string_contact']]
+    return dict(cases=len(rows), qualified=len(contact), body=sum(r['body_ground_seen'] for r in contact),
+                strict=sum(r['strict_physical_recovery'] is True for r in contact),
+                relaxed=sum(r['physical_recovery_success'] is True for r in contact),
+                net=sum(r['robot_net_fault'] for r in rows),
+                ball=sum(r['ball_side_complete_except_recovery'] for r in rows))
+
+
 def report(rows, checkpoint, alternate, companion, initial_states):
     if len(rows) != 128 or [r['case_id'] for r in rows[:64]] != [r['case_id'] for r in rows[64:]]:
         raise ValueError('Incomplete native pair')
@@ -63,15 +72,14 @@ def report(rows, checkpoint, alternate, companion, initial_states):
     if set(initial) != set(range(128)) or any(initial[i] != initial[64+i] for i in range(64)):
         raise ValueError('Candidate lanes have different native reset states')
     identity = hashlib.sha256(json.dumps([initial[i] for i in range(64)],sort_keys=True).encode()).hexdigest()
-    metrics = []
+    metrics, approach_metrics = [], []
     for group in (rows[:64], rows[64:]):
         if any(r['numerical_failures'] for r in group):
             raise ValueError('Invalid native evaluation')
-        contact = [r for r in group if r['qualified_airborne_string_contact']]
-        metrics.append(dict(qualified=len(contact), body=sum(r['body_ground_seen'] for r in contact),
-            strict=sum(r['strict_physical_recovery'] is True for r in contact),
-            relaxed=sum(r['physical_recovery_success'] is True for r in contact),
-            net=sum(r['robot_net_fault'] for r in group), ball=sum(r['ball_side_complete_except_recovery'] for r in group)))
+        counts = native_metrics(group)
+        counts.pop('cases')  # Preserve the existing aggregate report schema.
+        metrics.append(counts)
+        approach_metrics.append(dict(primary=native_metrics(group[::2]), companion=native_metrics(group[1::2])))
     return dict(schema='dynamimic-paired-native64-v1', checkpoints=[hashlib.sha256(p.read_bytes()).hexdigest()
         for p in (checkpoint,alternate)], companion_sha256=hashlib.sha256(companion.read_bytes()).hexdigest(),
-        metrics=metrics, reset_sha256=identity, case_ids=[r['case_id'] for r in rows[:64]], companion_lanes=list(range(1,64,2)))
+        metrics=metrics, approach_metrics=approach_metrics, reset_sha256=identity, case_ids=[r['case_id'] for r in rows[:64]], companion_lanes=list(range(1,64,2)))
