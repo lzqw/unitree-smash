@@ -60,7 +60,7 @@ def search(args, env, wrapper, obs, actor, companion, bank, protocol, stop):
             env.sweep_misses.zero_()
             env.sweep_unresolved.zero_()
             for buffer in (env.rally_records, env.episode_records, env.racket_plane_records,
-                           env.first_approach_contact_motion, env.initial_states):
+                           env.initial_states):
                 buffer.clear()
             obs, _ = wrapper.reset()
         group = root / f'generation_{generation+1:02d}'

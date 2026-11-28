@@ -44,8 +44,17 @@ def test_resident_search_keeps_strict_rescue_and_nominal_anchor(tmp_path, monkey
         rally=SimpleNamespace(had_contact=on, released=on, release_time=release, robot_net_fault=~on),
         robot=SimpleNamespace(data=SimpleNamespace(root_pos_w=xyz)), scene=SimpleNamespace(env_origins=xyz),
         body_ground_seen=~on, landed_once=on, rally_records=[])
+    env.cases = panel_layout(cases,0)
+    env._episode_has_stepped = on.clone()
+    env.sweep_misses = torch.zeros_like(release)
+    env.sweep_unresolved = torch.zeros_like(release)
+    env.episode_records, env.racket_plane_records, env.initial_states = [], [], []
+    def reset():
+        assert env.cases == panel_layout(cases,1)
+        assert not env.rally_records and not env._episode_has_stepped.any()
+        return {'policy':clock}, {}
     def step(action):
-        for i,c in enumerate(panel_layout(cases,0)):
+        for i,c in enumerate(env.cases):
             fall = i%16==0 and i<16
             env.rally_records.append(dict(case_id=c['case_id'],env_id=i,episode_index=0,numerical_failures=0,
                 jump=dict(terminated=False),body_ground_seen=fall,robot_net_fault=False,
@@ -62,11 +71,13 @@ def test_resident_search_keeps_strict_rescue_and_nominal_anchor(tmp_path, monkey
             return SimpleNamespace(loc=torch.zeros(len(x),18))
     ckpt=tmp_path/'seed.pt'
     ckpt.write_bytes(b'test')
-    args=SimpleNamespace(output=tmp_path,checkpoint=ckpt,seed=1,recovery_cem_generations=1)
-    search(args,env,SimpleNamespace(step=step),{'policy':clock},Policy(),Policy(),cases,{},dict(signal=False))
+    args=SimpleNamespace(output=tmp_path,checkpoint=ckpt,seed=1,recovery_cem_generations=2)
+    search(args,env,SimpleNamespace(step=step,reset=reset),{'policy':clock},Policy(),Policy(),cases,{},dict(signal=False))
     folder=tmp_path/'generation_01'
     report=json.loads((folder/'results.json').read_text())
     assert report['teachers']==['A0'] and len(report['scores'])==8
     examples=torch.load(folder/'examples.pt',weights_only=True)
     assert sum(e['anchor'] for e in examples)==15
     assert examples[0]['delta_raw'].abs().max()>0
+    second=json.loads((tmp_path/'generation_02/results.json').read_text())
+    assert second['teachers']==['A8'] and second['episodes'][0]['case']=='A8'
