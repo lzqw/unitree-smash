@@ -1,0 +1,170 @@
+{
+  "before": {
+    "episodes": 128,
+    "qualified_contacts": 108,
+    "body_ground_all": 87,
+    "body_ground_given_contact": 71,
+    "robot_net": 0,
+    "strict_physical_recovery": 10,
+    "relaxed_physical_recovery": 25,
+    "strict_scored_recovery": 10,
+    "relaxed_scored_recovery": 25,
+    "relaxed_ball_side": 96,
+    "strict_complete5": 10,
+    "relaxed_complete5": 25,
+    "strict_failed_without_body": 27,
+    "strict_failed_without_qualified_landing": 0,
+    "strict_threshold_failed_seconds": {
+      "support": 0.03899717330932617,
+      "roll_pitch": 28.2139573097229,
+      "horizontal_speed": 6.3995361328125,
+      "angular_speed": 11.989130973815918,
+      "joint_speed": 33.16859698295593,
+      "body_ground": 0.0
+    },
+    "strict_threshold_interrupts": {
+      "support": 0,
+      "roll_pitch": 0,
+      "horizontal_speed": 0,
+      "angular_speed": 0,
+      "joint_speed": 1013,
+      "body_ground": 0
+    },
+    "strict_arm_only_failed_s": 0.0489964485168457
+  },
+  "after": {
+    "episodes": 128,
+    "qualified_contacts": 108,
+    "body_ground_all": 89,
+    "body_ground_given_contact": 74,
+    "robot_net": 0,
+    "strict_physical_recovery": 6,
+    "relaxed_physical_recovery": 20,
+    "strict_scored_recovery": 6,
+    "relaxed_scored_recovery": 20,
+    "relaxed_ball_side": 95,
+    "strict_complete5": 6,
+    "relaxed_complete5": 20,
+    "strict_failed_without_body": 28,
+    "strict_failed_without_qualified_landing": 0,
+    "strict_threshold_failed_seconds": {
+      "support": 0.029997825622558594,
+      "roll_pitch": 32.49464726448059,
+      "horizontal_speed": 6.1435546875,
+      "angular_speed": 12.37410306930542,
+      "joint_speed": 32.70263051986694,
+      "body_ground": 0.0
+    },
+    "strict_threshold_interrupts": {
+      "support": 0,
+      "roll_pitch": 1,
+      "horizontal_speed": 0,
+      "angular_speed": 0,
+      "joint_speed": 757,
+      "body_ground": 0
+    },
+    "strict_arm_only_failed_s": 0.0659952163696289
+  },
+  "flips": {
+    "physical_recovery_success": {
+      "gained": [
+        "A-97124801-006",
+        "A-97124801-010",
+        "A-97124801-039",
+        "A-97124801-050",
+        "B-97124802-015",
+        "B-97124802-030"
+      ],
+      "lost": [
+        "A-97124801-002",
+        "A-97124801-023",
+        "A-97124801-034",
+        "A-97124801-044",
+        "A-97124801-047",
+        "A-97124801-057",
+        "A-97124801-058",
+        "A-97124801-060",
+        "B-97124802-006",
+        "B-97124802-018",
+        "B-97124802-058"
+      ]
+    },
+    "strict_physical_recovery": {
+      "gained": [
+        "A-97124801-006",
+        "A-97124801-039"
+      ],
+      "lost": [
+        "A-97124801-029",
+        "A-97124801-034",
+        "A-97124801-036",
+        "A-97124801-044",
+        "A-97124801-060",
+        "B-97124802-006"
+      ]
+    },
+    "body_ground_seen": {
+      "gained": [
+        "A-97124801-002",
+        "A-97124801-023",
+        "A-97124801-034",
+        "A-97124801-047",
+        "A-97124801-058",
+        "A-97124801-060",
+        "B-97124802-006",
+        "B-97124802-018",
+        "B-97124802-029",
+        "B-97124802-035",
+        "B-97124802-058"
+      ],
+      "lost": [
+        "A-97124801-010",
+        "A-97124801-038",
+        "A-97124801-039",
+        "A-97124801-050",
+        "B-97124802-015",
+        "B-97124802-027",
+        "B-97124802-030",
+        "B-97124802-041",
+        "B-97124802-060"
+      ]
+    },
+    "qualified_airborne_string_contact": {
+      "gained": [],
+      "lost": []
+    },
+    "robot_net_fault": {
+      "gained": [],
+      "lost": []
+    },
+    "ball_side_complete_except_recovery": {
+      "gained": [],
+      "lost": [
+        "A-97124801-005"
+      ]
+    },
+    "complete5": {
+      "gained": [
+        "A-97124801-006",
+        "A-97124801-010",
+        "A-97124801-039",
+        "A-97124801-050",
+        "B-97124802-015",
+        "B-97124802-030"
+      ],
+      "lost": [
+        "A-97124801-002",
+        "A-97124801-023",
+        "A-97124801-034",
+        "A-97124801-044",
+        "A-97124801-047",
+        "A-97124801-057",
+        "A-97124801-058",
+        "A-97124801-060",
+        "B-97124802-006",
+        "B-97124802-018",
+        "B-97124802-058"
+      ]
+    }
+  }
+}
