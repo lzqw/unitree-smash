@@ -83,3 +83,15 @@ def test_resident_search_keeps_strict_rescue_and_nominal_anchor(tmp_path, monkey
     assert examples[0]['delta_raw'].abs().max()>0
     second=json.loads((tmp_path/'generation_02/results.json').read_text())
     assert second['teachers']==['A8'] and second['episodes'][0]['case']=='A8'
+
+
+
+def test_native_flips_preserve_matched_set_and_approach_identity():
+    from scripts.native_recovery_cem import paired_case_changes
+    base = [dict(case=str(i), strict=(i>1),relaxed=True,body=False,net_rule_fault=False,ball=True)
+            for i in range(4)]
+    candidate = [dict(row, strict=not row['strict']) for row in base]
+    result = paired_case_changes(base, candidate, [True,False,True,True])
+    assert result['primary']['changes']['strict'] == dict(false_to_true=['0'],true_to_false=['2'])
+    assert result['companion']['changes']['strict'] == dict(false_to_true=[],true_to_false=['3'])
+    assert result['companion']['unmatched_cases'] == ['1']

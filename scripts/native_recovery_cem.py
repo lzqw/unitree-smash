@@ -57,6 +57,31 @@ def feedback_outcome(raw, protocol):
                 run=min(.8, raw['contact_flight_recovery']['recovery_s']))
 
 
+def paired_case_changes(baseline, candidate, matched):
+    """Classify matched native flips for each frozen Approach at identical serves."""
+    if len(baseline) != len(candidate) or len(matched) != len(candidate):
+        raise ValueError('Incomplete CEM case comparison')
+    result = {}
+    for parity, approach in enumerate(('primary','companion')):
+        group = dict(matched_cases=[], unmatched_cases=[], changes={})
+        for key in ('strict','relaxed','body','net_rule_fault','ball'):
+            group['changes'][key] = dict(false_to_true=[],true_to_false=[])
+        for i in range(parity,len(baseline),2):
+            b, c = baseline[i], candidate[i]
+            if b['case'] != c['case']:
+                raise ValueError('CEM branch and nominal case identities differ')
+            case = b['case']
+            if not matched[i]:
+                group['unmatched_cases'].append(case)
+                continue
+            group['matched_cases'].append(case)
+            for key, changes in group['changes'].items():
+                if b[key] != c[key]:
+                    changes['false_to_true' if c[key] else 'true_to_false'].append(case)
+        result[approach] = group
+    return result
+
+
 @torch.no_grad()
 def search(args, env, wrapper, obs, actor, companion, bank, protocol, stop):
     from scripts.run_supermimic_recovery_baseline import dump
@@ -142,6 +167,9 @@ def search(args, env, wrapper, obs, actor, companion, bank, protocol, stop):
         common = (onset == onset[:16].repeat(8)) & (onset >= 0)
         obs_error = (onset_obs - onset_obs[:16].repeat(8,1)).abs().amax(-1)
         matched = (common & (obs_error <= 1e-4)).tolist()
+        nominal = [records[i] for i in range(16)]
+        paired = [paired_case_changes(nominal, [records[j*16+i] for i in range(16)],
+                                      matched[j*16:(j+1)*16]) for j in range(8)]
         for i in range(16):
             base = records[i]
             choices = [j*16+i for j in range(1,8) if matched[j*16+i] and base['body'] and records[j*16+i]['strict']
@@ -166,7 +194,7 @@ def search(args, env, wrapper, obs, actor, companion, bank, protocol, stop):
              rl_calf=dict(active_ticks=calf_counts[:,0].tolist(),lower_saturated_ticks=calf_counts[:,1].tolist(),
                           released_from_clip_ticks=calf_counts[:,2].tolist(),
                           mean_executed_request_change=(calf_change/calf_counts[:,0].clamp_min(1)).tolist()),
-             scores=aggregates,elites=elites,teachers=teachers,episodes=list(records[i] for i in range(128)),
+             scores=aggregates,paired_by_approach=paired,elites=elites,teachers=teachers,episodes=list(records[i] for i in range(128)),
              elapsed_s=time.monotonic()-started))
 
 
