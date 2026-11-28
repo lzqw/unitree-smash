@@ -67,11 +67,15 @@ def main():
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--native-body-fault', action='store_true')
     group.add_argument('--absorbing-body-fault', action='store_true')
+    parser.add_argument('--tail-gradient-scale', type=float, default=1.,
+                        help='Scale the gradient through the discounted continuation value, preserving its forward value')
     parser.add_argument('--sample-late-body', action='store_true')
     parser.add_argument('--native-segments', action='store_true')
     parser.add_argument('--blocks', type=int, default=8, choices=range(1,9))
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
+    if not 0 <= args.tail_gradient_scale <= 1:
+        parser.error('Tail gradient scale must lie in [0, 1]')
     if (args.initial_wm or args.initial_critic) and not args.initial_native:
         parser.error('First-block fit reuse requires its native archive')
     if args.initial_retention and not (args.retain_success_actions and args.initial_native
@@ -125,6 +129,7 @@ def main():
                     fit = run('bptt',['scripts/train_dynamimic_recovery_bptt.py','--native',native,
                         '--wm',wm,'--critic',critic,'--asset',args.asset,'--checkpoint',current,
                         '--companion',args.companion,'--device',args.device,
+                        '--tail-gradient-scale', str(args.tail_gradient_scale),
                         *(['--native-body-fault'] if args.native_body_fault else []),
                         *(['--sample-late-body'] if args.sample_late_body else []),
                         *(['--native-segments'] if args.native_segments else []),

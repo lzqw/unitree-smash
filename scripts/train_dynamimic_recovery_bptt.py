@@ -227,7 +227,7 @@ def released_ball_path(ball, horizon):
     return path
 
 
-def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon, body_fault=None, absorbing_body=False, gradient_terms=False):
+def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon, body_fault=None, absorbing_body=False, gradient_terms=False, tail_gradient_scale=1.):
     from quadsmash.rl.dynamimic_recovery_wm_v1 import local_robot_state
     from quadsmash.rl.supermimic_physical_observation_v1 import PhysicalPolicyInputs
     from torch.utils.checkpoint import checkpoint
@@ -290,11 +290,12 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
             elapsed_s=elapsed, final_action=command.final_normalized, **context)
         obs, history = observer(physical, history)
     terminal = tail(obs)
+    continuation = discount * survival * terminal
     if gradient_terms:
         # Disjoint observation groups give the exact first derivative at the recorded endpoint.
         # The derivative of the value with respect to its input is held fixed for these VJPs.
         sensitivity, = torch.autograd.grad(
-            -(discount * survival.detach() * terminal).mean(), obs, retain_graph=True)
+            -(tail_gradient_scale * discount * survival.detach() * terminal).mean(), obs, retain_graph=True)
         attribution = obs * sensitivity.detach()
         frames = attribution[:, :759].reshape(len(obs), 11, 69)
         return {'running_reward': -value.mean(),
@@ -302,9 +303,11 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
                 'tail_racket': frames[:, :, 45:57].sum(), 'tail_ball_and_flags': frames[:, :, 61:].sum(),
                 'tail_command_phase_clock': attribution[:, 759:776].sum(),
                 'tail_last_action': attribution[:, 776:].sum(),
-                'tail_survival': -(discount * survival * terminal.detach()).mean(),
+                'tail_survival': -(tail_gradient_scale * discount * survival * terminal.detach()).mean(),
                 'saturation': saturation, 'disagreement': disagreement}
-    return -(value+discount*survival*terminal).mean() + saturation + disagreement
+    if tail_gradient_scale != 1:
+        continuation = continuation.detach() + tail_gradient_scale * (continuation - continuation.detach())
+    return -(value+continuation).mean() + saturation + disagreement
 
 
 def main():
@@ -336,12 +339,16 @@ def main():
     parser.add_argument('--horizon', type=int, choices=(48,64), default=48)
     parser.add_argument('--audit-segment-gradients', action='store_true',
                         help='Measure H16 objective gradients on native starts and exit before updating')
+    parser.add_argument('--tail-gradient-scale', type=float, default=1.,
+                        help='Scale the gradient through the discounted continuation value, preserving its forward value')
     parser.add_argument('--sample-late-body', action='store_true')
     parser.add_argument('--native-segments', action='store_true', help='Re-anchor every 16 ticks to measured state and G07 memory')
     parser.add_argument('--updates', type=int, choices=range(15,26), default=20)
     parser.add_argument('--starts', type=int, default=128)
     parser.add_argument('--microbatch', type=int, default=64)
     args = parser.parse_args()
+    if not 0 <= args.tail_gradient_scale <= 1:
+        parser.error('Tail gradient scale must lie in [0, 1]')
     if not 1 <= args.microbatch <= args.starts:
         parser.error('Microbatch must fit the full native start batch')
     report = json.loads((args.wm/'validation.json').read_text())
@@ -482,7 +489,7 @@ def main():
             for member in range(3):
                 start, memory = context(rows, audit=True)
                 parts = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,member,
-                                16,body_fault,args.absorbing_body_fault,gradient_terms=True)
+                                16,body_fault,args.absorbing_body_fault,gradient_terms=True, tail_gradient_scale=args.tail_gradient_scale)
                 gradients = {}
                 for i,(name, loss) in enumerate(parts.items()):
                     gs = torch.autograd.grad(loss, tuple(params.values()), retain_graph=i+1<len(parts))
@@ -517,7 +524,7 @@ def main():
             for group in batch.split(args.microbatch):
                 start, memory = context(group, audit=step==0)
                 loss = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,
-                               step%3,length,body_fault,args.absorbing_body_fault)
+                               step%3,length,body_fault,args.absorbing_body_fault,tail_gradient_scale=args.tail_gradient_scale)
                 weighted = loss*len(group)/weight_sum
                 weighted.backward()
                 total += float(weighted.detach())
@@ -556,7 +563,7 @@ def main():
                        args.output/(label+'.pt'))
             dump(args.output/(label+'.json'),dict(alpha=alpha,rms=rms,budget=budget))
     dump(args.output/'training.json',dict(updates=evidence, pools=[len(p) for p in pools], retained_cases=int(success.sum()),
-                                         horizon=args.horizon, native_segments=args.native_segments, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
+                                         tail_gradient_scale=args.tail_gradient_scale, horizon=args.horizon, native_segments=args.native_segments, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
 
 
 if __name__ == '__main__':
