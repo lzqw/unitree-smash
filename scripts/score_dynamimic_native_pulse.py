@@ -11,8 +11,9 @@ from scripts.fit_dynamimic_recovery_critic import NATIVE_RETURN_SCHEMA, gae, mak
 
 @torch.no_grad()
 def score(args):
-    before, a = read_rollout(args.baseline, args.checkpoint)
-    after, b = read_rollout(args.intervention, args.checkpoint,
+    flags = ('strict', 'relaxed')
+    before, a = read_rollout(args.baseline, args.checkpoint, extra_fields=flags)
+    after, b = read_rollout(args.intervention, args.checkpoint, extra_fields=flags,
                             expected_schema='dynamimic-native-recovery-pulse-v1')
     for key in ('cases', 'companion_sha256', 'origins', 'dt', 'lane_approach', 'episode_indices'):
         if a[key] != b[key]:
@@ -85,6 +86,19 @@ def score(args):
             correct_tail_direction=int((estimated_tail[material]*native_tail[material]>0).sum()),
             estimated_tail_rms=float(estimated_tail.square().mean().sqrt()) if len(native_tail) else None,
             native_tail_rms=float(native_tail.square().mean().sqrt()) if len(native_tail) else None)
+        outcomes = {}
+        for data, name in ((before, 'baseline'), (after, 'pulse')):
+            observed = {key: (data[key] & data['live']).any(0)
+                        for key in ('body', 'net', 'strict', 'relaxed', 'root_only_terminal')}
+            clean = ~(observed['body'] | observed['net'] | observed['root_only_terminal'])
+            outcomes[name] = dict(clean_strict=clean & observed['strict'], clean_relaxed=clean & observed['relaxed'],
+                                  root_only=observed['root_only_terminal'], robot_net=observed['net'])
+        transitions = {}
+        for key, old in outcomes['baseline'].items():
+            new = outcomes['pulse'][key]
+            transitions[key] = dict(before=int((sel & old).sum()), after=int((sel & new).sum()),
+                                    gained=case_ids(sel & ~old & new), lost=case_ids(sel & old & ~new))
+        report['groups'][label]['episode_outcomes'] = transitions
     return report
 
 
