@@ -55,9 +55,11 @@ def test_resident_search_keeps_strict_rescue_and_nominal_anchor(tmp_path, monkey
         return {'policy':clock}, {}
     def step(action):
         for i,c in enumerate(env.cases):
-            fall = i%16==0 and i<16
+            fall = i%16 in (0,1) and i<16
             env.rally_records.append(dict(case_id=c['case_id'],env_id=i,episode_index=0,numerical_failures=0,
                 jump=dict(terminated=False),body_ground_seen=fall,robot_net_fault=False,
+                body_over_net_fault=False, under_net_obstruction_fault=(i%16==1 and i>=16),
+                racket_invasion_fault=False, followthrough_crossed=True,
                 qualified_airborne_string_contact=True,physical_recovery_success=not fall,
                 ball_side_complete_except_recovery=True,contact_flight_recovery=dict(success=not fall,recovery_s=.8)))
         return {'policy':clock},None,on,None
@@ -77,7 +79,7 @@ def test_resident_search_keeps_strict_rescue_and_nominal_anchor(tmp_path, monkey
     report=json.loads((folder/'results.json').read_text())
     assert report['teachers']==['A0'] and len(report['scores'])==8
     examples=torch.load(folder/'examples.pt',weights_only=True)
-    assert sum(e['anchor'] for e in examples)==15
+    assert sum(e['anchor'] for e in examples)==14
     assert examples[0]['delta_raw'].abs().max()>0
     second=json.loads((tmp_path/'generation_02/results.json').read_text())
     assert second['teachers']==['A8'] and second['episodes'][0]['case']=='A8'

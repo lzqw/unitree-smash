@@ -9,3 +9,5 @@ The lift reward uses a broad height slope, reduces the incentive to keep the leg
 A separate deterministic dev128 run with the primary Approach establishes the baseline before training. The runner requires at least eight strict baseline successes. It compares case-matched results every three Actor updates, with a final fixed128 evaluation for candidates passing the development check. The selected development panel has 128 distinct launches and no case identifier or launch overlap with train256_r13_ab, fixed128 or independent512. Its strict-success coverage still requires native measurement.
 
 CPU regression tests passed, including the censored likelihood, truncated four-step returns and rotated collision box geometry. No native result is claimed for PPO04.
+
+The CEM terminal scorer was replayed against the 128 archived PPO01 native terminal records using the declared protocol hash. Strict, relaxed, ball-side and body-ground labels agreed case by case with the official summary. The teacher filter checks robot-net contact, body crossing, under-net obstruction and racket invasion even on a nominal ball-side failure. A legal follow-through crossing remains eligible.

@@ -36,9 +36,22 @@ def correction(obs, height, landed, age, coefficients):
     return delta.clamp(-2, 2) * ((age-.05)/.04).clamp(0, 1)[:, None]
 
 
+def feedback_outcome(raw, protocol):
+    from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
+    row = score_terminal_episode(raw, protocol)
+    clean = (row['qualified_airborne_string_contact'] and not raw['body_ground_seen']
+             and not raw['robot_net_fault'] and not raw['jump']['terminated'])
+    net_rule_fault = any(raw[k] for k in ('robot_net_fault', 'body_over_net_fault',
+                                          'under_net_obstruction_fault', 'racket_invasion_fault'))
+    return dict(case=raw['case_id'], body=bool(raw['body_ground_seen']), net=bool(raw['robot_net_fault']),
+                net_rule_fault=net_rule_fault, ball=row['ball_side_complete_except_recovery'],
+                strict=bool(clean and raw['contact_flight_recovery']['success']),
+                relaxed=bool(clean and row['physical_recovery_success']),
+                run=min(.8, raw['contact_flight_recovery']['recovery_s']))
+
+
 @torch.no_grad()
 def search(args, env, wrapper, obs, actor, companion, bank, protocol, stop):
-    from quadsmash.rl.supermimic_terminal_scoring import score_terminal_episode
     from scripts.run_supermimic_recovery_baseline import dump
 
     actor.install_release_arm_reference()
@@ -109,14 +122,7 @@ def search(args, env, wrapper, obs, actor, companion, bank, protocol, stop):
                     continue
                 if raw['numerical_failures'] or raw['case_id'] != cases[lane]['case_id']:
                     raise ValueError('Native terminal identity or numeric failure')
-                row = score_terminal_episode(raw, protocol)
-                ground = bool(raw['body_ground_seen'])
-                net = bool(raw['robot_net_fault'])
-                clean = bool(row['qualified_airborne_string_contact'] and not ground and not net and not raw['jump']['terminated'])
-                records[lane] = dict(case=raw['case_id'], body=ground, net=net, ball=row['ball_side_complete_except_recovery'],
-                                     strict=bool(clean and raw['contact_flight_recovery']['success']),
-                                     relaxed=bool(clean and row['physical_recovery_success']),
-                                     run=min(.8, raw['contact_flight_recovery']['recovery_s']))
+                records[lane] = feedback_outcome(raw, protocol)
             cursor = len(env.rally_records)
             if tick % 64 == 63:
                 dump(root/'progress.json',dict(generation=generation+1,tick=tick+1,episodes=len(records)))
@@ -127,16 +133,16 @@ def search(args, env, wrapper, obs, actor, companion, bank, protocol, stop):
         tape, teachers, aggregates = [], [], []
         for j in range(8):
             rows = [records[j*16+i] for i in range(16)]
-            aggregates.append({k:sum(row[k] for row in rows) for k in ('body','net','ball','strict','relaxed','run')})
+            aggregates.append({k:sum(row[k] for row in rows) for k in ('body','net','net_rule_fault','ball','strict','relaxed','run')})
         common = (onset == onset[:16].repeat(8)) & (onset >= 0)
         obs_error = (onset_obs - onset_obs[:16].repeat(8,1)).abs().amax(-1)
         matched = (common & (obs_error <= 1e-4)).tolist()
         for i in range(16):
             base = records[i]
             choices = [j*16+i for j in range(1,8) if matched[j*16+i] and base['body'] and records[j*16+i]['strict']
-                       and records[j*16+i]['ball'] >= base['ball']]
+                       and not records[j*16+i]['net_rule_fault'] and records[j*16+i]['ball'] >= base['ball']]
             chosen = min(choices, key=lambda lane:float(params[lane//16].norm())) if choices else None
-            if chosen is not None or base['strict']:
+            if chosen is not None or (base['strict'] and not base['net_rule_fault']):
                 lane = i if chosen is None else chosen
                 valid = [(x[lane],d[lane]) for x,d,a in frames if a[lane]]
                 if valid:
@@ -145,7 +151,7 @@ def search(args, env, wrapper, obs, actor, companion, bank, protocol, stop):
                     if chosen is not None:
                         teachers.append(base['case'])
         def fitness(a):
-            return 8*a['strict'] + 3*a['relaxed'] + 5*a['ball'] - 6*a['body'] - 20*a['net'] + a['run']
+            return 8*a['strict'] + 3*a['relaxed'] + 5*a['ball'] - 6*a['body'] - 20*a['net_rule_fault'] + a['run']
         elites = sorted(range(8), key=lambda j:fitness(aggregates[j]), reverse=True)[:3]
         mu = .4*mu + .6*params[elites].mean(0)
         sigma = (.5*sigma + .5*params[elites].std(0,unbiased=False)).clamp(.06,.70)
