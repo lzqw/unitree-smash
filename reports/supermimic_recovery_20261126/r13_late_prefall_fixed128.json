@@ -1,0 +1,221 @@
+{
+  "before": {
+    "episodes": 128,
+    "qualified_contacts": 108,
+    "body_ground_all": 87,
+    "body_ground_given_contact": 71,
+    "robot_net": 0,
+    "strict_physical_recovery": 10,
+    "relaxed_physical_recovery": 25,
+    "strict_scored_recovery": 10,
+    "relaxed_scored_recovery": 25,
+    "relaxed_ball_side": 96,
+    "strict_complete5": 10,
+    "relaxed_complete5": 25,
+    "strict_failed_without_body": 27,
+    "strict_failed_without_qualified_landing": 0,
+    "strict_threshold_failed_seconds": {
+      "support": 0.03899717330932617,
+      "roll_pitch": 28.2139573097229,
+      "horizontal_speed": 6.3995361328125,
+      "angular_speed": 11.989130973815918,
+      "joint_speed": 33.16859698295593,
+      "body_ground": 0.0
+    },
+    "strict_threshold_interrupts": {
+      "support": 0,
+      "roll_pitch": 0,
+      "horizontal_speed": 0,
+      "angular_speed": 0,
+      "joint_speed": 1013,
+      "body_ground": 0
+    },
+    "strict_arm_only_failed_s": 0.0489964485168457
+  },
+  "after": {
+    "episodes": 128,
+    "qualified_contacts": 108,
+    "body_ground_all": 95,
+    "body_ground_given_contact": 80,
+    "robot_net": 0,
+    "strict_physical_recovery": 5,
+    "relaxed_physical_recovery": 18,
+    "strict_scored_recovery": 5,
+    "relaxed_scored_recovery": 18,
+    "relaxed_ball_side": 96,
+    "strict_complete5": 3,
+    "relaxed_complete5": 17,
+    "strict_failed_without_body": 23,
+    "strict_failed_without_qualified_landing": 0,
+    "strict_threshold_failed_seconds": {
+      "support": 0.04399681091308594,
+      "roll_pitch": 17.079762935638428,
+      "horizontal_speed": 5.388609409332275,
+      "angular_speed": 10.532236576080322,
+      "joint_speed": 25.950119733810425,
+      "body_ground": 0.0
+    },
+    "strict_threshold_interrupts": {
+      "support": 0,
+      "roll_pitch": 0,
+      "horizontal_speed": 0,
+      "angular_speed": 0,
+      "joint_speed": 899,
+      "body_ground": 0
+    },
+    "strict_arm_only_failed_s": 0.01299905776977539
+  },
+  "flips": {
+    "physical_recovery_success": {
+      "gained": [
+        "A-97124801-001",
+        "B-97124802-002",
+        "B-97124802-015",
+        "B-97124802-049",
+        "B-97124802-060"
+      ],
+      "lost": [
+        "A-97124801-003",
+        "A-97124801-015",
+        "A-97124801-023",
+        "A-97124801-025",
+        "A-97124801-034",
+        "A-97124801-047",
+        "A-97124801-049",
+        "A-97124801-058",
+        "A-97124801-060",
+        "B-97124802-006",
+        "B-97124802-018",
+        "B-97124802-045"
+      ]
+    },
+    "strict_physical_recovery": {
+      "gained": [
+        "A-97124801-013",
+        "B-97124802-002",
+        "B-97124802-021"
+      ],
+      "lost": [
+        "A-97124801-025",
+        "A-97124801-029",
+        "A-97124801-034",
+        "A-97124801-044",
+        "A-97124801-049",
+        "A-97124801-059",
+        "A-97124801-060",
+        "B-97124802-006"
+      ]
+    },
+    "body_ground_seen": {
+      "gained": [
+        "A-97124801-003",
+        "A-97124801-015",
+        "A-97124801-025",
+        "A-97124801-032",
+        "A-97124801-034",
+        "A-97124801-047",
+        "A-97124801-049",
+        "A-97124801-060",
+        "B-97124802-005",
+        "B-97124802-006",
+        "B-97124802-018",
+        "B-97124802-029",
+        "B-97124802-035",
+        "B-97124802-045"
+      ],
+      "lost": [
+        "A-97124801-001",
+        "B-97124802-015",
+        "B-97124802-016",
+        "B-97124802-027",
+        "B-97124802-041",
+        "B-97124802-060"
+      ]
+    },
+    "qualified_airborne_string_contact": {
+      "gained": [],
+      "lost": []
+    },
+    "robot_net_fault": {
+      "gained": [],
+      "lost": []
+    },
+    "ball_side_complete_except_recovery": {
+      "gained": [
+        "B-97124802-061"
+      ],
+      "lost": [
+        "A-97124801-005"
+      ]
+    },
+    "complete5": {
+      "gained": [
+        "A-97124801-001",
+        "B-97124802-015",
+        "B-97124802-049",
+        "B-97124802-060"
+      ],
+      "lost": [
+        "A-97124801-003",
+        "A-97124801-015",
+        "A-97124801-023",
+        "A-97124801-025",
+        "A-97124801-034",
+        "A-97124801-047",
+        "A-97124801-049",
+        "A-97124801-058",
+        "A-97124801-060",
+        "B-97124802-006",
+        "B-97124802-018",
+        "B-97124802-045"
+      ]
+    }
+  },
+  "body_timing_given_contact": [
+    {
+      "before": "early",
+      "after": "early",
+      "cases": 47
+    },
+    {
+      "before": "early",
+      "after": "late",
+      "cases": 7
+    },
+    {
+      "before": "early",
+      "after": "no_body",
+      "cases": 2
+    },
+    {
+      "before": "late",
+      "after": "early",
+      "cases": 7
+    },
+    {
+      "before": "late",
+      "after": "late",
+      "cases": 7
+    },
+    {
+      "before": "late",
+      "after": "no_body",
+      "cases": 1
+    },
+    {
+      "before": "no_body",
+      "after": "early",
+      "cases": 5
+    },
+    {
+      "before": "no_body",
+      "after": "late",
+      "cases": 7
+    },
+    {
+      "before": "no_body",
+      "after": "no_body",
+      "cases": 25
+    }
+  ]
+}
