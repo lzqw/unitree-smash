@@ -1,0 +1,150 @@
+{
+  "probes": {
+    "early": {
+      "independent_train": 189,
+      "unique_teacher_cases": 3,
+      "harmful": 5,
+      "unchanged": 181,
+      "nearest_changed_train_neighbor": {
+        "(1, -1)": 3,
+        "(-1, -1)": 3,
+        "(-1, 1)": 2
+      }
+    },
+    "prefall": {
+      "independent_train": 190,
+      "unique_teacher_cases": 2,
+      "harmful": 10,
+      "unchanged": 178,
+      "nearest_changed_train_neighbor": {
+        "(1, -1)": 2,
+        "(-1, -1)": 6,
+        "(-1, 1)": 4
+      }
+    },
+    "air": {
+      "independent_train": 114,
+      "unique_teacher_cases": 4,
+      "harmful": 20,
+      "unchanged": 90,
+      "nearest_changed_train_neighbor": {
+        "(-1, -1)": 14,
+        "(-1, 1)": 6,
+        "(1, -1)": 4
+      }
+    }
+  },
+  "unique_training_teacher_cases": 8,
+  "train_improvements": [
+    {
+      "case": "B-931312-006",
+      "lane": 22,
+      "pulse": "early",
+      "tick": 336,
+      "gains": [
+        "clean_relaxed"
+      ],
+      "losses": [],
+      "label": 1,
+      "split": "train"
+    },
+    {
+      "case": "A-931301-025",
+      "lane": 41,
+      "pulse": "early",
+      "tick": 336,
+      "gains": [
+        "clean_strict"
+      ],
+      "losses": [],
+      "label": 1,
+      "split": "train"
+    },
+    {
+      "case": "B-931312-119",
+      "lane": 247,
+      "pulse": "early",
+      "tick": 336,
+      "gains": [
+        "clean_strict"
+      ],
+      "losses": [],
+      "label": 1,
+      "split": "train"
+    },
+    {
+      "case": "B-931312-006",
+      "lane": 22,
+      "pulse": "prefall",
+      "tick": 312,
+      "gains": [
+        "clean_relaxed"
+      ],
+      "losses": [],
+      "label": 1,
+      "split": "train"
+    },
+    {
+      "case": "B-931312-126",
+      "lane": 254,
+      "pulse": "prefall",
+      "tick": 321,
+      "gains": [
+        "clean_relaxed"
+      ],
+      "losses": [],
+      "label": 1,
+      "split": "train"
+    },
+    {
+      "case": "A-931301-044",
+      "lane": 76,
+      "pulse": "air",
+      "tick": 274,
+      "gains": [
+        "body"
+      ],
+      "losses": [],
+      "label": 1,
+      "split": "train"
+    },
+    {
+      "case": "A-931301-058",
+      "lane": 106,
+      "pulse": "air",
+      "tick": 278,
+      "gains": [
+        "clean_strict"
+      ],
+      "losses": [],
+      "label": 1,
+      "split": "train"
+    },
+    {
+      "case": "B-931312-052",
+      "lane": 116,
+      "pulse": "air",
+      "tick": 281,
+      "gains": [
+        "clean_relaxed"
+      ],
+      "losses": [],
+      "label": 1,
+      "split": "train"
+    },
+    {
+      "case": "A-931301-071",
+      "lane": 135,
+      "pulse": "air",
+      "tick": 275,
+      "gains": [
+        "clean_strict",
+        "clean_relaxed",
+        "body"
+      ],
+      "losses": [],
+      "label": 1,
+      "split": "train"
+    }
+  ]
+}

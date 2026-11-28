@@ -56,7 +56,10 @@ def main():
     timing.add_argument('--dynamimic-pulse-start', type=int)
     timing.add_argument('--dynamimic-pulse-timing-from', type=Path,
                         help='Target pre-fall windows using the case-matched native training archive')
-    parser.add_argument('--dynamimic-pulse-air-preparation', action='store_true',
+    phase = parser.add_mutually_exclusive_group()
+    phase.add_argument('--dynamimic-pulse-first-support', action='store_true',
+                       help='Apply the candidate on the first control decision after measured touchdown')
+    phase.add_argument('--dynamimic-pulse-air-preparation', action='store_true',
                         help='Start the training pulse at the first airborne state at least 50 ms after release')
     parser.add_argument('--recovery-ppo-panel', type=Path)
     parser.add_argument('--recovery-ppo-iterations', type=int, default=1)
@@ -122,8 +125,8 @@ def main():
             args.recovery_training_probes or args.recovery_ppo_panel or args.approach_prefix_checkpoint or
             args.approach_sensitivity or args.early_arm_seconds is not None or args.approach_hybrid_spec):
         parser.error('Paired Dyna validation requires a separate deterministic full-tail evaluation')
-    if args.dynamimic_pulse_air_preparation and not args.dynamimic_pulse_timing_from:
-        parser.error('Air preparation requires the case-matched timing archive')
+    if (args.dynamimic_pulse_air_preparation or args.dynamimic_pulse_first_support) and not args.dynamimic_pulse_timing_from:
+        parser.error('Phase selection requires the case-matched timing archive')
     if bool(args.dynamimic_pulse_checkpoint) != (args.dynamimic_pulse_start is not None or args.dynamimic_pulse_timing_from is not None):
         parser.error('Recovery intervention requires a checkpoint and a timing source')
     if args.dynamimic_pulse_checkpoint and (not args.dynamimic_capture or (args.dynamimic_pulse_start is not None and not 0 <= args.dynamimic_pulse_start <= 784)):

@@ -5,7 +5,9 @@ import json
 import torch
 
 
-def schedule_from_baseline(folder, cases, checkpoint, companion, *, air_preparation=False):
+def schedule_from_baseline(folder, cases, checkpoint, companion, *, air_preparation=False, first_support=False):
+    if air_preparation and first_support:
+        raise ValueError("Choose a single intervention phase")
     storage = folder/'trajectories'
     payload = (storage/'manifest.json').read_bytes()
     manifest = json.loads(payload)
@@ -18,16 +20,25 @@ def schedule_from_baseline(folder, cases, checkpoint, companion, *, air_preparat
         chunk = torch.load(storage/name, weights_only=True, mmap=True, map_location='cpu')
         for key in ('active','body','landed','live'):
             fields[key].append(chunk[key])
-        if air_preparation:
+        if first_support:
+            fields.setdefault('feet', []).append(chunk['feet'])
+        if air_preparation or first_support:
             fields.setdefault('release_age',[]).append(chunk['obs'][...,775] - chunk['release_time'])
     data = {k:torch.cat(parts) for k,parts in fields.items()}
-    starts = air_preparation_starts(data) if air_preparation else prefall_starts(data)
+    if first_support:
+        starts = first_support_starts(data)
+    elif air_preparation:
+        starts = air_preparation_starts(data)
+    else:
+        starts = prefall_starts(data)
     if not (starts >= 0).any():
         raise ValueError('No eligible native intervention windows')
     result = dict(start_ticks=starts.tolist(), duration_ticks=16,
                   baseline_manifest_sha256=hashlib.sha256(payload).hexdigest())
     if air_preparation:
         result['phase'] = 'air_preparation'
+    if first_support:
+        result['phase'] = 'first_support'
     return result
 
 
@@ -41,6 +52,21 @@ def air_preparation_starts(data):
     ticks = torch.arange(end, device=active.device)[:,None]
     start = torch.where(eligible,ticks,end).amin(0)
     return torch.where(start+16 < end,start,-1)
+
+
+def first_support_starts(data):
+    # Landed and feet describe the boundary after applying that tick's command.
+    landed = data['landed'] & data['live']
+    onset = landed.clone()
+    onset[1:] &= ~landed[:-1]
+    onset &= data['feet'].bool().any(-1)
+    eligible = torch.zeros_like(landed)
+    eligible[1:] = onset[:-1]
+    eligible &= data['active'] & data['live'] & (data['release_age'] >= .04)
+    end = len(landed)
+    ticks = torch.arange(end, device=landed.device)[:, None]
+    start = torch.where(eligible, ticks, end).amin(0)
+    return torch.where(start + 16 < end, start, -1)
 
 
 def prefall_starts(data):

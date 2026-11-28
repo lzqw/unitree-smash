@@ -515,3 +515,18 @@ def test_paired_landing_load_uses_vertical_response_in_final_four_ticks():
     changed['foot_impulse_w'][:4] = 200
     changed['foot_impulse_w'][..., :2] = -150
     torch.testing.assert_close(objective(), loss)
+
+
+def test_first_support_pulse_starts_after_observed_foot_impact():
+    from scripts.dynamimic_intervention_timing import first_support_starts
+    ticks = torch.arange(48)[:, None]
+    landed = ticks >= torch.tensor([8, 8, 8, 34, 8])
+    alive = torch.ones_like(landed)
+    active = alive.clone()
+    active[9, 4] = False
+    feet = landed[..., None].expand(-1, -1, 4).clone()
+    feet[:, 2] = False
+    age = torch.full(landed.shape, .1)
+    age[:10, 1] = .03
+    assert first_support_starts(dict(landed=landed, live=alive, active=active,
+                                     feet=feet, release_age=age)).tolist() == [9, -1, -1, -1, -1]
