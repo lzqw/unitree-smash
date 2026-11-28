@@ -1,0 +1,279 @@
+{
+  "incumbent": "0c16c7181f28267f841ba95b8ba6aa115af8835cf1b8013a7b894653b6d68d9d",
+  "intervention": "d2e388dab061c0bb1a3023b6182f1603a622b8ed97ac222b74d49abbb5559d8d",
+  "timing_matched_native_controls": {
+    "training_before_10": {
+      "matched_failures": 110,
+      "distinct_controls": 41,
+      "rl_calf_at_lower_clip": {
+        "fall": 0.9454545378684998,
+        "clean_matched_mean": 0.6886501908302307
+      },
+      "rl_calf_target_rad": {
+        "fall": -2.305612087249756,
+        "clean_matched_mean": -2.264869213104248
+      },
+      "root_height_m": {
+        "fall": 0.158296138048172,
+        "clean_matched_mean": 0.1558925211429596
+      },
+      "rl_thigh_clearance_m": {
+        "fall": 0.05877552926540375,
+        "clean_matched_mean": 0.11957524716854095
+      },
+      "minimum_body_clearance_m": {
+        "fall": 0.0121587123721838,
+        "clean_matched_mean": 0.015688970685005188
+      },
+      "support_feet": {
+        "fall": 3.090909004211426,
+        "clean_matched_mean": 2.857318639755249
+      }
+    },
+    "training_before_32": {
+      "matched_failures": 108,
+      "distinct_controls": 41,
+      "rl_calf_at_lower_clip": {
+        "fall": 0.6944444179534912,
+        "clean_matched_mean": 0.42167040705680847
+      },
+      "rl_calf_target_rad": {
+        "fall": -2.246061086654663,
+        "clean_matched_mean": -2.220316171646118
+      },
+      "root_height_m": {
+        "fall": 0.19155563414096832,
+        "clean_matched_mean": 0.18627411127090454
+      },
+      "rl_thigh_clearance_m": {
+        "fall": 0.16414499282836914,
+        "clean_matched_mean": 0.1885797679424286
+      },
+      "minimum_body_clearance_m": {
+        "fall": 0.017718175426125526,
+        "clean_matched_mean": 0.01760769635438919
+      },
+      "support_feet": {
+        "fall": 2.722222328186035,
+        "clean_matched_mean": 2.491124153137207
+      }
+    },
+    "held_before_10": {
+      "matched_failures": 12,
+      "distinct_controls": 6,
+      "rl_calf_at_lower_clip": {
+        "fall": 1.0,
+        "clean_matched_mean": 0.9305555820465088
+      },
+      "rl_calf_target_rad": {
+        "fall": -2.28379225730896,
+        "clean_matched_mean": -2.2885611057281494
+      },
+      "root_height_m": {
+        "fall": 0.1655857414007187,
+        "clean_matched_mean": 0.17380376160144806
+      },
+      "rl_thigh_clearance_m": {
+        "fall": 0.05037136375904083,
+        "clean_matched_mean": 0.0965847373008728
+      },
+      "minimum_body_clearance_m": {
+        "fall": 0.013943483121693134,
+        "clean_matched_mean": 0.016832005232572556
+      },
+      "support_feet": {
+        "fall": 3.0,
+        "clean_matched_mean": 2.625
+      }
+    },
+    "held_before_32": {
+      "matched_failures": 11,
+      "distinct_controls": 6,
+      "rl_calf_at_lower_clip": {
+        "fall": 0.8181818127632141,
+        "clean_matched_mean": 0.6818181872367859
+      },
+      "rl_calf_target_rad": {
+        "fall": -2.2795774936676025,
+        "clean_matched_mean": -2.2510626316070557
+      },
+      "root_height_m": {
+        "fall": 0.19050544500350952,
+        "clean_matched_mean": 0.1913978010416031
+      },
+      "rl_thigh_clearance_m": {
+        "fall": 0.17002268135547638,
+        "clean_matched_mean": 0.16045424342155457
+      },
+      "minimum_body_clearance_m": {
+        "fall": 0.017444675788283348,
+        "clean_matched_mean": 0.017053058370947838
+      },
+      "support_feet": {
+        "fall": 2.8181817531585693,
+        "clean_matched_mean": 2.3181817531585693
+      }
+    }
+  },
+  "native_intervention": {
+    "all": {
+      "cleared": {
+        "n": 67,
+        "later": 35,
+        "same": 18,
+        "earlier": 14,
+        "delay_ticks": 1,
+        "max_extension_target_when_cleared_rad": 0.010480165481567383,
+        "native_calf_angle_delta_at_h16_rad": 0.0057108402252197266,
+        "native_thigh_gap_delta_mm": 5.336344242095947,
+        "native_min_gap_delta_mm": 0.43342728167772293
+      },
+      "stayed_clipped": {
+        "n": 71,
+        "later": 21,
+        "same": 24,
+        "earlier": 26,
+        "delay_ticks": 0,
+        "max_extension_target_when_cleared_rad": 0.0,
+        "native_calf_angle_delta_at_h16_rad": 0.004183053970336914,
+        "native_thigh_gap_delta_mm": 4.91727888584137,
+        "native_min_gap_delta_mm": 0.25982316583395004
+      },
+      "never_clipped": {
+        "n": 7,
+        "later": 2,
+        "same": 4,
+        "earlier": 1,
+        "delay_ticks": 0,
+        "max_extension_target_when_cleared_rad": 0.0,
+        "native_calf_angle_delta_at_h16_rad": 0.006098270416259766,
+        "native_thigh_gap_delta_mm": 0.713646411895752,
+        "native_min_gap_delta_mm": -0.06716325879096985
+      }
+    },
+    "training": {
+      "cleared": {
+        "n": 59,
+        "later": 29,
+        "same": 17,
+        "earlier": 13,
+        "delay_ticks": 0,
+        "max_extension_target_when_cleared_rad": 0.010480165481567383,
+        "native_calf_angle_delta_at_h16_rad": 0.0057108402252197266,
+        "native_thigh_gap_delta_mm": 5.200773477554321,
+        "native_min_gap_delta_mm": 0.41401758790016174
+      },
+      "stayed_clipped": {
+        "n": 62,
+        "later": 19,
+        "same": 19,
+        "earlier": 24,
+        "delay_ticks": 0.0,
+        "max_extension_target_when_cleared_rad": 0.0,
+        "native_calf_angle_delta_at_h16_rad": 0.00384366512298584,
+        "native_thigh_gap_delta_mm": 4.94871661067009,
+        "native_min_gap_delta_mm": 0.47624483704566956
+      },
+      "never_clipped": {
+        "n": 6,
+        "later": 1,
+        "same": 4,
+        "earlier": 1,
+        "delay_ticks": 0.0,
+        "max_extension_target_when_cleared_rad": 0.0,
+        "native_calf_angle_delta_at_h16_rad": 0.005982875823974609,
+        "native_thigh_gap_delta_mm": 0.7306784391403198,
+        "native_min_gap_delta_mm": -0.059404876083135605
+      }
+    },
+    "held": {
+      "cleared": {
+        "n": 8,
+        "later": 6,
+        "same": 1,
+        "earlier": 1,
+        "delay_ticks": 1.0,
+        "max_extension_target_when_cleared_rad": 0.009608149528503418,
+        "native_calf_angle_delta_at_h16_rad": 0.0038499832153320312,
+        "native_thigh_gap_delta_mm": 6.83429092168808,
+        "native_min_gap_delta_mm": 0.6198864430189133
+      },
+      "stayed_clipped": {
+        "n": 9,
+        "later": 2,
+        "same": 5,
+        "earlier": 2,
+        "delay_ticks": 0,
+        "max_extension_target_when_cleared_rad": 0.0,
+        "native_calf_angle_delta_at_h16_rad": 0.008114337921142578,
+        "native_thigh_gap_delta_mm": 2.7805864810943604,
+        "native_min_gap_delta_mm": 0.12919306755065918
+      },
+      "never_clipped": {
+        "n": 1,
+        "later": 1,
+        "same": 0,
+        "earlier": 0,
+        "delay_ticks": 1,
+        "max_extension_target_when_cleared_rad": 0.0,
+        "native_calf_angle_delta_at_h16_rad": 0.008620262145996094,
+        "native_thigh_gap_delta_mm": -0.6604790687561035,
+        "native_min_gap_delta_mm": -0.12865662574768066
+      }
+    }
+  },
+  "modeled_thigh_response": {
+    "4": [
+      {
+        "cases": 124,
+        "native_rms_mm": 1.4921560287475586,
+        "model_total_rms_mm": 1.3681308031082153,
+        "calf_component_rms_mm": 0.3453550636768341,
+        "other_component_rms_mm": 1.2938767671585083,
+        "calf_projection_onto_total": 0.08466129004955292
+      },
+      {
+        "cases": 124,
+        "native_rms_mm": 1.4921560287475586,
+        "model_total_rms_mm": 1.569153904914856,
+        "calf_component_rms_mm": 0.36384904384613037,
+        "other_component_rms_mm": 1.5248453617095947,
+        "calf_projection_onto_total": 0.054721683263778687
+      },
+      {
+        "cases": 124,
+        "native_rms_mm": 1.4921560287475586,
+        "model_total_rms_mm": 1.5645946264266968,
+        "calf_component_rms_mm": 0.41259950399398804,
+        "other_component_rms_mm": 1.5069009065628052,
+        "calf_projection_onto_total": 0.07096625119447708
+      }
+    ],
+    "16": [
+      {
+        "cases": 145,
+        "native_rms_mm": 5.968465805053711,
+        "model_total_rms_mm": 4.934201717376709,
+        "calf_component_rms_mm": 2.486257791519165,
+        "other_component_rms_mm": 4.190959453582764,
+        "calf_projection_onto_total": 0.26623475551605225
+      },
+      {
+        "cases": 145,
+        "native_rms_mm": 5.968465805053711,
+        "model_total_rms_mm": 5.395341396331787,
+        "calf_component_rms_mm": 1.8655340671539307,
+        "other_component_rms_mm": 4.910691261291504,
+        "calf_projection_onto_total": 0.14557069540023804
+      },
+      {
+        "cases": 145,
+        "native_rms_mm": 5.968465805053711,
+        "model_total_rms_mm": 5.236259937286377,
+        "calf_component_rms_mm": 2.203001022338867,
+        "other_component_rms_mm": 4.655170440673828,
+        "calf_projection_onto_total": 0.19331935048103333
+      }
+    ]
+  }
+}
