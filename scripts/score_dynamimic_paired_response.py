@@ -32,6 +32,7 @@ def score(args):
     m = json.loads(args.pairs.read_text())
     a, baseline = read_data(args.before, ('active',))
     pulse = 'pulse' in m
+    timed = pulse and 'start_ticks' in m['pulse']
     schema = 'dynamimic-native-recovery-pulse-v1' if pulse else 'dynamimic-native-recovery-v1'
     b, candidate = read_data(args.after, ('active',), expected_schema=schema)
     if baseline['cases'] != candidate['cases'] or baseline['companion_sha256'] != candidate['companion_sha256']:
@@ -65,7 +66,10 @@ def score(args):
             rot = rotation(q[:,3:7])
             fk = geometry(q[:,7:],v[:,6:],q[:,:3],q[:,3:7],mv(rot,v[:,:3]),mv(rot,v[:,3:6]))
             gaps = shapes(fk['position'], fk['rotation'])
-            return dict(go2_floor_gap_m=gaps.amin(-1), left_rear_thigh_gap_m=gaps[:,shapes.left_rear_thigh])
+            result = dict(go2_floor_gap_m=gaps.amin(-1), left_rear_thigh_gap_m=gaps[:,shapes.left_rear_thigh])
+            if timed:
+                result.update(response(q, v))
+            return result
 
     lanes = torch.arange(len(baseline['cases']))
     if pulse:
@@ -85,6 +89,7 @@ def score(args):
         same &= (ta == tb) & a['active'][start,lanes] & b['active'][start,lanes]
         horizons = (4,8,16,32,48)
     out = dict(exact_prefix_cases=int(same.sum()), total_cases=len(lanes), horizons={})
+    baseline_fall = (a['active'] & a['body']).any(0)
     for h in horizons:
         valid = same & (start+h <= min(len(a['active']), len(b['active'])))
         times = (start[None,:] + torch.arange(h)[:,None]).clamp_max(min(len(a['active']),len(b['active']))-1)
@@ -97,6 +102,12 @@ def score(args):
         q0,v0 = local_robot_state(a['before'][t,l])
         measured = [quantities(*local_robot_state(d['after'][t+h-1,l])) for d in (a,b)]
         truth = {k:measured[1][k]-measured[0][k] for k in measured[0]}
+        splits = {'train': l % 16 >= 4, 'held': l % 16 < 2}
+        if timed:
+            # Use only the incumbent outcome to identify the scheduled window class.
+            for split, mask in tuple(splits.items()):
+                splits[split+'_prefall'] = mask & baseline_fall[l]
+                splits[split+'_control'] = mask & ~baseline_fall[l]
         members = []
         for member in range(3):
             branches = []
@@ -107,13 +118,13 @@ def score(args):
                 branches.append(quantities(q,v))
             predicted = {k:branches[1][k]-x for k,x in branches[0].items()}
             groups = {}
-            for group, sel in [('train',l%16>=4), ('held',l%16<2)]:
+            for group, sel in splits.items():
                 if not sel.any():
                     continue
                 groups[group] = {}
                 for key, x in predicted.items():
                     result = metrics(x[sel], truth[key][sel])
-                    if getattr(args, 'ground_surfaces', False):
+                    if key in ('go2_floor_gap_m', 'left_rear_thigh_gap_m'):
                         material = sel & (truth[key].abs() > .001)
                         result.update(measured_over_1mm=int(material.sum()),
                                       sign_correct_over_1mm=int((x[material]*truth[key][material] > 0).sum()))
