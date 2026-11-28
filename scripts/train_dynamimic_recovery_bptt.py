@@ -227,7 +227,7 @@ def released_ball_path(ball, horizon):
     return path
 
 
-def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon, body_fault=None, absorbing_body=False):
+def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon, body_fault=None, absorbing_body=False, gradient_terms=False):
     from quadsmash.rl.dynamimic_recovery_wm_v1 import local_robot_state
     from quadsmash.rl.supermimic_physical_observation_v1 import PhysicalPolicyInputs
     from torch.utils.checkpoint import checkpoint
@@ -289,7 +289,22 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
             airborne=contacts.amax(-1)<.5, airborne_seen=ever_airborne, hit_seen=all_active,
             elapsed_s=elapsed, final_action=command.final_normalized, **context)
         obs, history = observer(physical, history)
-    return -(value+discount*survival*tail(obs)).mean() + saturation + disagreement
+    terminal = tail(obs)
+    if gradient_terms:
+        # Disjoint observation groups give the exact first derivative at the recorded endpoint.
+        # The derivative of the value with respect to its input is held fixed for these VJPs.
+        sensitivity, = torch.autograd.grad(
+            -(discount * survival.detach() * terminal).mean(), obs, retain_graph=True)
+        attribution = obs * sensitivity.detach()
+        frames = attribution[:, :759].reshape(len(obs), 11, 69)
+        return {'running_reward': -value.mean(),
+                'tail_proprioception': frames[:, :, :45].sum() + frames[:, :, 57:61].sum(),
+                'tail_racket': frames[:, :, 45:57].sum(), 'tail_ball_and_flags': frames[:, :, 61:].sum(),
+                'tail_command_phase_clock': attribution[:, 759:776].sum(),
+                'tail_last_action': attribution[:, 776:].sum(),
+                'tail_survival': -(discount * survival * terminal.detach()).mean(),
+                'saturation': saturation, 'disagreement': disagreement}
+    return -(value+discount*survival*terminal).mean() + saturation + disagreement
 
 
 def main():
@@ -319,6 +334,8 @@ def main():
     group.add_argument('--absorbing-body-fault', action='store_true')
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--horizon', type=int, choices=(48,64), default=48)
+    parser.add_argument('--audit-segment-gradients', action='store_true',
+                        help='Measure H16 objective gradients on native starts and exit before updating')
     parser.add_argument('--sample-late-body', action='store_true')
     parser.add_argument('--native-segments', action='store_true', help='Re-anchor every 16 ticks to measured state and G07 memory')
     parser.add_argument('--updates', type=int, choices=range(15,26), default=20)
@@ -442,6 +459,40 @@ def main():
                      profile=profiles[l].to(device), origin_z=origins_z[l].to(device), landed=data['landed'][(t-1).clamp_min(0),l].to(device),
                      limits=limits, audit_target=data['final_joint_targets'][t,l].to(device) if audit else None)
         return start,pack_planned_execution(tuple(branches),tuple(sizes))
+
+    if args.audit_segment_gradients:
+        near = pools[1]
+        late = late_body[near[:,0], near[:,1]]
+        eligible = data['active'] & ~held & success
+        eligible &= torch.isin(torch.arange(len(eligible))[:,None],torch.as_tensor(ticks))
+        eligible &= data['landed'] & (data['obs'][...,775] - data['release_time'] >= .04)
+        groups = [('early_impact_or_prefall',near[~late]), ('late_prefall',near[late]),
+                  ('successful_landed',eligible.nonzero())]
+        reports = {}
+        for label, group in groups:
+            sample = []
+            for parity in (0,1):
+                subset = group[group[:,1] % 2 == parity]
+                ids = subset[:,1].unique()
+                for lane in ids[torch.randperm(len(ids),generator=generator)[:4]]:
+                    rows = subset[subset[:,1]==lane]
+                    sample.append(rows[torch.randint(len(rows),(),generator=generator)])
+            rows = torch.stack(sample)
+            members = []
+            for member in range(3):
+                start, memory = context(rows, audit=True)
+                parts = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,member,
+                                16,body_fault,args.absorbing_body_fault,gradient_terms=True)
+                gradients = {}
+                for i,(name, loss) in enumerate(parts.items()):
+                    gs = torch.autograd.grad(loss, tuple(params.values()), retain_graph=i+1<len(parts))
+                    gradients[name] = torch.cat([g.detach().flatten() for g in gs]).double()
+                total = sum(gradients.values())
+                members.append({k:dict(norm=float(g.norm()), projected_share=float(g@total/total.square().sum()))
+                                for k,g in gradients.items()})
+            reports[label] = dict(starts=rows.tolist(), members=members)
+        dump(args.output/'gradients.json',reports)
+        return
 
     evidence = []
     checks = stratified_starts(pools,args.starts,generator)
