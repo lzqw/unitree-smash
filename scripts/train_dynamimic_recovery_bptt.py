@@ -40,7 +40,7 @@ def candidate_steps(measure):
         alpha *= .5
 
 
-def recovery_start_groups(data, snapshot_ticks, held_lanes):
+def recovery_start_groups(data, snapshot_ticks, held_lanes, *, landing_assist=False):
     """Classify (tick, lane) using native events; future falls only select training starts."""
     ticks = torch.arange(len(data['live']))[:, None]
     landed = data['landed'].bool()
@@ -55,13 +55,17 @@ def recovery_start_groups(data, snapshot_ticks, held_lanes):
     age = ticks - touchdown
     near = had_landed & ((age < 30) | future_fall)
     stable = F.pad(data['strict'][:-1], (0, 0, 1, 0))
-    masks = (~had_landed, near, had_landed & ~near & ~stable & (age >= 30) & (age <= 250))
+    air = ~had_landed
+    if landing_assist:
+        air = air & (data['obs'][..., 775] - data['release_time'] >= .05)
+    masks = (air, near, had_landed & ~near & ~stable & (age >= 30) & (age <= 250))
     return tuple((eligible & mask).nonzero() for mask in masks)
 
 
 def native_segments(rows, horizon, active, snapshots, segment_ticks=16):
     segments = []
-    for offset in range(0,horizon,16):
+    stride = ((segment_ticks + 15) // 16) * 16
+    for offset in range(0,horizon,stride):
         tick = rows[:,0]+offset
         lane = rows[:,1]
         exists = (tick<len(active)) & torch.isin(tick, torch.as_tensor(snapshots))
@@ -102,7 +106,7 @@ def late_body_windows(data, horizon):
             & (fault < end) & data['active'])
 
 
-def stratified_starts(groups, count, generator, imminent=None, late_body=None):
+def stratified_starts(groups, count, generator, imminent=None, late_body=None, impact=None):
     if not 128 <= count <= 256:
         raise ValueError('Recovery expects 128 to 256 native starts')
     sizes = [round(.3*count), round(.4*count)]
@@ -128,6 +132,15 @@ def stratified_starts(groups, count, generator, imminent=None, late_body=None):
                     sampled.extend(candidates[ids])
                     needed -= n_urgent
                     cases = cases[~urgent]
+            if phase == 1 and impact is not None and needed:
+                impact_rows = cases[impact[cases[:,0],cases[:,1]]]
+                lanes = impact_rows[:,1].unique()
+                for lane in lanes[torch.randperm(len(lanes), generator=generator)[:needed//2]]:
+                    choices = impact_rows[impact_rows[:,1]==lane]
+                    row = choices[torch.randint(len(choices), (), generator=generator)]
+                    sampled.append(row)
+                    cases = cases[~(cases == row).all(1)]
+                    needed -= 1
             if phase == 1 and late_body is not None and needed:
                 late = cases[late_body[cases[:, 0], cases[:, 1]]]
                 # Each reserved slot covers a different measured fall for this Approach.
@@ -153,7 +166,27 @@ def stratified_starts(groups, count, generator, imminent=None, late_body=None):
     return torch.stack(sampled)
 
 
-def recovery_reward(q, v, contacts, geometry, landed, body_fault=None, absorbing_body=False, fk=None):
+class InwardRequestClamp(torch.autograd.Function):
+    """Execute the native request clamp and pass inward descent directions."""
+    @staticmethod
+    def forward(ctx, request):
+        ctx.save_for_backward(request)
+        return request.clamp(-1., 1.)
+
+    @staticmethod
+    def backward(ctx, gradient):
+        request, = ctx.saved_tensors
+        inward = ((request < -1) & (gradient < 0)) | ((request > 1) & (gradient > 0))
+        return torch.where((request.abs() <= 1) | inward, gradient, 0.)
+
+
+def lift_and_damping(height, leg_speed):
+    lift = .03 * ((height - .12) / .18).clamp(0., 1.)
+    damping_weight = .25 + .75 * ((height - .15) / .05).clamp(0., 1.)
+    return lift + .06 * damping_weight * torch.exp(-leg_speed.square())
+
+
+def recovery_reward(q, v, contacts, geometry, landed, body_fault=None, absorbing_body=False, fk=None, landing_assist=False):
     """Smooth physical margins. Link origins are calibrated surrogates for the ground barrier."""
     rot = rotation(q[:, 3:7])
     linear, angular = mv(rot, v[:, :3]), mv(rot, v[:, 3:6])
@@ -170,11 +203,17 @@ def recovery_reward(q, v, contacts, geometry, landed, body_fault=None, absorbing
               torch.sigmoid((.3-speed)/.05) * torch.sigmoid((1.-omega)/.15) *
               torch.sigmoid((1.-max_joint_speed)/.15) * (1-(1-contacts).prod(-1)))
     upright = torch.exp(-tilt_sq/math.radians(12)**2)
+    height_and_damping = (lift_and_damping(q[:,2], max_leg_speed) if landing_assist else
+                          .03*torch.exp(-((q[:,2]-.34)/.07).square()) + .06*torch.exp(-max_leg_speed.square()))
     ground_reward = (.03 + .05*torch.exp(-tilt_sq/math.radians(30)**2) + .05*upright +
-                     .03*torch.exp(-((q[:, 2]-.34)/.07).square()) + .03*support +
-                     .06*torch.exp(-max_leg_speed.square()) + .03*torch.exp(-(speed/.30).square()) +
+                     height_and_damping + .03*support +
+                     .03*torch.exp(-(speed/.30).square()) +
                      .03*torch.exp(-omega.square()) + .08*stable)
     air_reward = .015*torch.exp(-tilt_sq/math.radians(20)**2) + .01*torch.exp(-omega.square())
+    if landing_assist:
+        foot_height = fk['position'][:, geometry.feet, 2]
+        rear_above_front = (foot_height[:,2:].mean(1) - foot_height[:,:2].mean(1)).relu()
+        air_reward = air_reward + .015*(1 - (rear_above_front/.35).clamp_max(1))
     sites = (geometry.root_id, *geometry.heads,
              *(geometry.ids[name+'_hip'] for name in ('FL','FR','RL','RR')))
     h_min = fk['position'][:,sites,2].amin(-1)
@@ -189,8 +228,14 @@ def recovery_reward(q, v, contacts, geometry, landed, body_fault=None, absorbing
     return landed*ground_reward + (1-landed)*air_reward - ground_cost - 20*net
 
 
-def saturation_cost(raw):
-    return .08 * (raw.abs()-.90).relu().square().mean()
+def saturation_cost(raw, landed=None):
+    cost = .08 * (raw.abs()-.90).relu().square().mean()
+    if landed is not None:
+        from quadsmash.rl.supermimic_physical_observation_v1 import JOINT_NAMES
+        excess = (raw[:, :12].abs()-.95).relu().square()
+        rear = [JOINT_NAMES.index(name) for name in ('RL_calf_joint','RL_thigh_joint')]
+        cost = cost + .08 * (landed.detach() * (excess.mean(-1) + excess[:,rear].mean(-1))).mean()
+    return cost
 
 
 def focus_cost(weight, anchor):
@@ -243,7 +288,7 @@ def released_ball_path(ball, horizon):
     return path
 
 
-def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon, body_fault=None, absorbing_body=False, gradient_terms=False, tail_gradient_scale=1., ground_shapes=None):
+def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon, body_fault=None, absorbing_body=False, gradient_terms=False, tail_gradient_scale=1., ground_shapes=None, landing_assist=False, clamp_audit=None):
     from quadsmash.rl.dynamimic_recovery_wm_v1 import local_robot_state
     from quadsmash.rl.supermimic_physical_observation_v1 import PhysicalPolicyInputs
     from torch.utils.checkpoint import checkpoint
@@ -279,8 +324,12 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
 
     for step in range(horizon):
         request = mixed_request(primary, secondary, obs, starts['companion'], starts['release_time'])
-        saturation = saturation + saturation_cost(request)/horizon
-        command, memory, _ = preview.forward(obs, request.clamp(-1,1), default, starts['limits'], memory)
+        saturation = saturation + saturation_cost(request, landed if landing_assist else None)/horizon
+        clipped = InwardRequestClamp.apply(request) if landing_assist else request.clamp(-1,1)
+        if clamp_audit is not None:
+            clipped.retain_grad()
+            clamp_audit.append((request.detach(), clipped))
+        command, memory, _ = preview.forward(obs, clipped, default, starts['limits'], memory)
         if step == 0 and starts.get('audit_target') is not None:
             torch.testing.assert_close(command.final_joint_targets.detach(), starts['audit_target'], atol=2e-5, rtol=2e-5)
         q, v, contacts, variance = checkpoint(body_step, q, v, command.final_joint_targets, use_reentrant=False)
@@ -298,7 +347,7 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
             from scripts.dynamimic_body_fault import body_fault_score
             body_alive = body_alive * (1 - body_fault_score(q, v, contacts, body_fault))
         next_survival = root_alive * body_alive
-        step_reward = recovery_reward(q, v, contacts, geometry, landed, body_fault, absorbing_body or ground_shapes is not None, fk)
+        step_reward = recovery_reward(q, v, contacts, geometry, landed, body_fault, absorbing_body or ground_shapes is not None, fk, landing_assist)
         if ground_shapes is not None:
             step_reward = step_reward + landed * ground_shapes.thigh_margin_reward(gaps)
         value = value + discount * expected_live_reward(survival, next_survival, step_reward)
@@ -367,14 +416,18 @@ def main():
                         help='Measure H16 objective gradients on native starts and exit before updating')
     parser.add_argument('--tail-gradient-scale', type=float, default=1.,
                         help='Scale the gradient through the discounted continuation value, preserving its forward value')
+    parser.add_argument('--landing-assist', action='store_true',
+                        help='Use inward-only request gradients, landed desaturation and low-height lift')
     parser.add_argument('--sample-late-body', action='store_true')
     parser.add_argument('--native-segments', action='store_true', help='Re-anchor every 16 ticks to measured state and G07 memory')
     parser.add_argument('--updates', type=int, choices=range(15,26), default=20)
     parser.add_argument('--starts', type=int, default=128)
     parser.add_argument('--microbatch', type=int, default=64)
-    parser.add_argument('--segment-ticks', type=int, choices=(4,8,16), default=16,
+    parser.add_argument('--segment-ticks', type=int, choices=(4,8,16,24,32), default=16,
                         help='Open-loop ticks per native G07 snapshot, spaced 16 ticks apart')
     args = parser.parse_args()
+    if args.landing_assist and not args.authored_ground:
+        parser.error('Landing assistance uses asset-based ground geometry')
     if args.segment_ticks != 16 and not args.native_segments:
         parser.error('Short segment lengths require --native-segments')
     if not 0 <= args.tail_gradient_scale <= 1:
@@ -462,12 +515,13 @@ def main():
     ticks = sorted(int(p.stem.split('_')[-1]) for p in directory.glob('g07_*.pt'))
     origins_z = torch.as_tensor(manifest['origins'])[:, 2]
     data['root_terminated'] = root_termination(data['done'], data['after'][..., 2] + origins_z)
-    pools = recovery_start_groups(data, ticks, held)
+    pools = recovery_start_groups(data, ticks, held, landing_assist=args.landing_assist)
     imminent = imminent_root_rows(data)
     late_body = late_body_windows(data, args.horizon)
     end_tick = len(data['live'])
     control_tick = torch.arange(end_tick)[:, None]
     landing_tick = torch.where(data['live'] & data['landed'], control_tick, end_tick).amin(0)
+    impact = (control_tick >= landing_tick) & (control_tick < landing_tick + 24)
     first_fault_tick = torch.where(data['live'] & data['body'], control_tick, end_tick).amin(0)
     generator = torch.Generator().manual_seed(9917)
     success = ((data['relaxed']|data['strict']) & data['live']).any(0) & ~(
@@ -513,6 +567,8 @@ def main():
         eligible &= data['landed'] & (data['obs'][...,775] - data['release_time'] >= .04)
         groups = [('early_impact_or_prefall',near[~late]), ('late_prefall',near[late]),
                   ('successful_landed',eligible.nonzero())]
+        if args.landing_assist:
+            groups.append(('air_preparation', pools[0]))
         reports = {}
         for label, group in groups:
             sample = []
@@ -526,8 +582,22 @@ def main():
             members = []
             for member in range(3):
                 start, memory = context(rows, audit=True)
+                if args.landing_assist:
+                    records = []
+                    loss = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,
+                                   member,args.segment_ticks,body_fault,args.absorbing_body_fault,
+                                   tail_gradient_scale=args.tail_gradient_scale,ground_shapes=ground_shapes,
+                                   landing_assist=True,clamp_audit=records)
+                    gs = torch.autograd.grad(loss, tuple(params.values()))
+                    raw = torch.cat([r for r,_ in records])
+                    g = torch.cat([v.grad for _,v in records])
+                    inward = ((raw < -1) & (g < 0)) | ((raw > 1) & (g > 0))
+                    members.append(dict(total_gradient_norm=float(torch.cat([v.flatten() for v in gs]).norm()),
+                                        saturated=(raw.abs()>1).sum(0).tolist(),
+                                        inward_physical_gradient=inward.sum(0).tolist()))
+                    continue
                 parts = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,member,
-                                args.segment_ticks,body_fault,args.absorbing_body_fault,gradient_terms=True, tail_gradient_scale=args.tail_gradient_scale, ground_shapes=ground_shapes)
+                                args.segment_ticks,body_fault,args.absorbing_body_fault,gradient_terms=True, tail_gradient_scale=args.tail_gradient_scale, ground_shapes=ground_shapes, landing_assist=args.landing_assist)
                 gradients = {}
                 for i,(name, loss) in enumerate(parts.items()):
                     gs = torch.autograd.grad(loss, tuple(params.values()), retain_graph=i+1<len(parts))
@@ -551,7 +621,8 @@ def main():
     for step in range(args.updates):
         started = perf_counter()
         rows = stratified_starts(pools,args.starts,generator,imminent=imminent,
-                                 late_body=late_body if args.sample_late_body else None)
+                                 late_body=late_body if args.sample_late_body else None,
+                                 impact=impact if args.landing_assist else None)
         optimizer.zero_grad(set_to_none=True)
         total = 0.
         segments = [(rows,args.horizon)]
@@ -562,7 +633,7 @@ def main():
             for group in batch.split(args.microbatch):
                 start, memory = context(group, audit=step==0)
                 loss = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,
-                               step%3,length,body_fault,args.absorbing_body_fault,tail_gradient_scale=args.tail_gradient_scale, ground_shapes=ground_shapes)
+                               step%3,length,body_fault,args.absorbing_body_fault,tail_gradient_scale=args.tail_gradient_scale, ground_shapes=ground_shapes, landing_assist=args.landing_assist)
                 weighted = loss*len(group)/weight_sum
                 weighted.backward()
                 total += float(weighted.detach())
@@ -586,6 +657,7 @@ def main():
                                  end_tick),
                              native_first_body_in_window=body_fault_window_counts(
                                  rows, landing_tick, first_fault_tick, args.horizon, end_tick),
+                             landing_impact_starts=int(impact[rows[:,0], rows[:,1]].sum()),
                              late_body_prefall_starts=int(late_body[rows[:,0],rows[:,1]].sum()),
                              imminent_root_starts=int(imminent[rows[:,0],rows[:,1]].sum()),
                              h8d_starts=int((rows[:,1]%2).sum()),
@@ -607,7 +679,7 @@ def main():
                        args.output/(label+'.pt'))
             dump(args.output/(label+'.json'),dict(alpha=alpha,rms=rms,budget=budget))
     dump(args.output/'training.json',dict(updates=evidence, pools=[len(p) for p in pools], retained_cases=int(success.sum()),
-                                         tail_gradient_scale=args.tail_gradient_scale, horizon=args.horizon, authored_ground=args.authored_ground, native_segments=args.native_segments, segment_ticks=args.segment_ticks, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
+                                         tail_gradient_scale=args.tail_gradient_scale, horizon=args.horizon, authored_ground=args.authored_ground, native_segments=args.native_segments, landing_assist=args.landing_assist, segment_ticks=args.segment_ticks, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
 
 
 if __name__ == '__main__':

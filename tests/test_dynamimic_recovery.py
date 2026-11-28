@@ -406,3 +406,34 @@ def test_native_trunk_innovation_removes_inherited_velocity_and_uses_executed_co
     loss = innovation_loss(model, 0, *branches, end, lanes, profile)
     loss.backward()
     assert model.gain.grad < 0
+
+
+def test_inward_request_clamp_preserves_native_forward_and_descent_direction():
+    from scripts.train_dynamimic_recovery_bptt import InwardRequestClamp
+    x = torch.tensor([-1.22,-1.22,-1.,-.3,.3,1.,1.04,1.04],requires_grad=True)
+    y = InwardRequestClamp.apply(x)
+    assert torch.equal(y,x.clamp(-1,1))
+    y.clamp(-1.,1.).backward(torch.tensor([-2.,2.,1.,-3.,2.,-1.,2.,-2.]))
+    assert x.grad.tolist() == [-2.,0.,1.,-3.,2.,-1.,2.,0.]
+
+
+def test_low_landing_lift_and_inward_leg_penalty():
+    from scripts.train_dynamimic_recovery_bptt import lift_and_damping, saturation_cost
+    height = torch.tensor([.13,.14,.19,.24,.29],requires_grad=True)
+    speed = torch.ones_like(height,requires_grad=True)
+    lift_and_damping(height,speed).sum().backward()
+    assert (height.grad >= .16).all()
+    assert speed.grad[1].abs() < speed.grad[3].abs()
+    raw = torch.full((2,18), -1.22,requires_grad=True)
+    extra = saturation_cost(raw,torch.tensor([0.,1.]))-saturation_cost(raw)
+    extra.backward()
+    assert raw.grad[0].count_nonzero() == raw.grad[1,12:].count_nonzero() == 0
+    assert raw.grad[1,10] < raw.grad[1,9] < 0 and raw.grad[1,6] < raw.grad[1,7] < 0
+
+
+def test_long_segments_use_available_g07_snapshots_without_double_counting():
+    from scripts.train_dynamimic_recovery_bptt import native_segments
+    active = torch.ones((80,1),dtype=torch.bool)
+    for length in (24,32):
+        parts = native_segments(torch.tensor([[0,0]]),48,active,[0,16,32],length)
+        assert [(int(rows[0,0]),h) for rows,h in parts] == [(0,length),(32,16)]
