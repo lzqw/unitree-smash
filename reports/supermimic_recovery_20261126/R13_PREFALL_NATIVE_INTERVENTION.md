@@ -19,3 +19,9 @@ After fitting on paired training windows, the ensemble passed the nominal crossi
 | Local trunk angular velocity | −.128, −.080, .134 | −.175, −.180, .131 |
 
 The refit provides no improvement in predicting the trunk response to this correction. It was scored offline and was not deployed. The next diagnostic should separate interventions that changed the native foot-support sequence from interventions with matching support, and compare the resulting trunk velocity changes.
+
+## Foot support and the useful prediction horizon
+
+Using the previous validated ensemble, we separated paired trajectories by whether any of the four observed contact flags differed at any control boundary within the window. In the 18 held pre-fall cases, H4 local trunk linear velocity response cosines ranged from .55 to .57 for 14 pairs with matching support sequences and were .70 for the four with changed support. At H16, the corresponding cosines ranged from −.41 to −.34 across seven matching pairs and approximately .00 to .11 across eleven changed pairs. Across all 18, the H4 angular response cosines were .65–.67, falling to −.13 to .13 at H16. These are aggregate response directions for one intervention. Matching binary contact flags do not establish equal contact forces.
+
+A new first-block experiment uses four differentiable ticks from each measured G07 snapshot, retaining the 16-tick spacing between snapshot starts. It uses PPO01, the previous validated WM and native Critic. Twelve ticks between adjacent four-tick segments are outside the differentiable rollout. Native64 and official fixed128 retain their original full-tail protocols.

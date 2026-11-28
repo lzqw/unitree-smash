@@ -76,7 +76,11 @@ def main():
     parser.add_argument('--native-segments', action='store_true')
     parser.add_argument('--blocks', type=int, default=8, choices=range(1,9))
     parser.add_argument('--device', default='cuda:0')
+    parser.add_argument('--segment-ticks', type=int, choices=(4,8,16), default=16,
+                        help='Open-loop ticks per native G07 snapshot, spaced 16 ticks apart')
     args = parser.parse_args()
+    if args.segment_ticks != 16 and not args.native_segments:
+        parser.error('Short segment lengths require --native-segments')
     if not 0 <= args.tail_gradient_scale <= 1:
         parser.error('Tail gradient scale must lie in [0, 1]')
     if args.localize_fall_actions and not args.retain_success_actions:
@@ -134,7 +138,7 @@ def main():
                     fit = run('bptt',['scripts/train_dynamimic_recovery_bptt.py','--native',native,
                         '--wm',wm,'--critic',critic,'--asset',args.asset,'--checkpoint',current,
                         '--companion',args.companion,'--device',args.device,
-                        '--tail-gradient-scale', str(args.tail_gradient_scale),
+                        '--tail-gradient-scale', str(args.tail_gradient_scale), '--segment-ticks', str(args.segment_ticks),
                         *(['--native-body-fault'] if args.native_body_fault else []),
                         *(['--authored-ground'] if args.authored_ground else []),
                         *(['--sample-late-body'] if args.sample_late_body else []),

@@ -114,6 +114,15 @@ def score(args):
             for split, mask in tuple(splits.items()):
                 splits[split+'_prefall'] = mask & baseline_fall[l]
                 splits[split+'_control'] = mask & ~baseline_fall[l]
+        support_audit = timed and getattr(args, 'support_audit', False)
+        if support_audit:
+            # Compare the four observed contacts at every control boundary.
+            # Equal masks do not imply equal substep impulses.
+            feet_a, feet_b = [d['feet'][times[:, l], l].bool() for d in (a, b)]
+            changed = (feet_a != feet_b).any(-1).any(0)
+            for partition in ('train_prefall', 'held_prefall'):
+                splits[partition+'_changed_support'] = splits[partition] & changed
+                splits[partition+'_same_support'] = splits[partition] & ~changed
         members = []
         for member in range(3):
             branches = []
@@ -148,5 +157,7 @@ if __name__ == '__main__':
     for name in ('before','after','pairs','wm','asset','output'):
         parser.add_argument('--'+name, required=True, type=Path)
     parser.add_argument('--ground-surfaces', action='store_true')
+    parser.add_argument('--support-audit', action='store_true',
+                        help='Split timed pre-fall responses by observed foot contact sequence')
     args = parser.parse_args()
     args.output.write_text(json.dumps(score(args), indent=2)+'\n')

@@ -59,7 +59,7 @@ def recovery_start_groups(data, snapshot_ticks, held_lanes):
     return tuple((eligible & mask).nonzero() for mask in masks)
 
 
-def native_segments(rows, horizon, active, snapshots):
+def native_segments(rows, horizon, active, snapshots, segment_ticks=16):
     segments = []
     for offset in range(0,horizon,16):
         tick = rows[:,0]+offset
@@ -67,7 +67,7 @@ def native_segments(rows, horizon, active, snapshots):
         exists = (tick<len(active)) & torch.isin(tick, torch.as_tensor(snapshots))
         exists &= active[tick.clamp_max(len(active)-1),lane]
         if exists.any():
-            segments.append((torch.stack((tick[exists],lane[exists]),1),min(16,horizon-offset)))
+            segments.append((torch.stack((tick[exists],lane[exists]),1),min(segment_ticks,horizon-offset)))
     return segments
 
 
@@ -372,7 +372,11 @@ def main():
     parser.add_argument('--updates', type=int, choices=range(15,26), default=20)
     parser.add_argument('--starts', type=int, default=128)
     parser.add_argument('--microbatch', type=int, default=64)
+    parser.add_argument('--segment-ticks', type=int, choices=(4,8,16), default=16,
+                        help='Open-loop ticks per native G07 snapshot, spaced 16 ticks apart')
     args = parser.parse_args()
+    if args.segment_ticks != 16 and not args.native_segments:
+        parser.error('Short segment lengths require --native-segments')
     if not 0 <= args.tail_gradient_scale <= 1:
         parser.error('Tail gradient scale must lie in [0, 1]')
     if not 1 <= args.microbatch <= args.starts:
@@ -523,7 +527,7 @@ def main():
             for member in range(3):
                 start, memory = context(rows, audit=True)
                 parts = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,member,
-                                16,body_fault,args.absorbing_body_fault,gradient_terms=True, tail_gradient_scale=args.tail_gradient_scale, ground_shapes=ground_shapes)
+                                args.segment_ticks,body_fault,args.absorbing_body_fault,gradient_terms=True, tail_gradient_scale=args.tail_gradient_scale, ground_shapes=ground_shapes)
                 gradients = {}
                 for i,(name, loss) in enumerate(parts.items()):
                     gs = torch.autograd.grad(loss, tuple(params.values()), retain_graph=i+1<len(parts))
@@ -552,7 +556,7 @@ def main():
         total = 0.
         segments = [(rows,args.horizon)]
         if args.native_segments:
-            segments = native_segments(rows, args.horizon, data['active'], ticks)
+            segments = native_segments(rows, args.horizon, data['active'], ticks, args.segment_ticks)
         weight_sum = sum(len(batch) for batch,_ in segments)
         for batch,length in segments:
             for group in batch.split(args.microbatch):
@@ -599,7 +603,7 @@ def main():
                        args.output/(label+'.pt'))
             dump(args.output/(label+'.json'),dict(alpha=alpha,rms=rms,budget=budget))
     dump(args.output/'training.json',dict(updates=evidence, pools=[len(p) for p in pools], retained_cases=int(success.sum()),
-                                         tail_gradient_scale=args.tail_gradient_scale, horizon=args.horizon, authored_ground=args.authored_ground, native_segments=args.native_segments, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
+                                         tail_gradient_scale=args.tail_gradient_scale, horizon=args.horizon, authored_ground=args.authored_ground, native_segments=args.native_segments, segment_ticks=args.segment_ticks, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
 
 
 if __name__ == '__main__':

@@ -287,6 +287,9 @@ def test_native_segments_keep_lane_and_exclude_post_terminal_and_missing_snapsho
     parts = native_segments(rows,48,active,[16,32,48])
     assert [p.tolist() for p,_ in parts] == [rows.tolist(),[[32,0],[32,1]],[[48,0]]]
     assert [length for _,length in parts] == [16,16,16]
+    short = native_segments(rows, 34, active, [16,32,48], segment_ticks=4)
+    assert [length for _,length in short] == [4,4,2]
+    assert all(torch.equal(a,b) for (a,_),(b,_) in zip(parts,short))
 
 
 def test_monitored_go2_surfaces_match_authored_witnesses_and_differentiate():
