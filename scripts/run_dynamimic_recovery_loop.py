@@ -62,6 +62,8 @@ def main():
     parser.add_argument('--initial-validation-baseline', type=Path, help='Completed two-slot baseline for the same native validation setup')
     parser.add_argument('--retain-success-actions', action='store_true',
                         help='Fit the Recovery output layer to preserve successful native actions after BPTT')
+    parser.add_argument('--localize-fall-actions', action='store_true',
+                        help='Distill the BPTT change preferentially into observed pre-fall states after retention')
     parser.add_argument('--initial-retention', type=Path,
                         help='Reuse previously fitted and replay-verified first-block retention candidates')
     group = parser.add_mutually_exclusive_group()
@@ -77,6 +79,8 @@ def main():
     args = parser.parse_args()
     if not 0 <= args.tail_gradient_scale <= 1:
         parser.error('Tail gradient scale must lie in [0, 1]')
+    if args.localize_fall_actions and not args.retain_success_actions:
+        parser.error('Conditional corrective actions require success retention')
     if (args.initial_wm or args.initial_critic) and not args.initial_native:
         parser.error('First-block fit reuse requires its native archive')
     if args.initial_retention and not (args.retain_success_actions and args.initial_native
@@ -139,6 +143,9 @@ def main():
                     if args.retain_success_actions:
                         retention = run('retention',['scripts/fit_dynamimic_recovery_retention.py','--native',native,
                             '--checkpoint',current,'--companion',args.companion,'--bptt',fit])
+                        if args.localize_fall_actions:
+                            retention = run('localized',['scripts/localize_dynamimic_recovery_actions.py',
+                                '--native',native,'--checkpoint',current,'--companion',args.companion,'--retention',retention])
                 if retention is not None:
                     candidates = retention_candidates(retention, current_sha, manifest['companion_sha256'])
                 else:

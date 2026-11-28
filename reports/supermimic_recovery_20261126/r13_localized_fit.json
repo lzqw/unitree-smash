@@ -1,0 +1,75 @@
+{
+  "behavior": "0c16c7181f28267f841ba95b8ba6aa115af8835cf1b8013a7b894653b6d68d9d",
+  "companion": "48228839ccc884fa92366d7d321f8f742c35b564a717c02ab76f9ed31c4959f2",
+  "threshold": 0.8460713624954224,
+  "train_cases": 190,
+  "warning_train_cases": 113,
+  "candidates": {
+    "conservative": {
+      "source": "e3a7689a85e654eb36f04d9f46ea694f40cfb22ba30a3920cef0b3b1083a56b9",
+      "after": "19b8aad3be8adfc0b535b2324ab620cd8c85dc4501b255dff44a917719aa4cc8",
+      "rms": 0.004398657940328121,
+      "budget": 0.02,
+      "replay_max_error": 5.21540641784668e-07,
+      "held_head_changes": {
+        "warning": {
+          "cases": 19,
+          "ticks": 546,
+          "before_rms": 0.014689018949866295,
+          "after_rms": 0.014179171994328499,
+          "directional_gain": 0.9561148285865784,
+          "direction_cosine": 0.9904943108558655
+        },
+        "clean": {
+          "cases": 6,
+          "ticks": 3124,
+          "before_rms": 0.004746322054415941,
+          "after_rms": 0.0014506821753457189,
+          "directional_gain": 0.12379830330610275,
+          "direction_cosine": 0.40504157543182373
+        },
+        "no_warning": {
+          "cases": 31,
+          "ticks": 5728,
+          "before_rms": 0.007594793103635311,
+          "after_rms": 0.0033440529368817806,
+          "directional_gain": 0.33433157205581665,
+          "direction_cosine": 0.7593119740486145
+        }
+      }
+    },
+    "moderate": {
+      "source": "d2e388dab061c0bb1a3023b6182f1603a622b8ed97ac222b74d49abbb5559d8d",
+      "after": "70107e4757bc6b6635f3b4b48d3f3870996a476fd71c9b6dc7c69be6508b3487",
+      "rms": 0.008771848864853382,
+      "budget": 0.035,
+      "replay_max_error": 5.21540641784668e-07,
+      "held_head_changes": {
+        "warning": {
+          "cases": 19,
+          "ticks": 546,
+          "before_rms": 0.02927997335791588,
+          "after_rms": 0.02840888500213623,
+          "directional_gain": 0.9623623490333557,
+          "direction_cosine": 0.9918708205223083
+        },
+        "clean": {
+          "cases": 6,
+          "ticks": 3124,
+          "before_rms": 0.0094091035425663,
+          "after_rms": 0.0026858048513531685,
+          "directional_gain": 0.06448241323232651,
+          "direction_cosine": 0.22589939832687378
+        },
+        "no_warning": {
+          "cases": 31,
+          "ticks": 5728,
+          "before_rms": 0.015102582983672619,
+          "after_rms": 0.006418271455913782,
+          "directional_gain": 0.31581565737724304,
+          "direction_cosine": 0.7431334853172302
+        }
+      }
+    }
+  }
+}

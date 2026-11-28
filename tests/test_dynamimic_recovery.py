@@ -326,3 +326,23 @@ def test_monitored_go2_surfaces_match_authored_witnesses_and_differentiate():
     torch.testing.assert_close(bonus, torch.tensor([0.,.03,.06]))
     slope, = torch.autograd.grad(bonus.sum(), test_gaps)
     assert slope.count_nonzero() == 1 and slope[1,surface.left_rear_thigh] > 0
+
+
+def test_prefall_warning_uses_only_available_body_history_and_resets_on_gaps():
+    from scripts.localize_dynamimic_recovery_actions import observable_features, sustained_scores
+    obs = torch.randn(2, 794)
+    changed = obs.clone()
+    history = changed[:, :759].view(2, 11, 69)
+    history[:, :, 45:57] += 100
+    history[:, :, 61:] -= 100
+    changed[:, 759:] += 100
+    torch.testing.assert_close(observable_features(obs), observable_features(changed))
+    tick, lane = torch.ones(26, 2, dtype=torch.bool).nonzero().T
+    keep = ~((tick == 11) & (lane == 1))
+    tick, lane = tick[keep], lane[keep]
+    high = torch.full((len(tick),), .9)
+    high[(tick == 20) & (lane == 0)] = .2
+    score = sustained_scores(high, tick, lane, (26,2))
+    for t, l, expected in [(10,0,-1.), (11,0,.9), (19,0,.9), (20,0,.2),
+                           (22,1,-1.), (23,1,.9)]:
+        assert float(score[(tick == t) & (lane == l)]) == pytest.approx(expected)
