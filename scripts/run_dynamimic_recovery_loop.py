@@ -185,14 +185,15 @@ def main():
                     raise ValueError('Candidate and reference validation contracts differ')
                 if any(result[k] != incumbent[k] for k in ('case_ids','reset_sha256','companion_sha256')):
                     raise ValueError('Native promotion panel changed')
-                indices = [i for i in range(2) if choose_candidate(incumbent['metrics'][i], [result['metrics'][i]]) is not None]
+                baseline_metrics = incumbent['metrics']
+                indices = [i for i in range(2) if choose_candidate(baseline_metrics[i], [result['metrics'][i]]) is not None]
                 selected = max(indices, key=lambda i:(-result['metrics'][i]['body'],result['metrics'][i]['strict'],
                                                        result['metrics'][i]['relaxed'],-i),default=None)
                 previous = current
                 if selected is not None:
                     current = candidates[selected]
                     incumbent = None  # Rescore the promoted policy in both native lane positions.
-                decision = dict(comparison=result, selected=selected, previous=str(previous),
+                decision = dict(comparison=result, baseline_metrics_by_slot=baseline_metrics, selected=selected, previous=str(previous),
                                 native64_choice=str(current), retained=str(confirmed))
                 dump(folder/'decision.json', decision)
                 if block==1 or block%2==0 or block==args.blocks:

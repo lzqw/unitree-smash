@@ -121,4 +121,6 @@ With case IDs weighted equally, removing the learned foot-force prior during the
 
 ### Anchored-air native64 selection
 
-Both candidates completed 800 ticks on the same 64 launches with no numerical failures. Frozen PPO01 yielded 32 body faults, 3 strict recoveries and 8 relaxed recoveries conditional on 54 qualified contacts. Conservative produced 32/4/13 and moderate produced 30/4/11 on those respective metrics. Both retained 46 ball-side completions and zero robot-net faults. The registered ranking prioritizes body faults and selected moderate for official fixed128. This selection leaves PPO01 as incumbent pending the official result.
+Both candidates completed 800 ticks on the same 64 launches with no numerical failures. The two frozen PPO01 slots used identical weights and case identities but had different observed outcomes. On 54 qualified contacts per slot, conservative changed body/strict/relaxed from 31/3/9 to 32/4/13, and moderate from 32/3/8 to 30/4/11. Both retained 46 ball-side completions and zero robot-net faults. The registered ranking prioritizes body faults and selected moderate for official fixed128. This selection leaves PPO01 as incumbent pending the official result.
+
+Moderate avoided five body faults (all panel A) and added three (all panel B), at 1.375, 2.277 and 4.479 seconds after landing. Four relaxed recoveries were gained and one lost. Three strict recoveries were gained and two lost. No case flipped its qualified-contact or ball-side outcome. These are paired counts on the selection panel.
