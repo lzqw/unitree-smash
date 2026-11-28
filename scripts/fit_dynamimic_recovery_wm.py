@@ -20,6 +20,13 @@ def read_data(root, extra_fields=(), *, expected_schema='dynamimic-native-recove
     if manifest['schema'] != expected_schema:
         raise ValueError('Unexpected trajectory schema')
     names = ('before','after','gate','live','body','landed','feet','final_joint_targets', *extra_fields)
+    if 'foot_impulse_w' in extra_fields:
+        contract = json.loads((root/'actuator_contract.json').read_text())
+        sampling = dict(frame='world', units='N s', substeps=contract['hold_physics_steps'],
+                        physics_dt_s=contract['physics_dt_s'])
+        if (manifest.get('foot_impulse_sampling') != sampling or
+                manifest.get('foot_force_body_names') != ['FL_foot','FR_foot','RL_foot','RR_foot']):
+            raise ValueError('Native foot impulse timing or foot order differs')
     blocks = {key: [] for key in names}
     for name in manifest['chunks']:
         chunk = torch.load(dest/name, weights_only=True, mmap=True)
@@ -73,8 +80,11 @@ def crossing_panel(rows, lane_mask, latest_length):
 
 def crossing_metrics(sequence):
     last = sequence[-1]
-    return dict(tilt_deg=float(last[:, 0].median()), com_height_mae_m=float(last[:, 1].mean()),
+    result = dict(tilt_deg=float(last[:, 0].median()), com_height_mae_m=float(last[:, 1].mean()),
                 contact_accuracy=float(sequence[..., 2].mean()), joint_speed_mae=float(last[:, 3].mean()))
+    if sequence.shape[-1] == 5:
+        result['foot_impulse_mae_ns'] = float(sequence[..., 4].mean())
+    return result
 
 
 def center_z(geometry, q, v):
@@ -92,15 +102,17 @@ def rollout(wm, member, data, rows, horizon, device, profiles, geometry=None):
     truth = data['after'][times, lane].to(device)
     feet = data['feet'][times, lane].to(device).float()
     ground = data['body'][times, lane].to(device).float()
+    impulses = data['foot_impulse_w'][times, lane].to(device) if 'foot_impulse_w' in data else None
+    optional = {'return_foot_impulse': True} if impulses is not None else {}
     profile = profiles[lane].to(device)
     loss = q.new_zeros(())
     results = []
     for t in range(horizon):
         if q.is_cuda and horizon >= 16 and torch.is_grad_enabled():
             q, v, aux = checkpoint(wm, q, v, targets[t], member, profile,
-                                   use_reentrant=False, preserve_rng_state=False)
+                                   use_reentrant=False, preserve_rng_state=False, **optional)
         else:
-            q, v, aux = wm(q, v, targets[t], member, profile)
+            q, v, aux = wm(q, v, targets[t], member, profile, **optional)
         q_ref, v_ref = local_robot_state(truth[t])
         r, r_ref = rotation(q[:, 3:7]), rotation(q_ref[:, 3:7])
         p = aux['foot_contact'].clamp(1e-6, 1-1e-6)
@@ -111,13 +123,20 @@ def rollout(wm, member, data, rows, horizon, device, profiles, geometry=None):
                 F.binary_cross_entropy(p, feet[t]) +
                 F.binary_cross_entropy_with_logits(aux['body_ground_logit'], ground[t]) +
                 .001*aux['residual_force'].square().mean())
+        if impulses is not None:
+            impulse_error = aux['foot_impulse_w'] - impulses[t]
+            # One foot supporting a quarter of a 20 kg robot for 10 ms delivers ~0.5 N s.
+            step = step + F.smooth_l1_loss(impulse_error / .5, torch.zeros_like(impulse_error))
         loss = loss + step/horizon
         if geometry is not None:
             # Angle between gravity directions is invariant to yaw and bounds tilt error.
             tilt = torch.rad2deg(torch.acos((r[:, 2]*r_ref[:, 2]).sum(-1).clamp(-1,1)))
-            results.append(torch.stack((tilt, (center_z(geometry,q,v)-center_z(geometry,q_ref,v_ref)).abs(),
+            columns = [tilt, (center_z(geometry,q,v)-center_z(geometry,q_ref,v_ref)).abs(),
                 ((p >= .5) == feet[t].bool()).float().mean(-1),
-                (v[:, 6:]-v_ref[:, 6:]).abs().mean(-1)), -1))
+                (v[:, 6:]-v_ref[:, 6:]).abs().mean(-1)]
+            if impulses is not None:
+                columns.append(impulse_error.abs().mean(dim=(1,2)))
+            results.append(torch.stack(columns, -1))
     return loss, results
 
 
@@ -206,6 +225,7 @@ def main():
                         help='Fit native absolute and paired minimum and rear thigh surface gaps')
     parser.add_argument('--fit-trunk-innovation', action='store_true',
                         help='Also fit four-tick paired changes from both native branch states')
+    parser.add_argument('--fit-foot-impulse', action='store_true', help='Supervise control-period per-foot world impulses')
     parser.add_argument('--resume', type=Path)
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
@@ -219,7 +239,8 @@ def main():
         parser.error('Ground response fitting requires an audited native intervention pair')
     args.output.mkdir(parents=True, exist_ok=False)
     torch.manual_seed(7372)
-    data, manifest = read_data(args.native, ('active',) if args.pulse_audit else ())
+    force_fields = ('foot_impulse_w',) if args.fit_foot_impulse else ()
+    data, manifest = read_data(args.native, (('active',) if args.pulse_audit else ()) + force_fields)
     contract = json.loads((args.native/'actuator_contract.json').read_text())
     if len(args.history_native) > 3 or len(set([args.native, *args.history_native])) != 1+len(args.history_native):
         raise ValueError('Expected up to four distinct native archives')
@@ -281,7 +302,7 @@ def main():
     prior_data = []
     archive_cases = [manifest['cases']]
     for directory in args.history_native:
-        history, history_manifest = read_data(directory)
+        history, history_manifest = read_data(directory, force_fields)
         other_contract = json.loads((directory/'actuator_contract.json').read_text())
         if other_contract != contract:
             raise ValueError('Historical actuator contract changed')
@@ -354,6 +375,11 @@ def main():
                         result['four_tick_innovation_by_horizon'] = dict(zip(dev_pairs, map(float, local), strict=True))
                         result['four_tick_innovation'] = innovation
                         score = (score[0], innovation, *score[1:])
+                if args.fit_foot_impulse:
+                    impulse_error = result['foot_impulse_mae_ns']
+                    if not math.isfinite(impulse_error):
+                        raise ValueError('Nonfinite native foot impulse error')
+                    score = (max(0., max(errors)-1), impulse_error, *score)
                 selection_log.append(dict(horizon=horizon, member=member, **result))
                 if member not in selected or score < selected[member][0]:
                     state = {key: value.detach().cpu().clone() for key, value in
@@ -361,7 +387,7 @@ def main():
                     selected[member] = (score, state, horizon)
         (args.output/'development.json').write_text(json.dumps(selection_log, indent=2)+'\n')
 
-    if args.pulse_audit:
+    if args.pulse_audit or (args.fit_foot_impulse and args.resume):
         select_on_development(0)
     for horizon, (all_rows, crossing, _) in pools.items():
         if not len(crossing):
@@ -415,7 +441,7 @@ def main():
                  m['joint_speed_mae']<1.2 for m in metrics)
     torch.save(wm.state_dict(), args.output/'ensemble.pt')
     (args.output/'validation.json').write_text(json.dumps(dict(passed=passed, members=metrics, ensemble_sha256=hashlib.sha256((args.output/'ensemble.pt').read_bytes()).hexdigest(), native_checkpoint=manifest['checkpoint_sha256'],
-        fit_trunk_innovation=args.fit_trunk_innovation, fit_ground_response=args.fit_ground_response, paired_train_by_horizon={k:len(v) for k,v in train_pairs.items()} if args.pulse_audit else None,
+        fit_foot_impulse=args.fit_foot_impulse, fit_trunk_innovation=args.fit_trunk_innovation, fit_ground_response=args.fit_ground_response, paired_train_by_horizon={k:len(v) for k,v in train_pairs.items()} if args.pulse_audit else None,
         paired_development_by_horizon={k:len(v) for k,v in dev_pairs.items()} if args.pulse_audit else None,
         paired_native=str(args.paired_native) if paired is not None else None,
         paired_training_cases=len(pair_lanes) if paired is not None else 0,

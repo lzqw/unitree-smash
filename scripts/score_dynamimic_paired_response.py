@@ -54,13 +54,6 @@ def score(args):
             or fit['native_checkpoint'] != baseline['checkpoint_sha256']):
         raise ValueError('Expected the validated ensemble from the baseline behavior')
     contract = json.loads((args.before/'actuator_contract.json').read_text())
-    if impulse_audit:
-        sampling = dict(frame='world', units='N s', substeps=contract['hold_physics_steps'],
-                        physics_dt_s=contract['physics_dt_s'])
-        for manifest in (baseline, candidate):
-            if (manifest.get('foot_impulse_sampling') != sampling or
-                    manifest.get('foot_force_body_names') != ['FL_foot','FR_foot','RL_foot','RR_foot']):
-                raise ValueError('Native foot impulse timing or foot order differs')
     model = DynaMimicRecoveryWorldModel(args.asset, contract)
     model.load_state_dict(torch.load(weights, weights_only=True, map_location='cpu'))
     model.eval()
