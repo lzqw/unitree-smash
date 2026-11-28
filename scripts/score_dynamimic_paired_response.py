@@ -69,7 +69,8 @@ def score(args):
 
     lanes = torch.arange(len(baseline['cases']))
     if pulse:
-        start = torch.full_like(lanes, m['pulse']['start_tick'])
+        from scripts.dynamimic_intervention_timing import pulse_ticks
+        start = pulse_ticks(m['pulse'],len(lanes)).clamp_min(0)
         eligible = set(m['eligible_case_ids'])
         same = torch.tensor([row['case_id'] in eligible for row in baseline['cases']])
         if int(same.sum()) != m['eligible'] or len(eligible) != m['eligible']:

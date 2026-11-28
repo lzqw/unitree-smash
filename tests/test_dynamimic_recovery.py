@@ -346,3 +346,28 @@ def test_prefall_warning_uses_only_available_body_history_and_resets_on_gaps():
     for t, l, expected in [(10,0,-1.), (11,0,.9), (19,0,.9), (20,0,.2),
                            (22,1,-1.), (23,1,.9)]:
         assert float(score[(tick == t) & (lane == l)]) == pytest.approx(expected)
+
+
+def test_native_training_pulse_times_are_bound_to_each_episode():
+    from scripts.dynamimic_intervention_timing import prefall_starts, pulse_ticks
+    n = 120
+    t = torch.arange(n)[:,None]
+    data = dict(active=(t>=10).expand(-1,4).clone(),live=torch.ones(n,4,dtype=torch.bool),
+                body=t==torch.tensor([70,15,119,150]), landed=t>=torch.tensor([30,30,20,40]))
+    starts = prefall_starts(data)
+    assert starts.tolist() == [38,-1,87,56]
+    assert torch.equal(pulse_ticks(dict(start_ticks=starts.tolist()),4),starts)
+    assert pulse_ticks(dict(start_tick=22),4).tolist() == [22]*4
+    with pytest.raises(ValueError):
+        pulse_ticks(dict(start_ticks=[5,8]),4)
+
+
+def test_correction_batches_balance_approach_policies_in_each_stratum():
+    from scripts.localize_dynamimic_recovery_actions import sample,split_approaches
+    lanes = torch.tensor([0,2,4,5,9,12,13])
+    pools = split_approaches([torch.arange(5),torch.tensor([5,6])],lanes)
+    batch = sample(pools,[12,8])
+    assert int((lanes[batch[:12]]%2).sum()) == 6
+    assert int((lanes[batch[12:]]%2).sum()) == 4
+    with pytest.raises(ValueError):
+        split_approaches([torch.arange(3)],lanes)

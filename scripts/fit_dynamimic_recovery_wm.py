@@ -188,16 +188,18 @@ def main():
             raise ValueError('Intervention identity differs from the native training archive')
         accepted = set(pulse['eligible_case_ids'])
         same = torch.tensor([c['case_id'] in accepted for c in manifest['cases']])
-        tick = intervention['pulse']['start_tick']
-        starts = torch.full((len(same),),tick)
+        from scripts.dynamimic_intervention_timing import pulse_ticks
+        starts = pulse_ticks(intervention['pulse'],len(same)).clamp_min(0)
+        accepted_lanes = same.nonzero().flatten()
         if (int(same.sum()) != len(accepted) or len(accepted) != pulse['eligible']
-                or not torch.equal(data['before'][tick,same],paired['before'][tick,same])):
+                or not torch.equal(data['before'][starts[accepted_lanes],accepted_lanes],paired['before'][starts[accepted_lanes],accepted_lanes])):
             raise ValueError('Native intervention does not reproduce the audited starting states')
         lanes = torch.arange(len(same))
         train_pairs, dev_pairs = {}, {}
         nominal_active = data.pop('active')
         for horizon in (4,8,16):
-            valid = same & (nominal_active[tick:tick+horizon] & paired['active'][tick:tick+horizon]).all(0)
+            times = starts + torch.arange(horizon)[:,None]
+            valid = same & (nominal_active[times,lanes] & paired['active'][times,lanes]).all(0)
             train_pairs[horizon] = lanes[valid & (lanes%16>=4)]
             dev_pairs[horizon] = lanes[valid & (lanes%16//2==1)]
             if min(len(train_pairs[horizon]),len(dev_pairs[horizon])) < 2:

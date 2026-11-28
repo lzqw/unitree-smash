@@ -1,0 +1,53 @@
+"""Case-bound timing of training-only native interventions."""
+import hashlib
+import json
+
+import torch
+
+
+def schedule_from_baseline(folder, cases, checkpoint, companion):
+    storage = folder/'trajectories'
+    payload = (storage/'manifest.json').read_bytes()
+    manifest = json.loads(payload)
+    if (manifest['schema'] != 'dynamimic-native-recovery-v1' or manifest['dt'] != .01
+            or manifest['cases'] != cases or manifest['checkpoint_sha256'] != checkpoint
+            or manifest['companion_sha256'] != companion):
+        raise ValueError('Intervention timing requires the same baseline behavior and launches')
+    fields = {k:[] for k in ('active','body','landed','live')}
+    for name in manifest['chunks']:
+        chunk = torch.load(storage/name, weights_only=True, mmap=True, map_location='cpu')
+        for key, parts in fields.items():
+            parts.append(chunk[key])
+    data = {k:torch.cat(parts) for k,parts in fields.items()}
+    starts = prefall_starts(data)
+    if not (starts >= 0).any():
+        raise ValueError('No eligible active pre-fall or landing control windows')
+    return dict(start_ticks=starts.tolist(), duration_ticks=16, baseline_manifest_sha256=hashlib.sha256(payload).hexdigest())
+
+
+def prefall_starts(data):
+    active = data['active']
+    end = len(active)
+    ticks = torch.arange(end)[:,None]
+    landing = torch.where(data['live'] & data['landed'],ticks,end).amin(0)
+    fault = torch.where(active & data['body'],ticks,end).amin(0)
+    # Intervene before the recorded fall. Compare with other eligible lanes
+    # close to landing. Future outcome selects data, never the policy input.
+    start = torch.where(fault < end, fault-32, landing+16)
+    valid = (start >= 0) & (start+16 < end)
+    idx = start.clamp(0,end-1)
+    lane = torch.arange(len(idx))
+    valid &= active[idx,lane]
+    return torch.where(valid,start,-1)
+
+
+def pulse_ticks(pulse, count):
+    if 'start_ticks' in pulse:
+        ticks = pulse['start_ticks']
+        if not isinstance(ticks, list) or any(type(t) is not int for t in ticks):
+            raise ValueError('Per-lane intervention ticks must be integers')
+        start = torch.tensor(ticks, dtype=torch.long)
+        if start.shape != (count,) or (start < -1).any() or 'start_tick' in pulse:
+            raise ValueError('Malformed per-lane intervention timing')
+        return start
+    return torch.full((count,),int(pulse['start_tick']),dtype=torch.long)

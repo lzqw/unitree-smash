@@ -16,7 +16,7 @@ from scripts.fit_dynamimic_recovery_critic import root_termination
 from scripts.fit_dynamimic_recovery_retention import change_metrics
 from scripts.fit_dynamimic_recovery_wm import read_data
 from scripts.run_dynamimic_recovery_loop import retention_candidates
-from scripts.train_dynamimic_recovery_bptt import mixed_request, recovery_start_groups, stratified_starts
+from scripts.train_dynamimic_recovery_bptt import focus_cost, mixed_request, recovery_start_groups, stratified_starts
 
 
 def observable_features(obs):
@@ -33,8 +33,21 @@ def sustained_scores(probability, tick, lane, shape):
     return windows.amin(-1)[tick, lane]
 
 
+def split_approaches(pools, lanes):
+    paired = [(pool[lanes[pool] % 2 == 0], pool[lanes[pool] % 2 == 1]) for pool in pools]
+    if any(len(panel) == 0 for pair in paired for panel in pair):
+        raise ValueError('Each sampled stratum needs both Approach policies')
+    return paired
+
+
 def sample(pools, sizes):
-    return torch.cat([pool[torch.randint(len(pool), (size,))] for pool, size in zip(pools, sizes, strict=True)])
+    batches = []
+    for pair, size in zip(pools, sizes, strict=True):
+        if size % 2:
+            raise ValueError('Equal Approach allocation requires an even batch')
+        for panel in pair:
+            batches.append(panel[torch.randint(len(panel), (size // 2,))])
+    return torch.cat(batches)
 
 
 def fit_warning(obs, tick, lane, fault, clean, length):
@@ -47,6 +60,7 @@ def fit_warning(obs, tick, lane, fault, clean, length):
     pools = [(train & mask).nonzero().flatten() for mask in strata]
     if any(not len(p) for p in pools):
         raise ValueError('Native archive lacks pre-fall or retention coverage')
+    pools = split_approaches(pools,lane)
     net = nn.Sequential(nn.Linear(x.shape[1],48), nn.Tanh(), nn.Linear(48,1))
     optimizer = torch.optim.AdamW(net.parameters(), lr=.001, weight_decay=.01)
     for _ in range(300):
@@ -96,11 +110,18 @@ def main():
     pools = [(train & mask).nonzero().flatten() for mask in masks]
     if any(not len(p) for p in pools):
         raise ValueError('Insufficient native states for conditional correction')
+    pools = split_approaches(pools,l)
+    release_age = data['obs'][...,775] - data['release_time']
+    early_tick, early_lane = (data['active'] & (release_age < .04)
+                              & (torch.arange(len(clean)) % 16 >= 4)).nonzero().T
+    early_pool = split_approaches([torch.arange(len(early_lane))],early_lane)
     ticks = sorted(int(p.stem.split('_')[-1]) for p in (args.native/'trajectories').glob('g07_*.pt'))
     held = torch.arange(len(clean))%16 < 2
     checks = stratified_starts(recovery_start_groups(data,ticks,held),128,torch.Generator().manual_seed(9917))
     args.output.mkdir(parents=True,exist_ok=False)
     report = dict(behavior=behavior, companion=companion, threshold=threshold,
+                  action_batch_per_approach=128, early_leg_anchor_batch_per_approach=32,
+                  early_leg_anchor_cases=int(early_lane.unique().numel()), focus_cost_weight=.1,
                   train_cases=int(l[train].unique().numel()), warning_train_cases=int(l[train&warned].unique().numel()),
                   candidates={})
     for label,path,budget in zip(('conservative','moderate'),candidates,(.020,.035),strict=True):
@@ -115,11 +136,18 @@ def main():
             z = parent.actor.normalizer(obs)
             nominal = parent.actor.recovery(z)
             delta = teacher.actor.recovery(z)-nominal
+            early_z = parent.actor.normalizer(data['obs'][early_tick,early_lane])
+            early_target = parent.actor.recovery(early_z)[:,:12]
+        first_layer = dict(student.named_parameters())['actor.recovery.0.weight']
+        anchor = first_layer.detach().clone()
         optimizer = torch.optim.Adam(student.actor.recovery.parameters(),lr=.00012)
         for _ in range(600):
             idx = sample(pools,(128,64,64))
             prediction = student.actor.recovery(z[idx])-nominal[idx]
-            loss = 100*F.mse_loss(prediction,warned[idx,None]*delta[idx])
+            early = sample(early_pool,(64,))
+            leg_error = F.mse_loss(student.actor.recovery(early_z[early])[:,:12], early_target[early])
+            loss = 100*(F.mse_loss(prediction,warned[idx,None]*delta[idx]) + leg_error)
+            loss = loss + .1*focus_cost(first_layer,anchor)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()

@@ -52,7 +52,10 @@ def main():
     parser.add_argument('--dynamimic-capture', action='store_true')
     parser.add_argument('--dynamimic-pulse-checkpoint', type=Path,
                         help='Apply a different Recovery head for 16 native control ticks in a training archive')
-    parser.add_argument('--dynamimic-pulse-start', type=int)
+    timing = parser.add_mutually_exclusive_group()
+    timing.add_argument('--dynamimic-pulse-start', type=int)
+    timing.add_argument('--dynamimic-pulse-timing-from', type=Path,
+                        help='Target pre-fall windows using the case-matched native training archive')
     parser.add_argument('--recovery-ppo-panel', type=Path)
     parser.add_argument('--recovery-ppo-iterations', type=int, default=1)
     parser.add_argument('--recovery-ppo-resume', type=Path)
@@ -117,9 +120,9 @@ def main():
             args.recovery_training_probes or args.recovery_ppo_panel or args.approach_prefix_checkpoint or
             args.approach_sensitivity or args.early_arm_seconds is not None or args.approach_hybrid_spec):
         parser.error('Paired Dyna validation requires a separate deterministic full-tail evaluation')
-    if bool(args.dynamimic_pulse_checkpoint) != (args.dynamimic_pulse_start is not None):
-        parser.error('Recovery intervention requires both a checkpoint and a start tick')
-    if args.dynamimic_pulse_checkpoint and (not args.dynamimic_capture or not 0 <= args.dynamimic_pulse_start <= 784):
+    if bool(args.dynamimic_pulse_checkpoint) != (args.dynamimic_pulse_start is not None or args.dynamimic_pulse_timing_from is not None):
+        parser.error('Recovery intervention requires a checkpoint and a timing source')
+    if args.dynamimic_pulse_checkpoint and (not args.dynamimic_capture or (args.dynamimic_pulse_start is not None and not 0 <= args.dynamimic_pulse_start <= 784)):
         parser.error('Recovery intervention requires native training capture and a complete 16-tick interval')
     if args.dynamimic_capture and not args.recovery_ppo_panel:
         parser.error('Dyna capture requires a mixed Recovery training panel')

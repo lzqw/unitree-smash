@@ -36,6 +36,7 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
     companion.actor.recovery.load_state_dict(actor.actor.recovery.state_dict())
     pulse = args.dynamimic_pulse_checkpoint
     pulse_meta = {}
+    lane_starts = None
     if pulse:
         from quadsmash.rl.supermimic_physical_loop_loading_v1 import RECOVERY_NAMES
         from quadsmash.rl.supermimic_policy_execution_v1 import resolve_contract
@@ -50,8 +51,21 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
             return {k.removeprefix('actor.recovery.'): payload['actor'][k] for k in RECOVERY_NAMES}
         incumbent_head = recovery_weights(trained)
         pulse_head = recovery_weights(challenger)
-        pulse_meta = dict(start_tick=args.dynamimic_pulse_start, duration_ticks=16,
-                          candidate_sha256=hashlib.sha256(pulse.read_bytes()).hexdigest())
+        if args.dynamimic_pulse_timing_from:
+            from copy import deepcopy
+            from scripts.dynamimic_intervention_timing import schedule_from_baseline
+            pulse_meta = schedule_from_baseline(args.dynamimic_pulse_timing_from,cases,
+                hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
+                hashlib.sha256(args.recovery_probe_companion.read_bytes()).hexdigest())
+            lane_starts = torch.tensor(pulse_meta['start_ticks'], device=env.device)
+            pulse_policies = [deepcopy(policy) for policy in (actor,companion)]
+            for policy in pulse_policies:
+                policy.actor.recovery.load_state_dict(pulse_head,strict=True)
+            first_pulse = int(lane_starts[lane_starts >= 0].min())
+            last_pulse = int(lane_starts.max()) + 16
+        else:
+            pulse_meta = dict(start_tick=args.dynamimic_pulse_start, duration_ticks=16)
+        pulse_meta['candidate_sha256'] = hashlib.sha256(pulse.read_bytes()).hexdigest()
     prev = physical_state(env)
     episode = env.episode_index.clone()
     closed = torch.zeros_like(episode, dtype=torch.bool)
@@ -66,7 +80,7 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
     for tick in range(800):
         if stop['signal']:
             raise InterruptedError(stop['signal'])
-        if pulse and tick in (args.dynamimic_pulse_start, args.dynamimic_pulse_start + 16):
+        if pulse and lane_starts is None and tick in (args.dynamimic_pulse_start, args.dynamimic_pulse_start + 16):
             head = pulse_head if tick == args.dynamimic_pulse_start else incumbent_head
             for policy in (actor, companion):
                 policy.actor.recovery.load_state_dict(head, strict=True)
@@ -75,6 +89,12 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
         release = env.rally.release_time.clone()
         mean = actor._gated_distribution(x, gate, release_time=release).loc
         mean[1::2] = companion._gated_distribution(x[1::2], gate[1::2], release_time=release[1::2]).loc
+        if lane_starts is not None and first_pulse <= tick < last_pulse:
+            use = gate & ~closed & ~old_net & ~old_ground & (lane_starts >= 0)
+            use &= (tick >= lane_starts) & (tick < lane_starts + 16)
+            candidate = pulse_policies[0]._gated_distribution(x, gate, release_time=release).loc
+            candidate[1::2] = pulse_policies[1]._gated_distribution(x[1::2], gate[1::2], release_time=release[1::2]).loc
+            mean = torch.where(use[:,None],candidate,mean)
         action = mean.clamp(-1, 1)
         if tick % 16 == 0 and (gate & ~closed).any():
             memory = capture_controller(env._sm_residual_controller, plan_observation_cache={})
