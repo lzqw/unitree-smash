@@ -1,0 +1,156 @@
+{
+  "conservative": {
+    "before": {
+      "categories": {
+        "body_only": 31,
+        "neither": 9,
+        "low_root_only": 14
+      },
+      "relaxed_without_either": 9,
+      "strict_without_either": 3
+    },
+    "after": {
+      "categories": {
+        "body_only": 28,
+        "neither": 13,
+        "low_root_only": 10,
+        "body_and_low_root": 3
+      },
+      "relaxed_without_either": 12,
+      "strict_without_either": 5
+    },
+    "transitions": {
+      "body_only__body_only": 25,
+      "neither__neither": 6,
+      "low_root_only__low_root_only": 7,
+      "body_only__body_and_low_root": 2,
+      "body_only__neither": 2,
+      "low_root_only__neither": 5,
+      "low_root_only__body_only": 2,
+      "body_only__low_root_only": 2,
+      "neither__body_and_low_root": 1,
+      "neither__body_only": 1,
+      "neither__low_root_only": 1
+    },
+    "cases": {
+      "new_clean_survivor": [
+        "A-991101-007",
+        "A-991101-008",
+        "A-991101-011",
+        "B-991102-005",
+        "B-991102-008",
+        "B-991102-009",
+        "B-991102-013"
+      ],
+      "lost_clean_survivor": [
+        "A-991101-026",
+        "B-991102-010",
+        "B-991102-014"
+      ]
+    }
+  },
+  "moderate": {
+    "before": {
+      "categories": {
+        "body_only": 32,
+        "neither": 9,
+        "low_root_only": 13
+      },
+      "relaxed_without_either": 8,
+      "strict_without_either": 3
+    },
+    "after": {
+      "categories": {
+        "body_only": 33,
+        "neither": 11,
+        "low_root_only": 8,
+        "body_and_low_root": 2
+      },
+      "relaxed_without_either": 11,
+      "strict_without_either": 2
+    },
+    "transitions": {
+      "body_only__body_only": 31,
+      "neither__neither": 7,
+      "low_root_only__low_root_only": 7,
+      "body_only__neither": 1,
+      "low_root_only__body_only": 2,
+      "neither__body_and_low_root": 1,
+      "low_root_only__body_and_low_root": 1,
+      "neither__low_root_only": 1,
+      "low_root_only__neither": 3
+    },
+    "cases": {
+      "new_clean_survivor": [
+        "A-991101-007",
+        "B-991102-000",
+        "B-991102-009",
+        "B-991102-028"
+      ],
+      "lost_clean_survivor": [
+        "A-991101-026",
+        "A-991101-031"
+      ]
+    }
+  },
+  "fixed128": {
+    "before": {
+      "categories": {
+        "body_only": 70,
+        "neither": 26,
+        "low_root_only": 11,
+        "body_and_low_root": 1
+      },
+      "relaxed_without_either": 25,
+      "strict_without_either": 10
+    },
+    "after": {
+      "categories": {
+        "body_only": 72,
+        "neither": 20,
+        "low_root_only": 14,
+        "body_and_low_root": 2
+      },
+      "relaxed_without_either": 18,
+      "strict_without_either": 6
+    },
+    "transitions": {
+      "body_only__body_only": 64,
+      "body_only__neither": 4,
+      "neither__body_only": 6,
+      "neither__neither": 14,
+      "low_root_only__neither": 2,
+      "low_root_only__low_root_only": 8,
+      "neither__low_root_only": 5,
+      "body_only__body_and_low_root": 1,
+      "body_only__low_root_only": 1,
+      "neither__body_and_low_root": 1,
+      "low_root_only__body_only": 1,
+      "body_and_low_root__body_only": 1
+    },
+    "cases": {
+      "new_clean_survivor": [
+        "A-97124801-001",
+        "A-97124801-006",
+        "A-97124801-050",
+        "B-97124802-002",
+        "B-97124802-015",
+        "B-97124802-060"
+      ],
+      "lost_clean_survivor": [
+        "A-97124801-002",
+        "A-97124801-023",
+        "A-97124801-025",
+        "A-97124801-034",
+        "A-97124801-044",
+        "A-97124801-047",
+        "A-97124801-056",
+        "A-97124801-057",
+        "A-97124801-060",
+        "B-97124802-010",
+        "B-97124802-018",
+        "B-97124802-059"
+      ]
+    }
+  }
+}
