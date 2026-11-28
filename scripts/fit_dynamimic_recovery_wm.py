@@ -121,7 +121,7 @@ def rollout(wm, member, data, rows, horizon, device, profiles, geometry=None):
     return loss, results
 
 
-def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, device, profiles, *, impact=False, ground_geometry=None):
+def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, device, profiles, *, impact=False, ground_geometry=None, air_geometry=None):
     """Compare both executed command sequences from identical native starting states."""
     times = starts[lanes][None] + torch.arange(horizon)[:, None]
     q0, v0 = local_robot_state(baseline['before'][starts[lanes], lanes].to(device))
@@ -131,6 +131,12 @@ def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, d
         if ground_geometry is not None:
             shapes, geometry = ground_geometry
             values = (*values, shapes.monitored_gaps(geometry, q, v))
+        if air_geometry is not None:
+            rot = rotation(q[:,3:7])
+            feet = air_geometry(q[:,7:],v[:,6:],q[:,:3],q[:,3:7],
+                                (rot @ v[:,:3,None]).squeeze(-1),
+                                (rot @ v[:,3:6,None]).squeeze(-1))['feet']
+            values = (*values, feet[:,2:,2].mean(1,keepdim=True)-feet[:,:2,2].mean(1,keepdim=True))
         return values
 
     states = []
@@ -148,6 +154,8 @@ def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, d
     losses = []
     floors = (.01,.1,.01,.001,.02) if impact else (.01,.1,.01)
     if ground_geometry is not None:
+        floors = (*floors, .001)
+    if air_geometry is not None:
         floors = (*floors, .001)
     for a,b,x,y,floor in zip(*states, *truth, floors, strict=True):
         actual = y-x
@@ -216,6 +224,7 @@ def main():
     if len(args.history_native) > 3 or len(set([args.native, *args.history_native])) != 1+len(args.history_native):
         raise ValueError('Expected up to four distinct native archives')
     paired = None
+    air_pulse = False
     if args.pulse_audit:
         pulse = json.loads(args.pulse_audit.read_text())
         paired, intervention = read_data(args.paired_native, ('active',),
@@ -237,9 +246,14 @@ def main():
         lanes = torch.arange(len(same))
         train_pairs, dev_pairs = {}, {}
         nominal_active = data.pop('active')
-        for horizon in (4,8,16):
-            times = starts + torch.arange(horizon)[:,None]
-            valid = same & (nominal_active[times,lanes] & paired['active'][times,lanes]).all(0)
+        air_pulse = intervention['pulse'].get('phase') == 'air_preparation'
+        pair_horizons = (4,8,16,32) if air_pulse else (4,8,16)
+        end = min(len(nominal_active),len(paired['active']))
+        for horizon in pair_horizons:
+            times = (starts + torch.arange(horizon)[:,None]).clamp_max(end-1)
+            valid = same & (starts+horizon <= end) & (nominal_active[times,lanes] & paired['active'][times,lanes]).all(0)
+            if air_pulse and horizon == 32:
+                valid &= data['landed'][times[-1],lanes]
             train_pairs[horizon] = lanes[valid & (lanes%16>=4)]
             dev_pairs[horizon] = lanes[valid & (lanes%16//2==1)]
             if min(len(train_pairs[horizon]),len(dev_pairs[horizon])) < 2:
@@ -322,6 +336,14 @@ def main():
                         raise ValueError('Nonfinite development response score')
                     result['paired_h16'] = delta
                     score = (max(0., max(errors)-1), delta, *score)
+                    if air_pulse:
+                        crossing_delta = float(paired_response_loss(
+                            wm,member,data,paired,starts,dev_pairs[32],32,args.device,profiles,
+                            impact=True,air_geometry=geometry,ground_geometry=ground_geometry))
+                        if not math.isfinite(crossing_delta):
+                            raise ValueError('Nonfinite airborne-to-touchdown development loss')
+                        result['paired_crossing_h32'] = crossing_delta
+                        score = (score[0],crossing_delta,*score[1:])
                     if args.fit_trunk_innovation:
                         local = [innovation_loss(wm, member, data, paired, starts[dev_pairs[h]]+h,
                                                  dev_pairs[h], profiles[dev_pairs[h]].to(args.device))
@@ -352,14 +374,14 @@ def main():
             loss, _ = rollout(wm, members, data, rows, horizon, args.device, profiles)
             if paired is not None:
                 if args.pulse_audit:
-                    paired_horizon = {4:4,16:8,32:16}[horizon]
+                    paired_horizon = {4:4,16:16,32:32}[horizon] if air_pulse else {4:4,16:8,32:16}[horizon]
                     pair_lanes = train_pairs[paired_horizon]
                 else:
                     paired_horizon = {4:16,16:32,32:48}[horizon]
                 sampled = torch.cat([pair_lanes[torch.randint(len(pair_lanes), (n,), generator=g)] for g in generators])
                 loss = loss + .2 * paired_response_loss(wm, members, data, paired, starts, sampled,
                                                        paired_horizon, args.device, profiles, impact=bool(args.pulse_audit),
-                                                       ground_geometry=ground_geometry)
+                                                       ground_geometry=ground_geometry, air_geometry=geometry if air_pulse else None)
                 if args.fit_trunk_innovation:
                     loss = loss + innovation_loss(wm, members, data, paired, starts[sampled]+paired_horizon,
                                                   sampled, profiles[sampled].to(args.device))
