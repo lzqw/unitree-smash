@@ -485,3 +485,33 @@ def test_air_preparation_pulse_uses_pre_action_landing_and_release_age():
     release_age[5] = torch.tensor([.05, .05, .05, -.14])
     assert air_preparation_starts(dict(live=live,active=live,landed=landed,
                                        release_age=release_age)).tolist() == [5,5,-1,-1]
+
+
+def test_paired_landing_load_uses_vertical_response_in_final_four_ticks():
+    from scripts.fit_dynamimic_recovery_wm import paired_response_loss
+
+    gain = torch.tensor(.3, requires_grad=True)
+
+    def step(q, v, command, member, profile, return_foot_impulse=False):
+        aux = {}
+        if return_foot_impulse:
+            aux['foot_impulse_w'] = gain * command[:, :12].reshape(-1, 4, 3)
+        return q, v, aux
+
+    physical = torch.zeros(8, 1, 55)
+    physical[..., 3] = 1
+    nominal = dict(before=physical, after=physical, final_joint_targets=torch.zeros(8, 1, 18),
+                   foot_impulse_w=torch.zeros(8, 1, 4, 3))
+    changed = {k: v.clone() for k, v in nominal.items()}
+    changed['final_joint_targets'][..., 2] = 1
+    changed['foot_impulse_w'][..., 0, 2] = 1
+    index = torch.tensor([0])
+
+    def objective():
+        return paired_response_loss(step, 0, nominal, changed, index, index, 8, 'cpu', index, paired_load=True)
+
+    loss = objective()
+    assert torch.autograd.grad(loss, gain)[0] < 0
+    changed['foot_impulse_w'][:4] = 200
+    changed['foot_impulse_w'][..., :2] = -150
+    torch.testing.assert_close(objective(), loss)

@@ -142,7 +142,7 @@ def rollout(wm, member, data, rows, horizon, device, profiles, geometry=None):
     return loss, results
 
 
-def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, device, profiles, *, impact=False, ground_geometry=None, air_geometry=None):
+def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, device, profiles, *, impact=False, ground_geometry=None, air_geometry=None, paired_load=False):
     """Compare both executed command sequences from identical native starting states."""
     times = starts[lanes][None] + torch.arange(horizon)[:, None]
     q0, v0 = local_robot_state(baseline['before'][starts[lanes], lanes].to(device))
@@ -162,13 +162,22 @@ def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, d
 
     states = []
     truth = []
+    load_predictions, load_labels = [], []
     for branch in (baseline, other):
         q, v = q0, v0
         commands = branch['final_joint_targets'][times, lanes].to(device)
         profile = profiles[lanes].to(device)
-        for command in commands:
-            q, v, _ = checkpoint(wm, q, v, command, members, profile,
-                                 use_reentrant=False, preserve_rng_state=False)
+        loads = []
+        for step, command in enumerate(commands):
+            collect = paired_load and step >= horizon - 4
+            options = {'return_foot_impulse': True} if collect else {}
+            q, v, aux = checkpoint(wm, q, v, command, members, profile,
+                                   use_reentrant=False, preserve_rng_state=False, **options)
+            if collect:
+                loads.append(aux['foot_impulse_w'][..., 2])
+        if paired_load:
+            load_predictions.append(torch.stack(loads).sum(0))
+            load_labels.append(branch['foot_impulse_w'][times[-4:], lanes, :, 2].sum(0).to(device))
         states.append(outputs(q,v))
         q, v = local_robot_state(branch['after'][times[-1], lanes].to(device))
         truth.append(outputs(q,v))
@@ -187,6 +196,15 @@ def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, d
         # Native FK constrains the common offset that cancels from the branch difference.
         for predicted, measured in zip(states, truth, strict=True):
             loss = loss + .125 * F.smooth_l1_loss(predicted[-1]/.01, measured[-1]/.01)
+    if paired_load:
+        # Integrate both free rollouts from the same native state. Credit the
+        # response of each foot and the load transferred between body sides.
+        predicted = load_predictions[1] - load_predictions[0]
+        measured = load_labels[1] - load_labels[0]
+        side = predicted.new_tensor([1., -1., 1., -1.])  # FL, FR, RL, RR
+        for estimate, actual in ((predicted, measured), (predicted @ side, measured @ side)):
+            scale = actual.square().mean().sqrt().clamp_min(.05)
+            loss = loss + .5 * F.smooth_l1_loss(estimate / scale, actual / scale)
     return loss
 
 
@@ -228,6 +246,8 @@ def main():
     parser.add_argument('--fit-trunk-innovation', action='store_true',
                         help='Also fit four-tick paired changes from both native branch states')
     parser.add_argument('--fit-foot-impulse', action='store_true', help='Supervise control-period per-foot vertical support impulses')
+    parser.add_argument('--fit-paired-landing-load', action='store_true',
+                        help='Fit four-tick vertical load response at the end of a free H32 landing rollout')
     parser.add_argument('--resume', type=Path)
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
@@ -239,6 +259,8 @@ def main():
         parser.error('Trunk response fitting requires audited native intervention pairs')
     if args.fit_ground_response and not args.pulse_audit:
         parser.error('Ground response fitting requires an audited native intervention pair')
+    if args.fit_paired_landing_load and not (args.pulse_audit and args.fit_foot_impulse):
+        parser.error('Paired landing load requires audited interventions and absolute foot impulse supervision')
     args.output.mkdir(parents=True, exist_ok=False)
     torch.manual_seed(7372)
     force_fields = ('foot_impulse_w',) if args.fit_foot_impulse else ()
@@ -250,7 +272,7 @@ def main():
     air_pulse = False
     if args.pulse_audit:
         pulse = json.loads(args.pulse_audit.read_text())
-        paired, intervention = read_data(args.paired_native, ('active',),
+        paired, intervention = read_data(args.paired_native, ('active',) + (force_fields if args.fit_paired_landing_load else ()),
                                          expected_schema='dynamimic-native-recovery-pulse-v1')
         if (pulse['incumbent'] != manifest['checkpoint_sha256'] or intervention['pulse'] != pulse['pulse']
                 or intervention['pulse']['duration_ticks'] != 16
@@ -270,6 +292,8 @@ def main():
         train_pairs, dev_pairs = {}, {}
         nominal_active = data.pop('active')
         air_pulse = intervention['pulse'].get('phase') == 'air_preparation'
+        if args.fit_paired_landing_load and not air_pulse:
+            raise ValueError('Paired landing load requires an airborne intervention crossing touchdown')
         pair_horizons = (4,8,16,32) if air_pulse else (4,8,16)
         end = min(len(nominal_active),len(paired['active']))
         for horizon in pair_horizons:
@@ -362,7 +386,8 @@ def main():
                     if air_pulse:
                         crossing_delta = float(paired_response_loss(
                             wm,member,data,paired,starts,dev_pairs[32],32,args.device,profiles,
-                            impact=True,air_geometry=geometry,ground_geometry=ground_geometry))
+                            impact=True,air_geometry=geometry,ground_geometry=ground_geometry,
+                            paired_load=args.fit_paired_landing_load))
                         if not math.isfinite(crossing_delta):
                             raise ValueError('Nonfinite airborne-to-touchdown development loss')
                         result['paired_crossing_h32'] = crossing_delta
@@ -381,7 +406,7 @@ def main():
                     impulse_error = result['foot_vertical_impulse_mae_ns']
                     if not math.isfinite(impulse_error):
                         raise ValueError('Nonfinite native foot impulse error')
-                    score = (max(0., max(errors)-1), impulse_error, *score)
+                    score = (*score, impulse_error) if args.fit_paired_landing_load else (max(0., max(errors)-1), impulse_error, *score)
                 selection_log.append(dict(horizon=horizon, member=member, **result))
                 if member not in selected or score < selected[member][0]:
                     state = {key: value.detach().cpu().clone() for key, value in
@@ -410,7 +435,8 @@ def main():
                 sampled = torch.cat([pair_lanes[torch.randint(len(pair_lanes), (n,), generator=g)] for g in generators])
                 loss = loss + .2 * paired_response_loss(wm, members, data, paired, starts, sampled,
                                                        paired_horizon, args.device, profiles, impact=bool(args.pulse_audit),
-                                                       ground_geometry=ground_geometry, air_geometry=geometry if air_pulse else None)
+                                                       ground_geometry=ground_geometry, air_geometry=geometry if air_pulse else None,
+                                                       paired_load=args.fit_paired_landing_load and paired_horizon==32)
                 if args.fit_trunk_innovation:
                     loss = loss + innovation_loss(wm, members, data, paired, starts[sampled]+paired_horizon,
                                                   sampled, profiles[sampled].to(args.device))
@@ -443,7 +469,7 @@ def main():
                  m['joint_speed_mae']<1.2 for m in metrics)
     torch.save(wm.state_dict(), args.output/'ensemble.pt')
     (args.output/'validation.json').write_text(json.dumps(dict(passed=passed, members=metrics, ensemble_sha256=hashlib.sha256((args.output/'ensemble.pt').read_bytes()).hexdigest(), native_checkpoint=manifest['checkpoint_sha256'],
-        fit_foot_impulse=args.fit_foot_impulse, fit_trunk_innovation=args.fit_trunk_innovation, fit_ground_response=args.fit_ground_response, paired_train_by_horizon={k:len(v) for k,v in train_pairs.items()} if args.pulse_audit else None,
+        fit_paired_landing_load=args.fit_paired_landing_load, fit_foot_impulse=args.fit_foot_impulse, fit_trunk_innovation=args.fit_trunk_innovation, fit_ground_response=args.fit_ground_response, paired_train_by_horizon={k:len(v) for k,v in train_pairs.items()} if args.pulse_audit else None,
         paired_development_by_horizon={k:len(v) for k,v in dev_pairs.items()} if args.pulse_audit else None,
         paired_native=str(args.paired_native) if paired is not None else None,
         paired_training_cases=len(pair_lanes) if paired is not None else 0,
