@@ -347,10 +347,11 @@ def main():
                     if args.fit_trunk_innovation:
                         local = [innovation_loss(wm, member, data, paired, starts[dev_pairs[h]]+h,
                                                  dev_pairs[h], profiles[dev_pairs[h]].to(args.device))
-                                 for h in (4,8,16)]
+                                 for h in dev_pairs]
                         innovation = float(torch.stack(local).mean())
                         if not math.isfinite(innovation):
                             raise ValueError('Nonfinite local trunk response score')
+                        result['four_tick_innovation_by_horizon'] = dict(zip(dev_pairs, map(float, local), strict=True))
                         result['four_tick_innovation'] = innovation
                         score = (score[0], innovation, *score[1:])
                 selection_log.append(dict(horizon=horizon, member=member, **result))
