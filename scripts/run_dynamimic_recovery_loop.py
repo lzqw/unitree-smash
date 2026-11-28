@@ -73,7 +73,7 @@ def main():
     parser.add_argument('--tail-gradient-scale', type=float, default=1.,
                         help='Scale the gradient through the discounted continuation value, preserving its forward value')
     parser.add_argument('--landing-assist', action='store_true',
-                        help='Use inward-only request gradients, landed desaturation and low-height lift')
+                        help='Enable low-height lift and phase-specific landing assistance')
     parser.add_argument('--sample-late-body', action='store_true')
     parser.add_argument('--native-segments', action='store_true')
     parser.add_argument('--blocks', type=int, default=8, choices=range(1,9))

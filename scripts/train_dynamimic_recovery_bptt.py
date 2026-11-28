@@ -333,8 +333,8 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
 
     for step in range(horizon):
         request = mixed_request(primary, secondary, obs, starts['companion'], starts['release_time'])
-        saturation = saturation + saturation_cost(request, landed if landing_assist else None)/horizon
-        clipped = InwardRequestClamp.apply(request) if landing_assist else request.clamp(-1,1)
+        saturation = saturation + saturation_cost(request, landed)/horizon
+        clipped = InwardRequestClamp.apply(request)
         if clamp_audit is not None:
             clipped.retain_grad()
             clamp_audit.append((request.detach(), clipped))
@@ -426,7 +426,7 @@ def main():
     parser.add_argument('--tail-gradient-scale', type=float, default=1.,
                         help='Scale the gradient through the discounted continuation value, preserving its forward value')
     parser.add_argument('--landing-assist', action='store_true',
-                        help='Use inward-only request gradients, landed desaturation and low-height lift')
+                        help='Enable low-height lift and phase-specific landing assistance')
     parser.add_argument('--sample-late-body', action='store_true')
     parser.add_argument('--native-segments', action='store_true', help='Re-anchor every 16 ticks to measured state and G07 memory')
     parser.add_argument('--updates', type=int, choices=range(15,26), default=20)
@@ -701,6 +701,7 @@ def main():
                        args.output/(label+'.pt'))
             dump(args.output/(label+'.json'),dict(alpha=alpha,rms=rms,budget=budget))
     dump(args.output/'training.json',dict(updates=evidence, pools=[len(p) for p in pools], retained_cases=int(success.sum()),
+                                         request_gradient='inward_ste', landed_leg_desaturation=True,
                                          tail_gradient_scale=args.tail_gradient_scale, horizon=args.horizon, authored_ground=args.authored_ground, native_segments=args.native_segments, landing_assist=args.landing_assist, segment_ticks=args.segment_ticks, air_segment_ticks=args.air_segment_ticks, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
 
 

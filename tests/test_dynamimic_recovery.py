@@ -530,3 +530,23 @@ def test_first_support_pulse_starts_after_observed_foot_impact():
     age[:10, 1] = .03
     assert first_support_starts(dict(landed=landed, live=alive, active=active,
                                      feet=feet, release_age=age)).tolist() == [9, -1, -1, -1, -1]
+
+
+def test_six_fault_joints_have_inward_descent_and_landed_penalty():
+    from quadsmash.rl.supermimic_physical_observation_v1 import JOINT_NAMES
+    from scripts.train_dynamimic_recovery_bptt import InwardRequestClamp, saturation_cost
+    names = ('RL_calf_joint','FR_thigh_joint','RL_thigh_joint','RR_calf_joint','FL_hip_joint','FR_calf_joint')
+    indices = [JOINT_NAMES.index(name) for name in names]
+    raw = torch.zeros(2,18)
+    raw[:,indices] = torch.tensor([-1.22,1.10,-1.10,1.04,-1.04,1.02])
+    raw.requires_grad_()
+    bounded = InwardRequestClamp.apply(raw)
+    assert torch.equal(bounded, raw.clamp(-1,1))
+    inward, = torch.autograd.grad(bounded.square().sum(), raw, retain_graph=True)
+    outward, = torch.autograd.grad(-bounded.square().sum(), raw)
+    assert (raw[:,indices] * inward[:,indices] > 0).all()
+    assert not outward[:,indices].any()
+    extra = saturation_cost(raw, torch.tensor([0.,1.])) - saturation_cost(raw)
+    extra_grad, = torch.autograd.grad(extra,raw)
+    assert not extra_grad[0].any() and not extra_grad[1,12:].any()
+    assert (raw[1,indices] * extra_grad[1,indices] > 0).all()
