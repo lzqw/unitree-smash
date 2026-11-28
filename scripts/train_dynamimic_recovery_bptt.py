@@ -138,11 +138,12 @@ def stratified_starts(groups, count, generator, imminent=None, late_body=None):
     return torch.stack(sampled)
 
 
-def recovery_reward(q, v, contacts, geometry, landed, body_fault=None, absorbing_body=False):
+def recovery_reward(q, v, contacts, geometry, landed, body_fault=None, absorbing_body=False, fk=None):
     """Smooth physical margins. Link origins are calibrated surrogates for the ground barrier."""
     rot = rotation(q[:, 3:7])
     linear, angular = mv(rot, v[:, :3]), mv(rot, v[:, 3:6])
-    fk = geometry(q[:, 7:], v[:, 6:], q[:, :3], q[:, 3:7], linear, angular)
+    if fk is None:
+        fk = geometry(q[:, 7:], v[:, 6:], q[:, :3], q[:, 3:7], linear, angular)
     # Squared sine/cosine terms have a finite gradient at exact upright.
     tilt_sq = 2 * (1 - rot[:, 2, 2].clamp(-1, 1))
     speed = linear[:, :2].norm(dim=-1)
@@ -227,7 +228,7 @@ def released_ball_path(ball, horizon):
     return path
 
 
-def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon, body_fault=None, absorbing_body=False, gradient_terms=False, tail_gradient_scale=1.):
+def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer, tail, member, horizon, body_fault=None, absorbing_body=False, gradient_terms=False, tail_gradient_scale=1., ground_shapes=None):
     from quadsmash.rl.dynamimic_recovery_wm_v1 import local_robot_state
     from quadsmash.rl.supermimic_physical_observation_v1 import PhysicalPolicyInputs
     from torch.utils.checkpoint import checkpoint
@@ -271,11 +272,20 @@ def imagine(starts, memory, primary, secondary, preview, wm, geometry, observer,
         disagreement = disagreement + variance/horizon
         landed = torch.maximum(landed, contacts.amax(-1))
         root_alive = root_survival(root_alive, q[:, 2] + starts['origin_z'])
-        if absorbing_body:
+        fk = None
+        if ground_shapes is not None:
+            from quadsmash.rl.dynamimic_ground_clearance import ground_survival
+            rot = rotation(q[:,3:7])
+            fk = geometry(q[:,7:], v[:,6:], q[:,:3], q[:,3:7], mv(rot,v[:,:3]), mv(rot,v[:,3:6]))
+            gaps = ground_shapes(fk['position'], fk['rotation'])
+            body_alive = ground_survival(body_alive, gaps)
+        elif absorbing_body:
             from scripts.dynamimic_body_fault import body_fault_score
             body_alive = body_alive * (1 - body_fault_score(q, v, contacts, body_fault))
         next_survival = root_alive * body_alive
-        step_reward = recovery_reward(q, v, contacts, geometry, landed, body_fault, absorbing_body)
+        step_reward = recovery_reward(q, v, contacts, geometry, landed, body_fault, absorbing_body or ground_shapes is not None, fk)
+        if ground_shapes is not None:
+            step_reward = step_reward + landed * ground_shapes.thigh_margin_reward(gaps)
         value = value + discount * expected_live_reward(survival, next_survival, step_reward)
         survival = next_survival
         discount *= .995
@@ -334,6 +344,7 @@ def main():
         parser.add_argument('--'+name, required=True, type=Path)
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--native-body-fault', action='store_true')
+    group.add_argument('--authored-ground', action='store_true')
     group.add_argument('--absorbing-body-fault', action='store_true')
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--horizon', type=int, choices=(48,64), default=48)
@@ -389,6 +400,10 @@ def main():
     wm.requires_grad_(False).eval()
     geometry = FullBodyGeometryV1(wm.body.asset_sha256).to(device)
     geometry.enable_depth_batches()
+    ground_shapes = None
+    if args.authored_ground:
+        from quadsmash.rl.dynamimic_ground_clearance import Go2GroundClearance
+        ground_shapes = Go2GroundClearance(geometry).to(device)
     observer = PhysicalPolicyObservationV1().to(device=device, dtype=wm.kp.dtype)
     tail, source_sha = make_tail(args.checkpoint, device)
     value_state = torch.load(args.critic/'critic.pt', weights_only=True, map_location=device)
@@ -489,7 +504,7 @@ def main():
             for member in range(3):
                 start, memory = context(rows, audit=True)
                 parts = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,member,
-                                16,body_fault,args.absorbing_body_fault,gradient_terms=True, tail_gradient_scale=args.tail_gradient_scale)
+                                16,body_fault,args.absorbing_body_fault,gradient_terms=True, tail_gradient_scale=args.tail_gradient_scale, ground_shapes=ground_shapes)
                 gradients = {}
                 for i,(name, loss) in enumerate(parts.items()):
                     gs = torch.autograd.grad(loss, tuple(params.values()), retain_graph=i+1<len(parts))
@@ -524,7 +539,7 @@ def main():
             for group in batch.split(args.microbatch):
                 start, memory = context(group, audit=step==0)
                 loss = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,
-                               step%3,length,body_fault,args.absorbing_body_fault,tail_gradient_scale=args.tail_gradient_scale)
+                               step%3,length,body_fault,args.absorbing_body_fault,tail_gradient_scale=args.tail_gradient_scale, ground_shapes=ground_shapes)
                 weighted = loss*len(group)/weight_sum
                 weighted.backward()
                 total += float(weighted.detach())
@@ -563,7 +578,7 @@ def main():
                        args.output/(label+'.pt'))
             dump(args.output/(label+'.json'),dict(alpha=alpha,rms=rms,budget=budget))
     dump(args.output/'training.json',dict(updates=evidence, pools=[len(p) for p in pools], retained_cases=int(success.sum()),
-                                         tail_gradient_scale=args.tail_gradient_scale, horizon=args.horizon, native_segments=args.native_segments, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
+                                         tail_gradient_scale=args.tail_gradient_scale, horizon=args.horizon, authored_ground=args.authored_ground, native_segments=args.native_segments, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
 
 
 if __name__ == '__main__':

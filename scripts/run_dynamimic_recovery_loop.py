@@ -66,6 +66,7 @@ def main():
                         help='Reuse previously fitted and replay-verified first-block retention candidates')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--native-body-fault', action='store_true')
+    group.add_argument('--authored-ground', action='store_true')
     group.add_argument('--absorbing-body-fault', action='store_true')
     parser.add_argument('--tail-gradient-scale', type=float, default=1.,
                         help='Scale the gradient through the discounted continuation value, preserving its forward value')
@@ -131,6 +132,7 @@ def main():
                         '--companion',args.companion,'--device',args.device,
                         '--tail-gradient-scale', str(args.tail_gradient_scale),
                         *(['--native-body-fault'] if args.native_body_fault else []),
+                        *(['--authored-ground'] if args.authored_ground else []),
                         *(['--sample-late-body'] if args.sample_late_body else []),
                         *(['--native-segments'] if args.native_segments else []),
                         *(['--absorbing-body-fault'] if args.absorbing_body_fault else [])])

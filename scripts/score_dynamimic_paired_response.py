@@ -53,6 +53,20 @@ def score(args):
     model = DynaMimicRecoveryWorldModel(args.asset, contract)
     model.load_state_dict(torch.load(weights, weights_only=True, map_location='cpu'))
     model.eval()
+    quantities = response
+    if getattr(args, 'ground_surfaces', False):
+        from quadsmash.rl.dynamimic_ground_clearance import Go2GroundClearance
+        from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1
+        from quadsmash.rl.dynamimic_lagrangian_v1 import mv
+        geometry = FullBodyGeometryV1(model.body.asset_sha256)
+        geometry.enable_depth_batches()
+        shapes = Go2GroundClearance(geometry)
+        def quantities(q, v):
+            rot = rotation(q[:,3:7])
+            fk = geometry(q[:,7:],v[:,6:],q[:,:3],q[:,3:7],mv(rot,v[:,:3]),mv(rot,v[:,3:6]))
+            gaps = shapes(fk['position'], fk['rotation'])
+            return dict(go2_floor_gap_m=gaps.amin(-1), left_rear_thigh_gap_m=gaps[:,shapes.left_rear_thigh])
+
     lanes = torch.arange(len(baseline['cases']))
     if pulse:
         start = torch.full_like(lanes, m['pulse']['start_tick'])
@@ -80,7 +94,7 @@ def score(args):
             continue
         profile = torch.tensor(contract['lane_profile'])[l]
         q0,v0 = local_robot_state(a['before'][t,l])
-        measured = [response(*local_robot_state(d['after'][t+h-1,l])) for d in (a,b)]
+        measured = [quantities(*local_robot_state(d['after'][t+h-1,l])) for d in (a,b)]
         truth = {k:measured[1][k]-measured[0][k] for k in measured[0]}
         members = []
         for member in range(3):
@@ -89,10 +103,21 @@ def score(args):
                 q,v = q0,v0
                 for i in range(h):
                     q,v,_ = model(q,v,data['final_joint_targets'][t+i,l],member,profile)
-                branches.append(response(q,v))
+                branches.append(quantities(q,v))
             predicted = {k:branches[1][k]-x for k,x in branches[0].items()}
-            members.append({group:{k:metrics(x[sel],truth[k][sel]) for k,x in predicted.items()}
-                            for group,sel in [('train',l%16>=4),('held',l%16<2)] if sel.any()})
+            groups = {}
+            for group, sel in [('train',l%16>=4), ('held',l%16<2)]:
+                if not sel.any():
+                    continue
+                groups[group] = {}
+                for key, x in predicted.items():
+                    result = metrics(x[sel], truth[key][sel])
+                    if getattr(args, 'ground_surfaces', False):
+                        material = sel & (truth[key].abs() > .001)
+                        result.update(measured_over_1mm=int(material.sum()),
+                                      sign_correct_over_1mm=int((x[material]*truth[key][material] > 0).sum()))
+                    groups[group][key] = result
+            members.append(groups)
         out['horizons'][h] = dict(cases=len(l), members=members)
     return out
 
@@ -101,5 +126,6 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('before','after','pairs','wm','asset','output'):
         parser.add_argument('--'+name, required=True, type=Path)
+    parser.add_argument('--ground-surfaces', action='store_true')
     args = parser.parse_args()
     args.output.write_text(json.dumps(score(args), indent=2)+'\n')

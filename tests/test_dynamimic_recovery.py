@@ -287,3 +287,42 @@ def test_native_segments_keep_lane_and_exclude_post_terminal_and_missing_snapsho
     parts = native_segments(rows,48,active,[16,32,48])
     assert [p.tolist() for p,_ in parts] == [rows.tolist(),[[32,0],[32,1]],[[48,0]]]
     assert [length for _,length in parts] == [16,16,16]
+
+
+def test_monitored_go2_surfaces_match_authored_witnesses_and_differentiate():
+    import json
+    from scripts.authored_ground_clearance_v1 import support_witness
+    from quadsmash.rl.dynamimic_ground_clearance import Go2GroundClearance, SHAPES, ground_survival
+    from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1, MODEL, rotation
+
+    geometry = FullBodyGeometryV1(json.loads(MODEL.read_text())['asset_sha256'])
+    surface = Go2GroundClearance(geometry)
+    generator = torch.Generator().manual_seed(7529)
+    count = len(geometry.ids)
+    position = torch.randn(4, count, 3, generator=generator, requires_grad=True)
+    quat = torch.randn(4, count, 4, generator=generator, requires_grad=True)
+    rotations = rotation(quat)
+    gaps = surface(position, rotations)
+    shapes = [s for s in json.loads(SHAPES.read_text())['shapes'] if s['body'] in surface.names]
+    assert gaps.shape == (4, 21)
+    for j, shape in enumerate(shapes):
+        shape['transform'] = np.asarray(shape['transform'])
+        i = geometry.ids[shape['body']]
+        for lane in range(len(gaps)):
+            rot = rotations[lane,i].detach().numpy()
+            expected = float(position[lane,i,2].detach()) + rot[2] @ support_witness(shape, rot)
+            assert float(gaps[lane,j].detach()) == pytest.approx(expected, abs=3e-6)
+    gradients = torch.autograd.grad(gaps.sum(), (position,quat))
+    assert all(g.isfinite().all() and g.abs().sum()>0 for g in gradients)
+    floor = torch.tensor([[.02],[.0055],[.0005]],requires_grad=True)
+    live = ground_survival(torch.ones(3), floor)
+    torch.testing.assert_close(live,torch.tensor([1.,.5,0.]))
+    assert torch.autograd.grad(live.sum(),floor)[0][1,0]>0
+    torch.testing.assert_close(ground_survival(live,torch.full_like(floor,.1)), live)
+    test_gaps = torch.full((3, len(surface.names)), .12)
+    test_gaps[:,surface.left_rear_thigh] = torch.tensor([.0,.0375,.10])
+    test_gaps.requires_grad_()
+    bonus = surface.thigh_margin_reward(test_gaps)
+    torch.testing.assert_close(bonus, torch.tensor([0.,.03,.06]))
+    slope, = torch.autograd.grad(bonus.sum(), test_gaps)
+    assert slope.count_nonzero() == 1 and slope[1,surface.left_rear_thigh] > 0
