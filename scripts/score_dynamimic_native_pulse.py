@@ -10,6 +10,12 @@ from scripts.dynamimic_intervention_timing import pulse_ticks
 from scripts.fit_dynamimic_recovery_critic import NATIVE_RETURN_SCHEMA, gae, make_tail, read_rollout
 
 
+def first_body_tick(data, starts):
+    ticks = torch.arange(len(data['live']))[:, None]
+    hit = data['live'] & data['body'] & (ticks >= starts)
+    return torch.where(hit, ticks, len(ticks)).amin(0)
+
+
 @torch.no_grad()
 def score(args):
     flags = ('strict', 'relaxed')
@@ -74,7 +80,9 @@ def score(args):
     report = dict(pulse=b['pulse'], incumbent=a['checkpoint_sha256'], eligible=int(exact.sum()),
                   sha256_critic=hashlib.sha256((args.critic/'critic.pt').read_bytes()).hexdigest(), groups={})
     report['eligible_case_ids'] = [a['cases'][i]['case_id'] for i in exact.nonzero().flatten().tolist()]
-    body_a, body_b = [(d['body'] & d['live'] & (torch.arange(len(d['live']))[:,None] >= tick)).any(0) for d in (before, after)]
+    first_a, first_b = [first_body_tick(d, tick) for d in (before, after)]
+    body_a = first_a < len(before['live'])
+    body_b = first_b < len(after['live'])
     endpoint_live = before['active'][stop,lane] & after['active'][stop,lane]
     prefix_delta = prefixes[1] - prefixes[0]
     def case_ids(mask):
@@ -114,6 +122,19 @@ def score(args):
             clean = ~(observed['body'] | observed['net'] | observed['root_only_terminal'])
             outcomes[name] = dict(clean_strict=clean & observed['strict'], clean_relaxed=clean & observed['relaxed'],
                                   root_only=observed['root_only_terminal'], robot_net=observed['net'])
+        if 'start_ticks' in b['pulse']:
+            both = sel & body_a & body_b
+            avoided = sel & body_a & ~body_b
+            other_fault = outcomes['pulse']['root_only'] | outcomes['pulse']['robot_net']
+            report['groups'][label]['first_body_timing'] = dict(
+                both_fell=int(both.sum()),
+                earlier=int((both & (first_b < first_a)).sum()),
+                unchanged=int((both & (first_b == first_a)).sum()),
+                later=int((both & (first_b > first_a)).sum()),
+                delay_ticks_by_case={a['cases'][i]['case_id']:int(first_b[i]-first_a[i])
+                                     for i in both.nonzero().flatten().tolist()},
+                prevented_without_other_fault=case_ids(avoided & ~other_fault),
+                replaced_by_root_or_net_fault=case_ids(avoided & other_fault))
         transitions = {}
         for key, old in outcomes['baseline'].items():
             new = outcomes['pulse'][key]
