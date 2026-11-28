@@ -580,6 +580,10 @@ def main():
                              segment_counts=[len(batch) for batch,_ in segments], seconds=perf_counter()-started, microbatch=args.microbatch,
                              peak_cuda_mib=torch.cuda.max_memory_allocated(device)/2**20 if device.type=='cuda' else None,
                              unique_native_cases=len(rows[:,1].unique()),
+                             native_first_body_in_segments=body_fault_window_counts(
+                                 torch.cat([batch for batch,_ in segments]), landing_tick, first_fault_tick,
+                                 torch.cat([batch.new_full((len(batch),), length) for batch,length in segments]),
+                                 end_tick),
                              native_first_body_in_window=body_fault_window_counts(
                                  rows, landing_tick, first_fault_tick, args.horizon, end_tick),
                              late_body_prefall_starts=int(late_body[rows[:,0],rows[:,1]].sum()),
