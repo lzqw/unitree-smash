@@ -7,7 +7,7 @@ from pathlib import Path
 import torch
 
 from scripts.compare_dynamimic_native_behavior import first_tick
-from scripts.fit_dynamimic_recovery_wm import DynaMimicRecoveryWorldModel, local_robot_state, read_data, rotation
+from scripts.fit_dynamimic_recovery_wm import DynaMimicRecoveryWorldModel, local_robot_state, read_data, rotation, trunk_innovation
 
 
 def response(q, v):
@@ -132,6 +132,14 @@ def score(args):
                     q,v,_ = model(q,v,data['final_joint_targets'][t+i,l],member,profile)
                 branches.append(quantities(q,v))
             predicted = {k:branches[1][k]-x for k,x in branches[0].items()}
+            if support_audit:
+                # Remove pre-existing branch differences. Scoring only endpoint
+                # velocities after re-anchoring would give credit for inherited motion.
+                increments = [trunk_innovation(model, d, t+h, l, profile, member) for d in (a,b)]
+                for name, sl in [('linear',slice(0,3)), ('angular',slice(3,6))]:
+                    key = 'last4_world_'+name+'_innovation'
+                    predicted[key] = increments[1][0][:,sl] - increments[0][0][:,sl]
+                    truth[key] = increments[1][1][:,sl] - increments[0][1][:,sl]
             groups = {}
             for group, sel in splits.items():
                 if not sel.any():

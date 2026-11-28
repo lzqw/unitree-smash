@@ -374,3 +374,35 @@ def test_correction_batches_balance_approach_policies_in_each_stratum():
     assert int((lanes[batch[12:]]%2).sum()) == 4
     with pytest.raises(ValueError):
         split_approaches([torch.arange(3)],lanes)
+
+
+def test_native_trunk_innovation_removes_inherited_velocity_and_uses_executed_commands():
+    from scripts.fit_dynamimic_recovery_wm import innovation_loss, trunk_innovation
+
+    class Drive(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.gain = torch.nn.Parameter(torch.tensor(.5))
+
+        def forward(self, q, v, target, member, profile):
+            return q, v + self.gain * torch.nn.functional.pad(target[:, :1], (0,23)), {}
+
+    model = Drive()
+    lanes = torch.tensor([0,1])
+    end = torch.tensor([4,6])
+    branches = []
+    for inherited, drive in [(0.,0.), (7.,1.)]:
+        before = torch.zeros(6,2,55)
+        before[...,3] = 1.
+        before[...,7] = inherited
+        after = before.clone()
+        after[end-1,lanes,7] += 4*drive
+        commands = torch.full((6,2,18), drive)
+        branches.append(dict(before=before, after=after, final_joint_targets=commands))
+    profile = torch.zeros(2,dtype=torch.long)
+    predicted, measured = trunk_innovation(model, branches[1], end, lanes, profile, 0)
+    torch.testing.assert_close(predicted[:,0], torch.tensor([2.,2.]))
+    torch.testing.assert_close(measured[:,0], torch.tensor([4.,4.]))
+    loss = innovation_loss(model, 0, *branches, end, lanes, profile)
+    loss.backward()
+    assert model.gain.grad < 0

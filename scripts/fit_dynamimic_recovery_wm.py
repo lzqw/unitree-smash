@@ -161,6 +161,29 @@ def paired_response_loss(wm, members, baseline, other, starts, lanes, horizon, d
     return loss
 
 
+def trunk_innovation(model, data, end_tick, lane, profile, member, steps=4):
+    """World-frame change over the final segment from this branch's measured state."""
+    start = end_tick - steps
+    before = data['before'][start, lane].to(profile.device)
+    q,v = local_robot_state(before)
+    for offset in range(steps):
+        command = data['final_joint_targets'][start+offset,lane].to(profile.device)
+        q,v,_ = model(q,v,command,member,profile)
+    rot = rotation(q[:,3:7])
+    world = torch.cat([(rot @ vel.unsqueeze(-1)).squeeze(-1) for vel in (v[:,:3],v[:,3:6])], -1)
+    return world - before[:,7:13], data['after'][end_tick-1,lane,7:13].to(profile.device) - before[:,7:13]
+
+
+def innovation_loss(wm, member, baseline, paired, end_tick, lanes, profile):
+    left, right = [trunk_innovation(wm, d, end_tick, lanes, profile, member) for d in (baseline, paired)]
+    predicted, measured = right[0]-left[0], right[1]-left[1]
+    losses = []
+    for p, y, floor in zip(predicted.split(3, dim=-1), measured.split(3, dim=-1), (.005, .025)):
+        scale = y.square().mean().sqrt().clamp_min(floor)
+        losses.append(F.smooth_l1_loss(p/scale, y/scale))
+    return torch.stack(losses).mean()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('native','asset','output'):
@@ -173,6 +196,8 @@ def main():
                         help='Use exact-prefix H4/H8/H16 native intervention pairs and development response selection')
     parser.add_argument('--fit-ground-response', action='store_true',
                         help='Fit native absolute and paired minimum and rear thigh surface gaps')
+    parser.add_argument('--fit-trunk-innovation', action='store_true',
+                        help='Also fit four-tick paired changes from both native branch states')
     parser.add_argument('--resume', type=Path)
     parser.add_argument('--device', default='cuda:0')
     args = parser.parse_args()
@@ -180,6 +205,8 @@ def main():
         parser.error('Positive updates and at least two starts per batch required')
     if args.pulse_audit and not (args.resume and args.paired_native):
         parser.error('Intervention fitting requires the nominal ensemble and its paired archive')
+    if args.fit_trunk_innovation and not args.pulse_audit:
+        parser.error('Trunk response fitting requires audited native intervention pairs')
     if args.fit_ground_response and not args.pulse_audit:
         parser.error('Ground response fitting requires an audited native intervention pair')
     args.output.mkdir(parents=True, exist_ok=False)
@@ -295,6 +322,15 @@ def main():
                         raise ValueError('Nonfinite development response score')
                     result['paired_h16'] = delta
                     score = (max(0., max(errors)-1), delta, *score)
+                    if args.fit_trunk_innovation:
+                        local = [innovation_loss(wm, member, data, paired, starts[dev_pairs[h]]+h,
+                                                 dev_pairs[h], profiles[dev_pairs[h]].to(args.device))
+                                 for h in (4,8,16)]
+                        innovation = float(torch.stack(local).mean())
+                        if not math.isfinite(innovation):
+                            raise ValueError('Nonfinite local trunk response score')
+                        result['four_tick_innovation'] = innovation
+                        score = (score[0], innovation, *score[1:])
                 selection_log.append(dict(horizon=horizon, member=member, **result))
                 if member not in selected or score < selected[member][0]:
                     state = {key: value.detach().cpu().clone() for key, value in
@@ -324,6 +360,9 @@ def main():
                 loss = loss + .2 * paired_response_loss(wm, members, data, paired, starts, sampled,
                                                        paired_horizon, args.device, profiles, impact=bool(args.pulse_audit),
                                                        ground_geometry=ground_geometry)
+                if args.fit_trunk_innovation:
+                    loss = loss + innovation_loss(wm, members, data, paired, starts[sampled]+paired_horizon,
+                                                  sampled, profiles[sampled].to(args.device))
             # Batched mean includes all members. Restore each independent batch's
             # gradient scale before clipping its parameters separately.
             (loss * len(members)).backward()
@@ -353,7 +392,7 @@ def main():
                  m['joint_speed_mae']<1.2 for m in metrics)
     torch.save(wm.state_dict(), args.output/'ensemble.pt')
     (args.output/'validation.json').write_text(json.dumps(dict(passed=passed, members=metrics, ensemble_sha256=hashlib.sha256((args.output/'ensemble.pt').read_bytes()).hexdigest(), native_checkpoint=manifest['checkpoint_sha256'],
-        fit_ground_response=args.fit_ground_response, paired_train_by_horizon={k:len(v) for k,v in train_pairs.items()} if args.pulse_audit else None,
+        fit_trunk_innovation=args.fit_trunk_innovation, fit_ground_response=args.fit_ground_response, paired_train_by_horizon={k:len(v) for k,v in train_pairs.items()} if args.pulse_audit else None,
         paired_development_by_horizon={k:len(v) for k,v in dev_pairs.items()} if args.pulse_audit else None,
         paired_native=str(args.paired_native) if paired is not None else None,
         paired_training_cases=len(pair_lanes) if paired is not None else 0,
