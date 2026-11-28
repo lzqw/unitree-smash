@@ -68,3 +68,9 @@ The native64 validation alternates the primary Approach and h8d on 32 cases each
 We compared all twelve historical candidate evaluations for which the native64 and fixed128 runs could be linked to the saved candidate and matching PPO01 panel reference. On the primary native64 subset, body contacts decreased in nine and were unchanged in three. On fixed128 they increased in all twelve and relaxed recovery declined in all twelve. These observations share cases, starting weights and candidate selection, and do not constitute twelve independent trials. A repeat official run of PPO01 itself reproduced all reported paired endpoint labels. The initial states, task, actuator, physics and policy execution contracts agree between PPO01 and the H4 official run.
 
 Future native64 reports include separate primary and companion counts alongside unchanged aggregate selection metrics. The official fixed128 gate remains decisive. [Historical checkpoint-linked counts](r13_policy_panel_transfer.json)
+
+## Directed-lift native64 result
+
+The moderate candidate advanced to the official fixed128 evaluation. Against PPO01 in its matched simulator slot, it avoided four body contacts and introduced three (32 → 31 among 54 qualified contacts). Strict recovery gained two and lost one (3 → 4). Relaxed recovery gained five with no losses (8 → 13). All 46 ball-side successes kept their case identities and neither run incurred a robot net fault. The conservative candidate recorded four additional body contacts overall (31 → 35), strict 3 → 5 and relaxed 9 → 10.
+
+For the moderate candidate, the primary Approach had body 20 → 18, strict 0 → 1 and relaxed 4 → 8 among 31 qualified cases. The companion had body 12 → 13, strict 3 → 3 and relaxed 4 → 5 among 23. The official fixed128 decision remains pending. [Checkpoint-bound paired flips by Approach](r13_directed_lift_native64.json)
