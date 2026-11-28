@@ -12,6 +12,7 @@ def main():
     for name in ('checkpoint','companion','panel','baseline','output','gpu-lock'):
         p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--iterations', type=int, default=1)
+    p.add_argument('--cem-generations', type=int, choices=range(1,21))
     p.add_argument('--ground-prefix', action='store_true')
     args = p.parse_args()
     if args.iterations < 1:
@@ -23,6 +24,20 @@ def main():
                '--kit_args=--renderer/multiGpu/enabled=false','--recovery-full-tail']
     try:
         with args.gpu_lock.open('a') as lock:
+            if args.cem_generations:
+                from scripts.native_recovery_cem import distill
+                train = run_stage([*command,'--checkpoint',str(args.checkpoint),'--recovery-ppo-panel',str(args.panel),
+                                   '--recovery-probe-companion',str(args.companion),
+                                   '--recovery-cem-generations',str(args.cem_generations)],args.output/'search',lock,status)
+                distill(train,args.checkpoint)
+                if not (train/'candidate.pt').exists():
+                    dump(status,dict(state='no_distilled_candidate',search=str(train)))
+                    return
+                eval_dir = run_stage([*command,'--checkpoint',str(train/'candidate.pt'),'--research-fixed128'],
+                                     args.output/'fixed128',lock,status)
+                compare(args.baseline,eval_dir,args.output/'comparison.json')
+                dump(status,dict(state='candidate_evaluated',search=str(train),evaluation=str(eval_dir)))
+                return
             policy = args.checkpoint
             resume = []
             for start in range(0, args.iterations, 5):

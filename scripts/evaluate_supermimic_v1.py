@@ -61,6 +61,7 @@ def main():
                        help='Apply the candidate on the first control decision after measured touchdown')
     phase.add_argument('--dynamimic-pulse-air-preparation', action='store_true',
                         help='Start the training pulse at the first airborne state at least 50 ms after release')
+    parser.add_argument('--recovery-cem-generations', type=int, choices=range(1,21))
     parser.add_argument('--recovery-ppo-panel', type=Path)
     parser.add_argument('--recovery-ppo-iterations', type=int, default=1)
     parser.add_argument('--recovery-ppo-resume', type=Path)
@@ -131,6 +132,8 @@ def main():
         parser.error('Recovery intervention requires a checkpoint and a timing source')
     if args.dynamimic_pulse_checkpoint and (not args.dynamimic_capture or (args.dynamimic_pulse_start is not None and not 0 <= args.dynamimic_pulse_start <= 784)):
         parser.error('Recovery intervention requires native training capture and a complete 16-tick interval')
+    if args.recovery_cem_generations and (not args.recovery_ppo_panel or args.dynamimic_capture or args.recovery_ppo_resume):
+        parser.error('Native Recovery CEM requires a separate training panel and fresh search')
     if args.dynamimic_capture and not args.recovery_ppo_panel:
         parser.error('Dyna capture requires a mixed Recovery training panel')
     if args.recovery_ppo_panel and (args.recovery_training_probes or args.research_fixed128 or
@@ -388,6 +391,10 @@ def _run_native(args, stop_request):
             from scripts.recovery_native_teachers import training_layout
             cases = [case for shard in range(8) for case in training_layout(
                 args.recovery_ppo_panel,contract['protocol_sha256'],args.seed,shard)[:32]]
+        if args.recovery_cem_generations:
+            from scripts.native_recovery_cem import panel_layout, search
+            cem_bank = cases
+            cases = panel_layout(cem_bank, 0)
         lanes = len(cases)
         cfg = make_task_cfg(lanes, contract, protocol, receipt, execution_root=execution_root)
         cfg.seed, cfg.sim.device = args.seed, args.physics_device
@@ -486,6 +493,14 @@ def _run_native(args, stop_request):
             if policy_execution.get('arm_preparation_seconds') is not None:
                 companion.configure_approach_gate(policy_execution['arm_preparation_seconds'])
         if args.recovery_ppo_panel:
+            if args.recovery_cem_generations:
+                from quadsmash.rl.supermimic_actuator_identification import actuator_contract
+                drive = actuator_contract(env, contract)
+                if drive['lane_profile'] != drive['lane_profile'][:16] * 8:
+                    raise ValueError('CEM candidate and nominal actuator profiles differ')
+                write_json(args.output/'actuator_contract.json', drive)
+                search(args, env, wrapper, obs, actor, companion, cem_bank, scoring_protocol, stop_request)
+                return
             if args.dynamimic_capture:
                 from scripts.capture_dynamimic_recovery import collect
                 collect(args, env, wrapper, obs, actor, companion, trained, cases, stop_request)
