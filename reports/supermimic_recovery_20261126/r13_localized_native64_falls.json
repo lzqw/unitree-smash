@@ -1,0 +1,96 @@
+{
+  "conservative": {
+    "before": {
+      "categories": {
+        "body_only": 31,
+        "neither": 9,
+        "low_root_only": 14
+      },
+      "relaxed_without_either": 9,
+      "strict_without_either": 3
+    },
+    "after": {
+      "categories": {
+        "neither": 16,
+        "low_root_only": 9,
+        "body_only": 28,
+        "body_and_low_root": 1
+      },
+      "relaxed_without_either": 16,
+      "strict_without_either": 6
+    },
+    "transitions": {
+      "body_only__neither": 3,
+      "neither__neither": 8,
+      "low_root_only__low_root_only": 8,
+      "body_only__body_only": 27,
+      "low_root_only__neither": 5,
+      "neither__body_and_low_root": 1,
+      "low_root_only__body_only": 1,
+      "body_only__low_root_only": 1
+    },
+    "cases": {
+      "new_clean_survivor": [
+        "A-991101-000",
+        "A-991101-007",
+        "A-991101-008",
+        "A-991101-011",
+        "A-991101-023",
+        "B-991102-008",
+        "B-991102-009",
+        "B-991102-028"
+      ],
+      "lost_clean_survivor": [
+        "A-991101-026"
+      ]
+    }
+  },
+  "moderate": {
+    "before": {
+      "categories": {
+        "body_only": 32,
+        "neither": 9,
+        "low_root_only": 13
+      },
+      "relaxed_without_either": 8,
+      "strict_without_either": 3
+    },
+    "after": {
+      "categories": {
+        "neither": 12,
+        "body_only": 33,
+        "low_root_only": 8,
+        "body_and_low_root": 1
+      },
+      "relaxed_without_either": 11,
+      "strict_without_either": 4
+    },
+    "transitions": {
+      "body_only__neither": 2,
+      "neither__body_only": 2,
+      "low_root_only__low_root_only": 5,
+      "body_only__body_and_low_root": 1,
+      "body_only__body_only": 27,
+      "neither__neither": 6,
+      "low_root_only__body_only": 4,
+      "body_only__low_root_only": 2,
+      "low_root_only__neither": 4,
+      "neither__low_root_only": 1
+    },
+    "cases": {
+      "new_clean_survivor": [
+        "A-991101-000",
+        "A-991101-007",
+        "A-991101-023",
+        "B-991102-005",
+        "B-991102-008",
+        "B-991102-028"
+      ],
+      "lost_clean_survivor": [
+        "A-991101-001",
+        "B-991102-003",
+        "B-991102-010"
+      ]
+    }
+  }
+}
