@@ -14,10 +14,10 @@ from quadsmash.rl.dynamimic_recovery_wm_v1 import DynaMimicRecoveryWorldModel, l
 from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1
 
 
-def read_data(root, extra_fields=()):
+def read_data(root, extra_fields=(), *, expected_schema='dynamimic-native-recovery-v1'):
     dest = root/'trajectories'
     manifest = json.loads((dest/'manifest.json').read_text())
-    if manifest['schema'] != 'dynamimic-native-recovery-v1':
+    if manifest['schema'] != expected_schema:
         raise ValueError('Unexpected trajectory schema')
     names = ('before','after','gate','live','body','landed','feet','final_joint_targets', *extra_fields)
     blocks = {key: [] for key in names}

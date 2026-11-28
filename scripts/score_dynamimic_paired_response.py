@@ -31,8 +31,16 @@ def metrics(pred, truth):
 def score(args):
     m = json.loads(args.pairs.read_text())
     a, baseline = read_data(args.before, ('active',))
-    b, candidate = read_data(args.after, ('active',))
-    if (m['baseline'] != baseline['checkpoint_sha256'] or m['candidate'] != candidate['checkpoint_sha256']
+    pulse = 'pulse' in m
+    schema = 'dynamimic-native-recovery-pulse-v1' if pulse else 'dynamimic-native-recovery-v1'
+    b, candidate = read_data(args.after, ('active',), expected_schema=schema)
+    if baseline['cases'] != candidate['cases'] or baseline['companion_sha256'] != candidate['companion_sha256']:
+        raise ValueError('Different launches or Approach mixture')
+    if pulse:
+        if (m['incumbent'] != baseline['checkpoint_sha256'] or m['incumbent'] != candidate['checkpoint_sha256']
+                or m['pulse'] != candidate['pulse']):
+            raise ValueError('Native intervention and prefix audit disagree')
+    elif (m['baseline'] != baseline['checkpoint_sha256'] or m['candidate'] != candidate['checkpoint_sha256']
             or [r['case_id'] for r in m['cases']] != [r['case_id'] for r in baseline['cases']]
             or baseline['cases'] != candidate['cases']):
         raise ValueError('Paired audit and native archives disagree')
@@ -45,15 +53,24 @@ def score(args):
     model = DynaMimicRecoveryWorldModel(args.asset, contract)
     model.load_state_dict(torch.load(weights, weights_only=True, map_location='cpu'))
     model.eval()
-    ta, tb = [first_tick(d['active']) for d in (a,b)]
-    lanes = torch.arange(len(ta))
-    start = ta.clamp_max(min(len(a['active']), len(b['active']))-1)
-    same = (a['before'][start,lanes] == b['before'][start,lanes]).all(-1)
-    same &= torch.tensor([all(r['prefix_max_abs_'+k] == 0 for k in ('before','request','final_joint_targets'))
-                          for r in m['cases']])
-    same &= (ta == tb) & a['active'][start,lanes] & b['active'][start,lanes]
+    lanes = torch.arange(len(baseline['cases']))
+    if pulse:
+        start = torch.full_like(lanes, m['pulse']['start_tick'])
+        eligible = set(m['eligible_case_ids'])
+        same = torch.tensor([row['case_id'] in eligible for row in baseline['cases']])
+        if int(same.sum()) != m['eligible'] or len(eligible) != m['eligible']:
+            raise ValueError('Native prefix audit case identities differ')
+        horizons = [h for h in (4,8,16) if h <= m['pulse']['duration_ticks']]
+    else:
+        ta, tb = [first_tick(d['active']) for d in (a,b)]
+        start = ta.clamp_max(min(len(a['active']), len(b['active']))-1)
+        same = (a['before'][start,lanes] == b['before'][start,lanes]).all(-1)
+        same &= torch.tensor([all(r['prefix_max_abs_'+k] == 0 for k in ('before','request','final_joint_targets'))
+                              for r in m['cases']])
+        same &= (ta == tb) & a['active'][start,lanes] & b['active'][start,lanes]
+        horizons = (4,8,16,32,48)
     out = dict(exact_prefix_cases=int(same.sum()), total_cases=len(lanes), horizons={})
-    for h in (4,8,16,32,48):
+    for h in horizons:
         valid = same & (start+h <= min(len(a['active']), len(b['active'])))
         times = (start[None,:] + torch.arange(h)[:,None]).clamp_max(min(len(a['active']),len(b['active']))-1)
         valid &= (a['active'][times,lanes] & b['active'][times,lanes]).all(0)

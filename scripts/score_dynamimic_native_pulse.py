@@ -58,6 +58,7 @@ def score(args):
     pred, native = predictions[1]-predictions[0], returns[1]-returns[0]
     report = dict(pulse=b['pulse'], incumbent=a['checkpoint_sha256'], eligible=int(exact.sum()),
                   sha256_critic=hashlib.sha256((args.critic/'critic.pt').read_bytes()).hexdigest(), groups={})
+    report['eligible_case_ids'] = [a['cases'][i]['case_id'] for i in exact.nonzero().flatten().tolist()]
     held = torch.arange(n)%16 < 2
     for label, split in [('training', ~held), ('held', held)]:
         sel = exact & split
