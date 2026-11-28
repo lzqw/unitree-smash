@@ -1,0 +1,364 @@
+{
+  "members": [
+    {
+      "tilt_deg": 2.5448365211486816,
+      "com_height_mae_m": 0.004448829218745232,
+      "contact_accuracy": 0.9826108813285828,
+      "joint_speed_mae": 0.716843843460083
+    },
+    {
+      "tilt_deg": 2.1257803440093994,
+      "com_height_mae_m": 0.00395939638838172,
+      "contact_accuracy": 0.9848790168762207,
+      "joint_speed_mae": 0.6261066198348999
+    },
+    {
+      "tilt_deg": 2.045262098312378,
+      "com_height_mae_m": 0.005091117694973946,
+      "contact_accuracy": 0.984375,
+      "joint_speed_mae": 0.5951855778694153
+    }
+  ],
+  "held_cases": [
+    "A-931301-000",
+    "A-931301-001",
+    "B-931312-000",
+    "B-931312-001",
+    "A-931301-016",
+    "A-931301-017",
+    "B-931312-016",
+    "B-931312-017",
+    "A-931301-032",
+    "A-931301-033",
+    "B-931312-032",
+    "A-931301-048",
+    "A-931301-049",
+    "B-931312-048",
+    "B-931312-049",
+    "A-931301-064",
+    "A-931301-065",
+    "B-931312-064",
+    "B-931312-065",
+    "A-931301-080",
+    "A-931301-081",
+    "B-931312-080",
+    "B-931312-081",
+    "A-931301-096",
+    "A-931301-097",
+    "B-931312-096",
+    "B-931312-097",
+    "A-931301-112",
+    "A-931301-113",
+    "B-931312-112",
+    "B-931312-113"
+  ],
+  "passed": true,
+  "selected_horizons": [
+    4,
+    32,
+    32
+  ],
+  "paired_train_by_horizon": {
+    "4": 114,
+    "8": 114,
+    "16": 114,
+    "32": 114
+  },
+  "paired_development_by_horizon": {
+    "4": 16,
+    "8": 16,
+    "16": 16,
+    "32": 16
+  },
+  "ensemble_sha256": "1553c1d9a7581aa53c8c9e8990a3c95e9bcd5dffc652b089a1973617a00252ed",
+  "air_response": {
+    "16": [
+      {
+        "cases": 16,
+        "native_rms": 0.0004573946353048086,
+        "rmse": 5.168800998944789e-05,
+        "cosine": 0.9951440691947937,
+        "projected_gain": 0.9350661039352417,
+        "over_0.1mm": 13,
+        "correct_sign_over_0.1mm": 13,
+        "over_1mm": 1,
+        "correct_sign_over_1mm": 1
+      },
+      {
+        "cases": 16,
+        "native_rms": 0.0004573946353048086,
+        "rmse": 0.00011310690024401993,
+        "cosine": 0.979243814945221,
+        "projected_gain": 0.8201956152915955,
+        "over_0.1mm": 13,
+        "correct_sign_over_0.1mm": 12,
+        "over_1mm": 1,
+        "correct_sign_over_1mm": 1
+      },
+      {
+        "cases": 16,
+        "native_rms": 0.0004573946353048086,
+        "rmse": 6.550847319886088e-05,
+        "cosine": 0.9967190623283386,
+        "projected_gain": 1.1112184524536133,
+        "over_0.1mm": 13,
+        "correct_sign_over_0.1mm": 13,
+        "over_1mm": 1,
+        "correct_sign_over_1mm": 1
+      }
+    ],
+    "32": [
+      {
+        "cases": 16,
+        "native_rms": 0.002138793235644698,
+        "rmse": 0.0021751222666352987,
+        "cosine": 0.06045283377170563,
+        "projected_gain": 0.01542571559548378,
+        "over_0.1mm": 14,
+        "correct_sign_over_0.1mm": 5,
+        "over_1mm": 11,
+        "correct_sign_over_1mm": 4
+      },
+      {
+        "cases": 16,
+        "native_rms": 0.002138793235644698,
+        "rmse": 0.002130481880158186,
+        "cosine": 0.14117351174354553,
+        "projected_gain": 0.035505957901477814,
+        "over_0.1mm": 14,
+        "correct_sign_over_0.1mm": 4,
+        "over_1mm": 11,
+        "correct_sign_over_1mm": 3
+      },
+      {
+        "cases": 16,
+        "native_rms": 0.002138793235644698,
+        "rmse": 0.002092480193823576,
+        "cosine": 0.21610566973686218,
+        "projected_gain": 0.06013335660099983,
+        "over_0.1mm": 14,
+        "correct_sign_over_0.1mm": 6,
+        "over_1mm": 11,
+        "correct_sign_over_1mm": 5
+      }
+    ]
+  },
+  "fitted_air_response": {
+    "16": [
+      {
+        "cases": 16,
+        "native_rms": 0.0004573946353048086,
+        "rmse": 5.267999222269282e-05,
+        "cosine": 0.9950597882270813,
+        "projected_gain": 0.932045578956604,
+        "over_0.1mm": 13,
+        "correct_sign_over_0.1mm": 13,
+        "over_1mm": 1,
+        "correct_sign_over_1mm": 1
+      },
+      {
+        "cases": 16,
+        "native_rms": 0.0004573946353048086,
+        "rmse": 0.00011883659317390993,
+        "cosine": 0.9767264127731323,
+        "projected_gain": 0.8107891082763672,
+        "over_0.1mm": 13,
+        "correct_sign_over_0.1mm": 12,
+        "over_1mm": 1,
+        "correct_sign_over_1mm": 1
+      },
+      {
+        "cases": 16,
+        "native_rms": 0.0004573946353048086,
+        "rmse": 6.0026737628504634e-05,
+        "cosine": 0.99721360206604,
+        "projected_gain": 1.1021054983139038,
+        "over_0.1mm": 13,
+        "correct_sign_over_0.1mm": 13,
+        "over_1mm": 1,
+        "correct_sign_over_1mm": 1
+      }
+    ],
+    "32": [
+      {
+        "cases": 16,
+        "native_rms": 0.002138793235644698,
+        "rmse": 0.002176931593567133,
+        "cosine": 0.05606408789753914,
+        "projected_gain": 0.014232641085982323,
+        "over_0.1mm": 14,
+        "correct_sign_over_0.1mm": 5,
+        "over_1mm": 11,
+        "correct_sign_over_1mm": 4
+      },
+      {
+        "cases": 16,
+        "native_rms": 0.002138793235644698,
+        "rmse": 0.0021153148263692856,
+        "cosine": 0.16719812154769897,
+        "projected_gain": 0.04103618860244751,
+        "over_0.1mm": 14,
+        "correct_sign_over_0.1mm": 6,
+        "over_1mm": 11,
+        "correct_sign_over_1mm": 5
+      },
+      {
+        "cases": 16,
+        "native_rms": 0.002138793235644698,
+        "rmse": 0.002104328013956547,
+        "cosine": 0.19441300630569458,
+        "projected_gain": 0.05263739079236984,
+        "over_0.1mm": 14,
+        "correct_sign_over_0.1mm": 6,
+        "over_1mm": 11,
+        "correct_sign_over_1mm": 5
+      }
+    ]
+  },
+  "anchored_air_fit": {
+    "behavior": "0c16c7181f28267f841ba95b8ba6aa115af8835cf1b8013a7b894653b6d68d9d",
+    "companion": "48228839ccc884fa92366d7d321f8f742c35b564a717c02ab76f9ed31c4959f2",
+    "threshold": 0.9093046188354492,
+    "action_batch_per_approach": 128,
+    "early_leg_anchor_batch_per_approach": 32,
+    "early_leg_anchor_cases": 190,
+    "focus_cost_weight": 0.1,
+    "train_cases": 190,
+    "warning_train_cases": 109,
+    "landing_assist": true,
+    "anchor_airborne": true,
+    "phase_targets": {
+      "air_preparation": {
+        "train_cases": 110,
+        "train_ticks": 2775,
+        "previously_unwarned_ticks": 2775
+      },
+      "first_support": {
+        "train_cases": 110,
+        "train_ticks": 2640,
+        "previously_unwarned_ticks": 2480
+      },
+      "all_airborne": {
+        "train_cases": 190,
+        "train_ticks": 4968,
+        "previously_unwarned_ticks": 4968
+      }
+    },
+    "candidates": {
+      "conservative": {
+        "source": "7cacfcd33a1e25fe5933e6ade765e9f512ea4051d21ef3b300d9cd5a4a50acf9",
+        "after": "0ef1bbd8acc129d34f3a6344d5bf09cb6dbc3bf3341981149e8a90d7d5f1fe86",
+        "rms": 0.0048703597858548164,
+        "budget": 0.02,
+        "replay_max_error": 5.21540641784668e-07,
+        "held_head_changes": {
+          "warning": {
+            "cases": 19,
+            "ticks": 427,
+            "before_rms": 0.015636034309864044,
+            "after_rms": 0.014326458796858788,
+            "directional_gain": 0.9052718281745911,
+            "direction_cosine": 0.9880223870277405
+          },
+          "clean": {
+            "cases": 6,
+            "ticks": 3124,
+            "before_rms": 0.004941079765558243,
+            "after_rms": 0.001884185359813273,
+            "directional_gain": 0.18142668902873993,
+            "direction_cosine": 0.47577258944511414
+          },
+          "no_warning": {
+            "cases": 31,
+            "ticks": 5847,
+            "before_rms": 0.00890953466296196,
+            "after_rms": 0.00527220731601119,
+            "directional_gain": 0.4786510765552521,
+            "direction_cosine": 0.808875322341919
+          },
+          "air_preparation": {
+            "cases": 19,
+            "ticks": 483,
+            "before_rms": 0.00590935442596674,
+            "after_rms": 0.0009251382434740663,
+            "directional_gain": 0.017330734059214592,
+            "direction_cosine": 0.11070069670677185
+          },
+          "first_support": {
+            "cases": 19,
+            "ticks": 456,
+            "before_rms": 0.010196185670793056,
+            "after_rms": 0.009544091299176216,
+            "directional_gain": 0.9191407561302185,
+            "direction_cosine": 0.9819404482841492
+          },
+          "all_airborne": {
+            "cases": 31,
+            "ticks": 816,
+            "before_rms": 0.00547326123341918,
+            "after_rms": 0.0008738202741369605,
+            "directional_gain": 0.01273294072598219,
+            "direction_cosine": 0.0797540545463562
+          }
+        }
+      },
+      "moderate": {
+        "source": "58909d201023e4947d630922d4ec9d8eb3b8f15b7133ed6c0ccae5093120dd76",
+        "after": "f85f1eb2a4e774f01114f93c8c9c3b52c8c96be3c98cca6294fabee40ffbe469",
+        "rms": 0.009297306649386883,
+        "budget": 0.035,
+        "replay_max_error": 5.21540641784668e-07,
+        "held_head_changes": {
+          "warning": {
+            "cases": 19,
+            "ticks": 427,
+            "before_rms": 0.031084157526493073,
+            "after_rms": 0.028645716607570648,
+            "directional_gain": 0.9102442264556885,
+            "direction_cosine": 0.9877279996871948
+          },
+          "clean": {
+            "cases": 6,
+            "ticks": 3124,
+            "before_rms": 0.009762185625731945,
+            "after_rms": 0.0034031206741929054,
+            "directional_gain": 0.10083891451358795,
+            "direction_cosine": 0.28926634788513184
+          },
+          "no_warning": {
+            "cases": 31,
+            "ticks": 5847,
+            "before_rms": 0.01770654506981373,
+            "after_rms": 0.009617510251700878,
+            "directional_gain": 0.4218515455722809,
+            "direction_cosine": 0.7766597867012024
+          },
+          "air_preparation": {
+            "cases": 19,
+            "ticks": 483,
+            "before_rms": 0.01190149411559105,
+            "after_rms": 0.00136670155916363,
+            "directional_gain": -0.009343679994344711,
+            "direction_cosine": -0.08136651664972305
+          },
+          "first_support": {
+            "cases": 19,
+            "ticks": 456,
+            "before_rms": 0.020279444754123688,
+            "after_rms": 0.01772189885377884,
+            "directional_gain": 0.8534314632415771,
+            "direction_cosine": 0.9765948057174683
+          },
+          "all_airborne": {
+            "cases": 31,
+            "ticks": 816,
+            "before_rms": 0.011004401370882988,
+            "after_rms": 0.0012912671081721783,
+            "directional_gain": -0.012714024633169174,
+            "direction_cosine": -0.10835111886262894
+          }
+        }
+      }
+    }
+  }
+}

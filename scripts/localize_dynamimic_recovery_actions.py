@@ -94,7 +94,11 @@ def main():
     for name in ('native','checkpoint','companion','retention','output'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--landing-assist',action='store_true')
+    parser.add_argument('--anchor-airborne', action='store_true',
+                        help='Keep PPO01 airborne actions and distill the landed correction')
     args = parser.parse_args()
+    if args.anchor_airborne and not args.landing_assist:
+        parser.error('--anchor-airborne requires --landing-assist')
     data, manifest = read_data(args.native, ('active','obs','release_time','done','relaxed','strict','net','request'))
     digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
     behavior = digest(args.checkpoint)
@@ -124,7 +128,15 @@ def main():
         air, impact = landing_teacher_masks(t,l,data['obs'][...,775]-data['release_time'],landing,first_fault,length)
         target = (warned | air | impact) & ~clean[l]
         phases = dict(air_preparation=air, first_support=impact)
-    masks = (target, clean[l], ~clean[l]&~target)
+    sizes = (128,64,64)
+    if args.anchor_airborne:
+        airborne = t <= landing[l]
+        target = (warned | impact) & ~clean[l] & ~airborne
+        masks = (target, clean[l] & ~airborne, ~clean[l] & ~target & ~airborne, airborne)
+        sizes = (96,64,32,64)
+        phases['all_airborne'] = airborne
+    else:
+        masks = (target, clean[l], ~clean[l]&~target)
     pools = [(train & mask).nonzero().flatten() for mask in masks]
     if any(not len(p) for p in pools):
         raise ValueError('Insufficient native states for conditional correction')
@@ -141,7 +153,7 @@ def main():
                   action_batch_per_approach=128, early_leg_anchor_batch_per_approach=32,
                   early_leg_anchor_cases=int(early_lane.unique().numel()), focus_cost_weight=.1,
                   train_cases=int(l[train].unique().numel()), warning_train_cases=int(l[train&warned].unique().numel()),
-                  landing_assist=args.landing_assist,
+                  landing_assist=args.landing_assist, anchor_airborne=args.anchor_airborne,
                   phase_targets={key:dict(train_cases=len(l[mask&train].unique()),
                                           train_ticks=int((train&mask).sum()),
                                           previously_unwarned_ticks=int((train&mask&~warned).sum()))
@@ -164,7 +176,7 @@ def main():
         anchor = first_layer.detach().clone()
         optimizer = torch.optim.Adam(student.actor.recovery.parameters(),lr=.00012)
         for _ in range(600):
-            idx = sample(pools,(128,64,64))
+            idx = sample(pools,sizes)
             prediction = student.actor.recovery(z[idx])-nominal[idx]
             early = sample(early_pool,(64,))
             leg_error = F.mse_loss(student.actor.recovery(early_z[early])[:,:12], early_target[early])
