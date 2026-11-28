@@ -78,6 +78,7 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
     chunks, rows = [], []
     storage = root/'trajectories'
     storage.mkdir()
+    env.dyna_foot_impulse = torch.zeros_like(env.feet_contact.data.net_forces_w)
     for tick in range(800):
         if stop['signal']:
             raise InterruptedError(stop['signal'])
@@ -102,7 +103,11 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
         if tick % 16 == 0 and (gate & ~closed).any():
             memory = capture_controller(env._sm_residual_controller, plan_observation_cache={})
             torch.save(tensor_tree_copy(memory, cpu=True), storage/f'g07_{tick:04d}.pt')
+        env.dyna_foot_impulse.zero_()
+        env.dyna_impulse_frames = 0
         obs, _, done, _ = wrapper.step(action)
+        if env.dyna_impulse_frames != env.cfg.decimation:
+            raise ValueError(f'Incomplete native foot impulse: {env.dyna_impulse_frames} substeps')
         after, target, feet, landed, post_episode, foot_force = env.dyna_boundary
         if ((post_episode != episode) & ~closed).any():
             raise ValueError('Invalid terminal boundary capture')
@@ -113,7 +118,7 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
                   - 15*(ground & ~old_ground).float() - 20*(net & ~old_net).float())
         row = dict(before=prev, after=after, final_joint_targets=target, obs=x, request=action,
                    live=~closed, gate=gate, release_time=release, reward=reward,
-                   done=done, feet=feet, foot_net_force_w=foot_force, landed=landed, body=ground, net=net, relaxed=relaxed,
+                   done=done, feet=feet, foot_net_force_w=foot_force, foot_impulse_w=env.dyna_foot_impulse.clone(), landed=landed, body=ground, net=net, relaxed=relaxed,
                    strict=strict, active=gate & ~closed & ~old_net & ~old_ground)
         # release_time, observations and the public gate must describe the pre-step boundary.
         rows.append({key: value.detach().cpu() for key, value in row.items()})
@@ -135,6 +140,8 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
          schema='dynamimic-native-recovery-pulse-v1' if pulse else 'dynamimic-native-recovery-v1',
          pulse=pulse_meta, cases=cases, foot_force_body_names=list(env.feet_contact.body_names),
          foot_force_sampling="world-frame N at control boundary before reset",
+         foot_impulse_sampling=dict(frame="world", units="N s", substeps=int(env.cfg.decimation),
+                                    physics_dt_s=float(env.physics_dt)),
          episode_indices=episode.cpu().tolist(), origins=env.scene.env_origins.cpu().tolist(),
          lane_approach=['h8d' if i%2 else 'primary' for i in range(256)], chunks=chunks,
          checkpoint_sha256=hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),

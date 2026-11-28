@@ -395,6 +395,13 @@ def _run_native(args, stop_request):
         if args.recovery_ppo_panel:
             from scripts.native_recovery_ppo import reward_state
             class RecoveryPPOEnv(EvaluationEnv):
+                def _observe_physics_frame(self, frame):
+                    fresh = frame > self._observation_physics_frame and frame > 0
+                    super()._observe_physics_frame(frame)
+                    if fresh and getattr(self, 'dyna_foot_impulse', None) is not None:
+                        self.dyna_foot_impulse.add_(self.feet_contact.data.net_forces_w, alpha=self.physics_dt)
+                        self.dyna_impulse_frames += 1
+
                 def _get_dones(self):
                     result = super()._get_dones()
                     self.recovery_ppo_boundary = reward_state(self)
