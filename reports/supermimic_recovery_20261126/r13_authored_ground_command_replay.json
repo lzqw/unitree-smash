@@ -1,0 +1,72 @@
+{
+  "max_native_request_error": 6.556510925292969e-07,
+  "max_controller_only_error_rad": 8.630752563476562e-05,
+  "p999_baseline_command_error_rad": 4.76837158203125e-07,
+  "max_baseline_command_error_rad": 8.630752563476562e-05,
+  "candidates": [
+    "weak-tail moderate",
+    "authored-ground moderate"
+  ],
+  "groups": {
+    "training_early": {
+      "cases": 89,
+      "ticks": 267,
+      "old_command_rms_rad": 0.007705,
+      "new_command_rms_rad": 0.007403,
+      "difference_rms_rad": 0.002399,
+      "difference_legs_rad": 0.002794,
+      "difference_arm_rad": 0.001284,
+      "cosine": 0.9504
+    },
+    "training_late": {
+      "cases": 38,
+      "ticks": 114,
+      "old_command_rms_rad": 0.008665,
+      "new_command_rms_rad": 0.008725,
+      "difference_rms_rad": 0.002074,
+      "difference_legs_rad": 0.002432,
+      "difference_arm_rad": 0.001039,
+      "cosine": 0.9716
+    },
+    "training_clean": {
+      "cases": 47,
+      "ticks": 1503,
+      "old_command_rms_rad": 0.00339,
+      "new_command_rms_rad": 0.003224,
+      "difference_rms_rad": 0.000895,
+      "difference_legs_rad": 0.001044,
+      "difference_arm_rad": 0.000473,
+      "cosine": 0.9646
+    },
+    "held_early": {
+      "cases": 12,
+      "ticks": 36,
+      "old_command_rms_rad": 0.007439,
+      "new_command_rms_rad": 0.007175,
+      "difference_rms_rad": 0.002287,
+      "difference_legs_rad": 0.002657,
+      "difference_arm_rad": 0.001254,
+      "cosine": 0.9517
+    },
+    "held_late": {
+      "cases": 7,
+      "ticks": 21,
+      "old_command_rms_rad": 0.009643,
+      "new_command_rms_rad": 0.009714,
+      "difference_rms_rad": 0.002288,
+      "difference_legs_rad": 0.002687,
+      "difference_arm_rad": 0.001126,
+      "cosine": 0.9721
+    },
+    "held_clean": {
+      "cases": 6,
+      "ticks": 192,
+      "old_command_rms_rad": 0.003327,
+      "new_command_rms_rad": 0.003173,
+      "difference_rms_rad": 0.00091,
+      "difference_legs_rad": 0.001058,
+      "difference_arm_rad": 0.000493,
+      "cosine": 0.9619
+    }
+  }
+}
