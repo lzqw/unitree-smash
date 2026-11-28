@@ -80,7 +80,13 @@ def main():
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--segment-ticks', type=int, choices=(4,8,16,24,32), default=16,
                         help='Open-loop ticks per native G07 snapshot, spaced 16 ticks apart')
+    parser.add_argument('--air-segment-ticks', type=int, choices=(0,8,16,24,32),
+                        help='Maximum entirely airborne segment length; defaults to 24 with landing assistance')
     args = parser.parse_args()
+    if args.air_segment_ticks is None:
+        args.air_segment_ticks = 24 if args.landing_assist and args.native_segments else 0
+    if args.air_segment_ticks and not args.native_segments:
+        parser.error('Airborne segment lengths require native segment starts')
     if args.landing_assist and not args.authored_ground:
         parser.error('Landing assistance uses asset-based ground geometry')
     if args.segment_ticks != 16 and not args.native_segments:
@@ -143,6 +149,7 @@ def main():
                         '--wm',wm,'--critic',critic,'--asset',args.asset,'--checkpoint',current,
                         '--companion',args.companion,'--device',args.device,
                         '--tail-gradient-scale', str(args.tail_gradient_scale), '--segment-ticks', str(args.segment_ticks),
+                        '--air-segment-ticks', str(args.air_segment_ticks),
                         *(['--native-body-fault'] if args.native_body_fault else []),
                         *(['--authored-ground'] if args.authored_ground else []),
                         *(['--landing-assist'] if args.landing_assist else []),
@@ -159,6 +166,9 @@ def main():
                     candidates = retention_candidates(retention, current_sha, manifest['companion_sha256'])
                 else:
                     candidates = [fit/'conservative.pt',fit/'moderate.pt']
+                if args.landing_assist:
+                    from scripts.audit_dynamimic_recovery_requests import audit
+                    dump(folder/'fault10_target_changes.json', audit(native,current,args.companion,candidates))
                 if incumbent is None:
                     base = (args.initial_validation_baseline if block == 1 else None) or run('frozen_native64',[*native_flags,*validate_flags,'--checkpoint',current,
                                                    '--dynamimic-alternate',current])

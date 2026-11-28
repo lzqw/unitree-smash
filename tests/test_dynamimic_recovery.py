@@ -437,3 +437,14 @@ def test_long_segments_use_available_g07_snapshots_without_double_counting():
     for length in (24,32):
         parts = native_segments(torch.tensor([[0,0]]),48,active,[0,16,32],length)
         assert [(int(rows[0,0]),h) for rows,h in parts] == [(0,length),(32,16)]
+
+
+def test_air_only_extension_avoids_touchdown_overlap_and_unknown_landings():
+    from scripts.train_dynamimic_recovery_bptt import native_segments
+    rows = torch.tensor([[0,0],[0,1],[0,2],[0,3]])
+    parts = native_segments(rows,48,torch.ones(80,4,dtype=torch.bool),[0,16,32],
+                            4,landing_tick=torch.tensor([25,24,80,7]),air_ticks=24)
+    per_lane = [[(int(tick),h) for batch,h in parts for tick,i in batch if i==lane] for lane in range(4)]
+    assert per_lane[0] == [(0,24),(32,4)]
+    assert per_lane[1] == [(0,16),(16,4),(32,4)]
+    assert per_lane[2] == per_lane[3] == [(0,4),(16,4),(32,4)]

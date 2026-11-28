@@ -68,6 +68,20 @@ def score(args):
                 result.update(response(q, v))
             return result
 
+    air_audit = getattr(args, 'air_preparation', False)
+    if air_audit:
+        if pulse or getattr(args, 'ground_surfaces', False):
+            raise ValueError('Air preparation audit uses a complete paired policy rollout')
+        from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1
+        from quadsmash.rl.dynamimic_lagrangian_v1 import mv
+        geometry = FullBodyGeometryV1(model.body.asset_sha256)
+        geometry.enable_depth_batches()
+        def quantities(q, v):
+            rot = rotation(q[:,3:7])
+            feet = geometry(q[:,7:],v[:,6:],q[:,:3],q[:,3:7],mv(rot,v[:,:3]),mv(rot,v[:,3:6]))['feet']
+            return dict(**response(q,v), rear_minus_front_height=(
+                feet[:,2:,2].mean(1) - feet[:,:2,2].mean(1)).unsqueeze(-1))
+
     lanes = torch.arange(len(baseline['cases']))
     if pulse:
         from scripts.dynamimic_intervention_timing import pulse_ticks
@@ -88,7 +102,7 @@ def score(args):
         same &= torch.tensor([all(r['prefix_max_abs_'+k] == 0 for k in ('before','request','final_joint_targets'))
                               for r in m['cases']])
         same &= (ta == tb) & a['active'][start,lanes] & b['active'][start,lanes]
-        horizons = (4,8,16,32,48)
+        horizons = (4,8,16,24,32,48) if air_audit else (4,8,16,32,48)
     out = dict(exact_prefix_cases=int(same.sum()), total_cases=len(lanes), horizons={})
     baseline_fall = (a['active'] & a['body']).any(0)
     for h in horizons:
@@ -109,6 +123,14 @@ def score(args):
         measured = [quantities(*local_robot_state(d['after'][t+h-1,l])) for d in (a,b)]
         truth = {k:measured[1][k]-measured[0][k] for k in measured[0]}
         splits = {'train': l % 16 >= 4, 'held': l % 16 < 2}
+        if air_audit:
+            # Native landed is latched after the control step. Partition on the
+            # baseline outcome to avoid selecting for candidate-induced changes.
+            airborne = (t > 0) & ~a['landed'][(t-1).clamp_min(0),l]
+            touched = a['landed'][t+h-1,l].bool()
+            for split, mask in tuple(splits.items()):
+                splits[split+'_airborne'] = mask & airborne & ~touched
+                splits[split+'_crossing'] = mask & airborne & touched
         if timed:
             # Use only the incumbent outcome to identify the scheduled window class.
             for split, mask in tuple(splits.items()):
@@ -147,6 +169,11 @@ def score(args):
                 groups[group] = {}
                 for key, x in predicted.items():
                     result = metrics(x[sel], truth[key][sel])
+                    if key == 'rear_minus_front_height':
+                        for cutoff_mm in (.1,1.):
+                            material = sel & (truth[key].abs().flatten() > cutoff_mm*.001)
+                            result[f'over_{cutoff_mm:g}mm'] = int(material.sum())
+                            result[f'correct_sign_over_{cutoff_mm:g}mm'] = int((x[material]*truth[key][material] > 0).sum())
                     if key in ('go2_floor_gap_m', 'left_rear_thigh_gap_m'):
                         material = sel & (truth[key].abs() > .001)
                         result.update(measured_over_1mm=int(material.sum()),
@@ -165,6 +192,7 @@ if __name__ == '__main__':
     for name in ('before','after','pairs','wm','asset','output'):
         parser.add_argument('--'+name, required=True, type=Path)
     parser.add_argument('--ground-surfaces', action='store_true')
+    parser.add_argument('--air-preparation', action='store_true')
     parser.add_argument('--support-audit', action='store_true',
                         help='Split timed pre-fall responses by observed foot contact sequence')
     args = parser.parse_args()

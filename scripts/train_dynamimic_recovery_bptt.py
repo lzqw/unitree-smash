@@ -62,16 +62,25 @@ def recovery_start_groups(data, snapshot_ticks, held_lanes, *, landing_assist=Fa
     return tuple((eligible & mask).nonzero() for mask in masks)
 
 
-def native_segments(rows, horizon, active, snapshots, segment_ticks=16):
+def native_segments(rows, horizon, active, snapshots, segment_ticks=16, *, landing_tick=None, air_ticks=0):
+    """Use longer gradients only for windows entirely before observed touchdown."""
     segments = []
-    stride = ((segment_ticks + 15) // 16) * 16
-    for offset in range(0,horizon,stride):
+    lane = rows[:,1]
+    available = rows[:,0].clone()
+    for offset in range(0,horizon,16):
         tick = rows[:,0]+offset
-        lane = rows[:,1]
-        exists = (tick<len(active)) & torch.isin(tick, torch.as_tensor(snapshots))
+        exists = (tick<len(active)) & (tick>=available) & torch.isin(tick, torch.as_tensor(snapshots))
         exists &= active[tick.clamp_max(len(active)-1),lane]
-        if exists.any():
-            segments.append((torch.stack((tick[exists],lane[exists]),1),min(segment_ticks,horizon-offset)))
+        lengths = torch.full_like(tick,min(segment_ticks,horizon-offset))
+        if air_ticks:
+            for length in (8,16,24,32):
+                if segment_ticks < length <= min(air_ticks,horizon-offset):
+                    enough_air = (landing_tick[lane] < len(active)) & (tick+length < landing_tick[lane])
+                    lengths = torch.where(enough_air,length,lengths)
+        for length in lengths[exists].unique().tolist():
+            selected = exists & (lengths==length)
+            segments.append((torch.stack((tick[selected],lane[selected]),1),length))
+        available = torch.where(exists,tick+lengths,available)
     return segments
 
 
@@ -425,7 +434,13 @@ def main():
     parser.add_argument('--microbatch', type=int, default=64)
     parser.add_argument('--segment-ticks', type=int, choices=(4,8,16,24,32), default=16,
                         help='Open-loop ticks per native G07 snapshot, spaced 16 ticks apart')
+    parser.add_argument('--air-segment-ticks', type=int, choices=(0,8,16,24,32),
+                        help='Maximum entirely airborne segment length; defaults to 24 with landing assistance')
     args = parser.parse_args()
+    if args.air_segment_ticks is None:
+        args.air_segment_ticks = 24 if args.landing_assist and args.native_segments else 0
+    if args.air_segment_ticks and not args.native_segments:
+        parser.error('Airborne segment lengths require native segment starts')
     if args.landing_assist and not args.authored_ground:
         parser.error('Landing assistance uses asset-based ground geometry')
     if args.segment_ticks != 16 and not args.native_segments:
@@ -570,7 +585,13 @@ def main():
         if args.landing_assist:
             groups.append(('air_preparation', pools[0]))
         reports = {}
+        if args.landing_assist and args.air_segment_ticks:
+            t,l = pools[0].T
+            long_air = pools[0][(landing_tick[l] < end_tick) & (t+args.air_segment_ticks < landing_tick[l])]
+            if len(long_air):
+                groups.append(('long_air_preparation', long_air))
         for label, group in groups:
+            audit_ticks = args.air_segment_ticks if label=='long_air_preparation' else args.segment_ticks
             sample = []
             for parity in (0,1):
                 subset = group[group[:,1] % 2 == parity]
@@ -585,7 +606,7 @@ def main():
                 if args.landing_assist:
                     records = []
                     loss = imagine(start,memory,primary,secondary,preview,wm,geometry,observer,tail,
-                                   member,args.segment_ticks,body_fault,args.absorbing_body_fault,
+                                   member,audit_ticks,body_fault,args.absorbing_body_fault,
                                    tail_gradient_scale=args.tail_gradient_scale,ground_shapes=ground_shapes,
                                    landing_assist=True,clamp_audit=records)
                     gs = torch.autograd.grad(loss, tuple(params.values()))
@@ -605,7 +626,7 @@ def main():
                 total = sum(gradients.values())
                 members.append({k:dict(norm=float(g.norm()), projected_share=float(g@total/total.square().sum()))
                                 for k,g in gradients.items()})
-            reports[label] = dict(starts=rows.tolist(), members=members)
+            reports[label] = dict(starts=rows.tolist(), segment_ticks=audit_ticks, members=members)
         dump(args.output/'gradients.json',reports)
         return
 
@@ -627,7 +648,8 @@ def main():
         total = 0.
         segments = [(rows,args.horizon)]
         if args.native_segments:
-            segments = native_segments(rows, args.horizon, data['active'], ticks, args.segment_ticks)
+            segments = native_segments(rows, args.horizon, data['active'], ticks, args.segment_ticks,
+                                       landing_tick=landing_tick, air_ticks=args.air_segment_ticks)
         weight_sum = sum(len(batch) for batch,_ in segments)
         for batch,length in segments:
             for group in batch.split(args.microbatch):
@@ -648,7 +670,7 @@ def main():
             raise ValueError('Recovery gradient is zero')
         optimizer.step()
         evidence.append(dict(step=step+1, objective=total, gradient_norm=float(grad),
-                             segment_counts=[len(batch) for batch,_ in segments], seconds=perf_counter()-started, microbatch=args.microbatch,
+                             segment_ticks=[length for _,length in segments], segment_counts=[len(batch) for batch,_ in segments], seconds=perf_counter()-started, microbatch=args.microbatch,
                              peak_cuda_mib=torch.cuda.max_memory_allocated(device)/2**20 if device.type=='cuda' else None,
                              unique_native_cases=len(rows[:,1].unique()),
                              native_first_body_in_segments=body_fault_window_counts(
@@ -679,7 +701,7 @@ def main():
                        args.output/(label+'.pt'))
             dump(args.output/(label+'.json'),dict(alpha=alpha,rms=rms,budget=budget))
     dump(args.output/'training.json',dict(updates=evidence, pools=[len(p) for p in pools], retained_cases=int(success.sum()),
-                                         tail_gradient_scale=args.tail_gradient_scale, horizon=args.horizon, authored_ground=args.authored_ground, native_segments=args.native_segments, landing_assist=args.landing_assist, segment_ticks=args.segment_ticks, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
+                                         tail_gradient_scale=args.tail_gradient_scale, horizon=args.horizon, authored_ground=args.authored_ground, native_segments=args.native_segments, landing_assist=args.landing_assist, segment_ticks=args.segment_ticks, air_segment_ticks=args.air_segment_ticks, native_body_fault=args.native_body_fault, absorbing_body_fault=args.absorbing_body_fault, native=manifest['checkpoint_sha256']))
 
 
 if __name__ == '__main__':
