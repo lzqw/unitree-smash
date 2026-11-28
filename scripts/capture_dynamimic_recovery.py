@@ -17,7 +17,7 @@ def physical_state(env):
 
 def native_boundary(env):
     return (physical_state(env), env._sm_joint_targets.clone(), env.observed_foot_contact.clone(),
-            env.landed_once.clone(), env.episode_index.clone())
+            env.landed_once.clone(), env.episode_index.clone(), env.feet_contact.data.net_forces_w.clone())
 
 
 @torch.no_grad()
@@ -103,7 +103,7 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
             memory = capture_controller(env._sm_residual_controller, plan_observation_cache={})
             torch.save(tensor_tree_copy(memory, cpu=True), storage/f'g07_{tick:04d}.pt')
         obs, _, done, _ = wrapper.step(action)
-        after, target, feet, landed, post_episode = env.dyna_boundary
+        after, target, feet, landed, post_episode, foot_force = env.dyna_boundary
         if ((post_episode != episode) & ~closed).any():
             raise ValueError('Invalid terminal boundary capture')
         done = done.bool().reshape(-1)
@@ -113,7 +113,7 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
                   - 15*(ground & ~old_ground).float() - 20*(net & ~old_net).float())
         row = dict(before=prev, after=after, final_joint_targets=target, obs=x, request=action,
                    live=~closed, gate=gate, release_time=release, reward=reward,
-                   done=done, feet=feet, landed=landed, body=ground, net=net, relaxed=relaxed,
+                   done=done, feet=feet, foot_net_force_w=foot_force, landed=landed, body=ground, net=net, relaxed=relaxed,
                    strict=strict, active=gate & ~closed & ~old_net & ~old_ground)
         # release_time, observations and the public gate must describe the pre-step boundary.
         rows.append({key: value.detach().cpu() for key, value in row.items()})
@@ -133,7 +133,8 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
         raise ValueError('Incomplete or numerically invalid native batch')
     dump(storage/'manifest.json', dict(
          schema='dynamimic-native-recovery-pulse-v1' if pulse else 'dynamimic-native-recovery-v1',
-         pulse=pulse_meta, cases=cases,
+         pulse=pulse_meta, cases=cases, foot_force_body_names=list(env.feet_contact.body_names),
+         foot_force_sampling="world-frame N at control boundary before reset",
          episode_indices=episode.cpu().tolist(), origins=env.scene.env_origins.cpu().tolist(),
          lane_approach=['h8d' if i%2 else 'primary' for i in range(256)], chunks=chunks,
          checkpoint_sha256=hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
