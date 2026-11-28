@@ -33,6 +33,7 @@ def score(args):
     a, baseline = read_data(args.before, ('active',))
     pulse = 'pulse' in m
     timed = pulse and 'start_ticks' in m['pulse']
+    air_pulse = timed and m['pulse'].get('phase') == 'air_preparation'
     schema = 'dynamimic-native-recovery-pulse-v1' if pulse else 'dynamimic-native-recovery-v1'
     b, candidate = read_data(args.after, ('active',), expected_schema=schema)
     if baseline['cases'] != candidate['cases'] or baseline['companion_sha256'] != candidate['companion_sha256']:
@@ -70,8 +71,8 @@ def score(args):
 
     air_audit = getattr(args, 'air_preparation', False)
     if air_audit:
-        if pulse or getattr(args, 'ground_surfaces', False):
-            raise ValueError('Air preparation audit uses a complete paired policy rollout')
+        if (pulse and not air_pulse) or getattr(args, 'ground_surfaces', False):
+            raise ValueError('Air preparation requires complete paired policies or an airborne intervention')
         from quadsmash.rl.supermimic_full_body_geometry_v1 import FullBodyGeometryV1
         from quadsmash.rl.dynamimic_lagrangian_v1 import mv
         geometry = FullBodyGeometryV1(model.body.asset_sha256)
@@ -93,7 +94,9 @@ def score(args):
         horizons = [h for h in (4,8,16) if h <= m['pulse']['duration_ticks']]
         if timed:
             # The policy switches back to the incumbent after 16 ticks. Each branch
-            # then uses its own recorded closed-loop commands up to the nominal fall.
+            # then uses its own recorded closed-loop commands during continuation.
+            if air_audit:
+                horizons.append(m['pulse']['duration_ticks'] + 8)
             horizons.append(m['pulse']['duration_ticks'] + 16)
     else:
         ta, tb = [first_tick(d['active']) for d in (a,b)]
@@ -113,7 +116,8 @@ def score(args):
         coverage = {}
         if timed:
             held = lanes % 16 < 2
-            for label, group in [('held_prefall', held & baseline_fall), ('held_control', held & ~baseline_fall)]:
+            fall_group = 'held_later_fall' if air_pulse else 'held_prefall'
+            for label, group in [(fall_group, held & baseline_fall), ('held_control', held & ~baseline_fall)]:
                 coverage[label] = dict(matched=int((same & group).sum()), active_both=int((valid & group).sum()))
         if not len(l):
             out['horizons'][h] = dict(cases=0, **({'coverage': coverage} if timed else {}))
@@ -134,7 +138,7 @@ def score(args):
         if timed:
             # Use only the incumbent outcome to identify the scheduled window class.
             for split, mask in tuple(splits.items()):
-                splits[split+'_prefall'] = mask & baseline_fall[l]
+                splits[split+('_later_fall' if air_pulse else '_prefall')] = mask & baseline_fall[l]
                 splits[split+'_control'] = mask & ~baseline_fall[l]
         support_audit = timed and getattr(args, 'support_audit', False)
         if support_audit:
@@ -142,7 +146,8 @@ def score(args):
             # Equal masks do not imply equal substep impulses.
             feet_a, feet_b = [d['feet'][times[:, l], l].bool() for d in (a, b)]
             changed = (feet_a != feet_b).any(-1).any(0)
-            for partition in ('train_prefall', 'held_prefall'):
+            partitions = ('train_later_fall','held_later_fall') if air_pulse else ('train_prefall','held_prefall')
+            for partition in partitions:
                 splits[partition+'_changed_support'] = splits[partition] & changed
                 splits[partition+'_same_support'] = splits[partition] & ~changed
         members = []

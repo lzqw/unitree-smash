@@ -5,7 +5,7 @@ import json
 import torch
 
 
-def schedule_from_baseline(folder, cases, checkpoint, companion):
+def schedule_from_baseline(folder, cases, checkpoint, companion, *, air_preparation=False):
     storage = folder/'trajectories'
     payload = (storage/'manifest.json').read_bytes()
     manifest = json.loads(payload)
@@ -16,13 +16,31 @@ def schedule_from_baseline(folder, cases, checkpoint, companion):
     fields = {k:[] for k in ('active','body','landed','live')}
     for name in manifest['chunks']:
         chunk = torch.load(storage/name, weights_only=True, mmap=True, map_location='cpu')
-        for key, parts in fields.items():
-            parts.append(chunk[key])
+        for key in ('active','body','landed','live'):
+            fields[key].append(chunk[key])
+        if air_preparation:
+            fields.setdefault('release_age',[]).append(chunk['obs'][...,775] - chunk['release_time'])
     data = {k:torch.cat(parts) for k,parts in fields.items()}
-    starts = prefall_starts(data)
+    starts = air_preparation_starts(data) if air_preparation else prefall_starts(data)
     if not (starts >= 0).any():
-        raise ValueError('No eligible active pre-fall or landing control windows')
-    return dict(start_ticks=starts.tolist(), duration_ticks=16, baseline_manifest_sha256=hashlib.sha256(payload).hexdigest())
+        raise ValueError('No eligible native intervention windows')
+    result = dict(start_ticks=starts.tolist(), duration_ticks=16,
+                  baseline_manifest_sha256=hashlib.sha256(payload).hexdigest())
+    if air_preparation:
+        result['phase'] = 'air_preparation'
+    return result
+
+
+def air_preparation_starts(data):
+    # The current tick's landed signal is observed after executing its action.
+    active = data['active']
+    end = len(active)
+    previously_landed = torch.zeros_like(data['landed'])
+    previously_landed[1:] = data['landed'][:-1]
+    eligible = active & data['live'] & ~previously_landed & (data['release_age'] >= .05)
+    ticks = torch.arange(end, device=active.device)[:,None]
+    start = torch.where(eligible,ticks,end).amin(0)
+    return torch.where(start+16 < end,start,-1)
 
 
 def prefall_starts(data):

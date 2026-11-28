@@ -459,3 +459,14 @@ def test_localized_landing_targets_follow_native_step_timing():
                                       torch.tensor([35, 40, 38]), 40)
     assert air.tolist() == [False, True, True, False, False, False, False, False, False]
     assert impact.tolist() == [False, False, False, True, True, False, False, False, False]
+
+
+def test_air_preparation_pulse_uses_pre_action_landing_and_release_age():
+    from scripts.dynamimic_intervention_timing import air_preparation_starts
+    ticks = torch.arange(36)[:, None]
+    live = torch.ones(36, 4, dtype=torch.bool)
+    landed = ticks >= torch.tensor([7, 5, 3, 35])
+    release_age = (ticks - torch.tensor([0, 0, 0, 19])) * .01
+    release_age[5] = torch.tensor([.05, .05, .05, -.14])
+    assert air_preparation_starts(dict(live=live,active=live,landed=landed,
+                                       release_age=release_age)).tolist() == [5,5,-1,-1]

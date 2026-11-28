@@ -56,7 +56,8 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
             from scripts.dynamimic_intervention_timing import schedule_from_baseline
             pulse_meta = schedule_from_baseline(args.dynamimic_pulse_timing_from,cases,
                 hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
-                hashlib.sha256(args.recovery_probe_companion.read_bytes()).hexdigest())
+                hashlib.sha256(args.recovery_probe_companion.read_bytes()).hexdigest(),
+                air_preparation=args.dynamimic_pulse_air_preparation)
             lane_starts = torch.tensor(pulse_meta['start_ticks'], device=env.device)
             pulse_policies = [deepcopy(policy) for policy in (actor,companion)]
             for policy in pulse_policies:
@@ -92,6 +93,8 @@ def collect(args, env, wrapper, obs, actor, companion, trained, cases, stop):
         if lane_starts is not None and first_pulse <= tick < last_pulse:
             use = gate & ~closed & ~old_net & ~old_ground & (lane_starts >= 0)
             use &= (tick >= lane_starts) & (tick < lane_starts + 16)
+            if args.dynamimic_pulse_air_preparation:
+                use &= x[:,775] - release >= .05
             candidate = pulse_policies[0]._gated_distribution(x, gate, release_time=release).loc
             candidate[1::2] = pulse_policies[1]._gated_distribution(x[1::2], gate[1::2], release_time=release[1::2]).loc
             mean = torch.where(use[:,None],candidate,mean)
